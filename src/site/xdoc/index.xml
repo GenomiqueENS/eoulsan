@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+	<properties>
+		<title>Welcome to Eoulsan</title>
+		<author email="jourdren@biologie.ens.fr">
+			Laurent Jourdren
+		</author>
+		
+	</properties>
+		
+
+	<body>
+	        <link rel="alternate" type="application/rss+xml" title="Eoulsan updates" href="eoulsan.rss" />
+
+		<section name="Welcome to Eoulsan">
+
+
+
+			<div
+				style="float: right; margin: 0 10px 20px 20px; padding: 5px; border: 1px solid #999; background-color: #eee;">
+				<h5
+					style="margin: 0; font-size: smaller; border-bottom: 1px solid #aaaaaa">
+					Get Eoulsan @@@VERSION@@@
+				</h5>
+				<p style="font-size: smaller">
+					<img valign="top"
+						src="http://maven.apache.org/images/folder-open.gif" border="0"
+						alt="" title="Download Eoulsan" />
+					<a href="eoulsan-@@@VERSION@@@.tar.gz">Download</a>
+					Eoulsan Application
+					<br />
+				</p>
+				<ul style="margin-top: 0; list-style-type: disc">
+					<li style="font-size: smaller">
+						<a href="download.html#requirements">
+							System Requirements 
+						</a>
+						and 
+						<a href="installing.html">Installation Instructions</a>.						
+					</li>
+					<li style="font-size: smaller">
+						<a href="quickstart.html">
+							QuickStart tutorial
+						</a>
+					</li>
+				</ul>
+			</div>
+
+
+			<p>
+				Eoulsan is a flexible pipeline for RNA-seq analysis using 
+				Hadoop map-reduce framework.
+			</p>
+
+
+		</section>
+
+
+		
+			
+
+		<section name="Availabality">
+
+			<p>
+				Eoulsan is distributed under the
+				<a href="license.html">General Public Licence</a> and <a href="license.html">CeCill</a>.
+			</p>
+			
+		</section>
+		
+		<p><a href="./eoulsan.rss">Subscribe to Eoulsan RSS feed<img src="images/feed-icon-14x14.png"/></a></p>
+		
+		<p/>       
+		
+	</body>
+</document>

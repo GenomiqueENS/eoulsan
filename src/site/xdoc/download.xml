@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Teolenn development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Teolenn project and its aims,
+ * or to join the Teolenn Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/teolenn
+ *
+ */
+-->
+<document>
+  <properties>
+    <title>Download latest Teolenn version</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+  <body>
+  
+    <link rel="alternate" type="application/rss+xml" title="Teolenn updates" href="teolenn.rss" />
+  
+    <section name="Download Teolenn version @@@VERSION@@@">
+      <p>
+        Teolenn is distributed in several formats for your convenience.
+      </p>
+      <ul>
+        <li>
+          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-@@@VERSION@@@.tar.gz"-->
+          <a href="teolenn-@@@VERSION@@@.tar.gz">	
+            <code>.tar.gz</code> archive
+          </a>
+        </li>
+        <li>
+          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-@@@VERSION@@@.tar.bz2"-->
+          <a href="teolenn-@@@VERSION@@@.tar.bz2">
+            <code>.tar.bz2</code> archive
+          </a>
+        </li>
+        <li>
+          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-@@@VERSION@@@.zip"-->
+          <a href="teolenn-@@@VERSION@@@.zip">
+            <code>.zip</code> archive
+          </a>
+        </li>
+      </ul>
+      <p>
+        Teolenn is distributed under the
+        <a href="license.html">General Public License</a>.
+      </p>
+      <p>A full changelog is available in the <a href="changes-report.html">release note page</a>.</p>
+      <a name="requirements"/>
+      <subsection name="System Requirements">
+        <table>
+	  <tr>
+	    <th>Component</th>
+	    <th>Comment</th>
+	  </tr>
+	      <tr>
+            <td>Java Runtime Environment (J2SE)</td>
+            <td>5.0 or above (However Java 6.0 is fastest). </td>
+          </tr>
+          <tr>
+            <td>Memory</td>
+            <td>By default 2048 MiB are allocated to the JVM for running Teolenn.
+            You can edit this value in the <code>teolenn.sh</code> file with the 
+            <b>-Xmx</b> option of the JVM. However Teolenn use external tools 
+            like soap or genometools that also need memory, 2-3 GiB seem to be
+            a good amount of memory to run Teolenn.</td>
+          </tr>
+          <tr>
+            <td>Disk Space</td>
+            <td>
+              Approximately 6 MiB will be used by Teolenn installation but the
+               disk space needed to compute design is huge. For Trichoderma 
+               Reesei genome (33454791 pb) and 60 pb for oligonucleotides 
+               length, 26 GiB will be necessary. Fast hard drive with SCSI 
+               interface is recommended. <!-- Note for linux users that XFS file 
+               system is faster than ext3 for large sequential files used by Teolenn.-->
+            </td>
+          </tr>
+          <tr>
+            <td>Processor architecture</td>
+            <td>Any architecture processor that can run Java, Soap and genometools. 
+            Multi processors or multi cores system (SMP) are strongly recommended.</td>
+          </tr>
+          <tr>
+            <td>Operating System</td>
+            <td>
+		Teolenn can only works on *nix system as some externals tools (genometools 
+		and soap) can't run under Microsoft Windows.<!--  <b>Note for Mac OS X that soap 
+		seem buggy under this operating system, so <u>Teolenn will fail</u> if you use the Redundancy filter</b>-->
+            </td>
+          </tr>
+          <tr>
+            <td>SOAP</td>
+            <td>If you want to use the redundancy module for oligonucleotide sequence filtering, SOAP is mandatory. SOAP 1.11 is embedded in Teolenn for main platforms (see the <a href="installing.html">Teolenn installing page</a> for more informations). Note that <b>Teolenn is only compatible with SOAP 1.x</b>. SOAP 2.x will not work.</td>
+          </tr>
+          <tr>
+            <td>genometools</td>
+            <td>To use the unicity measurement module, genometools is requiered. However genometool 1.2.0 is embedded in Teolenn for main platforms (see the <a href="installing.html">Teolenn installing page</a> for more informations). Upper version of genometools may work with Teolenn.</td>
+          </tr>
+        </table>
+      </subsection>
+    </section>
+  </body>
+</document>
+

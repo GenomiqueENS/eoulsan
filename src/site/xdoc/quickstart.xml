@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Teolenn development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Teolenn project and its aims,
+ * or to join the Teolenn Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/teolenn
+ *
+ */
+-->
+<document>
+
+	<properties>
+		<title>Quickstart</title>
+		<author email="lecrom@biologie.ens.fr">
+			Stephane Le Crom
+        </author>
+	</properties>
+
+	<body>
+
+		<section name="Quickstart Guide">
+
+			<ul>
+				<li>
+					<a href="#installation">Installation</a>
+				</li>
+				<li>
+					<a href="#firstrun">Probe library creation</a>
+				</li>
+				<li>
+					<a href="#stats">Probe library statistics and filters</a>
+				</li>
+				<li>
+					<a href="#selection">Final probe selection</a>
+				</li>
+			</ul>
+
+
+			<a name="installation"/>
+			<subsection name="Installation">
+
+
+				<p> To install Teolenn, go to the
+					<a href="installing.html">Teolenn installation page</a>
+					and follow the detail procedure.
+				</p>
+			</subsection>
+
+
+			<a name="firstrun"/>
+			<subsection name="Probe library creation">
+
+
+				<p>Create a folder where to put all your files. Next in this folder download
+				the genome reference file (fasta format) and the masked genome (fasta format).
+				</p>
+
+				<p>Create your design file (xml format) either from scratch using the 
+				<a href="design.html"> documentation pages </a> or by using the 
+				<a href="./design-thricoderna-reesei.xml">template design file</a> we provide.
+				The better is to create the design file in the same folder than genome files.
+				</p>
+				<p>In the design file first edit the general parameters. Choose the start position
+				between 0 or 1. This is important because this will help you make the link with annotations
+				files. Choose the length of the oligonucleotide you want to design. Then fill
+				the relative location to the design file for your genome files.
+				</p>
+				<p>Next edit the sequencefilters and measurements. Pay attention that both values
+				of the "skip" parameter is set to "false". We advise to use both the redundancy and
+				Sequencexn filters. For the measurement you can add oligosequence, tm, %gc, complexicity and unicity.
+				If you don't know which parameter to provide for maxprefixlength you can let it
+				set to 30.
+				</p>
+				<p>For measurementfilters and selector you can set the "skip" parameter to
+				"true". Then launch the teolenn program for example as follow.
+				</p>
+		 	  <source>$ sh ../teolenn/teolenn.sh -log design.log design.xml</source>
+
+			</subsection>
+
+			<a name="stats"/>
+			<subsection name="Probe library statistics and filters">
+
+
+				<p>This first run has created the whole probe collection and apply a first 
+				general filter to discard redudant oligonucleotides and non classical bases.
+				You can now access the statistics of all the parameter calculated for the 
+				probe collection in the "filtered.stats" file. This file display each parameter
+				in column with an histogram distribution of the values and max, min, mean,
+				median and standard deviation calculated.
+				</p>
+				<p>These value are helpful to set up threshold on probe collection to discard
+				low quality probes. To do so open the design.xml file. First put the skip
+				parameter of sequencefilters and measurements to "true". Next edit the 
+				measurementfilters section and first put the skip value to "false".
+				For each measurement you can edit threshold based on the statistical 
+				distribution obtained.
+				</p>
+				<p>Now, you can launch teolenn another time. The probe collection is already 
+				done so that only the probe filtration step will be performed. This step is 
+				now very quick. At the end you can access the number of probe remaining in
+				the filtered.mes file to compared with the number of oligonucleotide in the
+				collection found in the oligo.mes file.
+				</p>
+
+			</subsection>
+
+			<a name="selection"/>
+			<subsection name="Final probe selection">
+
+
+				<p>Now that you have filtered your probe library according to your needs, 
+				the final step is to perform the probe selection. To do so edit the 
+				design.xml file and put all skip tag to true except for the last one 
+				(selector). Only the selection step will be done each time you will launch
+				Teolenn so that you can test several selection parameter configurations.
+				</p>
+				<p>For a tiling design add "tiling" to the "name" tag and set the two
+				parameters specific for this design: windowLength and windowStep. The
+				first give the size of the tiling window. The second give the step of 
+				the tiling path.
+				</p>
+				<p>Next set up the weight of each of the parameter to be taken into 
+				account for the final score calculation. Then launch the program. The final
+				design probe can be retrieved in the select.mes file.
+				</p>
+
+			</subsection>
+
+		</section>
+	</body>
+</document>
+

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Known Bugs for Eoulsan</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Known Bugs for Eoulsan @@@VERSION@@@">
+
+      <p>Eoulsan is not able to designing probes for genome sequence files with 
+      more than 500 scaffolds due to a limitation with the specificity calculation 
+      using genome tools.</p>  
+
+      <!--ul> 
+        <li>Bug 1.</li>
+	<li>Bug 2.</li>
+      </ul--> 
+      
+    </section>
+
+    <section name="Submit a Eoulsan bug">
+
+      <!-- eoulsan-list?subject=Bug -->
+      <p>You can submit a bug by filling an entry on the 
+      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
+      of the Google code hosting page of our project.</p>
+
+    </section>
+
+  </body>
+  
+</document>

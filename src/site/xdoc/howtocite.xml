@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="latin1"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+	<properties>
+		<title>How to cite Eoulsan</title>
+		<author email="jourdren@biologie.ens.fr">
+			Laurent Jourdren
+		</author>
+	</properties>
+
+	<body>
+
+		<section name="How to cite Eoulsan">
+		
+			<p>Eoulsan is still under developpement.</p>
+
+			<!--	
+                        <p>
+                                <b>
+                                        Eoulsan: my fovorite RNAseq pipeline
+                                </b>
+                        </p>
+                        <p>
+                                <small>
+                                        Laurent Jourdren, Aurélie Duclos, Christian Brion, Thomas Portnoy, Hugues Mathis, Antoine Margeot and Stéphane Le Crom
+                                </small>
+                                <br />
+                                <small><i>
+                                        Nucleic Acids Research,
+                                        2010, <b>1-9</b> doi:10.1093/nar/gkq110
+                                </i></small>
+                                <br/>
+                                <small>
+                                  <a href="http://nar.oxfordjournals.org/cgi/content/abstract/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Abstract] </a>
+                                  <a href="http://nar.oxfordjournals.org/cgi/content/full/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Full Text] </a>
+                                  <a href="http://nar.oxfordjournals.org/cgi/reprint/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[PDF]</a>
+                                </small>
+                        </p> -->
+
+		</section>
+	</body>
+</document>

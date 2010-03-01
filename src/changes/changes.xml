@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document>
+	<properties>
+		<title>Change log</title>
+		<author email="jourdren@biologie.ens.fr">
+			Laurent Jourdren
+		</author>
+	</properties>
+	<body>
+
+		<release version="0.1" description="First release" date="2010-03-01">
+			<action dev="jourdren" type="add">
+				Import data in hdfs.
+			</action>
+			<action dev="jourdren" type="add">
+				Filter reads.
+			</action>
+			<action dev="jourdren" type="add">
+				Map reads.
+			</action>
+		</release>
+	</body>
+</document>
