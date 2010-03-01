@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.hadoop;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -34,6 +35,8 @@ public class CreateLocalSoapIndex {
 
   public static void main(final String[] args) throws Exception {
 
+    System.out.println("CreateLocalSoapIndex arguments:\t" + Arrays.toString(args));
+    
     if (args.length == 0)
       throw new InvalidParameterException(
           "No parameter for create local soap index");
