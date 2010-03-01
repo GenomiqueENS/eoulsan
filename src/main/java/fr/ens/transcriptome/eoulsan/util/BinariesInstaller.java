@@ -98,7 +98,7 @@ public class BinariesInstaller {
           "There is no executable for your architecture ("
               + arch + ") included in " + Globals.APP_NAME);
 
-    final String inputPath = "/files/" + os.replace(" ", "") + "/" + arch;
+    final String inputPath = "/" + os.replace(" ", "") + "/" + arch;
 
     final String outputPath =
         "/tmp/" + Globals.APP_NAME_LOWER_CASE + "/" + Globals.APP_VERSION;
