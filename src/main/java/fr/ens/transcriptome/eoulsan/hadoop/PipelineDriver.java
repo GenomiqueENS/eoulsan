@@ -24,13 +24,19 @@ package fr.ens.transcriptome.eoulsan.hadoop;
 
 import org.apache.hadoop.util.ProgramDriver;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+
 public class PipelineDriver {
 
   public static void main(final String[] args) {
 
     int exitCode = -1;
 
-    ProgramDriver pgd = new ProgramDriver();
+    System.out.println(Globals.APP_NAME
+        + " version " + Globals.APP_VERSION + " ("
+        + Globals.APP_BUILD_NUMBER + ")");
+
+    final ProgramDriver pgd = new ProgramDriver();
 
     try {
       pgd.addClass("create_local_soap_index", CreateLocalSoapIndex.class,
@@ -39,7 +45,7 @@ public class PipelineDriver {
           "Import local data to hdfs.");
       pgd.addClass("filter_reads", FilterReads.class, "Filter reads.");
       pgd.addClass("map_reads", MapReads.class, "Map reads.");
-      
+      pgd.addClass("filter_and_map_reads", FilterAndMapReads.class, "Filter and map reads.");
 
       pgd.driver(args);
 
