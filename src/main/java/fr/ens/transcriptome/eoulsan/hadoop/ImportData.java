@@ -22,22 +22,22 @@
 
 package fr.ens.transcriptome.eoulsan.hadoop;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.FileUtils.SuffixFilenameFilter;
 
 public class ImportData {
 
   public static void main(final String[] args) throws Exception {
+
+    System.out.println("ImportData arguments:\t" + Arrays.toString(args));
 
     if (args == null)
       throw new NullPointerException("The arguments of import data is null");
@@ -46,18 +46,19 @@ public class ImportData {
       throw new IllegalArgumentException("Import data needs 4 arguments");
 
     final String uri = args[0];
-    final File genomeFile = new File(args[1]);
-    final File readsFile = new File(args[2]);
-    final File genomeSoapIndexFile = new File(args[3]);
-
-    // Check the parameters
-    FileUtils.checkExistingStandardFile(genomeFile, "genome file");
-    FileUtils.checkExistingStandardFileOrDirectory(readsFile, "reads file");
-    FileUtils.checkExistingStandardFile(genomeSoapIndexFile,
-        "genome SOAP index zip file");
+    final Path genomeFile = new Path(args[1]);
+    final Path readsFile = new Path(args[2]);
+    final Path genomeSoapIndexFile = new Path(args[3]);
 
     // Create configuration
     final Configuration conf = new Configuration();
+
+    // Check the parameters
+    PathUtils.checkExistingStandardFile(genomeFile, conf, "genome file");
+    PathUtils.checkExistingStandardFileOrDirectory(readsFile, conf,
+        "reads file");
+    PathUtils.checkExistingStandardFile(genomeSoapIndexFile, conf,
+        "genome SOAP index zip file");
 
     // Create the filesystem object
     final FileSystem fs = FileSystem.get(URI.create(uri), conf);
@@ -76,30 +77,34 @@ public class ImportData {
     // Import data in tree
     //
 
-    if (readsFile.isDirectory()) {
+    final FileSystem srcFs = PathUtils.getFileSystem(readsFile, conf);
+
+    if (srcFs.getFileStatus(readsFile).isDir()) {
 
       // Copy all file of the input directory
-      final File[] listFiles =
-          readsFile.listFiles(new SuffixFilenameFilter(Common.FASTQ_EXTENSION, true));
+      final List<Path> listFiles =
+          PathUtils.listPathsBySuffix(readsFile, Common.FASTQ_EXTENSION, true,
+              conf);
 
-      for (File f : listFiles)
-        if (!PathUtils.copyLocalFileToPath(f, readsDirPath, conf))
-          throw new IOException("Unable to copy to hdfs the  file: "
-              + f.getAbsolutePath());
-    } else if (!PathUtils.copyLocalFileToPath(readsFile, readsDirPath, conf))
+      for (Path f : listFiles)
+        if (!PathUtils.copy(f, readsDirPath, conf))
+          throw new IOException("Unable to copy to hdfs the  file: " + f);
+    } else if (!PathUtils.copy(readsFile, readsDirPath, conf))
       throw new IOException("Unable to copy to hdfs the  file: " + readsFile);
 
     // import genome index file to hdfs
-    if (!PathUtils.copyLocalFileToPath(genomeSoapIndexFile, new Path(basePath,
+    if (!PathUtils.copy(genomeSoapIndexFile, new Path(basePath,
         genomeSoapIndexFile.getName()), conf))
       throw new IOException("Unable to copy to hdfs the  file: "
           + genomeSoapIndexFile);
 
     // import genome sequence file to hdfs
-    if (!FileUtil.copy(genomeFile, fs, new Path(basePath
-        + "/" + genomeFile.getName()), false, conf))
+    if (!PathUtils.copy(genomeFile, basePath, conf))
       throw new IOException("Unable to copy to hdfs the  file: " + genomeFile);
 
-  }
+    // if (!FileUtil.copy(genomeFile, fs, new Path(basePath
+    // + "/" + genomeFile.getName()), false, conf))
+    // throw new IOException("Unable to copy to hdfs the  file: " + genomeFile);
 
+  }
 }
