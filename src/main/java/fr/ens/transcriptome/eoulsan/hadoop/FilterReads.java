@@ -24,12 +24,11 @@ package fr.ens.transcriptome.eoulsan.hadoop;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -51,6 +50,8 @@ public class FilterReads {
 
   public static void main(final String[] args) throws Exception {
 
+    System.out.println("FilterReads arguments:\t" + Arrays.toString(args));
+
     if (args == null)
       throw new NullPointerException("The arguments of import data is null");
 
@@ -66,11 +67,6 @@ public class FilterReads {
     final Path inputDirPath = new Path(basePath, Common.READS_SUBDIR);
 
     logger.info("Map reads input path: " + inputDirPath);
-
-    // final FileSystem fs = PathUtils.getFileSystem(inputDirPath, conf);
-    // final FileStatus[] filesStatus =
-    // fs.listStatus(inputDirPath, new PathUtils.SuffixPathFilter(
-    // HadoopGlobals.FASTQ_EXTENSION,true));
 
     final List<Path> paths =
         PathUtils.listPathsBySuffix(inputDirPath, Common.FASTQ_EXTENSION, true,
