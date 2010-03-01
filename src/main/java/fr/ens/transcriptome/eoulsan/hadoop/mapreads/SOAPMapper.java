@@ -50,6 +50,7 @@ public class SOAPMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String soapArgs;
   private String soapIndexZipPath;
   private Path unmapFilesDirPath;
+  private String unmapChunkPrefix;
   private File soapIndexZipDir;
   private Writer writer;
   private File dataFile;
@@ -76,12 +77,19 @@ public class SOAPMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("The SOAP index zip file path is not set");
 
     final String unmapChunkFilesDir =
-        conf.get(Globals.PARAMETER_PREFIX + ".soap.unmap.temp.dir");
+        conf.get(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.temp.dir");
 
     // Get unmap Files directory
     if (unmapChunkFilesDir == null)
       throw new IOException(
           "The temporary directory path for unmap file is not set");
+
+    final String unmapChunkPrefix =
+        conf.get(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix");
+
+    // Get unmap Files prefix directory
+    if (unmapChunkPrefix == null)
+      throw new IOException("The prefix of unmap chunk  is not set");
 
     // Get the number of threads to use
     this.nbSoapThreads =
@@ -90,6 +98,8 @@ public class SOAPMapper extends Mapper<LongWritable, Text, Text, Text> {
                 + Runtime.getRuntime().availableProcessors()));
 
     this.unmapFilesDirPath = new Path(unmapChunkFilesDir);
+
+    PathUtils.mkdirs(this.unmapFilesDirPath, conf);
 
     this.dataFile =
         FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-soap-data-",
@@ -135,7 +145,7 @@ public class SOAPMapper extends Mapper<LongWritable, Text, Text, Text> {
         FileUtils.createTempFile(Globals.TEMP_PREFIX + "soap-output-", ".aln");
 
     final File unmapFile =
-        FileUtils.createTempFile(Globals.TEMP_PREFIX + "soap-unmap-", ".fasta");
+        FileUtils.createTempFile(this.unmapChunkPrefix, ".fasta");
 
     SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile, unmapFile,
         this.soapArgs, this.nbSoapThreads);
