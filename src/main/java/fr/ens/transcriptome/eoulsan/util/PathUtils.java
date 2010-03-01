@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -40,12 +39,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.IOUtils;
 
-import fr.ens.transcriptome.eoulsan.Globals;
-
 public final class PathUtils {
-
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   /**
    * Simple PathFilter to filter Paths with their suffix
@@ -647,6 +641,187 @@ public final class PathUtils {
           return false;
 
     return true;
+  }
+
+  /**
+   * Check if a file exists
+   * @param file File to test
+   * @param conf Configuration
+   * @param msgFileType message for the description of the file
+   * @throws IOException if the file doesn't exists
+   */
+  public static final void checkExistingFile(final Path file,
+      final Configuration conf, final String msgFileType) throws IOException {
+
+    if (msgFileType == null)
+      throw new NullPointerException("Message file type for check is null");
+
+    if (file == null)
+      throw new NullPointerException("The " + msgFileType + " is null");
+
+    final FileSystem fs = getFileSystem(file, conf);
+
+    if (!fs.exists(file))
+      throw new IOException("The " + msgFileType + " does not exists: " + file);
+  }
+
+  /**
+   * Check if a directory exists
+   * @param directory directory to test * @param conf Configuration
+   * @param msgFileType message for the description of the file
+   * @throws IOException if the file doesn't exists
+   */
+  public static final void checkExistingDirectoryFile(final Path directory,
+      final Configuration conf, final String msgFileType) throws IOException {
+
+    checkExistingFile(directory, conf, msgFileType);
+
+    final FileSystem fs = getFileSystem(directory, conf);
+
+    if (!fs.getFileStatus(directory).isDir())
+      throw new IOException("The "
+          + msgFileType + " is not a directory: " + directory);
+  }
+
+  /**
+   * Check if a file exists
+   * @param file File to test * @param conf Configuration
+   * @param msgFileType message for the description of the file
+   * @throws IOException if the file doesn't exists
+   */
+  public static final void checkExistingStandardFile(final Path file,
+      final Configuration conf, final String msgFileType) throws IOException {
+
+    checkExistingFile(file, conf, msgFileType);
+
+    final FileSystem fs = getFileSystem(file, conf);
+
+    if (!fs.isFile(file))
+      throw new IOException("The "
+          + msgFileType + " is  not a standard file: " + file);
+  }
+
+  /**
+   * Check if a file exists
+   * @param file File to test * @param conf Configuration
+   * @param msgFileType message for the description of the file
+   * @throws IOException if the file doesn't exists
+   */
+  public static final void checkExistingStandardFileOrDirectory(
+      final Path file, final Configuration conf, final String msgFileType)
+      throws IOException {
+
+    checkExistingDirectoryFile(file, conf, msgFileType);
+
+    final FileSystem fs = getFileSystem(file, conf);
+
+    if (!fs.isFile(file) && !fs.getFileStatus(file).isDir())
+      throw new IOException("The "
+          + msgFileType + " is  not a standard file or a directory: " + file);
+  }
+
+  /**
+   * Copy file from a path to another path.
+   * @param srcPath source path
+   * @param destPath destination path
+   * @param overwrite true if existing files must be overwited
+   * @param conf Configuration
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying
+   */
+  public static final boolean copy(final Path srcPath, final Path destPath,
+      Configuration conf) throws IOException {
+
+    return copy(srcPath, destPath, true, conf);
+  }
+
+  /**
+   * Copy file from a path to another path.
+   * @param srcPath source path
+   * @param destPath destination path
+   * @param overwrite true if existing files must be overwited
+   * @param conf Configuration
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying
+   */
+  public static final boolean copy(final Path srcPath, final Path destPath,
+      final boolean overwrite, Configuration conf) throws IOException {
+
+    if (srcPath == null)
+      throw new NullPointerException("The source path is null.");
+
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem srcFs = getFileSystem(srcPath, conf);
+    final FileSystem destFs = getFileSystem(destPath, conf);
+
+    return FileUtil.copy(srcFs, srcPath, destFs, destPath, false, overwrite,
+        conf);
+  }
+
+  /**
+   * Move file from a path to another path.
+   * @param srcPath source path
+   * @param destPath destination path
+   * @param overwrite true if existing files must be overwited
+   * @param conf Configuration
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying
+   */
+  public static final boolean move(final Path srcPath, final Path destPath,
+      Configuration conf) throws IOException {
+
+    return move(srcPath, destPath, true, conf);
+  }
+
+  /**
+   * Move file from a path to another path.
+   * @param srcPath source path
+   * @param destPath destination path
+   * @param overwrite true if existing files must be overwited
+   * @param conf Configuration
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying
+   */
+  public static final boolean move(final Path srcPath, final Path destPath,
+      final boolean overwrite, Configuration conf) throws IOException {
+
+    if (srcPath == null)
+      throw new NullPointerException("The source path is null.");
+
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem srcFs = getFileSystem(srcPath, conf);
+    final FileSystem destFs = getFileSystem(destPath, conf);
+
+    return FileUtil.copy(srcFs, srcPath, destFs, destPath, true, overwrite,
+        conf);
+  }
+
+  /**
+   * Create a directory. If parent directories don't exists create it.
+   * @param path Path of the directory to create
+   * @param conf Configuration
+   * @return true if the directory is successfully created
+   * @throws IOException if an error occurs while creating the directory
+   */
+  public static final boolean mkdirs(final Path path, final Configuration conf)
+      throws IOException {
+
+    if (path == null)
+      throw new NullPointerException(
+          "The path of the directory to create is null.");
+
+    final FileSystem fs = getFileSystem(path, conf);
+    return fs.mkdirs(path);
   }
 
   //
