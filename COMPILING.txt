@@ -1,0 +1,24 @@
+Building Teolenn from source
+---------------------------
+
+  Teolenn requires to be built from source. Maven is project management from
+the Apache Software Foundation.
+
+  You can download it at the following URL:
+
+    http://maven.apache.org
+
+  After installing maven, you can :
+
+  * Compile Teolenn: type 'mvn'
+  * Build source and binary distribution: type 'mvn install'
+  * Build the website: type 'mvn site'
+  * Clean the build directory (target): type 'mvn clean'
+
+  You'll find the generated files in the 'target' directory.
+  To run Teolenn you only need to unpack one of the Teolenn binary archives and
+see the instruction in the running section of the README file.
+
+  You can download the latest version of doelan on our website :
+
+    http://transcriptome.ens.fr/teolenn

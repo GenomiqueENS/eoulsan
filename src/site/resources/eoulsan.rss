@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss  xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:content="http://purl.org/rss/1.0/modules/content/"
+      version="2.0">
+	<channel>
+	<title>@@@APPNAME@@@ updates</title>
+	<description>Feed for @@@APPNAME@@@ updates</description>
+	<lastBuildDate>@@@DATE@@@</lastBuildDate>
+	<link>@@@WEBSITE@@@</link>
+	<item>
+		<title>@@@APPNAME@@@ version @@@VERSION@@@ is available</title>
+		<description>
+			The @@@APPNAME@@@ developpement team is pleased to announce the @@@VERSION@@@ release!
+			You can download this new version here: @@@WEBSITE@@@/download.html
+			Full changelog available at: @@@WEBSITE@@@/changes-report.html
+			Have fun!
+			The @@@APPNAME@@@ development team.
+		</description>
+		<content:encoded>
+			&lt;p&gt;The @@@APPNAME@@@ developpement team is pleased to announce the @@@VERSION@@@ release!&lt;/p&gt;
+			&lt;p&gt;You can download this new version here: &lt;a href="@@@WEBSITE@@@/download.html">@@@WEBSITE@@@/download.html&lt;/a>&lt;/p&gt;
+			&lt;p&gt;Full changelog available at: &lt;a href="@@@WEBSITE@@@/changes-report.html">@@@WEBSITE@@@/changes-report.html&lt;/a>&lt;/p&gt;
+			&lt;p&gt;Have fun!&lt;/p&gt;
+			&lt;p&gt;The @@@APPNAME@@@ development team.&lt;/p&gt;
+	
+		</content:encoded>
+		<dc:creator>@@@APPNAME@@@ development team</dc:creator>
+		<pubDate>@@@DATE@@@</pubDate>
+		<link>@@@WEBSITE@@@/download.html</link>
+		<guid>@@@VERSION@@@</guid>
+	</item>
+	</channel>
+</rss>

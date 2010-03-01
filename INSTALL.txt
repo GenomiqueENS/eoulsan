@@ -1,0 +1,6 @@
+INSTALLING Teolenn
+-----------------
+
+  To install Teolenn, see the documentation on our website :
+
+    http://transcriptome.ens.fr/teolenn

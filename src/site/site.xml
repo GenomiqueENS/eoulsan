@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<project name="Eoulsan">
+
+	<publishDate position="left" format="yyyy-MM-dd HH:mm"/>
+
+	<bannerLeft>
+		<name>ENS</name>
+		<src>images/logo-ens.png</src>
+		<href>http://transcriptome.ens.fr/sgdb</href>
+	</bannerLeft>
+	<bannerRight>
+		<name>Eoulsan</name>
+		<src>images/eoulsan.png</src>
+		<href>@@@WEBSITE@@@</href>	
+	</bannerRight>
+	<body>
+		<links>
+			<item name="ENS microarray platform"
+				href="http://transcriptome.ens.fr" />
+			<item name="École Normale Supérieure"
+				href="http://www.ens.fr" />
+		</links>
+
+
+		<menu name="About Eoulsan">
+			<item name="What is Eoulsan ?" href="/index.html" />
+			<item name="License" href="/license.html" />
+			<item name="People behind Eoulsan" href="/team-list.html" />
+			<item name="How to cite Eoulsan" href="/howtocite.html" />
+		</menu>
+
+		<menu name="Getting Eoulsan">
+			<item name="Downloading" href="/download.html" />
+			<item name="Installing" href="/installing.html" />
+			<item name="Release Notes" href="/changes-report.html" />
+		</menu>
+
+		<menu name="Documentation">
+			<!--item name="Introduction" href="/introduction.html" />
+			<item name="Command line" href="/command_line.html" />
+			<item name="The design file" href="/design.html" collapse="true">
+				<item name="Global parameters" href="/design-global.html" />
+				<item name="Constants" href="/design-constants.html" />
+				<item name="Sequence creation" href="/design-sequencecreation.html" />
+				<item name="Sequence filters" href="/design-sequencefilters.html" />
+				<item name="Measurements" href="/design-measurements.html" />
+				<item name="Measurement filers" href="/design-measurementfilters.html" />
+				<item name="Selector" href="/design-selector.html" />
+				<item name="Outputs" href="/design-outputs.html" / -->
+			<!-- item name ="Optimize" href="/optimize.html"/ -->
+			<!--/item-->
+			<item name="Known bugs" href="/bugs.html" />
+			<item name="Mailing list" href="/mail-lists.html" />
+		</menu>
+
+		<menu name="Developement">
+			<item name="Downloading sources" href="/download-src.html" />
+			<item name="Compiling" href="/compiling.html"/>
+			<item name="Writing plugins" href="/plugins.html" /> 
+			<item name="Eoulsan community" href="/contribute.html"/>
+		</menu>
+
+		<!--menu ref="reports"/-->
+
+	</body>
+
+</project>
