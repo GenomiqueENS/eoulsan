@@ -74,12 +74,12 @@ public class Globals {
   };
 
   private static final String WEBSITE_URL_DEFAULT =
-      "http://transcriptome.ens.fr/teolenn";
+      "http://transcriptome.ens.fr/" + APP_NAME_LOWER_CASE;
 
   /** Teolenn Website url. */
   public static final String WEBSITE_URL = getWebSiteURL();
 
-  private static final String COPYRIGHT_DATE = "2008-2009";
+  private static final String COPYRIGHT_DATE = "2010";
 
   /** Licence text. */
   public static final String LICENSE_TXT =
@@ -88,18 +88,15 @@ public class Globals {
   /** About string, plain text version. */
   public static final String ABOUT_TXT =
       Globals.APP_NAME
-          + " version "
-          + Globals.APP_VERSION
-          + " ("
-          + Globals.APP_BUILD_NUMBER
-          + ")"
-          + " is a software to compute design of oligonucleotides for microarrays.\n"
+          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
+          + ")" + " is a pipeline for RNAseq analysis.\n"
           + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
           + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
+          + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
           + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n" + "Contacts:\n"
           + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
-          + "  Google group: http://groups.google.com/group/teolenn\n"
-          + "Copyright " + COPYRIGHT_DATE
+          + "  Google group: http://groups.google.com/group/"
+          + APP_NAME_LOWER_CASE + "\n" + "Copyright " + COPYRIGHT_DATE
           + " École Normale Supérieure microarray platform.\n" + LICENSE_TXT
           + "\n";
 
