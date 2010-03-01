@@ -25,10 +25,8 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
@@ -47,50 +45,34 @@ public final class MapReduceUtils {
       final Path destPath, final boolean overwrite, final Configuration conf)
       throws IOException {
 
-    return PathUtils.concat(PathUtils.listPathsByPrefix(srcDirPath, "part-",
+    final List<Path> paths =
+        PathUtils.listPathsByPrefix(srcDirPath, "part-", conf);
+
+    if (paths == null)
+      throw new NullPointerException("The list of output path is null");
+
+    if (paths.size() == 0)
+      return false;
+
+    if (paths.size() == 1) {
+
+      final Path p = paths.get(0);
+      final FileSystem srcFs = PathUtils.getFileSystem(p, conf);
+      final FileSystem destFs = PathUtils.getFileSystem(destPath, conf);
+
+      if (destFs.exists(destPath))
+        if (overwrite)
+          destFs.delete(destPath, false);
+        else
+          return false;
+
+      return srcFs.rename(p, destPath)
+          && PathUtils.fullyDelete(srcDirPath, conf);
+    }
+
+    return PathUtils.concat(PathUtils.listPathsByPrefix(srcDirPath, "part-r-",
         conf), destPath, true, overwrite, conf)
         && PathUtils.fullyDelete(srcDirPath, conf);
-
-    // if (srcDirPath == null)
-    // throw new NullPointerException("Source directory is null");
-    //
-    // if (destPath == null)
-    // throw new NullPointerException("Destination path is null");
-    //
-    // final FileSystem srcFs = PathUtils.getFileSystem(srcDirPath, conf);
-    // final FileSystem destFs = PathUtils.getFileSystem(srcDirPath, conf);
-    //
-    // if (!srcFs.exists(srcDirPath))
-    // throw new IOException("Source directory does not exists: " + srcDirPath);
-    //
-    // if (!srcFs.getFileStatus(srcDirPath).isDir())
-    // throw new IOException("Source path is not a directory: " + srcDirPath);
-    //
-    // if (!overwrite && destFs.exists(destPath))
-    // throw new IOException("The destination path already exists: " +
-    // destPath);
-    //
-    // if (destFs.exists(destPath))
-    // destFs.delete(destPath, false);
-    //
-    // final FileStatus[] filesstatus =
-    // srcFs.listStatus(srcDirPath, new PathUtils.PrefixPathFilter("part-"));
-    //
-    // final Path tmpSrcDirPath =
-    // PathUtils.createTempPath(srcDirPath, "", "", conf);
-    // srcFs.mkdirs(tmpSrcDirPath);
-    //
-    // if (filesstatus.length == 0)
-    // throw new IOException("The source directory is empty: " + srcDirPath);
-    //
-    // List<Path> paths = PathUtils.listPathsByPrefix(srcDirPath, "part-",
-    // conf);
-    // for (Path p : paths)
-    // srcFs.rename(p, tmpSrcDirPath);
-    //
-    // PathUtils.copyMerge(srcDirPath, destPath, true, conf);
-    //
-    // srcFs.delete(srcDirPath, true);
   }
 
   /**
