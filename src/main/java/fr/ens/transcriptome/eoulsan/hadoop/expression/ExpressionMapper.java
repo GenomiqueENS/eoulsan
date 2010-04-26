@@ -36,14 +36,14 @@ import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.AlignResult;
 import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
-import fr.ens.transcriptome.eoulsan.hadoop.expression.ExonFinder.Exon;
+import fr.ens.transcriptome.eoulsan.hadoop.expression.GeneAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 @SuppressWarnings("deprecation")
 public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> {
 
-  private final ExonFinder ef = new ExonFinder();
+  private final GeneAndExonFinder ef = new GeneAndExonFinder();
   private final AlignResult ar = new AlignResult();
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();

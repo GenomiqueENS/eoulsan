@@ -26,14 +26,14 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GeneExpression {
+public class ExonsCoverage {
 
-  private Map<String, GeneExpressionExon> exons =
-      new HashMap<String, GeneExpressionExon>();
+  private Map<String, Exoncoverage> exons =
+      new HashMap<String, Exoncoverage>();
 
   private int alignmentCount;
 
-  private final static class GeneExpressionExon {
+  private final static class Exoncoverage {
 
     private int start;
     private int end;
@@ -106,7 +106,7 @@ public class GeneExpression {
      * @param start start of the exon
      * @param end end of the exon
      */
-    public GeneExpressionExon(final int start, final int end) {
+    public Exoncoverage(final int start, final int end) {
 
       if (start < 1)
         throw new InvalidParameterException(
@@ -134,12 +134,12 @@ public class GeneExpression {
 
     final String key = exonStart + "_" + exonEnd;
 
-    final GeneExpressionExon exon;
+    final Exoncoverage exon;
 
     if (this.exons.containsKey(key))
       exon = this.exons.get(key);
     else {
-      exon = new GeneExpressionExon(exonStart, exonEnd);
+      exon = new Exoncoverage(exonStart, exonEnd);
       this.exons.put(key, exon);
     }
 
@@ -161,7 +161,7 @@ public class GeneExpression {
 
     int count = 0;
 
-    for (Map.Entry<String, GeneExpressionExon> e : this.exons.entrySet())
+    for (Map.Entry<String, Exoncoverage> e : this.exons.entrySet())
       count += e.getValue().getNotCovered();
 
     return count;
@@ -171,9 +171,9 @@ public class GeneExpression {
 
     int count = 0;
 
-    for (Map.Entry<String, GeneExpressionExon> e : this.exons.entrySet()) {
+    for (Map.Entry<String, Exoncoverage> e : this.exons.entrySet()) {
 
-      GeneExpressionExon ge = e.getValue();
+      Exoncoverage ge = e.getValue();
       count += ge.end - ge.start + 1;
     }
 
