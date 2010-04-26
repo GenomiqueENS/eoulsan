@@ -48,34 +48,78 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 public class ExonFinder {
 
-  private Map<String, ExonsParentRange> exonModeleRangeMap;
+  private Map<String, Gene> exonModeleRangeMap;
   private Map<String, ChromosomeZone> chrZoneMap;
 
-  public static final class ExonsParentRange implements Serializable {
+  public static final class Gene implements Serializable {
 
+    private String name;
+    private String chromosome;
     private int count;
     private int start = Integer.MAX_VALUE;
-    private int stop = Integer.MIN_VALUE;
+    private int end = Integer.MIN_VALUE;
     private char strand;
+    private int length;
 
     //
     // Getter
     //
 
+    /**
+     * Get the name of the gene.
+     * @return the name of the gene
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the number of exons
+     * @return the number of exons
+     */
     public int getCount() {
       return this.count;
     }
 
+    /**
+     * Get the chromosome of the gene.
+     * @return the chromosome of the gene
+     */
+    public String getChromosome() {
+      return this.chromosome;
+    }
+
+    /**
+     * Get the start of the gene.
+     * @return the start postion of the gene
+     */
     public int getStart() {
       return this.start;
     }
 
-    public int getStop() {
-      return this.stop;
+    /**
+     * Get the end position of the gene.
+     * @return the end position of the gene
+     */
+    public int getEnd() {
+      return this.end;
     }
 
+    /**
+     * Get the strand of the gene.
+     * @return the strand of the gene
+     */
     public char getStrand() {
       return this.strand;
+    }
+
+    /**
+     * Get the length of the gene.
+     * @return the length of the gene
+     */
+    public int getLength() {
+      return this.length;
     }
 
     //
@@ -83,17 +127,10 @@ public class ExonFinder {
     //
 
     /**
-     * Increment the number of count.
-     */
-    public void incrementCount() {
-      this.count++;
-    }
-
-    /**
      * Set the start position
      * @param start start position
      */
-    public void setStartIfMax(final int start) {
+    private void setStartIfMin(final int start) {
 
       this.start = Math.min(this.start, start);
     }
@@ -102,23 +139,56 @@ public class ExonFinder {
      * Set the stop position
      * @param stop stop position
      */
-    public void setStopIfMax(final int stop) {
+    private void setEndIfMax(final int stop) {
 
-      this.stop = Math.max(this.stop, stop);
+      this.end = Math.max(this.end, stop);
+    }
+
+    /**
+     * Add an exon.
+     * @param exon Exon to add
+     */
+    public void addExon(final Exon exon) {
+
+      setStartIfMin(exon.getStart());
+      setEndIfMax(exon.getEnd());
+      this.count++;
+      this.length += exon.getLength();
+
+      if (strand == 0)
+        this.strand = exon.getStrand();
+
+      if (this.strand != exon.getStrand())
+        throw new InvalidParameterException(
+            "The strand is not the same that the gene");
+
+      if (this.chromosome == null)
+        this.chromosome = exon.getChromosome();
+
+      if (!this.chromosome.equals(exon.getChromosome()))
+        throw new InvalidParameterException(
+            "The chromosome is not the same that the gene");
+
     }
 
     public String toString() {
 
-      return "[c=" + count + " s=" + start + " e=" + stop + "]";
+      return "[c=" + count + " s=" + start + " e=" + end + "]";
     }
 
     //
     // Constructor
     //
 
-    public ExonsParentRange(final char strand) {
+    /**
+     * Public constructor.
+     * @param name name of the the gene
+     */
+    public Gene(final String name) {
 
-      this.strand = strand;
+      if (name == null)
+        throw new NullPointerException("The name of the gene is null.");
+      this.name = name;
     }
 
   }
@@ -128,7 +198,7 @@ public class ExonFinder {
    * @param parentId identifier of the object
    * @return the exon range object or null if the parent doesn't exists
    */
-  public final ExonsParentRange getExonsParentRange(final String parentId) {
+  public final Gene getExonsParentRange(final String parentId) {
 
     return this.exonModeleRangeMap.get(parentId);
   }
@@ -192,6 +262,15 @@ public class ExonFinder {
     public String getParentId() {
 
       return this.parentId;
+    }
+
+    /**
+     * Get the length of the Exon.
+     * @return the length of the exon
+     */
+    public int getLength() {
+
+      return this.end - this.start + 1;
     }
 
     /**
@@ -558,7 +637,7 @@ public class ExonFinder {
     final GFFReader reader = new GFFReader(annotationFile);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
-    this.exonModeleRangeMap = new HashMap<String, ExonsParentRange>();
+    this.exonModeleRangeMap = new HashMap<String, Gene>();
 
     while (reader.readEntry()) {
 
@@ -585,28 +664,27 @@ public class ExonFinder {
         if (parentId == null)
           continue;
 
+        // Create Exon
+        final Exon exon = new Exon(chr, start, stop, strand, parentId);
+
         //
         // Populate exonModeleRangeMap
         //
 
-        final ExonsParentRange epr;
+        final Gene epr;
 
         if (this.exonModeleRangeMap.containsKey(parentId))
           epr = this.exonModeleRangeMap.get(parentId);
         else {
-          epr = new ExonsParentRange(strand);
+          epr = new Gene(parentId);
           this.exonModeleRangeMap.put(parentId, epr);
         }
 
-        epr.incrementCount();
-        epr.setStartIfMax(start);
-        epr.setStopIfMax(stop);
+        epr.addExon(exon);
 
         //
         // Populate parentExon
         //
-
-        final Exon exon = new Exon(chr, start, stop, strand, parentId);
 
         if (this.chrZoneMap.containsKey(chr))
           this.chrZoneMap.get(chr).addExon(exon);
@@ -642,6 +720,16 @@ public class ExonFinder {
     return cz.findExons(start, end);
   }
 
+  /**
+   * Get a Gene
+   * @param geneName name of the gene
+   * @return the Gene if exists or null
+   */
+  public Gene getGene(final String geneName) {
+
+    return this.exonModeleRangeMap.get(geneName);
+  }
+
   //
   // Save
   //
@@ -674,8 +762,7 @@ public class ExonFinder {
     final ObjectInputStream ois =
         new ObjectInputStream(new FileInputStream(inputFile));
     try {
-      this.exonModeleRangeMap =
-          (Map<String, ExonsParentRange>) ois.readObject();
+      this.exonModeleRangeMap = (Map<String, Gene>) ois.readObject();
       this.chrZoneMap = (Map<String, ChromosomeZone>) ois.readObject();
 
     } catch (ClassNotFoundException e) {
