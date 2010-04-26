@@ -92,7 +92,7 @@ public class ExpressionMain {
       final Path basePath, final Configuration conf, String expressionType)
       throws IOException {
 
-    final ExonFinder ef = new ExonFinder(gffPath, conf, expressionType);
+    final GeneAndExonFinder ef = new GeneAndExonFinder(gffPath, conf, expressionType);
     final File exonIndexFile = FileUtils.createTempFile("exonsindex-", ".data");
     ef.save(exonIndexFile);
     final Path exonsIndexPath = new Path(basePath, exonIndexFile.getName());

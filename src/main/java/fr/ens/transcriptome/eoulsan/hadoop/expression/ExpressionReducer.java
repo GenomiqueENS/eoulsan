@@ -34,7 +34,7 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
-import fr.ens.transcriptome.eoulsan.hadoop.expression.ExonFinder.ExonsParentRange;
+import fr.ens.transcriptome.eoulsan.hadoop.expression.GeneAndExonFinder.Gene;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -42,8 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 @SuppressWarnings("deprecation")
 public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
-  private final ExonFinder ef = new ExonFinder();
-  private final GeneExpression gene = new GeneExpression();
+  private final GeneAndExonFinder ef = new GeneAndExonFinder();
+  private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
   private final Text outputValue = new Text();
   private String parentType;
@@ -53,7 +53,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       final OutputCollector<Text, Text> collector, final Reporter reporter)
       throws IOException {
 
-    gene.clear();
+    geneExpr.clear();
     
 
     
@@ -89,20 +89,25 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
         continue;
       }
 
-      gene.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd);
+      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd);
     }
 
     if (count == 0)
       return;
 
-    final ExonsParentRange range = ef.getExonsParentRange(parentId);
+    final Gene gene = ef.getExonsParentRange(parentId);
+    
+    if (gene==null) {
+      reporter.incrCounter("expression", "Parent Id not found in exon range", 1);
+      return;
+    }
 
     final String result =
         this.parentType
-            + "\t" + chr + "\t" + range.getStart() + "\t" + range.getStop()
-            + "\t" + range.getStrand() + "\t" + gene.getLength() + "\t"
-            + gene.isCompletlyCovered() + "\t" + gene.getNotCovered() + "\t"
-            + gene.getAlignementCount();
+            + "\t" + gene.getChromosome() + "\t" + gene.getStart() + "\t" + gene.getEnd()
+            + "\t" + gene.getStrand() + "\t" + gene.getLength() + "\t"
+            + geneExpr.isCompletlyCovered() + "\t" + geneExpr.getNotCovered() + "\t"
+            + geneExpr.getAlignementCount();
 
     this.outputValue.set(result);
 

@@ -46,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.pipeline.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
-public class ExonFinder {
+public class GeneAndExonFinder {
 
   private Map<String, Gene> exonModeleRangeMap;
   private Map<String, ChromosomeZone> chrZoneMap;
@@ -781,7 +781,7 @@ public class ExonFinder {
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
    */
-  public ExonFinder(final Path annotationPath, final Configuration conf,
+  public GeneAndExonFinder(final Path annotationPath, final Configuration conf,
       final String expressionType) throws IOException {
 
     final File tmpFile = FileUtils.createTempFile("expression", "gff");
@@ -797,7 +797,7 @@ public class ExonFinder {
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
    */
-  public ExonFinder(final File annotationFile, final String expressionType)
+  public GeneAndExonFinder(final File annotationFile, final String expressionType)
       throws IOException {
 
     populateMapsFromGFFFile(annotationFile, expressionType);
@@ -806,7 +806,7 @@ public class ExonFinder {
   /**
    * Public constructor.
    */
-  public ExonFinder() {
+  public GeneAndExonFinder() {
   }
 
 }
