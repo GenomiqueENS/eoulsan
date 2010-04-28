@@ -24,6 +24,8 @@ package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.fs.Path;
@@ -48,6 +50,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
   private final AlignResult ar = new AlignResult();
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
+  private final Map<String, Exon> oneExonByParentId = new HashMap<String, Exon>();
 
   @Override
   public void map(final LongWritable key, final Text value,
@@ -73,13 +76,20 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     reporter.incrCounter("Expression", "reads used", 1);
     int count = 1;
     final int nbExons = exons.size();
-    String parentId = null;
-    for (Exon e : exons) {
 
-//      if (parentId == null)
-//        parentId = e.getParentId();
-//      else if (!parentId.equals(e.getParentId()))
-//        count=0;
+    this.oneExonByParentId.clear();
+
+    for (Exon e : exons)
+      oneExonByParentId.put(e.getParentId(), e);
+
+    for (Map.Entry<String, Exon> entry : oneExonByParentId.entrySet()) {
+
+      final Exon e = entry.getValue();
+
+      // if (parentId == null)
+      // parentId = e.getParentId();
+      // else if (!parentId.equals(e.getParentId()))
+      // count=0;
 
       this.resultKey.set(e.getParentId());
       this.resultValue.set(e.getChromosome()
@@ -115,7 +125,6 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
 
   @Override
   public void close() throws IOException {
-    // TODO Auto-generated method stub
 
   }
 
