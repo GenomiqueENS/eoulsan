@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.hadoop;
 import org.apache.hadoop.util.ProgramDriver;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.hadoop.expression.ExpressionMain;
 
 public class PipelineDriver {
 
@@ -46,6 +47,8 @@ public class PipelineDriver {
       pgd.addClass("filter_reads", FilterReads.class, "Filter reads.");
       pgd.addClass("map_reads", MapReads.class, "Map reads.");
       pgd.addClass("filter_and_map_reads", FilterAndMapReads.class, "Filter and map reads.");
+      pgd.addClass("gmorse", GMorse.class, "GMorse.");
+      pgd.addClass("expression", ExpressionMain.class, "Expression.");
 
       pgd.driver(args);
 
