@@ -22,10 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.hadoop.expression;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -42,6 +45,7 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
 import fr.ens.transcriptome.eoulsan.pipeline.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -797,8 +801,8 @@ public class GeneAndExonFinder {
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
    */
-  public GeneAndExonFinder(final File annotationFile, final String expressionType)
-      throws IOException {
+  public GeneAndExonFinder(final File annotationFile,
+      final String expressionType) throws IOException {
 
     populateMapsFromGFFFile(annotationFile, expressionType);
   }
@@ -809,4 +813,57 @@ public class GeneAndExonFinder {
   public GeneAndExonFinder() {
   }
 
+  public static void main(String[] args) throws IOException {
+
+    File baseDir = new File("/home/jourdren/tmp/mapreduce/expression/candida");
+
+    GeneAndExonFinder gef = new GeneAndExonFinder();
+    gef.populateMapsFromGFFFile(new File(baseDir, "candida-21_sort_CDS.gff"),
+        "CDS");
+
+    BufferedReader br =
+        new BufferedReader(new FileReader(new File(baseDir,
+            "G5_1.filtered_corrected_sort.soap.aln")));
+
+    FileWriter fw = new FileWriter(new File(baseDir, "out-java.txt"));
+
+    String line = null;
+    AlignResult ar = new AlignResult();
+    boolean found = false;
+    ExonsCoverage ec = new ExonsCoverage();
+
+    while ((line = br.readLine()) != null) {
+
+      ar.parseResultLine(line);
+      if (ar.getChromosome().equals("Ca21chr1")) {
+
+        Set<Exon> exons =
+            gef.findExons(ar.getChromosome(), ar.getLocation(), ar
+                .getLocation()
+                + ar.getReadLength());
+
+        if (exons != null)
+          for (Exon e : exons) {
+            if (e.getParentId().equals("orf19.2432")) {
+              fw.write(line + "\n");
+              ec.addAlignement(e.getStart(), e.getEnd(), ar.getLocation(), (ar
+                  .getLocation() + ar.getReadLength()), true);
+
+              System.out.println(ar.getLocation()
+                  + "\t" + (ar.getLocation() + ar.getReadLength()) + "\t"
+                  + e.getStart() + "\t" + e.getEnd());
+              System.out.println();
+              found = true;
+            } else if (found) {
+              found = false;
+              System.out.println(ec.getNotCovered(783));
+            }
+
+          }
+
+      }
+
+    }
+    fw.close();
+  }
 }

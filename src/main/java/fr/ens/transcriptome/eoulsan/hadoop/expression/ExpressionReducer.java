@@ -54,9 +54,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       throws IOException {
 
     geneExpr.clear();
-    
 
-    
     reporter.incrCounter("Expression", "parent", 1);
     final String parentId = key.toString();
 
@@ -75,6 +73,9 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       final int exonEnd = Integer.parseInt(this.fields[2]);
       // codingStrand = Boolean.parseBoolean(this.fields[3]);
 
+      final int exonNumber = Integer.parseInt(this.fields[4]);
+      // final int exonTotal = Integer.parseInt(this.fields[5]);
+
       final String alignementChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);
       final int alignementEnd = Integer.parseInt(this.fields[8]);
@@ -89,24 +90,30 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
         continue;
       }
 
-      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd);
+      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd,
+          true);
+          //exonNumber == 1);
     }
 
     if (count == 0)
       return;
 
     final Gene gene = ef.getExonsParentRange(parentId);
-    
-    if (gene==null) {
-      reporter.incrCounter("expression", "Parent Id not found in exon range", 1);
+
+    if (gene == null) {
+      reporter
+          .incrCounter("expression", "Parent Id not found in exon range", 1);
       return;
     }
 
+    final int geneLength = gene.getLength();
+    final int notCovered = geneExpr.getNotCovered(geneLength);
+
     final String result =
         this.parentType
-            + "\t" + gene.getChromosome() + "\t" + gene.getStart() + "\t" + gene.getEnd()
-            + "\t" + gene.getStrand() + "\t" + gene.getLength() + "\t"
-            + geneExpr.isCompletlyCovered() + "\t" + geneExpr.getNotCovered() + "\t"
+            + "\t" + gene.getChromosome() + "\t" + gene.getStart() + "\t"
+            + gene.getEnd() + "\t" + gene.getStrand() + "\t" + geneLength
+            + "\t" + (notCovered == 0) + "\t" + notCovered + "\t"
             + geneExpr.getAlignementCount();
 
     this.outputValue.set(result);

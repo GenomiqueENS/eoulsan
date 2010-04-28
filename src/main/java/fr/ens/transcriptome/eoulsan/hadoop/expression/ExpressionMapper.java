@@ -34,9 +34,9 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.AlignResult;
 import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
 import fr.ens.transcriptome.eoulsan.hadoop.expression.GeneAndExonFinder.Exon;
+import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -58,9 +58,10 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     final int start = ar.getLocation();
     final int stop = start + ar.getReadLength();
 
-    //System.out.println(chr + "\t" + start + "\t" + stop);
+    // System.out.println(chr + "\t" + start + "\t" + stop);
     final Set<Exon> exons = ef.findExons(chr, start, stop);
-    //System.out.println("Found " + (exons == null ? 0 : exons.size()) + " exons.");
+    // System.out.println("Found " + (exons == null ? 0 : exons.size()) +
+    // " exons.");
 
     reporter.incrCounter("Expression", "read total", 1);
     if (exons == null) {
@@ -69,14 +70,20 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     }
 
     reporter.incrCounter("Expression", "reads used", 1);
-    int count = 0;
+    int count = 1;
     final int nbExons = exons.size();
+    String parentId = null;
     for (Exon e : exons) {
+
+//      if (parentId == null)
+//        parentId = e.getParentId();
+//      else if (!parentId.equals(e.getParentId()))
+//        count=0;
 
       this.resultKey.set(e.getParentId());
       this.resultValue.set(e.getChromosome()
-          + "\t" + e.getStart() + "\t" + e.getEnd() + "\t" + e.getStart()
-          + "\t" + (++count) + "\t" + nbExons + "\t" + ar.getChromosome()
+          + "\t" + e.getStart() + "\t" + e.getEnd() + "\t" + e.getStrand()
+          + "\t" + (count++) + "\t" + nbExons + "\t" + ar.getChromosome()
           + "\t" + ar.getLocation() + "\t"
           + (ar.getLocation() + ar.getReadLength()));
 
