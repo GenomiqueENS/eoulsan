@@ -28,18 +28,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 
-import fr.ens.transcriptome.eoulsan.ReadsFilter;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
 import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
 import fr.ens.transcriptome.eoulsan.programs.filterreads.FilterReadsConstants;
+import fr.ens.transcriptome.eoulsan.programs.filterreads.ReadsFilter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a filter for read in local mode.
  * @author Laurent Jourdren
  */
-public class FilterReads {
+public class FilterReadsLocal {
 
   private DataSource fastqDS;
   private int threshold = FilterReadsConstants.THRESHOLD;
@@ -138,7 +138,7 @@ public class FilterReads {
    * Public constructor.
    * @param fastqFile fastq file to parse
    */
-  public FilterReads(final File fastqFile) {
+  public FilterReadsLocal(final File fastqFile) {
 
     if (fastqFile == null)
       throw new NullPointerException("The input fastq file is null.");
@@ -149,7 +149,7 @@ public class FilterReads {
    * Public constructor.
    * @param fastqFile fastq file to parse
    */
-  public FilterReads(final DataSource ds) {
+  public FilterReadsLocal(final DataSource ds) {
 
     if (ds == null)
       throw new NullPointerException("The data source is null.");
