@@ -20,22 +20,31 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.hadoop;
+package fr.ens.transcriptome.eoulsan;
 
 import org.apache.hadoop.util.ProgramDriver;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.hadoop.CreateLocalSoapIndex;
+import fr.ens.transcriptome.eoulsan.hadoop.FilterAndMapReads;
+import fr.ens.transcriptome.eoulsan.hadoop.FilterReads;
+import fr.ens.transcriptome.eoulsan.hadoop.GMorse;
+import fr.ens.transcriptome.eoulsan.hadoop.ImportData;
+import fr.ens.transcriptome.eoulsan.hadoop.MapReads;
 import fr.ens.transcriptome.eoulsan.hadoop.expression.ExpressionMain;
 
-public class PipelineDriver {
+/**
+ * Main class in Hadoop mode.
+ * @author Laurent Jourdren
+ */
+public class MainHadoop {
 
   public static void main(final String[] args) {
 
     int exitCode = -1;
 
     System.out.println(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION + " ("
-        + Globals.APP_BUILD_NUMBER + ")");
+        + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
+        + ")");
 
     final ProgramDriver pgd = new ProgramDriver();
 
@@ -46,7 +55,8 @@ public class PipelineDriver {
           "Import local data to hdfs.");
       pgd.addClass("filter_reads", FilterReads.class, "Filter reads.");
       pgd.addClass("map_reads", MapReads.class, "Map reads.");
-      pgd.addClass("filter_and_map_reads", FilterAndMapReads.class, "Filter and map reads.");
+      pgd.addClass("filter_and_map_reads", FilterAndMapReads.class,
+          "Filter and map reads.");
       pgd.addClass("gmorse", GMorse.class, "GMorse.");
       pgd.addClass("expression", ExpressionMain.class, "Expression.");
 
