@@ -105,6 +105,8 @@ public class Globals {
 
   /** Design file version. */
   public static final double DESIGN_FILE_VERSION = 1.1;
+  
+  public static final String DEFAULT_FILE_ENCODING = "UTF-8";
 
   private static String getVersion() {
 
