@@ -22,6 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.programs.filterreads;
 
+/**
+ * This class contains some constants for Filter reads.
+ * @author Laurent Jourdren
+ */
 public final class FilterReadsConstants {
 
   /** filter threshold. */
