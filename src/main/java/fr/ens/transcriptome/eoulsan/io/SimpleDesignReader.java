@@ -160,7 +160,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
       DataSource source =
           DataSourceUtils.identifyDataSource(this.baseDir, filenames.get(i));
-      design.setSource(ids.get(i), source);
+      design.setSource(ids.get(i), source.toString());
     }
 
     for (String fd : fieldnames) {
