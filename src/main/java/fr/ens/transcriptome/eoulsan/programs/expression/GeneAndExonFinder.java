@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.hadoop.expression;
+package fr.ens.transcriptome.eoulsan.programs.expression;
 
 import java.io.BufferedReader;
 import java.io.File;

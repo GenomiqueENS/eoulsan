@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.hadoop.FilterReads;
 import fr.ens.transcriptome.eoulsan.hadoop.GMorse;
 import fr.ens.transcriptome.eoulsan.hadoop.ImportData;
 import fr.ens.transcriptome.eoulsan.hadoop.MapReads;
-import fr.ens.transcriptome.eoulsan.hadoop.expression.ExpressionMain;
+import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionMain;
 
 /**
  * Main class in Hadoop mode.
