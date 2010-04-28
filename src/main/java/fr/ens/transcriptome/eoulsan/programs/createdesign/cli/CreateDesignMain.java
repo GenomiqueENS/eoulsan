@@ -42,8 +42,6 @@ public class CreateDesignMain {
   /**
    * Main method
    * @param args command line arguments
-   * @throws FileNotFoundException
-   * @throws EoulsanIOException
    */
   public static void main(final String[] args) {
 
