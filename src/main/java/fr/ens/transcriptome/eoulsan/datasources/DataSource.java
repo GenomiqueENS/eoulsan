@@ -25,8 +25,6 @@ package fr.ens.transcriptome.eoulsan.datasources;
 import java.io.InputStream;
 import java.util.Properties;
 
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
-
 /**
  * This interface define a source of data for designs.
  * @author Laurent Jourdren
@@ -62,11 +60,5 @@ public interface DataSource {
    * @return The input stream
    */
   InputStream getInputStream();
-
-  /**
-   * Get the bioAssay format if data is ALWAYS in the same format.
-   * @return The format of the data source
-   */
-  BioAssayFormat getBioAssayFormat();
 
 }

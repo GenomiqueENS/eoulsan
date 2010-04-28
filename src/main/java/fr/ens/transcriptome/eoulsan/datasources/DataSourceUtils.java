@@ -25,9 +25,6 @@ package fr.ens.transcriptome.eoulsan.datasources;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormatRegistery;
-
 /**
  * This class provides utility methods for DataSource.
  * @author Laurent Jourdren
@@ -35,6 +32,17 @@ import fr.ens.transcriptome.eoulsan.io.BioAssayFormatRegistery;
 public final class DataSourceUtils {
 
   private static final String SGDB_URL_PREFIX = "sgdb://";
+
+  /**
+   * Identify the type of the DataSource from the source.
+   * @param baseDir baseDir of the source if this a file
+   * @param source source to identify
+   * @return a new DataSource object
+   */
+  public static DataSource identifyDataSource(final String source) {
+
+    return identifyDataSource(System.getProperty("user.dir"), source);
+  }
 
   /**
    * Identify the type of the DataSource from the source.
@@ -59,31 +67,10 @@ public final class DataSourceUtils {
       malformedURL = true;
     }
 
-    if (malformedURL)
+    if (!malformedURL)
       return new URLDataSource(source);
 
     return new FileDataSource(baseDir, source);
-  }
-
-  /**
-   * Identify the format of a DataSource.
-   * @param source Source which format must be identify
-   * @return the BioAssayFormat of the source if found
-   */
-  public static BioAssayFormat identifyBioAssayFormat(final DataSource source) {
-
-    if (source == null)
-      return null;
-
-    final String sourceInfo = source.getSourceInfo();
-
-    if (source == null)
-      return null;
-
-    // if (source.getSourceInfo().startsWith(SGDB_URL_PREFIX))
-    // return BioAssayFormatRegistery.GPR_BIOASSAY_FORMAT;
-
-    return BioAssayFormatRegistery.getBioAssayFormat(sourceInfo);
   }
 
   //

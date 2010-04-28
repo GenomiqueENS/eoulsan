@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
 
 /**
  * This class implements a DataSource for a file.
@@ -108,13 +107,10 @@ public class FileDataSource implements DataSource, Serializable {
     }
   }
 
-  /**
-   * Get the bioAssay format if data is ALWAYS in the same format.
-   * @return The format of the data source
-   */
-  public BioAssayFormat getBioAssayFormat() {
+  @Override
+  public String toString() {
 
-    return null;
+    return this.file;
   }
 
   //
