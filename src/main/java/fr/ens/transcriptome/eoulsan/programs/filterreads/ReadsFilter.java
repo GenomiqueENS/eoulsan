@@ -20,9 +20,11 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
+package fr.ens.transcriptome.eoulsan.programs.filterreads;
 
 import java.util.regex.Pattern;
+
+import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
 
 /**
  * Class with static methods to used to filter reads.
@@ -38,7 +40,7 @@ public final class ReadsFilter {
    */
   public static final void trimReadSequence(final ReadSequence read) {
 
-    if (read == null || !read.isFastValid())
+    if (read == null || !read.isFastQValid())
       return;
 
     final String sequence = PATTERN.split(read.getSequence())[0];
