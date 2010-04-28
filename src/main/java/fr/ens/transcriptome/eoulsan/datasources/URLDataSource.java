@@ -30,7 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import fr.ens.transcriptome.eoulsan.NividicRuntimeException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 
 /**
  * This class define an URL DataSource.
@@ -96,13 +96,13 @@ public class URLDataSource extends FileDataSource implements Serializable {
         return url.openStream();
 
       } catch (MalformedURLException e1) {
-        throw new NividicRuntimeException("Invalid URL: " + this.url);
+        throw new EoulsanRuntimeException("Invalid URL: " + this.url);
       } catch (IOException e1) {
-        throw new NividicRuntimeException("IO error while reading URL data: "
+        throw new EoulsanRuntimeException("IO error while reading URL data: "
             + url);
       }
     } catch (IOException e) {
-      throw new NividicRuntimeException("IO error while reading URL data: "
+      throw new EoulsanRuntimeException("IO error while reading URL data: "
           + url);
     }
 

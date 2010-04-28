@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Properties;
 
-import fr.ens.transcriptome.eoulsan.NividicRuntimeException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
 
 /**
@@ -104,7 +104,7 @@ public class FileDataSource implements DataSource, Serializable {
       return new FileInputStream(new File("".equals(this.baseDir)
           ? null : this.baseDir, this.file));
     } catch (FileNotFoundException e) {
-      throw new NividicRuntimeException("File not Found: " + this.file);
+      throw new EoulsanRuntimeException("File not Found: " + this.file);
     }
   }
 
