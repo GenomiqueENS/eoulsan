@@ -20,56 +20,54 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
-
-import fr.ens.transcriptome.eoulsan.EoulsanException;
+package fr.ens.transcriptome.eoulsan;
 
 /**
  * A nestable nividic exception. This class came from from Biojava code.
  * @author Laurent Jourdren
  * @author Matthew Pocock
  */
-public class EoulsanIOException extends EoulsanException {
+public class EoulsanException extends Exception {
 
   /**
-   * Create a new NividicIOException with a message.
+   * Create a new NividicException with a message.
    * @param message the message
    */
-  public EoulsanIOException(final String message) {
+  public EoulsanException(final String message) {
     super(message);
   }
 
   /**
-   * Create a new NividicIOException with a cause.
-   * @param ex the Throwable that caused this NividicIOException
+   * Create a new NividicException with a cause.
+   * @param ex the Throwable that caused this NividicException
    */
-  public EoulsanIOException(final Throwable ex) {
+  public EoulsanException(final Throwable ex) {
     super(ex);
   }
 
   /**
-   * Create a new NividicIOException with a cause and a message.
-   * @param ex the Throwable that caused this NividicIOException
+   * Create a new NividicException with a cause and a message.
+   * @param ex the Throwable that caused this NividicException
    * @param message the message
-   * @deprecated use new NividicIOException(message, ex) instead
+   * @deprecated use new NividicException(message, ex) instead
    */
-  public EoulsanIOException(final Throwable ex, final String message) {
+  public EoulsanException(final Throwable ex, final String message) {
     this(message, ex);
   }
 
   /**
-   * Create a new NividicIOException with a cause and a message.
+   * Create a new NividicException with a cause and a message.
    * @param message the message
-   * @param ex the Throwable that caused this NividicIOException
+   * @param ex the Throwable that caused this NividicException
    */
-  public EoulsanIOException(final String message, final Throwable ex) {
+  public EoulsanException(final String message, final Throwable ex) {
     super(message, ex);
   }
 
   /**
-   * Create a new NividicIOException.
+   * Create a new NividicException.
    */
-  public EoulsanIOException() {
+  public EoulsanException() {
     super();
   }
 }
