@@ -24,7 +24,7 @@ package fr.ens.transcriptome.eoulsan.design.impl;
 
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.NividicRuntimeException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 public class SampleMetadataImpl implements SampleMetadata {
@@ -38,7 +38,7 @@ public class SampleMetadataImpl implements SampleMetadata {
     final String sampleName = this.design.getSampleName(this.slideId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.getMetadata(sampleName, fieldName);
   }
@@ -54,7 +54,7 @@ public class SampleMetadataImpl implements SampleMetadata {
 
     return get(COMMENT_FIELD);
   }
-  
+
   @Override
   public String getDescription() {
 
@@ -85,6 +85,24 @@ public class SampleMetadataImpl implements SampleMetadata {
     return get(SERIAL_NUMBER_FIELD);
   }
 
+  @Override
+  public String getAnnotation() {
+
+    return get(ANNOTATION_FIELD);
+  }
+
+  @Override
+  public String getGenome() {
+
+    return get(GENOME_FIELD);
+  }
+
+  @Override
+  public String getGenomicType() {
+
+    return get(GENOMIC_TYPE_FIELD);
+  }
+
   //
   // Setters
   //
@@ -95,7 +113,7 @@ public class SampleMetadataImpl implements SampleMetadata {
     final String sampleName = this.design.getSampleName(this.slideId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     this.design.setMetadata(sampleName, field, value);
   }
@@ -105,7 +123,7 @@ public class SampleMetadataImpl implements SampleMetadata {
 
     set(COMMENT_FIELD, comment);
   }
-  
+
   @Override
   public void setDescription(final String description) {
 
@@ -136,6 +154,25 @@ public class SampleMetadataImpl implements SampleMetadata {
     set(SERIAL_NUMBER_FIELD, serialNumber);
   }
 
+  @Override
+  public void setAnnotation(String annotation) {
+
+    set(ANNOTATION_FIELD, annotation);
+  }
+
+  @Override
+  public void setGenome(String genome) {
+
+    set(GENOME_FIELD, genome);
+
+  }
+
+  @Override
+  public void setGenomicType(String genomicType) {
+
+    set(GENOMIC_TYPE_FIELD, genomicType);
+  }
+
   //
   // Fields tester
   //
@@ -146,7 +183,7 @@ public class SampleMetadataImpl implements SampleMetadata {
     final String slideName = this.design.getSampleName(this.slideId);
 
     if (slideName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.isMetadataField(fieldName);
   }
@@ -156,7 +193,7 @@ public class SampleMetadataImpl implements SampleMetadata {
 
     return isField(COMMENT_FIELD);
   }
-  
+
   @Override
   public boolean isDescriptionField() {
 
@@ -181,7 +218,23 @@ public class SampleMetadataImpl implements SampleMetadata {
     return isField(SLIDE_NUMBER_FIELD);
   }
 
-  
+  @Override
+  public boolean isAnnotationField() {
+
+    return isField(ANNOTATION_FIELD);
+  }
+
+  @Override
+  public boolean isGenomeField() {
+
+    return isField(GENOME_FIELD);
+  }
+
+  @Override
+  public boolean isGenomicTypeField() {
+
+    return isField(GENOMIC_TYPE_FIELD);
+  }
 
   //
   // Constructor
@@ -192,4 +245,5 @@ public class SampleMetadataImpl implements SampleMetadata {
     this.design = design;
     this.slideId = slideId;
   }
+
 }

@@ -22,11 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.design.impl;
 
-import fr.ens.transcriptome.eoulsan.NividicRuntimeException;
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
 
 public class SampleImpl implements Sample {
 
@@ -43,7 +41,7 @@ public class SampleImpl implements Sample {
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return sampleName;
   }
@@ -54,18 +52,18 @@ public class SampleImpl implements Sample {
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.getSampleMetadata(sampleName);
   }
 
   @Override
-  public DataSource getSource() {
+  public String getSource() {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.getSource(sampleName);
   }
@@ -76,20 +74,9 @@ public class SampleImpl implements Sample {
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.getSourceInfo(sampleName);
-  }
-
-  @Override
-  public BioAssayFormat getSourceFormat() {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
-
-    return this.design.getSourceFormat(sampleName);
   }
 
   //
@@ -102,53 +89,20 @@ public class SampleImpl implements Sample {
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     this.design.renameSample(sampleName, newName);
   }
 
   @Override
-  public void setSource(final DataSource source) {
+  public void setSource(final String source) {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     this.design.setSource(sampleName, source);
-  }
-
-  @Override
-  public void setSource(final String filename) {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
-
-    this.design.setSource(sampleName, filename);
-  }
-
-  @Override
-  public void setSourceFormat(final String format) {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
-
-    this.design.setSourceFormat(sampleName, format);
-  }
-
-  @Override
-  public void setSourceFormat(final BioAssayFormat format) {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new NividicRuntimeException("The sample doesn't exists");
-
-    this.design.setSourceFormat(sampleName, format);
   }
 
   //

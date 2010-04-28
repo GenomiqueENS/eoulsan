@@ -24,9 +24,6 @@ package fr.ens.transcriptome.eoulsan.design;
 
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
-
 /**
  * This interface define a Design.
  * @author Laurent Jourdren
@@ -79,13 +76,6 @@ public interface Design {
   SampleMetadata getSampleMetadata(final String sampleName);
 
   /**
-   * Set the data source of a sample.
-   * @param sampleName The name of the slide
-   * @param source The source to set
-   */
-  void setSource(final String sampleName, final DataSource source);
-
-  /**
    * Set a filename as a source of a sample.
    * @param sampleName The name of the slide
    * @param filename The filename to set
@@ -93,25 +83,11 @@ public interface Design {
   void setSource(final String sampleName, final String filename);
 
   /**
-   * Set the data format of a sample.
-   * @param sampleName The name of the slide
-   * @param format The format to set
-   */
-  void setSourceFormat(final String sampleName, final BioAssayFormat format);
-
-  /**
-   * Set the data format of a sample.
-   * @param sampleName The name of the sample
-   * @param formatName The format to set
-   */
-  void setSourceFormat(final String sampleName, final String formatName);
-
-  /**
    * Get the source of a sample.
    * @param sampleName Name of the sample
    * @return a DataSource object
    */
-  DataSource getSource(final String sampleName);
+  String getSource(final String sampleName);
 
   /**
    * Get information about the source of the sample.
@@ -119,13 +95,6 @@ public interface Design {
    * @return information about the source of the slide
    */
   String getSourceInfo(final String sampleName);
-
-  /**
-   * Get the format of data source of a sample
-   * @param sampleName Name of the slide
-   * @return the format of the data source
-   */
-  BioAssayFormat getSourceFormat(final String sampleName);
 
   /**
    * Extract a sample object from the design.
