@@ -20,7 +20,9 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
+package fr.ens.transcriptome.eoulsan.parsers;
+
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This class define a read sequence.
