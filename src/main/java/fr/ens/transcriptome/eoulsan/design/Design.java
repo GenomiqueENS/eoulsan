@@ -1,0 +1,206 @@
+/*
+ *                      Nividic development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public Licence.  This should
+ * be distributed with the code.  If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/copyleft/lesser.html
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Nividic project and its aims,
+ * or to join the Nividic mailing list, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/nividic
+ *
+ */
+
+package fr.ens.transcriptome.eoulsan.design;
+
+import java.util.List;
+
+import fr.ens.transcriptome.eoulsan.datasources.DataSource;
+import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
+
+/**
+ * This interface define a Design.
+ * @author Laurent Jourdren
+ */
+public interface Design {
+
+  /**
+   * Test if a sample exists.
+   * @param sampleName Name of the sample to test
+   * @return true if the sample exists
+   */
+  boolean isSample(final String sampleName);
+
+  /**
+   * Add a sample.
+   * @param sampleName Name of the sample to add
+   */
+  void addSample(final String sampleName);
+
+  /**
+   * Rename a sample.
+   * @param oldSampleName Old name of the sample
+   * @param newSampleName New name of the sample
+   */
+  void renameSample(final String oldSampleName, final String newSampleName);
+
+  /**
+   * Get the name of the samples
+   * @return a Set with the name of the samples
+   */
+  List<String> getSamplesNames();
+
+  /**
+   * Remove a sample.
+   * @param sampleName Name of the sample to remove
+   */
+  void removeSample(final String sampleName);
+
+  /**
+   * Get the number of sample in the design.
+   * @return The number of samples in the design
+   */
+  int getSampleCount();
+
+  /**
+   * Get the metadata for a sample.
+   * @param sampleName Name of the slide
+   * @return the metadata of the sample
+   */
+  SampleMetadata getSampleMetadata(final String sampleName);
+
+  /**
+   * Set the data source of a sample.
+   * @param sampleName The name of the slide
+   * @param source The source to set
+   */
+  void setSource(final String sampleName, final DataSource source);
+
+  /**
+   * Set a filename as a source of a sample.
+   * @param sampleName The name of the slide
+   * @param filename The filename to set
+   */
+  void setSource(final String sampleName, final String filename);
+
+  /**
+   * Set the data format of a sample.
+   * @param sampleName The name of the slide
+   * @param format The format to set
+   */
+  void setSourceFormat(final String sampleName, final BioAssayFormat format);
+
+  /**
+   * Set the data format of a sample.
+   * @param sampleName The name of the sample
+   * @param formatName The format to set
+   */
+  void setSourceFormat(final String sampleName, final String formatName);
+
+  /**
+   * Get the source of a sample.
+   * @param sampleName Name of the sample
+   * @return a DataSource object
+   */
+  DataSource getSource(final String sampleName);
+
+  /**
+   * Get information about the source of the sample.
+   * @param sampleName Name of the slide
+   * @return information about the source of the slide
+   */
+  String getSourceInfo(final String sampleName);
+
+  /**
+   * Get the format of data source of a sample
+   * @param sampleName Name of the slide
+   * @return the format of the data source
+   */
+  BioAssayFormat getSourceFormat(final String sampleName);
+
+  /**
+   * Extract a sample object from the design.
+   * @param index Index of the sample in the design
+   * @return a slide object
+   */
+  Sample getSample(final int index);
+
+  /**
+   * Extract a sample object from the design.
+   * @param sampleName The name of the slide to extract
+   * @return a sample object
+   */
+  Sample getSample(final String sampleName);
+
+  /**
+   * Get a list of the samples of the design
+   * @return a unmodifiable list of the samples
+   */
+  List<Sample> getSamples();
+
+  /**
+   * Test if the metadata field is already set.
+   * @param fieldName Name of the metadata field to test
+   * @return true if the field exists
+   */
+  boolean isMetadataField(final String fieldName);
+
+  /**
+   * Add a metadata field.
+   * @param fieldName Name of the label to add
+   */
+  void addMetadataField(final String fieldName);
+
+  /**
+   * Rename a metadata field.
+   * @param oldMetadataFieldName Old name of the metadata field
+   * @param newMetadataFieldName New name of the metadata field
+   */
+  void renameMetadataField(final String oldMetadataFieldName,
+      final String newMetadataFieldName);
+
+  /**
+   * Get the names of the metadata fields.
+   * @return A List with the name of the metadata fields
+   */
+  List<String> getMetadataFieldsNames();
+
+  /**
+   * Remove a metadata field.
+   * @param fieldName Name of the metadata field to remove
+   */
+  void removeMetadataField(final String fieldName);
+
+  /**
+   * Get the number of metadata fields
+   * @return The number of metadata fields
+   */
+  int getMetadataFieldCount();
+
+  /**
+   * Set a metadata field for a sample.
+   * @param sampleName Sample name
+   * @param fieldName metadata field
+   * @param value of the description to set
+   */
+  void setMetadata(final String sampleName, final String fieldName,
+      final String value);
+
+  /**
+   * Get a metadata
+   * @param sampleName Sample name
+   * @param fieldName The metadata field
+   * @return The value of the metadata
+   */
+  String getMetadata(final String sampleName, final String fieldName);
+
+}
