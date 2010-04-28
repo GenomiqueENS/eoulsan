@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.hadoop.expression;
+package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,9 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
-import fr.ens.transcriptome.eoulsan.hadoop.expression.GeneAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
+import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder;
+import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
