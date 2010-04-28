@@ -65,7 +65,7 @@ public class ReadSequence extends Sequence {
    * Test if a ReadSequence is valid. Only check if all fields are not null.
    * @return true if the ReadSequence is valid
    */
-  public boolean isFastValid() {
+  public boolean isFastQValid() {
 
     return this.name != null && this.sequence != null && this.quality != null;
   }
@@ -128,12 +128,13 @@ public class ReadSequence extends Sequence {
     if (fastQ == null)
       return;
 
-    final int indexFirstTab = fastQ.indexOf('\t');
-    final int indexSecondTab = fastQ.indexOf('\t', indexFirstTab + 1);
+    final int indexCR1 = fastQ.indexOf('\n');
+    final int indexCR2 = fastQ.indexOf('\n', indexCR1 + 1);
+    final int indexCR3 = fastQ.indexOf('\n', indexCR2 + 1);
 
-    this.name = fastQ.substring(0, indexFirstTab);
-    this.sequence = fastQ.substring(indexFirstTab + 1, indexSecondTab);
-    this.quality = fastQ.substring(indexSecondTab + 1);
+    this.name = fastQ.substring(0, indexCR1);
+    this.sequence = fastQ.substring(indexCR1 + 1, indexCR2);
+    this.quality = fastQ.substring(indexCR3 + 1);
   }
 
   /**
