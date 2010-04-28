@@ -64,7 +64,7 @@ public final class FilterReadsMain {
       for (Sample s : design.getSamples()) {
 
         final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
-        final FilterReads filter = new FilterReads(ds);
+        final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
             new File("sample_filtered_" + (count++) + Common.FASTQ_EXTENSION);
 
