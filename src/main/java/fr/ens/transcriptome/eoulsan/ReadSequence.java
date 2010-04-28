@@ -26,41 +26,13 @@ package fr.ens.transcriptome.eoulsan;
  * This class define a read sequence.
  * @author Laurent Jourdren
  */
-public class ReadSequence {
+public class ReadSequence extends Sequence {
 
-  private int id;
-  private String name;
-  private String sequence;
   private String quality;
 
   //
   // Getters
   //
-
-  /**
-   * Get the id of the sequence.
-   * @return the id of the sequence
-   */
-  public int getId() {
-    return this.id;
-  }
-
-  /**
-   * Set the name of the sequence.
-   * @return the name of the sequence
-   */
-  public String getName() {
-    return this.name;
-  }
-
-  /**
-   * Get the sequence of the sequence.
-   * @return a string with the sequence
-   */
-  public final String getSequence() {
-
-    return this.sequence;
-  }
 
   /**
    * Get the quality of the sequence.
@@ -74,30 +46,6 @@ public class ReadSequence {
   //
   // Setters
   // 
-
-  /**
-   * Set the id of the sequence
-   * @param id id to set
-   */
-  public void setId(final int id) {
-    this.id = id;
-  }
-
-  /**
-   * Set the name of the sequence
-   * @param name the name to set
-   */
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  /**
-   * Set the sequence.
-   * @param sequence Sequence to set
-   */
-  public final void setSequence(final String sequence) {
-    this.sequence = sequence;
-  }
 
   /**
    * Set the quality.
@@ -118,60 +66,6 @@ public class ReadSequence {
   public boolean isFastValid() {
 
     return this.name != null && this.sequence != null && this.quality != null;
-  }
-
-  /**
-   * Get the length of the read.
-   * @return the length of the read
-   */
-  public int length() {
-
-    if (this.sequence == null)
-      return 0;
-
-    return this.sequence.length();
-  }
-
-  /**
-   * Get the tm of the sequence.
-   * @return the tm of the sequence
-   */
-  public final float getTm() {
-
-    return getTm(50, 50);
-  }
-
-  /**
-   * Get the tm of the sequence.
-   * @param dnac DNA concentration [nM]
-   * @param saltc salt concentration [mM
-   * @return the tm temp for the sequence
-   */
-  public final float getTm(final float dnac, final float saltc) {
-
-    return MeltingTemp.tmstalucDNA(this.sequence, dnac, saltc);
-  }
-
-  /**
-   * Get the GC percent for the sequence.
-   * @return the GC percent for the sequence
-   */
-  public final float getGCPercent() {
-
-    if (this.sequence == null)
-      return Float.NaN;
-
-    final int len = this.sequence.length();
-
-    int count = 0;
-
-    for (int i = 0; i < len; i++) {
-
-      if (this.sequence.charAt(i) == 'G' || this.sequence.charAt(i) == 'C')
-        count++;
-    }
-
-    return (float) count / (float) len;
   }
 
   /**
@@ -274,7 +168,7 @@ public class ReadSequence {
     this.quality = value.substring(indexTab + 1);
   }
 
-  public void check() throws PipelineException {
+  public void check() throws EoulsanException {
 
     if (this.name == null)
       throw new NullPointerException("The name of the sequence is null");
@@ -285,15 +179,15 @@ public class ReadSequence {
           "The quality string of the sequence is null");
 
     if (this.sequence.length() != this.quality.length())
-      throw new PipelineException(
+      throw new EoulsanException(
           "The length of sequence and quality string are not equals");
 
     if (!checkCharString(this.quality, (char) 33, (char) 126))
-      throw new PipelineException(
+      throw new EoulsanException(
           "The length of sequence and quality string are not equals");
 
     if (!checkBases(this.sequence))
-      throw new PipelineException("Invalid bases in sequence");
+      throw new EoulsanException("Invalid bases in sequence");
 
   }
 
@@ -354,9 +248,7 @@ public class ReadSequence {
   public ReadSequence(final int id, final String name, final String sequence,
       final String quality) {
 
-    this.id = id;
-    this.name = name;
-    this.sequence = sequence;
+    super(id, name, sequence);
     this.quality = quality;
   }
 
