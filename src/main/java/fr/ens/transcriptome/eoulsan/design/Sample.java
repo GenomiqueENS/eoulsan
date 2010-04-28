@@ -22,8 +22,6 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
 
 /**
  * This interface define a slide.
@@ -51,7 +49,7 @@ public interface Sample {
    * Get the source of a slide.
    * @return a DataSource object
    */
-  DataSource getSource();
+  String getSource();
 
   /**
    * Get information about the source of the slide.
@@ -70,33 +68,9 @@ public interface Sample {
   void setName(final String newName);
 
   /**
-   * Set the data source of a slide.
-   * @param source The source to set
-   */
-  void setSource(final DataSource source);
-
-  /**
    * Set a filename as a source of a slide.
    * @param filename The filename to set
    */
   void setSource(final String filename);
-
-  /**
-   * Get the format of the source of the slide.
-   * @return The format of the source of the slide
-   */
-  BioAssayFormat getSourceFormat();
-
-  /**
-   * Set the format of the source fof the slide.
-   * @param format The format to set
-   */
-  void setSourceFormat(final String format);
-
-  /**
-   * Set the format of the source fof the slide.
-   * @param format The format to set
-   */
-  void setSourceFormat(final BioAssayFormat format);
 
 }

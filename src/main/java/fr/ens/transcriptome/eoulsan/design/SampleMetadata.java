@@ -32,6 +32,12 @@ public interface SampleMetadata {
 
   /** Description field. */
   String DESCRIPTION_FIELD = "Description";
+  /** Genome field. */
+  String GENOME_FIELD = "Genome";
+  /** Annotation field. */
+  String ANNOTATION_FIELD = "Annotation";
+  /** Genomic type field. */
+  String GENOMIC_TYPE_FIELD = "GenomicType";
   /** Comment field. */
   String COMMENT_FIELD = "Comment";
   /** Date field. */
@@ -56,18 +62,35 @@ public interface SampleMetadata {
    */
   List<String> getFields();
 
-  
   /**
    * Get the description about the sample.
    * @return Returns the comment
    */
   String getDescription();
-  
+
   /**
    * Get the comment about the sample.
    * @return Returns the comment
    */
   String getComment();
+
+  /**
+   * Get the genome file relative to the sample.
+   * @return Returns the genome file
+   */
+  String getGenome();
+
+  /**
+   * Get the annotation relative to the sample.
+   * @return Returns the annaotation
+   */
+  String getAnnotation();
+
+  /**
+   * Get the Genomic type to use for the sample.
+   * @return Returns the comment
+   */
+  String getGenomicType();
 
   /**
    * Get the date of the hybridation
@@ -100,18 +123,35 @@ public interface SampleMetadata {
    */
   void set(final String field, final String value);
 
-  
   /**
    * Set the description.
    * @param description The description to set
    */
   void setDescription(final String description);
-  
+
   /**
    * Set the comment.
    * @param comment The comment to set
    */
   void setComment(final String comment);
+
+  /**
+   * Set the genome file relative to the sample.
+   * @param genome file to set
+   */
+  void setGenome(final String genome);
+
+  /**
+   * Set the annotation file relative to the sample.
+   * @param annotation file to set
+   */
+  void setAnnotation(final String annotation);
+
+  /**
+   * Set the genomic type to use for the sample.
+   * @param genomicType The genomic type to set
+   */
+  void setGenomicType(final String genomicType);
 
   /**
    * Set the hybridation date
@@ -149,7 +189,25 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isCommentField();
-  
+
+  /**
+   * Test if the genome field exists.
+   * @return true if the field exists
+   */
+  boolean isGenomeField();
+
+  /**
+   * Test if the annoatation field exists.
+   * @return true if the field exists
+   */
+  boolean isAnnotationField();
+
+  /**
+   * Test if the genomic type field exists.
+   * @return true if the field exists
+   */
+  boolean isGenomicTypeField();
+
   /**
    * Test if the description field exists.
    * @return true if the field exists

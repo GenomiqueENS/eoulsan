@@ -28,14 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.transcriptome.eoulsan.NividicRuntimeException;
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormat;
-import fr.ens.transcriptome.eoulsan.io.BioAssayFormatRegistery;
 
 public class DesignImpl implements Design {
 
@@ -43,10 +40,7 @@ public class DesignImpl implements Design {
   private Map<String, Integer> samples = new HashMap<String, Integer>();
   private Map<Integer, String> samplesReverse = new HashMap<Integer, String>();
 
-  private Map<Integer, DataSource> sources = new HashMap<Integer, DataSource>();
-  private Map<Integer, BioAssayFormat> formats =
-      new HashMap<Integer, BioAssayFormat>();
-
+  private Map<Integer, String> sources = new HashMap<Integer, String>();
 
   private Map<String, Integer> metadataFields = new HashMap<String, Integer>();
   private List<String> metadataOrder = new ArrayList<String>();
@@ -78,9 +72,9 @@ public class DesignImpl implements Design {
   public void addMetadataField(String fieldName) {
 
     if (fieldName == null)
-      throw new NividicRuntimeException("The metadata field can't be null");
+      throw new EoulsanRuntimeException("The metadata field can't be null");
     if (isMetadataField(fieldName))
-      throw new NividicRuntimeException(
+      throw new EoulsanRuntimeException(
           "The descriptionLabel name already exists");
 
     this.metadataFields.put(fieldName, countLabels++);
@@ -92,9 +86,9 @@ public class DesignImpl implements Design {
   public void addSample(String sampleName) {
 
     if (sampleName == null)
-      throw new NividicRuntimeException("Slide name can't be null");
+      throw new EoulsanRuntimeException("Slide name can't be null");
     if (isSample(sampleName))
-      throw new NividicRuntimeException("Slide name already exists");
+      throw new EoulsanRuntimeException("Slide name already exists");
 
     final int slideId = countSamples++;
     this.samples.put(sampleName, slideId);
@@ -112,9 +106,9 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Metadata field name can't be null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The sample name doesn't exists");
+      throw new EoulsanRuntimeException("The sample name doesn't exists");
     if (!isMetadataField(fieldName))
-      throw new NividicRuntimeException(
+      throw new EoulsanRuntimeException(
           "The metadata field name doesn't exists");
 
     return this.metadataData.get(createkeySampleMetadataField(sampleName,
@@ -138,7 +132,7 @@ public class DesignImpl implements Design {
 
     final String sampleName = this.samplesOrder.get(index);
     if (sampleName == null)
-      throw new NividicRuntimeException("The slide index doesn't exists");
+      throw new EoulsanRuntimeException("The slide index doesn't exists");
 
     return getSample(sampleName);
   }
@@ -147,10 +141,10 @@ public class DesignImpl implements Design {
   public Sample getSample(String sampleName) {
 
     if (sampleName == null)
-      throw new NividicRuntimeException("The slide name can't be null");
+      throw new EoulsanRuntimeException("The slide name can't be null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide doesn't exists");
+      throw new EoulsanRuntimeException("The slide doesn't exists");
 
     final int slideId = this.samples.get(sampleName);
 
@@ -163,8 +157,6 @@ public class DesignImpl implements Design {
     return this.samples.size();
   }
 
-  
-
   @Override
   public SampleMetadata getSampleMetadata(String sampleName) {
 
@@ -172,7 +164,7 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Sample name is null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     final int id = this.samples.get(sampleName);
 
@@ -200,31 +192,17 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public DataSource getSource(String sampleName) {
+  public String getSource(String sampleName) {
 
     if (sampleName == null)
       throw new NullPointerException("Slide name is null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide doesn't exists");
+      throw new EoulsanRuntimeException("The slide doesn't exists");
 
     final int id = this.samples.get(sampleName);
 
     return this.sources.get(id);
-  }
-
-  @Override
-  public BioAssayFormat getSourceFormat(String sampleName) {
-
-    if (sampleName == null)
-      throw new NullPointerException("Slide name is null");
-
-    if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide doesn't exists");
-
-    final int id = this.samples.get(sampleName);
-
-    return this.formats.get(id);
   }
 
   @Override
@@ -234,13 +212,14 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Slide name is null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide doesn't exists");
+      throw new EoulsanRuntimeException("The slide doesn't exists");
 
     final int id = this.samples.get(sampleName);
 
-    DataSource ds = this.sources.get(id);
+    String ds = this.sources.get(id);
 
-    return ds == null ? "" : ds.getSourceInfo();
+    return ds == null ? "" : DataSourceUtils.identifyDataSource(ds)
+        .getSourceInfo();
   }
 
   @Override
@@ -259,11 +238,11 @@ public class DesignImpl implements Design {
   public void removeMetadataField(String fieldName) {
 
     if (fieldName == null)
-      throw new NividicRuntimeException(
+      throw new EoulsanRuntimeException(
           "The description field name can't be null");
 
     if (!isMetadataField(fieldName))
-      throw new NividicRuntimeException(
+      throw new EoulsanRuntimeException(
           "The description field name doesn't exists");
 
     // Remove targets
@@ -282,10 +261,10 @@ public class DesignImpl implements Design {
   public void removeSample(String sampleName) {
 
     if (sampleName == null)
-      throw new NividicRuntimeException("Slide name can't be null");
+      throw new EoulsanRuntimeException("Slide name can't be null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("the slide name doesn't exists");
+      throw new EoulsanRuntimeException("the slide name doesn't exists");
 
     // Remove descriptions
     final String prefixDescritpion = this.samples.get(sampleName) + "-";
@@ -296,7 +275,6 @@ public class DesignImpl implements Design {
 
     // Remove formats and bioassays
     final int slideId = this.samples.get(sampleName);
-    this.formats.remove(slideId);
 
     // Remove entry
     this.samples.remove(sampleName);
@@ -309,14 +287,14 @@ public class DesignImpl implements Design {
       String newMetadataFieldName) {
 
     if (oldMetadataFieldName == null)
-      throw new NividicRuntimeException("oldName name can't be null");
+      throw new EoulsanRuntimeException("oldName name can't be null");
     if (newMetadataFieldName == null)
-      throw new NividicRuntimeException("newName name can't be null");
+      throw new EoulsanRuntimeException("newName name can't be null");
 
     if (!isMetadataField(oldMetadataFieldName))
-      throw new NividicRuntimeException("the old label name don't exists");
+      throw new EoulsanRuntimeException("the old label name don't exists");
     if (isMetadataField(newMetadataFieldName))
-      throw new NividicRuntimeException("the new label name already exists");
+      throw new EoulsanRuntimeException("the new label name already exists");
 
     int id = this.metadataFields.get(oldMetadataFieldName);
     this.metadataFields.remove(oldMetadataFieldName);
@@ -331,14 +309,14 @@ public class DesignImpl implements Design {
   public void renameSample(String oldSampleName, String newSampleName) {
 
     if (oldSampleName == null)
-      throw new NividicRuntimeException("oldName name can't be null");
+      throw new EoulsanRuntimeException("oldName name can't be null");
     if (newSampleName == null)
-      throw new NividicRuntimeException("newName name can't be null");
+      throw new EoulsanRuntimeException("newName name can't be null");
 
     if (!isSample(oldSampleName))
-      throw new NividicRuntimeException("the old slide name don't exists");
+      throw new EoulsanRuntimeException("the old slide name don't exists");
     if (isSample(newSampleName))
-      throw new NividicRuntimeException("the new slide name already exists");
+      throw new EoulsanRuntimeException("the new slide name already exists");
 
     int slideId = this.samples.get(oldSampleName);
     this.samples.remove(oldSampleName);
@@ -369,7 +347,7 @@ public class DesignImpl implements Design {
       throw new NullPointerException("value name can't be null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide name doesn't exists");
+      throw new EoulsanRuntimeException("The slide name doesn't exists");
     if (!isMetadataField(fieldName))
       addMetadataField(fieldName);
 
@@ -377,10 +355,8 @@ public class DesignImpl implements Design {
         value);
   }
 
- 
-
   @Override
-  public void setSource(String sampleName, DataSource source) {
+  public void setSource(String sampleName, String source) {
 
     if (sampleName == null)
       throw new NullPointerException("Sample name is null");
@@ -389,49 +365,11 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Sample source is null");
 
     if (!isSample(sampleName))
-      throw new NividicRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists");
 
     final int id = this.samples.get(sampleName);
 
     this.sources.put(id, source);
-  }
-
-  @Override
-  public void setSource(String sampleName, String filename) {
-
-    setSource(sampleName, new FileDataSource(filename));
-  }
-
-  @Override
-  public void setSourceFormat(String sampleName, BioAssayFormat format) {
-
-    if (sampleName == null)
-      throw new NullPointerException("Slide name is null");
-
-    if (!isSample(sampleName))
-      throw new NividicRuntimeException("The slide doesn't exists");
-
-    final int id = this.samples.get(sampleName);
-
-    if (format == null) {
-
-      if (this.formats.containsKey(id))
-        this.formats.remove(id);
-    } else
-      this.formats.put(id, format);
-  }
-
-  @Override
-  public void setSourceFormat(String sampleName, String formatName) {
-
-    if (formatName == null)
-      setSourceFormat(sampleName, (BioAssayFormat) null);
-    else {
-      BioAssayFormat format =
-          BioAssayFormatRegistery.getBioAssayFormat(formatName);
-      setSourceFormat(sampleName, format);
-    }
-
   }
 
 }
