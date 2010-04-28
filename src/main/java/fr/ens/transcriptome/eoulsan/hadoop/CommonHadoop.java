@@ -28,19 +28,24 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
-public class Common {
+/**
+ * This class define common constants and other methods specific to Hadoop mode.
+ * @author Laurent Jourdren
+ */
+public class CommonHadoop extends Common {
 
-  public static final String FASTA_EXTENSION = ".fasta";
-  public static final String READS_SUBDIR = "reads";
-  public static final String FASTQ_EXTENSION = ".fq";
-  public static final String SOAP_INDEX_ZIP_FILE_EXTENSION = ".soapindex.zip";
-  public static final String READS_FILTERED_EXTENSION = ".readsfiltered";
-  public static final String SOAP_RESULT_EXTENSION = ".soapaln";
-  public static final String UNMAP_EXTENSION = ".unmap";
   public static final int CHECK_COMPLETION_TIME = 5000;
 
+  /**
+   * Retrieve the genome file name from the files of a directory
+   * @param basePath Base path directory
+   * @param conf Hadoop configuration
+   * @return the genome file path
+   * @throws IOException if the genome file can't be identified
+   */
   public static Path getGenomeFilePath(final Path basePath,
       final Configuration conf) throws IOException {
 
@@ -48,7 +53,8 @@ public class Common {
       throw new NullPointerException("Base path is null");
 
     final List<Path> genomePaths =
-        PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
+        PathUtils.listPathsBySuffix(basePath, CommonHadoop.FASTA_EXTENSION,
+            conf);
     if (genomePaths.size() == 0)
       throw new IOException("Genome file not found.");
     if (genomePaths.size() > 1)
