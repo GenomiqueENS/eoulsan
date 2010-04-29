@@ -774,6 +774,16 @@ public class FileUtils {
   }
 
   /**
+   * Create a file in the temporary directory.
+   * @param filename The filename to create
+   * @return The new File
+   */
+  public static File createFileInTempDir(final String filename) {
+    
+    return new File(System.getProperty("java.io.tmpdir"),filename);
+  }
+  
+  /**
    * Create a new temporary file.
    * @param directory parent directory of the temporary file to create
    * @param prefix Prefix of the temporary file
