@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.mgmt.cli;
+package fr.ens.transcriptome.eoulsan.programs.mgmt.local;
 
 import java.io.FileNotFoundException;
 
