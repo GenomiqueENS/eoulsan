@@ -237,6 +237,29 @@ public final class PathUtils {
   }
 
   /**
+   * Copy bytes from an InputStream to a path.
+   * @param input the InputStream to read from
+   * @param destPath destination path
+   * @param conf Configuration object
+   * @return the number of bytes copied
+   * @throws IOException In case of an I/O problem
+   */
+  public static int copyInputStreamToPath(final InputStream is,
+      final Path destPath, final Configuration conf) throws IOException {
+
+    if (is == null)
+      throw new NullPointerException("The insput stream is null");
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
+    final OutputStream os = fs.create(destPath);
+    return FileUtils.copy(is, os);
+  }
+
+  /**
    * Unzip a zip file on local file system. Don't remove original zip file.
    * @param path Path of the zip file
    * @param outputDir Output directory of the content of the zip file
@@ -681,6 +704,32 @@ public final class PathUtils {
     if (!fs.getFileStatus(directory).isDir())
       throw new IOException("The "
           + msgFileType + " is not a directory: " + directory);
+  }
+
+  /**
+   * Check if a directory exists
+   * @param directory directory to test * @param conf Configuration
+   * @returm true is the directory exists
+   */
+  public static final boolean isExistingDirectoryFile(final Path directory,
+      final Configuration conf) throws IOException {
+
+    final FileSystem fs = getFileSystem(directory, conf);
+
+    return fs.isFile(directory) && fs.getFileStatus(directory).isDir();
+  }
+
+  /**
+   * Check if a file exists
+   * @param directory directory to test * @param conf Configuration
+   * @returm true is the directory exists
+   */
+  public static final boolean isFile(final Path directory,
+      final Configuration conf) throws IOException {
+
+    final FileSystem fs = getFileSystem(directory, conf);
+
+    return fs.isFile(directory);
   }
 
   /**
