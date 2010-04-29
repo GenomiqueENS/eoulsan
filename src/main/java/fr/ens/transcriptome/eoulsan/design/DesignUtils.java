@@ -22,7 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utils methods for Design.
@@ -87,6 +89,77 @@ public final class DesignUtils {
    * Private constructor.
    */
   private DesignUtils() {
+  }
+
+  /**
+   * Check if there are duplicate samples in the design.
+   * @param design Design to test
+   * @return if there are no duplicate
+   */
+  public static boolean checkSamples(final Design design) {
+  
+    final Set<String> samplesSources = new HashSet<String>();
+  
+    for (Sample s : design.getSamples()) {
+  
+      if (samplesSources.contains(s.getSource()))
+        return false;
+      samplesSources.add(s.getSource());
+    }
+  
+    return true;
+  }
+
+  /**
+   * Check if there is more than one genome in the design
+   * @param design Design to test
+   * @return true if there is more than one genome in the genome
+   */
+  public static boolean checkGenomes(final Design design) {
+  
+    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
+      return false;
+  
+    final Set<String> genomes = new HashSet<String>();
+  
+    for (Sample s : design.getSamples()) {
+  
+      String genome = s.getMetadata().getGenome();
+  
+      if (genomes.size() == 1 && !genomes.contains(genome))
+        return false;
+  
+      if (genomes.size() == 0)
+        genomes.add(genome);
+    }
+  
+    return true;
+  }
+
+  /**
+   * Check if there is more than one annotation in the design
+   * @param design Design to test
+   * @return true if there is more than one annotation in the genome
+   */
+  public static boolean checkAnnotations(final Design design) {
+  
+    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
+      return false;
+  
+    final Set<String> annotations = new HashSet<String>();
+  
+    for (Sample s : design.getSamples()) {
+  
+      String annotation = s.getMetadata().getAnnotation();
+  
+      if (annotations.size() == 1 && !annotations.contains(annotation))
+        return false;
+  
+      if (annotations.size() == 0)
+        annotations.add(annotation);
+    }
+  
+    return true;
   }
 
 }
