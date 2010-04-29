@@ -283,4 +283,89 @@ public final class StringUtils {
     return filename;
   }
 
+  public static final String protectGFF(final String s) {
+
+    if (s == null)
+      return null;
+
+    final String rTmp =
+        s.replace("\\", "\\\\").replace(";", "\\;").replace("=", "\\=")
+            .replace("%", "\\%").replace("&", "\\&").replace(",", "\\,");
+
+    final StringBuilder sb = new StringBuilder();
+
+    final int len = rTmp.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = rTmp.charAt(i);
+      if (c <= 32) {
+        sb.append('%');
+        sb.append(String.format("%02X", (int) c));
+      } else
+        sb.append(c);
+    }
+
+    final String r = sb.toString();
+    sb.setLength(0);
+
+    return r;
+  }
+
+  public static final String deprotectGFF(final String s) {
+
+    if (s == null)
+      return null;
+
+    final StringBuilder sb = new StringBuilder();
+
+    final int len = s.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = s.charAt(i);
+
+      if (c == '%') {
+
+        if (i + 2 >= len)
+          break;
+
+        final char d1 = s.charAt(i + 1);
+        final char d2 = s.charAt(i + 2);
+        System.out.println(d1 + "" + d2);
+        if (Character.isDigit(d1) && Character.isDigit(d2)) {
+          sb.append((char) Integer.parseInt("" + d1 + d2, 16));
+
+          i += 2;
+          continue;
+        }
+      }
+
+      sb.append(c);
+    }
+
+    return sb.toString().replace("\\,", ",").replace("\\&", "&").replace("\\%",
+        "%").replace("\\=", "=").replace("\\;", ";").replace("\\\\", "\\");
+  }
+
+  /**
+   * Get an array without the first element of the input array.
+   * @param array input array
+   * @return an array without the first element of the input array
+   */
+  public static final String[] arrayWithoutFirstElement(final String[] array) {
+
+    if (array == null)
+      return null;
+
+    if (array.length <= 1)
+      return new String[0];
+
+    final int newLen = array.length - 1;
+    final String[] result = new String[newLen];
+    System.arraycopy(array, 1, result, 0, newLen);
+
+    return result;
+  }
+
 }
