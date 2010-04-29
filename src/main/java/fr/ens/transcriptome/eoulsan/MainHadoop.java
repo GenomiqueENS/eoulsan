@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.hadoop.GMorse;
 import fr.ens.transcriptome.eoulsan.hadoop.ImportData;
 import fr.ens.transcriptome.eoulsan.hadoop.MapReads;
 import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionMain;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.UploadDesignDataMain;
 
 /**
  * Main class in Hadoop mode.
@@ -59,6 +60,8 @@ public class MainHadoop {
           "Filter and map reads.");
       pgd.addClass("gmorse", GMorse.class, "GMorse.");
       pgd.addClass("expression", ExpressionMain.class, "Expression.");
+      pgd.addClass("uploaddesigndata", UploadDesignDataMain.class,
+          "Upload design data.");
 
       pgd.driver(args);
 
