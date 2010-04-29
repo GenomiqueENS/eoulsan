@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.createdesign.cli;
+package fr.ens.transcriptome.eoulsan.programs.mgmt.cli;
 
 import java.io.FileNotFoundException;
 
@@ -29,7 +29,7 @@ import fr.ens.transcriptome.eoulsan.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
 
-import fr.ens.transcriptome.eoulsan.programs.createdesign.DesignBuilder;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.DesignBuilder;
 
 /**
  * Main class for Create Design program.

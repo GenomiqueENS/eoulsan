@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.createdesign;
+package fr.ens.transcriptome.eoulsan.programs.mgmt;
 
 import java.io.File;
 import java.util.ArrayList;
