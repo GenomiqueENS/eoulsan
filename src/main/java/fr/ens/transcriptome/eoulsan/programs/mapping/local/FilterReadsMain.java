@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.filterreads.local;
+package fr.ens.transcriptome.eoulsan.programs.mapping.local;
 
 import java.io.File;
 import java.io.FileNotFoundException;
