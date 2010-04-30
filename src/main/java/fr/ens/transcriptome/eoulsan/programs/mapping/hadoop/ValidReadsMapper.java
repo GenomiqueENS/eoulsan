@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 
 @SuppressWarnings("deprecation")
-public class ValidReadMapper implements Mapper<LongWritable, Text, Text, Text> {
+public class ValidReadsMapper implements Mapper<LongWritable, Text, Text, Text> {
 
   private Text outKey = new Text();
   private Text outValue = new Text();
