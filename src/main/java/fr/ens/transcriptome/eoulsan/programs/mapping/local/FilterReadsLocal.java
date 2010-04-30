@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.filterreads.local;
+package fr.ens.transcriptome.eoulsan.programs.mapping.local;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,8 +31,8 @@ import java.io.Writer;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
 import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
-import fr.ens.transcriptome.eoulsan.programs.filterreads.FilterReadsConstants;
-import fr.ens.transcriptome.eoulsan.programs.filterreads.ReadsFilter;
+import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
+import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

@@ -24,7 +24,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.util.Arrays;
 
-import fr.ens.transcriptome.eoulsan.programs.filterreads.local.FilterReadsMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsMain;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateDesignMain;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
