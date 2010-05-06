@@ -55,12 +55,14 @@ public class BinariesInstaller {
 
     final File outputDir = new File(outputPath);
 
-    if (!outputDir.isDirectory())
+    if (!outputDir.isDirectory()) {
       if (!outputDir.mkdirs())
         throw new IOException(
             "Can't create directory for binaries installation: "
                 + outputDir.getAbsolutePath());
-
+      FileUtils.setDirectoryWritable(outputDir, true, false);
+    }
+    
     final File outputFile = new File(outputDir, file);
     OutputStream fos = new FileOutputStream(outputFile);
 
@@ -73,8 +75,8 @@ public class BinariesInstaller {
     is.close();
     fos.close();
 
-    FileUtils.setExecutable(outputFile, false);
-    FileUtils.setReadable(outputFile, false);
+    FileUtils.setExecutable(outputFile, true, false);
+    FileUtils.setReadable(outputFile, true, false);
   }
 
   public static String install(final String file) throws IOException {
