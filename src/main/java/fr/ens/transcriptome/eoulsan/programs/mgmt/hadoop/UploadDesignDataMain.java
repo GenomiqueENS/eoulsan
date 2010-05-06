@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -36,6 +35,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -117,8 +117,6 @@ public class UploadDesignDataMain {
    */
   public static void main(final String[] args) {
 
-    System.out.println("Expression arguments:\t" + Arrays.toString(args));
-
     if (args == null)
       throw new NullPointerException("The arguments of import data is null");
 
@@ -129,6 +127,7 @@ public class UploadDesignDataMain {
     final String designFilename = args[0];
     final String hadoopPathname = args[1];
 
+    // Create configuration object
     final Configuration conf = new Configuration();
 
     final Path hadoopPath = new Path(hadoopPathname);
@@ -189,6 +188,14 @@ public class UploadDesignDataMain {
               createPath(hadoopPath, CommonHadoop.GENOME_FILE_PREFIX,
                   genomesCount, Common.FASTA_EXTENSION);
           copy(genome, newGenomePath, conf);
+
+          // Create soap index file
+          final File indexFile = SOAPWrapper.makeIndex(new File(genome), true);
+          copy(indexFile.toString(), createPath(hadoopPath,
+              CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX, genomesCount,
+              CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX), conf);
+          indexFile.delete();
+
           genomesMap.put(genome, newGenomePath.getName());
         }
         s.getMetadata().setGenome(genomesMap.get(genome));
