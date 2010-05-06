@@ -23,6 +23,7 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -293,19 +294,9 @@ public final class PathUtils {
       throw new NullPointerException("The configuration object is null");
 
     final File tmpZipFile = FileUtils.createTempFile("", ".zip");
-    System.out.println("srcPath: " + srcPath);
-    System.out.println("tmpZipFile: " + tmpZipFile.getAbsolutePath());
-    System.out.println("removeOriginalZipFile: " + removeOriginalZipFile);
 
     copyFromPathToLocalFile(srcPath, tmpZipFile, removeOriginalZipFile, conf);
 
-    System.out.println("outputDir: " + outputDir);
-    System.out.println("outputDir exists, dir: "
-        + outputDir.exists() + ", " + outputDir.isDirectory());
-    // if (!outputDir.mkdirs())
-    // throw new IOException("Unable to create output directory: "
-    // + outputDir.getAbsolutePath());
-    // FileUtil.unZip(tmpZipFile, outputDir);
     FileUtils.unzip(tmpZipFile, outputDir);
 
     if (!tmpZipFile.delete())
@@ -716,20 +707,25 @@ public final class PathUtils {
 
     final FileSystem fs = getFileSystem(directory, conf);
 
-    return fs.isFile(directory) && fs.getFileStatus(directory).isDir();
+    try {
+      return fs.getFileStatus(directory).isDir();
+    } catch (FileNotFoundException e) {
+      return false;
+    }
   }
 
   /**
    * Check if a file exists
-   * @param directory directory to test * @param conf Configuration
+   * @param file file to test
+   * @param conf Configuration
    * @returm true is the directory exists
    */
-  public static final boolean isFile(final Path directory,
-      final Configuration conf) throws IOException {
+  public static final boolean isFile(final Path file, final Configuration conf)
+      throws IOException {
 
-    final FileSystem fs = getFileSystem(directory, conf);
+    final FileSystem fs = getFileSystem(file, conf);
 
-    return fs.isFile(directory);
+    return fs.isFile(file);
   }
 
   /**
