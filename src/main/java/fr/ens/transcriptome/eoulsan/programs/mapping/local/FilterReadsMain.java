@@ -66,7 +66,7 @@ public final class FilterReadsMain {
         final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
-            new File("sample_filtered_" + (count++) + Common.FASTQ_EXTENSION);
+            new File(Common.SAMPLE_FILTERED_PREFIX + (count++) + Common.FASTQ_EXTENSION);
 
         if (threshold != -1)
           filter.setThreshold(threshold);
