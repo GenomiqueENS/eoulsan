@@ -46,11 +46,14 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 @SuppressWarnings("deprecation")
 public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> {
 
+  public static final String COUNTER_GROUP = "Expression";
+
   private final GeneAndExonFinder ef = new GeneAndExonFinder();
   private final AlignResult ar = new AlignResult();
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
-  private final Map<String, Exon> oneExonByParentId = new HashMap<String, Exon>();
+  private final Map<String, Exon> oneExonByParentId =
+      new HashMap<String, Exon>();
 
   @Override
   public void map(final LongWritable key, final Text value,
@@ -126,6 +129,8 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
   @Override
   public void close() throws IOException {
 
+    this.ef.clear();
+    this.oneExonByParentId.clear();
   }
 
 }
