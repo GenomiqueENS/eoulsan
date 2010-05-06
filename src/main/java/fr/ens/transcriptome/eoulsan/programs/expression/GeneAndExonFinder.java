@@ -22,14 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.programs.expression;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -43,13 +41,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
 import fr.ens.transcriptome.eoulsan.pipeline.GFFReader;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
+/**
+ * This class define a class that is use to do fast search on exons and genes of
+ * chromosomes.
+ * @author Laurent Jourdren
+ */
 public class GeneAndExonFinder {
 
   private Map<String, Gene> exonModeleRangeMap;
@@ -635,10 +637,10 @@ public class GeneAndExonFinder {
     }
   }
 
-  private void populateMapsFromGFFFile(final File annotationFile,
+  private void populateMapsFromGFFFile(final InputStream is,
       final String expressionType) throws IOException {
 
-    final GFFReader reader = new GFFReader(annotationFile);
+    final GFFReader reader = new GFFReader(is);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
     this.exonModeleRangeMap = new HashMap<String, Gene>();
@@ -776,6 +778,16 @@ public class GeneAndExonFinder {
   }
 
   //
+  // Other
+  //
+
+  public void clear() {
+
+    this.chrZoneMap.clear();
+    this.exonModeleRangeMap.clear();
+  }
+
+  //
   // Constructors
   //
 
@@ -788,11 +800,10 @@ public class GeneAndExonFinder {
   public GeneAndExonFinder(final Path annotationPath, final Configuration conf,
       final String expressionType) throws IOException {
 
-    final File tmpFile = FileUtils.createTempFile("expression", "gff");
-    PathUtils.copyFromPathToLocalFile(annotationPath, tmpFile, conf);
+    final FileSystem fs = FileSystem.get(conf);
+    final FSDataInputStream is = fs.open(annotationPath);
 
-    populateMapsFromGFFFile(tmpFile, expressionType);
-    tmpFile.delete();
+    populateMapsFromGFFFile(is, expressionType);
   }
 
   /**
@@ -804,7 +815,7 @@ public class GeneAndExonFinder {
   public GeneAndExonFinder(final File annotationFile,
       final String expressionType) throws IOException {
 
-    populateMapsFromGFFFile(annotationFile, expressionType);
+    populateMapsFromGFFFile(new FileInputStream(annotationFile), expressionType);
   }
 
   /**
@@ -813,57 +824,4 @@ public class GeneAndExonFinder {
   public GeneAndExonFinder() {
   }
 
-  public static void main(String[] args) throws IOException {
-
-    File baseDir = new File("/home/jourdren/tmp/mapreduce/expression/candida");
-
-    GeneAndExonFinder gef = new GeneAndExonFinder();
-    gef.populateMapsFromGFFFile(new File(baseDir, "candida-21_sort_CDS.gff"),
-        "CDS");
-
-    BufferedReader br =
-        new BufferedReader(new FileReader(new File(baseDir,
-            "G5_1.filtered_corrected_sort.soap.aln")));
-
-    FileWriter fw = new FileWriter(new File(baseDir, "out-java.txt"));
-
-    String line = null;
-    AlignResult ar = new AlignResult();
-    boolean found = false;
-    ExonsCoverage ec = new ExonsCoverage();
-
-    while ((line = br.readLine()) != null) {
-
-      ar.parseResultLine(line);
-      if (ar.getChromosome().equals("Ca21chr1")) {
-
-        Set<Exon> exons =
-            gef.findExons(ar.getChromosome(), ar.getLocation(), ar
-                .getLocation()
-                + ar.getReadLength());
-
-        if (exons != null)
-          for (Exon e : exons) {
-            if (e.getParentId().equals("orf19.2432")) {
-              fw.write(line + "\n");
-              ec.addAlignement(e.getStart(), e.getEnd(), ar.getLocation(), (ar
-                  .getLocation() + ar.getReadLength()), true);
-
-              System.out.println(ar.getLocation()
-                  + "\t" + (ar.getLocation() + ar.getReadLength()) + "\t"
-                  + e.getStart() + "\t" + e.getEnd());
-              System.out.println();
-              found = true;
-            } else if (found) {
-              found = false;
-              System.out.println(ec.getNotCovered(783));
-            }
-
-          }
-
-      }
-
-    }
-    fw.close();
-  }
 }
