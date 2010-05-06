@@ -23,13 +23,20 @@
 package fr.ens.transcriptome.eoulsan.hadoop;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define common constants and other methods specific to Hadoop mode.
@@ -37,7 +44,20 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public class CommonHadoop extends Common {
 
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
   public static final int CHECK_COMPLETION_TIME = 5000;
+  public static final String SAMPLE_FILE_PREFIX = "sample_";
+  public static final String GENOME_FILE_PREFIX = "genome_";
+  public static final String GENOME_SOAP_INDEX_FILE_PREFIX =
+      "genome_soap_index_";
+  public static final String GENOME_SOAP_INDEX_FILE_SUFFIX = ".zip";
+  public static final String ANNOTATION_FILE_PREFIX = "annotation_";
+  public static final String SOAP_ALIGNMENT_FILE_PREFIX =
+      "sample_soap_alignment_";
+  public static final String SOAP_UNMAP_FILE_PREFIX = "sample_soap_unmap_";
+  public static final String EXPRESSION_FILE_PREFIX = "sample_expression_";
 
   /**
    * Retrieve the genome file name from the files of a directory
@@ -61,6 +81,71 @@ public class CommonHadoop extends Common {
       throw new IOException("More than one genome file found.");
 
     return genomePaths.get(0);
+  }
+
+  /**
+   * Show an error message and exit program.
+   * @param message
+   */
+  public static void error(final String message) {
+
+    logger.severe(message);
+    System.err.println(message);
+    System.exit(1);
+  }
+
+  /**
+   * Show an error message and exit program.
+   * @param message
+   */
+  public static void error(final String message, final Exception e) {
+
+    error(message + e.getMessage());
+  }
+
+  /**
+   * Write log data.
+   * @param logPath Path of the log file
+   * @param data data to write
+   * @throws IOException if an error occurs while writing log file
+   */
+  public static void writeLog(final Path logPath, final long startTime,
+      final String data) throws IOException {
+
+    final long endTime = System.currentTimeMillis();
+    final long duration = endTime - startTime;
+
+    FileSystem fs = PathUtils.getFileSystem(logPath, new Configuration());
+
+    final Writer writer = new OutputStreamWriter(fs.create(logPath));
+    writer.write("Start time: "
+        + new Date(startTime) + "\nEnd time: " + new Date(endTime)
+        + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n");
+    writer.write(data);
+    writer.close();
+  }
+
+  public static Path selectDirectoryOrFile(final Path path,
+      final String extension) {
+
+    final Configuration conf = new Configuration();
+
+    try {
+
+      if (PathUtils.isExistingDirectoryFile(path, conf))
+        return path;
+
+      final Path filePath =
+          new Path(path.getParent(), path.getName() + extension);
+
+      if (PathUtils.isFile(filePath, conf))
+        return filePath;
+
+    } catch (IOException e) {
+      System.err.println("Error: " + e.getMessage());
+    }
+
+    return null;
   }
 
 }
