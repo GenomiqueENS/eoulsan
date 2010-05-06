@@ -37,10 +37,12 @@ import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 
 @SuppressWarnings("deprecation")
-public class ValidReadsMapper implements Mapper<LongWritable, Text, Text, Text> {
+public class FilterReadsMapper implements Mapper<LongWritable, Text, Text, Text> {
 
-  private Text outKey = new Text();
-  private Text outValue = new Text();
+  public static final String COUNTER_GROUP = "Filter reads";
+  
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
   private final ReadSequence read = new ReadSequence();
   private int threshold;
 
@@ -55,16 +57,16 @@ public class ValidReadsMapper implements Mapper<LongWritable, Text, Text, Text> 
     // Trim the sequence with polyN as tail
     ReadsFilter.trimReadSequence(read);
 
-    reporter.incrCounter("Filter reads", "reads total", 1);
+    reporter.incrCounter(COUNTER_GROUP, "reads total", 1);
     
     // Filter bad sequence
     if (ReadsFilter.isReadValid(read, this.threshold)) {
       this.outKey.set(read.toOutKey());
       this.outValue.set(read.toOutValue());
       output.collect(this.outKey, this.outValue);
-      reporter.incrCounter("Filter reads", "reads valids", 1);
+      reporter.incrCounter(COUNTER_GROUP, "reads valids", 1);
     } else
-      reporter.incrCounter("Filter reads", "reads not valids", 1);
+      reporter.incrCounter(COUNTER_GROUP, "reads not valids", 1);
 
   }
 
