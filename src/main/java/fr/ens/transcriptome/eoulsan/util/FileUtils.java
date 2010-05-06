@@ -601,8 +601,12 @@ public class FileUtils {
     if (!file.exists() || !file.isFile())
       throw new FileNotFoundException(file.getAbsolutePath());
 
+    final char op = executable ? '+' : '-';
+
     final String cmd =
-        "chmod " + (ownerOnly ? "u+x " : "ugo+x ") + file.getAbsolutePath();
+        "chmod "
+            + (ownerOnly ? "u" + op + "x " : "ugo" + op + "x ")
+            + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, false);
 
@@ -647,8 +651,12 @@ public class FileUtils {
     if (!file.exists() || !file.isFile())
       throw new FileNotFoundException(file.getAbsolutePath());
 
+    final char op = readable ? '+' : '-';
+
     final String cmd =
-        "chmod " + (ownerOnly ? "u+r " : "ugo+r ") + file.getAbsolutePath();
+        "chmod "
+            + (ownerOnly ? "u" + op + "r " : "ugo" + op + "r ")
+            + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, true);
 
@@ -690,8 +698,12 @@ public class FileUtils {
     if (!file.exists() || !file.isFile())
       throw new FileNotFoundException(file.getAbsolutePath());
 
+    final char op = writable ? '+' : '-';
+
     final String cmd =
-        "chmod " + (ownerOnly ? "u+w " : "ugo+w ") + file.getAbsolutePath();
+        "chmod "
+            + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
+            + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, true);
 
@@ -709,6 +721,53 @@ public class FileUtils {
   public static boolean setWritable(final File file, boolean writable)
       throws IOException {
     return setWritable(file, writable, true);
+  }
+
+  /**
+   * Set writable bits on directory on *nix.
+   * @param file File to handle
+   * @param writable If true, sets the access permission to allow read
+   *          operations; if false to disallow execute operations
+   * @param ownerOnly If true, the execute permission applies only to the
+   *          owner's execute permission; otherwise, it applies to everybody. If
+   *          the underlying file system can not distinguish the owner's execute
+   *          permission from that of others, then the permission will apply to
+   *          everybody, regardless of this value.
+   * @return true if and only if the operation succeeded
+   * @throws IOException
+   */
+  public static boolean setDirectoryWritable(final File file,
+      final boolean writable, final boolean ownerOnly) throws IOException {
+
+    if (file == null)
+      return false;
+
+    if (!file.exists() || !file.isDirectory())
+      throw new FileNotFoundException(file.getAbsolutePath());
+
+    final char op = writable ? '+' : '-';
+
+    final String cmd =
+        "chmod "
+            + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
+            + file.getAbsolutePath();
+
+    ProcessUtils.exec(cmd, true);
+
+    return true;
+  }
+
+  /**
+   * Set writable bits on directory on *nix.
+   * @param file File to handle
+   * @param writable If true, sets the access permission to allow read
+   *          operations; if false to disallow execute operations
+   * @return true if and only if the operation succeeded
+   * @throws IOException
+   */
+  public static boolean setDirectoryWritable(final File file, boolean writable)
+      throws IOException {
+    return setDirectoryWritable(file, writable, true);
   }
 
   /**
@@ -779,10 +838,10 @@ public class FileUtils {
    * @return The new File
    */
   public static File createFileInTempDir(final String filename) {
-    
-    return new File(System.getProperty("java.io.tmpdir"),filename);
+
+    return new File(System.getProperty("java.io.tmpdir"), filename);
   }
-  
+
   /**
    * Create a new temporary file.
    * @param directory parent directory of the temporary file to create
