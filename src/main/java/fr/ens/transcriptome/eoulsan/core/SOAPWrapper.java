@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  */
 public class SOAPWrapper {
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static String soapPath;
   private static String indexerPath;
