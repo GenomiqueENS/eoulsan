@@ -28,7 +28,10 @@ package fr.ens.transcriptome.eoulsan.programs.mapping;
  */
 public final class FilterReadsConstants {
 
-  /** filter threshold. */
-  public static final int THRESHOLD = 15;
+  /** filter reads length threshold. */
+  public static final int LENGTH_THRESHOLD = 15;
+  
+  /** filter reads quality threshold. */
+  public static final double QUALITY_THRESHOLD = 15;
 
 }

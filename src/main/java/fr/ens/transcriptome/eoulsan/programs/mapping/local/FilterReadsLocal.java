@@ -42,7 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class FilterReadsLocal {
 
   private DataSource fastqDS;
-  private int threshold = FilterReadsConstants.THRESHOLD;
+  private int lengthThreshold = FilterReadsConstants.LENGTH_THRESHOLD;
+  private double qualityThreshold = FilterReadsConstants.LENGTH_THRESHOLD;
 
   /**
    * Filter the reads file.
@@ -67,7 +68,7 @@ public class FilterReadsLocal {
     final StringBuilder sb = new StringBuilder();
     final ReadSequence read = new ReadSequence();
 
-    final int threshold = this.threshold;
+    final int threshold = this.lengthThreshold;
     String line = null;
     int count = 0;
 
@@ -98,7 +99,8 @@ public class FilterReadsLocal {
         ReadsFilter.trimReadSequence(read);
 
         // Filter bad sequence
-        if (ReadsFilter.isReadValid(read, threshold))
+        if (ReadsFilter.isReadValid(read, this.lengthThreshold,
+            this.qualityThreshold))
           writer.write(read.toFastQ());
 
         sb.setLength(0);
@@ -118,16 +120,25 @@ public class FilterReadsLocal {
    */
   public int getThreshold() {
 
-    return threshold;
+    return lengthThreshold;
   }
 
   /**
    * Set the threshold for the filter
    * @param threshold the threshold
    */
-  public void setThreshold(final int threshold) {
+  public void setLengthThreshold(final int threshold) {
 
-    this.threshold = threshold;
+    this.lengthThreshold = threshold;
+  }
+
+  /**
+   * Set the threshold for the filter
+   * @param threshold the threshold
+   */
+  public void setQualityThreshold(final int threshold) {
+
+    this.qualityThreshold = threshold;
   }
 
   //

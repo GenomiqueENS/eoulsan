@@ -37,46 +37,60 @@ import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 
 @SuppressWarnings("deprecation")
-public class FilterReadsMapper implements Mapper<LongWritable, Text, Text, Text> {
+public class FilterReadsMapper implements
+    Mapper<LongWritable, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Filter reads";
-  
+
   private final Text outKey = new Text();
   private final Text outValue = new Text();
   private final ReadSequence read = new ReadSequence();
-  private int threshold;
+  private int lengthThreshold;
+  private double qualityThreshold;
 
   @Override
-  public void map(final LongWritable key, final Text value, final 
-      OutputCollector<Text, Text> output, final Reporter reporter) throws IOException {
-   
-    
+  public void map(final LongWritable key, final Text value,
+      final OutputCollector<Text, Text> output, final Reporter reporter)
+      throws IOException {
+
     // Fill the ReadSequence object
     read.parse(value.toString());
+    reporter.incrCounter(COUNTER_GROUP, "input fastq", 1);
+
+    if (!this.read.check()) {
+
+      reporter.incrCounter(COUNTER_GROUP, "input fastq not valid", 1);
+      return;
+    }
+    reporter.incrCounter(COUNTER_GROUP, "input fastq valid", 1);
 
     // Trim the sequence with polyN as tail
     ReadsFilter.trimReadSequence(read);
 
-    reporter.incrCounter(COUNTER_GROUP, "reads total", 1);
-    
     // Filter bad sequence
-    if (ReadsFilter.isReadValid(read, this.threshold)) {
+    if (ReadsFilter.isReadValid(read, this.lengthThreshold,
+        this.qualityThreshold)) {
       this.outKey.set(read.toOutKey());
       this.outValue.set(read.toOutValue());
       output.collect(this.outKey, this.outValue);
-      reporter.incrCounter(COUNTER_GROUP, "reads valids", 1);
+      reporter.incrCounter(COUNTER_GROUP, "reads after filtering", 1);
     } else
-      reporter.incrCounter(COUNTER_GROUP, "reads not valids", 1);
+      reporter.incrCounter(COUNTER_GROUP, "reads rejected by filter", 1);
 
   }
 
   @Override
   public void configure(final JobConf conf) {
 
-    this.threshold =
-        Integer.parseInt(conf
-            .get(Globals.PARAMETER_PREFIX + ".validreadsmapper.theshold", ""
-                + FilterReadsConstants.THRESHOLD));
+    this.lengthThreshold =
+        Integer.parseInt(conf.get(Globals.PARAMETER_PREFIX
+            + ".validreadsmapper.length.threshold", ""
+            + FilterReadsConstants.LENGTH_THRESHOLD));
+
+    this.qualityThreshold =
+        Double.parseDouble(conf.get(Globals.PARAMETER_PREFIX
+            + ".validreadsmapper.quality.threshold", ""
+            + FilterReadsConstants.QUALITY_THRESHOLD));
 
   }
 

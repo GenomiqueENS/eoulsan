@@ -57,13 +57,14 @@ public final class ReadsFilter {
   /**
    * Test if a read is valid.
    * @param read Read to test
-   * @param threshold Threshold
+   * @param lengthThreshold threshold for the length of reads
+   * @param qualityThreshold threshold for reads quality
    * @return true if the read is valid
    */
   public static final boolean isReadValid(final ReadSequence read,
-      final int threshold) {
+      final int lengthThreshold, final double qualityThreshold) {
 
-    return read.length() > threshold && read.meanQuality() > threshold;
+    return read.length() > lengthThreshold && read.meanQuality() > qualityThreshold;
   }
 
 }

@@ -69,7 +69,7 @@ public final class FilterReadsMain {
             new File(Common.SAMPLE_FILTERED_PREFIX + (count++) + Common.FASTQ_EXTENSION);
 
         if (threshold != -1)
-          filter.setThreshold(threshold);
+          filter.setLengthThreshold(threshold);
 
         filter.filter(outputFile);
       }

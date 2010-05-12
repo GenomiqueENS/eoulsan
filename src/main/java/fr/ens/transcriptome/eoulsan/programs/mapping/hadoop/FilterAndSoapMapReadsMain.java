@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -66,29 +65,6 @@ public class FilterAndSoapMapReadsMain {
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
 
-  private static Path selectDirectoryOrFile(final Path path,
-      final String extension) {
-
-    final Configuration conf = new Configuration();
-
-    try {
-
-      if (PathUtils.isExistingDirectoryFile(path, conf))
-        return path;
-
-      final Path filePath =
-          new Path(path.getParent(), path.getName() + extension);
-      System.out.println(filePath);
-      if (PathUtils.isFile(filePath, conf))
-        return filePath;
-
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-    }
-
-    return null;
-  }
-
   /**
    * Create the JobConf object for a sample
    * @param basePath base path of data
@@ -96,7 +72,8 @@ public class FilterAndSoapMapReadsMain {
    * @return a new JobConf object
    */
   private static JobConf createJobConf(final Path basePath,
-      final Sample sample, final int threshold) {
+      final Sample sample, final int lengthThreshold,
+      final double qualityThreshold) {
 
     final JobConf conf = new JobConf(FilterReadsMain.class);
 
@@ -110,9 +87,13 @@ public class FilterAndSoapMapReadsMain {
     conf.setJobName("Filter and map reads with SOAP ("
         + sample.getName() + ", " + inputPath.getName() + ")");
 
-    if (threshold >= 0)
-      conf.set(Globals.PARAMETER_PREFIX + ".validreadsmapper.theshold", ""
-          + threshold);
+    if (lengthThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
+          + lengthThreshold);
+
+    if (qualityThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold", ""
+          + qualityThreshold);
 
     // Set genome reference path
     conf
@@ -136,10 +117,14 @@ public class FilterAndSoapMapReadsMain {
             CommonHadoop.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", "1");
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
+        + Runtime.getRuntime().availableProcessors());
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
+
+    // timeout
+    conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
 
     // Set the jar
     conf.setJarByClass(FilterAndSoapMapReadsMain.class);
@@ -195,18 +180,23 @@ public class FilterAndSoapMapReadsMain {
     // Set the design path
     final String designPathname = args[0];
 
-    // Set the threshold
-    int threshold = -1;
+    // Set the thresholds
+    int lengthThreshold = -1;
+    double qualityThreshold = -1;
 
-    if (args.length > 1) {
-
+    if (args.length > 1)
       try {
-        threshold = Integer.parseInt(args[1]);
+        lengthThreshold = Integer.parseInt(args[1]);
       } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid threshold: " + args[1]);
+        CommonHadoop.error("Invalid length threshold: " + args[1]);
       }
 
-    }
+    if (args.length > 2)
+      try {
+        qualityThreshold = Double.parseDouble(args[2]);
+      } catch (NumberFormatException e) {
+        CommonHadoop.error("Invalid quality threshold: " + args[2]);
+      }
 
     final Path designPath = new Path(designPathname);
     final Path basePath = designPath.getParent();
@@ -230,7 +220,8 @@ public class FilterAndSoapMapReadsMain {
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs.add(createJobConf(basePath, s, threshold));
+      jobconfs
+          .add(createJobConf(basePath, s, lengthThreshold, qualityThreshold));
 
     try {
       final long startTime = System.currentTimeMillis();

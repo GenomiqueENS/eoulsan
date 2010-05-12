@@ -26,8 +26,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -40,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
 import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
+import fr.ens.transcriptome.eoulsan.util.ExecLock;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -50,11 +56,9 @@ public class SoapMapReadsMapper implements
     Mapper<LongWritable, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Map reads with SOAP";
-  
-  private static final String SOAP_ARGS_DEFAULT = "-r 1 -l 28";
 
-  
-  
+  private static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";
+
   private final String counterGroup = getCounterGroup();
 
   private IOException configureException;
@@ -71,6 +75,7 @@ public class SoapMapReadsMapper implements
   private OutputCollector<Text, Text> collector;
   private Reporter reporter;
   private JobConf conf;
+  private static final ExecLock lock = new ExecLock("soap");
 
   protected String getCounterGroup() {
 
@@ -85,7 +90,7 @@ public class SoapMapReadsMapper implements
     if (configureException != null)
       throw configureException;
 
-    reporter.incrCounter(this.counterGroup, "input reads", 1);
+    reporter.incrCounter(this.counterGroup, "map input reads", 1);
 
     this.readSequence.parse(value.toString());
     writeRead(this.readSequence, collector, reporter);
@@ -96,6 +101,7 @@ public class SoapMapReadsMapper implements
       throws IOException {
 
     this.writer.write(readSequence.toFastQ());
+    reporter.incrCounter(this.counterGroup, "soap input reads", 1);
 
     if (this.reporter == null && reporter != null)
       this.reporter = reporter;
@@ -162,6 +168,61 @@ public class SoapMapReadsMapper implements
 
   }
 
+  private String getSoapIndexLocalName(final Path soapIndexPath)
+      throws IOException {
+
+    FileSystem fs = PathUtils.getFileSystem(soapIndexPath, this.conf);
+    FileStatus fStatus = fs.getFileStatus(soapIndexPath);
+
+    return "soap-output-"
+        + fStatus.getLen() + "-" + fStatus.getModificationTime();
+  }
+
+  private File installSoapIndex(final Path soapIndexPath) {
+
+    try {
+
+      final String dirname = getSoapIndexLocalName(soapIndexPath);
+      final File dir = new File("/tmp", dirname);
+      final File lockFile = new File(dir, "lock");
+
+      if (dir.exists()) {
+
+        while (lockFile.exists()) {
+
+          try {
+            Thread.sleep(5000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+          }
+        }
+
+        return dir;
+      }
+
+      if (!dir.mkdirs())
+        return null;
+
+      lockFile.createNewFile();
+
+      final InputStream is = new URL(soapIndexPath.toString()).openStream();
+      FileUtils.unzip(is, dir);
+
+      lockFile.delete();
+
+      return dir;
+
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      return null;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+  }
+
   @Override
   public final void close() throws IOException {
 
@@ -172,18 +233,14 @@ public class SoapMapReadsMapper implements
       return;
 
     // Download genome reference
-    if (this.soapIndexZipDir == null) {
+    if (this.soapIndexZipDir == null)
+      this.soapIndexZipDir = installSoapIndex(new Path(this.soapIndexZipPath));
 
-      // final Configuration conf = context.getConfiguration();
-      final File outputDirectory = FileUtils.createTempDir("soap-index-");
-
-      PathUtils.unZipPathToLocalFile(new Path(this.soapIndexZipPath),
-          outputDirectory, this.conf);
-
-      this.soapIndexZipDir = outputDirectory;
+    if (this.soapIndexZipPath == null) {
+      this.reporter.incrCounter(this.counterGroup,
+          "ERROR CAN'T INSTALL SOAP INDEX", 1);
+      return;
     }
-
-    // Create the temporary output files
 
     final File outputFile =
         FileUtils.createTempFile(Globals.TEMP_PREFIX + "soap-output-", ".aln");
@@ -191,8 +248,10 @@ public class SoapMapReadsMapper implements
     final File unmapFile =
         FileUtils.createTempFile(this.unmapChunkPrefix, ".fasta");
 
+    lock.lock();
     SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile, unmapFile,
         this.soapArgs, this.nbSoapThreads);
+    lock.unlock();
 
     parseSOAPResults(outputFile, unmapFile, this.collector, this.reporter);
 
@@ -216,8 +275,8 @@ public class SoapMapReadsMapper implements
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(resultFile);
     final AlignResult aln = new AlignResult();
-    int parseCount = 0;
-    int moreOneLocus = 0;
+    // int parseCount = 0;
+    // int moreOneLocus = 0;
 
     while ((line = readerResults.readLine()) != null) {
 
@@ -226,25 +285,21 @@ public class SoapMapReadsMapper implements
         continue;
 
       aln.parseResultLine(trimmedLine);
-      parseCount++;
+      reporter.incrCounter(this.counterGroup, "soap alignments", 1);
 
       if (aln.getNumberOfHits() == 1) {
         outKey.set(aln.getSequenceId());
         outValue.set(StringUtils.subStringAfterFirstTab(line));
         collector.collect(outKey, outValue);
+        reporter.incrCounter(this.counterGroup,
+            "soap alignment with only one locus", 1);
       } else
-        moreOneLocus++;
+        reporter.incrCounter(this.counterGroup,
+            "soap alignment with more one locus", 1);
 
     }
 
     readerResults.close();
-
-    // Return reads count with more than one hit
-    // outKey.set("__COUNT_MORE_ONE_LOCUS__");
-    // outValue.set("" + moreOneLocus);
-    // context.write(outKey, outValue);
-    reporter.incrCounter(this.counterGroup, "more one locus", moreOneLocus);
-    reporter.incrCounter(this.counterGroup, "results parsed", parseCount);
 
     // Parse unmap
     final BufferedReader readerUnmap =
@@ -258,20 +313,12 @@ public class SoapMapReadsMapper implements
     readerUnmap.close();
 
     // Return unmaps reads
-    // outKey.set("__COUNT_UNMAP_READS__");
-    // outValue.set("" + countUnMap);
-    // context.write(outKey, outValue);
-    reporter.incrCounter(this.counterGroup, "unmap reads", countUnMap);
+    reporter.incrCounter(this.counterGroup, "soap unmap reads", countUnMap);
 
     // Move unmap file to HDFS
     final Path unmapPath =
         new Path(this.unmapFilesDirPath, unmapFile.getName());
     PathUtils.copyLocalFileToPath(unmapFile, unmapPath, true, this.conf);
-
-    // Set the unmap file
-    // outKey.set("__UNMAP_FILE__");
-    // outValue.set(unmapPath.toString());
-    // collector.collect(outKey, outValue);
   }
 
 }
