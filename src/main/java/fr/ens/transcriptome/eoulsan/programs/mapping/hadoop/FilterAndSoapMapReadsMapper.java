@@ -47,7 +47,8 @@ public final class FilterAndSoapMapReadsMapper extends SoapMapReadsMapper {
 
   private final String counterGroup = getCounterGroup();
   private final ReadSequence read = new ReadSequence();
-  private int threshold;
+  private int lengthThreshold;
+  private double qualityThreshold;
 
   protected String getCounterGroup() {
 
@@ -57,10 +58,15 @@ public final class FilterAndSoapMapReadsMapper extends SoapMapReadsMapper {
   @Override
   public void configure(final JobConf conf) {
 
-    this.threshold =
-        Integer.parseInt(conf
-            .get(Globals.PARAMETER_PREFIX + ".validreadsmapper.theshold", ""
-                + FilterReadsConstants.THRESHOLD));
+    this.lengthThreshold =
+        Integer.parseInt(conf.get(Globals.PARAMETER_PREFIX
+            + ".filter.reads.length.threshold", ""
+            + FilterReadsConstants.LENGTH_THRESHOLD));
+
+    this.qualityThreshold =
+        Double.parseDouble(conf.get(Globals.PARAMETER_PREFIX
+            + ".filter.reads.quality.threshold", ""
+            + FilterReadsConstants.QUALITY_THRESHOLD));
 
     super.configure(conf);
   }
@@ -72,19 +78,26 @@ public final class FilterAndSoapMapReadsMapper extends SoapMapReadsMapper {
 
     // Fill the ReadSequence object
     this.read.parse(value.toString());
+    reporter.incrCounter(counterGroup, "input fastq", 1);
+
+    if (!this.read.check()) {
+
+      reporter.incrCounter(counterGroup, "input fastq not valid", 1);
+      return;
+    }
+    reporter.incrCounter(counterGroup, "input fastq valid", 1);
 
     // Trim the sequence with polyN as tail
     ReadsFilter.trimReadSequence(read);
 
-    reporter.incrCounter(counterGroup, "reads total", 1);
-
     // Filter bad sequence
-    if (ReadsFilter.isReadValid(read, this.threshold)) {
+    if (ReadsFilter.isReadValid(read, this.lengthThreshold,
+        this.qualityThreshold)) {
 
-      reporter.incrCounter(this.counterGroup, "reads valids", 1);
+      reporter.incrCounter(this.counterGroup, "reads after filtering", 1);
       super.writeRead(this.read, collector, reporter);
     } else
-      reporter.incrCounter(this.counterGroup, "reads not valids", 1);
+      reporter.incrCounter(this.counterGroup, "reads rejected by filter", 1);
   }
 
 }

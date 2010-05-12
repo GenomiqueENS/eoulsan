@@ -63,13 +63,18 @@ public class FilterReadsMain {
   }
 
   private static JobConf createJobConf(final Path basePath,
-      final Sample sample, final int threshold) {
+      final Sample sample, final int lengthThreshold,
+      final double qualityThreshold) {
 
     final JobConf conf = new JobConf(FilterReadsMain.class);
 
-    if (threshold >= 0)
-      conf.set(Globals.PARAMETER_PREFIX + ".validreadsmapper.theshold", ""
-          + threshold);
+    if (lengthThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
+          + lengthThreshold);
+
+    if (qualityThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold", ""
+          + qualityThreshold);
 
     // Set Job name
     conf.setJobName("Filter reads ("
@@ -131,18 +136,23 @@ public class FilterReadsMain {
     // Set the design path
     final String designPathname = args[0];
 
-    // Set the threshold
-    int threshold = -1;
+    // Set the thresholds
+    int lengthThreshold = -1;
+    double qualityThreshold = -1;
 
-    if (args.length > 1) {
-
+    if (args.length > 1)
       try {
-        threshold = Integer.parseInt(args[1]);
+        lengthThreshold = Integer.parseInt(args[1]);
       } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid threshold: " + args[1]);
+        CommonHadoop.error("Invalid length threshold: " + args[1]);
       }
 
-    }
+    if (args.length > 2)
+      try {
+        qualityThreshold = Double.parseDouble(args[2]);
+      } catch (NumberFormatException e) {
+        CommonHadoop.error("Invalid quality threshold: " + args[2]);
+      }
 
     final Path designPath = new Path(designPathname);
     final Path basePath = designPath.getParent();
@@ -165,7 +175,8 @@ public class FilterReadsMain {
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs.add(createJobConf(basePath, s, threshold));
+      jobconfs
+          .add(createJobConf(basePath, s, lengthThreshold, qualityThreshold));
 
     try {
       final long startTime = System.currentTimeMillis();
