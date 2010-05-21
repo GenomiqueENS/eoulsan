@@ -44,12 +44,14 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * Main class for Filter Reads program.
+ * Main class for filter reads program.
  * @author Laurent Jourdren
+ * @author Maria Bernard
  */
-public final class FilterReadsMain {
+public final class FilterReadsLocalMain {
 
   public static String PROGRAM_NAME = "filterreads";
   private static int threshold = -1;
@@ -57,22 +59,37 @@ public final class FilterReadsMain {
   private static void filter(final String designFilename, final int threshold) {
 
     try {
+      final long startTime = System.currentTimeMillis();
+      final StringBuilder log = new StringBuilder();
+
       final DesignReader dr = new SimpleDesignReader(designFilename);
       final Design design = dr.read();
 
       int count = 1;
+
       for (Sample s : design.getSamples()) {
 
+        final Reporter reporter = new Reporter();
         final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
-            new File(Common.SAMPLE_FILTERED_PREFIX + (count++) + Common.FASTQ_EXTENSION);
+            new File(Common.SAMPLE_FILTERED_PREFIX
+                + (count++) + Common.FASTQ_EXTENSION);
 
         if (threshold != -1)
           filter.setLengthThreshold(threshold);
 
-        filter.filter(outputFile);
+        // Filter reads
+        filter.filter(outputFile, reporter);
+
+        // Add counters for this sample to log file
+        log.append(reporter.CountersValuesToString(
+            FilterReadsLocal.COUNTER_GROUP, "Filter reads ("
+                + s.getName() + ", " + ds + ")"));
       }
+
+      // Write log file
+      Common.writeLog(new File("filterreads.log"), startTime, log.toString());
 
     } catch (EoulsanIOException e) {
       System.err.println("Error while reading design file: " + e.getMessage());

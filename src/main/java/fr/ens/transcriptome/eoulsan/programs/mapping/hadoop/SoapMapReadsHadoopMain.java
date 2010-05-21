@@ -34,26 +34,26 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.hadoop.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
- * This class is the main class for the filter and mapping program of the reads
- * in hadoop mode.
+ * This class is the main class for the mapping program of the reads in hadoop
+ * mode.
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class FilterAndSoapMapReadsMain {
+public class SoapMapReadsHadoopMain {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -65,35 +65,33 @@ public class FilterAndSoapMapReadsMain {
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
 
+  // Configure URL handler for hdfs protocol
+  static {
+    URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
+  }
+
   /**
    * Create the JobConf object for a sample
    * @param basePath base path of data
    * @param sample sample to process
    * @return a new JobConf object
    */
-  private static JobConf createJobConf(final Path basePath,
-      final Sample sample, final int lengthThreshold,
-      final double qualityThreshold) {
+  private static JobConf createJobConf(final Path basePath, final Sample sample) {
 
-    final JobConf conf = new JobConf(FilterReadsMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
 
     final int sampleId = CommonHadoop.getSampleId(sample);
     final int genomeId =
         CommonHadoop.getSampleId(sample.getMetadata().getGenome());
 
-    final Path inputPath = new Path(basePath, sample.getSource());
+    final Path inputPath =
+        CommonHadoop.selectDirectoryOrFile(new Path(basePath,
+            CommonHadoop.SAMPLE_FILTERED_PREFIX + sampleId),
+            CommonHadoop.FASTQ_EXTENSION);
 
     // Set Job name
-    conf.setJobName("Filter and map reads with SOAP ("
+    conf.setJobName("Map reads with SOAP ("
         + sample.getName() + ", " + inputPath.getName() + ")");
-
-    if (lengthThreshold >= 0)
-      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
-          + lengthThreshold);
-
-    if (qualityThreshold >= 0)
-      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold", ""
-          + qualityThreshold);
 
     // Set genome reference path
     conf
@@ -104,7 +102,7 @@ public class FilterAndSoapMapReadsMain {
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, CommonHadoop.SOAP_UNMAP_FILE_PREFIX + sampleId)
+        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId)
             .toString());
 
     // Set unmap chuck prefix
@@ -117,27 +115,23 @@ public class FilterAndSoapMapReadsMain {
             CommonHadoop.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
-        + Runtime.getRuntime().availableProcessors());
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", "1");
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
 
-    // timeout
-    conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
-
     // Set the jar
-    conf.setJarByClass(FilterAndSoapMapReadsMain.class);
+    conf.setJarByClass(SoapMapReadsHadoopMain.class);
 
     // Set input path
 
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format
-    conf.setInputFormat(FastqInputFormat.class);
+    conf.setInputFormat(TextInputFormat.class);
 
     // Set the Mapper class
-    conf.setMapperClass(FilterAndSoapMapReadsMapper.class);
+    conf.setMapperClass(SoapMapReadsMapper.class);
 
     // Set the reducer class
     conf.setReducerClass(IdentityReducer.class);
@@ -153,7 +147,7 @@ public class FilterAndSoapMapReadsMain {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath,
-        CommonHadoop.SOAP_ALIGNMENT_FILE_PREFIX + sampleId));
+        CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;
   }
@@ -173,30 +167,11 @@ public class FilterAndSoapMapReadsMain {
     if (args == null)
       throw new NullPointerException("The arguments of import data is null");
 
-    if (args.length < 1)
-      throw new IllegalArgumentException(
-          "Filter reads need one or two arguments");
+    if (args.length != 1)
+      throw new IllegalArgumentException("Filter reads need one argument");
 
     // Set the design path
     final String designPathname = args[0];
-
-    // Set the thresholds
-    int lengthThreshold = -1;
-    double qualityThreshold = -1;
-
-    if (args.length > 1)
-      try {
-        lengthThreshold = Integer.parseInt(args[1]);
-      } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid length threshold: " + args[1]);
-      }
-
-    if (args.length > 2)
-      try {
-        qualityThreshold = Double.parseDouble(args[2]);
-      } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid quality threshold: " + args[2]);
-      }
 
     final Path designPath = new Path(designPathname);
     final Path basePath = designPath.getParent();
@@ -220,15 +195,14 @@ public class FilterAndSoapMapReadsMain {
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs
-          .add(createJobConf(basePath, s, lengthThreshold, qualityThreshold));
+      jobconfs.add(createJobConf(basePath, s));
 
     try {
       final long startTime = System.currentTimeMillis();
-      CommonHadoop.writeLog(new Path(basePath, "filtersoapmapreads.log"),
-          startTime, MapReduceUtils.submitandWaitForJobs(jobconfs,
+      CommonHadoop.writeLog(new Path(basePath, "soapmapreads.log"), startTime,
+          MapReduceUtils.submitandWaitForJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
-              FilterAndSoapMapReadsMapper.COUNTER_GROUP));
+              SoapMapReadsMapper.COUNTER_GROUP));
 
     } catch (IOException e) {
       CommonHadoop.error("Error while running job: ", e);

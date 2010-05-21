@@ -24,14 +24,11 @@ package fr.ens.transcriptome.eoulsan;
 
 import org.apache.hadoop.util.ProgramDriver;
 
-import fr.ens.transcriptome.eoulsan.hadoop.CreateLocalSoapIndex;
-import fr.ens.transcriptome.eoulsan.hadoop.FilterAndMapReads;
-import fr.ens.transcriptome.eoulsan.hadoop.FilterReads;
-import fr.ens.transcriptome.eoulsan.hadoop.GMorse;
-import fr.ens.transcriptome.eoulsan.hadoop.ImportData;
-import fr.ens.transcriptome.eoulsan.hadoop.MapReads;
-import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionMain;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.UploadDesignDataMain;
+import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapReadsHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.UploadDesignDataHadoopMain;
 
 /**
  * Main class in Hadoop mode.
@@ -50,18 +47,15 @@ public class MainHadoop {
     final ProgramDriver pgd = new ProgramDriver();
 
     try {
-      pgd.addClass("create_local_soap_index", CreateLocalSoapIndex.class,
-          "Create local SOAP index.");
-      pgd.addClass("import_data", ImportData.class,
-          "Import local data to hdfs.");
-      pgd.addClass("filter_reads", FilterReads.class, "Filter reads.");
-      pgd.addClass("map_reads", MapReads.class, "Map reads.");
-      pgd.addClass("filter_and_map_reads", FilterAndMapReads.class,
-          "Filter and map reads.");
-      pgd.addClass("gmorse", GMorse.class, "GMorse.");
-      pgd.addClass("expression", ExpressionMain.class, "Expression.");
-      pgd.addClass("uploaddesigndata", UploadDesignDataMain.class,
+
+      pgd.addClass("uploaddesigndata", UploadDesignDataHadoopMain.class,
           "Upload design data.");
+      pgd.addClass("filterreads", FilterReadsHadoopMain.class, "Filter reads.");
+      pgd.addClass("soapmapreads", SoapMapReadsHadoopMain.class,
+          "Map reads on genome with SOAP.");
+      pgd.addClass("filterandsoapmapreads", FilterAndSoapMapReadsHadoopMain.class,
+          "Filter and map reads on genome with SOAP.");
+      pgd.addClass("expression", ExpressionHadoopMain.class, "Expression.");
 
       pgd.driver(args);
 

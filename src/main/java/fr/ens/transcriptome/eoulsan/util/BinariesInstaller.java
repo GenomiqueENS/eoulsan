@@ -64,7 +64,7 @@ public class BinariesInstaller {
     }
     
     final File outputFile = new File(outputDir, file);
-    OutputStream fos = new FileOutputStream(outputFile);
+    OutputStream fos = FileUtils.createOutputStream(outputFile);
 
     byte[] buf = new byte[BUFFER_SIZE];
     int i = 0;

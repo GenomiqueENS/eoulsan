@@ -20,118 +20,127 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
+package fr.ens.transcriptome.eoulsan.programs.mapping.hadoop;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.hadoop.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class is the main class for the expression program of the reads in
- * hadoop mode.
+ * This class is the main class for the filter and mapping program of the reads
+ * in hadoop mode.
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class ExpressionMain {
+public class FilterAndSoapMapReadsHadoopMain {
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   // Configure URL handler for hdfs protocol
   static {
     URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
   }
 
-  private static final String SERIALIZED_DATA_EXTENSION = ".data";
+  private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
 
   /**
-   * Create JobConf object.
-   * @param basePath base path
-   * @param sample sample of the job
-   * @param parentType parent type
+   * Create the JobConf object for a sample
+   * @param basePath base path of data
+   * @param sample sample to process
+   * @return a new JobConf object
    */
-  private static final JobConf createJobConf(final Path basePath,
-      final Sample sample, final String parentType) {
+  private static JobConf createJobConf(final Path basePath,
+      final Sample sample, final int lengthThreshold,
+      final double qualityThreshold) {
 
-    // Create JobConf
-    final JobConf conf = new JobConf(ExpressionMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
 
     final int sampleId = CommonHadoop.getSampleId(sample);
     final int genomeId =
         CommonHadoop.getSampleId(sample.getMetadata().getGenome());
 
-    final Path inputPath =
-        CommonHadoop.selectDirectoryOrFile(new Path(basePath,
-            CommonHadoop.SOAP_ALIGNMENT_FILE_PREFIX + sampleId),
-            CommonHadoop.SOAP_RESULT_EXTENSION);
+    final Path inputPath = new Path(basePath, sample.getSource());
 
     // Set Job name
-    conf.setJobName("Expression computation ("
+    conf.setJobName("Filter and map reads with SOAP ("
         + sample.getName() + ", " + inputPath.getName() + ")");
 
-    conf.set("mapred.child.java.opts", "-Xmx1024m");
+    if (lengthThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
+          + lengthThreshold);
 
-    final Path exonsIndexPath =
-        new Path(basePath, CommonHadoop.ANNOTATION_FILE_PREFIX
-            + genomeId + SERIALIZED_DATA_EXTENSION);
+    if (qualityThreshold >= 0)
+      conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold", ""
+          + qualityThreshold);
 
-    try {
-      if (!PathUtils.isFile(exonsIndexPath, conf))
-        createExonsIndex(new Path(basePath, sample.getMetadata()
-            .getAnnotation()), sample.getMetadata().getGenomicType(),
-            exonsIndexPath, conf);
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      return null;
-    }
-
-    // Set the path to the exons index
-    conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
-        exonsIndexPath.toString());
-
-    // Set the parent type
+    // Set genome reference path
     conf
-        .set(Globals.PARAMETER_PREFIX + ".expression.parent.type",
-            parentType == null
-                ? sample.getMetadata().getGenomicType() : parentType);
+        .set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", new Path(
+            basePath, CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX
+                + genomeId + CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX)
+            .toString());
+
+    // Set unmap chuck dir path
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
+        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId)
+            .toString());
+
+    // Set unmap chuck prefix
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
+        UNMAP_CHUNK_PREFIX);
+
+    // Set unmap output file path
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
+        .newPathWithOtherExtension(new Path(basePath, sample.getSource()),
+            CommonHadoop.UNMAP_EXTENSION).toString());
+
+    // Set the number of threads for soap
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
+        + Runtime.getRuntime().availableProcessors());
 
     // Debug
-    // conf.set("mapred.job.tracker", "local");
+    //conf.set("mapred.job.tracker", "local");
+
+    // timeout
+    conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
+
+    // Set the jar
+    conf.setJarByClass(FilterAndSoapMapReadsHadoopMain.class);
 
     // Set input path
+
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format
-    conf.setInputFormat(TextInputFormat.class);
+    conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class
-    conf.setMapperClass(ExpressionMapper.class);
+    conf.setMapperClass(FilterAndSoapMapReadsMapper.class);
 
     // Set the reducer class
-    conf.setReducerClass(ExpressionReducer.class);
+    conf.setReducerClass(IdentityReducer.class);
 
     // Set the output key class
     conf.setOutputKeyClass(Text.class);
@@ -144,33 +153,50 @@ public class ExpressionMain {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath,
-        CommonHadoop.EXPRESSION_FILE_PREFIX + sampleId));
+        CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;
   }
+
+  //
+  // Main method
+  //
 
   /**
    * Main method
    * @param args command line arguments
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(final String[] args) {
 
-    System.out.println("Expression arguments:\t" + Arrays.toString(args));
+    logger.info("Start SOAP map reads.");
 
     if (args == null)
       throw new NullPointerException("The arguments of import data is null");
 
     if (args.length < 1)
-      throw new IllegalArgumentException("Expression need one or two arguments");
+      throw new IllegalArgumentException(
+          "Filter reads need one or two arguments");
 
     // Set the design path
     final String designPathname = args[0];
 
-    // Set the threshold
-    String parentType = null;
+    // Set the thresholds
+    int lengthThreshold = -1;
+    double qualityThreshold = -1;
 
     if (args.length > 1)
-      parentType = args[1];
+      try {
+        lengthThreshold = Integer.parseInt(args[1]);
+      } catch (NumberFormatException e) {
+        CommonHadoop.error("Invalid length threshold: " + args[1]);
+      }
+
+    if (args.length > 2)
+      try {
+        qualityThreshold = Double.parseDouble(args[2]);
+      } catch (NumberFormatException e) {
+        CommonHadoop.error("Invalid quality threshold: " + args[2]);
+      }
 
     final Path designPath = new Path(designPathname);
     final Path basePath = designPath.getParent();
@@ -194,14 +220,15 @@ public class ExpressionMain {
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs.add(createJobConf(basePath, s, parentType));
+      jobconfs
+          .add(createJobConf(basePath, s, lengthThreshold, qualityThreshold));
 
     try {
       final long startTime = System.currentTimeMillis();
-      CommonHadoop.writeLog(new Path(basePath, "expression.log"), startTime,
-          MapReduceUtils.submitandWaitForJobs(jobconfs,
+      CommonHadoop.writeLog(new Path(basePath, "filtersoapmapreads.log"),
+          startTime, MapReduceUtils.submitandWaitForJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
-              ExpressionMapper.COUNTER_GROUP));
+              FilterAndSoapMapReadsMapper.COUNTER_GROUP));
 
     } catch (IOException e) {
       CommonHadoop.error("Error while running job: ", e);
@@ -211,31 +238,6 @@ public class ExpressionMain {
       CommonHadoop.error("Error while running job: ", e);
     }
 
-  }
-
-  /**
-   * Create exon index.
-   * @param gffPath gff path
-   * @param expressionType expression type
-   * @param exonsIndexPath output exon index path
-   * @param conf configuration object
-   * @throws IOException if an error occurs while creating the index
-   */
-  private static final Path createExonsIndex(final Path gffPath,
-      final String expressionType, final Path exonsIndexPath,
-      final Configuration conf) throws IOException {
-
-    final GeneAndExonFinder ef =
-        new GeneAndExonFinder(gffPath, conf, expressionType);
-    final File exonIndexFile =
-        FileUtils.createFileInTempDir(StringUtils.basename(gffPath.getName())
-            + SERIALIZED_DATA_EXTENSION);
-    ef.save(exonIndexFile);
-
-    PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
-    exonIndexFile.delete();
-
-    return exonsIndexPath;
   }
 
 }

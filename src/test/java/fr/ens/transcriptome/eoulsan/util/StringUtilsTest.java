@@ -42,25 +42,25 @@ public class StringUtilsTest {
     assertEquals("toto", StringUtils.basename("toto.tar.gz"));
   }
 
-  @Test
-  public void testRemoveNonAlphaAtEndOfString() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testToTimeHumanReadable() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testFastSplitStringListOfString() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testFastSplitStringStringArray() {
-    fail("Not yet implemented");
-  }
+//  @Test
+//  public void testRemoveNonAlphaAtEndOfString() {
+//    fail("Not yet implemented");
+//  }
+//
+//  @Test
+//  public void testToTimeHumanReadable() {
+//    fail("Not yet implemented");
+//  }
+//
+//  @Test
+//  public void testFastSplitStringListOfString() {
+//    fail("Not yet implemented");
+//  }
+//
+//  @Test
+//  public void testFastSplitStringStringArray() {
+//    fail("Not yet implemented");
+//  }
 
   @Test
   public void testSubStringAfterFirstTab() {
@@ -75,5 +75,38 @@ public class StringUtilsTest {
     assertEquals("toto", StringUtils.subStringBeforeFirstTab("toto\ttiti\ttata"));
     assertEquals("toto", StringUtils.subStringBeforeFirstTab("toto"));
   }
+  
+  @Test
+  public void testProtectGFF() {
+    
+    assertEquals("toto", StringUtils.protectGFF("toto"));
+    assertEquals("toto%09", StringUtils.protectGFF("toto\t"));
+    assertEquals("toto%20", StringUtils.protectGFF("toto "));
+    assertEquals("toto%20titi", StringUtils.protectGFF("toto titi"));
+    assertEquals("t\\\\oto%20titi", StringUtils.protectGFF("t\\oto titi"));
+    assertEquals("toto\\;titi", StringUtils.protectGFF("toto;titi"));
+    assertEquals("toto\\=titi", StringUtils.protectGFF("toto=titi"));
+    assertEquals("toto\\%titi", StringUtils.protectGFF("toto%titi"));
+    assertEquals("toto\\&titi", StringUtils.protectGFF("toto&titi"));
+    assertEquals("toto\\,titi", StringUtils.protectGFF("toto,titi"));
+  }
+  
+  @Test
+  public void testDeprotectGFF() {
+    
+    System.out.println((char) Integer.parseInt("" + '5' + 'F', 16));
+    
+    assertEquals("toto", StringUtils.deprotectGFF("toto"));
+    assertEquals("toto\t", StringUtils.deprotectGFF("toto%09"));
+    assertEquals("toto ", StringUtils.deprotectGFF("toto%20"));
+    assertEquals("toto titi", StringUtils.deprotectGFF("toto%20titi"));
+    assertEquals("t\\oto titi", StringUtils.deprotectGFF("t\\\\oto%20titi"));
+    assertEquals("toto;titi", StringUtils.deprotectGFF("toto\\;titi"));
+    assertEquals("toto=titi", StringUtils.deprotectGFF("toto\\=titi"));
+    assertEquals("toto%titi", StringUtils.deprotectGFF("toto\\%titi"));
+    assertEquals("toto&titi", StringUtils.deprotectGFF("toto\\&titi"));
+    assertEquals("toto,titi", StringUtils.deprotectGFF("toto\\,titi"));
+  }
+  
 
 }

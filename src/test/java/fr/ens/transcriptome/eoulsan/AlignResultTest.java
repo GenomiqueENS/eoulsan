@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.AlignResult;
+import fr.ens.transcriptome.eoulsan.core.AlignResult;
 
 public class AlignResultTest {
 

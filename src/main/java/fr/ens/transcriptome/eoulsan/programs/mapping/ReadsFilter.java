@@ -24,7 +24,7 @@ package fr.ens.transcriptome.eoulsan.programs.mapping;
 
 import java.util.regex.Pattern;
 
-import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
+import fr.ens.transcriptome.eoulsan.core.ReadSequence;
 
 /**
  * Class with static methods to used to filter reads.

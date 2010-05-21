@@ -23,13 +23,12 @@
 package fr.ens.transcriptome.eoulsan.programs.expression;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -40,26 +39,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
-import fr.ens.transcriptome.eoulsan.pipeline.GFFReader;
+import fr.ens.transcriptome.eoulsan.io.GFFReader;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a class that is use to do fast search on exons and genes of
  * chromosomes.
  * @author Laurent Jourdren
  */
-public class GeneAndExonFinder {
+public class TranscriptAndExonFinder {
 
-  private Map<String, Gene> exonModeleRangeMap;
+  private Map<String, Transcript> transcripts;
   private Map<String, ChromosomeZone> chrZoneMap;
 
-  public static final class Gene implements Serializable {
+  public static final class Transcript implements Serializable {
 
     private String name;
+    private String type;
     private String chromosome;
     private int count;
     private int start = Integer.MAX_VALUE;
@@ -78,6 +74,15 @@ public class GeneAndExonFinder {
     public String getName() {
 
       return this.name;
+    }
+
+    /**
+     * Get the type of the gene.
+     * @return the type of the gene
+     */
+    public String getType() {
+
+      return this.type;
     }
 
     /**
@@ -131,6 +136,15 @@ public class GeneAndExonFinder {
     //
     // Setters
     //
+
+    /**
+     * Set the type of the gene
+     * @param type The type of the gene
+     */
+    private void setType(final String type) {
+
+      this.type = type;
+    }
 
     /**
      * Set the start position
@@ -190,23 +204,13 @@ public class GeneAndExonFinder {
      * Public constructor.
      * @param name name of the the gene
      */
-    public Gene(final String name) {
+    public Transcript(final String name) {
 
       if (name == null)
         throw new NullPointerException("The name of the gene is null.");
       this.name = name;
     }
 
-  }
-
-  /**
-   * Get the exon range object
-   * @param parentId identifier of the object
-   * @return the exon range object or null if the parent doesn't exists
-   */
-  public final Gene getExonsParentRange(final String parentId) {
-
-    return this.exonModeleRangeMap.get(parentId);
   }
 
   /**
@@ -643,11 +647,16 @@ public class GeneAndExonFinder {
     final GFFReader reader = new GFFReader(is);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
-    this.exonModeleRangeMap = new HashMap<String, Gene>();
+    this.transcripts = new HashMap<String, Transcript>();
+
+    final Map<String, String> idType = new HashMap<String, String>();
 
     while (reader.readEntry()) {
 
       final String type = reader.getType();
+
+      if (reader.isAttribute("ID"))
+        idType.put(reader.getAttributeValue("ID"), type);
 
       if (expressionType.equals(type)) {
 
@@ -677,13 +686,13 @@ public class GeneAndExonFinder {
         // Populate exonModeleRangeMap
         //
 
-        final Gene epr;
+        final Transcript epr;
 
-        if (this.exonModeleRangeMap.containsKey(parentId))
-          epr = this.exonModeleRangeMap.get(parentId);
+        if (this.transcripts.containsKey(parentId))
+          epr = this.transcripts.get(parentId);
         else {
-          epr = new Gene(parentId);
-          this.exonModeleRangeMap.put(parentId, epr);
+          epr = new Transcript(parentId);
+          this.transcripts.put(parentId, epr);
         }
 
         epr.addExon(exon);
@@ -703,7 +712,12 @@ public class GeneAndExonFinder {
       }
     }
 
+    // Close reader
     reader.close();
+
+    // Set the types of genes
+    for (Map.Entry<String, Transcript> e : this.transcripts.entrySet())
+      e.getValue().setType(idType.get(e.getKey()));
   }
 
   /**
@@ -727,13 +741,22 @@ public class GeneAndExonFinder {
   }
 
   /**
-   * Get a Gene
-   * @param geneName name of the gene
+   * Get a transcript
+   * @param transcriptName name of the transcript
    * @return the Gene if exists or null
    */
-  public Gene getGene(final String geneName) {
+  public Transcript getTranscript(final String transcriptName) {
 
-    return this.exonModeleRangeMap.get(geneName);
+    return this.transcripts.get(transcriptName);
+  }
+
+  /**
+   * Get a set with transcripts identifiers.
+   * @return a set of strings with identifiers
+   */
+  public Set<String> getTranscriptsIds() {
+
+    return this.transcripts.keySet();
   }
 
   //
@@ -742,16 +765,24 @@ public class GeneAndExonFinder {
 
   /**
    * Save the annotation.
+   * @param os Output stream
+   */
+  public void save(final OutputStream os) throws IOException {
+
+    final ObjectOutputStream oos = new ObjectOutputStream(os);
+    oos.writeObject(this.transcripts);
+    oos.writeObject(this.chrZoneMap);
+    oos.close();
+  }
+
+  /**
+   * Save the annotation.
    * @param outputFile Output file
    */
   public void save(final File outputFile) throws FileNotFoundException,
       IOException {
 
-    final ObjectOutputStream oos =
-        new ObjectOutputStream((new FileOutputStream(outputFile)));
-    oos.writeObject(this.exonModeleRangeMap);
-    oos.writeObject(this.chrZoneMap);
-    oos.close();
+    save(FileUtils.createOutputStream(outputFile));
   }
 
   //
@@ -760,21 +791,29 @@ public class GeneAndExonFinder {
 
   /**
    * Load the annotation.
-   * @param inputFile input file
+   * @param is InputStream input stream
    */
-  public void load(final File inputFile) throws FileNotFoundException,
-      IOException {
+  public void load(final InputStream is) throws IOException {
 
-    final ObjectInputStream ois =
-        new ObjectInputStream(new FileInputStream(inputFile));
+    final ObjectInputStream ois = new ObjectInputStream(is);
     try {
-      this.exonModeleRangeMap = (Map<String, Gene>) ois.readObject();
+      this.transcripts = (Map<String, Transcript>) ois.readObject();
       this.chrZoneMap = (Map<String, ChromosomeZone>) ois.readObject();
 
     } catch (ClassNotFoundException e) {
       throw new IOException("Unable to load data.");
     }
     ois.close();
+  }
+
+  /**
+   * Load the annotation.
+   * @param inputFile input file
+   */
+  public void load(final File inputFile) throws FileNotFoundException,
+      IOException {
+
+    load(FileUtils.createInputStream(inputFile));
   }
 
   //
@@ -784,7 +823,7 @@ public class GeneAndExonFinder {
   public void clear() {
 
     this.chrZoneMap.clear();
-    this.exonModeleRangeMap.clear();
+    this.transcripts.clear();
   }
 
   //
@@ -793,35 +832,32 @@ public class GeneAndExonFinder {
 
   /**
    * Public constructor used to create the index.
-   * @param annotationPath annotation file to use
+   * @param annotationFile annotation file to use
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
    */
-  public GeneAndExonFinder(final Path annotationPath, final Configuration conf,
+  public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType) throws IOException {
 
-    final FileSystem fs = FileSystem.get(conf);
-    final FSDataInputStream is = fs.open(annotationPath);
+    populateMapsFromGFFFile(FileUtils.createInputStream(annotationFile), expressionType);
+  }
+
+  /**
+   * Public constructor used to create the index.
+   * @param is annotation input stream to use
+   * @param expressionType the expression type to filter
+   * @throws IOException if an error occurs while creating the index
+   */
+  public TranscriptAndExonFinder(final InputStream is,
+      final String expressionType) throws IOException {
 
     populateMapsFromGFFFile(is, expressionType);
   }
 
   /**
-   * Public constructor used to create the index.
-   * @param annotationFile annotation file to use
-   * @param expressionType the expression type to filter
-   * @throws IOException if an error occurs while creating the index
-   */
-  public GeneAndExonFinder(final File annotationFile,
-      final String expressionType) throws IOException {
-
-    populateMapsFromGFFFile(new FileInputStream(annotationFile), expressionType);
-  }
-
-  /**
    * Public constructor.
    */
-  public GeneAndExonFinder() {
+  public TranscriptAndExonFinder() {
   }
 
 }

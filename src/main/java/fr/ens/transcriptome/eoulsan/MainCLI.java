@@ -24,8 +24,11 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.util.Arrays;
 
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsMain;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateDesignMain;
+import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsMain;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateDesignLocalMain;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateSoapIndexLocalMain;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -113,10 +116,16 @@ public class MainCLI {
     if (testOptions(lower, "-h", "help", "-help", "--help"))
       help();
 
-    if (CreateDesignMain.PROGRAM_NAME.equals(program))
-      CreateDesignMain.main(arguments);
-    else if (FilterReadsMain.PROGRAM_NAME.equals(program))
-      FilterReadsMain.main(arguments);
+    if (CreateDesignLocalMain.PROGRAM_NAME.equals(program))
+      CreateDesignLocalMain.main(arguments);
+    else if (CreateSoapIndexLocalMain.PROGRAM_NAME.equals(program))
+      CreateSoapIndexLocalMain.main(arguments);
+    else if (FilterReadsLocalMain.PROGRAM_NAME.equals(program))
+      FilterReadsLocalMain.main(arguments);
+    else if (SoapMapReadsMain.PROGRAM_NAME.equals(program))
+      SoapMapReadsMain.main(arguments);
+    else if (ExpressionLocalMain.PROGRAM_NAME.equals(program))
+      ExpressionLocalMain.main(arguments);
     else
       System.err.println("Program not found: " + program);
 

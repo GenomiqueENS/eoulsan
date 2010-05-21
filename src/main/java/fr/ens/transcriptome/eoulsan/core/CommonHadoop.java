@@ -23,9 +23,6 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -36,7 +33,6 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define common constants and other methods specific to Hadoop mode.
@@ -54,7 +50,6 @@ public class CommonHadoop extends Common {
       "genome_soap_index_";
   public static final String GENOME_SOAP_INDEX_FILE_SUFFIX = ".zip";
   public static final String ANNOTATION_FILE_PREFIX = "annotation_";
-  
 
   /**
    * Retrieve the genome file name from the files of a directory
@@ -109,17 +104,8 @@ public class CommonHadoop extends Common {
   public static void writeLog(final Path logPath, final long startTime,
       final String data) throws IOException {
 
-    final long endTime = System.currentTimeMillis();
-    final long duration = endTime - startTime;
-
     FileSystem fs = PathUtils.getFileSystem(logPath, new Configuration());
-
-    final Writer writer = new OutputStreamWriter(fs.create(logPath));
-    writer.write("Start time: "
-        + new Date(startTime) + "\nEnd time: " + new Date(endTime)
-        + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n");
-    writer.write(data);
-    writer.close();
+    writeLog(fs.create(logPath), startTime, data);
   }
 
   public static Path selectDirectoryOrFile(final Path path,

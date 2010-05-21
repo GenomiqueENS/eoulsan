@@ -26,21 +26,15 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.core.Sequence;
 
-public class ReadsFilterTest {
-
-  @Test
-  public void testTrimReadSequence() {
-    
-    ReadSequence rs = new ReadSequence(1,"","","");
-    
-    fail("Not yet implemented");
-  }
+public class SequenceTest {
 
   @Test
-  public void testIsReadValid() {
-    fail("Not yet implemented");
+  public void testReverseComplementString() {
+    
+    assertEquals("GCAT",Sequence.reverseComplement("ATGC"));
+    
   }
 
 }

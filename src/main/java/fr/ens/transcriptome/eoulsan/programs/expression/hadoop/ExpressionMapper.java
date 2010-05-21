@@ -22,12 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -36,19 +36,23 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
-import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
-import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder;
-import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder.Exon;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.core.AlignResult;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
+import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
+/**
+ * Mapper for Expression computation
+ * @author Laurent Jourdren
+ * @author Maria Bernard
+ */
 @SuppressWarnings("deprecation")
 public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Expression";
 
-  private final GeneAndExonFinder ef = new GeneAndExonFinder();
+  private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final AlignResult ar = new AlignResult();
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
@@ -66,17 +70,17 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     final int stop = start + ar.getReadLength();
 
     // System.out.println(chr + "\t" + start + "\t" + stop);
-    final Set<Exon> exons = ef.findExons(chr, start, stop);
+    final Set<Exon> exons = tef.findExons(chr, start, stop);
     // System.out.println("Found " + (exons == null ? 0 : exons.size()) +
     // " exons.");
 
-    reporter.incrCounter("Expression", "read total", 1);
+    reporter.incrCounter(COUNTER_GROUP, "read total", 1);
     if (exons == null) {
-      reporter.incrCounter("Expression", "reads unused", 1);
+      reporter.incrCounter(COUNTER_GROUP, "reads unused", 1);
       return;
     }
 
-    reporter.incrCounter("Expression", "reads used", 1);
+    reporter.incrCounter(COUNTER_GROUP, "reads used", 1);
     int count = 1;
     final int nbExons = exons.size();
 
@@ -88,11 +92,6 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     for (Map.Entry<String, Exon> entry : oneExonByParentId.entrySet()) {
 
       final Exon e = entry.getValue();
-
-      // if (parentId == null)
-      // parentId = e.getParentId();
-      // else if (!parentId.equals(e.getParentId()))
-      // count=0;
 
       this.resultKey.set(e.getParentId());
       this.resultValue.set(e.getChromosome()
@@ -113,10 +112,9 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       final Path indexPath =
           new Path(Parameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
-      File indexFile = FileUtils.createFileInTempDir(indexPath.getName());
-      PathUtils.copyFromPathToLocalFile(indexPath, indexFile, conf);
-      ef.load(indexFile);
-      indexFile.delete();
+
+      final FileSystem fs = PathUtils.getFileSystem(indexPath, conf);
+      tef.load(fs.open(indexPath));
 
     } catch (IOException e) {
       System.out.println(e);
@@ -129,7 +127,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
   @Override
   public void close() throws IOException {
 
-    this.ef.clear();
+    this.tef.clear();
     this.oneExonByParentId.clear();
   }
 

@@ -368,4 +368,19 @@ public final class StringUtils {
     return result;
   }
 
+  /**
+   * Escape a bash filename
+   * @param s bash string to escape
+   * @return a escaped string
+   */
+  public static final String bashEscaping(final String s) {
+
+    if (s == null)
+      return null;
+
+    return s.replace("\\", "\\\\").replace(" ", "\\ ").replace("'", "\\'")
+        .replace("\"", "\\\"").replace("&", "\\&").replace("!", "\\!").replace(
+            "~", "\\~");
+  }
+
 }
