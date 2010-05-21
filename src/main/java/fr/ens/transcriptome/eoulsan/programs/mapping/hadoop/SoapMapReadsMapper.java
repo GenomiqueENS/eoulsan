@@ -28,8 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -41,10 +39,11 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.AlignResult;
+import fr.ens.transcriptome.eoulsan.core.ReadSequence;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
-import fr.ens.transcriptome.eoulsan.parsers.AlignResult;
-import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.ExecLock;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -56,8 +55,6 @@ public class SoapMapReadsMapper implements
     Mapper<LongWritable, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Map reads with SOAP";
-
-  private static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";
 
   private final String counterGroup = getCounterGroup();
 
@@ -119,7 +116,7 @@ public class SoapMapReadsMapper implements
       // Get SOAP arguments
       this.soapArgs =
           conf.get(Globals.PARAMETER_PREFIX + ".soap.args", ""
-              + SOAP_ARGS_DEFAULT);
+              + Common.SOAP_ARGS_DEFAULT);
 
       // Get SOAP index zip file path
       this.soapIndexZipPath =
@@ -174,7 +171,7 @@ public class SoapMapReadsMapper implements
     FileSystem fs = PathUtils.getFileSystem(soapIndexPath, this.conf);
     FileStatus fStatus = fs.getFileStatus(soapIndexPath);
 
-    return "soap-output-"
+    return "soap-index-"
         + fStatus.getLen() + "-" + fStatus.getModificationTime();
   }
 
@@ -184,40 +181,23 @@ public class SoapMapReadsMapper implements
 
       final String dirname = getSoapIndexLocalName(soapIndexPath);
       final File dir = new File("/tmp", dirname);
-      final File lockFile = new File(dir, "lock");
 
-      if (dir.exists()) {
-
-        while (lockFile.exists()) {
-
-          try {
-            Thread.sleep(5000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-          }
-        }
-
+      if (dir.exists())
         return dir;
-      }
 
       if (!dir.mkdirs())
         return null;
 
-      lockFile.createNewFile();
-
-      final InputStream is = new URL(soapIndexPath.toString()).openStream();
+      final FileSystem fs = FileSystem.get(soapIndexPath.toUri(), this.conf);
+      final InputStream is = fs.open(soapIndexPath);
       FileUtils.unzip(is, dir);
-
-      lockFile.delete();
 
       return dir;
 
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-      return null;
     } catch (IOException e) {
+      System.err.println(e.getMessage());
       e.printStackTrace();
+
       return null;
     }
 
@@ -233,8 +213,11 @@ public class SoapMapReadsMapper implements
       return;
 
     // Download genome reference
-    if (this.soapIndexZipDir == null)
+    if (this.soapIndexZipDir == null) {
+      lock.lock();
       this.soapIndexZipDir = installSoapIndex(new Path(this.soapIndexZipPath));
+      lock.unlock();
+    }
 
     if (this.soapIndexZipPath == null) {
       this.reporter.incrCounter(this.counterGroup,
@@ -257,7 +240,7 @@ public class SoapMapReadsMapper implements
 
     // Remove temporary files
     outputFile.delete();
-    // unmapFile.delete();
+    //unmapFile.delete();
     this.dataFile.delete();
 
   }
@@ -292,10 +275,10 @@ public class SoapMapReadsMapper implements
         outValue.set(StringUtils.subStringAfterFirstTab(line));
         collector.collect(outKey, outValue);
         reporter.incrCounter(this.counterGroup,
-            "soap alignment with only one locus", 1);
+            "soap alignment with only one hit", 1);
       } else
         reporter.incrCounter(this.counterGroup,
-            "soap alignment with more one locus", 1);
+            "soap alignment with more one hit", 1);
 
     }
 

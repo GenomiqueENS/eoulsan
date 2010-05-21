@@ -88,18 +88,13 @@ public class MapReduceUtils {
   }
 
   /**
-   * Submit a collection of jobs and wait the completion of all jobs.
-   * @param jobs Collection of jobs to submit
-   * @param waitTimeInMillis waiting time between 2 checks of the completion of
-   *          jobs
-   * @throws IOException if an IO error occurs while waiting for jobs
-   * @throws InterruptedException if an error occurs while waiting for jobs
-   * @throws ClassNotFoundException if a class needed for map reduce execution
-   *           is not found
+   * Submit a collection of jobs and get running jobs.
+   * @param jobconfs Collection of jobs to submit
+   * @return a collection of running jobs
+   * @throws IOException if an IO error occurs while creating jobs
    */
-  public static String submitandWaitForJobs(final Collection<JobConf> jobconfs,
-      final int waitTimeInMillis, final String counterGroup)
-      throws IOException, InterruptedException, ClassNotFoundException {
+  public static Collection<RunningJob> submitJobs(
+      final Collection<JobConf> jobconfs) throws IOException {
 
     if (jobconfs == null)
       throw new NullPointerException("The list of jobs is null");
@@ -115,7 +110,24 @@ public class MapReduceUtils {
       jobs.add(jc.submitJob(jconf));
     }
 
-    return waitForJobs(jobs, waitTimeInMillis, counterGroup);
+    return jobs;
+  }
+
+  /**
+   * Submit a collection of jobs and wait the completion of all jobs.
+   * @param jobs Collection of jobs to submit
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of
+   *          jobs
+   * @throws IOException if an IO error occurs while waiting for jobs
+   * @throws InterruptedException if an error occurs while waiting for jobs
+   * @throws ClassNotFoundException if a class needed for map reduce execution
+   *           is not found
+   */
+  public static String submitandWaitForJobs(final Collection<JobConf> jobconfs,
+      final int waitTimeInMillis, final String counterGroup)
+      throws IOException, InterruptedException, ClassNotFoundException {
+
+    return waitForJobs(submitJobs(jobconfs), waitTimeInMillis, counterGroup);
   }
 
   /**

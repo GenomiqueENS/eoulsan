@@ -22,10 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
@@ -33,22 +33,27 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.hadoop.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExonsCoverage;
-import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder;
-import fr.ens.transcriptome.eoulsan.programs.expression.GeneAndExonFinder.Gene;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
+import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * Reducer for Expression computation
+ * @author Laurent Jourdren
+ * @author Maria Bernard
+ */
 @SuppressWarnings("deprecation")
 public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
-  private final GeneAndExonFinder ef = new GeneAndExonFinder();
+  public static final String COUNTER_GROUP = "Expression";
+  
+  private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
   private final Text outputValue = new Text();
-  private String parentType;
 
   @Override
   public void reduce(final Text key, Iterator<Text> values,
@@ -57,7 +62,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
     geneExpr.clear();
 
-    reporter.incrCounter("Expression", "parent", 1);
+    reporter.incrCounter(COUNTER_GROUP, "parent", 1);
     final String parentId = key.toString();
 
     boolean first = true;
@@ -75,7 +80,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       final int exonEnd = Integer.parseInt(this.fields[2]);
       // codingStrand = Boolean.parseBoolean(this.fields[3]);
 
-      final int exonNumber = Integer.parseInt(this.fields[4]);
+      // final int exonNumber = Integer.parseInt(this.fields[4]);
       // final int exonTotal = Integer.parseInt(this.fields[5]);
 
       final String alignementChr = this.fields[6];
@@ -88,35 +93,29 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       }
 
       if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
-        reporter.incrCounter("expression", "invalid chromosome", 1);
+        reporter.incrCounter(COUNTER_GROUP, "invalid chromosome", 1);
         continue;
       }
 
       geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd,
           true);
-          //exonNumber == 1);
     }
 
     if (count == 0)
       return;
 
-    final Gene gene = ef.getExonsParentRange(parentId);
+    final Transcript transcript = tef.getTranscript(parentId);
 
-    if (gene == null) {
+    if (transcript == null) {
       reporter
-          .incrCounter("expression", "Parent Id not found in exon range", 1);
+          .incrCounter(COUNTER_GROUP, "Parent Id not found in exon range", 1);
       return;
     }
 
-    final int geneLength = gene.getLength();
+    final int geneLength = transcript.getLength();
     final int notCovered = geneExpr.getNotCovered(geneLength);
 
-    final String result =
-        this.parentType
-            + "\t" + gene.getChromosome() + "\t" + gene.getStart() + "\t"
-            + gene.getEnd() + "\t" + gene.getStrand() + "\t" + geneLength
-            + "\t" + (notCovered == 0) + "\t" + notCovered + "\t"
-            + geneExpr.getAlignementCount();
+    final String result = notCovered + "\t" + geneExpr.getAlignementCount();
 
     this.outputValue.set(result);
 
@@ -131,13 +130,8 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       final Path indexPath =
           new Path(Parameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
-      File indexFile = FileUtils.createFileInTempDir(indexPath.getName());
-      PathUtils.copyFromPathToLocalFile(indexPath, indexFile, conf);
-      ef.load(indexFile);
-      indexFile.delete();
-
-      this.parentType =
-          Parameter.getStringParameter(conf, ".expression.parent.type", "");
+      final FileSystem fs = PathUtils.getFileSystem(indexPath, conf);
+      tef.load(fs.open(indexPath));
 
     } catch (IOException e) {
       System.out.println(e);

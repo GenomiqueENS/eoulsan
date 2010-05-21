@@ -28,18 +28,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 
+import fr.ens.transcriptome.eoulsan.core.ReadSequence;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
-import fr.ens.transcriptome.eoulsan.parsers.ReadSequence;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
  * This class define a filter for read in local mode.
  * @author Laurent Jourdren
+ * @author Maria Bernard
  */
 public class FilterReadsLocal {
+
+  public static final String COUNTER_GROUP = "Filter reads";
 
   private DataSource fastqDS;
   private int lengthThreshold = FilterReadsConstants.LENGTH_THRESHOLD;
@@ -50,7 +54,8 @@ public class FilterReadsLocal {
    * @param outputFile output file with filtered reads
    * @throws IOException if an error occurs while reading the reads file
    */
-  public void filter(final File outputFile) throws IOException {
+  public void filter(final File outputFile, final Reporter reporter)
+      throws IOException {
 
     final Writer writer = FileUtils.createBufferedWriter(outputFile);
     final BufferedReader br;
@@ -68,7 +73,8 @@ public class FilterReadsLocal {
     final StringBuilder sb = new StringBuilder();
     final ReadSequence read = new ReadSequence();
 
-    final int threshold = this.lengthThreshold;
+    final int lengthThreshold = this.lengthThreshold;
+    final double qualityThreshold = this.qualityThreshold;
     String line = null;
     int count = 0;
 
@@ -94,14 +100,24 @@ public class FilterReadsLocal {
 
         // Fill the ReadSequence object
         read.parseFastQ(sb.toString());
+        reporter.incrCounter(COUNTER_GROUP, "input fastq", 1);
+
+        if (!read.check()) {
+
+          reporter.incrCounter(COUNTER_GROUP, "input fastq not valid", 1);
+          continue;
+        }
+        reporter.incrCounter(COUNTER_GROUP, "input fastq valid", 1);
 
         // Trim the sequence with polyN as tail
         ReadsFilter.trimReadSequence(read);
 
         // Filter bad sequence
-        if (ReadsFilter.isReadValid(read, this.lengthThreshold,
-            this.qualityThreshold))
+        if (ReadsFilter.isReadValid(read, lengthThreshold, qualityThreshold)) {
           writer.write(read.toFastQ());
+          reporter.incrCounter(COUNTER_GROUP, "reads after filtering", 1);
+        } else
+          reporter.incrCounter(COUNTER_GROUP, "reads rejected by filter", 1);
 
         sb.setLength(0);
         count = 0;

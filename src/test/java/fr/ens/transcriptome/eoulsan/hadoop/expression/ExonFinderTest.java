@@ -20,27 +20,12 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
+package fr.ens.transcriptome.eoulsan.hadoop.expression;
 
-import static org.junit.Assert.*;
 
-import org.junit.Test;
+public class ExonFinderTest {
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
-
-public class ReadsFilterTest {
-
-  @Test
-  public void testTrimReadSequence() {
-    
-    ReadSequence rs = new ReadSequence(1,"","","");
-    
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testIsReadValid() {
-    fail("Not yet implemented");
-  }
-
+  
+  
+  
 }

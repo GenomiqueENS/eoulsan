@@ -163,12 +163,12 @@ public class FileUtils {
   };
 
   /**
-   * Utility method to create fast BufferedReader.
+   * Utility method to create a fast InputStream from a file.
    * @param file File to read
-   * @return a BufferedReader
+   * @return an InputStream
    * @throws FileNotFoundException if the file is not found
    */
-  public static final BufferedReader createBufferedReader(final File file)
+  public static final InputStream createInputStream(final File file)
       throws FileNotFoundException {
 
     if (file == null)
@@ -177,8 +177,45 @@ public class FileUtils {
     final FileInputStream inFile = new FileInputStream(file);
     final FileChannel inChannel = inFile.getChannel();
 
-    return new BufferedReader(new InputStreamReader(Channels
-        .newInputStream(inChannel)));
+    return Channels.newInputStream(inChannel);
+  }
+
+  /**
+   * Utility method to create a fast OutputStream from a file.
+   * @param file File to read
+   * @return an InputStream
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final OutputStream createOutputStream(final File file)
+      throws FileNotFoundException {
+
+    if (file == null)
+      return null;
+
+    if (file.isFile())
+      file.delete();
+
+    final FileOutputStream outFile = new FileOutputStream(file);
+    final FileChannel outChannel = outFile.getChannel();
+
+    return Channels.newOutputStream(outChannel);
+  }
+
+  /**
+   * Utility method to create fast BufferedReader.
+   * @param file File to read
+   * @return a BufferedReader
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedReader createBufferedReader(final File file)
+      throws FileNotFoundException {
+
+    final InputStream is = createInputStream(file);
+
+    if (is == null)
+      return null;
+
+    return new BufferedReader(new InputStreamReader(is));
   }
 
   /**
@@ -191,17 +228,13 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createBufferedWriter(
       final File file) throws FileNotFoundException {
 
-    if (file == null)
+    final OutputStream os = createOutputStream(file);
+
+    if (os == null)
       return null;
 
-    if (file.isFile())
-      file.delete();
-
-    final FileOutputStream outFile = new FileOutputStream(file);
-    final FileChannel outChannel = outFile.getChannel();
-
-    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(Channels
-        .newOutputStream(outChannel), Charset.forName(CHARSET)));
+    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os, Charset
+        .forName(CHARSET)));
   }
 
   /**
@@ -428,18 +461,15 @@ public class FileUtils {
 
   /**
    * Unzip a zip file in a directory.
-   * @param zipFile
+   * @param is input stream of the zip file
    * @param outputDirectory
    * @throws IOException
    */
-  public static void unzip(final File zipFile, final File outputDirectory)
+  public static void unzip(final InputStream is, final File outputDirectory)
       throws IOException {
 
-    if (zipFile == null)
-      throw new IOException("The zip file is null");
-
-    if (!(zipFile.exists() && zipFile.isFile()))
-      throw new IOException("Invalid zip file (" + zipFile.getName() + ")");
+    if (is == null)
+      throw new IOException("The inputStream is null");
 
     if (outputDirectory == null)
       throw new IOException("The output directory is null");
@@ -449,9 +479,8 @@ public class FileUtils {
           + outputDirectory + ")");
 
     BufferedOutputStream dest = null;
-    final FileInputStream fis = new FileInputStream(zipFile);
 
-    final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+    final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
     ZipEntry entry;
 
     while ((entry = zis.getNextEntry()) != null) {
@@ -470,7 +499,24 @@ public class FileUtils {
       dest.close();
     }
     zis.close();
+  }
 
+  /**
+   * Unzip a zip file in a directory.
+   * @param zipFile
+   * @param outputDirectory
+   * @throws IOException
+   */
+  public static void unzip(final File zipFile, final File outputDirectory)
+      throws IOException {
+
+    if (zipFile == null)
+      throw new IOException("The zip file is null");
+
+    if (!(zipFile.exists() && zipFile.isFile()))
+      throw new IOException("Invalid zip file (" + zipFile.getName() + ")");
+
+    unzip(new FileInputStream(zipFile), outputDirectory);
   }
 
   /**
@@ -1058,6 +1104,70 @@ public class FileUtils {
       throw new IOException("The "
           + msgFileType + " is  not a standard file or a directory: "
           + file.getAbsolutePath());
+  }
+
+  /**
+   * Create an hard link on an unix system.
+   * @param target target file
+   * @param link link file
+   * @return true if the link has been successfully created
+   */
+  public static final boolean createHardLink(final File target, final File link) {
+
+    if (target == null || link == null || !target.exists())
+      return false;
+
+    final String cmd =
+        "ln "
+            + StringUtils.bashEscaping(target.getAbsolutePath()) + " "
+            + StringUtils.bashEscaping(link.getAbsolutePath());
+    try {
+
+      Process p = Runtime.getRuntime().exec(cmd);
+      if (p.waitFor() == 0)
+        return true;
+
+      return false;
+
+    } catch (IOException e) {
+      return false;
+    } catch (InterruptedException e) {
+      return false;
+    }
+
+  }
+
+  /**
+   * Create an symbolic link on an unix system.
+   * @param target target file
+   * @param link link file
+   * @return true if the link has been successfully created
+   */
+  public static final boolean createSymbolicLink(final File target,
+      final File link) {
+
+    if (target == null || link == null || !target.exists())
+      return false;
+
+    final String cmd =
+        "ln -s "
+            + StringUtils.bashEscaping(target.getAbsolutePath()) + " "
+            + StringUtils.bashEscaping(link.getAbsolutePath());
+    try {
+
+      Process p = Runtime.getRuntime().exec(cmd);
+
+      if (p.waitFor() == 0)
+        return true;
+
+      return false;
+
+    } catch (IOException e) {
+      return false;
+    } catch (InterruptedException e) {
+      return false;
+    }
+
   }
 
 }

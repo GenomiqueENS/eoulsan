@@ -24,10 +24,10 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -39,6 +39,56 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public final class ProcessUtils {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
+  /**
+   * Execute a command.
+   * @param cmd command to execute
+   * @return the exit error of the program
+   * @throws IOException
+   */
+  public static int system(final String cmd) throws IOException {
+
+    logger.fine("execute (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final Process p = Runtime.getRuntime().exec(cmd);
+
+    try {
+      return p.waitFor();
+    } catch (InterruptedException e) {
+      throw new IOException(e.getMessage());
+    }
+  }
+
+  /**
+   * Execute a command.
+   * @param cmd command to execute
+   * @return the exit error of the program
+   * @throws IOException
+   */
+  public static int sh(final String cmd) throws IOException {
+
+    File f = File.createTempFile("sh-", ".sh");
+    UnSynchronizedBufferedWriter bw = FileUtils.createBufferedWriter(f);
+    bw.write("#!/bin/sh\n");
+    bw.write(cmd);
+    bw.close();
+    f.setExecutable(true);
+
+    logger.fine("execute script (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
+
+    try {
+      final int result = p.waitFor();
+      f.delete();
+      return result;
+    } catch (InterruptedException e) {
+      f.delete();
+      throw new IOException(e.getMessage());
+    }
+  }
 
   /**
    * Execute a command with the OS.
@@ -99,7 +149,7 @@ public final class ProcessUtils {
 
     InputStream std = p.getInputStream();
 
-    FileOutputStream fos = new FileOutputStream(outputFile);
+    final OutputStream fos = FileUtils.createOutputStream(outputFile);
 
     FileUtils.copy(std, fos);
 

@@ -35,13 +35,13 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.hadoop.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * This class allow to copy data to hdfs.
  * @author Laurent Jourdren
  */
-public class UploadDesignDataMain {
+public class UploadDesignDataHadoopMain {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -190,7 +190,7 @@ public class UploadDesignDataMain {
           copy(genome, newGenomePath, conf);
 
           // Create soap index file
-          final File indexFile = SOAPWrapper.makeIndex(new File(genome), true);
+          final File indexFile = SOAPWrapper.makeIndexInZipFile(new File(genome));
           copy(indexFile.toString(), createPath(hadoopPath,
               CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX, genomesCount,
               CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX), conf);

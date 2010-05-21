@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.programs.mgmt.DesignBuilder;
  * Main class for Create Design program.
  * @author Laurent Jourdren
  */
-public class CreateDesignMain {
+public class CreateDesignLocalMain {
 
   public static String PROGRAM_NAME = "createdesign";
 

@@ -38,9 +38,9 @@ import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.hadoop.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class FilterReadsMain {
+public class FilterReadsHadoopMain {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -66,7 +66,7 @@ public class FilterReadsMain {
       final Sample sample, final int lengthThreshold,
       final double qualityThreshold) {
 
-    final JobConf conf = new JobConf(FilterReadsMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
 
     if (lengthThreshold >= 0)
       conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
@@ -84,7 +84,7 @@ public class FilterReadsMain {
     // conf.set("mapred.job.tracker", "local");
 
     // Set the jar
-    conf.setJarByClass(FilterReadsMain.class);
+    conf.setJarByClass(FilterReadsHadoopMain.class);
 
     // Set input path
     FileInputFormat.setInputPaths(conf, new Path(basePath, sample.getSource()));
