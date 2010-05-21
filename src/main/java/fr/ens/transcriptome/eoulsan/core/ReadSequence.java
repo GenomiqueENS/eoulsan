@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.parsers;
+package fr.ens.transcriptome.eoulsan.core;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -171,7 +171,7 @@ public class ReadSequence extends Sequence {
     this.quality = value.substring(indexTab + 1);
   }
 
-  public void check() throws EoulsanException {
+  public void checkWithException() throws EoulsanException {
 
     if (this.name == null)
       throw new NullPointerException("The name of the sequence is null");
@@ -192,6 +192,15 @@ public class ReadSequence extends Sequence {
     if (!checkBases(this.sequence))
       throw new EoulsanException("Invalid bases in sequence");
 
+  }
+
+  public boolean check() {
+
+    return this.name != null
+        && this.sequence != null && this.quality != null
+        && this.sequence.length() == this.quality.length()
+        && checkCharString(this.quality, (char) 33, (char) 126)
+        && checkBases(this.sequence);
   }
 
   private boolean checkCharString(final String s, final char intervalLow,

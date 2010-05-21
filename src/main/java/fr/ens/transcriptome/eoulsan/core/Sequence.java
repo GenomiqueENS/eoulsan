@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.parsers;
+package fr.ens.transcriptome.eoulsan.core;
 
 import fr.ens.transcriptome.eoulsan.MeltingTemp;
 
