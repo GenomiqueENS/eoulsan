@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.hadoop;
+package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -54,10 +54,7 @@ public class CommonHadoop extends Common {
       "genome_soap_index_";
   public static final String GENOME_SOAP_INDEX_FILE_SUFFIX = ".zip";
   public static final String ANNOTATION_FILE_PREFIX = "annotation_";
-  public static final String SOAP_ALIGNMENT_FILE_PREFIX =
-      "sample_soap_alignment_";
-  public static final String SOAP_UNMAP_FILE_PREFIX = "sample_soap_unmap_";
-  public static final String EXPRESSION_FILE_PREFIX = "sample_expression_";
+  
 
   /**
    * Retrieve the genome file name from the files of a directory

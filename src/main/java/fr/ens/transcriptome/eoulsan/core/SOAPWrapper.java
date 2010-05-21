@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -37,18 +38,54 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  */
 public class SOAPWrapper {
 
-  private static final boolean DEBUG = false;
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final boolean DEBUG = true;
 
   private static String soapPath;
   private static String indexerPath;
 
-  public static void init() throws IOException {
+  /**
+   * Create the soap index in a directory
+   * @param genomeFile path to the genome file
+   * @param outputDir output directory for the index
+   * @throws IOException if an error occurs while creating the index
+   */
+  public static void makeIndex(final File genomeFile, final File outputDir)
+      throws IOException {
 
-    if (soapPath == null)
-      soapPath = BinariesInstaller.install("soap");
+    if (genomeFile == null)
+      throw new NullPointerException("genome file is null");
+
+    if (outputDir == null)
+      throw new NullPointerException("output directory is null");
+
+    if (indexerPath == null)
+      indexerPath = BinariesInstaller.install("2bwt-builder");
+
+    if (!outputDir.exists())
+      if (!outputDir.mkdir())
+        throw new IOException("Unable to create directory for genome index");
+
+    final File tmpGenomeFile = new File(outputDir, genomeFile.getName());
+
+    // Create temporary symbolic link for genome
+    FileUtils.createSymbolicLink(genomeFile, tmpGenomeFile);
+
+    // Compute the index
+    final String cmd = indexerPath + " " + tmpGenomeFile.getAbsolutePath();
+    ProcessUtils.exec(cmd, DEBUG);
+
+    // Remove symbolic link
+    tmpGenomeFile.delete();
   }
 
-  public static File makeIndex(final File genomeFile, final boolean copyFile)
+  /**
+   * Create the soap index in a zip archive
+   * @param genomeFile path to the genome file
+   * @throws IOException if an error occurs while creating the index
+   */
+  public static File makeIndexInZipFile(final File genomeFile)
       throws IOException {
 
     if (indexerPath == null)
@@ -65,16 +102,7 @@ public class SOAPWrapper {
     if (!tmpDir.mkdir())
       throw new IOException("Unable to create directory for genome index");
 
-    final File tmpGenomeFile = new File(tmpDir, genomeFile.getName());
-
-    if (copyFile)
-      FileUtils.copyFile(genomeFile, tmpGenomeFile);
-    else
-      genomeFile.renameTo(tmpDir);
-
-    final String cmd = indexerPath + " " + tmpGenomeFile.getAbsolutePath();
-
-    ProcessUtils.exec(cmd, DEBUG);
+    makeIndex(genomeFile, tmpDir);
 
     final File indexZipFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-soapgenomeindex",
@@ -89,6 +117,16 @@ public class SOAPWrapper {
     return indexZipFile;
   }
 
+  /**
+   * Map reads using soap.
+   * @param readsFile reads file
+   * @param soapIndexDir soap index file
+   * @param outputFile output alignment file
+   * @param unmapFile output unmap file
+   * @param soapArgs soap arguments
+   * @param nbSoapThreads number of threads to use
+   * @throws IOException if an error occurs while mapping reads
+   */
   public static void map(final File readsFile, final File soapIndexDir,
       final File outputFile, final File unmapFile, final String soapArgs,
       final int nbSoapThreads) throws IOException {
@@ -114,10 +152,13 @@ public class SOAPWrapper {
             + readsFile.getAbsolutePath() + " -D "
             + ambFile.substring(0, ambFile.length() - 4) + " -o "
             + outputFile.getAbsolutePath() + " -u "
-            + unmapFile.getAbsolutePath();
-    if (DEBUG)
-      System.out.println(cmd);
-    ProcessUtils.exec(cmd, DEBUG);
+            + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+
+    logger.info(cmd);
+
+//    final String soapOutput = ProcessUtils.execToString(cmd);
+//    logger.info(soapOutput);
+    ProcessUtils.sh(cmd);
   }
 
 }
