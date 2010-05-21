@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.parsers;
+package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.ArrayList;
 import java.util.List;
