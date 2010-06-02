@@ -80,7 +80,7 @@ public class SoapMapReadsHadoopMain {
 
     final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
 
-    final int sampleId = CommonHadoop.getSampleId(sample);
+    final int sampleId = sample.getId();
     final int genomeId =
         CommonHadoop.getSampleId(sample.getMetadata().getGenome());
 
@@ -168,7 +168,7 @@ public class SoapMapReadsHadoopMain {
       throw new NullPointerException("The arguments of import data is null");
 
     if (args.length != 1)
-      throw new IllegalArgumentException("Filter reads need one argument");
+      throw new IllegalArgumentException("Soap map need one argument");
 
     // Set the design path
     final String designPathname = args[0];

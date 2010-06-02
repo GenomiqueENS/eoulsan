@@ -109,7 +109,7 @@ public class FilterReadsHadoopMain {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath, "sample_filtered_"
-        + Common.getSampleId(sample)));
+        + sample.getId()));
 
     return conf;
   }

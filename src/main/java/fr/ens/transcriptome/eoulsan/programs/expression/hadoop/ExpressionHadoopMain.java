@@ -85,7 +85,7 @@ public class ExpressionHadoopMain {
     // Create JobConf
     final JobConf conf = new JobConf(ExpressionHadoopMain.class);
 
-    final int sampleId = CommonHadoop.getSampleId(sample);
+    final int sampleId = sample.getId();
     final int genomeId =
         CommonHadoop.getSampleId(sample.getMetadata().getGenome());
 
@@ -265,7 +265,7 @@ public class ExpressionHadoopMain {
       final Sample sample = e.getKey();
       final RunningJob rj = e.getValue();
 
-      final int sampleId = CommonHadoop.getSampleId(sample);
+      final int sampleId = sample.getId();
       final int genomeId =
           CommonHadoop.getSampleId(sample.getMetadata().getGenome());
       final long readsUsed =

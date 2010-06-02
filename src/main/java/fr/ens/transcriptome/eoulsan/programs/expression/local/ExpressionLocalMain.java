@@ -60,8 +60,6 @@ public class ExpressionLocalMain {
       final DesignReader dr = new SimpleDesignReader(designFilename);
       final Design design = dr.read();
 
-      int sampleCount = 1;
-
       ExpressionPseudoMapReduce epmr = null;
       String lastAnnotationKey = null;
 
@@ -84,15 +82,15 @@ public class ExpressionLocalMain {
 
         final File alignmentFile =
             new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + (sampleCount) + Common.SOAP_RESULT_EXTENSION);
+                + s.getId() + Common.SOAP_RESULT_EXTENSION);
 
         final File expressionTmpFile =
             new File(Common.SAMPLE_EXPRESSION_FILE_PREFIX
-                + (sampleCount) + Common.SOAP_RESULT_EXTENSION + ".tmp");
+                + s.getId() + Common.SOAP_RESULT_EXTENSION + ".tmp");
 
         final File expressionFile =
             new File(Common.SAMPLE_EXPRESSION_FILE_PREFIX
-                + (sampleCount) + Common.SOAP_RESULT_EXTENSION);
+                + s.getId() + Common.SAMPLE_EXPRESSION_FILE_SUFFIX);
 
         if (tmpdir != null)
           epmr.setMapReduceTemporaryDirectory(new File(tmpdir));
@@ -113,12 +111,11 @@ public class ExpressionLocalMain {
         expressionTmpFile.delete();
 
         // Add counters for this sample to log file
-        log.append(epmr.getReporter().CountersValuesToString(
+        log.append(epmr.getReporter().countersValuesToString(
             ExpressionPseudoMapReduce.COUNTER_GROUP,
             "Expression computation ("
                 + s.getName() + ", " + alignmentFile.getName() + ")"));
 
-        sampleCount++;
       }
 
       // Write log file

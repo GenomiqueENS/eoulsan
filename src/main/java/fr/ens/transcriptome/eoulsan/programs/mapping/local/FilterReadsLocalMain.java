@@ -65,8 +65,6 @@ public final class FilterReadsLocalMain {
       final DesignReader dr = new SimpleDesignReader(designFilename);
       final Design design = dr.read();
 
-      int count = 1;
-
       for (Sample s : design.getSamples()) {
 
         final Reporter reporter = new Reporter();
@@ -74,7 +72,7 @@ public final class FilterReadsLocalMain {
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
             new File(Common.SAMPLE_FILTERED_PREFIX
-                + (count++) + Common.FASTQ_EXTENSION);
+                + s.getId() + Common.FASTQ_EXTENSION);
 
         if (threshold != -1)
           filter.setLengthThreshold(threshold);
@@ -83,7 +81,7 @@ public final class FilterReadsLocalMain {
         filter.filter(outputFile, reporter);
 
         // Add counters for this sample to log file
-        log.append(reporter.CountersValuesToString(
+        log.append(reporter.countersValuesToString(
             FilterReadsLocal.COUNTER_GROUP, "Filter reads ("
                 + s.getName() + ", " + ds + ")"));
       }
