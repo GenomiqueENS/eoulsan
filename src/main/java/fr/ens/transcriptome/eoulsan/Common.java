@@ -29,7 +29,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
 
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -63,21 +62,9 @@ public class Common {
 
   public static final String SAMPLE_EXPRESSION_FILE_PREFIX =
       "sample_expression_";
+  public static final String SAMPLE_EXPRESSION_FILE_SUFFIX = ".txt";
 
   public static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";
-
-  /**
-   * Get the identifier of the sample from the source path
-   * @param sample Sample to use
-   * @return the identifier of the source
-   */
-  public static int getSampleId(final Sample sample) {
-
-    if (sample == null)
-      return -1;
-
-    return getSampleId(sample.getSource());
-  }
 
   /**
    * Get the identifier of the sample from the source path
@@ -114,7 +101,7 @@ public class Common {
     writer.write(data);
     writer.close();
   }
-  
+
   /**
    * Write log data.
    * @param os OutputStream of the log file
@@ -124,9 +111,9 @@ public class Common {
   public static void writeLog(final File file, final long startTime,
       final String data) throws IOException {
 
-    if (file==null)
+    if (file == null)
       throw new NullPointerException("File for log file is null.");
-    
+
     writeLog(FileUtils.createOutputStream(file), startTime, data);
   }
 
