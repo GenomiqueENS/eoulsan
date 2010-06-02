@@ -22,8 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class implements a reporter class like Counter class in Hadoop
@@ -65,6 +67,29 @@ public class Reporter {
   }
 
   /**
+   * Set the value of a counter.
+   * @param counterGroup group of the counter
+   * @param counter the counter to increment
+   * @param value value of the counter
+   */
+  public void setCounter(final String counterGroup, final String counter,
+      final long value) {
+
+    if (counterGroup == null || counter == null || value <= 0)
+      return;
+
+    final Map<String, Long> group;
+
+    if (!this.map.containsKey(counterGroup)) {
+      group = new HashMap<String, Long>();
+      this.map.put(counterGroup, group);
+    } else
+      group = this.map.get(counterGroup);
+
+    group.put(counter, value);
+  }
+
+  /**
    * Get the value of a counter.
    * @param counterGroup the group of the counter
    * @param counter the counter name
@@ -87,6 +112,15 @@ public class Reporter {
   }
 
   /**
+   * Get a list of counter groups
+   * @return a unmodifiable list of the counter groups
+   */
+  public Set<String> getCounterGroups() {
+
+    return Collections.unmodifiableSet(this.map.keySet());
+  }
+
+  /**
    * Clear all the counters in the reporter.
    */
   public void clear() {
@@ -100,7 +134,7 @@ public class Reporter {
    * @param header header before counter values
    * @return a string with all the values of counter of the counter group
    */
-  public String CountersValuesToString(final String counterGroup,
+  public String countersValuesToString(final String counterGroup,
       final String header) {
 
     final StringBuilder sb = new StringBuilder();
@@ -123,4 +157,17 @@ public class Reporter {
     return sb.toString();
   }
 
+  @Override
+  public String toString() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    for (String counterGroup : getCounterGroups()) {
+      sb.append(counterGroup);
+      sb.append('\n');
+      sb.append(countersValuesToString(counterGroup, null));
+    }
+
+    return sb.toString();
+  }
 }
