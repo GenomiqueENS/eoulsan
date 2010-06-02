@@ -77,7 +77,7 @@ public class FilterAndSoapMapReadsHadoopMain {
 
     final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
 
-    final int sampleId = CommonHadoop.getSampleId(sample);
+    final int sampleId = sample.getId();
     final int genomeId =
         CommonHadoop.getSampleId(sample.getMetadata().getGenome());
 
