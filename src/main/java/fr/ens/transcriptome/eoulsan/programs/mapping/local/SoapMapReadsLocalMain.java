@@ -57,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public class SoapMapReadsMain {
+public class SoapMapReadsLocalMain {
 
   public static String PROGRAM_NAME = "soapmapreads";
   public static final String COUNTER_GROUP = "Map reads with SOAP";
@@ -78,9 +78,6 @@ public class SoapMapReadsMain {
       final DesignReader dr = new SimpleDesignReader(designFilename);
       final Design design = dr.read();
 
-      final Reporter reporter = new Reporter();
-
-      int sampleCount = 1;
       int genomeCount = 0;
       final Map<String, Integer> genomes = new HashMap<String, Integer>();
 
@@ -90,25 +87,27 @@ public class SoapMapReadsMain {
         if (!genomes.containsKey(genomeFilename))
           genomes.put(genomeFilename, ++genomeCount);
 
+        final Reporter reporter = new Reporter();
+
         final File soapIndexDir =
             new File(Common.GENOME_SOAP_INDEX_DIR_PREFIX
                 + genomes.get(genomeFilename));
 
         final File inputFile =
             new File(Common.SAMPLE_FILTERED_PREFIX
-                + (sampleCount) + Common.FASTQ_EXTENSION);
+                + s.getId() + Common.FASTQ_EXTENSION);
 
         final File alignmentFile =
             new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + (sampleCount) + Common.SOAP_RESULT_EXTENSION + ".tmp");
+                + s.getId() + Common.SOAP_RESULT_EXTENSION + ".tmp");
 
         final File unmapFile =
             new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + (sampleCount) + Common.UNMAP_EXTENSION);
+                + s.getId() + Common.UNMAP_EXTENSION);
 
         final File resultFile =
             new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + (sampleCount) + Common.SOAP_RESULT_EXTENSION);
+                + s.getId() + Common.SOAP_RESULT_EXTENSION);
 
         SOAPWrapper.map(inputFile, soapIndexDir, alignmentFile, unmapFile,
             Common.SOAP_ARGS_DEFAULT, threads == -1 ? Runtime.getRuntime()
@@ -118,11 +117,10 @@ public class SoapMapReadsMain {
         alignmentFile.delete();
 
         // Add counters for this sample to log file
-        log.append(reporter.CountersValuesToString(COUNTER_GROUP,
+        log.append(reporter.countersValuesToString(COUNTER_GROUP,
             "Map reads with SOAP ("
                 + s.getName() + ", " + inputFile.getName() + ")"));
 
-        sampleCount++;
       }
 
       // Write log file
@@ -216,7 +214,7 @@ public class SoapMapReadsMain {
         "display information about the license of this software");
 
     options.addOption(OptionBuilder.withArgName("value").hasArg()
-        .withDescription("threshold of the filter").create("threshold"));
+        .withDescription("number of threads to use").create("threads"));
 
     return options;
   }
