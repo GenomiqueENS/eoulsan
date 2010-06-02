@@ -126,8 +126,10 @@ public class FilterSamplesLocalMain {
           + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
           + " threshold=" + threshold);
 
-      if (ratio < threshold)
+      if (ratio < threshold) {
         design.removeSample(sample);
+        logger.info("Remove sample: " + sample);
+      }
     }
 
     // Write output design
