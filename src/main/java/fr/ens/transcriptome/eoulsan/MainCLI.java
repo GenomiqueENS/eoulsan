@@ -26,7 +26,8 @@ import java.util.Arrays;
 
 import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterSamplesLocalMain;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateDesignLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.local.CreateSoapIndexLocalMain;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -122,8 +123,10 @@ public class MainCLI {
       CreateSoapIndexLocalMain.main(arguments);
     else if (FilterReadsLocalMain.PROGRAM_NAME.equals(program))
       FilterReadsLocalMain.main(arguments);
-    else if (SoapMapReadsMain.PROGRAM_NAME.equals(program))
-      SoapMapReadsMain.main(arguments);
+    else if (SoapMapReadsLocalMain.PROGRAM_NAME.equals(program))
+      SoapMapReadsLocalMain.main(arguments);
+    else if (FilterSamplesLocalMain.PROGRAM_NAME.equals(program))
+      FilterSamplesLocalMain.main(arguments);
     else if (ExpressionLocalMain.PROGRAM_NAME.equals(program))
       ExpressionLocalMain.main(arguments);
     else
