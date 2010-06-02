@@ -168,16 +168,46 @@ public class FileUtils {
    * @return an InputStream
    * @throws FileNotFoundException if the file is not found
    */
+  public static final InputStream createInputStream(final String filename)
+      throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null.");
+
+    return createInputStream(new File(filename));
+  }
+
+  /**
+   * Utility method to create a fast InputStream from a file.
+   * @param file File to read
+   * @return an InputStream
+   * @throws FileNotFoundException if the file is not found
+   */
   public static final InputStream createInputStream(final File file)
       throws FileNotFoundException {
 
     if (file == null)
-      return null;
+      throw new NullPointerException("The file is null.");
 
     final FileInputStream inFile = new FileInputStream(file);
     final FileChannel inChannel = inFile.getChannel();
 
     return Channels.newInputStream(inChannel);
+  }
+
+  /**
+   * Utility method to create a fast OutputStream from a file.
+   * @param filename Name of the file to read
+   * @return an OutputStream
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final OutputStream createOutputStream(final String filename)
+      throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null.");
+
+    return createOutputStream(new File(filename));
   }
 
   /**
@@ -190,7 +220,7 @@ public class FileUtils {
       throws FileNotFoundException {
 
     if (file == null)
-      return null;
+      throw new NullPointerException("The file is null.");
 
     if (file.isFile())
       file.delete();
@@ -199,6 +229,21 @@ public class FileUtils {
     final FileChannel outChannel = outFile.getChannel();
 
     return Channels.newOutputStream(outChannel);
+  }
+
+  /**
+   * Utility method to create fast BufferedReader.
+   * @param filename Name of the file to read
+   * @return a BufferedReader
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedReader createBufferedReader(final String filename)
+      throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null");
+
+    return createBufferedReader(new File(filename));
   }
 
   /**
@@ -219,6 +264,37 @@ public class FileUtils {
   }
 
   /**
+   * Utility method to create fast BufferedReader.
+   * @param is InputStream to read
+   * @return a BufferedReader
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedReader createBufferedReader(final InputStream is)
+      throws FileNotFoundException {
+
+    if (is == null)
+      throw new NullPointerException("The input stream is null");
+
+    return new BufferedReader(new InputStreamReader(is));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param filename Name of the file to write
+   * @return a BufferedWriter
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final UnSynchronizedBufferedWriter createBufferedWriter(
+      final String filename) throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null");
+
+    return createBufferedWriter(new File(filename));
+  }
+
+  /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
    * safe-thread. The created file use ISO-8859-1 encoding.
    * @param file File to write
@@ -232,6 +308,23 @@ public class FileUtils {
 
     if (os == null)
       return null;
+
+    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os, Charset
+        .forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param os OutputStream to write
+   * @return a BufferedWriter
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final UnSynchronizedBufferedWriter createBufferedWriter(
+      final OutputStream os) throws FileNotFoundException {
+
+    if (os == null)
+      throw new NullPointerException("The output stream is null");
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os, Charset
         .forName(CHARSET)));
