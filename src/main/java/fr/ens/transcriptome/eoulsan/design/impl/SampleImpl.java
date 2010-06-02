@@ -36,6 +36,17 @@ public class SampleImpl implements Sample {
   //
 
   @Override
+  public int getId() {
+
+    final String sampleName = this.design.getSampleName(this.sampleId);
+
+    if (sampleName == null)
+      throw new EoulsanRuntimeException("The sample doesn't exists");
+
+    return this.design.getSampleId(sampleName);
+  }
+
+  @Override
   public String getName() {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
@@ -82,6 +93,23 @@ public class SampleImpl implements Sample {
   //
   // Setters
   //
+
+  /**
+   * Set the identfier of the sample
+   * @param id the identifier to set
+   */
+  public void setId(final int id) {
+
+    final String sampleName = this.design.getSampleName(this.sampleId);
+
+    if (sampleName == null)
+      throw new EoulsanRuntimeException("The sample doesn't exists");
+
+    if (this.design.getSampleId(sampleName) == id)
+      return;
+
+    this.design.setSampleId(sampleName, id);
+  }
 
   @Override
   public void setName(final String newName) {

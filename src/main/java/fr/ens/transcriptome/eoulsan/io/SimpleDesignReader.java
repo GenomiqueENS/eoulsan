@@ -149,9 +149,11 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
       List<String> slides = data.get(SLIDENUMBER_FIELD);
 
-      for (int i = 0; i < count; i++)
+      for (int i = 0; i < count; i++) {
         design.getSampleMetadata(ids.get(i)).setSlideNumber(
             Integer.parseInt(slides.get(i)));
+        design.getSample(ids.get(i)).setId(Integer.parseInt(slides.get(i)));
+      }
     }
 
     // Set FileName field

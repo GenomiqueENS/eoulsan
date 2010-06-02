@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.design.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class DesignImpl implements Design {
   private List<String> samplesOrder = new ArrayList<String>();
   private Map<String, Integer> samples = new HashMap<String, Integer>();
   private Map<Integer, String> samplesReverse = new HashMap<Integer, String>();
+  private Map<Integer, Integer> ids = new HashMap<Integer, Integer>();
 
   private Map<Integer, String> sources = new HashMap<Integer, String>();
 
@@ -56,6 +58,29 @@ public class DesignImpl implements Design {
     final int fieldId = this.metadataFields.get(metadataField);
 
     return slideId + "-" + fieldId;
+  }
+
+  /**
+   * Get the identifier of a sample
+   * @param sampleName Sample name
+   * @return the sample identifier
+   */
+  public int getSampleId(final String sampleName) {
+
+    if (sampleName == null)
+      throw new NullPointerException("Slide name is null");
+
+    if (!isSample(sampleName))
+      throw new EoulsanRuntimeException("The slide doesn't exists");
+
+    final int sampleId = this.samples.get(sampleName);
+
+    final Integer result = this.ids.get(sampleId);
+
+    if (result == null)
+      return -1;
+
+    return result;
   }
 
   /**
@@ -94,7 +119,11 @@ public class DesignImpl implements Design {
     this.samples.put(sampleName, slideId);
     this.samplesReverse.put(slideId, sampleName);
     this.samplesOrder.add(sampleName);
-
+    
+    int id = slideId+1;
+    while (this.ids.containsValue(id))
+      id++;
+    this.ids.put(slideId, id);
   }
 
   @Override
@@ -269,7 +298,7 @@ public class DesignImpl implements Design {
     // Remove descriptions
     final String prefixDescritpion = this.samples.get(sampleName) + "-";
 
-    for (String key : this.metadataData.keySet())
+    for (String key : new HashSet<String>(this.metadataData.keySet()))
       if (key.startsWith(prefixDescritpion))
         this.metadataData.remove(key);
 
@@ -370,6 +399,30 @@ public class DesignImpl implements Design {
     final int id = this.samples.get(sampleName);
 
     this.sources.put(id, source);
+  }
+
+  /**
+   * Set the identifier of a sample
+   * @param sampleName Name of the sample
+   * @param id identifier of the sample to set
+   */
+  public void setSampleId(final String sampleName, final int id) {
+
+    if (sampleName == null)
+      throw new NullPointerException("Sample name is null");
+
+    if (id <= 0)
+      throw new NullPointerException("Sample source is lower or equals to 0");
+
+    if (!isSample(sampleName))
+      throw new EoulsanRuntimeException("The sample doesn't exists");
+
+    if (this.ids.containsValue(id))
+      throw new EoulsanRuntimeException("The identifier already exists: "+id);
+
+    final int sampleId = this.samples.get(sampleName);
+
+    this.ids.put(sampleId, id);
   }
 
 }

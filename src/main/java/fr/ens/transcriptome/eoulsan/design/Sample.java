@@ -34,6 +34,12 @@ public interface Sample {
   //
 
   /**
+   * Get the id of the sample
+   * @return the id of the sample
+   */
+  int getId();
+  
+  /**
    * Get the name of the slide.
    * @return The name of the slide
    */
@@ -61,6 +67,12 @@ public interface Sample {
   // Setters
   //
 
+  /**
+   * Set the id of the sample.
+   * @param id the id of the sample
+   */
+  void setId(final int id);
+  
   /**
    * Rename the slide.
    * @param newName The new name of the slide.

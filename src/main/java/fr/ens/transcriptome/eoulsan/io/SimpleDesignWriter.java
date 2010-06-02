@@ -63,18 +63,12 @@ public class SimpleDesignWriter extends DesignWriter {
 
       List<String> metadataFields = design.getMetadataFieldsNames();
 
-      final boolean serialNumber =
-          design.isMetadataField(SampleMetadata.SLIDE_NUMBER_FIELD);
-
       // Write header
       bw.append("SampleNumber");
       bw.append(SEPARATOR);
 
-      if (serialNumber) {
-
-        bw.append("Name");
-        bw.append(SEPARATOR);
-      }
+      bw.append("Name");
+      bw.append(SEPARATOR);
 
       bw.append("FileName");
 
@@ -94,22 +88,11 @@ public class SimpleDesignWriter extends DesignWriter {
 
       for (Sample s : samples) {
 
-        if (serialNumber) {
+        bw.append(Integer.toString(s.getId()));
+        bw.append(SEPARATOR);
 
-          final String sn = s.getMetadata().getSampleNumber();
-
-          bw.append(sn == null ? "" : sn);
-          bw.append(SEPARATOR);
-
-          bw.append(s.getName());
-          bw.append(SEPARATOR);
-
-        } else {
-
-          bw.append(s.getName());
-          bw.append(SEPARATOR);
-
-        }
+        bw.append(s.getName());
+        bw.append(SEPARATOR);
 
         String sourceInfo = s.getSourceInfo();
         if (sourceInfo != null)
