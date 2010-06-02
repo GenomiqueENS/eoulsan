@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
-import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
  * This class define a design reader for limma design files.
@@ -133,27 +132,15 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
     Design design = DesignFactory.createEmptyDesign();
 
-    // Set Id field
-    boolean refName = data.containsKey(NAME_FIELD);
-
-    List<String> ids = data.get(refName ? NAME_FIELD : SLIDENUMBER_FIELD);
+    List<String> names = data.get(NAME_FIELD);
+    List<String> ids = data.get(SLIDENUMBER_FIELD);
     final int count = ids.size();
 
-    for (final String id : ids)
-      design.addSample(id);
+    for (int i = 0; i < names.size(); i++) {
 
-    // Set SlideNumber field
-    if (refName) {
-
-      design.addMetadataField(SampleMetadata.SLIDE_NUMBER_FIELD);
-
-      List<String> slides = data.get(SLIDENUMBER_FIELD);
-
-      for (int i = 0; i < count; i++) {
-        design.getSampleMetadata(ids.get(i)).setSlideNumber(
-            Integer.parseInt(slides.get(i)));
-        design.getSample(ids.get(i)).setId(Integer.parseInt(slides.get(i)));
-      }
+      final String name = names.get(i);
+      design.addSample(name);
+      design.getSample(name).setId(Integer.parseInt(ids.get(i)));
     }
 
     // Set FileName field
@@ -162,7 +149,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
       DataSource source =
           DataSourceUtils.identifyDataSource(this.baseDir, filenames.get(i));
-      design.setSource(ids.get(i), source.toString());
+      design.setSource(names.get(i), source.toString());
     }
 
     for (String fd : fieldnames) {
@@ -176,7 +163,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
       int k = 0;
       for (String desc : descriptions)
-        design.setMetadata(ids.get(k++), fd, desc);
+        design.setMetadata(names.get(k++), fd, desc);
 
     }
 
