@@ -22,10 +22,14 @@
 
 package fr.ens.transcriptome.eoulsan.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.core.GFFEntry;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class GFFWriter extends GFFEntry {
@@ -34,13 +38,12 @@ public class GFFWriter extends GFFEntry {
 
   private boolean first = true;
   private StringBuilder sb;
-  
 
   private void writeMetadata() throws IOException {
 
     if (!this.isMetaDataEntry("gff-version"))
       sb.append("##gff-version\t3\n");
-    
+
     for (String k : this.getMetadataKeyNames()) {
       sb.append("##");
       sb.append(StringUtils.protectGFF(k));
@@ -48,8 +51,6 @@ public class GFFWriter extends GFFEntry {
       sb.append(StringUtils.protectGFF(getMetadataEntryValue(k)));
       sb.append('\n');
     }
-    
-    
 
     this.writer.write(sb.toString());
     this.sb.setLength(0);
@@ -79,20 +80,45 @@ public class GFFWriter extends GFFEntry {
   }
 
   //
-  // Utility methods
+  // Constructors
   //
 
-  
-
-  //
-  // Constructor
-  //
-
+  /**
+   * Public constructor.
+   * @param writer Writer to use
+   */
   public GFFWriter(final Writer writer) {
 
     if (writer == null)
       throw new NullPointerException("The writer is null.");
 
+    this.writer = writer;
   }
 
+  /**
+   * Public constructor.
+   * @param os OutputStream to use
+   */
+  public GFFWriter(final OutputStream os) throws FileNotFoundException {
+
+    this.writer = FileUtils.createBufferedWriter(os);
+  }
+
+  /**
+   * Public constructor.
+   * @param outputFile file to use
+   */
+  public GFFWriter(final File outputFile) throws FileNotFoundException {
+
+    this.writer = FileUtils.createBufferedWriter(outputFile);
+  }
+
+  /**
+   * Public constructor.
+   * @param outputFilename name of the file to use
+   */
+  public GFFWriter(final String outputFilename) throws FileNotFoundException {
+
+    this.writer = FileUtils.createBufferedWriter(outputFilename);
+  }
 }
