@@ -169,7 +169,7 @@ public class FilterSamplesLocalMain {
     // Show help message
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " [options] " + PROGRAM_NAME + " src_design design_design", options);
+        + " [options] " + PROGRAM_NAME + " src_design dest_design", options);
 
     System.exit(0);
   }
@@ -248,8 +248,13 @@ public class FilterSamplesLocalMain {
     final int argsOptions = parseCommandLine(args);
 
     if (args.length < argsOptions + 2) {
-      System.err.println("Error: " + PROGRAM_NAME + " need two parameters");
-      help(makeOptions());
+      System.err.println("Error: "
+          + PROGRAM_NAME
+          + " need two parameters. Use the -h option to get more information.");
+      System.err.println("usage:"
+          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
+          + " [options] src_design dest_design");
+
       System.exit(1);
     }
 

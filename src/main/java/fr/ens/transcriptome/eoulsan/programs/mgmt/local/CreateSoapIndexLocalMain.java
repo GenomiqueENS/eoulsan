@@ -98,7 +98,7 @@ public class CreateSoapIndexLocalMain {
     // Show help message
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " [options] design [genome [genome_masked [output_dir]]]", options);
+        + " " + PROGRAM_NAME + " [options] design", options);
 
     System.exit(0);
   }
@@ -170,7 +170,11 @@ public class CreateSoapIndexLocalMain {
 
     if (args == null || args.length != argsOptions + 1) {
 
-      System.err.println("Invalid number of arguments.");
+      System.err
+          .println("This program needs one argument. Use the -h option to get more information.");
+      System.err.println("usage:"
+          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
+          + " [options] design");
       System.exit(1);
     }
 
