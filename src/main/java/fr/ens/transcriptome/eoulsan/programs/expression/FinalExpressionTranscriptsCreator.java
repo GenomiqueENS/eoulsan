@@ -188,7 +188,7 @@ public class FinalExpressionTranscriptsCreator {
     final OutputStreamWriter osw = new OutputStreamWriter(os);
 
     osw
-        .write("#ID\tType\tChromosome\tStart\tEnd\tStrand\tlength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
+        .write("ID\tType\tChromosome\tStart\tEnd\tStrand\tlength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
     for (ExpressionTranscript et : list)
       osw.write(et.toString() + "\n");
 
