@@ -47,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.util.ExecLock;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
@@ -148,6 +149,9 @@ public class SoapMapReadsMapper implements
               + ".soap.nb.threads", ""
               + Runtime.getRuntime().availableProcessors()));
 
+      if (this.nbSoapThreads > Runtime.getRuntime().availableProcessors())
+        this.nbSoapThreads = Runtime.getRuntime().availableProcessors();
+
       this.unmapFilesDirPath = new Path(unmapChunkFilesDir);
 
       PathUtils.mkdirs(this.unmapFilesDirPath, conf);
@@ -231,7 +235,9 @@ public class SoapMapReadsMapper implements
     final File unmapFile =
         FileUtils.createTempFile(this.unmapChunkPrefix, ".fasta");
 
+    ProcessUtils.waitRandom(5000);
     lock.lock();
+    ProcessUtils.waitUntilExecutableRunning("soap");
     SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile, unmapFile,
         this.soapArgs, this.nbSoapThreads);
     lock.unlock();
@@ -240,7 +246,7 @@ public class SoapMapReadsMapper implements
 
     // Remove temporary files
     outputFile.delete();
-    //unmapFile.delete();
+    // unmapFile.delete();
     this.dataFile.delete();
 
   }
