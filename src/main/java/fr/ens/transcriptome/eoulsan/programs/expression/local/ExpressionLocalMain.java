@@ -142,7 +142,7 @@ public class ExpressionLocalMain {
     // Show help message
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " [options] design [genome [genome_masked [output_dir]]]", options);
+        + " [options] design", options);
 
     System.exit(0);
   }
@@ -220,10 +220,17 @@ public class ExpressionLocalMain {
     // Parse the command line
     final int argsOptions = parseCommandLine(args);
 
-    final String designFilename = args[argsOptions];
+    if (args == null || args.length != argsOptions + 1) {
 
-    System.out.println("designFilename=" + designFilename);
-    System.out.println("tmpdir=" + tmpdir);
+      System.err
+          .println("This program needs one argument. Use the -h option to get more information.");
+      System.err.println("usage:"
+          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
+          + " [options] design");
+      System.exit(1);
+    }
+    
+    final String designFilename = args[argsOptions];
 
     expression(designFilename, tmpdir);
   }
