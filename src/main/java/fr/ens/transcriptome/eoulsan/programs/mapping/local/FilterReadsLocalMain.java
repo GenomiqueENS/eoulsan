@@ -54,9 +54,11 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public final class FilterReadsLocalMain {
 
   public static String PROGRAM_NAME = "filterreads";
-  private static int threshold = -1;
+  private static int lengthThreshold = -1;
+  private static int qualityThreshold = -1;
 
-  private static void filter(final String designFilename, final int threshold) {
+  private static void filter(final String designFilename,
+      final int lengthThreshold, final int qualityThreshold) {
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -74,8 +76,11 @@ public final class FilterReadsLocalMain {
             new File(Common.SAMPLE_FILTERED_PREFIX
                 + s.getId() + Common.FASTQ_EXTENSION);
 
-        if (threshold != -1)
-          filter.setLengthThreshold(threshold);
+        if (lengthThreshold != -1)
+          filter.setLengthThreshold(lengthThreshold);
+
+        if (qualityThreshold != -1)
+          filter.setQualityThreshold(qualityThreshold);
 
         // Filter reads
         filter.filter(outputFile, reporter);
@@ -110,7 +115,7 @@ public final class FilterReadsLocalMain {
     // Show help message
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " [options] design [genome [genome_masked [output_dir]]]", options);
+        + " " + PROGRAM_NAME + " [options] design", options);
 
     System.exit(0);
   }
@@ -132,7 +137,12 @@ public final class FilterReadsLocalMain {
         "display information about the license of this software");
 
     options.addOption(OptionBuilder.withArgName("value").hasArg()
-        .withDescription("threshold of the filter").create("threshold"));
+        .withDescription("length threshold of the filter").create(
+            "lengththreshold"));
+
+    options.addOption(OptionBuilder.withArgName("value").hasArg()
+        .withDescription("quality threshold of the filter").create(
+            "qualitythreshold"));
 
     return options;
   }
@@ -166,8 +176,15 @@ public final class FilterReadsLocalMain {
       if (line.hasOption("license"))
         MainCLI.license();
 
-      if (line.hasOption("threshold")) {
-        threshold = Integer.parseInt(line.getOptionValue("threshold"));
+      if (line.hasOption("lengththreshold")) {
+        lengthThreshold =
+            Integer.parseInt(line.getOptionValue("lengththreshold"));
+        argsOptions += 2;
+      }
+
+      if (line.hasOption("qualitythreshold")) {
+        qualityThreshold =
+            Integer.parseInt(line.getOptionValue("qualitythreshold"));
         argsOptions += 2;
       }
 
@@ -190,12 +207,16 @@ public final class FilterReadsLocalMain {
 
     if (args == null || args.length != argsOptions + 1) {
 
-      System.err.println("Invalid number of arguments.");
+      System.err
+          .println("This program needs one argument. Use the -h option to get more information.");
+      System.err.println("usage:"
+          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
+          + " [options] design");
       System.exit(1);
     }
 
     final String designFilename = args[argsOptions];
-    filter(designFilename, threshold);
+    filter(designFilename, lengthThreshold, qualityThreshold);
   }
 
 }
