@@ -101,6 +101,9 @@ public class DesignBuilder {
         smd.setAnnotation(this.gffFile.toString());
         smd.setGenomicType("exon");
       }
+      
+      smd.setCondition(sampleName);
+      smd.setReplicatType("T");
 
     }
 
