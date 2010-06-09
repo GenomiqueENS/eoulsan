@@ -48,6 +48,10 @@ public interface SampleMetadata {
   String SERIAL_NUMBER_FIELD = "Serial number";
   /** Operator field. */
   String OPERATOR_FIELD = "Operator";
+  /** Operator field. */
+  String CONDITION_FIELD = "Condition";
+  /** Operator field. */
+  String REPLICAT_TYPE_FIELD = "ReplicateType";
 
   /**
    * Get a description.
@@ -117,6 +121,18 @@ public interface SampleMetadata {
   String getSerialNumber();
 
   /**
+   * Get the condition of the sample
+   * @return Returns the condition
+   */
+  String getCondition();
+
+  /**
+   * Get replicat type of the sample
+   * @return Returns the replicat
+   */
+  String getReplicatType();
+
+  /**
    * Set a field of the metadata.
    * @param field Field to set
    * @param value value to set
@@ -178,6 +194,18 @@ public interface SampleMetadata {
   void setSerialNumber(final String serialNumber);
 
   /**
+   * Set the condition of the sample
+   * @param condition The condition to set
+   */
+  void setCondition(final String condition);
+
+  /**
+   * Set the replicat type of the sample
+   * @param replicatType The replicat type to set
+   */
+  void setReplicatType(final String replicatType);
+
+  /**
    * Test if a field exists.
    * @param field The field to test
    * @return true if the field exists
@@ -231,5 +259,17 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isSerialNumberField();
+
+  /**
+   * Test if the condition field exists.
+   * @return true if the field exists
+   */
+  boolean isCondition();
+
+  /**
+   * Test if the replicat type field exists.
+   * @return true if the field exists
+   */
+  boolean isReplicatType();
 
 }

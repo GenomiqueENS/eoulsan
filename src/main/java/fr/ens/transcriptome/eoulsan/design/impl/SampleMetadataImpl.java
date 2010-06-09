@@ -103,6 +103,18 @@ public class SampleMetadataImpl implements SampleMetadata {
     return get(GENOMIC_TYPE_FIELD);
   }
 
+  @Override
+  public String getCondition() {
+
+    return get(CONDITION_FIELD);
+  }
+
+  @Override
+  public String getReplicatType() {
+
+    return get(REPLICAT_TYPE_FIELD);
+  }
+
   //
   // Setters
   //
@@ -173,6 +185,18 @@ public class SampleMetadataImpl implements SampleMetadata {
     set(GENOMIC_TYPE_FIELD, genomicType);
   }
 
+  @Override
+  public void setCondition(String condition) {
+
+    set(CONDITION_FIELD, condition);
+  }
+
+  @Override
+  public void setReplicatType(String replicatType) {
+
+    set(REPLICAT_TYPE_FIELD, replicatType);
+  }
+
   //
   // Fields tester
   //
@@ -234,6 +258,18 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isGenomicTypeField() {
 
     return isField(GENOMIC_TYPE_FIELD);
+  }
+
+  @Override
+  public boolean isCondition() {
+
+    return isField(CONDITION_FIELD);
+  }
+
+  @Override
+  public boolean isReplicatType() {
+
+    return isField(REPLICAT_TYPE_FIELD);
   }
 
   //

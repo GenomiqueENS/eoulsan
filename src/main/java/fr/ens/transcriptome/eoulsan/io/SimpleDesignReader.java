@@ -185,6 +185,8 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     super(file);
     if (file != null)
       this.baseDir = file.getParent();
+    else
+      throw new NullPointerException("The design file to read is null.");
   }
 
   /**
