@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -39,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public final class ProcessUtils {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static Random random;
 
   /**
    * Execute a command.
@@ -246,6 +250,80 @@ public final class ProcessUtils {
     } catch (InterruptedException e) {
 
       logger.severe("Interrupted exception: " + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Return a set withs pid of existing executable.
+   * @return a set of integers with pid of existing executable
+   */
+  public static Set<Integer> getExecutablePids(final String executableName) {
+
+    if (executableName == null)
+      return null;
+
+    Set<Integer> result = new HashSet<Integer>();
+
+    try {
+      final String s =
+          ProcessUtils.execToString("pgrep " + executableName.trim());
+      if (s == null)
+        return result;
+      final String[] lines = s.split("\n");
+      for (String line : lines)
+        try {
+          result.add(Integer.parseInt(line));
+        } catch (NumberFormatException e) {
+          continue;
+        }
+
+    } catch (IOException e) {
+      return result;
+    }
+
+    return result;
+  }
+
+  /**
+   * Wait the end of the execution of all the instance of an executable.
+   * @param executableName name of the executable
+   */
+  public static void waitUntilExecutableRunning(final String executableName) {
+
+    if (executableName == null)
+      return;
+
+    while (true) {
+
+      final Set<Integer> pids = getExecutablePids(executableName);
+
+      if (pids.size() == 0)
+        return;
+
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+      }
+    }
+
+  }
+
+  /**
+   * Wait a random number of milliseconds.
+   * @param maxMilliseconds the maximum number of milliseconds to wait
+   */
+  public static void waitRandom(final int maxMilliseconds) {
+
+    if (maxMilliseconds <= 0)
+      return;
+
+    if (random == null)
+      random = new Random(System.currentTimeMillis());
+
+    try {
+      Thread.sleep(random.nextInt(maxMilliseconds));
+    } catch (InterruptedException e) {
     }
 
   }
