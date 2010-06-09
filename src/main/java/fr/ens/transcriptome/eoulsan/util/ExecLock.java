@@ -168,25 +168,7 @@ public class ExecLock {
    */
   private Set<Integer> getJVMsPids() {
 
-    Set<Integer> result = new HashSet<Integer>();
-
-    try {
-      final String s = ProcessUtils.execToString("pgrep java");
-      if (s == null)
-        return result;
-      final String[] lines = s.split("\n");
-      for (String line : lines)
-        try {
-          result.add(Integer.parseInt(line));
-        } catch (NumberFormatException e) {
-          continue;
-        }
-
-    } catch (IOException e) {
-      return result;
-    }
-
-    return result;
+    return ProcessUtils.getExecutablePids("java");
   }
 
   /**
