@@ -161,19 +161,15 @@ public class UploadDesignDataHadoopMain {
       final Map<String, String> genomesMap = new HashMap<String, String>();
       final Map<String, String> annotationsMap = new HashMap<String, String>();
 
-      int samplesCount = 0;
       int genomesCount = 0;
       int annotationsCount = 0;
 
       for (Sample s : design.getSamples()) {
 
-        // Set the number of the sample
-        samplesCount++;
-
         // Copy the sample
         final Path newSamplePath =
-            createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX,
-                samplesCount, Common.FASTQ_EXTENSION);
+            createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
+                Common.FASTQ_EXTENSION);
         copy(s.getSource(), newSamplePath, conf);
 
         s.setSource(newSamplePath.getName());
@@ -190,7 +186,8 @@ public class UploadDesignDataHadoopMain {
           copy(genome, newGenomePath, conf);
 
           // Create soap index file
-          final File indexFile = SOAPWrapper.makeIndexInZipFile(new File(genome));
+          final File indexFile =
+              SOAPWrapper.makeIndexInZipFile(new File(genome));
           copy(indexFile.toString(), createPath(hadoopPath,
               CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX, genomesCount,
               CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX), conf);
