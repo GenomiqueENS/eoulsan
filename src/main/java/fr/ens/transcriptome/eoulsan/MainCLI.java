@@ -22,8 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-import java.util.Arrays;
-
+import fr.ens.transcriptome.eoulsan.programs.anadiff.local.AnaDiffLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalMain;
 import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterSamplesLocalMain;
@@ -72,8 +71,43 @@ public class MainCLI {
    */
   private static void help() {
 
-    System.out.println("Help.");
-    System.out.println("TODO...");
+    System.out.println(Globals.APP_NAME + " version " + Globals.APP_VERSION);
+
+    System.out
+        .println("usage: eoulsan.sh command [options] [arguments]\nAvailable commands:");
+
+    System.out
+        .println(" - "
+            + CreateDesignLocalMain.PROGRAM_NAME
+            + "          Create a design file");
+    System.out.println(" - "
+        + CreateSoapIndexLocalMain.PROGRAM_NAME + "       Create SOAP index");
+    System.out.println(" - "
+        + FilterReadsLocalMain.PROGRAM_NAME + "           Filter reads");
+    System.out.println(" - "
+        + SoapMapReadsLocalMain.PROGRAM_NAME
+        + "            Map read on genome using SOAP");
+    System.out.println(" - "
+        + FilterSamplesLocalMain.PROGRAM_NAME
+        + "         Filter samples with low reads alignment");
+    System.out.println(" - "
+        + ExpressionLocalMain.PROGRAM_NAME
+        + "            Compute expression of genes");
+    System.out.println(" - "
+        + AnaDiffLocalMain.PROGRAM_NAME
+        + "               Compute differential analysis");
+
+    System.out.println();
+    System.out.println(" - about                 About Eoulsan");
+    System.out
+        .println(" - version               Show information about the version");
+    System.out
+        .println(" - license               Show the license of the software");
+    System.out.println(" - help                  This help");
+
+    System.out
+        .println("\n With eoulsan.sh command -help you can get help about each command.");
+
     System.exit(0);
   }
 
@@ -95,10 +129,8 @@ public class MainCLI {
    */
   public static void main(final String[] args) {
 
-    System.out.println("MainCLI arguments: " + Arrays.toString(args));
-
     if (args == null || args.length == 0)
-      return;
+      help();
 
     final String program = args[0];
     final String[] arguments = StringUtils.arrayWithoutFirstElement(args);
@@ -129,6 +161,8 @@ public class MainCLI {
       FilterSamplesLocalMain.main(arguments);
     else if (ExpressionLocalMain.PROGRAM_NAME.equals(program))
       ExpressionLocalMain.main(arguments);
+    else if (AnaDiffLocalMain.PROGRAM_NAME.equals(program))
+      AnaDiffLocalMain.main(arguments);
     else
       System.err.println("Program not found: " + program);
 
