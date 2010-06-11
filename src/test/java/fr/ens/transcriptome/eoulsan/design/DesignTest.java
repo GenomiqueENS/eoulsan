@@ -44,18 +44,28 @@ public class DesignTest {
     
     d.addSample("G5_1");
     assertEquals(true,d.isSample("G5_1"));
+    assertEquals(1,d.getSample("G5_1").getId());
     d.addSample("G3_1");
     assertEquals(true,d.isSample("G5_1"));
+    assertEquals(true,d.isSample("G3_1"));
+    assertEquals(1,d.getSample("G5_1").getId());
+    assertEquals(2,d.getSample("G3_1").getId());
+    
+    d.getSample("G5_1").setId(5);
+    assertEquals(5,d.getSample("G5_1").getId());
 
     d.getSample("G5_1").getMetadata().setDescription("Test G5");
     assertEquals("Test G5",d.getSample("G5_1").getMetadata().getDescription());
     d.getSample("G3_1").getMetadata().setDescription("Test G3");
     assertEquals("Test G5",d.getSample("G5_1").getMetadata().getDescription());
     assertEquals("Test G3",d.getSample("G3_1").getMetadata().getDescription());
+    assertEquals(5,d.getSample("G5_1").getId());
     
     
     SimpleDesignReader sdr = new SimpleDesignReader(new File("/home/jourdren/tmp/d.txt"));
     Design d2 = sdr.read();
+    
+    assertEquals(5,d.getSample("G5_1").getId());
     
     SimpleDesignWriter sdw = new SimpleDesignWriter(new File("/home/jourdren/tmp/d2.txt"));
     sdw.write(d2);
