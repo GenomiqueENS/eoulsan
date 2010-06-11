@@ -6,7 +6,7 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for RNA-seq analysis.
@@ -78,38 +78,19 @@
 	</developers>
 
 	<contributors>
-		<!--contributor>
-			<name>Aurelie Duclos</name>
-			<email/>
+		<contributor>
+			<name>Marie-agnès Dilies</name>
+			<email />
 			<url />
-			<organization>
-				École Normale Supérieure Microarray platform
-			</organization>
-			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
-			</organizationUrl>
+			<organization>Pasteur Institute, Paris, Microarray platform PF2</organization>
+			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
 			<roles>
-				<role>Specificity set up and testing</role>
+				<role>Differential analysis normalization help</role>
 			</roles>
 			<timezone>1</timezone>
 			<properties />
 		</contributor>
-		<contributor>
-			<name>Bernd Jagla</name>
-			<email/>
-			<url />
-			<organization>
-				Pasteur Institute, Paris, Microarray platform PF2 
-			</organization>
-			<organizationUrl>
-				http://www.pasteur.fr/
-			</organizationUrl>
-			<roles>
-				<role>Mac OS X testing and SOAP binary building for Mac OS X</role>
-			</roles>
-			<timezone>1</timezone>
-			<properties />
-		</contributor-->
+
 	</contributors>
 
 	<licenses>
@@ -182,19 +163,25 @@
 			<scope>test</scope>
 		</dependency>
 		<!--dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>compile</scope>
+		</dependency-->
+		<!--dependency>
 			<groupId>commons-math</groupId>
 			<artifactId>commons-math</artifactId>
 			<version>1.1</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency!-->
 
 		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
@@ -263,6 +250,8 @@
 									<attribute name="Implementation-Title" value="${pom.name}"/>   
 									<attribute name="Implementation-Version" value="build${build.number}"/>   
 									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
+
+									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main"/>
 								</manifest>
 								<copy file="${basedir}/target/generated-resources/MANIFEST.MF" tofile="${basedir}/target/classes/manifest.txt"/>
              						</tasks>
@@ -275,7 +264,10 @@
 						<id>copy-output-jar</id>
            					<phase>package</phase>
            					<configuration>
-             						<tasks>
+             						<tasks unless="distrib.package.skip">
+		
+								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
+
 								<!-- Package binary distribution -->
 
 								<mkdir dir="${basedir}/target/dist/lib"/>
@@ -349,7 +341,10 @@
 						<id>integrate-archives-site</id>
 						<phase>install</phase>
 						<configuration>
-							<tasks>
+							<tasks unless="distrib.package.skip">
+
+								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
+
 								<mkdir dir="${basedir}/target/site" />
 
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.url}">
@@ -434,16 +429,6 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-						                  <groupId>commons-math</groupId>
-						                  <artifactId>commons-math</artifactId>
-						                  <version>1.1</version>
-						                  <!--type></type-->
-				                                  <!--classifier> [classifier - optional] </classifier-->
-						                  <overWrite>true</overWrite>
-						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>commons-math.jar</destFileName>
-						                </artifactItem>
-								<artifactItem>
 						                  <groupId>commons-cli</groupId>
 						                  <artifactId>commons-cli</artifactId>
 						                  <version>1.1</version>
@@ -452,36 +437,6 @@
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>commons-cli.jar</destFileName>
-						                </artifactItem>
-								<artifactItem>
-						                  <groupId>dom4j</groupId>
-						                  <artifactId>dom4j</artifactId>
-						                  <version>1.6.1</version>
-						                  <!--type></type-->
-				                                  <!--classifier> [classifier - optional] </classifier-->
-						                  <overWrite>true</overWrite>
-						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>dom4j.jar</destFileName>
-						                </artifactItem>
-								<artifactItem>
-						                  <groupId>com.sleepycat</groupId>
-						                  <artifactId>je</artifactId>
-						                  <version>3.3.75</version>
-						                  <!--type></type-->
-				                                  <!--classifier> [classifier - optional] </classifier-->
-						                  <overWrite>true</overWrite>
-						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>je.jar</destFileName>
-						                </artifactItem>
-								<artifactItem>
-						                  <groupId>org.apache.derby</groupId>
-						                  <artifactId>derby</artifactId>
-						                  <version>10.4.2.0</version>
-						                  <!--type></type-->
-				                                  <!--classifier> [classifier - optional] </classifier-->
-						                  <overWrite>true</overWrite>
-						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>derby.jar</destFileName>
 						                </artifactItem>
 					              </artifactItems>
 					              <!-- other configurations here -->
