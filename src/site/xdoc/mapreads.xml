@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
  *                  Eoulsan development code
@@ -25,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Known Bugs for Eoulsan</title>
+    <title>Map reads</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -33,27 +32,25 @@
 
   <body>
   
-    <section name="Known Bugs for Eoulsan @@@VERSION@@@">
+    <section name="Map reads">
 
-      <p>Eoulsan is not able to designing probes for genome sequence files with 
-      more than 500 scaffolds due to a limitation with the specificity calculation 
-      using genome tools.</p>  
+      <p>This module allow to map read with SOAP program.</p>  
 
-      <!--ul> 
-        <li>Bug 1.</li>
-	<li>Bug 2.</li>
-      </ul--> 
+      <ul>
+         <li><b>Available</b>: Both local and distributed mode.</li>
+         <li><b>Optional parameters</b>: none</li>
+
+        <li><b>Usage</b>:
+<source>
+$ eoulsan.sh [options] mapreads design.txt
+</source>
+
+</li>
+        
+       </ul>
       
     </section>
 
-    <section name="Submit a Eoulsan bug">
-
-      <!-- eoulsan-list?subject=Bug -->
-      <p>You can submit a bug by filling an entry on the 
-      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
-      of the Google code hosting page of our project.</p>
-
-    </section>
 
   </body>
   

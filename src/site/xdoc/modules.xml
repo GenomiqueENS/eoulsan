@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Modules</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Modules of Eoulsan">
+
+      <p>Eoulsan contains many modules to perform analysis. As Eoulsan can work in two (local an distributed) modes, some modules are available for the two and some for only one.</p>  
+
+	<table>
+		<tr><th>Phase/Module</th><th>Local Mode</th><th>Distributed mode</th></tr>
+		<tr><td>Create design</td><td>Yes</td><td>Yes</td></tr>
+		<tr><td>Upload design data</td><td>No</td><td>Yes</td></tr>
+		<tr><td>Create SOAP index</td><td>Yes</td><td>No (available in upload design data)</td></tr>
+		<tr><td>Filter reads</td><td>Yes</td><td>Yes</td></tr>
+		<tr><td>Map reads</td><td>Yes</td><td>Yes</td></tr>
+		<tr><td>Filter and map reads</td><td>No</td><td>Yes</td></tr>
+		<tr><td>Filter samples</td><td>Yes</td><td>Yes</td></tr>
+		<tr><td>Expression</td><td>Yes</td><td>Yes</td></tr>
+		<tr><td>Differential analysis</td><td>Yes</td><td>No</td></tr>
+	</table>
+
+	<p>You can get the list of available modules with: </p>
+<source>
+$ eoulsan.sh help
+</source>
+
+	<p>Help for each module can be shown with:</p>
+<source>
+$ eoulsan.sh module -h
+</source>
+      
+    </section>
+
+
+  </body>
+  
+</document>

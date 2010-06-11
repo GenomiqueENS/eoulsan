@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
- *                  Teolenn development code
+ *                  Eoulsan development code
  *
  * This code may be freely distributed and modified under the
  * terms of the GNU General Public License version 2 or later. This
@@ -14,55 +14,55 @@
  * of the École Normale Supérieure and the individual authors.
  * These should be listed in @author doc comments.
  *
- * For more information on the Teolenn project and its aims,
- * or to join the Teolenn Google group, visit the home page
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/teolenn
+ *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
 -->
 <document>
   <properties>
-    <title>Download Teolenn @@@VERSION@@@ source</title>
+    <title>Download Eoulsan @@@VERSION@@@ source</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
   <body>
-    <section name="Download Teolenn source">
+    <section name="Download Eoulsan source">
       <p>
-        Teolenn source is distributed in several formats for your convenience.
+        Eoulsan source is distributed in several formats for your convenience.
       </p>
       <ul>
         <li>
-          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-src-@@@VERSION@@@.tar.gz"-->
-          <a href="teolenn-src-@@@VERSION@@@.tar.gz">
+          <!--a href="/sgdb/download.php?ref=lbdl/eoulsan-src-@@@VERSION@@@.tar.gz"-->
+          <a href="@@@APPNAMEMIN@@@-src-@@@VERSION@@@.tar.gz">
             <code>.tar.gz</code> archive
           </a>
         </li>
         <li>
-          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-src-@@@VERSION@@@.tar.bz2"-->
-          <a href="teolenn-src-@@@VERSION@@@.tar.bz2">
+          <!--a href="/sgdb/download.php?ref=lbdl/eoulsan-src-@@@VERSION@@@.tar.bz2"-->
+          <a href="@@@APPNAMEMIN@@@-src-@@@VERSION@@@.tar.bz2">
             <code>.tar.bz2</code> archive
           </a>
         </li>
 	<li>
-          <!--a href="/sgdb/download.php?ref=lbdl/teolenn-src-@@@VERSION@@@.zip"-->
-          <a href="teolenn-src-@@@VERSION@@@.zip">
+          <!--a href="/sgdb/download.php?ref=lbdl/eoulsan-src-@@@VERSION@@@.zip"-->
+          <a href="@@@APPNAMEMIN@@@-src-@@@VERSION@@@.zip">
             <code>.zip</code> archive
           </a>
         </li>
       </ul>
       <p>
-        Teolenn is distributed under the
+        Eoulsan is distributed under the
         <a href="license.html">General Public License</a> and <a href="license.html">CeCILL</a>.
       </p>
 
       <subsection name="Code repository">
-        <p>You can also download the Teolenn source from our <a href="http://code.google.com/p/teolenn/source/checkout">code repository</a> hosted by <a href="http://code.google.com/hosting">Google code hosting</a>. On the <a href="http://code.google.com/p/teolenn">main page of Teolenn on this forge</a> you have access to the <a href="http://code.google.com/p/teolenn/issues">issue tracker</a> and to the <a href="http://code.google.com/p/teolenn/source/browse/">source browser</a> of the project.</p>
+        <p>You can also download the Eoulsan source from our <a href="http://code.google.com/p/eoulsan/source/checkout">code repository</a> hosted by <a href="http://code.google.com/hosting">Google code hosting</a>. On the <a href="http://code.google.com/p/eoulsan">main page of Eoulsan on this forge</a> you have access to the <a href="http://code.google.com/p/eoulsan/issues">issue tracker</a> and to the <a href="http://code.google.com/p/eoulsan/source/browse/">source browser</a> of the project.</p>
       </subsection>
 
       <subsection name="Compilation">
-        <p>You'll find more information about how compile Teolenn in the <a href="compiling.html">compiling section</a>.</p>
+        <p>You'll find more information about how compile Eoulsan in the <a href="compiling.html">compiling section</a>.</p>
       </subsection>
     </section>
   </body>

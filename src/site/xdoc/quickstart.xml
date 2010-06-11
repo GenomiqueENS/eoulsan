@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
- *                  Teolenn development code
+ *                  Eoulsan development code
  *
  * This code may be freely distributed and modified under the
  * terms of the GNU General Public License version 2 or later. This
@@ -14,11 +14,11 @@
  * of the École Normale Supérieure and the individual authors.
  * These should be listed in @author doc comments.
  *
- * For more information on the Teolenn project and its aims,
- * or to join the Teolenn Google group, visit the home page
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/teolenn
+ *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
 -->
@@ -55,8 +55,8 @@
 			<subsection name="Installation">
 
 
-				<p> To install Teolenn, go to the
-					<a href="installing.html">Teolenn installation page</a>
+				<p> To install Eoulsan, go to the
+					<a href="installing.html">Eoulsan installation page</a>
 					and follow the detail procedure.
 				</p>
 			</subsection>
@@ -87,9 +87,9 @@
 				set to 30.
 				</p>
 				<p>For measurementfilters and selector you can set the "skip" parameter to
-				"true". Then launch the teolenn program for example as follow.
+				"true". Then launch the eoulsan program for example as follow.
 				</p>
-		 	  <source>$ sh ../teolenn/teolenn.sh -log design.log design.xml</source>
+		 	  <source>$ sh ../eoulsan/eoulsan.sh -log design.log design.xml</source>
 
 			</subsection>
 
@@ -111,7 +111,7 @@
 				For each measurement you can edit threshold based on the statistical 
 				distribution obtained.
 				</p>
-				<p>Now, you can launch teolenn another time. The probe collection is already 
+				<p>Now, you can launch eoulsan another time. The probe collection is already 
 				done so that only the probe filtration step will be performed. This step is 
 				now very quick. At the end you can access the number of probe remaining in
 				the filtered.mes file to compared with the number of oligonucleotide in the
@@ -128,7 +128,7 @@
 				the final step is to perform the probe selection. To do so edit the 
 				design.xml file and put all skip tag to true except for the last one 
 				(selector). Only the selection step will be done each time you will launch
-				Teolenn so that you can test several selection parameter configurations.
+				Eoulsan so that you can test several selection parameter configurations.
 				</p>
 				<p>For a tiling design add "tiling" to the "name" tag and set the two
 				parameters specific for this design: windowLength and windowStep. The
