@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Run Eoulsan in local mode</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Eoulsan in hadoop mode">
+
+      <p>Each phase of Eoulsan is a module/program. To run a batch of Eoulsan, you must write a shell script. The following script show a typical Eoulsan pipeline.</p>
+      
+<source>
+#!/bin/sh
+
+EOULSAN_DIR=~/eoulsan-0.1
+CMD=hadoop jar $EOULSAN_DIR/lib/`ls eoulsan*.jar`
+
+BASE_URI='hdfs://hati.ens.fr/user/jourdren/mouse'
+
+$CMD uploaddesigndata design.txt $BASE_URI
+$CMD filterandmapreads filterandsoapmapreads $BASE_URI/design.txt
+$CMD filtersamples $BASE_URI/design.txt $BASE_URI/design_filtered.txt
+$CMD expression $BASE_URI/design.txt
+</source>
+ 
+    </section>
+    <section name="Configure Hadoop cluster for a debian or ubuntu node">
+
+	<p>This tutorial, we use Cloudera Distribution for Hadoop (CDH) forr the cluster installation.</p>
+
+	<p>In /etc/apt/sources.list add the following line (replace lucid by the name of the version of your system, e.g. karmic, lucid, lenny...):</p>
+<source>
+deb http://archive.cloudera.com/debian lucid-cdh2 contrib
+</source>
+
+	<p>Add the public key for Cloudera packages:</p>
+<source> 
+curl -s http://archive.cloudera.com/debian/archive.key | sudo apt-key add -
+</source>
+
+	<p>Install the necessary packages:</p>
+<source>
+$ sudo apt-get install hadoop-0.20 hadoop-0.20-conf-pseudo hadoop-0.20-doc hadoop-0.20-source
+</source>
+
+	<p>Create a directory for cluster configuration:</p>
+<source>
+$ sudo cp -r /etc/hadoop-0.20/conf.empty /etc/hadoop-0.20/conf.my_cluster
+$ sudo chown hadoop:hadoop /etc/hadoop-0.20/conf.my_cluster/*
+</source>
+
+	<p>Change the alternative for hadoop configuration to the cluster configuration:</p>
+<source>
+$ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc/hadoop-0.20/conf.my_cluster 50
+</source>
+
+	<p>The default home directory for the hadoop user is /var/run/hadoop-0.20, as this directory id wiped at the startup of the system, ssh key of hadoop user will be removed at the same time. So the home directory of the hadoop user must be persistant like in /home.</p>
+
+	<p>Change the home of hadoop user in /etc/passwd to /home/hadoop</p>
+	<p>Configure the public keys, as the hadoop user of the master node can access to slave without password:</p>
+<source>
+$ sudo mkdir /home/hadoop &amp;&amp; sudo chown hadoop:hadoop /home/hadoop
+$ sudo su hadoop
+$ mkdir ~/.ssh &amp;&amp; chmod og-rwx ~/.ssh &amp;&amp; echo "ssh-dss AAAAB3NzaC1kc3MAAACBALMnkGdKJ3GnRV3To3OEbJzk6eDbTjAQTyTdW0/qj32Cb2Tq1v02jhST6TEnk4gcxC9ISg9o2IJzImHLgHyWJFJc8hhf7U93w5UahM18l11ovDNxk2GrB1KhpAEHlApW2ZGsI6kGCq7OXO+XxG5nX1eNDM2UTl05kvy5D9BquAPPAAAAFQDhquagha0QUe/0K3w6dTGIxkOwjwAAAIEAlqJz1LH4KHeq0+g9ckZ2KAGyFfMIpZbMkHbHtJMWfzu1SFQbgpjxoCo4AsVdhnU3EosBFFMisfH8KBR8A99uHGP3gl4j32kRNlHlopXTCgnuP2hK4Vgoc1hDc7ofNGyFOR9klERczRfkXSzMnfT9CpFfGC2sqTed8a908Q+or/IAAACAfbPSsgt2hlyRrMDK+iLtbJKQhRSyhm8PeRmV4AJFAYGwcUDcym4rO1tVTLHmEMCyk9fDSCsDEs4XjHId4jaWkY0fNaW/4l1jESMx2YWMZv6ky4Bfm2WHjDfHCqB1LOYr8HgRcq5PimGrrfUd2mPgWu2Yznm+Rpc4A9OLsGIRuiU= hadoop@hati" >> ~/.ssh/authorized_keys
+</source>
+	<p>Copy configuration of the master to the slaves:</p>
+<source>
+$ scp /etc/hadoop/conf.my_cluster/* hadoop@slave1:/etc/hadoop/conf.my_cluster/
+</source>
+
+	<p>Start the distributed file system on the master node:</p>
+<source>
+$ /usr/lib/hadoop/bin/start-dfs.sh
+</source>
+
+	<p>start the map reduce cluster on the master node:</p>
+<source>
+$ /usr/lib/hadoop/bin/start-mapred.sh
+</source>
+
+	</section>
+	<section name="Create a pulic and private key for ssh">
+
+	<p>Creation of the key:</p>
+<source>
+$ sudo su hadoop
+$ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
+</source>
+
+	<p>This is the content of ~/.ssh/id_dsa that must be add to ~/.ssh/authorized_key to the hadoop user of the slaves</p>
+
+    </section>
+
+  </body>
+  
+</document>

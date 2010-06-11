@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
  *                  Eoulsan development code
@@ -25,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Known Bugs for Eoulsan</title>
+    <title>Create design</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -33,27 +32,23 @@
 
   <body>
   
-    <section name="Known Bugs for Eoulsan @@@VERSION@@@">
+    <section name="Create design">
 
-      <p>Eoulsan is not able to designing probes for genome sequence files with 
-      more than 500 scaffolds due to a limitation with the specificity calculation 
-      using genome tools.</p>  
+      <p>This module allow to create the SOAP index for the mapper from the design file and the genome sequence in fasta.</p>  
 
-      <!--ul> 
-        <li>Bug 1.</li>
-	<li>Bug 2.</li>
-      </ul--> 
+      <ul>
+         <li><b>Available</b>: Only in local mode.</li>
+         <li><b>Optional parameters</b>: none</li>
+
+        <li><b>Usage</b>:</li>
+<source>
+$ eoulsan.sh [options] createsoapindex design.xml 
+</source>
+        
+      </ul>
       
     </section>
 
-    <section name="Submit a Eoulsan bug">
-
-      <!-- eoulsan-list?subject=Bug -->
-      <p>You can submit a bug by filling an entry on the 
-      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
-      of the Google code hosting page of our project.</p>
-
-    </section>
 
   </body>
   

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="latin1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
  *                  Eoulsan development code
@@ -11,7 +11,7 @@
  *      http://www.gnu.org/licenses/gpl-2.0.txt
  *
  * Copyright for this code is held jointly by the microarray platform
- * of the École Normale Supérieure and the individual authors.
+ * of the Ã‰cole Normale SupÃ©rieure and the individual authors.
  * These should be listed in @author doc comments.
  *
  * For more information on the Eoulsan project and its aims,
@@ -45,7 +45,7 @@
                         </p>
                         <p>
                                 <small>
-                                        Laurent Jourdren, Aurélie Duclos, Christian Brion, Thomas Portnoy, Hugues Mathis, Antoine Margeot and Stéphane Le Crom
+                                        Laurent Jourdren, AurÃ©lie Duclos, Christian Brion, Thomas Portnoy, Hugues Mathis, Antoine Margeot and StÃ©phane Le Crom
                                 </small>
                                 <br />
                                 <small><i>

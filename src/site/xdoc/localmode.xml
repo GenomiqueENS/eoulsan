@@ -25,7 +25,7 @@
 <document> 
 
   <properties>
-    <title>Known Bugs for Eoulsan</title>
+    <title>Run Eoulsan in local mode</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -33,26 +33,26 @@
 
   <body>
   
-    <section name="Known Bugs for Eoulsan @@@VERSION@@@">
+    <section name="Eoulsan in local mode">
 
-      <p>Eoulsan is not able to designing probes for genome sequence files with 
-      more than 500 scaffolds due to a limitation with the specificity calculation 
-      using genome tools.</p>  
-
-      <!--ul> 
-        <li>Bug 1.</li>
-	<li>Bug 2.</li>
-      </ul--> 
+      <p>Each phase of Eoulsan is a module/program. To run a batch of Eoulsan, you must write a shell script. The following script show a typical Eoulsan pipeline.</p>
       
-    </section>
+<source>
+#!/bin/sh
 
-    <section name="Submit a Eoulsan bug">
 
-      <!-- eoulsan-list?subject=Bug -->
-      <p>You can submit a bug by filling an entry on the 
-      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
-      of the Google code hosting page of our project.</p>
+EOULSAN_DIR=~/eoulsan-0.1
+CMD=$EOULSAN_DIR/eoulsan.sh
 
+$CMD createsoapindex design.txt
+$CMD filterreads design.txt
+$CMD soapmapreads design.txt
+$CMD filtersamples --threshold 50 design.txt design_filtered.txt
+$CMD expression --tmpdir . design-filtered.txt
+$CMD  anadiff design_filtered2.txt
+
+</source>
+ 
     </section>
 
   </body>

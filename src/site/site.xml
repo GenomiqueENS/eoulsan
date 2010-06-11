@@ -59,6 +59,18 @@
 		</menu>
 
 		<menu name="Documentation">
+			<item name="Eoulsan in local mode" href="/localmode.html"/>
+			<item name="Eoulsan in haddoop mode" href="/hadoopmode.html"/>
+			<item name="Design file" href="/designfile.html"/>
+			<item name="modules" href="/modules.html">
+				<item name="Create design" href="/createdesign.html" />
+				<item name="Create soap index" href="/createsoapindex.html" />
+				<item name="Filter reads" href="/filterreads.html" />
+				<item name="Map reads" href="/mapreads.html" />
+				<item name="Filter samples" href="/filtersamples.html" />
+				<item name="Expression" href="/expression.html" />
+				<item name="anadiff" href="/anadiff.html" />
+			</item>
 			<!--item name="Introduction" href="/introduction.html" />
 			<item name="Command line" href="/command_line.html" />
 			<item name="The design file" href="/design.html" collapse="true">
@@ -79,7 +91,6 @@
 		<menu name="Developement">
 			<item name="Downloading sources" href="/download-src.html" />
 			<item name="Compiling" href="/compiling.html"/>
-			<item name="Writing plugins" href="/plugins.html" /> 
 			<item name="Eoulsan community" href="/contribute.html"/>
 		</menu>
 

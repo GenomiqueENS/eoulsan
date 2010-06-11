@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
- *                  Teolenn development code
+ *                  Eoulsan development code
  *
  * This code may be freely distributed and modified under the
  * terms of the GNU General Public License version 2 or later. This
@@ -14,18 +14,18 @@
  * of the École Normale Supérieure and the individual authors.
  * These should be listed in @author doc comments.
  *
- * For more information on the Teolenn project and its aims,
- * or to join the Teolenn Google group, visit the home page
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/teolenn
+ *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
 -->
 <document>
 
   <properties>
-    <title>Installing Teolenn</title>
+    <title>Installing Eoulsan</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -33,70 +33,34 @@
     
     <section name="Standalone installation">
      
-      <p>The installation of Teolenn on all *nix systems is quite similar and very easy. You don't need to be the root user of your system to install Teolenn.</p> 
+      <p>The installation of Eoulsan on all *nix systems is quite similar and very easy. You don't need to be the root user of your system to install Eoulsan.</p> 
      
       <p>The only tool you need to have is a tar/gz/bz2/zip extractor.</p>
      
       <ul>
-        <li><a href="download.html">Download Teolenn</a> on our website.</li>
+        <li><a href="download.html">Download Eoulsan</a> on our website.</li>
 
 <source>
-$ wget http://transcriptome.ens.fr/toelenn/teolenn-@@@VERSION@@@.tar.gz
+$ wget http://transcriptome.ens.fr/eoulsan/eoulsan-@@@VERSION@@@.tar.gz
 </source>
 
         <li>Unzip the archive where you want install the software.</li>
 
 <source>
-$ tar xzf teolenn-@@@VERSION@@@.tar.gz
+$ tar xzf eoulsan-@@@VERSION@@@.tar.gz
 </source>
 
-        <li>Teolenn is ready to run.</li>
+        <li>Eoulsan is ready to run.</li>
 
 <source>
-$ cd teolenn-@@@VERSION@@@
-$ ./teolenn.sh
+$ cd eoulsan-@@@VERSION@@@
+$ ./eoulsan.sh
 </source>
 
       </ul>
      
 
    </section>
-   
-   <section name="Non standard Installation">
-        
-        <p><a href="http://soap.genomics.org.cn">Soap</a> and 
-        <a href="http://genometools.org/">genometools</a> can be installed 
-        manualy. This is mandatory if the executable is not built-in in Teolenn. The following versions of soap and genometools are embedded in Toelenn:</p>
-        
-        <table>
-            <tr><th>Tool</th><th>Version</th><th>OS</th><th>Arch</th><th>Comment</th></tr>
-            <tr><td>soap</td><td>1.11</td><td>Linux 2.6.8+</td><td>i386</td><td></td></tr>
-            <tr><td>soap</td><td>1.11</td><td>Linux 2.6.8+</td><td>x86_64</td><td></td></tr>
-        <tr><td>soap</td><td>1.11</td><td>Mac OS 10.5+</td><td>i386</td><td></td></tr>
-        <tr><td>soap</td><td>1.11</td><td>Mac OS 10.5+</td><td>x86_64</td><td>This the i386 that is embedded because it was impossible to compile genometools
-            as a static executable for this architecture.</td></tr>
-            <tr><td>genometools</td><td>1.2.0</td><td>Linux 2.4.1+</td><td>i386</td><td></td></tr>
-            <tr><td>genometools</td><td>1.2.0</td><td>Linux 2.4.1+</td><td>x86_64</td><td>
-            This the i386 that is embedded because it was impossible to compile genometools 
-            as a static executable for this architecture. IA32 compatibility 
-            libraries are needed.</td></tr>
-        <tr><td>genometools</td><td>1.2.0</td><td>Mac OS 10.5+</td><td>i386</td><td></td></tr>
-        <tr><td>genometools</td><td>1.2.0</td><td>Mac OS 10.5+</td><td>x86_64</td><td>This the i386 that is embedded because it was impossible to compile genometools
-            as a static executable for this architecture.</td></tr>
-        </table>
-        
-        <p>The source code of the embedded versions of this tools can be downloaded at the following places:</p>
-        <table>
-            <tr><th>Tool</th><th>Version</th><th>URL</th></tr>
-            <tr><td>soap</td><td>1.11</td><td><a href="http://soap.genomics.org.cn/soap1/soap_1.11.tar.gz">http://soap.genomics.org.cn/soap1/soap_1.11.tar.gz</a></td></tr>
-            <tr><td>genometools</td><td>1.2.0</td><td><a href="http://genometools.org/pub/genometools-1.2.0.tar.gz">http://genometools.org/pub/genometools-1.2.0.tar.gz</a></td></tr>
-        </table>
-        
-        <p>Note that only 1.x version of soap can work with Teolenn. <b>Soap 2.x is currently not supported by Teolenn</b>.</p>
-        <p>Once soap and genometools installed, you must create a configuration file to set the path of this tools for Teolenn. See the 
-        <a href="command_line.html#configuration_file">documentation</a> for more informations.</p>
-        
-    </section>
    
   </body>
 </document>
