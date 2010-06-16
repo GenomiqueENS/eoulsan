@@ -19,6 +19,16 @@
 			<action dev="jourdren" type="add">
 				Map reads.
 			</action>
+			<action dev="jourdren" type="add">
+                First release.
+            </action>
 		</release>
+		
+		<release version="0.2" description="First release" date="2010-06-16">
+            <action dev="jourdren" type="fix">
+                Fix R anadif script.
+            </action>
+        </release>
+		
 	</body>
 </document>
