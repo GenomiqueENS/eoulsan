@@ -64,22 +64,22 @@ ana_diff_ssrep = function(tabTest,cond1,cond2,out)
   sizeC1 = sum(tab[,cond1])/sqrt(f1[2])
   sizeC2 = sum(tab[,cond2])*sqrt(f1[2])
   # calculation of p-values with a fisher exact test
-  pvaldeseq <- sage.test(tabTest[,cond1], tabTest[,cond2], n1=sizeC1, n2=sizeC2)
+  pvaldeseq <- sage.test(tab[,cond1], tab[,cond2], n1=sizeC1, n2=sizeC2)
   # correction of p-value using Benjamini&Hochberg method
   p.adjdeseq = p.adjust(pvaldeseq,"BH")
 
   # calculation of the log fold change and addition the results table
-  logFC = log2(as.numeric(tabTest[,cond1])) - log2(as.numeric(tabTest[,cond2]))
+  logFC = log2(as.numeric(tab[,cond1])) - log2(as.numeric(tab[,cond2]))
    
   # creation of the results table   
-  tabTest = cbind(tabTest,pvaldeseq,p.adjdeseq,logFC)
-  tabTest = tabTest[order(data.frame(tabTest)$p.adjdeseq),]
+  tab = cbind(tab,pvaldeseq,p.adjdeseq,logFC)
+  tab = tab[order(data.frame(tab)$p.adjdeseq),]
 
-  tabTest = cbind(rownames(tabTest),tabTest)
-  colnames(tabTest) = c("Id",paste(cond1,"norm",sep=''),paste(cond2,"norm",sep=''),"pval","padj","logFC")
+  tab = cbind(rownames(tab),tab)
+  colnames(tab) = c("Id",paste(cond1,"norm",sep=''),paste(cond2,"norm",sep=''),"pval","padj","logFC")
 
   # writing the results table in the file "out"
-   write.table(tabTest,out,sep='\t',row.names=F, quote=F)
+   write.table(tab,out,sep='\t',row.names=F, quote=F)
 }
 
 # Sum of technical replicat, normalization and variance estimation using a the DESeq software (Negativ Binomial model)
