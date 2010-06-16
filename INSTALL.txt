@@ -1,6 +1,6 @@
-INSTALLING Teolenn
+INSTALLING Eoulsan
 -----------------
 
-  To install Teolenn, see the documentation on our website :
+  To install Eoulsan, see the documentation on our website :
 
-    http://transcriptome.ens.fr/teolenn
+    http://transcriptome.ens.fr/eoulsan
