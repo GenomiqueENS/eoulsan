@@ -181,6 +181,13 @@ public class ReadSequence extends Sequence {
       throw new NullPointerException(
           "The quality string of the sequence is null");
 
+    if (this.sequence.length() == 0)
+      throw new NullPointerException("The sequence length equals 0");
+
+    if (this.quality.length() == 0)
+      throw new NullPointerException(
+          "The length of quality string of the sequence equals 0");
+
     if (this.sequence.length() != this.quality.length())
       throw new EoulsanException(
           "The length of sequence and quality string are not equals");
@@ -198,6 +205,7 @@ public class ReadSequence extends Sequence {
 
     return this.name != null
         && this.sequence != null && this.quality != null
+        && this.sequence.length() > 0 && this.quality.length() > 0
         && this.sequence.length() == this.quality.length()
         && checkCharString(this.quality, (char) 33, (char) 126)
         && checkBases(this.sequence);
