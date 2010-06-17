@@ -71,16 +71,34 @@ public final class SystemUtils {
 
   /**
    * Test if the system is Unix.
-   * @return true if the operating systeme is Windows.
+   * @return true if the operating system is Linux.
    */
   public static boolean isLinux() {
 
     return System.getProperty("os.name").toLowerCase().startsWith("linux");
   }
 
+  /**
+   * Test if the system is Windows.
+   * @return true if the operating system is Windows
+   */
+  public static boolean isWindows() {
+
+    return System.getProperty("os.name").toLowerCase().startsWith("windows");
+  }
+
+  /**
+   * Test if the system is an *nix.
+   * @return true if the operating system is an *nix
+   */
+  public static boolean isUnix() {
+
+    return !isWindows();
+  }
+
   //
   // Private constructor
   //
-  private SystemUtils() { 
+  private SystemUtils() {
   }
 }
