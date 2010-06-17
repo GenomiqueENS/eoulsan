@@ -63,8 +63,13 @@ public class Globals {
   /** Set the debug mode. */
   public static final boolean DEBUG = false;
 
-  /** Use serialization format for measurement file. */
-  public static final boolean MEASUREMENT_FILE_SERIALIZED = true;
+  // Platforms where Eoulsan is available
+  public static String[][] AVAILABLE_BINARY_ARCH =
+      { {"linux", "amd64"}, {"linux", "x86_64"}};
+
+  // Platforms alias
+  public static String[][] AVAILABLE_BINARY_ARCH_ALIAS =
+      {{"linux", "x86_64", "linux", "amd64"}};
 
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
@@ -105,7 +110,7 @@ public class Globals {
 
   /** Design file version. */
   public static final double DESIGN_FILE_VERSION = 1.1;
-  
+
   public static final String DEFAULT_FILE_ENCODING = "UTF-8";
 
   private static String getVersion() {
