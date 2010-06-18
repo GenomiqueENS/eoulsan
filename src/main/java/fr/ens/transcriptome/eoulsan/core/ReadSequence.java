@@ -102,6 +102,30 @@ public class ReadSequence extends Sequence {
   }
 
   /**
+   * Return the sequence in TFQ format
+   * @return a String with the sequence in FastQ format
+   */
+  public String toTFQ() {
+
+    return toTFQ(true);
+  }
+
+  /**
+   * Return the sequence in TFQ format
+   * @return a String with the sequence in FastQ format
+   */
+  public String toTFQ(final boolean withId) {
+
+    if (this.name == null || this.sequence == null || this.quality == null)
+      return null;
+
+    if (withId)
+      return this.name + '\t' + this.sequence + '\t' + this.quality + '\n';
+
+    return '\t' + this.sequence + '\t' + this.quality + '\n';
+  }
+
+  /**
    * Return the key for the read (the name).
    * @return a string with the name of the read as the key
    */
