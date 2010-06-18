@@ -226,7 +226,7 @@ public class FilterAndSoapMapReadsHadoopMain {
     try {
       final long startTime = System.currentTimeMillis();
       CommonHadoop.writeLog(new Path(basePath, "filtersoapmapreads.log"),
-          startTime, MapReduceUtils.submitandWaitForJobs(jobconfs,
+          startTime, MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
               FilterAndSoapMapReadsMapper.COUNTER_GROUP));
 

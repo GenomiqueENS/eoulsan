@@ -200,7 +200,7 @@ public class SoapMapReadsHadoopMain {
     try {
       final long startTime = System.currentTimeMillis();
       CommonHadoop.writeLog(new Path(basePath, "soapmapreads.log"), startTime,
-          MapReduceUtils.submitandWaitForJobs(jobconfs,
+          MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
               SoapMapReadsMapper.COUNTER_GROUP));
 

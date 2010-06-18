@@ -210,7 +210,7 @@ public class ExpressionHadoopMain {
       }
 
       CommonHadoop.writeLog(new Path(basePath, "expression.log"), startTime,
-          MapReduceUtils.waitForJobs(jobsRunning.values(),
+          MapReduceUtils.waitForRunningJobs(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME,
               ExpressionMapper.COUNTER_GROUP));
 
