@@ -69,7 +69,9 @@
 	  </tr>
 	      <tr>
             <td>Java Runtime Environment (J2SE)</td>
-            <td>5.0 or above (However Java 6.0 is fastest). </td>
+            <td>6.0 or above (5.0 may work, however Java 6.0 is fastest). We strongly recommand 
+            the sun/oracle version of the jre (not JRockit). 
+            You can check your installed jre version with <source>java -version</source>.</td>
           </tr>
           <tr>
             <td>Memory</td>
