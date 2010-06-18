@@ -181,7 +181,7 @@ public class FilterReadsHadoopMain {
     try {
       final long startTime = System.currentTimeMillis();
       CommonHadoop.writeLog(new Path(basePath, "filterreads.log"), startTime,
-          MapReduceUtils.submitandWaitForJobs(jobconfs,
+          MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
               FilterReadsMapper.COUNTER_GROUP));
 

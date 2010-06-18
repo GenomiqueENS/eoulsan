@@ -123,11 +123,11 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static String submitandWaitForJobs(final Collection<JobConf> jobconfs,
+  public static String submitAndWaitForRunningJobs(final Collection<JobConf> jobconfs,
       final int waitTimeInMillis, final String counterGroup)
       throws IOException, InterruptedException, ClassNotFoundException {
 
-    return waitForJobs(submitJobs(jobconfs), waitTimeInMillis, counterGroup);
+    return waitForRunningJobs(submitJobs(jobconfs), waitTimeInMillis, counterGroup);
   }
 
   /**
@@ -140,7 +140,7 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static String waitForJobs(final Collection<RunningJob> jobs,
+  public static String waitForRunningJobs(final Collection<RunningJob> jobs,
       final int waitTimeInMillis, final String counterGroup)
       throws InterruptedException, IOException {
 
@@ -191,6 +191,8 @@ public class MapReduceUtils {
     return sb.toString();
   }
 
+
+  
   //
   // Constructor
   //
