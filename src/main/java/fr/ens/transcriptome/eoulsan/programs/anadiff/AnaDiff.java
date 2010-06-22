@@ -212,7 +212,7 @@ public class AnaDiff {
       else {
 
         sb.append("expr1 = merge(expr1,expr");
-        sb.append(rSampleIds.get(i));
+        sb.append(i + 1);
         sb.append(",by.x=\"ID\",by.y=\"ID\")\n");
 
       }
