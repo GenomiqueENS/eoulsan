@@ -80,9 +80,9 @@ public final class StringUtils {
   /**
    * Get the extension of a filename.
    * @param filename The filename
-   * @return the exstension of the filename
+   * @return the extension of the filename
    */
-  public static String extension(String filename) {
+  public static String extension(final String filename) {
 
     if (filename == null)
       return null;
@@ -90,13 +90,72 @@ public final class StringUtils {
     final File f = new File(filename);
     final String shortName = f.getName();
 
-    final int pos = shortName.indexOf('.');
+    final int pos = shortName.lastIndexOf('.');
 
     if (pos == -1)
       return "";
 
     return filename.substring(filename.length() - (shortName.length() - pos),
         filename.length());
+  }
+
+  /**
+   * Get the compression extension if exists.
+   * @param filename The filename
+   * @return the compression extension or an empty string if there is no
+   *         compression extension
+   */
+  public static String compressionExtension(final String filename) {
+
+    if (filename == null)
+      return null;
+
+    final String ext = extension(filename);
+
+    if (".gz".equals(ext))
+      return ext;
+
+    if (".bz2".equals(ext))
+      return ext;
+
+    if (".zip".equals(ext))
+      return ext;
+
+    if (".deflate".equals(ext))
+      return ext;
+
+    if (".lzo".equals(ext))
+      return ext;
+
+    return "";
+  }
+
+  /**
+   * Get the filename without the compression extension.
+   * @param filename The filename
+   * @return the filename without the compression extension
+   */
+  public static String filenameWithoutCompressionExtension(final String filename) {
+
+    if (filename == null)
+      return null;
+
+    if (filename.endsWith(".gz"))
+      return filename.substring(0, filename.length() - 3);
+
+    if (filename.endsWith(".bz2"))
+      return filename.substring(0, filename.length() - 4);
+
+    if (filename.endsWith(".zip"))
+      return filename.substring(0, filename.length() - 4);
+
+    if (filename.endsWith(".deflate"))
+      return filename.substring(0, filename.length() - 8);
+
+    if (filename.endsWith(".lzo"))
+      return filename.substring(0, filename.length() - 4);
+
+    return filename;
   }
 
   /**
@@ -332,7 +391,7 @@ public final class StringUtils {
 
         final char d1 = s.charAt(i + 1);
         final char d2 = s.charAt(i + 2);
-        System.out.println(d1 + "" + d2);
+
         if (Character.isDigit(d1) && Character.isDigit(d2)) {
           sb.append((char) Integer.parseInt("" + d1 + d2, 16));
 
