@@ -37,6 +37,8 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.Counters.Counter;
 import org.apache.hadoop.mapred.Counters.Group;
+import org.apache.hadoop.mapreduce.CounterGroup;
+import org.apache.hadoop.mapreduce.Job;
 
 /**
  * This class provide utility methods to run map reduce jobs.
@@ -93,7 +95,7 @@ public class MapReduceUtils {
    * @return a collection of running jobs
    * @throws IOException if an IO error occurs while creating jobs
    */
-  public static Collection<RunningJob> submitJobs(
+  public static Collection<RunningJob> submitJobConfs(
       final Collection<JobConf> jobconfs) throws IOException {
 
     if (jobconfs == null)
@@ -123,11 +125,13 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static String submitAndWaitForRunningJobs(final Collection<JobConf> jobconfs,
-      final int waitTimeInMillis, final String counterGroup)
-      throws IOException, InterruptedException, ClassNotFoundException {
+  public static String submitAndWaitForRunningJobs(
+      final Collection<JobConf> jobconfs, final int waitTimeInMillis,
+      final String counterGroup) throws IOException, InterruptedException,
+      ClassNotFoundException {
 
-    return waitForRunningJobs(submitJobs(jobconfs), waitTimeInMillis, counterGroup);
+    return waitForRunningJobs(submitJobConfs(jobconfs), waitTimeInMillis,
+        counterGroup);
   }
 
   /**
@@ -191,8 +195,91 @@ public class MapReduceUtils {
     return sb.toString();
   }
 
+  /**
+   * Submit a collection of jobs and wait the completion of all jobs.
+   * @param jobs Collection of jobs to submit
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of
+   *          jobs
+   * @throws IOException if an IO error occurs while waiting for jobs
+   * @throws InterruptedException if an error occurs while waiting for jobs
+   * @throws ClassNotFoundException if a class needed for map reduce execution
+   *           is not found
+   */
+  public static String submitAndWaitForJobs(final Collection<Job> jobs,
+      final int waitTimeInMillis, final String counterGroup)
+      throws IOException, InterruptedException, ClassNotFoundException {
 
-  
+    if (jobs == null)
+      throw new NullPointerException("The list of jobs is null");
+
+    for (Job j : jobs)
+      j.submit();
+
+    return waitForJobs(jobs, waitTimeInMillis, counterGroup);
+  }
+
+  /**
+   * Wait the completion of a collection of jobs.
+   * @param jobs Collection of jobs to submit
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of
+   *          jobs
+   * @throws IOException if an IO error occurs while waiting for jobs
+   * @throws InterruptedException if an error occurs while waiting for jobs
+   * @throws ClassNotFoundException if a class needed for map reduce execution
+   *           is not found
+   */
+  public static String waitForJobs(final Collection<Job> jobs,
+      final int waitTimeInMillis, final String counterGroup)
+      throws InterruptedException, IOException {
+
+    if (jobs == null)
+      throw new NullPointerException("The list of jobs is null");
+
+    final int totalJobs = jobs.size();
+    int completedJobs = 0;
+
+    final StringBuilder sb = new StringBuilder();
+    final Set<Job> completedJobsSet = new HashSet<Job>();
+
+    while (completedJobs != totalJobs) {
+
+      Thread.sleep(waitTimeInMillis);
+      completedJobs = 0;
+
+      for (Job j : jobs)
+        if (j.isComplete()) {
+          completedJobs++;
+
+          if (counterGroup != null && !completedJobsSet.contains(j)) {
+            sb.append(j.getJobName());
+            sb.append('\n');
+
+            final CounterGroup g = j.getCounters().getGroup(counterGroup);
+            if (g != null) {
+
+              final Iterator<org.apache.hadoop.mapreduce.Counter> it =
+                  g.iterator();
+              while (it.hasNext()) {
+
+                org.apache.hadoop.mapreduce.Counter counter = it.next();
+                sb.append('\t');
+                sb.append(counter.getName());
+                sb.append('=');
+                sb.append(counter.getValue());
+                sb.append('\n');
+
+              }
+            }
+          }
+
+          completedJobsSet.add(j);
+        }
+
+    }
+
+    return sb.toString();
+  }
+
   //
   // Constructor
   //
