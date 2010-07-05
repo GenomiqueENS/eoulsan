@@ -413,6 +413,10 @@ public class FileUtils {
       output.write(buffer, 0, n);
       count += n;
     }
+
+    input.close();
+    output.close();
+
     return count;
   }
 
