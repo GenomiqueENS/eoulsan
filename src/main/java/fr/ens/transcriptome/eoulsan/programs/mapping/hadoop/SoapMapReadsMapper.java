@@ -267,6 +267,8 @@ public class SoapMapReadsMapper implements
     // int parseCount = 0;
     // int moreOneLocus = 0;
 
+    String lastSequenceId = null;
+    
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
@@ -275,6 +277,8 @@ public class SoapMapReadsMapper implements
 
       aln.parseResultLine(trimmedLine);
       reporter.incrCounter(this.counterGroup, "soap alignments", 1);
+      
+      final String currentSequenceId = aln.getSequenceId();
 
       if (aln.getNumberOfHits() == 1) {
         outKey.set(aln.getSequenceId());
@@ -282,10 +286,12 @@ public class SoapMapReadsMapper implements
         collector.collect(outKey, outValue);
         reporter.incrCounter(this.counterGroup,
             "soap alignment with only one hit", 1);
-      } else
+      } else if (currentSequenceId != null
+          && (!currentSequenceId.equals(lastSequenceId)))
         reporter.incrCounter(this.counterGroup,
             "soap alignment with more one hit", 1);
 
+      lastSequenceId = currentSequenceId;
     }
 
     readerResults.close();
