@@ -23,6 +23,7 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,8 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
 public final class PathUtils {
 
@@ -258,6 +261,77 @@ public final class PathUtils {
     final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
     final OutputStream os = fs.create(destPath);
     return FileUtils.copy(is, os);
+  }
+
+  /**
+   * Copy a local file to a path
+   * @param srcFile source file
+   * @param destPath destination path
+   * @param removeSrcFile true if the source file must be removed
+   * @param conf Configuration object
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying file
+   */
+  public static boolean copyAndCompressLocalFileToPath(final File srcFile,
+      final Path destPath, final Configuration conf) throws IOException {
+
+    return copyAndCompressLocalFileToPath(srcFile, destPath, false, conf);
+  }
+  
+  /**
+   * Copy a local file to a path
+   * @param srcFile source file
+   * @param destPath destination path
+   * @param removeSrcFile true if the source file must be removed
+   * @param conf Configuration object
+   * @return true if the copy is successful
+   * @throws IOException if an error occurs while copying file
+   */
+  public static boolean copyAndCompressLocalFileToPath(final File srcFile,
+      final Path destPath, final boolean removeSrcFile, final Configuration conf)
+      throws IOException {
+
+    if (srcFile == null)
+      throw new NullPointerException("The source file is null");
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    return copyAndCompressInputStreamToPath(new FileInputStream(srcFile),
+        destPath, conf);
+  }
+
+  /**
+   * Copy bytes from an InputStream to a path.
+   * @param input the InputStream to read from
+   * @param destPath destination path
+   * @param conf Configuration object
+   * @return the number of bytes copied
+   * @throws IOException In case of an I/O problem
+   */
+  public static boolean copyAndCompressInputStreamToPath(final InputStream is,
+      final Path destPath, final Configuration conf) throws IOException {
+
+    if (is == null)
+      throw new NullPointerException("The insput stream is null");
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
+
+    final CompressionCodecFactory factory = new CompressionCodecFactory(conf);
+    final CompressionCodec codec = factory.getCodec(destPath);
+
+    if (codec == null)
+      throw new IOException("No codec found for: " + destPath);
+
+    final OutputStream os = codec.createOutputStream(fs.create(destPath));
+    FileUtils.copy(is, os);
+
+    return true;
   }
 
   /**
