@@ -114,6 +114,7 @@ public class SoapMapReadsLocalMain {
                 .availableProcessors() : threads);
 
         filterSoapResult(alignmentFile, resultFile, reporter);
+        countUnmap(unmapFile, reporter);
         alignmentFile.delete();
 
         // Add counters for this sample to log file
@@ -159,6 +160,7 @@ public class SoapMapReadsLocalMain {
     final AlignResult aln = new AlignResult();
 
     String line = null;
+    String lastSequenceId = null;
 
     while ((line = readerResults.readLine()) != null) {
 
@@ -169,18 +171,46 @@ public class SoapMapReadsLocalMain {
       aln.parseResultLine(trimmedLine);
       reporter.incrCounter(COUNTER_GROUP, "soap alignments", 1);
 
+      final String currentSequenceId = aln.getSequenceId();
+
       if (aln.getNumberOfHits() == 1) {
         bw.write(line + "\n");
-        reporter.incrCounter(COUNTER_GROUP,
-            "soap alignment with only one locus", 1);
-      } else
-        reporter.incrCounter(COUNTER_GROUP,
-            "soap alignment with more one locus", 1);
+        reporter.incrCounter(COUNTER_GROUP, "soap alignment with only one hit",
+            1);
+      } else if (currentSequenceId != null
+          && (!currentSequenceId.equals(lastSequenceId)))
+        reporter.incrCounter(COUNTER_GROUP, "soap alignment with more one hit",
+            1);
 
+      lastSequenceId = currentSequenceId;
     }
 
     readerResults.close();
     bw.close();
+  }
+
+  /**
+   * Count the number of unmap reads.
+   * @param unmapFile unmap file to read
+   * @param reporter the reporter for the report
+   * @throws IOException if an error occurs while reading file
+   */
+  private static void countUnmap(final File unmapFile, final Reporter reporter)
+      throws IOException {
+
+    final BufferedReader br = FileUtils.createBufferedReader(unmapFile);
+
+    String line = null;
+
+    long count = 0;
+
+    while ((line = br.readLine()) != null)
+      if (line.startsWith(">"))
+        count++;
+
+    br.close();
+
+    reporter.incrCounter(COUNTER_GROUP, "soap unmap reads", count);
   }
 
   /**
