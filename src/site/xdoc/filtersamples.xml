@@ -47,7 +47,7 @@
         </li>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh [options] filtersamples design.txt
+$ eoulsan.sh [options] filtersamples design_src.txt design_dest.txt
 </source>
 
 </li>

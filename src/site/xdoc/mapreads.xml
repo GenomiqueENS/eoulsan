@@ -42,7 +42,7 @@
 
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh [options] mapreads design.txt
+$ eoulsan.sh [options] soapmapreads design.txt
 </source>
 
 </li>
