@@ -204,6 +204,15 @@ public class Sequence {
     return sb.toString();
   }
 
+  /**
+   * Return the sequence object in string in Fasta format.
+   * @return the sequence in Fasta format
+   */
+  public String toFasta() {
+
+    return '>' + this.name + '\n' + this.sequence + '\n';
+  }
+
   //
   // Constructor
   //
