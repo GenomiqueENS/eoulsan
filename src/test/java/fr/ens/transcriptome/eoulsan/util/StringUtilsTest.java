@@ -32,53 +32,80 @@ public class StringUtilsTest {
 
   @Test
   public void testBasename() {
-    
+
     assertEquals("toto", StringUtils.basename("toto.tar.gz"));
   }
 
   @Test
   public void testExtension() {
-    
+
     assertEquals("toto", StringUtils.basename("toto.tar.gz"));
   }
 
-//  @Test
-//  public void testRemoveNonAlphaAtEndOfString() {
-//    fail("Not yet implemented");
-//  }
-//
-//  @Test
-//  public void testToTimeHumanReadable() {
-//    fail("Not yet implemented");
-//  }
-//
-//  @Test
-//  public void testFastSplitStringListOfString() {
-//    fail("Not yet implemented");
-//  }
-//
-//  @Test
-//  public void testFastSplitStringStringArray() {
-//    fail("Not yet implemented");
-//  }
+  @Test
+  public void testCompressionExtension() {
+
+    assertEquals(".gz", StringUtils.compressionExtension("toto.tar.gz"));
+    assertEquals(".bz2", StringUtils.compressionExtension("toto.tar.bz2"));
+    assertEquals(".zip", StringUtils.compressionExtension("toto.tar.zip"));
+    assertEquals(".lzo", StringUtils.compressionExtension("toto.tar.lzo"));
+    assertEquals(".deflate", StringUtils
+        .compressionExtension("toto.tar.deflate"));
+    assertEquals("", StringUtils.compressionExtension("toto.tar"));
+    assertEquals("", StringUtils.compressionExtension("toto"));
+  }
+
+  @Test
+  public void testfilenameWithoutCompressionExtension() {
+
+    assertEquals("toto.tar", StringUtils
+        .filenameWithoutCompressionExtension("toto.tar.gz"));
+    assertEquals("toto.tar", StringUtils
+        .filenameWithoutCompressionExtension("toto.tar"));
+    assertEquals("toto", StringUtils
+        .filenameWithoutCompressionExtension("toto"));
+  }
+
+  // @Test
+  // public void testRemoveNonAlphaAtEndOfString() {
+  // fail("Not yet implemented");
+  // }
+  //
+  // @Test
+  // public void testToTimeHumanReadable() {
+  // fail("Not yet implemented");
+  // }
+  //
+  // @Test
+  // public void testFastSplitStringListOfString() {
+  // fail("Not yet implemented");
+  // }
+  //
+  // @Test
+  // public void testFastSplitStringStringArray() {
+  // fail("Not yet implemented");
+  // }
 
   @Test
   public void testSubStringAfterFirstTab() {
-    assertEquals("titi\ttata", StringUtils.subStringAfterFirstTab("toto\ttiti\ttata"));
-    assertEquals("toto\ttiti\ttata", StringUtils.subStringAfterFirstTab("\ttoto\ttiti\ttata"));
+    assertEquals("titi\ttata", StringUtils
+        .subStringAfterFirstTab("toto\ttiti\ttata"));
+    assertEquals("toto\ttiti\ttata", StringUtils
+        .subStringAfterFirstTab("\ttoto\ttiti\ttata"));
     assertEquals("toto", StringUtils.subStringAfterFirstTab("toto"));
     assertEquals("toto", StringUtils.subStringAfterFirstTab("toto"));
   }
 
   @Test
   public void testSubStringBeforeFirstTab() {
-    assertEquals("toto", StringUtils.subStringBeforeFirstTab("toto\ttiti\ttata"));
+    assertEquals("toto", StringUtils
+        .subStringBeforeFirstTab("toto\ttiti\ttata"));
     assertEquals("toto", StringUtils.subStringBeforeFirstTab("toto"));
   }
-  
+
   @Test
   public void testProtectGFF() {
-    
+
     assertEquals("toto", StringUtils.protectGFF("toto"));
     assertEquals("toto%09", StringUtils.protectGFF("toto\t"));
     assertEquals("toto%20", StringUtils.protectGFF("toto "));
@@ -90,13 +117,10 @@ public class StringUtilsTest {
     assertEquals("toto\\&titi", StringUtils.protectGFF("toto&titi"));
     assertEquals("toto\\,titi", StringUtils.protectGFF("toto,titi"));
   }
-  
+
   @Test
   public void testDeprotectGFF() {
-    
-    System.out.println((char) Integer.parseInt("" + '5' + 'F', 16));
-    
-    assertEquals("toto", StringUtils.deprotectGFF("toto"));
+
     assertEquals("toto\t", StringUtils.deprotectGFF("toto%09"));
     assertEquals("toto ", StringUtils.deprotectGFF("toto%20"));
     assertEquals("toto titi", StringUtils.deprotectGFF("toto%20titi"));
@@ -107,6 +131,5 @@ public class StringUtilsTest {
     assertEquals("toto&titi", StringUtils.deprotectGFF("toto\\&titi"));
     assertEquals("toto,titi", StringUtils.deprotectGFF("toto\\,titi"));
   }
-  
 
 }
