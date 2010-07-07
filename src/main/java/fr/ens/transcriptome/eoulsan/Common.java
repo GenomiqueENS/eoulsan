@@ -41,6 +41,7 @@ public class Common {
   public static final String FASTA_EXTENSION = ".fasta";
   public static final String READS_SUBDIR = "reads";
   public static final String FASTQ_EXTENSION = ".fq";
+  public static final String TFQ_EXTENSION = ".tfq";  
   public static final String GFF_EXTENSION = ".gff";
   public static final String SOAP_INDEX_ZIP_FILE_EXTENSION = ".soapindex.zip";
   public static final String READS_FILTERED_EXTENSION = ".readsfiltered";
