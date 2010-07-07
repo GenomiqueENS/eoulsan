@@ -24,9 +24,30 @@
             </action>
 		</release>
 		
-		<release version="0.2" description="First release" date="2010-06-16">
+		<release version="0.2" description="" date="2010-06-16">
             <action dev="jourdren" type="fix">
                 Fix R anadif script.
+            </action>
+        </release>
+        
+        <release version="0.3" description="" date="2010-07-07">
+            <action dev="jourdren" type="fix">
+                Check read and quality length in ReadSequence.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix R anadif script.
+            </action>
+            <action dev="jourdren" type="add">
+                TFQ format support in distributed mode.
+            </action>
+            <action dev="jourdren" type="add">
+                Upload of compressed FASTQ files on HDFS.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix FASTQ parsing in local mode.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix trim sequence when sequence comtains only 'N' nucleotides.
             </action>
         </release>
 		
