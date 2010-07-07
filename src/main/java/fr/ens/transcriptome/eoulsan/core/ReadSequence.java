@@ -156,7 +156,7 @@ public class ReadSequence extends Sequence {
     final int indexCR2 = fastQ.indexOf('\n', indexCR1 + 1);
     final int indexCR3 = fastQ.indexOf('\n', indexCR2 + 1);
 
-    this.name = fastQ.substring(0, indexCR1);
+    this.name = fastQ.substring(1, indexCR1);
     this.sequence = fastQ.substring(indexCR1 + 1, indexCR2);
     this.quality = fastQ.substring(indexCR3 + 1);
   }
