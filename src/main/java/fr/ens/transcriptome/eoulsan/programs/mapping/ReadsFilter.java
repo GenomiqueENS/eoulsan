@@ -43,10 +43,20 @@ public final class ReadsFilter {
     if (read == null || !read.isFastQValid())
       return;
 
-    final String sequence = PATTERN.split(read.getSequence())[0];
+    final String[] splitResult = PATTERN.split(read.getSequence());
 
+    // Test if the sequence contains only N nucleotides
+    if (splitResult == null || splitResult.length == 0) {
+      read.setSequence("");
+      read.setQuality("");
+
+      return;
+    }
+
+    final String sequence = splitResult[0];
     final int len = sequence.length();
 
+    // Trim read sequence and quality if needed
     if (len != read.length()) {
       read.setSequence(sequence);
       read.setQuality(read.getQuality().substring(0, len));
@@ -64,7 +74,8 @@ public final class ReadsFilter {
   public static final boolean isReadValid(final ReadSequence read,
       final int lengthThreshold, final double qualityThreshold) {
 
-    return read.length() > lengthThreshold && read.meanQuality() > qualityThreshold;
+    return read.length() > lengthThreshold
+        && read.meanQuality() > qualityThreshold;
   }
 
 }
