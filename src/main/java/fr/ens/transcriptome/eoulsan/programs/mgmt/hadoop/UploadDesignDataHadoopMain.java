@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,8 @@ import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -44,9 +47,12 @@ import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class allow to copy data to hdfs.
@@ -74,6 +80,69 @@ public class UploadDesignDataHadoopMain {
       PathUtils.copyLocalFileToPath(new File(ds.toString()), destPath, conf);
     else
       PathUtils.copyInputStreamToPath(ds.getInputStream(), destPath, conf);
+  }
+
+  /**
+   * Copy and compress a DataSource to a Path
+   * @param source source to copy
+   * @param destPath destination path
+   * @param conf Configuration object
+   * @throws IOException if an error occurs while copying data
+   */
+  private static void copyAndCompress(final String source, final Path destPath,
+      final Configuration conf) throws IOException {
+
+    logger.info("Copy and compress " + source.toString() + " to " + destPath);
+    final DataSource ds = DataSourceUtils.identifyDataSource(source);
+
+    if ("File".equals(ds.getSourceType()))
+      PathUtils.copyAndCompressLocalFileToPath(new File(ds.toString()),
+          destPath, conf);
+    else
+      PathUtils.copyAndCompressInputStreamToPath(ds.getInputStream(), destPath,
+          conf);
+  }
+
+  /**
+   * Copy and compress to TFQ a Fastq DataSource to a Path
+   * @param source source to copy
+   * @param destPath destination path
+   * @param conf Configuration object
+   * @throws IOException if an error occurs while copying data
+   */
+  private static void fastqToTfq(final String source, final Path destPath,
+      final Configuration conf) throws IOException {
+
+    logger.info("Transform " + source.toString() + " to " + destPath);
+    final DataSource ds = DataSourceUtils.identifyDataSource(source);
+
+    final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
+
+    final CompressionCodecFactory factory = new CompressionCodecFactory(conf);
+    final CompressionCodec codec = factory.getCodec(destPath);
+
+    if (codec == null)
+      throw new IOException("No codec found for: " + destPath);
+
+    final OutputStream os = codec.createOutputStream(fs.create(destPath));
+    final UnSynchronizedBufferedWriter writer =
+        FileUtils.createBufferedWriter(os);
+
+    final InputStream is;
+
+    if ("File".equals(ds.getSourceType()))
+      is = FileUtils.createInputStream(new File(ds.toString()));
+    else
+      is = ds.getInputStream();
+
+    FastQReader reader = new FastQReader(is);
+
+    while (reader.readEntry())
+      writer.write(reader.toTFQ(false));
+
+    reader.close();
+    writer.close();
+
   }
 
   /***
@@ -171,6 +240,18 @@ public class UploadDesignDataHadoopMain {
             createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
                 Common.FASTQ_EXTENSION);
         copy(s.getSource(), newSamplePath, conf);
+
+        // Compress to bz2
+        // final Path newSamplePathCompressed =
+        // createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
+        // Common.FASTQ_EXTENSION + ".bz2");
+        // copyAndCompress(s.getSource(), newSamplePathCompressed, conf);
+
+        // Compress to TFQ
+        // final Path newSampleTFQ =
+        // createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
+        // Common.TFQ_EXTENSION + ".bz2");
+        // fastqToTfq(s.getSource(), newSampleTFQ, conf);
 
         s.setSource(newSamplePath.getName());
 
