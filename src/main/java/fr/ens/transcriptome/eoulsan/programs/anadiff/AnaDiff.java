@@ -267,7 +267,16 @@ public class AnaDiff {
 
     sb
         .append("# Sum of technical replicates (if there is technical replicat) and normalisation\n"
-            + "normdeseq = norm_ss_rep(count,cond,condNames)\n\n");
+            + "# for all conditions sums of technical replicates expression\n"
+            + "tab=c()\n"
+            + "for (i in 1:length(unique(cond)))\n"
+            + "{\n"
+            + "  tab = cbind(tab,rowSums(count[which(cond == i)]))\n"
+            + "}\n\n"
+            + "colnames(tab) = condNames\n"
+            + "rownames(tab)=rownames(count)\n\n"
+            + "# deleting genes that are not expressed in any condition\n"
+            + "tab = tab[rowSums(tab)>0,]\n\n");
 
     for (int i = 0; i < rCondNames.size(); i++)
       for (int j = i + 1; j < rCondNames.size(); j++) {
@@ -279,7 +288,7 @@ public class AnaDiff {
         sb
             .append(".txt\"\n"
                 + "# statistical analysis of differentially expressed genes of condition 1 vs condition 2 (give the names)\n"
-                + "ana_diff_ssrep(normdeseq,condNames[");
+                + "ana_diff_without_bio_rep(tab, condNames[");
         sb.append(i + 1);
         sb.append("],condNames[");
         sb.append(j + 1);
@@ -313,7 +322,7 @@ public class AnaDiff {
     sb.append(")\n");
 
     sb.append("library(DESeq)\n");
-    sb.append("\ncds = sum_rept_norm_acrepbio(count,cond,rep)\n");
+    sb.append("\ncds = ana_diff_with_bio_rep(count,cond,rep)\n");
 
     for (int i = 0; i < rCondNames.size(); i++)
       for (int j = i + 1; j < rCondNames.size(); j++) {
@@ -331,7 +340,7 @@ public class AnaDiff {
         sb.append(i + 1);
         sb.append(")\n");
 
-        sb.append("res = resDESeqAll[order(resDESeqAll$padj),]");
+        sb.append("res = resDESeqAll[order(resDESeqAll$padj),]\n");
         sb.append("write.table(res,out,quote=F, row.names=F, sep='\t')\n\n");
 
       }
