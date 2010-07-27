@@ -63,15 +63,15 @@ $ wget http://cran.r-project.org/src/contrib/statmod_1.4.6.tar.gz
 $ sudo R CMD INSTALL statmod_1.4.6.tar.gz
         </source>
         
-        <li><b>edgeR</b></li>
+        <li><b>edgeR and DESeq</b></li>
         <source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("edgeR")       
+&gt; biocLite("edgeR")   
+&gt; biocLite("DESeq")    
         </source>
-    </ul>
-    
-    
+
+    </ul>    
     
     </section>
 
