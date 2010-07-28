@@ -99,7 +99,7 @@ public class SoapMapReadsMapper implements
       throws IOException {
 
     this.writer.write(readSequence.toFastQ());
-    reporter.incrCounter(this.counterGroup, "soap input reads", 1);
+    reporter.incrCounter(this.counterGroup, Common.SOAP_INPUT_READS_COUNTER, 1);
 
     if (this.reporter == null && reporter != null)
       this.reporter = reporter;
@@ -285,7 +285,7 @@ public class SoapMapReadsMapper implements
         outValue.set(StringUtils.subStringAfterFirstTab(line));
         collector.collect(outKey, outValue);
         reporter.incrCounter(this.counterGroup,
-            "soap alignment with only one hit", 1);
+            Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER, 1);
       } else if (currentSequenceId != null
           && (!currentSequenceId.equals(lastSequenceId)))
         reporter.incrCounter(this.counterGroup,

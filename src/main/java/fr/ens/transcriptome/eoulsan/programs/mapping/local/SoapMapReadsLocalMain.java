@@ -175,8 +175,8 @@ public class SoapMapReadsLocalMain {
 
       if (aln.getNumberOfHits() == 1) {
         bw.write(line + "\n");
-        reporter.incrCounter(COUNTER_GROUP, "soap alignment with only one hit",
-            1);
+        reporter.incrCounter(COUNTER_GROUP,
+            Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER, 1);
       } else if (currentSequenceId != null
           && (!currentSequenceId.equals(lastSequenceId)))
         reporter.incrCounter(COUNTER_GROUP, "soap alignment with more one hit",

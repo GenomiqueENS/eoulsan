@@ -31,6 +31,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.DesignReader;
@@ -113,9 +114,10 @@ public class FilterSamplesHadoopMain {
       final String sample = group.substring(pos1 + 1, pos2).trim();
 
       final long inputReads =
-          reporter.getCounterValue(group, "soap input reads");
+          reporter.getCounterValue(group, Common.SOAP_INPUT_READS_COUNTER);
       final long oneLocus =
-          reporter.getCounterValue(group, "soap alignment with only one locus");
+          reporter.getCounterValue(group,
+              Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
 
       final double ratio = (double) oneLocus / (double) inputReads;
       logger.info("Check Reads with only one match: "
