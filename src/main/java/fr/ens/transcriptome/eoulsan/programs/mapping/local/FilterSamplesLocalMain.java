@@ -37,6 +37,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.MainCLI;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -105,12 +106,12 @@ public class FilterSamplesLocalMain {
 
     // Get the input reads for each sample
     final Map<String, Long> sampleInputMapReads =
-        parseReporter(filterReadsReporter, "reads after filtering");
+        parseReporter(filterReadsReporter, Common.READS_AFTER_FILTERING_COUNTER);
 
     // Get the number of match with onlt one locus for each sample
     final Map<String, Long> soapAlignementWithOneLocus =
         parseReporter(soapMapReadsReporter,
-            "soap alignment with only one locus");
+            Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
 
     // Compute ration and filter samples
     for (String sample : sampleInputMapReads.keySet()) {
