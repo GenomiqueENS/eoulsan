@@ -40,7 +40,7 @@ ana_diff_without_bio_rep = function(tabTest,cond1,cond2,out)
   tab = tab[order(data.frame(tab)$p.adj),]
 
   tab = cbind(rownames(tab),tab)
-  colnames(tab) = c("Id",paste(cond1,"norm",sep=''),paste(cond2,"norm",sep=''),"pval","padj","logFC")
+  colnames(tab) = c("Id", cond1, cond2, "pval", "padj", "logFC")
 
   # writing the results table in the file "out"
    write.table(tab,out,sep='\t',row.names=F, quote=F)
