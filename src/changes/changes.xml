@@ -25,17 +25,17 @@
 		</release>
 		
 		<release version="0.2" description="" date="2010-06-16">
-            <action dev="jourdren" type="fix">
+            <action dev="mbernard" type="fix">
                 Fix R anadif script.
             </action>
         </release>
         
         <release version="0.3" description="" date="2010-07-07">
-            <action dev="jourdren" type="fix">
+            <action dev="mbernard" type="fix">
                 Check read and quality length in ReadSequence.
             </action>
-            <action dev="jourdren" type="fix">
-                Fix R anadif script.
+            <action dev="mbernard" type="fix">
+                Fix R anadiff script.
             </action>
             <action dev="jourdren" type="add">
                 TFQ format support in distributed mode.
@@ -50,6 +50,21 @@
                 Fix trim sequence when sequence comtains only 'N' nucleotides.
             </action>
         </release>
+        
+         <release version="0.4" description="" date="2010-07-28">
+            <action dev="jourdren" type="fix">
+                Bad counter names in filter samples.
+            </action>
+            
+            <action dev="jourdren" type="add">
+                DESeq modules installation documentation.
+            </action>
+            
+            <action dev="mbernard" type="fix">
+                Fix R anadiff code.
+            </action>
+            
+         </release>
 		
 	</body>
 </document>
