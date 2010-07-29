@@ -2,7 +2,7 @@
 # Differential analysis R script
 #
 # Authors : Maria Bernard
-#           Marie-agnès Dilies
+#           Marie-agnes Dilies
 #
 
 ##########################################################################
