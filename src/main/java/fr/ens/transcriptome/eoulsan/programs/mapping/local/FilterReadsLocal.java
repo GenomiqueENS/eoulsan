@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.programs.mapping.local;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.core.ReadSequence;
@@ -58,17 +57,8 @@ public class FilterReadsLocal {
       throws IOException {
 
     final Writer writer = FileUtils.createBufferedWriter(outputFile);
-    final BufferedReader br;
-
-    // Create the reader
-    if ("File".equals(this.fastqDS.getSourceType()))
-      br =
-          FileUtils
-              .createBufferedReader(new File(this.fastqDS.getSourceInfo()));
-    else
-      br =
-          new BufferedReader(new InputStreamReader(this.fastqDS
-              .getInputStream()));
+    final BufferedReader br =
+        FileUtils.createBufferedReader(this.fastqDS.getInputStream());
 
     final StringBuilder sb = new StringBuilder();
     final ReadSequence read = new ReadSequence();
