@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.mgmt;
+package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.HashMap;
 import java.util.Map;

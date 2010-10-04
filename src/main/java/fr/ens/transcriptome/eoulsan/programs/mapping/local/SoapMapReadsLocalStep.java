@@ -33,12 +33,12 @@ import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.programs.mapping.MapReadsStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 

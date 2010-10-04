@@ -26,12 +26,12 @@ import java.io.File;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.programs.anadiff.AnaDiff;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Parameter;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Step;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 
 /**
  * This class define the step of differential analysis in local mode.

@@ -33,7 +33,7 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.HadoopParameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Transcript;
@@ -127,7 +127,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
     try {
 
       final Path indexPath =
-          new Path(Parameter.getStringParameter(conf,
+          new Path(HadoopParameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
       final FileSystem fs = indexPath.getFileSystem(conf);
       tef.load(fs.open(indexPath));
