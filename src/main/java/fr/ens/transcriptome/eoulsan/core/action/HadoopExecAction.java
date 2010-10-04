@@ -27,10 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -45,7 +43,8 @@ import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -56,16 +55,9 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public class HadoopExecAction implements Action {
 
-  /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      new HashSet<Parameter>();
 
-  // Configure URL handler for hdfs protocol
-  // static {
-  // URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-  // }
-
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = new HashSet<Parameter>();
-  
   @Override
   public void action(final String[] args) {
 
@@ -111,13 +103,6 @@ public class HadoopExecAction implements Action {
       final Path paramPath = new Path(paramURI.toString());
       final Path designPath = new Path(designURI.toString());
 
-      logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-          + " on " + Globals.APP_BUILD_DATE + ")");
-      logger.info("Hadoop base dir: " + basePath);
-      logger.info("Parameter file: " + paramPath);
-      logger.info("Design file: " + designPath);
-
       // Test if param file exists
       FileSystem paramFs = paramPath.getFileSystem(conf);
       if (!paramFs.exists(paramPath))
@@ -135,12 +120,15 @@ public class HadoopExecAction implements Action {
       // Create command object
       final Command c = new Command();
 
-      // Add Copy design and parameter file Step
-      c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
-          EMPTY_PARAMEMETER_SET);
+      // Add init global logger Step
+      c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Add upload Step
       c.addStep(HDFSDataUploadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
+
+      // Add Copy design and parameter file Step
+      c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
+          EMPTY_PARAMEMETER_SET);
 
       // Parse param file
       final ParamParser pp =

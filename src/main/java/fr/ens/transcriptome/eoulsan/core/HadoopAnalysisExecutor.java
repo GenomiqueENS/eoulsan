@@ -44,7 +44,8 @@ import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapRead
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopStep;
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopStep;
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -230,7 +231,7 @@ public class HadoopAnalysisExecutor extends Executor {
     this.registery.addStepType(ExpressionHadoopStep.class);
     this.registery.addStepType(HDFSDataDownloadStep.class);
     this.registery.addStepType(CopyDesignAndParametersToOutputStep.class);
-
+    this.registery.addStepType(InitGlobalLoggerStep.class);
   }
 
   /**
