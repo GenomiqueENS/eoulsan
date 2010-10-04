@@ -24,7 +24,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import org.apache.hadoop.util.ProgramDriver;
 
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.ExecHadoopMain;
+import fr.ens.transcriptome.eoulsan.core.action.HadoopExecAction;
 
 /**
  * Main class in Hadoop mode.
@@ -62,7 +62,7 @@ public class MainHadoop {
       //
       // pgd.addClass("newupload", HDFSDataUpload.class, "Upload data.");
 
-      pgd.addClass("exec", ExecHadoopMain.class, "Execute " + Globals.APP_NAME);
+      pgd.addClass("exec", HadoopExecAction.class, "Execute " + Globals.APP_NAME);
       //pgd.addClass("exec", UploadDesignDataHadoopMain.class, "Execute " + Globals.APP_NAME);
       pgd.driver(args);
 

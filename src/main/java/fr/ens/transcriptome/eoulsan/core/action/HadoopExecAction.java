@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop;
+package fr.ens.transcriptome.eoulsan.core.action;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,7 +48,11 @@ import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
-public class ExecHadoopMain {
+/**
+ * This class define the exec action in hadoop mode.
+ * @author Laurent Jourdren
+ */
+public class HadoopExecAction implements Action {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
@@ -57,7 +61,8 @@ public class ExecHadoopMain {
   // URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
   // }
 
-  public static void main(String[] args) {
+  @Override
+  public void action(final String[] args) {
 
     if (args.length != 3) {
 
@@ -168,6 +173,12 @@ public class ExecHadoopMain {
       System.exit(1);
     }
 
+  }
+  
+  
+  public static void main(final String [] args) {
+
+    new HadoopExecAction().action(args);
   }
 
 }
