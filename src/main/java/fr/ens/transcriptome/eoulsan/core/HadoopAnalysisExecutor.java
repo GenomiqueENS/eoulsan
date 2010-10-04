@@ -39,15 +39,15 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.InitGlobalLoggerStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
+import fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndSoapMapReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterSamplesHadoopStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SoapMapReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
