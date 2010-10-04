@@ -37,6 +37,8 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   private String logPathname;
   private String outputPathname;
   private String executionName;
+  private String designPathname;
+  private String paramPathname;
 
   //
   // Getters
@@ -77,6 +79,24 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   public String getExecutionName() {
     return this.executionName;
   }
+  
+  /**
+   * Get the design path.
+   * @return the design path
+   */
+  @Override
+  public String getDesignPathname() {
+    return this.designPathname;
+  }
+  
+  /**
+   * Get the parameter path.
+   * @return the parameter path
+   */
+  @Override
+  public String getParameterPathname(){
+    return this.paramPathname;
+  }
 
   //
   // Setters
@@ -110,6 +130,26 @@ public class SimpleExecutorInfo implements ExecutorInfo {
 
     logger.info("Output path: " + outputPath);
     this.outputPathname = outputPath;
+  }
+  
+  /**
+   * Set the design path
+   * @param designPathname The log Path to set
+   */
+  public void setDesignPathname(final String designPathname) {
+
+    logger.info("Design path: " + designPathname);
+    this.designPathname = designPathname;
+  }
+  
+  /**
+   * Set the parameter path
+   * @param paramPathname The log Path to set
+   */
+  public void setParameterPathname(final String paramPathname) {
+
+    logger.info("Parameter path: " + paramPathname);
+    this.paramPathname = paramPathname;
   }
 
   //

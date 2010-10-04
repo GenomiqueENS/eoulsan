@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapRead
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopStep;
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopStep;
 import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.CopyDesignAndParametersToOutputStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -228,6 +229,8 @@ public class HadoopAnalysisExecutor extends Executor {
     this.registery.addStepType(FilterSamplesHadoopStep.class);
     this.registery.addStepType(ExpressionHadoopStep.class);
     this.registery.addStepType(HDFSDataDownloadStep.class);
+    this.registery.addStepType(CopyDesignAndParametersToOutputStep.class);
+    
   }
 
   /**
@@ -261,7 +264,7 @@ public class HadoopAnalysisExecutor extends Executor {
    */
   public HadoopAnalysisExecutor(final Configuration conf,
       final Command command, final Design design, final Path designPath,
-      final Path basePath) throws IOException {
+      final Path paramPath, final Path basePath) throws IOException {
 
     this(conf);
 
@@ -301,6 +304,8 @@ public class HadoopAnalysisExecutor extends Executor {
 
     info.setLogPathname(logPath.toString());
     info.setOutputPathname(outputPath.toString());
+    info.setDesignPathname(designPath.toString());
+    info.setParameterPathname(paramPath.toString());
   }
 
 }

@@ -25,19 +25,19 @@ package fr.ens.transcriptome.eoulsan.core;
 public interface ExecutorInfo {
 
   /**
-   * Get the base path
+   * Get the base path.
    * @return Returns the basePath
    */
   public String getBasePathname();
 
   /**
-   * Get the log path
+   * Get the log path.
    * @return Returns the log Path
    */
   public String getLogPathname();
 
   /**
-   * Get the output path
+   * Get the output path.
    * @return Returns the output Path
    */
   public String getOutputPathname();
@@ -47,5 +47,18 @@ public interface ExecutorInfo {
    * @return the execution name
    */
   public String getExecutionName();
+  
+  
+  /**
+   * Get the design path.
+   * @return the design path
+   */
+  public String getDesignPathname();
+  
+  /**
+   * Get the parameter path.
+   * @return the parameter path
+   */
+  public String getParameterPathname();
 
 }
