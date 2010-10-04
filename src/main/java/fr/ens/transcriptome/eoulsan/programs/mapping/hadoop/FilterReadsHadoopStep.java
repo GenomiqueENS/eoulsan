@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class FilterReadsHadoopMain extends FilterReadsStep {
+public class FilterReadsHadoopStep extends FilterReadsStep {
 
   //
   // Step methods
@@ -106,7 +106,7 @@ public class FilterReadsHadoopMain extends FilterReadsStep {
    */
   private JobConf createJobConf(final Path basePath, final Sample sample) {
 
-    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
     if (getLengthThreshold() >= 0)
       conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold", ""
@@ -124,7 +124,7 @@ public class FilterReadsHadoopMain extends FilterReadsStep {
     // conf.set("mapred.job.tracker", "local");
 
     // Set the jar
-    conf.setJarByClass(FilterReadsHadoopMain.class);
+    conf.setJarByClass(FilterReadsHadoopStep.class);
 
     // Set input path
     FileInputFormat.setInputPaths(conf, new Path(basePath, sample.getSource()));

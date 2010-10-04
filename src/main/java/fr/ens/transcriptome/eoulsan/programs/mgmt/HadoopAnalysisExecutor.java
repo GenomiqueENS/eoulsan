@@ -39,11 +39,11 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapReadsHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionHadoopStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -222,11 +222,11 @@ public class HadoopAnalysisExecutor extends Executor {
     //
 
     this.registery.addStepType(HDFSDataUploadStep.class);
-    this.registery.addStepType(FilterReadsHadoopMain.class);
-    this.registery.addStepType(SoapMapReadsHadoopMain.class);
-    this.registery.addStepType(FilterAndSoapMapReadsHadoopMain.class);
-    this.registery.addStepType(FilterSamplesHadoopMain.class);
-    this.registery.addStepType(ExpressionHadoopMain.class);
+    this.registery.addStepType(FilterReadsHadoopStep.class);
+    this.registery.addStepType(SoapMapReadsHadoopStep.class);
+    this.registery.addStepType(FilterAndSoapMapReadsHadoopStep.class);
+    this.registery.addStepType(FilterSamplesHadoopStep.class);
+    this.registery.addStepType(ExpressionHadoopStep.class);
     this.registery.addStepType(HDFSDataDownloadStep.class);
   }
 

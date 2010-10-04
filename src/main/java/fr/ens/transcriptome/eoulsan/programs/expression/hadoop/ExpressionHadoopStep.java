@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class ExpressionHadoopMain extends ExpressionStep {
+public class ExpressionHadoopStep extends ExpressionStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -80,7 +80,7 @@ public class ExpressionHadoopMain extends ExpressionStep {
       final Sample sample, final String genomicType) throws IOException {
 
     // Create JobConf
-    final JobConf conf = new JobConf(ExpressionHadoopMain.class);
+    final JobConf conf = new JobConf(ExpressionHadoopStep.class);
 
     final int sampleId = sample.getId();
     final int genomeId =
