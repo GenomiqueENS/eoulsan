@@ -202,21 +202,6 @@ public abstract class DataUploadStep implements Step {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
-
-      if ("designpath".equals(p.getName()))
-        setDesignURI(p.getStringValue());
-      else if ("parampath".equals(p.getName()))
-        setParamURI(p.getStringValue());
-
-    }
-
-    if (getDesignURI() == null)
-      throw new EoulsanException("No URI is set for the design file.");
-
-    if (getParamURI() == null)
-      throw new EoulsanException("No URI is set for the design file.");
-
   }
 
   /**
@@ -230,6 +215,8 @@ public abstract class DataUploadStep implements Step {
     final List<FileUploader> files = new ArrayList<FileUploader>();
     final long startTime = System.currentTimeMillis();
 
+    setDesignURI(info.getDesignPathname());
+    setParamURI(info.getParameterPathname());
     setDestURI(info.getBasePathname());
 
     // Create output dir

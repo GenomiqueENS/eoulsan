@@ -79,7 +79,7 @@ public class LocalExecAction implements Action {
       final Command c = pp.parse();
 
       // Execute
-      final Executor e = new LocalAnalysisExecutor(c, designFile);
+      final Executor e = new LocalAnalysisExecutor(c, designFile, paramFile);
       e.execute();
 
     } catch (FileNotFoundException e) {

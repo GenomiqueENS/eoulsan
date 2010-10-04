@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.CopyDesignAndParametersToOutputStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -54,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public class HadoopExecAction implements Action {
 
+  /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   // Configure URL handler for hdfs protocol
@@ -61,6 +64,8 @@ public class HadoopExecAction implements Action {
   // URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
   // }
 
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = new HashSet<Parameter>();
+  
   @Override
   public void action(final String[] args) {
 
@@ -130,11 +135,12 @@ public class HadoopExecAction implements Action {
       // Create command object
       final Command c = new Command();
 
+      // Add Copy design and parameter file Step
+      c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
+          EMPTY_PARAMEMETER_SET);
+
       // Add upload Step
-      final Set<Parameter> uploadParameters = new HashSet<Parameter>();
-      uploadParameters.add(new Parameter("parampath", paramPath.toString()));
-      uploadParameters.add(new Parameter("designpath", designPath.toString()));
-      c.addStep(HDFSDataUploadStep.STEP_NAME, uploadParameters);
+      c.addStep(HDFSDataUploadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Parse param file
       final ParamParser pp =
@@ -142,11 +148,12 @@ public class HadoopExecAction implements Action {
       pp.parse(c);
 
       // Add download Step
-      c.addStep(HDFSDataDownloadStep.STEP_NAME, new HashSet<Parameter>());
+      c.addStep(HDFSDataDownloadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Execute
       final Executor e =
-          new HadoopAnalysisExecutor(conf, c, design, designPath, basePath);
+          new HadoopAnalysisExecutor(conf, c, design, designPath, paramPath,
+              basePath);
       e.execute();
 
     } catch (FileNotFoundException e) {
@@ -174,9 +181,8 @@ public class HadoopExecAction implements Action {
     }
 
   }
-  
-  
-  public static void main(final String [] args) {
+
+  public static void main(final String[] args) {
 
     new HadoopExecAction().action(args);
   }

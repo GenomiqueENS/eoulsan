@@ -113,7 +113,8 @@ public class LocalAnalysisExecutor extends Executor {
    * @param command command to execute
    * @param design the path to the design filename
    */
-  public LocalAnalysisExecutor(final Command command, final File designFile) {
+  public LocalAnalysisExecutor(final Command command, final File designFile,
+      final File paramFile) {
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -124,8 +125,12 @@ public class LocalAnalysisExecutor extends Executor {
       throw new NullPointerException("The design file is null");
 
     this.designFile = designFile;
-    getInfo().setBasePathname(
-        designFile.getAbsoluteFile().getParentFile().getAbsolutePath());
+
+    final SimpleExecutorInfo info = getInfo();
+    info.setBasePathname(designFile.getAbsoluteFile().getParentFile()
+        .getAbsolutePath());
+    info.setDesignPathname(designFile.getAbsolutePath());
+    info.setParameterPathname(paramFile.getAbsolutePath());
 
     //
     // Register local steps
