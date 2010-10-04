@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,7 +159,7 @@ public class BinaryFastQWriter {
       return sb.toString();
     }
 
-    //final MultiBitsDecompressor d = new MultiBitsDecompressor();
+    // final MultiBitsDecompressor d = new MultiBitsDecompressor();
     int countOk;
 
     private void checkResult(final byte[] result) {
@@ -466,29 +465,6 @@ public class BinaryFastQWriter {
       sb.append((b & i) != 0 ? "1" : "0");
 
     return sb.toString();
-  }
-
-  public static void main(String[] args) throws IOException {
-
-//    final BinaryFastQWriter.MultiBitsCompressor c =
-//        new BinaryFastQWriter.MultiBitsCompressor();
-//
-//    final BinaryFastQWriter.MultiBitsDecompressor d =
-//        new BinaryFastQWriter.MultiBitsDecompressor();
-
-    FastQReader reader = new FastQReader(new File("/tmp/G5_1.fq"));
-
-    Writer writer =
-        FileUtils.createBufferedWriter(new File("/tmp/G5_1.nn.tfq"));
-
-    while (reader.readEntry())
-
-      writer.write("\t"
-          + reader.getSequence() + "\t" + reader.getQuality() + "\n");
-
-    reader.close();
-    writer.close();
-
   }
 
 }
