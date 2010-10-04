@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 
 /**
  * Utils methods for Design.

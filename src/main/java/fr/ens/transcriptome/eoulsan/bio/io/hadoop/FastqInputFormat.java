@@ -20,20 +20,29 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
+
+import java.io.IOException;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileSplit;
+import org.apache.hadoop.mapred.InputSplit;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RecordReader;
+import org.apache.hadoop.mapred.Reporter;
 
-public class FastQFormatNew extends TextInputFormat {
+@SuppressWarnings("deprecation")
+public class FastqInputFormat extends
+    FileInputFormat<LongWritable, Text> {
 
-  @Override
-  public RecordReader<LongWritable, Text> createRecordReader(
-      InputSplit inputSplit, TaskAttemptContext taskAttemptContext) {
-    return new FastQRecordReaderNew();
+  public RecordReader<LongWritable, Text> getRecordReader(
+      InputSplit input, JobConf job, Reporter reporter)
+      throws IOException {
+
+    reporter.setStatus(input.toString());
+    return new FastqRecordReader(job, (FileSplit)input);
   }
+  
 }

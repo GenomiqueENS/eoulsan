@@ -31,7 +31,7 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 

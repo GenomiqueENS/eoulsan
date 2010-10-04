@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.bio;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 

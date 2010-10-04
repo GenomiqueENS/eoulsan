@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.core.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;

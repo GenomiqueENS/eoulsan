@@ -43,7 +43,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.io.compression.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 

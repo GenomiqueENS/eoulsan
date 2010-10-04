@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;

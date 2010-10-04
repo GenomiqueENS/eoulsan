@@ -20,18 +20,18 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.compression;
+package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
- * This class define an input stream for Bzip2 files in hadoop mode.
+ * This class define an input stream for Bzip2 files in local mode.
  * @author Laurent Jourdren
  */
-public class HadoopBZip2InputStream extends InputStream {
+public class LocalBZip2InputStream extends InputStream {
 
   @Override
   public int available() throws IOException {
@@ -47,7 +47,7 @@ public class HadoopBZip2InputStream extends InputStream {
 
   @Override
   public synchronized void mark(int readlimit) {
-    // TODO Auto-generated method stub
+
     is.mark(readlimit);
   }
 
@@ -97,10 +97,9 @@ public class HadoopBZip2InputStream extends InputStream {
    * Public constructor.
    * @param is InputStream
    */
-  public HadoopBZip2InputStream(final InputStream is) throws IOException {
+  public LocalBZip2InputStream(final InputStream is) throws IOException {
 
-    BZip2Codec codec = new BZip2Codec();
-    this.is = codec.createInputStream(is);
+    this.is = new BZip2CompressorInputStream(is);
   }
 
 }

@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.hadoop;
+package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 public class FastaInputFormat {
 

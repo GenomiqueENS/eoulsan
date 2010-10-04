@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.design.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This class implements a writer for limma design files.

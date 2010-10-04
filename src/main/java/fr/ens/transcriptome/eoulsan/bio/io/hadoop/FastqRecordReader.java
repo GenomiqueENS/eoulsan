@@ -20,30 +20,26 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DataOutputBuffer;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapred.FileSplit;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RecordReader;
 
-public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
+@SuppressWarnings("deprecation")
+public class FastqRecordReader implements RecordReader<LongWritable, Text> {
 
   private long end;
   private boolean stillInChunk = true;
-
-  private LongWritable key = new LongWritable();
-  private Text value = new Text();
 
   private FSDataInputStream fsin;
   private DataOutputBuffer buffer = new DataOutputBuffer();
@@ -52,14 +48,10 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 
-  public void initialize(InputSplit inputSplit,
-      TaskAttemptContext taskAttemptContext) throws IOException,
-      InterruptedException {
+  public FastqRecordReader(JobConf job, FileSplit split) throws IOException {
 
-    FileSplit split = (FileSplit) inputSplit;
-    Configuration conf = taskAttemptContext.getConfiguration();
     Path path = split.getPath();
-    FileSystem fs = path.getFileSystem(conf);
+    FileSystem fs = path.getFileSystem(job);
 
     fsin = fs.open(path);
     long start = split.getStart();
@@ -71,14 +63,14 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
     }
   }
 
-  public boolean nextKeyValue() throws IOException {
+  @Override
+  public boolean next(final LongWritable key, final Text value)
+      throws IOException {
+
     if (!stillInChunk)
       return false;
 
     final long startPos = fsin.getPos();
-
-    // if (true)
-    // throw new IOException("startPos=" + startPos);
 
     boolean status = readUntilMatch(endTag, true);
 
@@ -117,35 +109,41 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
       count++;
     }
 
-    // if (count != 5)
-    // throw new IOException("Invalid record: found " + count + " lines");
+    key.set(fsin.getPos());
+    value.set(sb.toString());
 
-    value = new Text(sb.toString());
-    // value.set(buffer.getData(), 0, buffer.getLength());
     sb.setLength(0);
-
-    key = new LongWritable(fsin.getPos());
     buffer.reset();
 
-    if (!status) {
+    if (!status)
       stillInChunk = false;
-    }
 
     return true;
   }
 
-  public LongWritable getCurrentKey() throws IOException, InterruptedException {
-    return key;
+  @Override
+  public long getPos() throws IOException {
+
+    return fsin.getPos();
   }
 
-  public Text getCurrentValue() throws IOException, InterruptedException {
-    return value;
+  @Override
+  public LongWritable createKey() {
+    return new LongWritable();
   }
 
-  public float getProgress() throws IOException, InterruptedException {
+  @Override
+  public Text createValue() {
+
+    return new Text();
+  }
+
+  @Override
+  public float getProgress() {
     return 0;
   }
 
+  @Override
   public void close() throws IOException {
     fsin.close();
   }

@@ -45,9 +45,9 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.io.DesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.Command;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.Executor;

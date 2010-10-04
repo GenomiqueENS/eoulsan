@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.hadoop;
+package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
 import java.util.regex.Pattern;

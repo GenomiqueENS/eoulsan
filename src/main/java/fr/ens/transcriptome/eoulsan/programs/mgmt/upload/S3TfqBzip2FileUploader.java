@@ -29,8 +29,8 @@ import java.io.OutputStreamWriter;
 
 import com.amazonaws.auth.AWSCredentials;
 
+import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.io.FastQReader;
 
 /**
  * This class define an uploader for bzip2 TFQ files. *
