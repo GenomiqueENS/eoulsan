@@ -22,14 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -43,23 +36,9 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.Executor;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.core.LocalAnalysisExecutor;
-import fr.ens.transcriptome.eoulsan.core.ParamParser;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.SimpleExecutorInfo;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
-import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.FakeS3ProtocolFactory;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.S3DataUploadStep;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.core.action.LocalCreateDesignAction;
+import fr.ens.transcriptome.eoulsan.core.action.LocalExecAction;
+import fr.ens.transcriptome.eoulsan.core.action.LocalUploadS3Action;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -68,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class MainCLI {
 
+  /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   /**
@@ -212,176 +192,6 @@ public class MainCLI {
   // Action methods
   //
 
-  /**
-   * Exec action.
-   * @param args command line parameters for exec action
-   */
-  private static void execAction(final String[] args) {
-
-    if (args.length != 2) {
-
-      System.err.println("Invalid number of arguments.");
-      System.err.println("usage: "
-          + Globals.APP_NAME_LOWER_CASE + " exec param.xml design.txt");
-
-      System.exit(1);
-
-    }
-
-    final File paramFile = new File(args[0]);
-    final File designFile = new File(args[1]);
-
-    logger.info(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-        + " on " + Globals.APP_BUILD_DATE + ")");
-    logger.info("Parameter file: " + paramFile);
-    logger.info("Design file: " + designFile);
-
-    try {
-
-      // Test if param file exists
-      if (!paramFile.exists())
-        throw new FileNotFoundException(paramFile.toString());
-
-      // Test if design file exists
-      if (!designFile.exists())
-        throw new FileNotFoundException(designFile.toString());
-
-      // Parse param file
-      final ParamParser pp = new ParamParser(paramFile);
-      final Command c = pp.parse();
-
-      // Execute
-      final Executor e = new LocalAnalysisExecutor(c, designFile);
-      e.execute();
-
-    } catch (FileNotFoundException e) {
-      System.err.println("File not found: " + e.getMessage());
-      System.exit(1);
-    } catch (EoulsanException e) {
-
-      e.printStackTrace();
-
-      System.err.println("Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-      System.exit(1);
-    }
-
-  }
-
-  /**
-   * Create soap index action.
-   * @param args command line parameters for exec action
-   */
-  private static void createDesignAction(final String[] args) {
-
-    DesignBuilder db = new DesignBuilder(args);
-
-    Design design = db.getDesign();
-
-    if (design.getSampleCount() == 0) {
-      System.err
-          .println("Error: Nothing to create, no file found.  Use the -h option to get more information.");
-      System.err.println("usage: "
-          + Globals.APP_NAME_LOWER_CASE + " createdesign files");
-      System.exit(1);
-    }
-
-    try {
-      DesignWriter dw = new SimpleDesignWriter("design.txt");
-
-      dw.write(design);
-
-    } catch (FileNotFoundException e) {
-      System.err.println("File not found: " + e.getMessage());
-      System.exit(1);
-    } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    }
-
-  }
-
-  /**
-   * Exec action.
-   * @param args command line parameters for exec action
-   */
-  private static void uploadS3Action(final String[] args) {
-
-    final File userDir = new File(System.getProperty("user.dir"));
-
-    try {
-
-      URL.setURLStreamHandlerFactory(new FakeS3ProtocolFactory());
-
-      // DataUploadStep du = new S3DataUploadStep(new File(userDir,
-      // ".credentials"));
-
-      final String paramPathname = args[0];
-      final String designPathname = args[1];
-
-      // Define parameter URI
-      final URI paramURI;
-      if (paramPathname.indexOf("://") != -1)
-        paramURI = new URI(paramPathname);
-      else
-        paramURI = new File(paramPathname).getAbsoluteFile().toURI();
-
-      // Define design URI
-      final URI designURI;
-      if (designPathname.indexOf("://") != -1)
-        designURI = new URI(designPathname);
-      else
-        designURI = new File(designPathname).getAbsoluteFile().toURI();
-
-      // Define destination URI
-      final URI destURI = new URI(args[2]);
-
-      logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-          + " on " + Globals.APP_BUILD_DATE + ")");
-      logger.info("Parameter file: " + paramURI);
-      logger.info("Design file: " + designURI);
-      logger.info("Destination : " + destURI);
-
-      // Read design file
-      final Design design =
-          DesignUtils.readAndCheckDesign(FileUtils.createInputStream(new File(
-              designURI)));
-
-      // Add upload Step
-      final Set<Parameter> uploadParameters = new HashSet<Parameter>();
-      uploadParameters.add(new Parameter("basepath", destURI.toString()));
-      uploadParameters.add(new Parameter("parampath", paramURI.toString()));
-      uploadParameters.add(new Parameter("designpath", destURI.toString()));
-
-      final S3DataUploadStep step =
-          new S3DataUploadStep(new File(userDir, ".credentials"));
-      step.configure(uploadParameters, new HashSet<Parameter>());
-
-      // Create Executor information
-      final ExecutorInfo info = new SimpleExecutorInfo();
-
-      final StepResult result = step.execute(design, info);
-
-      if (result.getException() != null) {
-        System.err.println("Error: " + result.getException().getMessage());
-        System.exit(1);
-      }
-
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    } catch (EoulsanException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    } catch (URISyntaxException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    }
-
-  }
-
   //
   // Main method
   //
@@ -419,11 +229,11 @@ public class MainCLI {
         StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
 
     if ("exec".equals(action))
-      execAction(arguments);
+      new LocalExecAction().action(arguments);
     else if ("createdesign".equals(action))
-      createDesignAction(arguments);
+      new LocalCreateDesignAction().action(arguments);
     else if ("uploads3".equals(action))
-      uploadS3Action(arguments);
+      new LocalUploadS3Action().action(arguments);
 
   }
 }
