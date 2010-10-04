@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.core.Sequence;
+import fr.ens.transcriptome.eoulsan.bio.Sequence;
 
 public class SequenceTest {
 

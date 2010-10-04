@@ -28,9 +28,9 @@ import java.io.File;
 
 import org.junit.Test;
 
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
 
 
 public class DesignTest {
