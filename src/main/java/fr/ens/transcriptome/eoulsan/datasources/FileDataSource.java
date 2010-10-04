@@ -25,11 +25,15 @@ package fr.ens.transcriptome.eoulsan.datasources;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Properties;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.io.compression.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class implements a DataSource for a file.
@@ -100,10 +104,27 @@ public class FileDataSource implements DataSource, Serializable {
 
     try {
 
-      return new FileInputStream(new File("".equals(this.baseDir)
-          ? null : this.baseDir, this.file));
+      File f = new File(this.file);
+      if (!f.exists())
+        f = new File("".equals(this.baseDir) ? null : this.baseDir, this.file);
+
+      final InputStream is = new FileInputStream(f);
+
+      final String extension = StringUtils.compressionExtension(this.file);
+
+      if (Common.GZIP_EXTENSION.equals(extension))
+        return CompressionFactory.createGZInputStream(is);
+
+      if (Common.BZIP2_EXTENSION.equals(extension))
+        return CompressionFactory.createBZip2InputStream(is);
+
+      return is;
+
     } catch (FileNotFoundException e) {
       throw new EoulsanRuntimeException("File not Found: " + this.file);
+    } catch (IOException e) {
+      throw new EoulsanRuntimeException("Error while decompressing: "
+          + this.file);
     }
   }
 

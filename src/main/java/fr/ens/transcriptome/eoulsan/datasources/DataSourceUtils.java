@@ -22,16 +22,18 @@
 
 package fr.ens.transcriptome.eoulsan.datasources;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class provides utility methods for DataSource.
  * @author Laurent Jourdren
  */
 public final class DataSourceUtils {
-
-  private static final String SGDB_URL_PREFIX = "sgdb://";
 
   /**
    * Identify the type of the DataSource from the source.
@@ -56,8 +58,11 @@ public final class DataSourceUtils {
     if (source == null)
       return null;
 
-    if (source.startsWith(SGDB_URL_PREFIX))
-      return new URLDataSource(source);
+    if (source.startsWith(Common.S3_PROTOCOL + "://") && SystemUtils.isHadoop())
+      return new S3DataSource(source);
+
+    if (source.startsWith("file:/"))
+      return new FileDataSource(new File(source.substring(5)));
 
     boolean malformedURL = false;
 

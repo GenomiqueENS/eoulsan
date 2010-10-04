@@ -536,7 +536,15 @@ public class GFFEntry {
 
     final String[] fields = this.parsedFields;
 
-    StringUtils.fastSplit(s, fields);
+    try {
+      StringUtils.fastSplit(s, fields);
+    } catch (ArrayIndexOutOfBoundsException e) {
+
+      System.err.println("Error in GFF parsing line ("
+          + s.split("\t").length + " fields, 9 attemped): \"" + s+"\"");
+
+      throw e;
+    }
 
     setSeqId(fields[0]);
     setSource(fields[1]);

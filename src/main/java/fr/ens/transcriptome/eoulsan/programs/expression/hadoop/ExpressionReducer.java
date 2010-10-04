@@ -37,7 +37,6 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Transcript;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -130,7 +129,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       final Path indexPath =
           new Path(Parameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
-      final FileSystem fs = PathUtils.getFileSystem(indexPath, conf);
+      final FileSystem fs = indexPath.getFileSystem(conf);
       tef.load(fs.open(indexPath));
 
     } catch (IOException e) {

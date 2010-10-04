@@ -22,6 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
+
 /**
  * This class is the main class. Check the environment, if Hadoop library is in
  * the classpath launch Hadoop main class else run local main class.
@@ -29,35 +31,13 @@ package fr.ens.transcriptome.eoulsan;
  */
 public class Main {
 
-  private static String HADOOP_CLASS_TO_TEST = "org.apache.hadoop.io.Text";
-
-  /**
-   * Test if a class is present is the classpath
-   * @param className the class to test
-   * @return true if the class is present in the classpath
-   */
-  private static boolean isClass(final String className) {
-
-    if (className == null)
-      return false;
-
-    try {
-      Main.class.getClassLoader().loadClass(className);
-
-      return true;
-
-    } catch (ClassNotFoundException e) {
-      return false;
-    }
-  }
-
   /**
    * Main method of the program.
    * @param args command line arguments
    */
   public static void main(final String[] args) {
 
-    if (isClass(HADOOP_CLASS_TO_TEST))
+    if (SystemUtils.isHadoop())
       MainHadoop.main(args);
     else
       MainCLI.main(args);

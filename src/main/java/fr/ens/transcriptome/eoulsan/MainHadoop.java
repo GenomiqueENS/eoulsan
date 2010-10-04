@@ -24,12 +24,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import org.apache.hadoop.util.ProgramDriver;
 
-import fr.ens.transcriptome.eoulsan.programs.expression.hadoop.ExpressionHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterAndSoapMapReadsHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterReadsHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.FilterSamplesHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.hadoop.SoapMapReadsHadoopMain;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.UploadDesignDataHadoopMain;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.ExecHadoopMain;
 
 /**
  * Main class in Hadoop mode.
@@ -49,18 +44,26 @@ public class MainHadoop {
 
     try {
 
-      pgd.addClass("uploaddesigndata", UploadDesignDataHadoopMain.class,
-          "Upload design data.");
-      pgd.addClass("filterreads", FilterReadsHadoopMain.class, "Filter reads.");
-      pgd.addClass("soapmapreads", SoapMapReadsHadoopMain.class,
-          "Map reads on genome with SOAP.");
-      pgd.addClass("filterandsoapmapreads",
-          FilterAndSoapMapReadsHadoopMain.class,
-          "Filter and map reads on genome with SOAP.");
-      pgd.addClass("filtersamples", FilterSamplesHadoopMain.class,
-          "Filter samples.");
-      pgd.addClass("expression", ExpressionHadoopMain.class, "Expression.");
+      // pgd.addClass("uploaddesigndata", UploadDesignDataHadoopMain.class,
+      // "Upload design data.");
+      // pgd.addClass("filterreads", FilterReadsHadoopMain.class,
+      // "Filter reads.");
+      // pgd.addClass("soapmapreads", SoapMapReadsHadoopMain.class,
+      // "Map reads on genome with SOAP.");
+      // pgd.addClass("filterandsoapmapreads",
+      // FilterAndSoapMapReadsHadoopMain.class,
+      // "Filter and map reads on genome with SOAP.");
+      // pgd.addClass("filterandsoapmapreads2",
+      // FilterAndSoapMapReadsHadoopMain2.class,
+      // "Filter and map reads on genome with SOAP.");
+      // pgd.addClass("filtersamples", FilterSamplesHadoopMain.class,
+      // "Filter samples.");
+      // pgd.addClass("expression", ExpressionHadoopMain.class, "Expression.");
+      //
+      // pgd.addClass("newupload", HDFSDataUpload.class, "Upload data.");
 
+      pgd.addClass("exec", ExecHadoopMain.class, "Execute " + Globals.APP_NAME);
+      //pgd.addClass("exec", UploadDesignDataHadoopMain.class, "Execute " + Globals.APP_NAME);
       pgd.driver(args);
 
       // success

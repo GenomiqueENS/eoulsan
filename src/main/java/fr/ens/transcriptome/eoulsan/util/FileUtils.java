@@ -42,10 +42,11 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.UUID;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import fr.ens.transcriptome.eoulsan.io.compression.CompressionFactory;
 
 public class FileUtils {
 
@@ -350,8 +351,9 @@ public class FileUtils {
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
 
-    final GZIPOutputStream gzos =
-        new GZIPOutputStream(Channels.newOutputStream(outChannel));
+    final OutputStream gzos =
+        CompressionFactory.createGZipOutputStream(Channels
+            .newOutputStream(outChannel));
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(gzos,
         Charset.forName(CHARSET)));
@@ -404,10 +406,10 @@ public class FileUtils {
    * @return the number of bytes copied
    * @throws IOException In case of an I/O problem
    */
-  public static int copy(InputStream input, OutputStream output)
+  public static long copy(InputStream input, OutputStream output)
       throws IOException {
     byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-    int count = 0;
+    long count = 0;
     int n = 0;
     while (-1 != (n = input.read(buffer))) {
       output.write(buffer, 0, n);

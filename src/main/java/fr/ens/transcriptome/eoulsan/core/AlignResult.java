@@ -27,6 +27,10 @@ import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * This class define an alignment result.
+ * @author Laurent Jourdren
+ */
 public class AlignResult {
 
   private List<String> fields = new ArrayList<String>();
@@ -64,7 +68,14 @@ public class AlignResult {
    */
   public int getNumberOfHits() {
 
-    return Integer.parseInt(this.fields.get(3));
+    try {
+      return Integer.parseInt(this.fields.get(3));
+    } catch (NumberFormatException e) {
+
+      System.out.println(fields);
+
+      throw e;
+    }
   }
 
   /**

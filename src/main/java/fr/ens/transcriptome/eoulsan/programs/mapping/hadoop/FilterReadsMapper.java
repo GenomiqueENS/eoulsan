@@ -36,6 +36,10 @@ import fr.ens.transcriptome.eoulsan.core.ReadSequence;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.programs.mapping.ReadsFilter;
 
+/**
+ * This class is the mapper for filtering reads
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("deprecation")
 public class FilterReadsMapper implements
     Mapper<LongWritable, Text, Text, Text> {
@@ -55,6 +59,11 @@ public class FilterReadsMapper implements
 
     // Fill the ReadSequence object
     read.parse(value.toString());
+
+    // Create an id if does not exists
+    if ("".equals(this.read.getName()))
+      this.read.setName("ID_" + Long.toHexString(key.get()));
+
     reporter.incrCounter(COUNTER_GROUP, "input fastq", 1);
 
     if (!this.read.check()) {

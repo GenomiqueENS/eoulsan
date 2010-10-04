@@ -27,16 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.MainCLI;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -52,7 +43,7 @@ public class CreateSoapIndexLocalMain {
 
   public static String PROGRAM_NAME = "createsoapindex";
 
-  private static void makeIndex(final String designFilename)
+  public static void makeIndex(final String designFilename)
       throws EoulsanIOException, IOException {
 
     DesignReader dr = new SimpleDesignReader(designFilename);
@@ -87,109 +78,6 @@ public class CreateSoapIndexLocalMain {
 
     }
 
-  }
-
-  /**
-   * Show command line help.
-   * @param options Options of the software
-   */
-  private static void help(final Options options) {
-
-    // Show help message
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " " + PROGRAM_NAME + " [options] design", options);
-
-    System.exit(0);
-  }
-
-  /**
-   * Create options for command line
-   * @return an Options object
-   */
-  private static Options makeOptions() {
-
-    // create Options object
-    final Options options = new Options();
-
-    options.addOption("version", false, "show version of the software");
-    options
-        .addOption("about", false, "display information about this software");
-    options.addOption("h", "help", false, "display this help");
-    options.addOption("license", false,
-        "display information about the license of this software");
-
-    return options;
-  }
-
-  /**
-   * Parse the options of the command line
-   * @param args command line arguments
-   * @return the number of optional arguments
-   */
-  private static int parseCommandLine(final String args[]) {
-
-    final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
-
-    int argsOptions = 0;
-
-    try {
-
-      // parse the command line arguments
-      CommandLine line = parser.parse(options, args);
-
-      if (line.hasOption("help"))
-        help(options);
-
-      if (line.hasOption("about"))
-        MainCLI.about();
-
-      if (line.hasOption("version"))
-        MainCLI.version();
-
-      if (line.hasOption("license"))
-        MainCLI.license();
-
-    } catch (ParseException e) {
-      System.err.println(e.getMessage());
-      System.exit(1);
-    }
-
-    return argsOptions;
-  }
-
-  /**
-   * Main method
-   * @param args command line arguments
-   */
-  public static void main(final String[] args) {
-
-    // Parse the command line
-    final int argsOptions = parseCommandLine(args);
-
-    if (args == null || args.length != argsOptions + 1) {
-
-      System.err
-          .println("This program needs one argument. Use the -h option to get more information.");
-      System.err.println("usage:"
-          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
-          + " [options] design");
-      System.exit(1);
-    }
-
-    final String designFilename = args[argsOptions];
-    try {
-      makeIndex(designFilename);
-    } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
-    }
   }
 
 }

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

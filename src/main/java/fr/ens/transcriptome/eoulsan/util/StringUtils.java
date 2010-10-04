@@ -23,6 +23,8 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -97,6 +99,38 @@ public final class StringUtils {
 
     return filename.substring(filename.length() - (shortName.length() - pos),
         filename.length());
+  }
+
+  /**
+   * Get the extension without compression extension
+   * @param filename The filename
+   * @return the extension without the compression extension
+   */
+  public static String extensionWithoutCompressionExtension(
+      final String filename) {
+
+    return extension(filenameWithoutCompressionExtension(filename));
+  }
+
+  /**
+   * Get the filename without the extension.
+   * @param filename The filename
+   * @return the filename without the extension
+   */
+  public static String filenameWithoutExtension(final String filename) {
+
+    if (filename == null)
+      return null;
+
+    final File f = new File(filename);
+    final String shortName = f.getName();
+
+    final int pos = shortName.lastIndexOf('.');
+
+    if (pos == -1)
+      return "";
+
+    return filename.substring(0, pos);
   }
 
   /**
@@ -414,13 +448,25 @@ public final class StringUtils {
    */
   public static final String[] arrayWithoutFirstElement(final String[] array) {
 
+    return arrayWithoutFirstsElement(array, 1);
+  }
+
+  /**
+   * Get an array without the first element of the input array.
+   * @param array input array
+   * @param elementsToRemove number of the first elements to remove
+   * @return an array without the first element of the input array
+   */
+  public static final String[] arrayWithoutFirstsElement(final String[] array,
+      final int elementsToRemove) {
+
     if (array == null)
       return null;
 
-    if (array.length <= 1)
+    if (elementsToRemove < 1 || elementsToRemove > array.length)
       return new String[0];
 
-    final int newLen = array.length - 1;
+    final int newLen = array.length - elementsToRemove;
     final String[] result = new String[newLen];
     System.arraycopy(array, 1, result, 0, newLen);
 
@@ -440,6 +486,27 @@ public final class StringUtils {
     return s.replace("\\", "\\\\").replace(" ", "\\ ").replace("'", "\\'")
         .replace("\"", "\\\"").replace("&", "\\&").replace("!", "\\!").replace(
             "~", "\\~");
+  }
+
+  /**
+   * Get the filename of an URI
+   * @param s The URI in a string
+   * @return the filename of the URI
+   */
+  public static final String getURIFilename(final String s) {
+
+    if (s == null)
+      return null;
+
+    try {
+      final URI uri = new URI(s);
+
+      return new File(uri.getPath()).getName();
+    } catch (URISyntaxException e) {
+
+      return null;
+    }
+
   }
 
 }

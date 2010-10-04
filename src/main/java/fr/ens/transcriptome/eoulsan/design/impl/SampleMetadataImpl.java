@@ -27,6 +27,10 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
+/**
+ * This class is the implementation of SampleMetadata.
+ * @author Laurent Jourdren
+ */
 public class SampleMetadataImpl implements SampleMetadata {
 
   private DesignImpl design;
@@ -95,12 +99,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   public String getGenome() {
 
     return get(GENOME_FIELD);
-  }
-
-  @Override
-  public String getGenomicType() {
-
-    return get(GENOMIC_TYPE_FIELD);
   }
 
   @Override
@@ -180,12 +178,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setGenomicType(String genomicType) {
-
-    set(GENOMIC_TYPE_FIELD, genomicType);
-  }
-
-  @Override
   public void setCondition(String condition) {
 
     set(CONDITION_FIELD, condition);
@@ -252,12 +244,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isGenomeField() {
 
     return isField(GENOME_FIELD);
-  }
-
-  @Override
-  public boolean isGenomicTypeField() {
-
-    return isField(GENOMIC_TYPE_FIELD);
   }
 
   @Override

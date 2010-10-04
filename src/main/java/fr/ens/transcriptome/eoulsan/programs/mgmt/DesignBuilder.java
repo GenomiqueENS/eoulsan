@@ -97,11 +97,9 @@ public class DesignBuilder {
         smd.setGenome(this.genomeFile.toString());
 
       // Set the Annaotion file
-      if (this.gffFile != null) {
+      if (this.gffFile != null)
         smd.setAnnotation(this.gffFile.toString());
-        smd.setGenomicType("exon");
-      }
-      
+
       smd.setCondition(sampleName);
       smd.setReplicatType("T");
 
@@ -118,7 +116,7 @@ public class DesignBuilder {
    * Public constructor.
    * @param filenames filenames to add
    */
-  public DesignBuilder(String[] filenames) {
+  public DesignBuilder(final String[] filenames) {
 
     if (filenames == null)
       return;

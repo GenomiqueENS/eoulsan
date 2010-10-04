@@ -24,16 +24,14 @@ package fr.ens.transcriptome.eoulsan.programs.expression.hadoop;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -48,11 +46,11 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.programs.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.programs.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -64,12 +62,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class ExpressionHadoopMain {
+public class ExpressionHadoopMain extends ExpressionStep {
 
-  // Configure URL handler for hdfs protocol
-  static {
-    URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-  }
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private static final String SERIALIZED_DATA_EXTENSION = ".data";
 
@@ -77,10 +73,11 @@ public class ExpressionHadoopMain {
    * Create JobConf object.
    * @param basePath base path
    * @param sample sample of the job
-   * @param parentType parent type
+   * @param genomicType genomic type
+   * @throws IOException if an error occurs while creating job
    */
   private static final JobConf createJobConf(final Path basePath,
-      final Sample sample, final String parentType) {
+      final Sample sample, final String genomicType) throws IOException {
 
     // Create JobConf
     final JobConf conf = new JobConf(ExpressionHadoopMain.class);
@@ -94,9 +91,16 @@ public class ExpressionHadoopMain {
             CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId),
             CommonHadoop.SOAP_RESULT_EXTENSION);
 
+    logger.fine("sample: " + sample);
+    logger.fine("inputPath.getName(): " + inputPath.getName());
+    logger.fine("sample.getMetadata(): " + sample.getMetadata());
+    logger.fine("sample.getMetadata().getAnnotation(): "
+        + sample.getMetadata().getAnnotation());
+
     // Set Job name
     conf.setJobName("Expression computation ("
-        + sample.getName() + ", " + inputPath.getName() + ")");
+        + sample.getName() + ", " + inputPath.getName() + ", "
+        + sample.getMetadata().getAnnotation() + ", " + genomicType + ")");
 
     conf.set("mapred.child.java.opts", "-Xmx1024m");
 
@@ -104,16 +108,10 @@ public class ExpressionHadoopMain {
         new Path(basePath, CommonHadoop.ANNOTATION_FILE_PREFIX
             + genomeId + SERIALIZED_DATA_EXTENSION);
 
-    try {
-      if (!PathUtils.isFile(exonsIndexPath, conf))
-        createExonsIndex(new Path(basePath, sample.getMetadata()
-            .getAnnotation()), sample.getMetadata().getGenomicType(),
-            exonsIndexPath, conf);
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      return null;
-    }
+    if (!PathUtils.isFile(exonsIndexPath, conf))
+      createExonsIndex(
+          new Path(basePath, sample.getMetadata().getAnnotation()),
+          genomicType, exonsIndexPath, conf);
 
     // Set the path to the exons index
     conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
@@ -151,81 +149,6 @@ public class ExpressionHadoopMain {
   }
 
   /**
-   * Main method
-   * @param args command line arguments
-   */
-  public static void main(final String[] args) throws Exception {
-
-    System.out.println("Expression arguments:\t" + Arrays.toString(args));
-
-    if (args == null)
-      throw new NullPointerException("The arguments of import data is null");
-
-    if (args.length < 1)
-      throw new IllegalArgumentException("Expression need one or two arguments");
-
-    // Set the design path
-    final String designPathname = args[0];
-
-    // Set the threshold
-    String parentType = null;
-
-    if (args.length > 1)
-      parentType = args[1];
-
-    final Path designPath = new Path(designPathname);
-    final Path basePath = designPath.getParent();
-    Design design = null;
-
-    // Read design file
-    try {
-
-      final DesignReader dr =
-          new SimpleDesignReader(designPath.toUri().toURL().openStream());
-
-      design = dr.read();
-
-    } catch (IOException e) {
-      CommonHadoop.error("Error while reading design file: ", e);
-    } catch (EoulsanIOException e) {
-      CommonHadoop.error("Error while reading design file: ", e);
-    }
-
-    // Create the list of jobs to run
-    final Map<Sample, RunningJob> jobsRunning =
-        new HashMap<Sample, RunningJob>();
-
-    try {
-      final long startTime = System.currentTimeMillis();
-
-      JobClient jc = null;
-
-      for (Sample s : design.getSamples()) {
-
-        final JobConf jconf = createJobConf(basePath, s, parentType);
-
-        if (jc == null)
-          jc = new JobClient(jconf);
-        jobsRunning.put(s, jc.submitJob(jconf));
-      }
-
-      CommonHadoop.writeLog(new Path(basePath, "expression.log"), startTime,
-          MapReduceUtils.waitForRunningJobs(jobsRunning.values(),
-              CommonHadoop.CHECK_COMPLETION_TIME,
-              ExpressionMapper.COUNTER_GROUP));
-
-      createFinalExpressionTranscriptsFile(basePath, jobsRunning,
-          new Configuration());
-
-    } catch (IOException e) {
-      CommonHadoop.error("Error while running job: ", e);
-    } catch (InterruptedException e) {
-      CommonHadoop.error("Error while running job: ", e);
-    }
-
-  }
-
-  /**
    * Create exon index.
    * @param gffPath gff path
    * @param expressionType expression type
@@ -237,7 +160,7 @@ public class ExpressionHadoopMain {
       final String expressionType, final Path exonsIndexPath,
       final Configuration conf) throws IOException {
 
-    final FileSystem fs = FileSystem.get(conf);
+    final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
 
     final TranscriptAndExonFinder ef =
@@ -272,7 +195,7 @@ public class ExpressionHadoopMain {
           rj.getCounters().getGroup(ExpressionMapper.COUNTER_GROUP).getCounter(
               "reads used");
 
-      final FileSystem fs = PathUtils.getFileSystem(basePath, conf);
+      final FileSystem fs = basePath.getFileSystem(conf);
 
       // Load the annotation index
       if (genomeId != lastGenomeId) {
@@ -287,7 +210,8 @@ public class ExpressionHadoopMain {
       }
 
       final Path outputDirPath =
-          new Path(basePath, CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX + sampleId);
+          new Path(basePath, CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX
+              + sampleId);
       final Path resultPath =
           new Path(basePath, CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX
               + sampleId + Common.EXPRESSION_FILE_SUFFIX);
@@ -302,4 +226,62 @@ public class ExpressionHadoopMain {
     }
 
   }
+
+  //
+  // Step methods
+  //
+
+  @Override
+  public String getLogName() {
+
+    return "expression";
+  }
+
+  @Override
+  public StepResult execute(final Design design, final ExecutorInfo info) {
+
+    final Path basePath = new Path(info.getBasePathname());
+
+    // Create the list of jobs to run
+    final Map<Sample, RunningJob> jobsRunning =
+        new HashMap<Sample, RunningJob>();
+
+    try {
+      final long startTime = System.currentTimeMillis();
+
+      JobClient jc = null;
+
+      logger.info("Genomic type: " + getGenomicType());
+
+      for (Sample s : design.getSamples()) {
+
+        final JobConf jconf = createJobConf(basePath, s, getGenomicType());
+
+        if (jc == null)
+          jc = new JobClient(jconf);
+        jobsRunning.put(s, jc.submitJob(jconf));
+      }
+
+      final String log =
+          MapReduceUtils.waitForRunningJobs(jobsRunning.values(),
+              CommonHadoop.CHECK_COMPLETION_TIME,
+              ExpressionMapper.COUNTER_GROUP);
+
+      createFinalExpressionTranscriptsFile(basePath, jobsRunning,
+          new Configuration());
+
+      return new StepResult(this, startTime, log);
+
+    } catch (IOException e) {
+
+      return new StepResult(this, e, "Error while running job: "
+          + e.getMessage());
+    } catch (InterruptedException e) {
+
+      return new StepResult(this, e, "Error while running job: "
+          + e.getMessage());
+    }
+
+  }
+
 }

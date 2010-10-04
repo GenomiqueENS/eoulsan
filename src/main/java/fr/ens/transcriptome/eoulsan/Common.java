@@ -52,6 +52,9 @@ public class Common {
       "all" + SOAP_RESULT_EXTENSION;
   public static final String EXPRESSION_FILE_SUFFIX = ".txt";
 
+  public static final String BZIP2_EXTENSION = ".bz2";
+  public static final String GZIP_EXTENSION = ".gz";
+  
   public static final String SAMPLE_PREFIX = "sample_";
   public static final String SAMPLE_FILTERED_PREFIX = "sample_filtered_";
   public static final String SAMPLE_SOAP_ALIGNMENT_PREFIX =
@@ -65,6 +68,8 @@ public class Common {
       "sample_expression_";
   public static final String SAMPLE_EXPRESSION_FILE_SUFFIX = ".txt";
 
+  public static final String S3_PROTOCOL = "s3n";
+  
   public static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";
 
   
