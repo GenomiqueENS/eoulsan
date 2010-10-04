@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -117,6 +118,10 @@ public class ExpressionLocalStep extends ExpressionStep {
     } catch (IOException e) {
 
       return new StepResult(this, e, "Error while filtering: " + e.getMessage());
+    } catch (BadBioEntryException e) {
+
+      return new StepResult(this, e, "Invalid annotation entry: "
+          + e.getEntry());
     }
   }
 }

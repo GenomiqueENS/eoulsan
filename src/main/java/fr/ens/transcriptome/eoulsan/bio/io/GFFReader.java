@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -44,8 +45,9 @@ public class GFFReader extends GFFEntry {
    * Read the next entry in the stream.
    * @return false if there is no more entry to read
    * @throws IOException if an error occurs while reading file
+   * @throws BadBioEntryException if an entry is invalid
    */
-  public boolean readEntry() throws IOException {
+  public boolean readEntry() throws IOException, BadBioEntryException {
 
     String line = null;
     int count = 0;

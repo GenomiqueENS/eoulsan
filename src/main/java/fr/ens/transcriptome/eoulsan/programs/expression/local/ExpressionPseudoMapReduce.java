@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;
@@ -197,9 +198,10 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
    * @throws IOException if an error occurs while reading annotation file
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private void loadAnnotationFile(final File annotationFile,
-      final String expressionType) throws IOException {
+      final String expressionType) throws IOException, BadBioEntryException {
 
     this.tef = new TranscriptAndExonFinder(annotationFile, expressionType);
   }
@@ -208,8 +210,15 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   // Constructor
   //
 
+  /**
+   * Load annotation information
+   * @param annotationFile annotation file to load
+   * @param expressionType expression type to use
+   * @throws IOException if an error occurs while reading annotation file
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
+   */
   public ExpressionPseudoMapReduce(final File annotationFile,
-      final String expressionType) throws IOException {
+      final String expressionType) throws IOException, BadBioEntryException {
 
     loadAnnotationFile(annotationFile, expressionType);
   }
