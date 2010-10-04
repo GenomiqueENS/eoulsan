@@ -25,40 +25,57 @@ package fr.ens.transcriptome.eoulsan.core;
 public interface ExecutorInfo {
 
   /**
+   * Get the command name.
+   * @return the command name
+   */
+  String getCommandName();
+
+  /**
+   * Get command description.
+   * @return the command description
+   */
+  String getCommandDescription();
+
+  /**
+   * Get the command author.
+   * @return the command author
+   */
+  String getCommandAuthor();
+
+  /**
    * Get the base path.
    * @return Returns the basePath
    */
-  public String getBasePathname();
+  String getBasePathname();
 
   /**
    * Get the log path.
    * @return Returns the log Path
    */
-  public String getLogPathname();
+  String getLogPathname();
 
   /**
    * Get the output path.
    * @return Returns the output Path
    */
-  public String getOutputPathname();
+  String getOutputPathname();
 
   /**
    * Get the execution name.
    * @return the execution name
    */
-  public String getExecutionName();
-  
-  
+  String getExecutionName();
+
   /**
    * Get the design path.
    * @return the design path
    */
-  public String getDesignPathname();
-  
+  String getDesignPathname();
+
   /**
    * Get the parameter path.
    * @return the parameter path
    */
-  public String getParameterPathname();
+  String getParameterPathname();
 
 }

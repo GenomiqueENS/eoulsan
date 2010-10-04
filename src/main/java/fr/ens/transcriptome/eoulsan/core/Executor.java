@@ -175,6 +175,9 @@ public abstract class Executor {
     if (design.getSampleCount() == 0)
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
+    
+    // Add executor info
+    getInfo().addCommandInfo(command);
 
     // Create steps
     final List<Step> steps = createSteps();

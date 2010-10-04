@@ -39,6 +39,9 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   private String executionName;
   private String designPathname;
   private String paramPathname;
+  private String commandName;
+  private String commandDescription;
+  private String commandAuthor;
 
   //
   // Getters
@@ -79,7 +82,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   public String getExecutionName() {
     return this.executionName;
   }
-  
+
   /**
    * Get the design path.
    * @return the design path
@@ -88,14 +91,41 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   public String getDesignPathname() {
     return this.designPathname;
   }
-  
+
   /**
    * Get the parameter path.
    * @return the parameter path
    */
   @Override
-  public String getParameterPathname(){
+  public String getParameterPathname() {
     return this.paramPathname;
+  }
+
+  /**
+   * Get the command name.
+   * @return the command name
+   */
+  @Override
+  public String getCommandName() {
+    return this.commandName;
+  }
+
+  /**
+   * Get command description.
+   * @return the command description
+   */
+  @Override
+  public String getCommandDescription() {
+    return this.commandDescription;
+  }
+
+  /**
+   * Get the command author.
+   * @return the command author
+   */
+  @Override
+  public String getCommandAuthor() {
+    return this.commandAuthor;
   }
 
   //
@@ -131,7 +161,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
     logger.info("Output path: " + outputPath);
     this.outputPathname = outputPath;
   }
-  
+
   /**
    * Set the design path
    * @param designPathname The log Path to set
@@ -141,7 +171,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
     logger.info("Design path: " + designPathname);
     this.designPathname = designPathname;
   }
-  
+
   /**
    * Set the parameter path
    * @param paramPathname The log Path to set
@@ -150,6 +180,50 @@ public class SimpleExecutorInfo implements ExecutorInfo {
 
     logger.info("Parameter path: " + paramPathname);
     this.paramPathname = paramPathname;
+  }
+
+  /**
+   * Set command name
+   * @param commandName the command name
+   */
+  public void setCommandName(final String commandName) {
+
+    logger.info("Command name: " + commandName);
+    this.commandName = commandName;
+  }
+
+  /**
+   * Set command description
+   * @param commandDescription the command name
+   */
+  public void setCommandDescription(final String commandDescription) {
+
+    logger.info("Command description: " + commandDescription);
+    this.commandName = commandDescription;
+  }
+
+  /**
+   * Set command author
+   * @param commandAuthor the command name
+   */
+  public void setCommandAuthor(final String commandAuthor) {
+
+    logger.info("Command author: " + commandAuthor);
+    this.commandAuthor = commandAuthor;
+  }
+
+  /**
+   * Add information from command object.
+   * @param command the command object
+   */
+  public void addCommandInfo(final Command command) {
+
+    if (command == null)
+      throw new NullPointerException("The command is null");
+
+    setCommandName(command.getName());
+    setCommandDescription(command.getDescription());
+    setCommandAuthor(command.getAuthor());
   }
 
   //
