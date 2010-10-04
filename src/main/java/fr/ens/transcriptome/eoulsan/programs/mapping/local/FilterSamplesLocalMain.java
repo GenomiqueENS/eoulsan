@@ -29,24 +29,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.MainCLI;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.programs.mapping.FilterSamplesStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -54,89 +43,87 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * mode.
  * @author Laurent Jourdren
  */
-public class FilterSamplesLocalMain {
+public class FilterSamplesLocalMain extends FilterSamplesStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  public static String PROGRAM_NAME = "filtersamples";
+  //
+  // Step methods
+  //
 
-  private static int threshold = 50;
+  @Override
+  public String getLogName() {
 
-  private static void filterSamples(final String srcDesignFilename,
-      final String destDesignFilename, final double threshold) {
+    return "filtersamples";
+  }
+
+  @Override
+  public StepResult execute(final Design design, final ExecutorInfo info) {
+
+    final long startTime = System.currentTimeMillis();
+
+    final double threshold = getThreshold() / 100.0;
+    final File baseDir = new File(info.getBasePathname());
 
     try {
-      filterSamples(new File(srcDesignFilename), new File(destDesignFilename),
-          threshold);
-    } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    }
-  }
+      // Read filterreads.log
+      LogReader logReader = new LogReader(new File(baseDir, "filterreads.log"));
+      final Reporter filterReadsReporter = logReader.read();
 
-  private static void filterSamples(final File srcDesignFile,
-      final File destDesignFile, final double threshold) throws IOException,
-      EoulsanIOException {
+      // Read soapmapreads.log
+      logReader = new LogReader(new File(baseDir, "soapmapreads.log"));
+      final Reporter soapMapReadsReporter = logReader.read();
 
-    if (srcDesignFile == null)
-      throw new NullPointerException("Source design file is null");
+      // Get the input reads for each sample
+      final Map<String, Long> sampleInputMapReads =
+          parseReporter(filterReadsReporter,
+              Common.READS_AFTER_FILTERING_COUNTER);
 
-    if (destDesignFile == null)
-      throw new NullPointerException("Destination design file is null");
+      // Get the number of match with onlt one locus for each sample
+      final Map<String, Long> soapAlignementWithOneLocus =
+          parseReporter(soapMapReadsReporter,
+              Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
 
-    if (destDesignFile.exists())
-      throw new EoulsanIOException("The output design already exists: "
-          + destDesignFile);
+      int removedSampleCount = 0;
+      final StringBuilder sb = new StringBuilder();
 
-    // Read the design file
-    final DesignReader dr = new SimpleDesignReader(srcDesignFile);
-    final Design design = dr.read();
+      // Compute ration and filter samples
+      for (String sample : sampleInputMapReads.keySet()) {
 
-    // Read filterreads.log
-    LogReader logReader = new LogReader(new File("filterreads.log"));
-    final Reporter filterReadsReporter = logReader.read();
+        if (!soapAlignementWithOneLocus.containsKey(sample))
+          continue;
 
-    // Read soapmapreads.log
-    logReader = new LogReader(new File("soapmapreads.log"));
-    final Reporter soapMapReadsReporter = logReader.read();
+        final long inputReads = sampleInputMapReads.get(sample);
+        final long oneLocus = soapAlignementWithOneLocus.get(sample);
 
-    // Get the input reads for each sample
-    final Map<String, Long> sampleInputMapReads =
-        parseReporter(filterReadsReporter, Common.READS_AFTER_FILTERING_COUNTER);
+        final double ratio = (double) oneLocus / (double) inputReads;
+        logger.info("Check Reads with only one match: "
+            + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
+            + " threshold=" + threshold);
 
-    // Get the number of match with onlt one locus for each sample
-    final Map<String, Long> soapAlignementWithOneLocus =
-        parseReporter(soapMapReadsReporter,
-            Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
-
-    // Compute ration and filter samples
-    for (String sample : sampleInputMapReads.keySet()) {
-
-      if (!soapAlignementWithOneLocus.containsKey(sample))
-        continue;
-
-      final long inputReads = sampleInputMapReads.get(sample);
-      final long oneLocus = soapAlignementWithOneLocus.get(sample);
-
-      final double ratio = (double) oneLocus / (double) inputReads;
-      logger.info("Check Reads with only one match: "
-          + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
-          + " threshold=" + threshold);
-
-      if (ratio < threshold) {
-        design.removeSample(sample);
-        logger.info("Remove sample: " + sample);
+        if (ratio < threshold) {
+          design.removeSample(sample);
+          logger.info("Remove sample: " + sample);
+          sb.append("Remove sample: " + sample + "\n");
+          removedSampleCount++;
+        }
       }
+
+      return new StepResult(this, startTime, "Sample(s) removed: "
+          + removedSampleCount + "\n" + sb.toString());
+
+    } catch (IOException e) {
+
+      return new StepResult(this, e, "Error while filtering samples: "
+          + e.getMessage());
     }
 
-    // Write output design
-    DesignWriter writer = new SimpleDesignWriter(destDesignFile);
-    writer.write(design);
   }
+
+  //
+  // Other method
+  // 
 
   private static final Map<String, Long> parseReporter(final Reporter reporter,
       final String counter) {
@@ -159,110 +146,6 @@ public class FilterSamplesLocalMain {
     }
 
     return result;
-  }
-
-  /**
-   * Show command line help.
-   * @param options Options of the software
-   */
-  private static void help(final Options options) {
-
-    // Show help message
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + " [options] " + PROGRAM_NAME + " src_design dest_design", options);
-
-    System.exit(0);
-  }
-
-  /**
-   * Create options for command line
-   * @return an Options object
-   */
-  private static Options makeOptions() {
-
-    // create Options object
-    final Options options = new Options();
-
-    options.addOption("version", false, "show version of the software");
-    options
-        .addOption("about", false, "display information about this software");
-    options.addOption("h", "help", false, "display this help");
-    options.addOption("license", false,
-        "display information about the license of this software");
-
-    options.addOption(OptionBuilder.withArgName("value").hasArg()
-        .withDescription("threshold of the filter").create("threshold"));
-
-    return options;
-  }
-
-  /**
-   * Parse the options of the command line
-   * @param args command line arguments
-   * @return the number of optional arguments
-   */
-  private static int parseCommandLine(final String args[]) {
-
-    final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
-
-    int argsOptions = 0;
-
-    try {
-
-      // parse the command line arguments
-      CommandLine line = parser.parse(options, args);
-
-      if (line.hasOption("help"))
-        help(options);
-
-      if (line.hasOption("about"))
-        MainCLI.about();
-
-      if (line.hasOption("version"))
-        MainCLI.version();
-
-      if (line.hasOption("license"))
-        MainCLI.license();
-
-      if (line.hasOption("threshold")) {
-        threshold = Integer.parseInt(line.getOptionValue("threshold"));
-        argsOptions += 2;
-      }
-
-    } catch (ParseException e) {
-      System.err.println(e.getMessage());
-      System.exit(1);
-    }
-
-    return argsOptions;
-  }
-
-  /**
-   * Main method
-   * @param args command line arguments
-   */
-  public static void main(final String[] args) {
-
-    // Parse the command line
-    final int argsOptions = parseCommandLine(args);
-
-    if (args.length < argsOptions + 2) {
-      System.err.println("Error: "
-          + PROGRAM_NAME
-          + " need two parameters. Use the -h option to get more information.");
-      System.err.println("usage:"
-          + Globals.APP_NAME_LOWER_CASE + " " + PROGRAM_NAME
-          + " [options] src_design dest_design");
-
-      System.exit(1);
-    }
-
-    final String srcDesignFilename = args[argsOptions];
-    final String destDesignFilename = args[argsOptions + 1];
-
-    filterSamples(srcDesignFilename, destDesignFilename, threshold / 100.0);
   }
 
 }

@@ -51,6 +51,10 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
+/**
+ * This class is mapper to map reads using SOAP.
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("deprecation")
 public class SoapMapReadsMapper implements
     Mapper<LongWritable, Text, Text, Text> {
@@ -172,8 +176,8 @@ public class SoapMapReadsMapper implements
   private String getSoapIndexLocalName(final Path soapIndexPath)
       throws IOException {
 
-    FileSystem fs = PathUtils.getFileSystem(soapIndexPath, this.conf);
-    FileStatus fStatus = fs.getFileStatus(soapIndexPath);
+    final FileSystem fs = soapIndexPath.getFileSystem(this.conf);
+    final FileStatus fStatus = fs.getFileStatus(soapIndexPath);
 
     return "soap-index-"
         + fStatus.getLen() + "-" + fStatus.getModificationTime();
@@ -268,7 +272,7 @@ public class SoapMapReadsMapper implements
     // int moreOneLocus = 0;
 
     String lastSequenceId = null;
-    
+
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
@@ -277,7 +281,7 @@ public class SoapMapReadsMapper implements
 
       aln.parseResultLine(trimmedLine);
       reporter.incrCounter(this.counterGroup, "soap alignments", 1);
-      
+
       final String currentSequenceId = aln.getSequenceId();
 
       if (aln.getNumberOfHits() == 1) {

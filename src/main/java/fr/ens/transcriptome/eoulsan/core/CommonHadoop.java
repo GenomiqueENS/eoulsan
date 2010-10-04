@@ -104,29 +104,31 @@ public class CommonHadoop extends Common {
   public static void writeLog(final Path logPath, final long startTime,
       final String data) throws IOException {
 
-    FileSystem fs = PathUtils.getFileSystem(logPath, new Configuration());
+    final FileSystem fs = logPath.getFileSystem(new Configuration());
     writeLog(fs.create(logPath), startTime, data);
   }
 
+  /**
+   * Return the path of entry data either a directory or a file with an
+   * extension
+   * @param path the path of the data
+   * @param extension the extension of the file
+   * @return the path of the data
+   * @throws IOException if an error occurs while testing files
+   */
   public static Path selectDirectoryOrFile(final Path path,
-      final String extension) {
+      final String extension) throws IOException {
 
     final Configuration conf = new Configuration();
 
-    try {
+    if (PathUtils.isExistingDirectoryFile(path, conf))
+      return path;
 
-      if (PathUtils.isExistingDirectoryFile(path, conf))
-        return path;
+    final Path filePath =
+        new Path(path.getParent(), path.getName() + extension);
 
-      final Path filePath =
-          new Path(path.getParent(), path.getName() + extension);
-
-      if (PathUtils.isFile(filePath, conf))
-        return filePath;
-
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-    }
+    if (PathUtils.isFile(filePath, conf))
+      return filePath;
 
     return null;
   }

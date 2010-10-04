@@ -78,6 +78,11 @@ public final class FilterAndSoapMapReadsMapper extends SoapMapReadsMapper {
 
     // Fill the ReadSequence object
     this.read.parse(value.toString());
+
+    // Create an id if does not exists
+    if ("".equals(this.read.getName()))
+      this.read.setName("ID_" + Long.toHexString(key.get()));
+
     reporter.incrCounter(counterGroup, "input fastq", 1);
 
     if (!this.read.check()) {

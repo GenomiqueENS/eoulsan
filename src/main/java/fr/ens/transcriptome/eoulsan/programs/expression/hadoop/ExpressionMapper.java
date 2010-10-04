@@ -40,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.core.AlignResult;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * Mapper for Expression computation
@@ -113,7 +112,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
           new Path(Parameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
 
-      final FileSystem fs = PathUtils.getFileSystem(indexPath, conf);
+      final FileSystem fs = indexPath.getFileSystem(conf);
       tef.load(fs.open(indexPath));
 
     } catch (IOException e) {

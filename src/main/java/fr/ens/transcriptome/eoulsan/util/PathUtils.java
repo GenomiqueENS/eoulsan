@@ -165,6 +165,30 @@ public final class PathUtils {
   };
 
   /**
+   * Create an input stream from a path.
+   * @param path Path of the file to open
+   * @param conf configuration
+   * @return an InputStream
+   * @throws IOException if an error occurs while creating InputStream
+   */
+  public static final InputStream createInputStream(final Path path,
+      final Configuration conf) throws IOException {
+
+    if (path == null)
+      throw new NullPointerException("Path to create is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(conf);
+
+    if (fs == null)
+      throw new IOException(
+          "Unable to create InputSteam, The FileSystem is null");
+
+    return fs.open(path);
+  }
+
+  /**
    * Copy a file from a path to a local file. Don't remove original file.
    * @param srcPath Path of the file to copy
    * @param destFile Destination file
@@ -248,7 +272,7 @@ public final class PathUtils {
    * @return the number of bytes copied
    * @throws IOException In case of an I/O problem
    */
-  public static int copyInputStreamToPath(final InputStream is,
+  public static long copyInputStreamToPath(final InputStream is,
       final Path destPath, final Configuration conf) throws IOException {
 
     if (is == null)
@@ -277,7 +301,7 @@ public final class PathUtils {
 
     return copyAndCompressLocalFileToPath(srcFile, destPath, false, conf);
   }
-  
+
   /**
    * Copy a local file to a path
    * @param srcFile source file
@@ -385,16 +409,13 @@ public final class PathUtils {
    * @return a FileSystem Object
    * @throws IOException if an error occurs while getting the FileSystem object
    */
-  public static FileSystem getFileSystem(final Path path,
-      final Configuration conf) throws IOException {
-
-    if (path == null)
-      throw new NullPointerException("Path is null");
-    if (conf == null)
-      throw new NullPointerException("The configuration object is null");
-
-    return FileSystem.get(path.toUri(), conf);
-  }
+  /*
+   * public static FileSystem getFileSystem(final Path path, final Configuration
+   * conf) throws IOException { if (path == null) throw new
+   * NullPointerException("Path is null"); if (conf == null) throw new
+   * NullPointerException("The configuration object is null"); return
+   * FileSystem.get(path.toUri(), conf); }
+   */
 
   /**
    * Fully delete a file of the content of a directory
@@ -411,7 +432,7 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("The configuration object is null");
 
-    final FileSystem fs = getFileSystem(path, conf);
+    final FileSystem fs = path.getFileSystem(conf);
 
     if (fs == null)
       throw new IOException("Unable to delete path, The FileSystem is null");
@@ -460,8 +481,17 @@ public final class PathUtils {
       final boolean deleteSource, final Configuration conf,
       final String addString) throws IOException {
 
-    final FileSystem srcFs = getFileSystem(srcPath, conf);
-    final FileSystem destFs = getFileSystem(destPath, conf);
+    if (srcPath == null)
+      throw new NullPointerException("The source path is null.");
+
+    if (destPath == null)
+      throw new NullPointerException("The destination path is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem srcFs = srcPath.getFileSystem(conf);
+    final FileSystem destFs = destPath.getFileSystem(conf);
 
     FileUtil.copyMerge(srcFs, srcPath, destFs, destPath, deleteSource, conf,
         addString);
@@ -524,7 +554,7 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("Configuration is null");
 
-    final FileSystem fs = getFileSystem(dir, conf);
+    final FileSystem fs = dir.getFileSystem(conf);
     if (!fs.getFileStatus(dir).isDir())
       throw new IOException("Directory path is not a directory: " + dir);
 
@@ -579,7 +609,7 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("Configuration is null");
 
-    final FileSystem fs = getFileSystem(dir, conf);
+    final FileSystem fs = dir.getFileSystem(conf);
     if (!fs.getFileStatus(dir).isDir())
       throw new IOException("Directory path is not a directory: " + dir);
 
@@ -616,6 +646,9 @@ public final class PathUtils {
     if (directory == null)
       throw new NullPointerException("Directory is null");
 
+    if (conf == null)
+      throw new NullPointerException("Configuration is null");
+
     myDir = directory;
 
     if (prefix == null)
@@ -628,7 +661,7 @@ public final class PathUtils {
     else
       mySuffix = suffix;
 
-    final FileSystem fs = getFileSystem(directory, conf);
+    final FileSystem fs = directory.getFileSystem(conf);
     Path tempFile;
 
     final int maxAttempts = 9;
@@ -695,8 +728,14 @@ public final class PathUtils {
     if (paths.size() == 0)
       return false;
 
-    final FileSystem srcFs = getFileSystem(paths.get(0), conf);
-    final FileSystem dstFs = getFileSystem(dstPath, conf);
+    if (dstPath == null)
+      throw new NullPointerException("The destination path is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null.");
+
+    final FileSystem srcFs = paths.get(0).getFileSystem(conf);
+    final FileSystem dstFs = dstPath.getFileSystem(conf);
 
     if (!overwrite && dstFs.exists(dstPath))
       throw new IOException("The output file already exists: " + dstPath);
@@ -747,7 +786,10 @@ public final class PathUtils {
     if (file == null)
       throw new NullPointerException("The " + msgFileType + " is null");
 
-    final FileSystem fs = getFileSystem(file, conf);
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.exists(file))
       throw new IOException("The " + msgFileType + " does not exists: " + file);
@@ -764,7 +806,7 @@ public final class PathUtils {
 
     checkExistingFile(directory, conf, msgFileType);
 
-    final FileSystem fs = getFileSystem(directory, conf);
+    final FileSystem fs = directory.getFileSystem(conf);
 
     if (!fs.getFileStatus(directory).isDir())
       throw new IOException("The "
@@ -779,7 +821,13 @@ public final class PathUtils {
   public static final boolean isExistingDirectoryFile(final Path directory,
       final Configuration conf) throws IOException {
 
-    final FileSystem fs = getFileSystem(directory, conf);
+    if (directory == null)
+      throw new NullPointerException("The directory is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem fs = directory.getFileSystem(conf);
 
     try {
       return fs.getFileStatus(directory).isDir();
@@ -797,7 +845,13 @@ public final class PathUtils {
   public static final boolean isFile(final Path file, final Configuration conf)
       throws IOException {
 
-    final FileSystem fs = getFileSystem(file, conf);
+    if (file == null)
+      throw new NullPointerException("The path is null");
+
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem fs = file.getFileSystem(conf);
 
     return fs.isFile(file);
   }
@@ -813,7 +867,7 @@ public final class PathUtils {
 
     checkExistingFile(file, conf, msgFileType);
 
-    final FileSystem fs = getFileSystem(file, conf);
+    final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.isFile(file))
       throw new IOException("The "
@@ -832,7 +886,7 @@ public final class PathUtils {
 
     checkExistingDirectoryFile(file, conf, msgFileType);
 
-    final FileSystem fs = getFileSystem(file, conf);
+    final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.isFile(file) && !fs.getFileStatus(file).isDir())
       throw new IOException("The "
@@ -875,8 +929,8 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("The configuration is null");
 
-    final FileSystem srcFs = getFileSystem(srcPath, conf);
-    final FileSystem destFs = getFileSystem(destPath, conf);
+    final FileSystem srcFs = srcPath.getFileSystem(conf);
+    final FileSystem destFs = destPath.getFileSystem(conf);
 
     return FileUtil.copy(srcFs, srcPath, destFs, destPath, false, overwrite,
         conf);
@@ -918,8 +972,8 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("The configuration is null");
 
-    final FileSystem srcFs = getFileSystem(srcPath, conf);
-    final FileSystem destFs = getFileSystem(destPath, conf);
+    final FileSystem srcFs = srcPath.getFileSystem(conf);
+    final FileSystem destFs = destPath.getFileSystem(conf);
 
     return FileUtil.copy(srcFs, srcPath, destFs, destPath, true, overwrite,
         conf);
@@ -939,8 +993,30 @@ public final class PathUtils {
       throw new NullPointerException(
           "The path of the directory to create is null.");
 
-    final FileSystem fs = getFileSystem(path, conf);
+    if (conf == null)
+      throw new NullPointerException("The configuration is null");
+
+    final FileSystem fs = path.getFileSystem(conf);
     return fs.mkdirs(path);
+  }
+
+  /**
+   * Test if a path exists
+   * @param path Path to test
+   * @param conf Configuration
+   * @return true if the path exists
+   * @throws IOException if an error occurs while creating the directory
+   */
+  public static final boolean exists(final Path path, final Configuration conf)
+      throws IOException {
+
+    // final FileSystem fs = getFileSystem(path, conf);
+    final FileSystem fs = path.getFileSystem(conf);
+
+    System.out.println(fs.getName());
+    System.out.println(fs);
+
+    return fs.exists(path);
   }
 
   //

@@ -23,23 +23,19 @@
 package fr.ens.transcriptome.eoulsan.programs.mapping.hadoop;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.programs.mapping.FilterSamplesStep;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
@@ -48,116 +44,85 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * mode.
  * @author Laurent Jourdren
  */
-public class FilterSamplesHadoopMain {
+public class FilterSamplesHadoopMain extends FilterSamplesStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  // Configure URL handler for hdfs protocol
-  static {
-    URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
+  //
+  // Step methods
+  //
+
+  @Override
+  public String getLogName() {
+
+    return "filtersamples";
   }
 
-  private static int threshold = 50;
+  @Override
+  public StepResult execute(Design design, final ExecutorInfo info) {
 
-  private static void filterSamples(final String srcDesignFilename,
-      final String destDesignFilename, final double threshold) {
+    final long startTime = System.currentTimeMillis();
+
+    final double threshold = getThreshold() / 100.0;
+    final Path basePath = new Path(info.getBasePathname());
 
     try {
-      filterSamples(new Path(srcDesignFilename), new Path(destDesignFilename),
-          threshold);
-    } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    }
-  }
 
-  private static void filterSamples(final Path srcDesignFile,
-      final Path destDesignFile, final double threshold) throws IOException,
-      EoulsanIOException {
+      final Configuration conf = new Configuration();
+      final FileSystem fs = basePath.getFileSystem(conf);
+      // Read soapmapreads.log
+      Path logPath = new Path(basePath, "soapmapreads.log");
+      if (!PathUtils.exists(logPath, conf))
+        logPath = new Path(basePath, "filtersoapmapreads.log");
 
-    if (srcDesignFile == null)
-      throw new NullPointerException("Source design file is null");
+      logger.info("Read log: " + logPath);
+      LogReader logReader = new LogReader(fs.open(logPath));
+      final Reporter reporter = logReader.read();
 
-    if (destDesignFile == null)
-      throw new NullPointerException("Destination design file is null");
+      int removedSampleCount = 0;
+      final StringBuilder sb = new StringBuilder();
 
-    final Configuration conf = new Configuration();
-    final FileSystem fs = srcDesignFile.getFileSystem(conf);
+      // Compute ration and filter samples
+      for (String group : reporter.getCounterGroups()) {
 
-    if (PathUtils.isFile(destDesignFile, conf))
-      throw new EoulsanIOException("The output design already exists: "
-          + destDesignFile);
+        final int pos1 = group.indexOf('(');
+        final int pos2 = group.indexOf(',');
 
-    // Read the design file
-    final DesignReader dr = new SimpleDesignReader(fs.open(srcDesignFile));
-    final Design design = dr.read();
+        if (pos1 == -1 || pos2 == -1)
+          continue;
 
-    // Read soapmapreads.log
-    LogReader logReader =
-        new LogReader(fs.open(new Path(srcDesignFile.getParent(),
-            "soapmapreads.log")));
-    final Reporter reporter = logReader.read();
+        final String sample = group.substring(pos1 + 1, pos2).trim();
 
-    // Compute ration and filter samples
-    for (String group : reporter.getCounterGroups()) {
+        final long inputReads =
+            reporter.getCounterValue(group, Common.SOAP_INPUT_READS_COUNTER);
+        final long oneLocus =
+            reporter.getCounterValue(group,
+                Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
 
-      final int pos1 = group.indexOf('(');
-      final int pos2 = group.indexOf(',');
+        final double ratio = (double) oneLocus / (double) inputReads;
 
-      if (pos1 == -1 || pos2 == -1)
-        continue;
+        logger.info("Check Reads with only one match: "
+            + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
+            + " threshold=" + threshold);
 
-      final String sample = group.substring(pos1 + 1, pos2).trim();
-
-      final long inputReads =
-          reporter.getCounterValue(group, Common.SOAP_INPUT_READS_COUNTER);
-      final long oneLocus =
-          reporter.getCounterValue(group,
-              Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
-
-      final double ratio = (double) oneLocus / (double) inputReads;
-      logger.info("Check Reads with only one match: "
-          + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
-          + " threshold=" + threshold);
-
-      if (ratio < threshold) {
-        design.removeSample(sample);
-        logger.info("Remove sample: " + sample);
+        if (ratio < threshold) {
+          design.removeSample(sample);
+          logger.info("Remove sample: " + sample);
+          sb.append("Remove sample: " + sample + "\n");
+          removedSampleCount++;
+        }
       }
+
+      return new StepResult(this, startTime, "Sample(s) removed: "
+          + removedSampleCount + "\n" + sb.toString());
+
+    } catch (IOException e) {
+
+      return new StepResult(this, e, "Error while filtering samples: "
+          + e.getMessage());
+
     }
 
-    // Write output design
-    DesignWriter writer = new SimpleDesignWriter(fs.create(destDesignFile));
-    writer.write(design);
   }
-
-  //
-  // Main method
-  //
-
-  /**
-   * Main method
-   * @param args command line arguments
-   */
-  public static void main(String[] args) {
-
-    logger.info("Start SOAP map reads.");
-
-    if (args == null)
-      throw new NullPointerException("The arguments of import data is null");
-
-    if (args.length != 2)
-      throw new IllegalArgumentException("Soap map need two arguments");
-
-    // Set the design path
-    final String srcDesignPathname = args[0];
-    final String destDesignPathname = args[0];
-
-    filterSamples(srcDesignPathname, destDesignPathname, threshold);
-  }
-
 }

@@ -22,10 +22,11 @@
 
 package fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,8 +34,6 @@ import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -50,9 +49,8 @@ import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class allow to copy data to hdfs.
@@ -80,69 +78,6 @@ public class UploadDesignDataHadoopMain {
       PathUtils.copyLocalFileToPath(new File(ds.toString()), destPath, conf);
     else
       PathUtils.copyInputStreamToPath(ds.getInputStream(), destPath, conf);
-  }
-
-  /**
-   * Copy and compress a DataSource to a Path
-   * @param source source to copy
-   * @param destPath destination path
-   * @param conf Configuration object
-   * @throws IOException if an error occurs while copying data
-   */
-  private static void copyAndCompress(final String source, final Path destPath,
-      final Configuration conf) throws IOException {
-
-    logger.info("Copy and compress " + source.toString() + " to " + destPath);
-    final DataSource ds = DataSourceUtils.identifyDataSource(source);
-
-    if ("File".equals(ds.getSourceType()))
-      PathUtils.copyAndCompressLocalFileToPath(new File(ds.toString()),
-          destPath, conf);
-    else
-      PathUtils.copyAndCompressInputStreamToPath(ds.getInputStream(), destPath,
-          conf);
-  }
-
-  /**
-   * Copy and compress to TFQ a Fastq DataSource to a Path
-   * @param source source to copy
-   * @param destPath destination path
-   * @param conf Configuration object
-   * @throws IOException if an error occurs while copying data
-   */
-  private static void fastqToTfq(final String source, final Path destPath,
-      final Configuration conf) throws IOException {
-
-    logger.info("Transform " + source.toString() + " to " + destPath);
-    final DataSource ds = DataSourceUtils.identifyDataSource(source);
-
-    final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
-
-    final CompressionCodecFactory factory = new CompressionCodecFactory(conf);
-    final CompressionCodec codec = factory.getCodec(destPath);
-
-    if (codec == null)
-      throw new IOException("No codec found for: " + destPath);
-
-    final OutputStream os = codec.createOutputStream(fs.create(destPath));
-    final UnSynchronizedBufferedWriter writer =
-        FileUtils.createBufferedWriter(os);
-
-    final InputStream is;
-
-    if ("File".equals(ds.getSourceType()))
-      is = FileUtils.createInputStream(new File(ds.toString()));
-    else
-      is = ds.getInputStream();
-
-    FastQReader reader = new FastQReader(is);
-
-    while (reader.readEntry())
-      writer.write(reader.toTFQ(false));
-
-    reader.close();
-    writer.close();
-
   }
 
   /***
@@ -180,129 +115,124 @@ public class UploadDesignDataHadoopMain {
   // Main method
   //
 
-  /**
-   * Main method.
-   * @param args command line argument
-   */
-  public static void main(final String[] args) {
-
-    if (args == null)
-      throw new NullPointerException("The arguments of import data is null");
-
-    if (args.length != 2)
-      throw new IllegalArgumentException(
-          "Expression need three or more arguments");
-
-    final String designFilename = args[0];
-    final String hadoopPathname = args[1];
-
-    // Create configuration object
-    final Configuration conf = new Configuration();
+  public static void upload(final String designPathname,
+      final String paramPathname, final String hadoopPathname,
+      final Configuration conf) throws IOException, EoulsanIOException {
 
     final Path hadoopPath = new Path(hadoopPathname);
 
-    try {
+    if (PathUtils.isFile(hadoopPath, conf)
+        || PathUtils.isExistingDirectoryFile(hadoopPath, conf))
+      throw new IOException("The output path already exists.");
 
-      if (PathUtils.isFile(hadoopPath, conf)
-          || PathUtils.isExistingDirectoryFile(hadoopPath, conf))
-        throw new IOException("The output path already exists.");
+    PathUtils.mkdirs(hadoopPath, conf);
 
-      PathUtils.mkdirs(hadoopPath, conf);
+    final Path designPath = new Path(designPathname);
+    final FileSystem designFs = designPath.getFileSystem(conf);
 
-      final DesignReader dr = new SimpleDesignReader(designFilename);
-      final Design design = dr.read();
+    System.out.println(designPath);
+    System.out.println(designFs);
+    System.out.println(designFs.getName());
 
-      if (!DesignUtils.checkSamples(design)) {
+    final DesignReader dr = new SimpleDesignReader(designFs.open(designPath));
+    final Design design = dr.read();
 
-        System.err
-            .println("Error: The design contains one or more duplicate sample sources.");
-        System.exit(1);
-      }
+    if (!DesignUtils.checkSamples(design)) {
 
-      if (!DesignUtils.checkGenomes(design))
-        System.err
-            .println("Warning: The design contains more than one genome file.");
-
-      if (!DesignUtils.checkAnnotations(design))
-        System.err
-            .println("Warning: The design contains more than one annotation file.");
-
-      final Map<String, String> genomesMap = new HashMap<String, String>();
-      final Map<String, String> annotationsMap = new HashMap<String, String>();
-
-      int genomesCount = 0;
-      int annotationsCount = 0;
-
-      for (Sample s : design.getSamples()) {
-
-        // Copy the sample
-        final Path newSamplePath =
-            createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
-                Common.FASTQ_EXTENSION);
-        copy(s.getSource(), newSamplePath, conf);
-
-        // Compress to bz2
-        // final Path newSamplePathCompressed =
-        // createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
-        // Common.FASTQ_EXTENSION + ".bz2");
-        // copyAndCompress(s.getSource(), newSamplePathCompressed, conf);
-
-        // Compress to TFQ
-        // final Path newSampleTFQ =
-        // createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
-        // Common.TFQ_EXTENSION + ".bz2");
-        // fastqToTfq(s.getSource(), newSampleTFQ, conf);
-
-        s.setSource(newSamplePath.getName());
-
-        // copy the genome file
-        final String genome = s.getMetadata().getGenome();
-
-        if (!genomesMap.containsKey(genome)) {
-          genomesCount++;
-
-          final Path newGenomePath =
-              createPath(hadoopPath, CommonHadoop.GENOME_FILE_PREFIX,
-                  genomesCount, Common.FASTA_EXTENSION);
-          copy(genome, newGenomePath, conf);
-
-          // Create soap index file
-          final File indexFile =
-              SOAPWrapper.makeIndexInZipFile(new File(genome));
-          copy(indexFile.toString(), createPath(hadoopPath,
-              CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX, genomesCount,
-              CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX), conf);
-          indexFile.delete();
-
-          genomesMap.put(genome, newGenomePath.getName());
-        }
-        s.getMetadata().setGenome(genomesMap.get(genome));
-
-        // Copy the annotation
-        final String annotation = s.getMetadata().getAnnotation();
-
-        if (!annotationsMap.containsKey(annotation)) {
-          annotationsCount++;
-
-          final Path newAnnotationPath =
-              createPath(hadoopPath, CommonHadoop.ANNOTATION_FILE_PREFIX,
-                  annotationsCount, Common.GFF_EXTENSION);
-          copy(annotation, newAnnotationPath, conf);
-          annotationsMap.put(annotation, newAnnotationPath.getName());
-        }
-        s.getMetadata().setAnnotation(annotationsMap.get(annotation));
-
-      }
-
-      writeNewDesign(design, new Path(hadoopPath, designFilename), conf);
-
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
-    } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
+      System.err
+          .println("Error: The design contains one or more duplicate sample sources.");
       System.exit(1);
     }
+
+    if (!DesignUtils.checkGenomes(design))
+      System.err
+          .println("Warning: The design contains more than one genome file.");
+
+    if (!DesignUtils.checkAnnotations(design))
+      System.err
+          .println("Warning: The design contains more than one annotation file.");
+
+    final Map<String, String> genomesMap = new HashMap<String, String>();
+    final Map<String, String> annotationsMap = new HashMap<String, String>();
+
+    int genomesCount = 0;
+    int annotationsCount = 0;
+
+    for (Sample s : design.getSamples()) {
+
+      // Copy the sample
+      final Path newSamplePath =
+          createPath(hadoopPath, CommonHadoop.SAMPLE_FILE_PREFIX, s.getId(),
+              Common.TFQ_EXTENSION);
+
+      if (Common.TFQ_EXTENSION.equals(StringUtils
+          .extensionWithoutCompressionExtension(s.getSource())))
+        copy(s.getSource(), newSamplePath, conf);
+      else {
+
+        final FileSystem fs = newSamplePath.getFileSystem(conf);
+
+        final BufferedWriter bw =
+            new BufferedWriter(new OutputStreamWriter(fs.create(newSamplePath)));
+
+        final FastQReader fqr =
+            new FastQReader(DataSourceUtils.identifyDataSource(s.getSource())
+                .getInputStream());
+
+        while (fqr.readEntry())
+          bw.write(fqr.toTFQ(false));
+
+        bw.close();
+        fqr.close();
+      }
+
+      s.setSource(newSamplePath.getName());
+
+      // copy the genome file
+      final String genome = s.getMetadata().getGenome();
+
+      if (!genomesMap.containsKey(genome)) {
+        genomesCount++;
+
+        final Path newGenomePath =
+            createPath(hadoopPath, CommonHadoop.GENOME_FILE_PREFIX,
+                genomesCount, Common.FASTA_EXTENSION);
+        copy(genome, newGenomePath, conf);
+
+        // Create soap index file
+        final File indexFile = SOAPWrapper.makeIndexInZipFile(new File(genome));
+        copy(indexFile.toString(), createPath(hadoopPath,
+            CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX, genomesCount,
+            CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX), conf);
+        indexFile.delete();
+
+        genomesMap.put(genome, newGenomePath.getName());
+      }
+      s.getMetadata().setGenome(genomesMap.get(genome));
+
+      // Copy the annotation
+      final String annotation = s.getMetadata().getAnnotation();
+
+      if (!annotationsMap.containsKey(annotation)) {
+        annotationsCount++;
+
+        final Path newAnnotationPath =
+            createPath(hadoopPath, CommonHadoop.ANNOTATION_FILE_PREFIX,
+                annotationsCount, Common.GFF_EXTENSION);
+        copy(annotation, newAnnotationPath, conf);
+        annotationsMap.put(annotation, newAnnotationPath.getName());
+      }
+      s.getMetadata().setAnnotation(annotationsMap.get(annotation));
+
+    }
+
+    // Copy new design file
+    writeNewDesign(design, new Path(hadoopPath, designPathname), conf);
+
+    // Copy parameter
+    final Path paramPath = new Path(paramPathname);
+    final FileSystem paramFs = paramPath.getFileSystem(conf);
+    PathUtils.copyInputStreamToPath(paramFs.open(paramPath), hadoopPath, conf);
 
   }
 }

@@ -36,8 +36,6 @@ public interface SampleMetadata {
   String GENOME_FIELD = "Genome";
   /** Annotation field. */
   String ANNOTATION_FIELD = "Annotation";
-  /** Genomic type field. */
-  String GENOMIC_TYPE_FIELD = "GenomicType";
   /** Comment field. */
   String COMMENT_FIELD = "Comment";
   /** Date field. */
@@ -89,12 +87,6 @@ public interface SampleMetadata {
    * @return Returns the annaotation
    */
   String getAnnotation();
-
-  /**
-   * Get the Genomic type to use for the sample.
-   * @return Returns the comment
-   */
-  String getGenomicType();
 
   /**
    * Get the date of the hybridation
@@ -164,12 +156,6 @@ public interface SampleMetadata {
   void setAnnotation(final String annotation);
 
   /**
-   * Set the genomic type to use for the sample.
-   * @param genomicType The genomic type to set
-   */
-  void setGenomicType(final String genomicType);
-
-  /**
    * Set the hybridation date
    * @param date The date to set
    */
@@ -229,12 +215,6 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isAnnotationField();
-
-  /**
-   * Test if the genomic type field exists.
-   * @return true if the field exists
-   */
-  boolean isGenomicTypeField();
 
   /**
    * Test if the description field exists.

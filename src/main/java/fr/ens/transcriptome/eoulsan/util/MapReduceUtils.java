@@ -71,8 +71,8 @@ public class MapReduceUtils {
     if (paths.size() == 1) {
 
       final Path p = paths.get(0);
-      final FileSystem srcFs = PathUtils.getFileSystem(p, conf);
-      final FileSystem destFs = PathUtils.getFileSystem(destPath, conf);
+      final FileSystem srcFs = p.getFileSystem(conf);
+      final FileSystem destFs = destPath.getFileSystem(conf);
 
       if (destFs.exists(destPath))
         if (overwrite)

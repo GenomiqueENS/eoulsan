@@ -23,12 +23,10 @@
 package fr.ens.transcriptome.eoulsan.programs.mapping.hadoop;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
 
-import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -36,14 +34,16 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.hadoop.FastqInputFormat;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.Parameter;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.Step;
+import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -53,17 +53,129 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class FilterAndSoapMapReadsHadoopMain {
+public class FilterAndSoapMapReadsHadoopMain implements Step {
 
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-
-  // Configure URL handler for hdfs protocol
-  static {
-    URL.setURLStreamHandlerFactory(new FsUrlStreamHandlerFactory());
-  }
+  private static final String STEP_NAME = "filterandmapreads";
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
+
+  private int lengthThreshold = -1;
+  private double qualityThreshold = -1;
+  private String mapperName;
+
+  //
+  // Getters
+  //
+
+  /**
+   * Get the length threshold
+   * @return Returns the lengthThreshold
+   */
+  protected int getLengthThreshold() {
+    return lengthThreshold;
+  }
+
+  /**
+   * Get the quality threshold
+   * @return Returns the qualityThreshold
+   */
+  protected double getQualityThreshold() {
+    return qualityThreshold;
+  }
+
+  /**
+   * Get the name of the mapper to use.
+   * @return Returns the mapperName
+   */
+  protected String getMapperName() {
+    return mapperName;
+  }
+
+  //
+  // Step methods
+  //
+
+  @Override
+  public String getName() {
+
+    return STEP_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "This step filters reads.";
+  }
+
+  @Override
+  public String getLogName() {
+
+    return "filtersoapmapreads";
+  }
+
+  @Override
+  public void configure(final Set<Parameter> stepParameters,
+      final Set<Parameter> globalParameters) throws EoulsanException {
+
+    for (Parameter p : stepParameters) {
+
+      if ("lengththreshold".equals(p.getName()))
+        this.lengthThreshold = p.getIntValue();
+      else if ("qualitythreshold".equals(p.getName()))
+        this.qualityThreshold = p.getDoubleValue();
+      else if ("mapper".equals(p.getName()))
+        this.mapperName = p.getStringValue();
+      else
+        throw new EoulsanException("Unknown parameter for "
+            + getName() + " step: " + p.getName());
+
+    }
+
+    if (this.mapperName == null)
+      throw new EoulsanException("No mapper set.");
+
+    if (!"soap".equals(this.mapperName))
+      throw new EoulsanException("Unknown mapper: " + this.mapperName);
+
+  }
+
+  @Override
+  public StepResult execute(final Design design, final ExecutorInfo info) {
+
+    final Path basePath = new Path(info.getBasePathname());
+
+    // Create the list of jobs to run
+    final List<JobConf> jobconfs =
+        new ArrayList<JobConf>(design.getSampleCount());
+    for (Sample s : design.getSamples())
+      jobconfs.add(createJobConf(basePath, s, getLengthThreshold(),
+          getQualityThreshold()));
+
+    try {
+      final long startTime = System.currentTimeMillis();
+
+      final String log =
+          MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
+              CommonHadoop.CHECK_COMPLETION_TIME,
+              FilterAndSoapMapReadsMapper.COUNTER_GROUP);
+
+      return new StepResult(this, startTime, log);
+
+    } catch (IOException e) {
+
+      return new StepResult(this, e, "Error while running job: "
+          + e.getMessage());
+    } catch (InterruptedException e) {
+
+      return new StepResult(this, e, "Error while running job: "
+          + e.getMessage());
+    } catch (ClassNotFoundException e) {
+
+      return new StepResult(this, e, "Error while running job: "
+          + e.getMessage());
+    }
+
+  }
 
   /**
    * Create the JobConf object for a sample
@@ -104,8 +216,8 @@ public class FilterAndSoapMapReadsHadoopMain {
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId)
-            .toString());
+        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
+            + sampleId).toString());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
@@ -121,7 +233,7 @@ public class FilterAndSoapMapReadsHadoopMain {
         + Runtime.getRuntime().availableProcessors());
 
     // Debug
-    //conf.set("mapred.job.tracker", "local");
+    // conf.set("mapred.job.tracker", "local");
 
     // timeout
     conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
@@ -134,7 +246,8 @@ public class FilterAndSoapMapReadsHadoopMain {
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format
-    conf.setInputFormat(FastqInputFormat.class);
+    if (sample.getSource().endsWith(CommonHadoop.FASTQ_EXTENSION))
+      conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class
     conf.setMapperClass(FilterAndSoapMapReadsMapper.class);
@@ -156,88 +269,6 @@ public class FilterAndSoapMapReadsHadoopMain {
         CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;
-  }
-
-  //
-  // Main method
-  //
-
-  /**
-   * Main method
-   * @param args command line arguments
-   */
-  public static void main(final String[] args) {
-
-    logger.info("Start SOAP map reads.");
-
-    if (args == null)
-      throw new NullPointerException("The arguments of import data is null");
-
-    if (args.length < 1)
-      throw new IllegalArgumentException(
-          "Filter reads need one or two arguments");
-
-    // Set the design path
-    final String designPathname = args[0];
-
-    // Set the thresholds
-    int lengthThreshold = -1;
-    double qualityThreshold = -1;
-
-    if (args.length > 1)
-      try {
-        lengthThreshold = Integer.parseInt(args[1]);
-      } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid length threshold: " + args[1]);
-      }
-
-    if (args.length > 2)
-      try {
-        qualityThreshold = Double.parseDouble(args[2]);
-      } catch (NumberFormatException e) {
-        CommonHadoop.error("Invalid quality threshold: " + args[2]);
-      }
-
-    final Path designPath = new Path(designPathname);
-    final Path basePath = designPath.getParent();
-    Design design = null;
-
-    // Read design file
-    try {
-
-      final DesignReader dr =
-          new SimpleDesignReader(designPath.toUri().toURL().openStream());
-
-      design = dr.read();
-
-    } catch (IOException e) {
-      CommonHadoop.error("Error while reading design file: ", e);
-    } catch (EoulsanIOException e) {
-      CommonHadoop.error("Error while reading design file: ", e);
-    }
-
-    // Create the list of jobs to run
-    final List<JobConf> jobconfs =
-        new ArrayList<JobConf>(design.getSampleCount());
-    for (Sample s : design.getSamples())
-      jobconfs
-          .add(createJobConf(basePath, s, lengthThreshold, qualityThreshold));
-
-    try {
-      final long startTime = System.currentTimeMillis();
-      CommonHadoop.writeLog(new Path(basePath, "filtersoapmapreads.log"),
-          startTime, MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
-              CommonHadoop.CHECK_COMPLETION_TIME,
-              FilterAndSoapMapReadsMapper.COUNTER_GROUP));
-
-    } catch (IOException e) {
-      CommonHadoop.error("Error while running job: ", e);
-    } catch (InterruptedException e) {
-      CommonHadoop.error("Error while running job: ", e);
-    } catch (ClassNotFoundException e) {
-      CommonHadoop.error("Error while running job: ", e);
-    }
-
   }
 
 }

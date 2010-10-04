@@ -826,6 +826,13 @@ public class TranscriptAndExonFinder {
     this.transcripts.clear();
   }
 
+  @Override
+  public String toString() {
+
+    return "Transcripts size: "
+        + (this.transcripts == null ? "null" : this.transcripts.size());
+  }
+
   //
   // Constructors
   //
@@ -839,7 +846,8 @@ public class TranscriptAndExonFinder {
   public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType) throws IOException {
 
-    populateMapsFromGFFFile(FileUtils.createInputStream(annotationFile), expressionType);
+    populateMapsFromGFFFile(FileUtils.createInputStream(annotationFile),
+        expressionType);
   }
 
   /**

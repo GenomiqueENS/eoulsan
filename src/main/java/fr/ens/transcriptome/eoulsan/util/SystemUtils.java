@@ -27,6 +27,8 @@ import java.net.UnknownHostException;
 
 public final class SystemUtils {
 
+  private static String HADOOP_CLASS_TO_TEST = "org.apache.hadoop.io.Text";
+  
   /**
    * Get the name of the host.
    * @return The name of the host
@@ -94,6 +96,36 @@ public final class SystemUtils {
   public static boolean isUnix() {
 
     return !isWindows();
+  }
+
+  /**
+   * Test if a class is present is the classpath
+   * @param className the class to test
+   * @return true if the class is present in the classpath
+   */
+  public static boolean isClass(final String className) {
+
+    if (className == null)
+      return false;
+
+    try {
+      SystemUtils.class.getClassLoader().loadClass(className);
+
+      return true;
+
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
+  }
+  
+  
+  /**
+   * Test if Eoulsan is in Hadoop mode
+   * @return true if Eoulsan is in Hadoop mode
+   */
+  public static boolean isHadoop() {
+
+    return isClass(HADOOP_CLASS_TO_TEST);
   }
 
   //

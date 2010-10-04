@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.core.ReadSequence;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class BinaryFastQWriter {
@@ -161,7 +160,7 @@ public class BinaryFastQWriter {
       return sb.toString();
     }
 
-    final MultiBitsDecompressor d = new MultiBitsDecompressor();
+    //final MultiBitsDecompressor d = new MultiBitsDecompressor();
     int countOk;
 
     private void checkResult(final byte[] result) {
@@ -185,11 +184,11 @@ public class BinaryFastQWriter {
       }
 
       if (!found00) {
-        
+
         for (int j = 0; j < result.length; j++)
           System.out.print(byteToBinary(result[j]) + ",");
         System.out.println();
-        
+
         throw new Error("No 00 found at the end of the entry. Count=" + countOk);
       }
 
@@ -445,10 +444,6 @@ public class BinaryFastQWriter {
     this.os = FileUtils.createOutputStream(outputFilename);
   }
 
-  private BinaryFastQWriter() {
-
-  }
-
   public static String binByteToString(byte b) {
 
     final StringBuilder sb = new StringBuilder();
@@ -457,17 +452,6 @@ public class BinaryFastQWriter {
       sb.append(((b & i) != 0 ? "1" : "0"));
 
     return sb.toString();
-  }
-
-  private static final void print(byte b) {
-
-    int i = 256; // max number * 2
-    while ((i >>= 1) > 0) {
-      System.out.print(((b & i) != 0 ? "1" : "0"));
-    }
-
-    System.out.println();
-    // System.out.println(b + "\t" + Integer.toBinaryString(b));
   }
 
   private static final String byteToBinary(int i) {
@@ -486,70 +470,21 @@ public class BinaryFastQWriter {
 
   public static void main(String[] args) throws IOException {
 
-    final BinaryFastQWriter.MultiBitsCompressor c =
-        new BinaryFastQWriter.MultiBitsCompressor();
-
-    final BinaryFastQWriter.MultiBitsDecompressor d =
-        new BinaryFastQWriter.MultiBitsDecompressor();
-
-    // System.out.println("val: " + c.toString());
-    // System.out.println(c.bytePos + " " + c.bitPos);
-    // System.out.println("   : " + binByteToString((byte) 1));
-    // c.add(1, 3);
-    // System.out.println("val: " + c.toString());
-    // System.out.println(c.bytePos + " " + c.bitPos);
-    //
-    // System.out.println("   : " + binByteToString((byte) 2));
-    // c.add(2, 3);
-    // System.out.println("val: " + c.toString());
-    // System.out.println(c.bytePos + " " + c.bitPos);
-    //
-    // System.out.println("   : " + binByteToString((byte) 5));
-    // c.add(5, 3);
-    // System.out.println("val: " + c.toString());
-    // System.out.println(c.bytePos + " " + c.bitPos);
-    //
-    // System.out.println("   : " + binByteToString((byte) 4));
-    // c.add(4, 3);
-
-//    for (int i = 1; i <= 7; i++)
-//      c.add(i, i);
+//    final BinaryFastQWriter.MultiBitsCompressor c =
+//        new BinaryFastQWriter.MultiBitsCompressor();
 //
-//    System.out.println("val: " + c.toString());
-//    System.out.println(c.bytePos + " " + c.bitPos);
-//
-//    byte[] result = c.toArray();
-//    System.out.println("array len="
-//        + result.length + "\t" + Arrays.toString(result));
-//    d.setData(result);
-//
-//    for (int i = 1; i <= 7; i++)
-//      System.out.println(d.nextValue(i));
-
-    // System.out.println(d.nextValue(3));
-    // System.out.println(d.nextValue(3));
-    // System.out.println(d.nextValue(3));
-    // System.out.println(d.nextValue(3));
+//    final BinaryFastQWriter.MultiBitsDecompressor d =
+//        new BinaryFastQWriter.MultiBitsDecompressor();
 
     FastQReader reader = new FastQReader(new File("/tmp/G5_1.fq"));
-    //BinaryFastQWriter writer = new BinaryFastQWriter(new File("/tmp/G5_1.nn.bfq"));
-    //writer.keepName=false;
-    Writer writer = FileUtils.createBufferedWriter(new File("/tmp/G5_1.nn.tfq"));
 
-    // writer.codec.add(3, 2);
-    // System.out.println(Arrays.toString(writer.codec.toArray()));
-    // System.exit(0);
-
-    // String s = "@HWI-EAS285:7:10:1000:1973#0/1";
-
-    // writer.addName(s);
-    // System.out.println(Arrays.toString(writer.codec.toArray()));
-    // System.out.println(Arrays.toString(writer.entry));
-    // System.exit(0);
+    Writer writer =
+        FileUtils.createBufferedWriter(new File("/tmp/G5_1.nn.tfq"));
 
     while (reader.readEntry())
-      //writer.write(reader);
-      writer.write("\t"+reader.getSequence()+"\t"+reader.getQuality()+"\n");
+
+      writer.write("\t"
+          + reader.getSequence() + "\t" + reader.getQuality() + "\n");
 
     reader.close();
     writer.close();

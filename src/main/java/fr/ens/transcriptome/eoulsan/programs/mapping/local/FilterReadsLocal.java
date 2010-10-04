@@ -142,7 +142,7 @@ public class FilterReadsLocal {
    * Set the threshold for the filter
    * @param threshold the threshold
    */
-  public void setQualityThreshold(final int threshold) {
+  public void setQualityThreshold(final double threshold) {
 
     this.qualityThreshold = threshold;
   }
