@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.bio.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

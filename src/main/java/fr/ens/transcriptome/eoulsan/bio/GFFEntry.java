@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.bio;
 
 import java.util.Arrays;
 import java.util.Collections;

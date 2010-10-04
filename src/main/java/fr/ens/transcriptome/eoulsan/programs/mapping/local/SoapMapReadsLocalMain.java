@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.core.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;

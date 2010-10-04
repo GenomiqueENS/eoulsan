@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.design.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This class define a writer for designs.

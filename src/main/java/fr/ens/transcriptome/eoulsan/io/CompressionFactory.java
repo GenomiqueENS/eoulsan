@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.compression;
+package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
 import java.io.InputStream;

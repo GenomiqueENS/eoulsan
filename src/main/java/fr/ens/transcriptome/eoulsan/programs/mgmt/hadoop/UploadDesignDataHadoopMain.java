@@ -37,6 +37,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
@@ -44,11 +45,10 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.FastQReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 

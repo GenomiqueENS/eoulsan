@@ -20,9 +20,10 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.design.io;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 
 

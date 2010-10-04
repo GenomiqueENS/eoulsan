@@ -46,7 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import fr.ens.transcriptome.eoulsan.io.compression.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
 
 public class FileUtils {
 

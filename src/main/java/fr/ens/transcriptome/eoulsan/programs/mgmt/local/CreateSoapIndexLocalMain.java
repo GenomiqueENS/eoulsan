@@ -31,9 +31,9 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.io.SimpleDesignReader;
 
 /**
  * Main class for creating soap index.

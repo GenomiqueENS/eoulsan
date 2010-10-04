@@ -34,10 +34,10 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterReadsStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;

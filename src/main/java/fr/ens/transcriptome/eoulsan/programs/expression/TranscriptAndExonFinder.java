@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.io.GFFReader;
+import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

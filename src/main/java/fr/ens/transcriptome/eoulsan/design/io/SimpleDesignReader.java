@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.design.io;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This class define a design reader for limma design files.

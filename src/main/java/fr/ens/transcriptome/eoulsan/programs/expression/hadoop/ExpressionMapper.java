@@ -36,7 +36,7 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.core.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;

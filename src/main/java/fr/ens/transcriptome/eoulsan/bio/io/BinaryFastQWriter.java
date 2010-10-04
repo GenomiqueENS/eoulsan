@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.bio.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class BinaryFastQWriter {
