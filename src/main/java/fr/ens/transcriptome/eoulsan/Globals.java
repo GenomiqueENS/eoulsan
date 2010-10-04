@@ -24,6 +24,9 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -73,8 +76,13 @@ public class Globals {
 
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
+
+    private final DateFormat df = new SimpleDateFormat("yyyy.MM.dd kk:mm:ss");
+
     public String format(final LogRecord record) {
-      return record.getLevel() + "\t" + record.getMessage() + "\n";
+      return record.getLevel()
+          + "\t" + df.format(new Date(record.getMillis())) + "\t"
+          + record.getMessage() + "\n";
     }
   };
 

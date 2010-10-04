@@ -154,6 +154,7 @@ public class MainCLI {
         try {
           Handler fh = new FileHandler(line.getOptionValue("log"));
           fh.setFormatter(Globals.LOG_FORMATTER);
+          logger.setLevel(Globals.LOG_LEVEL);
           logger.setUseParentHandlers(false);
 
           logger.addHandler(fh);

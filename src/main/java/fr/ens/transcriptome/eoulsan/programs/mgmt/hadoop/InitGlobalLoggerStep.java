@@ -20,11 +20,12 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.mgmt.upload;
+package fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -37,20 +38,17 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
- * This step copy design and parameter file to output directory.
+ * This class initialize the global logger
  * @author Laurent Jourdren
  */
-public class CopyDesignAndParametersToOutputStep implements Step {
+public class InitGlobalLoggerStep implements Step {
 
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  public static final String STEP_NAME = "_copy_design_params_to_output";
+  public static final String STEP_NAME = "_init_global_logger";
 
   //
   // Step methods
@@ -66,35 +64,25 @@ public class CopyDesignAndParametersToOutputStep implements Step {
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
     final Configuration conf = new Configuration();
+    final Path loggerPath =
+        new Path(info.getLogPathname(), Globals.APP_NAME_LOWER_CASE + ".log");
 
-    final Path designPath = new Path(info.getDesignPathname());
-    final Path paramPath = new Path(info.getParameterPathname());
-    final Path outputPath = new Path(info.getOutputPathname());
-
-    final Path outputDesignPath = new Path(outputPath, designPath.getName());
-    final Path outputParamPath = new Path(outputPath, paramPath.getName());
-
-    // Copy design file
     try {
-      if (!PathUtils.exists(outputDesignPath, conf)) {
 
-        final FileSystem outputDesignFs = outputDesignPath.getFileSystem(conf);
+      final FileSystem loggerFs = loggerPath.getFileSystem(conf);
+      logger.addHandler(new StreamHandler(loggerFs.create(loggerPath),
+          Globals.LOG_FORMATTER));
+      logger.setLevel(Globals.LOG_LEVEL);
 
-        new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
-            .write(design);
-      }
+      logger.info(Globals.APP_NAME
+          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
+          + " on " + Globals.APP_BUILD_DATE + ")");
+      logger.info("Hadoop base dir: " + info.getBasePathname());
+      logger.info("Parameter file: " + info.getParameterPathname());
+      logger.info("Design file: " + info.getDesignPathname());
+
     } catch (IOException e) {
-      logger.severe("Unable to copy design file to output path.");
-    } catch (EoulsanIOException e) {
-      logger.severe("Unable to copy design file to output path.");
-    }
-
-    // Copy parameter file
-    try {
-      if (!PathUtils.exists(outputParamPath, conf))
-        PathUtils.copy(designPath, outputParamPath, conf);
-    } catch (IOException e) {
-      logger.severe("Unable to copy design file to output path.");
+      logger.severe("Unable to configure global logger: " + loggerPath);
     }
 
     return new StepResult(this, true, "");
@@ -103,7 +91,7 @@ public class CopyDesignAndParametersToOutputStep implements Step {
   @Override
   public String getDescription() {
 
-    return "Copy design and parameters file to output path.";
+    return "Initialize global logger";
   }
 
   @Override
