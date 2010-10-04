@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.core.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 public class ReadsFilterTest {
 
