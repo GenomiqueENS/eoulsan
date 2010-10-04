@@ -37,7 +37,7 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.HadoopParameter;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.programs.expression.TranscriptAndExonFinder.Exon;
 
@@ -109,7 +109,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     try {
 
       final Path indexPath =
-          new Path(Parameter.getStringParameter(conf,
+          new Path(HadoopParameter.getStringParameter(conf,
               ".expression.exonsindex.path", ""));
 
       final FileSystem fs = indexPath.getFileSystem(conf);

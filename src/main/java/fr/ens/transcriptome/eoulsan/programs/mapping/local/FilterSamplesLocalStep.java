@@ -31,11 +31,11 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
 import fr.ens.transcriptome.eoulsan.programs.mapping.FilterSamplesStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**

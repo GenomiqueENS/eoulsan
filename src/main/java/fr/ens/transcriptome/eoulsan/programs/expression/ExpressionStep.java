@@ -25,8 +25,8 @@ package fr.ens.transcriptome.eoulsan.programs.expression;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Parameter;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Step;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 
 /**
  * This abstract class define and parse arguments for the expression step.

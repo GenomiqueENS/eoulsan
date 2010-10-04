@@ -22,119 +22,109 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.io.IOException;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
-import org.apache.hadoop.conf.Configuration;
-
-import fr.ens.transcriptome.eoulsan.Globals;
-
+/**
+ * This class define a parameter.
+ * @author Laurent Jourdren
+ */
 public class Parameter {
 
+  private String name;
+  private String value;
+
   /**
-   * Get an integer parameter value
-   * @param conf Configuration
-   * @param parameterName Name of the parameter
-   * @param errorMessage Error message
-   * @param defaultValue default value of the parameter if not set
-   * @return the parameter
-   * @throws IOException if the parameter does not exists or if its value is
-   *           invalid
+   * Get the name of the parameter
+   * @return Returns the name
    */
-  public static int getInt(final Configuration conf,
-      final String parameterName, final String errorMessage) throws IOException {
+  public String getName() {
+    return this.name;
+  }
 
-    final String key = Globals.PARAMETER_PREFIX + parameterName;
-    final String value = conf.get(key);
+  /**
+   * Get the value of the parameter
+   * @return Returns the value
+   */
+  public String getValue() {
+    return this.value;
+  }
 
-    if (value == null)
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Unable to find parameter: " + key);
+  /**
+   * Get the value of the parameter as a String value
+   * @return the value as a String
+   */
+  public String getStringValue() {
+
+    return this.value;
+  }
+
+  /**
+   * Get the value of the parameter as a integer value
+   * @return the value as an integer
+   */
+  public int getIntValue() throws EoulsanException {
 
     try {
-      return Integer.parseInt(value);
+
+      return Integer.parseInt(this.value);
     } catch (NumberFormatException e) {
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Invalid parameter value: " + key);
+
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + this.name + " parameter: " + this.value);
     }
 
   }
 
   /**
-   * Get an integer parameter value
-   * @param conf Configuration
-   * @param parameterName Name of the parameter
-   * @param errorMessage Error message
-   * @param defaultValue default value of the parameter if not set
-   * @return the parameter
-   * @throws IOException if the parameter does not exists or if its value is
-   *           invalid
+   * Get the value of the parameter as a double value
+   * @return the value as an integer
    */
-  public static int getIntParameter(final Configuration conf,
-      final String parameterName, final String errorMessage,
-      final int defaultValue) throws IOException {
-
-    final String key = Globals.PARAMETER_PREFIX + parameterName;
-    final String value = conf.get(key, "" + defaultValue);
-
-    if (value == null)
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Unable to find parameter: " + key);
+  public double getDoubleValue() throws EoulsanException {
 
     try {
-      return Integer.parseInt(value);
+
+      return Double.parseDouble(this.value);
     } catch (NumberFormatException e) {
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Invalid parameter value: " + key);
+
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + this.name + " parameter: " + this.value);
     }
 
   }
 
   /**
-   * Get an String parameter value
-   * @param conf Configuration
-   * @param parameterName Name of the parameter
-   * @param errorMessage Error message
-   * @param defaultValue default value of the parameter if not set
-   * @return the parameter
-   * @throws IOException if the parameter does not exists or if its value is
-   *           invalid
+   * Get the value of the parameter as a boolean value
+   * @return the value as a boolean
    */
-  public static String getStringParameter(final Configuration conf,
-      final String parameterName, final String errorMessage,
-      final String defaultValue) throws IOException {
+  public boolean getBooleanValue() {
 
-    final String key = Globals.PARAMETER_PREFIX + parameterName;
-    final String value = conf.get(key, defaultValue);
-
-    if (value == null)
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Unable to find parameter: " + key);
-
-    return value;
-
+    return Boolean.parseBoolean(this.value);
   }
 
-  /**
-   * Get an String parameter value
-   * @param conf Configuration
-   * @param parameterName Name of the parameter
-   * @param errorMessage Error message
-   * @return the parameter
-   * @throws IOException if the parameter does not exists or if its value is
-   *           invalid
-   */
-  public static String getStringParameter(final Configuration conf,
-      final String parameterName, final String errorMessage) throws IOException {
+  //
+  // Constructor
+  //
 
-    final String key = Globals.PARAMETER_PREFIX + parameterName;
-    final String value = conf.get(key);
+  /**
+   * Public constructor.
+   * @param name Name of the parameter
+   * @param value value of the parameter
+   */
+  public Parameter(final String name, final String value) {
+
+    if (name == null)
+      throw new NullPointerException("Parameter name can't be null");
 
     if (value == null)
-      throw new IOException(errorMessage != null
-          ? errorMessage : "Unable to find parameter: " + key);
+      throw new NullPointerException("Parameter value can't be null");
 
-    return value;
+    if ("".equals(name))
+      throw new IllegalArgumentException("Parameter name can't be empty");
 
+    this.name = name;
+    this.value = value;
   }
 
 }

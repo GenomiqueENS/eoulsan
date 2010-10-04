@@ -34,11 +34,11 @@ import org.apache.hadoop.fs.PathFilter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Parameter;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Step;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 public class HDFSDataDownloadStep implements Step {

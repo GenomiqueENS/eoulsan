@@ -37,13 +37,13 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.Executor;
+import fr.ens.transcriptome.eoulsan.core.HadoopAnalysisExecutor;
+import fr.ens.transcriptome.eoulsan.core.ParamParser;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Command;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Executor;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.HadoopAnalysisExecutor;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ParamParser;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.Parameter;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;

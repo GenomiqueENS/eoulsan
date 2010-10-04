@@ -20,17 +20,13 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.programs.mgmt;
+package fr.ens.transcriptome.eoulsan.design;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.DesignFactory;
-import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**

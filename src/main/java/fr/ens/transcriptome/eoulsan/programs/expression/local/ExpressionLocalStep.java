@@ -27,12 +27,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.programs.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.programs.expression.FinalExpressionTranscriptsCreator;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 
 public class ExpressionLocalStep extends ExpressionStep {
 
