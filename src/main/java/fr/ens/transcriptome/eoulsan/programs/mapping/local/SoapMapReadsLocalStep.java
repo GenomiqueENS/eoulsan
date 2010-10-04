@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public class SoapMapReadsLocalMain extends MapReadsStep {
+public class SoapMapReadsLocalStep extends MapReadsStep {
 
   public static String PROGRAM_NAME = "soapmapreads";
   public static final String COUNTER_GROUP = "Map reads with SOAP";

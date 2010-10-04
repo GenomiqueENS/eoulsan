@@ -33,10 +33,10 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.programs.anadiff.local.AnaDiffLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterSamplesLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsLocalMain;
+import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterSamplesLocalStep;
+import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsLocalStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -131,10 +131,10 @@ public class LocalAnalysisExecutor extends Executor {
     // Register local steps
     //
 
-    this.registery.addStepType(FilterReadsLocalMain.class);
-    this.registery.addStepType(SoapMapReadsLocalMain.class);
-    this.registery.addStepType(FilterSamplesLocalMain.class);
-    this.registery.addStepType(ExpressionLocalMain.class);
+    this.registery.addStepType(FilterReadsLocalStep.class);
+    this.registery.addStepType(SoapMapReadsLocalStep.class);
+    this.registery.addStepType(FilterSamplesLocalStep.class);
+    this.registery.addStepType(ExpressionLocalStep.class);
     this.registery.addStepType(AnaDiffLocalMain.class);
 
   }

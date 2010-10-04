@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public final class FilterReadsLocalMain extends FilterReadsStep {
+public final class FilterReadsLocalStep extends FilterReadsStep {
 
   @Override
   public String getLogName() {

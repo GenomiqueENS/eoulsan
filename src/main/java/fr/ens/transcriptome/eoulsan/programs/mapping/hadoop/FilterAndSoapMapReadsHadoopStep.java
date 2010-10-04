@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class FilterAndSoapMapReadsHadoopMain implements Step {
+public class FilterAndSoapMapReadsHadoopStep implements Step {
 
   private static final String STEP_NAME = "filterandmapreads";
 
@@ -187,7 +187,7 @@ public class FilterAndSoapMapReadsHadoopMain implements Step {
       final Sample sample, final int lengthThreshold,
       final double qualityThreshold) {
 
-    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
     final int sampleId = sample.getId();
     final int genomeId =
@@ -239,7 +239,7 @@ public class FilterAndSoapMapReadsHadoopMain implements Step {
     conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
 
     // Set the jar
-    conf.setJarByClass(FilterAndSoapMapReadsHadoopMain.class);
+    conf.setJarByClass(FilterAndSoapMapReadsHadoopStep.class);
 
     // Set input path
 

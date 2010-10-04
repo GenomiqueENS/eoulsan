@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class SoapMapReadsHadoopMain extends MapReadsStep {
+public class SoapMapReadsHadoopStep extends MapReadsStep {
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
 
@@ -64,7 +64,7 @@ public class SoapMapReadsHadoopMain extends MapReadsStep {
   private static JobConf createJobConf(final Path basePath, final Sample sample)
       throws IOException {
 
-    final JobConf conf = new JobConf(FilterReadsHadoopMain.class);
+    final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
     final int sampleId = sample.getId();
     final int genomeId =
@@ -107,7 +107,7 @@ public class SoapMapReadsHadoopMain extends MapReadsStep {
     // conf.set("mapred.job.tracker", "local");
 
     // Set the jar
-    conf.setJarByClass(SoapMapReadsHadoopMain.class);
+    conf.setJarByClass(SoapMapReadsHadoopStep.class);
 
     // Set input path
 

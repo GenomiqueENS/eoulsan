@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.programs.expression.FinalExpressionTranscrip
 import fr.ens.transcriptome.eoulsan.programs.mgmt.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.programs.mgmt.StepResult;
 
-public class ExpressionLocalMain extends ExpressionStep {
+public class ExpressionLocalStep extends ExpressionStep {
 
   @Override
   public String getLogName() {
