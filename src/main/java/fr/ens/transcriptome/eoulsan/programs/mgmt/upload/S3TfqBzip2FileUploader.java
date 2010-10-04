@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 
 import com.amazonaws.auth.AWSCredentials;
 
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 
@@ -54,8 +55,14 @@ public class S3TfqBzip2FileUploader extends S3Bzip2FileUploader {
     final FastQReader fqr =
         new FastQReader(getFileToUpload().getDataSource().getInputStream());
 
-    while (fqr.readEntry())
-      bw.write(fqr.toTFQ(false));
+    try {
+      while (fqr.readEntry())
+        bw.write(fqr.toTFQ(false));
+    } catch (BadBioEntryException e) {
+
+      throw new IOException("Invalid fastq entry in "
+          + getFileToUpload().getDataSource());
+    }
 
     bw.close();
     fqr.close();

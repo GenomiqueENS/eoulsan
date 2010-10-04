@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -46,7 +47,7 @@ public class FastQReader extends ReadSequence {
    * @return false if there is no more entry to read
    * @throws IOException if an error occurs while reading file
    */
-  public boolean readEntry() throws IOException {
+  public boolean readEntry() throws IOException, BadBioEntryException {
 
     String line = null;
     int count = 0;
@@ -64,10 +65,12 @@ public class FastQReader extends ReadSequence {
       sb.append(trim);
 
       if (count == 1 && trim.charAt(0) != '@')
-        throw new IOException("Invalid Fastq file.");
+        throw new BadBioEntryException(
+            "Invalid Fastq file. First line don't start with '@'", line);
 
       if (count == 3 && trim.charAt(0) != '+')
-        throw new IOException("Invalid Fastq file.");
+        throw new BadBioEntryException(
+            "Invalid Fastq file. Third line don't start with '@'", line);
 
       if (count == 4) {
 
