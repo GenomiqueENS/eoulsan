@@ -524,7 +524,7 @@ public class GFFEntry {
    * Parse a GFF entry
    * @param s String to parse
    */
-  public void parse(final String s) {
+  public void parse(final String s) throws BadBioEntryException {
 
     if (s == null)
       throw new NullPointerException("String to parse is null");
@@ -537,13 +537,12 @@ public class GFFEntry {
     final String[] fields = this.parsedFields;
 
     try {
+
       StringUtils.fastSplit(s, fields);
     } catch (ArrayIndexOutOfBoundsException e) {
 
-      System.err.println("Error in GFF parsing line ("
-          + s.split("\t").length + " fields, 9 attemped): \"" + s+"\"");
-
-      throw e;
+      throw new BadBioEntryException("Error in GFF parsing line ("
+          + s.split("\t").length + " fields, 9 attemped)", s);
     }
 
     setSeqId(fields[0]);

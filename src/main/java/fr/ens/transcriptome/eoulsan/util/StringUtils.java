@@ -267,9 +267,23 @@ public final class StringUtils {
    * Split a string. \t is the separator character.
    * @param s the String to split
    * @param array The result array.
+   * @param allowEmptyFields to allow empty fields
    * @return the array with the new values
    */
   public static final String[] fastSplit(final String s, final String[] array) {
+    
+    return fastSplit(s, array, false);
+  }
+
+  /**
+   * Split a string. \t is the separator character.
+   * @param s the String to split
+   * @param array The result array.
+   * @param allowEmptyFields to allow empty fields
+   * @return the array with the new values
+   */
+  public static final String[] fastSplit(final String s, final String[] array,
+      final boolean allowEmptyFields) {
 
     if (array == null || s == null)
       return null;
@@ -281,8 +295,15 @@ public final class StringUtils {
 
       final int pos = s.indexOf("\t", lastPos);
 
-      if (pos == -1)
+      if (pos == -1) {
+        if (allowEmptyFields) {
+          while (i <= len)
+            array[i++] = "";
+          return array;
+        }
         throw new ArrayIndexOutOfBoundsException();
+      }
+
       array[i] = s.substring(lastPos, pos);
       lastPos = pos + 1;
     }

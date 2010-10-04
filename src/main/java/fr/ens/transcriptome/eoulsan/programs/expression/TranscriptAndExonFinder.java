@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -642,7 +643,7 @@ public class TranscriptAndExonFinder {
   }
 
   private void populateMapsFromGFFFile(final InputStream is,
-      final String expressionType) throws IOException {
+      final String expressionType) throws IOException, BadBioEntryException {
 
     final GFFReader reader = new GFFReader(is);
 
@@ -842,9 +843,10 @@ public class TranscriptAndExonFinder {
    * @param annotationFile annotation file to use
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
+   * @throws BadBioEntryException if an invalid entry of the annotation file is found
    */
   public TranscriptAndExonFinder(final File annotationFile,
-      final String expressionType) throws IOException {
+      final String expressionType) throws IOException, BadBioEntryException {
 
     populateMapsFromGFFFile(FileUtils.createInputStream(annotationFile),
         expressionType);
@@ -855,9 +857,10 @@ public class TranscriptAndExonFinder {
    * @param is annotation input stream to use
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
+   * @throws BadBioEntryException if an invalid entry of the annotation file is found
    */
   public TranscriptAndExonFinder(final InputStream is,
-      final String expressionType) throws IOException {
+      final String expressionType) throws IOException, BadBioEntryException {
 
     populateMapsFromGFFFile(is, expressionType);
   }

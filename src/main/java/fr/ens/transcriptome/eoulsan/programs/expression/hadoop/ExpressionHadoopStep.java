@@ -43,6 +43,7 @@ import org.apache.hadoop.mapred.TextInputFormat;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -75,9 +76,11 @@ public class ExpressionHadoopStep extends ExpressionStep {
    * @param sample sample of the job
    * @param genomicType genomic type
    * @throws IOException if an error occurs while creating job
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final JobConf createJobConf(final Path basePath,
-      final Sample sample, final String genomicType) throws IOException {
+      final Sample sample, final String genomicType) throws IOException,
+      BadBioEntryException {
 
     // Create JobConf
     final JobConf conf = new JobConf(ExpressionHadoopStep.class);
@@ -155,10 +158,11 @@ public class ExpressionHadoopStep extends ExpressionStep {
    * @param exonsIndexPath output exon index path
    * @param conf configuration object
    * @throws IOException if an error occurs while creating the index
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final Path createExonsIndex(final Path gffPath,
       final String expressionType, final Path exonsIndexPath,
-      final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException, BadBioEntryException {
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
@@ -280,6 +284,10 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
       return new StepResult(this, e, "Error while running job: "
           + e.getMessage());
+    } catch (BadBioEntryException e) {
+
+      return new StepResult(this, e, "Invalid annotation entry: "
+          + e.getEntry());
     }
 
   }
