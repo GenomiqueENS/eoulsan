@@ -91,7 +91,7 @@ public class HadoopAnalysisExecutor extends Executor {
   @Override
   protected void writeStepLogs(final StepResult result) {
 
-    if (result == null)
+    if (result == null || result.getStep().getLogName() == null)
       return;
 
     try {
@@ -230,7 +230,7 @@ public class HadoopAnalysisExecutor extends Executor {
     this.registery.addStepType(ExpressionHadoopStep.class);
     this.registery.addStepType(HDFSDataDownloadStep.class);
     this.registery.addStepType(CopyDesignAndParametersToOutputStep.class);
-    
+
   }
 
   /**
