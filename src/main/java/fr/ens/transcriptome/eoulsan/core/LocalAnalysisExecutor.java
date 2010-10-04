@@ -32,11 +32,11 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.programs.anadiff.local.AnaDiffLocalMain;
-import fr.ens.transcriptome.eoulsan.programs.expression.local.ExpressionLocalStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterReadsLocalStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.FilterSamplesLocalStep;
-import fr.ens.transcriptome.eoulsan.programs.mapping.local.SoapMapReadsLocalStep;
+import fr.ens.transcriptome.eoulsan.steps.anadiff.local.AnaDiffLocalMain;
+import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterReadsLocalStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterSamplesLocalStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.local.SoapMapReadsLocalStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

@@ -43,10 +43,10 @@ import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.hadoop.InitGlobalLoggerStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataDownloadStep;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.HDFSDataUploadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**

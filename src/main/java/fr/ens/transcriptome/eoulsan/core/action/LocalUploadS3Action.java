@@ -39,8 +39,8 @@ import fr.ens.transcriptome.eoulsan.core.SimpleExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.FakeS3ProtocolFactory;
-import fr.ens.transcriptome.eoulsan.programs.mgmt.upload.S3DataUploadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.FakeS3ProtocolFactory;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.S3DataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
