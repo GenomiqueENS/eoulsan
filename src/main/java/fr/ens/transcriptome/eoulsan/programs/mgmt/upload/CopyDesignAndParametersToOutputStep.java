@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -36,6 +37,8 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -73,9 +76,16 @@ public class CopyDesignAndParametersToOutputStep implements Step {
 
     // Copy design file
     try {
-      if (!PathUtils.exists(outputDesignPath, conf))
-        PathUtils.copy(designPath, outputDesignPath, conf);
+      if (!PathUtils.exists(outputDesignPath, conf)) {
+
+        final FileSystem outputDesignFs = outputDesignPath.getFileSystem(conf);
+
+        new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
+            .write(design);
+      }
     } catch (IOException e) {
+      logger.severe("Unable to copy design file to output path.");
+    } catch (EoulsanIOException e) {
       logger.severe("Unable to copy design file to output path.");
     }
 
