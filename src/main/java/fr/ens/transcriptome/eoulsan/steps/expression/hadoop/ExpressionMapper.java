@@ -22,12 +22,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -36,8 +38,8 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
-import fr.ens.transcriptome.eoulsan.core.HadoopParameter;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
 
@@ -50,6 +52,9 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exo
 public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Expression";
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final AlignResult ar = new AlignResult();
@@ -68,10 +73,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
     final int start = ar.getLocation();
     final int stop = start + ar.getReadLength();
 
-    // System.out.println(chr + "\t" + start + "\t" + stop);
     final Set<Exon> exons = tef.findExons(chr, start, stop);
-    // System.out.println("Found " + (exons == null ? 0 : exons.size()) +
-    // " exons.");
 
     reporter.incrCounter(COUNTER_GROUP, "read total", 1);
     if (exons == null) {
@@ -108,15 +110,23 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
 
     try {
 
-      final Path indexPath =
-          new Path(HadoopParameter.getStringParameter(conf,
-              ".expression.exonsindex.path", ""));
+      final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
 
-      final FileSystem fs = indexPath.getFileSystem(conf);
-      tef.load(fs.open(indexPath));
+      if (localCacheFiles == null || localCacheFiles.length == 0)
+        throw new IOException("Unable to retrieve genome index");
+
+      if (localCacheFiles.length > 1)
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+
+      logger.info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
+
+      final File indexFile = new File(localCacheFiles[0].toString());
+      tef.load(indexFile);
 
     } catch (IOException e) {
-      System.out.println(e);
+      System.err.println(e);
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

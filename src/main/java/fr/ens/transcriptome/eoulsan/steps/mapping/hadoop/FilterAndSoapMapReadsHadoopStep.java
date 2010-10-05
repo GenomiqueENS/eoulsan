@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -207,12 +208,15 @@ public class FilterAndSoapMapReadsHadoopStep implements Step {
       conf.set(Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold", ""
           + qualityThreshold);
 
-    // Set genome reference path
-    conf
-        .set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", new Path(
-            basePath, CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX
-                + genomeId + CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX)
-            .toString());
+    // Set genome index reference path
+    final Path genomeIndex =
+        new Path(basePath, CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX
+            + genomeId + CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX);
+
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", genomeIndex
+        .toString());
+
+    DistributedCache.addCacheFile(genomeIndex.toUri(), conf);
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
