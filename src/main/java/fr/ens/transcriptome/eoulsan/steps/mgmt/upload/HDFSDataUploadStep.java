@@ -110,6 +110,9 @@ public class HDFSDataUploadStep extends DataUploadStep {
   protected FileUploader getFastaUploader(String src, String filename)
       throws IOException {
 
+    if (!this.uploadGemome)
+      return new FakeFileUploader(src, getDestURI() + "/" + filename);
+
     return getUploader(src, filename);
   }
 

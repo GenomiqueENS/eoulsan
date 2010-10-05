@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public abstract class DataUploadStep implements Step {
 
   public static final String STEP_NAME = "_upload";
+  protected boolean uploadGemome = false;
 
   private String designURI;
   private String paramURI;
@@ -268,7 +269,7 @@ public abstract class DataUploadStep implements Step {
           // genomeIndexNewFilename));
 
           // indexFile.delete();
-
+          
           genomesMap.put(genome, genomeFU.getDest());
         }
         s.getMetadata().setGenome(genomesMap.get(genome));

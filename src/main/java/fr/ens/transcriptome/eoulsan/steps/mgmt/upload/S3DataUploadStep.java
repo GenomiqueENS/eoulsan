@@ -48,13 +48,13 @@ public class S3DataUploadStep extends DataUploadStep {
   //
   // Step method
   //
-  
+
   @Override
   public String getDescription() {
 
     return "Upload data to S3 filesystem";
   }
-  
+
   //
   // Overriding methods
   //
@@ -86,6 +86,9 @@ public class S3DataUploadStep extends DataUploadStep {
   @Override
   protected FileUploader getFastaUploader(final String src,
       final String filename) throws IOException {
+
+    if (!this.uploadGemome)
+      return new FakeFileUploader(src, getDestURI() + "/" + filename);
 
     final String extension = StringUtils.extension(src);
     final S3FileUploader fu;
@@ -166,18 +169,18 @@ public class S3DataUploadStep extends DataUploadStep {
 
   }
 
-//  @Override
-//  public Design upload(final URI paramURI, final URI designURI,
-//      final URI destURI) throws EoulsanException, IOException {
-//
-//    final Design design =
-//        DesignUtils.readAndCheckDesign(FileUtils.createInputStream(new File(
-//            designURI)));
-//    setDest(destURI);
-//    upload(paramURI, design);
-//
-//    return design;
-//  }
+  // @Override
+  // public Design upload(final URI paramURI, final URI designURI,
+  // final URI destURI) throws EoulsanException, IOException {
+  //
+  // final Design design =
+  // DesignUtils.readAndCheckDesign(FileUtils.createInputStream(new File(
+  // designURI)));
+  // setDest(destURI);
+  // upload(paramURI, design);
+  //
+  // return design;
+  // }
 
   private IOException exp = null;
 
