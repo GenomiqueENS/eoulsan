@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -38,7 +39,9 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class implements DataUpload for upload data to HDFS.
@@ -158,7 +161,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
   protected void uploadFiles(final List<FileUploader> files) throws IOException {
 
-    final Map<String, String> distCpEntries = new HashMap<String, String>();
+    final Map<String, String> dataSourceDistCpEntries =
+        new HashMap<String, String>();
 
     for (FileUploader f : files) {
 
@@ -166,38 +170,56 @@ public class HDFSDataUploadStep extends DataUploadStep {
       f.upload();
 
       if (f instanceof HDFSFileUploader)
-        distCpEntries.putAll(((HDFSFileUploader) f).getDistCpEntries());
+        dataSourceDistCpEntries.putAll(((HDFSFileUploader) f)
+            .getDistCpEntries());
     }
 
     // If entries to copy
-    if (distCpEntries.size() > 0) {
+    if (dataSourceDistCpEntries.size() > 0) {
 
+      final Map<String, String> distCpEntries = new HashMap<String, String>();
+
+      // Select files to copy with DataSourceDistCp
+      for (Map.Entry<String, String> e : dataSourceDistCpEntries.entrySet()) {
+
+        if (e.getKey().startsWith("s3n:/")) {
+
+          final Path src = new Path(e.getKey());
+          final Path dest = new Path(e.getValue());
+
+          if (src.getName().equals(dest.getName())) {
+            distCpEntries.put(e.getKey(), e.getValue());
+            dataSourceDistCpEntries.remove(e.getKey());
+          }
+        }
+      }
+
+      // Copy files with DataSourceDistCp
       final DataSourceDistCp cp =
           new DataSourceDistCp(this.conf, new Path(getDestURI().toString()));
-      cp.copy(distCpEntries);
+      cp.copy(dataSourceDistCpEntries);
 
       // Create distcp object
-      // DistCp distcp = new DistCp(this.conf);
+      DistCp distcp = new DistCp(this.conf);
 
-      // // Reverse map
-      // Map<String, Set<String>> reverseEntries =
-      // Utils.reverseMap(distCpEntries);
-      //      
-      // // Prepare distcp arguments and execute distcp
-      // for (Map.Entry<String, Set<String>> e : reverseEntries.entrySet()) {
-      //
-      // final String dest = e.getKey();
-      // final Set<String> sources = e.getValue();
-      //
-      // String[] args = new String[sources.size() + 1];
-      // int i = 0;
-      // for (String src : sources)
-      // args[i++] = src;
-      //
-      // args[i] = dest;
-      //
-      // distcp.run(args);
-      // }
+      // Reverse map
+      Map<String, Set<String>> reverseEntries = Utils.reverseMap(distCpEntries);
+
+      // Prepare distcp arguments and execute distcp
+      for (Map.Entry<String, Set<String>> e : reverseEntries.entrySet()) {
+
+        final String dest = e.getKey();
+        final Set<String> sources = e.getValue();
+
+        String[] args = new String[sources.size() + 1];
+        int i = 0;
+        for (String src : sources)
+          args[i++] = src;
+
+        args[i] = dest;
+
+        distcp.run(args);
+      }
 
     }
 
