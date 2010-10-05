@@ -121,15 +121,4 @@ public class LogReader {
     this.reader = FileUtils.createBufferedReader(file);
   }
 
-  public static final void main(String[] args) throws FileNotFoundException,
-      IOException {
-
-    System.out
-        .println(new LogReader(
-            new File(
-                "/home/jourdren/shares-mimir/bioinfo/test-soap/lolo-local/soapmapreads.log"))
-            .read().toString());
-
-  }
-
 }
