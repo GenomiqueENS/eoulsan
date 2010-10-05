@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -172,8 +172,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
     // If entries to copy
     if (distCpEntries.size() > 0) {
 
-      final DistCp cp =
-          new DistCp(this.conf, new Path(getDestURI().toString()));
+      final DataSourceDistCp cp =
+          new DataSourceDistCp(this.conf, new Path(getDestURI().toString()));
       cp.copy(distCpEntries);
 
       // Create distcp object
