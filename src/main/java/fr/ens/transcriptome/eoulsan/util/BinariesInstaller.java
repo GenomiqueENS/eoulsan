@@ -86,8 +86,6 @@ public class BinariesInstaller {
     FileUtils.setReadable(outputFile, true, false);
   }
 
-  
-  
   /**
    * Install a binary bundled in the jar in /tmp
    * @param binaryFilename program to install
@@ -98,7 +96,7 @@ public class BinariesInstaller {
 
     if (!SystemUtils.isUnix())
       throw new IOException("Can only install binaries on *nix systems.");
-    
+
     String os = System.getProperty("os.name").toLowerCase();
     String arch = System.getProperty("os.arch").toLowerCase();
 
