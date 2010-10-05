@@ -26,11 +26,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
+import java.util.logging.Logger;
 
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -58,6 +57,9 @@ import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 @SuppressWarnings("deprecation")
 public class SoapMapReadsMapper implements
     Mapper<LongWritable, Text, Text, Text> {
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   public static final String COUNTER_GROUP = "Map reads with SOAP";
 
@@ -166,6 +168,33 @@ public class SoapMapReadsMapper implements
       this.writer =
           new UnSynchronizedBufferedWriter(new FileWriter(this.dataFile));
 
+      // Download genome reference
+      if (this.soapIndexZipDir == null) {
+        lock.lock();
+
+        final Path[] localCacheFiles =
+            DistributedCache.getLocalCacheFiles(conf);
+
+        if (localCacheFiles == null || localCacheFiles.length == 0)
+          throw new IOException("Unable to retrieve genome index");
+
+        if (localCacheFiles.length > 1)
+          throw new IOException(
+              "Retrieve more than one file in distributed cache");
+
+        logger.info("Genome index compressed file (from distributed cache): "
+            + localCacheFiles[0]);
+
+        logger.info("Start decompressing genome index");
+
+        this.soapIndexZipDir =
+            installSoapIndex(new File(localCacheFiles[0].toString()));
+
+        logger.info("End of the decompression of the genome index");
+
+        lock.unlock();
+      }
+
     } catch (IOException e) {
 
       this.configureException = e;
@@ -173,21 +202,18 @@ public class SoapMapReadsMapper implements
 
   }
 
-  private String getSoapIndexLocalName(final Path soapIndexPath)
+  private String getSoapIndexLocalName(final File soapIndexPath)
       throws IOException {
 
-    final FileSystem fs = soapIndexPath.getFileSystem(this.conf);
-    final FileStatus fStatus = fs.getFileStatus(soapIndexPath);
-
     return "soap-index-"
-        + fStatus.getLen() + "-" + fStatus.getModificationTime();
+        + soapIndexPath.length() + "-" + soapIndexPath.lastModified();
   }
 
-  private File installSoapIndex(final Path soapIndexPath) {
+  private File installSoapIndex(final File soapIndexFile) {
 
     try {
 
-      final String dirname = getSoapIndexLocalName(soapIndexPath);
+      final String dirname = getSoapIndexLocalName(soapIndexFile);
       final File dir = new File("/tmp", dirname);
 
       if (dir.exists())
@@ -196,19 +222,16 @@ public class SoapMapReadsMapper implements
       if (!dir.mkdirs())
         return null;
 
-      final FileSystem fs = FileSystem.get(soapIndexPath.toUri(), this.conf);
-      final InputStream is = fs.open(soapIndexPath);
-      FileUtils.unzip(is, dir);
+      FileUtils.unzip(soapIndexFile, dir);
 
       return dir;
 
     } catch (IOException e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
+
+      logger.severe("Error: " + e.getMessage());
 
       return null;
     }
-
   }
 
   @Override
@@ -219,13 +242,6 @@ public class SoapMapReadsMapper implements
 
     if (this.collector == null || this.reporter == null)
       return;
-
-    // Download genome reference
-    if (this.soapIndexZipDir == null) {
-      lock.lock();
-      this.soapIndexZipDir = installSoapIndex(new Path(this.soapIndexZipPath));
-      lock.unlock();
-    }
 
     if (this.soapIndexZipPath == null) {
       this.reporter.incrCounter(this.counterGroup,

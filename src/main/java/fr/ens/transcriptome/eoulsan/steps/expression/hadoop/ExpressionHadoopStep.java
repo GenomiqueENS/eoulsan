@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -117,8 +118,9 @@ public class ExpressionHadoopStep extends ExpressionStep {
           genomicType, exonsIndexPath, conf);
 
     // Set the path to the exons index
-    conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
-        exonsIndexPath.toString());
+    // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
+    // exonsIndexPath.toString());
+    DistributedCache.addCacheFile(exonsIndexPath.toUri(), conf);
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
