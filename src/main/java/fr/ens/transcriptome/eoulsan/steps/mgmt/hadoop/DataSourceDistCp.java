@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-public class DistCp {
+public class DataSourceDistCp {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
@@ -96,14 +96,12 @@ public class DistCp {
       final Path destPath = new Path(val.substring(tabPos + 1));
       final Configuration conf = context.getConfiguration();
 
-      System.out.println("Start copy " + srcPathname+ " to " + destPath + "\n");
-      logger.info("Start copy " + srcPathname+ " to " + destPath + "\n");
+      logger.info("Start copy " + srcPathname + " to " + destPath + "\n");
 
       PathUtils.copyInputStreamToPath(getInputStream(srcPathname, conf),
           destPath, conf);
 
-      System.out.println("End copy " + srcPathname+ " to " + destPath + "\n");
-      logger.info("End copy " + srcPathname+ " to " + destPath + "\n");
+      logger.info("End copy " + srcPathname + " to " + destPath + "\n");
     }
 
   }
@@ -131,7 +129,6 @@ public class DistCp {
 
       count++;
       final Path f = new Path(tmpInputDir, "distcp-" + count + ".cp");
-
 
       BufferedWriter bw =
           new BufferedWriter(new OutputStreamWriter(fs.create(f)));
@@ -168,7 +165,7 @@ public class DistCp {
     final Job job = new Job(jobConf, "Distcp");
 
     // Set the jar
-    job.setJarByClass(DistCp.class);
+    job.setJarByClass(DataSourceDistCp.class);
 
     // Add input path
     FileInputFormat.addInputPath(job, cpEntriesPath);
@@ -201,7 +198,12 @@ public class DistCp {
   // Constructor
   //
 
-  public DistCp(final Configuration conf, final Path jobPath) {
+  /**
+   * Public constructor.
+   * @param conf Configuration object
+   * @param jobPath the path where create job temporary file
+   */
+  public DataSourceDistCp(final Configuration conf, final Path jobPath) {
 
     if (conf == null)
       throw new NullPointerException("The configuration is null");
