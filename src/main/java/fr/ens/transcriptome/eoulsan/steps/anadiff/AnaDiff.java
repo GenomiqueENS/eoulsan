@@ -164,9 +164,6 @@ public class AnaDiff {
 
     final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 
-    System.out.println(rCondIndexes);
-    System.out.println(rCondRep);
-
     for (int i = 0; i < rCondIndexes.size(); i++) {
 
       final int index = rCondIndexes.get(i);

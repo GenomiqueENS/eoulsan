@@ -84,8 +84,6 @@ public class SoapMapReadsMapper2 extends Mapper<LongWritable, Text, Text, Text> 
       if (line == null)
         return;
 
-      // System.out.println("process line: " + line);
-
       if (line.indexOf('\t') != -1) {
 
         aln.parseResultLine(line);

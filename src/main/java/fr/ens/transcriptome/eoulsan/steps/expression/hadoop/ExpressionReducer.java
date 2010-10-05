@@ -133,7 +133,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       tef.load(fs.open(indexPath));
 
     } catch (IOException e) {
-      System.out.println(e);
+      System.err.println(e);
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
