@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -131,31 +132,37 @@ public class HDFSDataUploadStep extends DataUploadStep {
   }
 
   @Override
-  protected FileUploader getIndexUploader(String src, String filename)
-      throws IOException {
+  protected FileUploader getIndexUploader(final String src,
+      final String filename) throws IOException {
 
-    final Path srcPath = new Path(src);
-    final Path indexPath = new Path(srcPath.getParent(), filename);
+    final Path genomePath;
+
+    if (src.contains("://")) {
+      genomePath = new Path(src);
+    } else {
+      genomePath = new Path(new File(src).getAbsoluteFile().toURI().toString());
+    }
+
+    final Path indexPath = new Path(genomePath.getParent(), filename);
 
     final FileSystem indexFs = indexPath.getFileSystem(this.conf);
 
     if (indexFs.exists(indexPath))
       return getUploader(indexPath.toString(), filename);
 
-    final Path genomePath;
-
-    if (src.contains("://"))
-      genomePath = new Path(src);
-    else
-      genomePath = new Path(new File(src).getAbsoluteFile().toURI().toString());
-
     final FileSystem genomeFs = genomePath.getFileSystem(this.conf);
 
     final File indexFile;
 
-    if ("file:///".equals(genomeFs.getUri()))
-      indexFile = SOAPWrapper.makeIndexInZipFile(new File(genomePath.toUri()));
-    else
+    if ("file:///".equals(genomeFs.getUri().toString())) {
+
+      final File tmpIndexFile =
+          SOAPWrapper.makeIndexInZipFile(new File(genomePath.toUri()));
+
+      // Copy index file to genome directory
+      indexFile = new File(new Path(genomePath.getParent(), filename).toUri());
+      FileUtils.moveFile(tmpIndexFile, indexFile);
+    } else
       indexFile = SOAPWrapper.makeIndexInZipFile(genomeFs.open(genomePath));
 
     return getUploader(new Path(indexFile.toString()).toString(), filename);
