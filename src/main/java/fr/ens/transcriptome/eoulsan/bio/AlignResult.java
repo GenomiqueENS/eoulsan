@@ -71,9 +71,7 @@ public class AlignResult {
     try {
       return Integer.parseInt(this.fields.get(3));
     } catch (NumberFormatException e) {
-
-      System.out.println(fields);
-
+      System.err.println(fields);
       throw e;
     }
   }

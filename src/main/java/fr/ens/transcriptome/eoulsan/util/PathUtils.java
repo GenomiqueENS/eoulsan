@@ -1010,11 +1010,7 @@ public final class PathUtils {
   public static final boolean exists(final Path path, final Configuration conf)
       throws IOException {
 
-    // final FileSystem fs = getFileSystem(path, conf);
     final FileSystem fs = path.getFileSystem(conf);
-
-    System.out.println(fs.getName());
-    System.out.println(fs);
 
     return fs.exists(path);
   }
