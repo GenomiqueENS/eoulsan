@@ -169,18 +169,4 @@ public class FlatFasta {
     createFlatFastas(fastaFile);
   }
 
-  public static void main(String[] args) throws IOException {
-
-    File fastaFile =
-        new File("/home/jourdren/tmp/mapreduce/Ca21_chromosomes.fasta");
-    File flatDir = new File("/tmp/flatfasta");
-
-    FlatFasta ff = new FlatFasta(fastaFile, flatDir);
-
-    String s = ff.getSequence("Ca21chr1", -5, 25);
-
-    System.out.println(s + " " + s.length());
-
-  }
-
 }
