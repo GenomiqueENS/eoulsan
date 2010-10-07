@@ -45,7 +45,7 @@ public class Globals {
 
   /** The prefix of the parameters of the application. */
   public static final String PARAMETER_PREFIX =
-      "fr.ens.transcriptome" + APP_NAME_LOWER_CASE;
+      "fr.ens.transcriptome." + APP_NAME_LOWER_CASE;
 
   /** The version of the application. */
   public static final String APP_VERSION = getVersion();
