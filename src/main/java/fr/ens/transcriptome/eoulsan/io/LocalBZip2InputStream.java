@@ -33,6 +33,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
  */
 public class LocalBZip2InputStream extends InputStream {
 
+  private InputStream is;
+
   @Override
   public int available() throws IOException {
 
@@ -86,8 +88,6 @@ public class LocalBZip2InputStream extends InputStream {
 
     return is.skip(n);
   }
-
-  private InputStream is;
 
   //
   // Constructor

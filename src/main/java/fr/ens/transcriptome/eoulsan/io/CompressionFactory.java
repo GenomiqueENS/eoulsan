@@ -37,11 +37,45 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  */
 public class CompressionFactory {
 
+  public static InputStream getCompressionInputStream(final InputStream is,
+      final String contentEncoding) throws IOException {
+
+    if (contentEncoding == null)
+      throw new IOException("Content encoding is null");
+
+    if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
+      return createGZipInputStream(is);
+
+    if (".bz2".equals(contentEncoding) || "bz2".equals(contentEncoding))
+      return createBZip2InputStream(is);
+
+    throw new IOException(
+        "Unable to find a compression input stream for this content encoding: "
+            + contentEncoding);
+  }
+
+  public static OutputStream getCompressionOutputStream(final OutputStream os,
+      final String contentEncoding) throws IOException {
+
+    if (contentEncoding == null)
+      throw new IOException("Content encoding is null");
+
+    if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
+      return createGZipOutputStream(os);
+
+    if (".bz2".equals(contentEncoding) || "bz2".equals(contentEncoding))
+      return createBZip2OutputStream(os);
+
+    throw new IOException(
+        "Unable to find a compression output stream for this content encoding: "
+            + contentEncoding);
+  }
+
   //
   // InputStreams
   //
 
-  public static InputStream createGZInputStream(final InputStream is)
+  public static InputStream createGZipInputStream(final InputStream is)
       throws IOException {
 
     return new GZIPInputStream(is);
@@ -69,6 +103,20 @@ public class CompressionFactory {
       throws IOException {
 
     return new GZIPOutputStream(os);
+  }
+
+  public static OutputStream createBZip2OutputStream(final OutputStream os)
+      throws IOException {
+
+    if (SystemUtils
+        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream"))
+      return new LocalBZip2OutputStream(os);
+
+    if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec"))
+      return new HadoopBZip2OutputStream(os);
+
+    throw new IOException(
+        "Unable to find a class to create a BZip2InputStream.");
   }
 
 }
