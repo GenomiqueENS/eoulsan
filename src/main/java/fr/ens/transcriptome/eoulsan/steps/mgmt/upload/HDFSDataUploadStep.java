@@ -78,7 +78,19 @@ public class HDFSDataUploadStep extends DataUploadStep {
   private FileUploader getUploader(final String src, final String filename)
       throws IOException {
 
-    final FileUploader result = new HDFSFileUploader(this.conf);
+    return getUploader(new HDFSFileUploader(this.conf), src, filename);
+  }
+
+  /**
+   * This method define the default uploader for file to HDFS.
+   * @param FileUploader FileUploader to use
+   * @param src source data source
+   * @param filename output filename
+   * @return a FileUploader object
+   * @throws IOException if an error occurs while uploading data
+   */
+  private FileUploader getUploader(final FileUploader uploader,
+      final String src, final String filename) {
 
     final String outputFilename;
     final String ext = StringUtils.extension(filename);
@@ -89,10 +101,10 @@ public class HDFSDataUploadStep extends DataUploadStep {
     else
       outputFilename = filename;
 
-    result.init(DataSourceUtils.identifyDataSource(src), getDestURI()
+    uploader.init(DataSourceUtils.identifyDataSource(src), getDestURI()
         + "/" + outputFilename);
 
-    return result;
+    return uploader;
   }
 
   //
@@ -127,7 +139,26 @@ public class HDFSDataUploadStep extends DataUploadStep {
   protected FileUploader getFastqUploader(String src, String filename)
       throws IOException {
 
-    return getUploader(src, filename);
+    final FileUploader result = new HDFSTfqFileUploader(this.conf);
+
+    String outputFilename;
+    final String ext = StringUtils.extension(filename);
+
+    if (Common.GZIP_EXTENSION.equals(ext) || Common.BZIP2_EXTENSION.equals(ext))
+      outputFilename =
+          StringUtils.filenameWithoutCompressionExtension(filename);
+    else
+      outputFilename = filename;
+
+    outputFilename =
+        StringUtils.filenameWithoutExtension(outputFilename)
+            + Common.TFQ_EXTENSION;
+
+    result.init(DataSourceUtils.identifyDataSource(src), getDestURI()
+        + "/" + outputFilename);
+
+    return result;
+
   }
 
   @Override
