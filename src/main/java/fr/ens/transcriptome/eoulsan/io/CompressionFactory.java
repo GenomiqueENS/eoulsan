@@ -37,6 +37,13 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  */
 public class CompressionFactory {
 
+  /**
+   * Get the compression input stream required by a content encoding
+   * @param is the input stream
+   * @param contentEncoding the content encoding
+   * @return an input stream
+   * @throws IOException if an error occurs while creating the input stream
+   */
   public static InputStream getCompressionInputStream(final InputStream is,
       final String contentEncoding) throws IOException {
 
@@ -54,6 +61,13 @@ public class CompressionFactory {
             + contentEncoding);
   }
 
+  /**
+   * Get the compression output stream required by a content encoding
+   * @param os the output stream
+   * @param contentEncoding the content encoding
+   * @return an output stream
+   * @throws IOException if an error occurs while creating the input stream
+   */
   public static OutputStream getCompressionOutputStream(final OutputStream os,
       final String contentEncoding) throws IOException {
 
@@ -75,12 +89,24 @@ public class CompressionFactory {
   // InputStreams
   //
 
+  /**
+   * Create a GZip input stream.
+   * @param is the input stream to decompress
+   * @return a decompressed input stream
+   * @throws IOException if an error occurs while creating the input stream
+   */
   public static InputStream createGZipInputStream(final InputStream is)
       throws IOException {
 
     return new GZIPInputStream(is);
   }
 
+  /**
+   * Create a BZip2 input stream.
+   * @param is the input stream to decompress
+   * @return a decompressed input stream
+   * @throws IOException if an error occurs while creating the input stream
+   */
   public static InputStream createBZip2InputStream(final InputStream is)
       throws IOException {
 
@@ -99,12 +125,24 @@ public class CompressionFactory {
   // OutputStream
   //
 
+  /**
+   * Create a GZip output stream.
+   * @param os the output stream to compress
+   * @return a compressed output stream
+   * @throws IOException if an error occurs while creating the output stream
+   */
   public static OutputStream createGZipOutputStream(final OutputStream os)
       throws IOException {
 
     return new GZIPOutputStream(os);
   }
 
+  /**
+   * Create a BZip2 output stream.
+   * @param os the output stream to compress
+   * @return a compressed output stream
+   * @throws IOException if an error occurs while creating the output stream
+   */
   public static OutputStream createBZip2OutputStream(final OutputStream os)
       throws IOException {
 
