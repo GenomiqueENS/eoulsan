@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -155,12 +156,12 @@ public class FilterAndSoapMapReadsHadoopStep implements Step {
     try {
       final long startTime = System.currentTimeMillis();
 
-      final String log =
+      final JobsResults jobsResults =
           MapReduceUtils.submitAndWaitForRunningJobs(jobconfs,
               CommonHadoop.CHECK_COMPLETION_TIME,
               FilterAndSoapMapReadsMapper.COUNTER_GROUP);
 
-      return new StepResult(this, startTime, log);
+      return jobsResults.getStepResult(this, startTime);
 
     } catch (IOException e) {
 
@@ -233,20 +234,22 @@ public class FilterAndSoapMapReadsHadoopStep implements Step {
             CommonHadoop.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
-        + Runtime.getRuntime().availableProcessors());
+    // conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
+    // + Runtime.getRuntime().availableProcessors());
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
 
     // timeout
-    conf.set("mapred.task.timeout", "" + 20 * 60 * 1000);
+    conf.set("mapred.task.timeout", "" + 30 * 60 * 1000);
+
+    // No JVM task resuse
+    conf.setNumTasksToExecutePerJvm(1);
 
     // Set the jar
     conf.setJarByClass(FilterAndSoapMapReadsHadoopStep.class);
 
     // Set input path
-
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format

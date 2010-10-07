@@ -54,7 +54,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.JobsResults;
+import fr.ens.transcriptome.eoulsan.util.OldAPIJobsResults;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -268,15 +269,15 @@ public class ExpressionHadoopStep extends ExpressionStep {
         jobsRunning.put(s, jc.submitJob(jconf));
       }
 
-      final String log =
-          MapReduceUtils.waitForRunningJobs(jobsRunning.values(),
+      final JobsResults jobsResults =
+          new OldAPIJobsResults(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME,
               ExpressionMapper.COUNTER_GROUP);
 
       createFinalExpressionTranscriptsFile(basePath, jobsRunning,
           new Configuration());
 
-      return new StepResult(this, startTime, log);
+      return jobsResults.getStepResult(this, startTime);
 
     } catch (IOException e) {
 
