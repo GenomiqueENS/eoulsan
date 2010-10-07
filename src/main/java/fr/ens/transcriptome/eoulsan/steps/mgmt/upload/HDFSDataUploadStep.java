@@ -37,8 +37,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
@@ -112,6 +114,14 @@ public class HDFSDataUploadStep extends DataUploadStep {
   //
 
   @Override
+  public void configure(final Set<Parameter> stepParameters,
+      final Set<Parameter> globalParameters) throws EoulsanException {
+
+    CommonHadoop.setAmazonS3Credentials(this.conf, globalParameters);
+    super.configure(stepParameters, globalParameters);
+  }
+
+  @Override
   protected FileUploader getDesignUploader(String src, String filename)
       throws IOException {
 
@@ -139,26 +149,11 @@ public class HDFSDataUploadStep extends DataUploadStep {
   protected FileUploader getFastqUploader(String src, String filename)
       throws IOException {
 
-    final FileUploader result = new HDFSTfqFileUploader(this.conf);
+    final String s = StringUtils.filenameWithoutCompressionExtension(filename);
+    final String out =
+        StringUtils.filenameWithoutExtension(s) + Common.TFQ_EXTENSION;
 
-    String outputFilename;
-    final String ext = StringUtils.extension(filename);
-
-    if (Common.GZIP_EXTENSION.equals(ext) || Common.BZIP2_EXTENSION.equals(ext))
-      outputFilename =
-          StringUtils.filenameWithoutCompressionExtension(filename);
-    else
-      outputFilename = filename;
-
-    outputFilename =
-        StringUtils.filenameWithoutExtension(outputFilename)
-            + Common.TFQ_EXTENSION;
-
-    result.init(DataSourceUtils.identifyDataSource(src), getDestURI()
-        + "/" + outputFilename);
-
-    return result;
-
+    return getUploader(src, out);
   }
 
   @Override
@@ -259,7 +254,7 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
   }
 
-  private void hadoopDistCp(Map<String, String> entries) {
+  private void hadoopDistCp(Map<String, String> entries) throws IOException {
 
     if (entries == null || entries.size() == 0)
       return;
@@ -285,7 +280,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
       // Copy the entries
       logger.info("Hadoop DistCp arguments: " + Arrays.toString(args));
-      distcp.run(args);
+      if (distcp.run(args)!=0)
+        throw new IOException("Unable to copy file with distcp.");
     }
   }
 
