@@ -33,66 +33,30 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * This class implements a Fastq reader.
+ * This class implements a TFQ reader.
  * @author Laurent Jourdren
  */
-public class FastQReader extends ReadSequenceReader {
+public class TFQReader extends ReadSequenceReader {
 
   private BufferedReader reader;
-  private final StringBuilder sb = new StringBuilder();
 
-  /**
-   * Read the next entry in the stream.
-   * @return false if there is no more entry to read
-   * @throws IOException if an error occurs while reading file
-   */
-  @Override
-  public boolean readEntry() throws IOException, BadBioEntryException {
-
-    String line = null;
-    int count = 0;
-
-    while ((line = this.reader.readLine()) != null) {
-
-      // Trim the line
-      final String trim = line.trim();
-
-      // discard empty lines
-      if ("".equals(trim))
-        continue;
-
-      count++;
-      sb.append(trim);
-
-      if (count == 1 && trim.charAt(0) != '@')
-        throw new BadBioEntryException(
-            "Invalid Fastq file. First line don't start with '@'", line);
-
-      if (count == 3 && trim.charAt(0) != '+')
-        throw new BadBioEntryException(
-            "Invalid Fastq file. Third line don't start with '@'", line);
-
-      if (count == 4) {
-
-        // Fill the ReadSequence object
-        parseFastQ(sb.toString());
-        sb.setLength(0);
-        return true;
-      }
-      sb.append('\n');
-    }
-
-    return false;
-  }
-
-  /**
-   * Close the stream.
-   * @throws IOException
-   */
   @Override
   public void close() throws IOException {
 
     this.reader.close();
+  }
+
+  @Override
+  public boolean readEntry() throws IOException, BadBioEntryException {
+
+    final String line = this.reader.readLine();
+
+    if (line == null)
+      return false;
+
+    parse(line);
+
+    return true;
   }
 
   //
@@ -103,7 +67,7 @@ public class FastQReader extends ReadSequenceReader {
    * Public constructor
    * @param is InputStream to use
    */
-  public FastQReader(final InputStream is) {
+  public TFQReader(final InputStream is) {
 
     if (is == null)
       throw new NullPointerException("InputStream is null");
@@ -115,7 +79,7 @@ public class FastQReader extends ReadSequenceReader {
    * Public constructor
    * @param file File to use
    */
-  public FastQReader(final File file) throws FileNotFoundException {
+  public TFQReader(final File file) throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");

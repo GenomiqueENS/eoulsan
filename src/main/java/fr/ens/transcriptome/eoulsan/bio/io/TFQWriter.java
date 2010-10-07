@@ -31,30 +31,23 @@ import java.io.Writer;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * this class implements a FastQ writer.
+ * this class implements a TFQ writer.
  * @author Laurent Jourdren
  */
-public class FastQWriter extends ReadSequenceWriter {
+public class TFQWriter extends ReadSequenceWriter {
 
   private Writer writer;
 
-  /**
-   * Write the current entry.
-   * @throws IOException if an error occurs while writing data
-   */
+  @Override
+  public void close() throws IOException {
+
+    this.writer.close();
+  }
+
   @Override
   public void write() throws IOException {
 
-    this.writer.write(toFastQ());
-  }
-
-  /**
-   * Close the writer
-   */
-  @Override
-  public void close() {
-
-    this.close();
+    this.writer.write(toTFQ());
   }
 
   //
@@ -65,7 +58,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param writer Writer to use
    */
-  public FastQWriter(final Writer writer) {
+  public TFQWriter(final Writer writer) {
 
     if (writer == null)
       throw new NullPointerException("The writer is null.");
@@ -77,7 +70,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param os OutputStream to use
    */
-  public FastQWriter(final OutputStream os) throws FileNotFoundException {
+  public TFQWriter(final OutputStream os) throws FileNotFoundException {
 
     this.writer = FileUtils.createBufferedWriter(os);
   }
@@ -86,7 +79,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public FastQWriter(final File outputFile) throws FileNotFoundException {
+  public TFQWriter(final File outputFile) throws FileNotFoundException {
 
     this.writer = FileUtils.createBufferedWriter(outputFile);
   }
@@ -95,7 +88,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public FastQWriter(final String outputFilename) throws FileNotFoundException {
+  public TFQWriter(final String outputFilename) throws FileNotFoundException {
 
     this.writer = FileUtils.createBufferedWriter(outputFilename);
   }
