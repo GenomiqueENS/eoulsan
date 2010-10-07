@@ -22,10 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
@@ -33,7 +35,7 @@ import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
-import fr.ens.transcriptome.eoulsan.core.HadoopParameter;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
@@ -48,7 +50,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
   public static final String COUNTER_GROUP = "Expression";
-  
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
@@ -106,8 +111,8 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
     final Transcript transcript = tef.getTranscript(parentId);
 
     if (transcript == null) {
-      reporter
-          .incrCounter(COUNTER_GROUP, "Parent Id not found in exon range", 1);
+      reporter.incrCounter(COUNTER_GROUP, "Parent Id not found in exon range",
+          1);
       return;
     }
 
@@ -126,16 +131,25 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
     try {
 
-      final Path indexPath =
-          new Path(HadoopParameter.getStringParameter(conf,
-              ".expression.exonsindex.path", ""));
-      final FileSystem fs = indexPath.getFileSystem(conf);
-      tef.load(fs.open(indexPath));
+      final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+
+      if (localCacheFiles == null || localCacheFiles.length == 0)
+        throw new IOException("Unable to retrieve genome index");
+
+      if (localCacheFiles.length > 1)
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+
+      logger.info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
+
+      final File indexFile = new File(localCacheFiles[0].toString());
+      tef.load(indexFile);
 
     } catch (IOException e) {
-      System.err.println(e);
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      logger.severe("Error while loading annotation data in Reducer: "
+          + e.getMessage());
     }
 
   }
