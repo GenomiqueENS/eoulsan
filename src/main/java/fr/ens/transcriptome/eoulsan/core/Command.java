@@ -164,4 +164,24 @@ public class Command {
     return this.stepsMap.get(stepName);
   }
 
+  /**
+   * Add a global parameter.
+   * @param key key of the parameter
+   * @param value value of the parameter
+   */
+  public void addGlobalParameter(final String key, final String value) {
+
+    if (key == null || value == null)
+      return;
+
+    final String keyTrimmed = key.trim();
+    final String valueTrimmed = value.trim();
+
+    if ("".equals(keyTrimmed))
+      return;
+
+    final Parameter p = new Parameter(keyTrimmed, valueTrimmed);
+    this.globalParameters.add(p);
+  }
+
 }

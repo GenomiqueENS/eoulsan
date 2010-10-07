@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -42,6 +43,11 @@ public class CommonHadoop extends Common {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
+  public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
+      "fs.s3n.awsSecretAccessKey";
+  public static final String AWS_S3_ACCESSKEY_ID_PARAM_KEY =
+      "fs.s3n.awsAccessKeyId";
 
   public static final int CHECK_COMPLETION_TIME = 5000;
   public static final String SAMPLE_FILE_PREFIX = "sample_";
@@ -131,6 +137,28 @@ public class CommonHadoop extends Common {
       return filePath;
 
     return null;
+  }
+
+  /**
+   * Set the keys to allow access to Amazon S3 service
+   * @param conf Hadoop configuration
+   * @param globalParameters Command global parameters
+   */
+  public static final void setAmazonS3Credentials(final Configuration conf,
+      Set<Parameter> globalParameters) {
+
+    if (conf == null || globalParameters == null)
+      return;
+
+    for (Parameter p : globalParameters) {
+
+      if (AWS_S3_ACCESSKEY_ID_PARAM_KEY.equals(p.getName()))
+        conf.set(AWS_S3_ACCESSKEY_ID_PARAM_KEY, p.getValue());
+
+      if (AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME.equals(p.getName()))
+        conf.set(AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME, p.getValue());
+    }
+
   }
 
 }
