@@ -33,11 +33,42 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSource;
  */
 public interface FileUploader {
 
+  /**
+   * Init the FileUploader.
+   * @param dataSource source
+   * @param dest destination
+   */
   void init(DataSource dataSource, String dest);
+
+  /**
+   * Prepare upload.
+   * @throws IOException if an error occurs while preparing the upload
+   */
   void prepare() throws IOException;
+
+  /**
+   * Upload data.
+   * @throws IOException if an error occurs while uploading
+   */
   void upload() throws IOException;
+
+  /**
+   * Create outputStream for directly create output stream.
+   * @return a new OutputStream
+   * @throws IOException if an error occurs while creating the outputStream
+   */
   OutputStream createUploadOutputStream() throws IOException;
+
+  /**
+   * Get the source.
+   * @return the source
+   */
   String getSrc();
+
+  /**
+   * Get the destination.
+   * @return the destination
+   */
   String getDest();
-  
+
 }
