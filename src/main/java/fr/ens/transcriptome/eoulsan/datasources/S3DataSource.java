@@ -100,7 +100,7 @@ public final class S3DataSource implements DataSource {
       final String extension = StringUtils.compressionExtension(this.pathname);
 
       if (Common.GZIP_EXTENSION.equals(extension))
-        return CompressionFactory.createGZInputStream(is);
+        return CompressionFactory.createGZipInputStream(is);
 
       if (Common.BZIP2_EXTENSION.equals(extension))
         return CompressionFactory.createBZip2InputStream(is);
