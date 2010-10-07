@@ -119,7 +119,34 @@ public class StepResult {
   /**
    * Public constructor.
    * @param step the step for this result
+   * @param startTime the time of the start of the step
    * @param success true if the step is successful
+   * @param logMsg log message
+   */
+  public StepResult(final Step step, final boolean success,
+      final long startTime, final String logMsg) {
+
+    this(step, success, createLogMessage(startTime, logMsg));
+  }
+  
+  /**
+   * Public constructor.
+   * @param step the step for this result
+   * @param startTime the time of the start of the step
+   * @param success true if the step is successful
+   * @param logMsg log message
+   */
+  public StepResult(final Step step, final boolean success,
+      final long startTime, final String logMsg, final String errorMsg) {
+
+    this(step, success, createLogMessage(startTime, logMsg));
+    this.errorMessage= errorMsg;
+  }
+
+  /**
+   * Public constructor for a successful step
+   * @param step the step for this result
+   * @param startTime the time of the start of the step
    * @param logMsg log message
    */
   public StepResult(final Step step, final long startTime, final String logMsg) {
