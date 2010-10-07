@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.filecache.DistributedCache;
@@ -63,6 +64,8 @@ public class SoapMapReadsMapper implements
 
   public static final String COUNTER_GROUP = "Map reads with SOAP";
 
+  private static final String END_DECOMPRESSION_FILE = "unzip.end";
+
   private final String counterGroup = getCounterGroup();
 
   private IOException configureException;
@@ -79,6 +82,7 @@ public class SoapMapReadsMapper implements
   private OutputCollector<Text, Text> collector;
   private Reporter reporter;
   private JobConf conf;
+  private int fastqEntries;
   private static final ExecLock lock = new ExecLock("soap");
 
   protected String getCounterGroup() {
@@ -106,6 +110,7 @@ public class SoapMapReadsMapper implements
 
     this.writer.write(readSequence.toFastQ());
     reporter.incrCounter(this.counterGroup, Common.SOAP_INPUT_READS_COUNTER, 1);
+    this.fastqEntries++;
 
     if (this.reporter == null && reporter != null)
       this.reporter = reporter;
@@ -116,6 +121,8 @@ public class SoapMapReadsMapper implements
 
   @Override
   public void configure(final JobConf conf) {
+
+    logger.info("Start of configure()");
 
     this.conf = conf;
 
@@ -128,11 +135,6 @@ public class SoapMapReadsMapper implements
       // Get SOAP index zip file path
       this.soapIndexZipPath =
           conf.get(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath");
-
-      if (this.soapIndexZipPath == null) {
-
-        throw new IOException("The SOAP index zip file path is not set");
-      }
 
       final String unmapChunkFilesDir =
           conf.get(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir");
@@ -157,6 +159,7 @@ public class SoapMapReadsMapper implements
 
       if (this.nbSoapThreads > Runtime.getRuntime().availableProcessors())
         this.nbSoapThreads = Runtime.getRuntime().availableProcessors();
+      logger.info("Use SOAP with " + this.nbSoapThreads + " threads option");
 
       this.unmapFilesDirPath = new Path(unmapChunkFilesDir);
 
@@ -170,7 +173,6 @@ public class SoapMapReadsMapper implements
 
       // Download genome reference
       if (this.soapIndexZipDir == null) {
-        lock.lock();
 
         final Path[] localCacheFiles =
             DistributedCache.getLocalCacheFiles(conf);
@@ -182,24 +184,60 @@ public class SoapMapReadsMapper implements
           throw new IOException(
               "Retrieve more than one file in distributed cache");
 
+        // Get the local genome index zip file
+        final File soapLocalIndexZipFile =
+            new File(localCacheFiles[0].toString());
+
         logger.info("Genome index compressed file (from distributed cache): "
-            + localCacheFiles[0]);
+            + soapLocalIndexZipFile);
 
-        logger.info("Start decompressing genome index");
+        // Test if the decompression of the index is ok
 
-        this.soapIndexZipDir =
-            installSoapIndex(new File(localCacheFiles[0].toString()));
+        final File endUnzipFile =
+            new File("/tmp/" + getSoapIndexLocalName(soapLocalIndexZipFile),
+                END_DECOMPRESSION_FILE);
 
-        logger.info("End of the decompression of the genome index");
+        if (!endUnzipFile.exists()) {
 
-        lock.unlock();
+          lock.lock();
+
+          logger.info("Start decompressing genome index");
+
+          this.soapIndexZipDir = installSoapIndex(soapLocalIndexZipFile);
+
+          final boolean resultCreationEndUnzipFile =
+              endUnzipFile.createNewFile();
+
+          lock.unlock();
+
+          // Error can't unzip genome index
+          if (this.soapIndexZipDir == null) {
+            logger.info("soapIndexZipDir is null");
+            throw new IOException("The SOAP index zip file path is not set");
+          }
+
+          logger.info("soapIndexZipDir: " + this.soapIndexZipDir);
+          logger.info("soapIndexZipDir content: "
+              + Arrays.toString(this.soapIndexZipDir.list()));
+
+          if (!resultCreationEndUnzipFile)
+            throw new IOException("Unable to create end decompression file");
+
+          logger.info("End of the decompression of the genome index");
+
+        } else {
+          logger.info("The genome index has been already unzipped");
+          this.soapIndexZipDir = endUnzipFile.getParentFile();
+        }
       }
 
     } catch (IOException e) {
 
+      logger.severe("Error: " + e.getMessage());
       this.configureException = e;
     }
 
+    logger.info("End of configure()");
   }
 
   private String getSoapIndexLocalName(final File soapIndexPath)
@@ -209,44 +247,44 @@ public class SoapMapReadsMapper implements
         + soapIndexPath.length() + "-" + soapIndexPath.lastModified();
   }
 
-  private File installSoapIndex(final File soapIndexFile) {
+  private File installSoapIndex(final File soapIndexFile) throws IOException {
 
-    try {
+    final String dirname = getSoapIndexLocalName(soapIndexFile);
+    final File dir = new File("/tmp", dirname);
 
-      final String dirname = getSoapIndexLocalName(soapIndexFile);
-      final File dir = new File("/tmp", dirname);
-
-      if (dir.exists())
-        return dir;
-
-      if (!dir.mkdirs())
-        return null;
-
-      FileUtils.unzip(soapIndexFile, dir);
-
+    if (dir.exists()) {
+      logger.info("The genome index has been already decompressed");
       return dir;
-
-    } catch (IOException e) {
-
-      logger.severe("Error: " + e.getMessage());
-
-      return null;
     }
+
+    if (!dir.mkdirs())
+      return null;
+
+    FileUtils.unzip(soapIndexFile, dir);
+
+    return dir;
   }
 
   @Override
   public final void close() throws IOException {
 
+    logger.info("Start of close() of the mapper.");
     // Close the data file
     this.writer.close();
+
+    logger.info(this.fastqEntries
+        + " fastq entries wrote in input file for SOAP.");
 
     if (this.collector == null || this.reporter == null)
       return;
 
     if (this.soapIndexZipPath == null) {
-      this.reporter.incrCounter(this.counterGroup,
-          "ERROR CAN'T INSTALL SOAP INDEX", 1);
-      return;
+
+      throw new IOException("SOAP index was not installed");
+
+      // this.reporter.incrCounter(this.counterGroup,
+      // "ERROR CAN'T INSTALL SOAP INDEX", 1);
+      // return;
     }
 
     final File outputFile =
@@ -255,13 +293,24 @@ public class SoapMapReadsMapper implements
     final File unmapFile =
         FileUtils.createTempFile(this.unmapChunkPrefix, ".fasta");
 
+    this.reporter.setStatus("Wait free JVM for running SOAP");
+    final long waitStartTime = System.currentTimeMillis();
+
     ProcessUtils.waitRandom(5000);
     lock.lock();
     ProcessUtils.waitUntilExecutableRunning("soap");
+
+    logger.info("Wait "
+        + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+            - waitStartTime) + " before running SOAP");
+
+    this.reporter.setStatus("Run SOAP");
+
     SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile, unmapFile,
         this.soapArgs, this.nbSoapThreads);
     lock.unlock();
 
+    this.reporter.setStatus("Parse SOAP results");
     parseSOAPResults(outputFile, unmapFile, this.collector, this.reporter);
 
     // Remove temporary files
@@ -269,6 +318,7 @@ public class SoapMapReadsMapper implements
     // unmapFile.delete();
     this.dataFile.delete();
 
+    logger.info("End of close() of the mapper.");
   }
 
   private final void parseSOAPResults(final File resultFile,
@@ -289,11 +339,15 @@ public class SoapMapReadsMapper implements
 
     String lastSequenceId = null;
 
+    int entriesParsed = 0;
+
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
       if ("".equals(trimmedLine))
         continue;
+
+      entriesParsed++;
 
       aln.parseResultLine(trimmedLine);
       reporter.incrCounter(this.counterGroup, "soap alignments", 1);
@@ -316,6 +370,8 @@ public class SoapMapReadsMapper implements
 
     readerResults.close();
 
+    logger.info(entriesParsed + " entries parsed in SOAP output file");
+
     // Parse unmap
     final BufferedReader readerUnmap =
         FileUtils.createBufferedReader(unmapFile);
@@ -329,6 +385,7 @@ public class SoapMapReadsMapper implements
 
     // Return unmaps reads
     reporter.incrCounter(this.counterGroup, "soap unmap reads", countUnMap);
+    logger.info(countUnMap + " entries parsed in SOAP Unmap output file");
 
     // Move unmap file to HDFS
     final Path unmapPath =
