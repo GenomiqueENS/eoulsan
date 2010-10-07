@@ -126,9 +126,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       tef.load(indexFile);
 
     } catch (IOException e) {
-      System.err.println(e);
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.severe("Error while loading annotation data in Mapper: " + e.getMessage());
     }
 
   }
