@@ -47,8 +47,8 @@ public class CompressionFactory {
   public static InputStream getCompressionInputStream(final InputStream is,
       final String contentEncoding) throws IOException {
 
-    if (contentEncoding == null)
-      throw new IOException("Content encoding is null");
+    if (contentEncoding == null || "".equals(contentEncoding))
+      return is;
 
     if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
       return createGZipInputStream(is);
@@ -71,8 +71,8 @@ public class CompressionFactory {
   public static OutputStream getCompressionOutputStream(final OutputStream os,
       final String contentEncoding) throws IOException {
 
-    if (contentEncoding == null)
-      throw new IOException("Content encoding is null");
+    if (contentEncoding == null || "".equals(contentEncoding))
+      return os;
 
     if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
       return createGZipOutputStream(os);
