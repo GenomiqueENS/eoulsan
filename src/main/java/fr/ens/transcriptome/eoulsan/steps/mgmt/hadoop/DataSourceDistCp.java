@@ -24,7 +24,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,12 +39,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.CopyDataSource;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSourceDistCp {
 
@@ -56,25 +53,6 @@ public class DataSourceDistCp {
 
   public static final class DistCpMapper extends
       Mapper<LongWritable, Text, Text, Text> {
-
-    private static final InputStream getInputStream(final String pathname,
-        final Configuration conf) throws IOException {
-
-      final Path path = new Path(pathname);
-      final FileSystem fs = path.getFileSystem(conf);
-
-      final InputStream is = fs.open(path);
-
-      final String extension = StringUtils.compressionExtension(pathname);
-
-      if (Common.GZIP_EXTENSION.equals(extension))
-        return CompressionFactory.createGZipInputStream(is);
-
-      if (Common.BZIP2_EXTENSION.equals(extension))
-        return CompressionFactory.createBZip2InputStream(is);
-
-      return is;
-    }
 
     /*
      * (non-Javadoc)
@@ -95,11 +73,12 @@ public class DataSourceDistCp {
       final String srcPathname = val.substring(0, tabPos);
       final Path destPath = new Path(val.substring(tabPos + 1));
       final Configuration conf = context.getConfiguration();
+      final FileSystem fs = destPath.getFileSystem(conf);
 
       logger.info("Start copy " + srcPathname + " to " + destPath + "\n");
 
-      PathUtils.copyInputStreamToPath(getInputStream(srcPathname, conf),
-          destPath, conf);
+      new CopyDataSource(srcPathname, destPath.toString()).copy(fs
+          .create(destPath));
 
       logger.info("End copy " + srcPathname + " to " + destPath + "\n");
     }
@@ -151,6 +130,8 @@ public class DataSourceDistCp {
     PathUtils.fullyDelete(tmpInputDir, conf);
     PathUtils.fullyDelete(tmpOutputDir, conf);
 
+    if (!job.isSuccessful())
+      throw new IOException("Unable to copy files using DataSourceDistCp.");
   }
 
   private static Job createJobConf(final Configuration parentConf,

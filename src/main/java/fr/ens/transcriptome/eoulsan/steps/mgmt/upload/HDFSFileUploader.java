@@ -36,7 +36,6 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This class allow to upload a file to HDFS.
@@ -70,17 +69,24 @@ public class HDFSFileUploader implements FileUploader {
   @Override
   public void upload() throws IOException {
 
-    if (this.outputStreamMode)
+    if (this.outputStreamMode) {
+      logger.info("Copy [outputStream] to " + this.dest);
       return;
-
-    logger.info("Copy " + this.src + " to " + this.dest);
+    }
 
     if (this.src != null
-        && this.src.getSourceInfo().startsWith(Common.S3_PROTOCOL + "://"))
+        && this.src.getSourceInfo().startsWith(Common.S3_PROTOCOL + "://")) {
+
+      logger.info("Copy [distrituted] " + this.src + " to " + this.dest);
       this.distCp.put(this.src.getSourceInfo(), this.dest);
-    else
-      PathUtils.copyInputStreamToPath(this.src.getInputStream(), new Path(
-          this.dest), this.conf);
+    } else {
+      logger.info("Copy [standard] " + this.src + " to " + this.dest);
+      final CopyDataSource cds = new CopyDataSource(this.src, this.dest);
+
+      final Path destPath = new Path(this.dest);
+      FileSystem fs = destPath.getFileSystem(conf);
+      cds.copy(fs.create(destPath));
+    }
 
   }
 
