@@ -119,6 +119,9 @@ public class HadoopExecAction implements Action {
 
       // Create command object
       final Command c = new Command();
+      c.addGlobalParameter("fs.s3n.awsAccessKeyId", "AKIAJPXBAOLESJ2TOABA");
+      c.addGlobalParameter("fs.s3n.awsSecretAccessKey",
+          "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");
 
       // Add init global logger Step
       c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
@@ -133,6 +136,7 @@ public class HadoopExecAction implements Action {
       // Parse param file
       final ParamParser pp =
           new ParamParser(PathUtils.createInputStream(paramPath, conf));
+
       pp.parse(c);
 
       // Add download Step
