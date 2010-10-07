@@ -57,6 +57,21 @@ public class ReadSequence extends Sequence {
     this.quality = quality;
   }
 
+  /**
+   * Set the ReadSequence with the values of another readsequence
+   * @param rs ReadSequence to use to set the values of this ReadSequence
+   */
+  public final void set(final ReadSequence rs) {
+
+    if (rs == null)
+      return;
+
+    this.setId(rs.getId());
+    this.setName(rs.getName());
+    this.setSequence(rs.getSequence());
+    this.setQuality(rs.getQuality());
+  }
+
   //
   // Other methods
   // 
