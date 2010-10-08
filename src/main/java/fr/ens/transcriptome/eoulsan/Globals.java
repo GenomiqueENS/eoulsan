@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -121,6 +122,13 @@ public class Globals {
 
   public static final String DEFAULT_FILE_ENCODING = "UTF-8";
 
+  /** Default locale of the application. */
+  public static final Locale DEFAULT_LOCALE = Locale.US;
+
+  //
+  // Methods
+  //
+
   private static String getVersion() {
 
     String s = getManifestProperty("Specification-Version");
@@ -178,6 +186,14 @@ public class Globals {
       manifestProperties.load(is);
     } catch (IOException e) {
     }
+  }
+
+  /**
+   * Set the default Local of the application
+   */
+  public static void setDefaultLocale() {
+    
+    Locale.setDefault(DEFAULT_LOCALE);
   }
 
   //
