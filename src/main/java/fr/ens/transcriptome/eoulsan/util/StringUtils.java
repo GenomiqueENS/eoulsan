@@ -271,7 +271,7 @@ public final class StringUtils {
    * @return the array with the new values
    */
   public static final String[] fastSplit(final String s, final String[] array) {
-    
+
     return fastSplit(s, array, false);
   }
 
@@ -528,6 +528,33 @@ public final class StringUtils {
       return null;
     }
 
+  }
+
+  /**
+   * Get a file size in a human readable way
+   * @param bytes size of a file
+   * @return a string with the size of the file
+   */
+  public static final String sizeToHumanReadable(final long bytes) {
+
+    final double ki = 1024;
+    final double mi = ki * 1024;
+    final double gi = mi * 1024;
+    final double ti = gi * 1024;
+
+    if (bytes < ki)
+      return String.format("%.2f B", bytes);
+
+    if (bytes < mi)
+      return String.format("%.2f KiB", bytes / ki);
+
+    if (bytes < gi)
+      return String.format("%.2f MiB", bytes / mi);
+
+    if (bytes < ti)
+      return String.format("%.2f GiB", bytes / gi);
+
+    return String.format("%.2f TiB", bytes / ti);
   }
 
 }
