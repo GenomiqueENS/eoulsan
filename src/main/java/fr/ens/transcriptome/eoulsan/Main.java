@@ -37,6 +37,9 @@ public class Main {
    */
   public static void main(final String[] args) {
 
+    // Set the default local for all the application
+    Globals.setDefaultLocale();
+
     if (SystemUtils.isHadoop())
       MainHadoop.main(args);
     else
