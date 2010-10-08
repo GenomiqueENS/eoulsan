@@ -72,29 +72,38 @@ public class DataSourceDistCp {
       if (tabPos == -1)
         return;
 
-      final String srcPathname = val.substring(0, tabPos);
-      final Path destPath = new Path(val.substring(tabPos + 1));
       final Configuration conf = context.getConfiguration();
-      final FileSystem fs = destPath.getFileSystem(conf);
 
-      logger.info("Start copy " + srcPathname + " to " + destPath + "\n");
+      final String srcPathname = val.substring(0, tabPos);
+      final Path srcPath = new Path(srcPathname);
+      final Path destPath = new Path(val.substring(tabPos + 1));
+
+      final FileSystem srcFs = destPath.getFileSystem(conf);
+      final FileSystem destFs = destPath.getFileSystem(conf);
+
+      // Statistic about src file
+      final FileStatus fStatusSrc = srcFs.getFileStatus(srcPath);
+      final long srcSize = fStatusSrc == null ? 0 : fStatusSrc.getLen();
+
+      logger.info("Start copy "
+          + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
 
       final long startTime = System.currentTimeMillis();
 
       // Copy the file
-      new CopyDataSource(srcPathname, destPath.toString()).copy(fs
+      new CopyDataSource(srcPathname, destPath.toString()).copy(destFs
           .create(destPath));
 
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
-      final FileStatus fStatus = fs.getFileStatus(destPath);
-      final long size = fStatus == null ? 0 : fStatus.getLen();
+      final FileStatus fStatusDest = destFs.getFileStatus(destPath);
+      final long destSize = fStatusDest == null ? 0 : fStatusDest.getLen();
       final double speed =
-          size == 0 ? 0 : (double) size / (double) duration * 1000;
+          destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
 
       logger.info("End copy "
           + srcPathname + " to " + destPath + " in "
-          + StringUtils.toTimeHumanReadable(duration) + " (" + size
+          + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
           + " bytes, " + ((int) speed) + " bytes/s)\n");
     }
 
