@@ -48,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToO
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -303,13 +302,6 @@ public class HadoopAnalysisExecutor extends Executor {
       PathUtils.mkdirs(logPath, conf);
     if (!outputPath.getFileSystem(conf).exists(outputPath))
       PathUtils.mkdirs(outputPath, conf);
-
-    // Create a file to force log directory to be created on S3 filesystem
-    Path bidon = new Path(logPath, "starttime.txt");
-    Writer writer =
-        FileUtils.createBufferedWriter(bidon.getFileSystem(conf).create(bidon));
-    writer.write(new Date() + "\n");
-    writer.close();
 
     info.setLogPathname(logPath.toString());
     info.setOutputPathname(outputPath.toString());
