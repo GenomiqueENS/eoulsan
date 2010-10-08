@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -43,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.CopyDataSource;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSourceDistCp {
 
@@ -77,10 +79,23 @@ public class DataSourceDistCp {
 
       logger.info("Start copy " + srcPathname + " to " + destPath + "\n");
 
+      final long startTime = System.currentTimeMillis();
+
+      // Copy the file
       new CopyDataSource(srcPathname, destPath.toString()).copy(fs
           .create(destPath));
 
-      logger.info("End copy " + srcPathname + " to " + destPath + "\n");
+      // Compute copy statistics
+      final long duration = System.currentTimeMillis() - startTime;
+      final FileStatus fStatus = fs.getFileStatus(destPath);
+      final long size = fStatus == null ? 0 : fStatus.getLen();
+      final double speed =
+          size == 0 ? 0 : (double) size / (double) duration * 1000;
+
+      logger.info("End copy "
+          + srcPathname + " to " + destPath + " in "
+          + StringUtils.toTimeHumanReadable(duration) + " (" + size
+          + " bytes, " + ((int) speed) + " bytes/s)\n");
     }
 
   }
@@ -140,7 +155,7 @@ public class DataSourceDistCp {
     final Configuration jobConf = new Configuration(parentConf);
 
     // timeout
-    jobConf.set("mapred.task.timeout", "" + 60 * 60 * 1000);
+    jobConf.set("mapred.task.timeout", "" + 30 * 60 * 1000);
 
     // Create the job and its name
     final Job job = new Job(jobConf, "Distcp");
