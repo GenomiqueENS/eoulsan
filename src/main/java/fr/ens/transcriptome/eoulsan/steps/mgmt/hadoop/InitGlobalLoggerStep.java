@@ -34,16 +34,10 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.DF;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.hadoop.hdfs.DistributedFileSystem.DiskStatus;
-import org.apache.hadoop.hdfs.server.namenode.DatanodeDescriptor;
-import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
-import org.apache.hadoop.util.VersionInfo;
+import javax.security.auth.login.Configuration;
 
+import sun.management.FileSystem;
+import sun.text.normalizer.VersionInfo;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -126,9 +120,7 @@ public class InitGlobalLoggerStep implements Step {
       logger.info(Globals.APP_NAME
           + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
           + " on " + Globals.APP_BUILD_DATE + ")");
-      logger.info("Hadoop base dir: " + info.getBasePathname());
-      logger.info("Parameter file: " + info.getParameterPathname());
-      logger.info("Design file: " + info.getDesignPathname());
+     info.logInfo();
 
     } catch (IOException e) {
       logger.severe("Unable to configure global logger: " + loggerPath);
