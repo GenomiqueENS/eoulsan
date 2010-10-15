@@ -64,15 +64,15 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
     final long startTime = System.currentTimeMillis();
 
     final double threshold = getThreshold() / 100.0;
-    final File baseDir = new File(info.getBasePathname());
+    final File logDir = new File(info.getLogPathname());
 
     try {
       // Read filterreads.log
-      LogReader logReader = new LogReader(new File(baseDir, "filterreads.log"));
+      LogReader logReader = new LogReader(new File(logDir, "filterreads.log"));
       final Reporter filterReadsReporter = logReader.read();
 
       // Read soapmapreads.log
-      logReader = new LogReader(new File(baseDir, "soapmapreads.log"));
+      logReader = new LogReader(new File(logDir, "soapmapreads.log"));
       final Reporter soapMapReadsReporter = logReader.read();
 
       // Get the input reads for each sample

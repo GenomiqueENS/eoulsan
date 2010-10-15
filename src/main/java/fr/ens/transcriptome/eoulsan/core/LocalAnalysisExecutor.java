@@ -91,7 +91,10 @@ public class LocalAnalysisExecutor extends Executor {
           FileUtils
               .createBufferedWriter(new File(logDir, logFilename + ".log"));
 
-      writer.write(result.getLogMessage());
+      if (result.getLogMessage() != null)
+        writer.write(result.getLogMessage());
+      else
+        writer.write("Nothing to log.");
       writer.close();
 
     } catch (IOException e) {
@@ -132,6 +135,17 @@ public class LocalAnalysisExecutor extends Executor {
     info.setDesignPathname(designFile.getAbsolutePath());
     info.setParameterPathname(paramFile.getAbsolutePath());
 
+    final File logDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + info.getExecutionName());
+
+    final File outputDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + info.getExecutionName());
+
+    info.setOutputPathname(outputDir.getAbsolutePath());
+    info.setLogPathname(logDir.getAbsolutePath());
+
     //
     // Register local steps
     //
@@ -142,6 +156,8 @@ public class LocalAnalysisExecutor extends Executor {
     this.registery.addStepType(ExpressionLocalStep.class);
     this.registery.addStepType(AnaDiffLocalMain.class);
 
+    // Log executor information
+    info.logInfo();
   }
 
 }
