@@ -58,13 +58,13 @@ public abstract class Executor {
   protected Command getCommand() {
     return this.command;
   }
-  
+
   /**
    * Get the information object
    * @return the information object
    */
   protected SimpleExecutorInfo getInfo() {
-    
+
     return this.info;
   }
 
@@ -175,7 +175,7 @@ public abstract class Executor {
     if (design.getSampleCount() == 0)
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
-    
+
     // Add executor info
     getInfo().addCommandInfo(command);
 
@@ -200,6 +200,12 @@ public abstract class Executor {
       logStartStep(s.getName());
       final StepResult r = s.execute(design, this.info);
       logEndStep(s.getName());
+
+      if (r == null) {
+        logger.severe("No result for step: " + s.getName());
+        System.err.println("No result for step: " + s.getName());
+        System.exit(1);
+      }
 
       // Write step logs
       writeStepLogs(r);
