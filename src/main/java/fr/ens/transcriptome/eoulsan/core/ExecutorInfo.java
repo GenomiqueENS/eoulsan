@@ -78,4 +78,9 @@ public interface ExecutorInfo {
    */
   String getParameterPathname();
 
+  /**
+   * Add executor information to log.
+   */
+  void logInfo();
+
 }

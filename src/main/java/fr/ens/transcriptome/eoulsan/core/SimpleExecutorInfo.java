@@ -245,6 +245,29 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   }
 
   //
+  // Other methods
+  //
+
+  /**
+   * Add executor information to log.
+   */
+  @Override
+  public void logInfo() {
+
+    logger.info("Design path: " + this.getDesignPathname());
+    logger.info("Parameter path: " + this.getParameterPathname());
+
+    logger.info("Author: " + this.getCommandAuthor());
+    logger.info("Description: " + this.getCommandDescription());
+    logger.info("Command name: " + this.getCommandName());
+    logger.info("Exection name: " + this.getExecutionName());
+
+    logger.info("Base path: " + this.getBasePathname());
+    logger.info("Output path: " + this.getOutputPathname());
+    logger.info("Log path: " + this.getLogPathname());
+  }
+
+  //
   // Constructor
   //
 
