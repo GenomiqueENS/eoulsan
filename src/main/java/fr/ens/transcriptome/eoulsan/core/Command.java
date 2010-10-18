@@ -23,10 +23,12 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -188,6 +190,34 @@ public class Command {
 
     final Parameter p = new Parameter(keyTrimmed, valueTrimmed);
     this.globalParameters.add(p);
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor.
+   */
+  public Command() {
+  }
+
+  /**
+   * Public constructor.
+   * @param globalProperties global properties to add the the command
+   */
+  public Command(final Properties globalProperties) {
+
+    if (globalProperties == null)
+      return;
+
+    final Enumeration<Object> e = globalProperties.keys();
+
+    while (e.hasMoreElements()) {
+
+      final String keyName = (String) e.nextElement();
+      addGlobalParameter(keyName, globalProperties.getProperty(keyName));
+    }
   }
 
 }
