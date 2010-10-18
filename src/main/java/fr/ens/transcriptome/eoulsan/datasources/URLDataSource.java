@@ -108,6 +108,12 @@ public class URLDataSource extends FileDataSource implements Serializable {
 
   }
 
+  @Override
+  public String toString() {
+
+    return this.url;
+  }
+
   //
   // Constructors
   //
