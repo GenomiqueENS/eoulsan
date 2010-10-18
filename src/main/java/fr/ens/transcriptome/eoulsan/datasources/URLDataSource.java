@@ -30,7 +30,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an URL DataSource.
@@ -88,12 +91,12 @@ public class URLDataSource extends FileDataSource implements Serializable {
 
     try {
 
-      return new URL(this.url).openStream();
+      return decompressInputStreamIsNeeded(new URL(this.url).openStream());
     } catch (MalformedURLException e) {
 
       try {
-        URL url = (new File(this.url)).toURI().toURL();
-        return url.openStream();
+        final URL url = (new File(this.url)).toURI().toURL();
+        return decompressInputStreamIsNeeded(url.openStream());
 
       } catch (MalformedURLException e1) {
         throw new EoulsanRuntimeException("Invalid URL: " + this.url);
@@ -103,7 +106,7 @@ public class URLDataSource extends FileDataSource implements Serializable {
       }
     } catch (IOException e) {
       throw new EoulsanRuntimeException("IO error while reading URL data: "
-          + url);
+          + url + " ("+e.getMessage()+")");
     }
 
   }
@@ -112,6 +115,20 @@ public class URLDataSource extends FileDataSource implements Serializable {
   public String toString() {
 
     return this.url;
+  }
+
+  private InputStream decompressInputStreamIsNeeded(final InputStream is)
+      throws IOException {
+
+    final String extension = StringUtils.compressionExtension(this.url);
+
+    if (Common.GZIP_EXTENSION.equals(extension))
+      return CompressionFactory.createGZipInputStream(is);
+
+    if (Common.BZIP2_EXTENSION.equals(extension))
+      return CompressionFactory.createBZip2InputStream(is);
+
+    return is;
   }
 
   //
