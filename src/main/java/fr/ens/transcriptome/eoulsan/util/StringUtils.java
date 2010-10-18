@@ -557,4 +557,23 @@ public final class StringUtils {
     return String.format("%.2f TiB", bytes / ti);
   }
 
+  /**
+   * Test if a String starts with one of the prefix of a list in an array
+   * @param s String to test
+   * @param prefixes list of prefixes
+   * @return true if the String starts with one of the prefix of a list in an
+   *         array
+   */
+  public static final boolean startsWith(final String s, final String[] prefixes) {
+
+    if (s == null || prefixes == null)
+      return false;
+
+    for (String p : prefixes)
+      if (s.startsWith(p))
+        return true;
+
+    return false;
+  }
+
 }
