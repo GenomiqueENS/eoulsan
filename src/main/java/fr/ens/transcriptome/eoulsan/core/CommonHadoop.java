@@ -23,7 +23,11 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -32,6 +36,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -56,6 +61,7 @@ public class CommonHadoop extends Common {
       "genome_soap_index_";
   public static final String GENOME_SOAP_INDEX_FILE_SUFFIX = ".zip";
   public static final String ANNOTATION_FILE_PREFIX = "annotation_";
+  public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
 
   /**
    * Retrieve the genome file name from the files of a directory
@@ -140,25 +146,103 @@ public class CommonHadoop extends Common {
   }
 
   /**
-   * Set the keys to allow access to Amazon S3 service
-   * @param conf Hadoop configuration
-   * @param globalParameters Command global parameters
+   * Print the contents of a Configuration object
+   * @param conf Configuration object
+   * @param prefix prefix used for keys filtering
    */
-  public static final void setAmazonS3Credentials(final Configuration conf,
-      Set<Parameter> globalParameters) {
+  public static void printConfiguration(final Configuration conf) {
 
-    if (conf == null || globalParameters == null)
+    printConfiguration(conf, null);
+  }
+
+  /**
+   * Print the contents of a Configuration object
+   * @param conf Configuration object
+   * @param prefix prefix used for keys filtering
+   */
+  public static void printConfiguration(final Configuration conf,
+      final String prefix) {
+
+    if (conf == null)
       return;
+
+    final Iterator<Map.Entry<String, String>> it = conf.iterator();
+
+    System.out.println("=== Start print configuration ===");
+
+    while (it.hasNext()) {
+
+      final Map.Entry<String, String> e = it.next();
+
+      if (prefix == null || e.getKey().startsWith(prefix))
+        System.out.println(e.getKey() + "\t" + e.getValue());
+
+    }
+    System.out.println("=== End print configuration ===");
+
+  }
+
+  /**
+   * Create a new Configuration object from global parameters
+   * @param globalParameters global parameter as a set of Parameter object
+   * @return a new Configuration object
+   */
+  public static final Configuration createConfiguration(
+      final Set<Parameter> globalParameters) throws EoulsanException {
+
+    if (globalParameters == null)
+      return null;
+
+    final Configuration conf = new Configuration();
+
+    if (conf == null)
+      throw new EoulsanException(
+          "Try to create configuration object for Hadoop but result is null.");
 
     for (Parameter p : globalParameters) {
 
-      if (AWS_S3_ACCESSKEY_ID_PARAM_KEY.equals(p.getName()))
-        conf.set(AWS_S3_ACCESSKEY_ID_PARAM_KEY, p.getValue());
+      final String keyName = p.getName();
 
-      if (AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME.equals(p.getName()))
-        conf.set(AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME, p.getValue());
+      if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
+
+        final String hadoopKey =
+            keyName.substring(HADOOP_PARAMETER_PREFIX.length());
+        conf.set(hadoopKey, p.getStringValue());
+      }
     }
 
+    return conf;
+  }
+
+  /**
+   * Create a new Configuration object from global parameters
+   * @param globalProperties global parameter as a Properties object
+   * @return a new Configuration object
+   */
+  public static final Configuration createConfiguration(
+      final Properties globalProperties) {
+
+    if (globalProperties == null)
+      return null;
+
+    final Configuration conf = new Configuration();
+
+    final Enumeration<Object> e = globalProperties.keys();
+
+    while (e.hasMoreElements()) {
+
+      final String keyName = (String) e.nextElement();
+
+      if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
+
+        final String hadoopKey =
+            keyName.substring(HADOOP_PARAMETER_PREFIX.length());
+
+        conf.set(hadoopKey, globalProperties.getProperty(keyName));
+      }
+    }
+
+    return conf;
   }
 
 }

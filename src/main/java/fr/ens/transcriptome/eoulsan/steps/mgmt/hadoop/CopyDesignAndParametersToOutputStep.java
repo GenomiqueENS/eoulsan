@@ -32,6 +32,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -50,8 +51,11 @@ public class CopyDesignAndParametersToOutputStep implements Step {
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  /** Step name. */
   public static final String STEP_NAME = "_copy_design_params_to_output";
 
+  private Configuration conf;
+  
   //
   // Step methods
   //
@@ -60,12 +64,13 @@ public class CopyDesignAndParametersToOutputStep implements Step {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
   }
 
   @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
-    final Configuration conf = new Configuration();
+    final Configuration conf = this.conf;
 
     final Path designPath = new Path(info.getDesignPathname());
     final Path paramPath = new Path(info.getParameterPathname());

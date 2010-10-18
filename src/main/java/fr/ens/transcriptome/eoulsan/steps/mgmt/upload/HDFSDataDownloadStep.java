@@ -34,6 +34,7 @@ import org.apache.hadoop.fs.PathFilter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -46,12 +47,16 @@ public class HDFSDataDownloadStep implements Step {
   // Logger
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  /** Step name. */
   public static final String STEP_NAME = "_download";
+
+  private Configuration conf;
 
   @Override
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
   }
 
   @Override
@@ -62,7 +67,7 @@ public class HDFSDataDownloadStep implements Step {
         + info.getBasePathname() + "\toutpath=" + info.getOutputPathname());
 
     final long startTime = System.currentTimeMillis();
-    final Configuration conf = new Configuration();
+    final Configuration conf = this.conf;
 
     if (info.getBasePathname() == null)
       throw new NullPointerException("The input path is null");

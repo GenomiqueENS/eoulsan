@@ -46,6 +46,7 @@ import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -63,7 +64,10 @@ public class InitGlobalLoggerStep implements Step {
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  /** Step name. */
   public static final String STEP_NAME = "_init_global_logger";
+
+  private Configuration conf;
 
   /**
    * This class define a simple file Parser
@@ -106,12 +110,13 @@ public class InitGlobalLoggerStep implements Step {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
   }
 
   @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
-    final Configuration conf = new Configuration();
+    final Configuration conf = this.conf;
     final Path loggerPath =
         new Path(info.getLogPathname(), Globals.APP_NAME_LOWER_CASE + ".log");
 
@@ -125,7 +130,7 @@ public class InitGlobalLoggerStep implements Step {
       logger.info(Globals.APP_NAME
           + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
           + " on " + Globals.APP_BUILD_DATE + ")");
-     info.logInfo();
+      info.logInfo();
 
     } catch (IOException e) {
       logger.severe("Unable to configure global logger: " + loggerPath);

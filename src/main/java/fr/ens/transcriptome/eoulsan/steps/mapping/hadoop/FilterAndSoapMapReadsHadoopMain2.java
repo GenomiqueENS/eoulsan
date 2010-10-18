@@ -57,6 +57,7 @@ public class FilterAndSoapMapReadsHadoopMain2 implements Step {
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";
 
+  private Configuration conf;
   private int lengthThreshold = -1;
   private double qualityThreshold = -1;
   private String mapperName;
@@ -135,6 +136,7 @@ public class FilterAndSoapMapReadsHadoopMain2 implements Step {
     if (!"soap".equals(this.mapperName))
       throw new EoulsanException("Unknown mapper: " + this.mapperName);
 
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
   }
 
   @Override
@@ -143,7 +145,7 @@ public class FilterAndSoapMapReadsHadoopMain2 implements Step {
     final Path basePath = new Path(info.getBasePathname());
 
     // Create configuration object
-    final Configuration conf = new Configuration();
+    final Configuration conf = this.conf;
 
     try {
 
