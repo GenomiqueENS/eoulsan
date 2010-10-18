@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -43,10 +44,12 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -71,6 +74,8 @@ public class ExpressionHadoopStep extends ExpressionStep {
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private static final String SERIALIZED_DATA_EXTENSION = ".data";
+
+  private Configuration conf;
 
   /**
    * Create JobConf object.
@@ -245,6 +250,14 @@ public class ExpressionHadoopStep extends ExpressionStep {
   }
 
   @Override
+  public void configure(Set<Parameter> stepParameters,
+      Set<Parameter> globalParameters) throws EoulsanException {
+
+    super.configure(stepParameters, globalParameters);
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
+  }
+
+  @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
     final Path basePath = new Path(info.getBasePathname());
@@ -274,8 +287,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
               CommonHadoop.CHECK_COMPLETION_TIME,
               ExpressionMapper.COUNTER_GROUP);
 
-      createFinalExpressionTranscriptsFile(basePath, jobsRunning,
-          new Configuration());
+      createFinalExpressionTranscriptsFile(basePath, jobsRunning, this.conf);
 
       return jobsResults.getStepResult(this, startTime);
 

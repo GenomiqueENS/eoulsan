@@ -23,6 +23,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -30,8 +31,11 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
@@ -49,6 +53,8 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  private Configuration conf;
+
   //
   // Step methods
   //
@@ -57,6 +63,14 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
   public String getLogName() {
 
     return "filtersamples";
+  }
+
+  @Override
+  public void configure(Set<Parameter> stepParameters,
+      Set<Parameter> globalParameters) throws EoulsanException {
+
+    super.configure(stepParameters, globalParameters);
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
   }
 
   @Override
@@ -69,7 +83,7 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
 
     try {
 
-      final Configuration conf = new Configuration();
+      final Configuration conf = this.conf;
       final FileSystem fs = basePath.getFileSystem(conf);
       // Read soapmapreads.log
       Path logPath = new Path(basePath, "soapmapreads.log");

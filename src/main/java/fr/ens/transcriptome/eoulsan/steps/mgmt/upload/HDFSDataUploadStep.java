@@ -117,7 +117,11 @@ public class HDFSDataUploadStep extends DataUploadStep {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
-    CommonHadoop.setAmazonS3Credentials(this.conf, globalParameters);
+    this.conf = CommonHadoop.createConfiguration(globalParameters);
+
+    if (conf == null)
+      throw new NullPointerException("Configuration is null.");
+
     super.configure(stepParameters, globalParameters);
   }
 
@@ -176,6 +180,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
     }
 
     final Path indexPath = new Path(genomePath.getParent(), filename);
+
+    CommonHadoop.printConfiguration(this.conf, "fs.ftp.");
 
     final FileSystem indexFs = indexPath.getFileSystem(this.conf);
 
@@ -280,7 +286,7 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
       // Copy the entries
       logger.info("Hadoop DistCp arguments: " + Arrays.toString(args));
-      if (distcp.run(args)!=0)
+      if (distcp.run(args) != 0)
         throw new IOException("Unable to copy file with distcp.");
     }
   }
@@ -292,30 +298,6 @@ public class HDFSDataUploadStep extends DataUploadStep {
     CommonHadoop.writeLog(new Path(destURI.toString() + "/upload.log"),
         startTime, msg);
 
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Public constructor.
-   */
-  public HDFSDataUploadStep() {
-
-    this(new Configuration());
-  }
-
-  /**
-   * Public constructor.
-   * @param conf Configuration object
-   */
-  public HDFSDataUploadStep(final Configuration conf) {
-
-    if (conf == null)
-      throw new NullPointerException("Configuration is null.");
-
-    this.conf = conf;
   }
 
 }
