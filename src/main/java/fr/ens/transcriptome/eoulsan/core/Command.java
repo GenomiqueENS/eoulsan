@@ -37,9 +37,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class Command {
 
-  private String name;
-  private String description;
-  private String author;
+  private String name = "";
+  private String description = "";
+  private String author = "";
 
   private List<String> stepNamesList = new ArrayList<String>();
   private final Map<String, Set<Parameter>> stepsMap =
@@ -83,7 +83,9 @@ public class Command {
    * @param name The name to set
    */
   public void setName(final String name) {
-    this.name = name;
+
+    if (name != null)
+      this.name = name;
   }
 
   /**
@@ -91,7 +93,9 @@ public class Command {
    * @param description The description to set
    */
   public void setDescription(final String description) {
-    this.description = description;
+
+    if (description != null)
+      this.description = description;
   }
 
   /**
@@ -99,7 +103,9 @@ public class Command {
    * @param author The author to set
    */
   public void setAuthor(final String author) {
-    this.author = author;
+
+    if (author != null)
+      this.author = author;
   }
 
   /**
