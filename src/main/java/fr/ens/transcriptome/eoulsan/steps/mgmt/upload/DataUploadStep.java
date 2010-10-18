@@ -50,7 +50,9 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class DataUploadStep implements Step {
 
+  /** Step name. */
   public static final String STEP_NAME = "_upload";
+  
   protected boolean uploadGemome = false;
 
   private String designURI;
