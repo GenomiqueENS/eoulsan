@@ -116,6 +116,30 @@ public final class DesignUtils {
   }
 
   /**
+   * Check if there are duplicate samples in the design.
+   * @param design Design to test
+   * @return if there are no duplicate
+   * @throws EoulsanException if a source is a duplicate
+   */
+  private static boolean checkSamplesWithException(final Design design)
+      throws EoulsanException {
+
+    final Set<String> samplesSources = new HashSet<String>();
+
+    for (Sample s : design.getSamples()) {
+
+      if (samplesSources.contains(s.getSource()))
+        throw new EoulsanException(
+            "Error: The design contains one or more duplicate sample sources: "
+                + s.getSource() + " (sample " + s.getId() + ")");
+      ;
+      samplesSources.add(s.getSource());
+    }
+
+    return true;
+  }
+
+  /**
    * Check if there is more than one genome in the design
    * @param design Design to test
    * @return true if there is more than one genome in the genome
@@ -179,9 +203,7 @@ public final class DesignUtils {
     final DesignReader dr = new SimpleDesignReader(is);
     final Design design = dr.read();
 
-    if (!DesignUtils.checkSamples(design))
-      throw new EoulsanException(
-          "Error: The design contains one or more duplicate sample sources.");
+    DesignUtils.checkSamplesWithException(design);
 
     if (!DesignUtils.checkGenomes(design))
       throw new EoulsanException(
