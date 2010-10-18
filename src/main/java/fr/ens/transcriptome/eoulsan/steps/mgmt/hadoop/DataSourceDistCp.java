@@ -56,11 +56,8 @@ public class DataSourceDistCp {
   public static final class DistCpMapper extends
       Mapper<LongWritable, Text, Text, Text> {
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.hadoop.mapreduce.Mapper#map(java.lang.Object,
-     * java.lang.Object, org.apache.hadoop.mapreduce.Mapper.Context)
-     */
+    private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
+
     @Override
     protected void map(final LongWritable key, final Text value, Context context)
         throws IOException, InterruptedException {
@@ -78,7 +75,7 @@ public class DataSourceDistCp {
       final Path srcPath = new Path(srcPathname);
       final Path destPath = new Path(val.substring(tabPos + 1));
 
-      final FileSystem srcFs = destPath.getFileSystem(conf);
+      final FileSystem srcFs = srcPath.getFileSystem(conf);
       final FileSystem destFs = destPath.getFileSystem(conf);
 
       // Statistic about src file
@@ -105,6 +102,11 @@ public class DataSourceDistCp {
           + srcPathname + " to " + destPath + " in "
           + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
           + " bytes, " + ((int) speed) + " bytes/s)\n");
+
+      context.getCounter(COUNTER_GROUP_NAME, "Input file size").increment(
+          srcSize);
+      context.getCounter(COUNTER_GROUP_NAME, "Output file size").increment(
+          destSize);
     }
 
   }
