@@ -34,10 +34,16 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import javax.security.auth.login.Configuration;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.DF;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.DistributedFileSystem.DiskStatus;
+import org.apache.hadoop.hdfs.server.namenode.DatanodeDescriptor;
+import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
+import org.apache.hadoop.util.VersionInfo;
 
-import sun.management.FileSystem;
-import sun.text.normalizer.VersionInfo;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -52,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class initialize the global logger
  * @author Laurent Jourdren
  */
-@SuppressWarnings("deprecation")
 public class InitGlobalLoggerStep implements Step {
 
   /** Logger. */
