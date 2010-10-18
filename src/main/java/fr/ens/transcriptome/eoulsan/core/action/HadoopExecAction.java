@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -37,6 +38,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopAnalysisExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
@@ -71,10 +73,20 @@ public class HadoopExecAction implements Action {
 
     }
 
-    final Configuration conf = new Configuration();
-    conf.set("fs.s3n.awsAccessKeyId", "AKIAJPXBAOLESJ2TOABA");
-    conf.set("fs.s3n.awsSecretAccessKey",
+    final Properties globalProperties = new Properties();
+    globalProperties.setProperty("hadoop.conf.fs.s3n.awsAccessKeyId",
+        "AKIAJPXBAOLESJ2TOABA");
+    globalProperties.setProperty("hadoop.conf.fs.s3n.awsSecretAccessKey",
         "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");
+
+    globalProperties.setProperty("hadoop.conf.fs.ftp.user.hestia.ens.fr", "anonymous");
+    globalProperties.setProperty("hadoop.conf.fs.ftp.password.hestia.ens.fr",
+        "toto@toto.com");
+
+    final Configuration conf =
+        CommonHadoop.createConfiguration(globalProperties);
+
+    CommonHadoop.printConfiguration(conf, "fs.ftp.");
 
     try {
 
@@ -118,10 +130,7 @@ public class HadoopExecAction implements Action {
           DesignUtils.readAndCheckDesign(designFs.open(designPath));
 
       // Create command object
-      final Command c = new Command();
-      c.addGlobalParameter("fs.s3n.awsAccessKeyId", "AKIAJPXBAOLESJ2TOABA");
-      c.addGlobalParameter("fs.s3n.awsSecretAccessKey",
-          "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");
+      final Command c = new Command(globalProperties);
 
       // Add init global logger Step
       c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
