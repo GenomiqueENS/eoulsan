@@ -62,6 +62,7 @@ public class CopyDataSource {
     this.destContentEncoding = StringUtils.compressionExtension(this.dest);
     this.destContentType =
         StringUtils.extensionWithoutCompressionExtension(this.dest);
+
   }
 
   /**
