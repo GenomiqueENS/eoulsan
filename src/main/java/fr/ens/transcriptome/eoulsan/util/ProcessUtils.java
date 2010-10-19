@@ -44,6 +44,56 @@ public final class ProcessUtils {
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
   private static Random random;
 
+  public static class ProcessResult {
+
+    private int exitValue;
+    private String stdout;
+    private String stderr;
+
+    /**
+     * Get the exit value of the process.
+     * @return Returns the errorResult
+     */
+    public int getExitValue() {
+      return exitValue;
+    }
+
+    /**
+     * Get the standard output of the process
+     * @return Returns the stdout
+     */
+    public String getStdout() {
+      return stdout;
+    }
+
+    /**
+     * Get the standard error of the process
+     * @return Returns the stderr
+     */
+    public String getStderr() {
+      return stderr;
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param exitValue the exit value of the process
+     * @param stdout the standard output of the process
+     * @param stderr the standard error of the process
+     */
+    private ProcessResult(final int exitValue, final String stdout,
+        final String stderr) {
+
+      this.exitValue = exitValue;
+      this.stdout = stdout;
+      this.stderr = stderr;
+    }
+
+  }
+
   /**
    * Execute a command.
    * @param cmd command to execute
@@ -88,6 +138,74 @@ public final class ProcessUtils {
       final int result = p.waitFor();
       f.delete();
       return result;
+    } catch (InterruptedException e) {
+      f.delete();
+      throw new IOException(e.getMessage());
+    }
+  }
+
+  /**
+   * Execute a command.
+   * @param cmd command to execute
+   * @return the exit error of the program
+   * @throws IOException
+   */
+  public static ProcessResult shWithOutputs(final String cmd)
+      throws IOException {
+
+    File f = File.createTempFile("sh-", ".sh");
+    UnSynchronizedBufferedWriter bw = FileUtils.createBufferedWriter(f);
+    bw.write("#!/bin/sh\n");
+    bw.write(cmd);
+    bw.close();
+    f.setExecutable(true);
+
+    logger.fine("execute script (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
+
+    final StringBuilder stdout = new StringBuilder();
+    final StringBuilder stderr = new StringBuilder();
+    
+    try {
+
+      final InputStream std = p.getInputStream();
+      final BufferedReader stdr =
+          new BufferedReader(new InputStreamReader(std));
+
+      
+
+      String stdoutLine = null;
+
+      while ((stdoutLine = stdr.readLine()) != null) {
+        stdout.append(stdoutLine);
+        stdout.append('\n');
+      }
+
+      InputStream err = p.getInputStream();
+      BufferedReader errr = new BufferedReader(new InputStreamReader(err));
+
+      String stderrLine = null;
+
+      while ((stderrLine = errr.readLine()) != null) {
+        stderr.append(stderrLine);
+        stderr.append('\n');
+      }
+
+      stdr.close();
+      errr.close();
+
+      final int exitValue = p.waitFor();
+
+      f.delete();
+
+      // Return result
+      return new ProcessResult(exitValue, stdout.toString(), stderr.toString());
+
+    } catch (IOException e) {
+      f.delete();
+      throw e;
     } catch (InterruptedException e) {
       f.delete();
       throw new IOException(e.getMessage());
