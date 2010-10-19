@@ -297,6 +297,7 @@ public class SoapMapReadsMapper implements
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
+    logger.info(lock.getProcessesWaiting() + " process(es) waiting.");
     lock.lock();
     ProcessUtils.waitUntilExecutableRunning("soap");
 
@@ -306,9 +307,17 @@ public class SoapMapReadsMapper implements
 
     this.reporter.setStatus("Run SOAP");
 
-    SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile, unmapFile,
-        this.soapArgs, this.nbSoapThreads);
-    lock.unlock();
+    try {
+      SOAPWrapper.map(this.dataFile, this.soapIndexZipDir, outputFile,
+          unmapFile, this.soapArgs, this.nbSoapThreads);
+    } catch (IOException e) {
+
+      logger.severe("Error while running SOAP: " + e.getMessage());
+      throw e;
+
+    } finally {
+      lock.unlock();
+    }
 
     this.reporter.setStatus("Parse SOAP results");
     parseSOAPResults(outputFile, unmapFile, this.collector, this.reporter);

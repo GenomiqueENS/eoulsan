@@ -229,6 +229,28 @@ public class ExecLock {
       this.lockFile.delete();
   }
 
+  /**
+   * Get the number of processes waiting.
+   * @return the number of process waiting
+   */
+  public int getProcessesWaiting() {
+
+    File[] files = this.tmpDir.listFiles(new FilenameFilter() {
+
+      @Override
+      public boolean accept(File arg0, String arg1) {
+
+        return arg1.startsWith(execName + "-") && arg1.endsWith(PID_EXTENSION);
+      }
+
+    });
+
+    if (files == null)
+      return 0;
+
+    return files.length;
+  }
+
   //
   // Constructors
   //
