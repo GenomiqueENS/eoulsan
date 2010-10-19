@@ -40,6 +40,7 @@ import org.apache.hadoop.mapred.Reporter;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
 
@@ -68,7 +69,17 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       final OutputCollector<Text, Text> output, final Reporter reporter)
       throws IOException {
 
-    ar.parseResultLine(value.toString());
+    try {
+      ar.parseResultLine(value.toString());
+    } catch (BadBioEntryException e) {
+
+      reporter.getCounter(COUNTER_GROUP, "invalid soap output entries")
+          .increment(1);
+      logger.info("Invalid soap output entry: "
+          + e.getMessage() + " line='" + e.getEntry() + "'");
+      return;
+    }
+
     final String chr = ar.getChromosome();
     final int start = ar.getLocation();
     final int stop = start + ar.getReadLength();
@@ -126,7 +137,8 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       tef.load(indexFile);
 
     } catch (IOException e) {
-      logger.severe("Error while loading annotation data in Mapper: " + e.getMessage());
+      logger.severe("Error while loading annotation data in Mapper: "
+          + e.getMessage());
     }
 
   }

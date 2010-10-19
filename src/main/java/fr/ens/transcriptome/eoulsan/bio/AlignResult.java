@@ -138,12 +138,21 @@ public class AlignResult {
    * Parse line.
    * @param line Line to parse
    */
-  public void parseResultLine(final String line) {
+  public void parseResultLine(final String line) throws BadBioEntryException {
 
     if (line == null)
       throw new NullPointerException("line is null");
 
-    this.fields = StringUtils.fastSplit(line, this.fields);
+    final List<String> fields = StringUtils.fastSplit(line, this.fields);
+
+    if (fields == null)
+      throw new BadBioEntryException("The parsing of the line is null", line);
+
+    if (fields.size() < 11)
+      throw new BadBioEntryException("Invalid number of field "
+          + fields.size() + " (11 expected) ", line);
+
+    this.fields = fields;
   }
 
 }

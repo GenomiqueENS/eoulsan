@@ -42,6 +42,7 @@ import org.apache.hadoop.mapred.Reporter;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.util.ExecLock;
@@ -358,7 +359,17 @@ public class SoapMapReadsMapper implements
 
       entriesParsed++;
 
-      aln.parseResultLine(trimmedLine);
+      try {
+        aln.parseResultLine(trimmedLine);
+      } catch (BadBioEntryException e) {
+
+        reporter.getCounter(this.counterGroup, "invalid soap output entries")
+            .increment(1);
+        logger.info("Invalid soap output entry: "
+            + e.getMessage() + " line='" + e.getEntry() + "'");
+        continue;
+      }
+
       reporter.incrCounter(this.counterGroup, "soap alignments", 1);
 
       final String currentSequenceId = aln.getSequenceId();

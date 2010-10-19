@@ -29,7 +29,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
@@ -47,6 +49,9 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Maria Bernard
  */
 public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   public static final String COUNTER_GROUP = "Expression";
 
@@ -72,7 +77,16 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   public void map(final String value, final List<String> output,
       final Reporter reporter) throws IOException {
 
-    ar.parseResultLine(value);
+    try {
+      ar.parseResultLine(value.toString());
+    } catch (BadBioEntryException e) {
+
+      reporter.incrCounter(COUNTER_GROUP, "invalid soap output entries", 1);
+      logger.info("Invalid soap output entry: "
+          + e.getMessage() + " line='" + e.getEntry() + "'");
+      return;
+    }
+
     final String chr = ar.getChromosome();
     final int start = ar.getLocation();
     final int stop = start + ar.getReadLength();

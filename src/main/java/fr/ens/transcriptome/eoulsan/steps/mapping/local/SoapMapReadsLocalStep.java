@@ -30,9 +30,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -49,6 +52,9 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 public class SoapMapReadsLocalStep extends MapReadsStep {
 
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  
   public static String PROGRAM_NAME = "soapmapreads";
   public static final String COUNTER_GROUP = "Map reads with SOAP";
 
@@ -164,7 +170,16 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
       if ("".equals(trimmedLine))
         continue;
 
+      try {
       aln.parseResultLine(trimmedLine);
+      }
+      catch (BadBioEntryException e) {
+        reporter.incrCounter(COUNTER_GROUP, "invalid soap output", 1);
+        logger.info("Invalid soap output entry: "
+            + e.getMessage() + " line='" + e.getEntry() + "'");
+        continue;
+      }
+      
       reporter.incrCounter(COUNTER_GROUP, "soap alignments", 1);
 
       final String currentSequenceId = aln.getSequenceId();
