@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 
 public class AlignResultTest {
 
@@ -43,7 +44,7 @@ public class AlignResultTest {
   // }
 
   @Test
-  public void testGetSequenceId() {
+  public void testGetSequenceId() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -53,7 +54,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetSequence() {
+  public void testGetSequence() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -63,7 +64,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetQuality() {
+  public void testGetQuality() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -73,7 +74,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetNumberOfHits() {
+  public void testGetNumberOfHits() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -90,7 +91,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetReadLength() {
+  public void testGetReadLength() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -100,7 +101,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetPairendFlag() {
+  public void testGetPairendFlag() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -111,7 +112,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testIsDirectStrand() {
+  public void testIsDirectStrand() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -127,7 +128,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetChromosome() {
+  public void testGetChromosome() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -137,7 +138,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetLocation() {
+  public void testGetLocation() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"
@@ -147,7 +148,7 @@ public class AlignResultTest {
   }
 
   @Test
-  public void testGetHitType() {
+  public void testGetHitType() throws BadBioEntryException {
 
     ar
         .parseResultLine("HWI-EAS285:7:1:24:1771#0/1\tCATTAACCAATTCTGTAACCAACGAATCTACTCGCG\t"

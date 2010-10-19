@@ -42,6 +42,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.core.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.util.AbstractExternalCommandMapRedPipeThread;
@@ -86,7 +87,17 @@ public class SoapMapReadsMapper2 extends Mapper<LongWritable, Text, Text, Text> 
 
       if (line.indexOf('\t') != -1) {
 
-        aln.parseResultLine(line);
+        try {
+          aln.parseResultLine(line);
+        } catch (BadBioEntryException e) {
+
+          this.context.getCounter(COUNTER_GROUP, "invalid soap output entries")
+              .increment(1);
+          logger.info("Invalid soap output entry: "
+              + e.getMessage() + " line='" + e.getEntry() + "'");
+          return;
+        }
+
         this.context.getCounter(this.counterGroup, "soap alignments")
             .increment(1);
 
