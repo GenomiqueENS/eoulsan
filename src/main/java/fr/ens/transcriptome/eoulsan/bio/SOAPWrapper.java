@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.bio;
 
 /*
  *                      Nividic development code
