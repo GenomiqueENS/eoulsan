@@ -32,7 +32,6 @@ import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils.ProcessResult;
 
 /**
  * Wrapper class for SOAP. TODO set the number of thread to use TODO Handle Path
@@ -193,21 +192,10 @@ public class SOAPWrapper {
 
     logger.info(cmd);
 
-    final ProcessResult result = ProcessUtils.shWithOutputs(cmd);
+    final int exitValue = ProcessUtils.sh(cmd);
 
-    if (result.getExitValue() != 0) {
-
-      System.err.println("### Start of stdout of SOAP ###");
-      System.err.print(result.getStdout());
-      System.err.println("### End of stdout of SOAP ###");
-
-      System.err.println("### Start of stderr of SOAP ###");
-      System.err.print(result.getStderr());
-      System.err.println("### End of stderr of SOAP ###");
-
-      throw new IOException("Bad error result for SOAP execution: "
-          + result.getExitValue());
-    }
+    if (exitValue != 0)
+      throw new IOException("Bad error result for SOAP execution: " + exitValue);
   }
 
   /**
