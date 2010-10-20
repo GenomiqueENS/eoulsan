@@ -36,6 +36,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
+import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -46,6 +47,8 @@ public class HDFSFileUploader implements FileUploader {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
+  private static long MAX_LEN_STD_COPY = 10 * 1024 * 1024L;
 
   // Create configuration object
   private final Configuration conf;
@@ -75,13 +78,40 @@ public class HDFSFileUploader implements FileUploader {
       return;
     }
 
-    if (this.src != null
-        && StringUtils.startsWith(this.src.getSourceInfo(), new String[] {
-            Common.S3_PROTOCOL + "://", "ftp://", "http://"})) {
+    boolean copied = false;
 
-      logger.info("Copy [distrituted] " + this.src + " to " + this.dest);
-      this.distCp.put(this.src.getSourceInfo(), this.dest);
-    } else {
+    if (this.src != null) {
+
+      // Create a valid URL for file on local file system
+      String srcName = this.src.getSourceInfo();
+      if (srcName.startsWith("/"))
+        srcName = "file://" + this.src.getSourceInfo();
+
+      final Path src = new Path(srcName);
+      final Path dest = new Path(this.dest);
+
+      // No translation, tiny file
+      if (src.getName().equals(dest.getName())
+          && getFileSize(src) < MAX_LEN_STD_COPY) {
+
+        logger.info("Copy [basic] " + this.src + " to " + this.dest);
+        PathUtils.copy(src, dest, this.conf);
+        copied = true;
+      }
+
+      // Network protocol
+      if (StringUtils.startsWith(this.src.getSourceInfo(), new String[] {
+          Common.S3_PROTOCOL + "://", "ftp://", "http://"})) {
+
+        logger.info("Copy [distrituted] " + this.src + " to " + this.dest);
+        this.distCp.put(this.src.getSourceInfo(), this.dest);
+        copied = true;
+      }
+    }
+
+    // Other cases
+    if (!copied) {
+
       logger.info("Copy [standard] " + this.src + " to " + this.dest);
       final CopyDataSource cds = new CopyDataSource(this.src, this.dest);
 
@@ -90,6 +120,12 @@ public class HDFSFileUploader implements FileUploader {
       cds.copy(fs.create(destPath));
     }
 
+  }
+
+  private long getFileSize(final Path path) throws IOException {
+
+    final FileSystem fs = path.getFileSystem(this.conf);
+    return fs.getFileStatus(path).getLen();
   }
 
   @Override
@@ -116,6 +152,10 @@ public class HDFSFileUploader implements FileUploader {
     return this.dest;
   }
 
+  /**
+   * Get the map of the files to copy in distributed mode.
+   * @return a map with the list of files to copy
+   */
   public Map<String, String> getDistCpEntries() {
 
     return this.distCp;
