@@ -232,21 +232,13 @@ public class HDFSDataUploadStep extends DataUploadStep {
       // Select files to copy with DataSourceDistCp
       for (Map.Entry<String, String> e : originalDistCpEntries.entrySet()) {
 
-        boolean useHadoopDistCp = false;
+        // final Path src = new Path(e.getKey());
+        // final Path dest = new Path(e.getValue());
 
-        if (e.getKey().startsWith("s3n:/")) {
-
-          final Path src = new Path(e.getKey());
-          final Path dest = new Path(e.getValue());
-
-          if (src.getName().equals(dest.getName()))
-            useHadoopDistCp = true;
-        }
-
-        if (useHadoopDistCp)
-          hadoopdistCpEntries.put(e.getKey(), e.getValue());
-        else
-          dataSourceDistCpEntries.put(e.getKey(), e.getValue());
+        // if (src.getName().equals(dest.getName())) {
+        // hadoopdistCpEntries.put(e.getKey(), e.getValue());
+        // } else
+        dataSourceDistCpEntries.put(e.getKey(), e.getValue());
       }
 
       // Copy files with DataSourceDistCp
