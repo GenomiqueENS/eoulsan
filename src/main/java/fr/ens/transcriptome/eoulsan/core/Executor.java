@@ -213,6 +213,13 @@ public abstract class Executor {
       // End of the analysis if the analysis fail
       if (!r.isSuccess()) {
         logger.severe("Fail of the analysis: " + r.getErrorMessage());
+
+        if (r.getException() != null) {
+          System.err.println("\n=== Stack Trace ===");
+          r.getException().printStackTrace();
+          System.err.println("\n===");
+          }
+
         success = false;
         break;
       }
@@ -227,7 +234,8 @@ public abstract class Executor {
     if (!success) {
       System.err.println("Error during analysis.");
       System.exit(1);
-    }
+    } else
+      logger.info("Successful analysis");
 
   }
 
