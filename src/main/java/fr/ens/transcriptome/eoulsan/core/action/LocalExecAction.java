@@ -24,6 +24,8 @@ package fr.ens.transcriptome.eoulsan.core.action;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -32,6 +34,8 @@ import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalAnalysisExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 
 /**
  * This class define the Local exec Action.
@@ -41,6 +45,9 @@ public class LocalExecAction implements Action {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+    Collections.emptySet();
 
   @Override
   public void action(final String[] args) {
@@ -76,7 +83,12 @@ public class LocalExecAction implements Action {
 
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
-      final Command c = pp.parse();
+      final Command c = new Command();
+      
+      // Add execution info to log Step
+      c.addStep(ExecInfoLogStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
+      
+      pp.parse(c);
 
       // Execute
       final Executor e = new LocalAnalysisExecutor(c, designFile, paramFile);
