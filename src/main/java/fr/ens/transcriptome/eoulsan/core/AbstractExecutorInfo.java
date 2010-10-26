@@ -22,16 +22,29 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
+import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-public class SimpleExecutorInfo implements ExecutorInfo {
+/**
+ * This class define an abstract ExecutorInfo. TODO Rename to
+ * AbstractExecutorInfo
+ * @author jourdren
+ */
+public abstract class AbstractExecutorInfo implements ExecutorInfo {
 
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  protected static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private String basePathname;
   private String logPathname;
@@ -267,6 +280,50 @@ public class SimpleExecutorInfo implements ExecutorInfo {
     logger.info("EXECINFO Log path: " + this.getLogPathname());
   }
 
+  @Override
+  public String getPathname(final DataType dt, final Sample sample) {
+
+    if (dt == null || sample == null)
+      return null;
+
+    if (dt == DataTypes.READS)
+      return sample.getSource();
+
+    if (dt == DataTypes.GENOME)
+      return sample.getMetadata().getGenome();
+
+    if (dt == DataTypes.ANNOTATION)
+      return sample.getMetadata().getAnnotation();
+
+    return this.getBasePathname()
+        + "/"
+        + dt.getPrefix()
+        + (dt.isOneFilePerAnalysis() ? "1" : sample.getId()
+            + dt.getDefaultExtention());
+  }
+
+  /**
+   * Decompress an inputStream if needed.
+   * @param is the InputStream
+   * @param source source of the inputStream
+   * @return a InputStream with decompression integrated or not
+   * @throws IOException if an error occurs while creating decompressor
+   *           InputStream
+   */
+  protected InputStream decompressInputStreamIsNeeded(final InputStream is,
+      final String source) throws IOException {
+
+    final String extension = StringUtils.compressionExtension(source);
+
+    if (Common.GZIP_EXTENSION.equals(extension))
+      return CompressionFactory.createGZipInputStream(is);
+
+    if (Common.BZIP2_EXTENSION.equals(extension))
+      return CompressionFactory.createBZip2InputStream(is);
+
+    return is;
+  }
+
   //
   // Constructor
   //
@@ -274,7 +331,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   /**
    * Public constructor.
    */
-  public SimpleExecutorInfo() {
+  protected AbstractExecutorInfo() {
 
     createExecutionName();
   }

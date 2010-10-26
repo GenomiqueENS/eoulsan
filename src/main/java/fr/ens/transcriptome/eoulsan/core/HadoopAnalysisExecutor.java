@@ -62,13 +62,12 @@ public class HadoopAnalysisExecutor extends Executor {
   private Configuration conf;
   private Path designPath;
   private Design design;
-
-  private final StepsRegistery registery = new StepsRegistery();
+  private HadoopExecutorInfo info;
 
   @Override
-  protected Step getStep(String stepName) {
+  protected AbstractExecutorInfo getExecutorInfo() {
 
-    return this.registery.getStep(stepName);
+    return this.info;
   }
 
   @Override
@@ -97,8 +96,8 @@ public class HadoopAnalysisExecutor extends Executor {
 
     try {
 
-      final Path logPath = new Path(getInfo().getLogPathname());
-      final Path basePath = new Path(getInfo().getBasePathname());
+      final Path logPath = new Path(getExecutorInfo().getLogPathname());
+      final Path basePath = new Path(getExecutorInfo().getBasePathname());
       final FileSystem logFs = logPath.getFileSystem(this.conf);
       final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
@@ -168,7 +167,7 @@ public class HadoopAnalysisExecutor extends Executor {
 
     final Writer writer = new OutputStreamWriter(fs.create(catPath));
 
-    final Path basePath = new Path(getInfo().getBasePathname());
+    final Path basePath = new Path(getExecutorInfo().getBasePathname());
     final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
     final StringBuilder sb = new StringBuilder();
@@ -218,20 +217,23 @@ public class HadoopAnalysisExecutor extends Executor {
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
+    this.info = new HadoopExecutorInfo(conf);
 
     //
     // Register local steps
     //
 
-    this.registery.addStepType(HDFSDataUploadStep.class);
-    this.registery.addStepType(FilterReadsHadoopStep.class);
-    this.registery.addStepType(SoapMapReadsHadoopStep.class);
-    this.registery.addStepType(FilterAndSoapMapReadsHadoopStep.class);
-    this.registery.addStepType(FilterSamplesHadoopStep.class);
-    this.registery.addStepType(ExpressionHadoopStep.class);
-    this.registery.addStepType(HDFSDataDownloadStep.class);
-    this.registery.addStepType(CopyDesignAndParametersToOutputStep.class);
-    this.registery.addStepType(InitGlobalLoggerStep.class);
+    final StepsRegistery registery = StepsRegistery.getInstance();
+
+    registery.addStepType(HDFSDataUploadStep.class);
+    registery.addStepType(FilterReadsHadoopStep.class);
+    registery.addStepType(SoapMapReadsHadoopStep.class);
+    registery.addStepType(FilterAndSoapMapReadsHadoopStep.class);
+    registery.addStepType(FilterSamplesHadoopStep.class);
+    registery.addStepType(ExpressionHadoopStep.class);
+    registery.addStepType(HDFSDataDownloadStep.class);
+    registery.addStepType(CopyDesignAndParametersToOutputStep.class);
+    registery.addStepType(InitGlobalLoggerStep.class);
   }
 
   /**
@@ -253,7 +255,7 @@ public class HadoopAnalysisExecutor extends Executor {
       throw new NullPointerException("The design path is null.");
 
     this.designPath = designPath;
-    getInfo().setBasePathname(designPath.getParent().toString());
+    getExecutorInfo().setBasePathname(designPath.getParent().toString());
 
   }
 
@@ -286,7 +288,7 @@ public class HadoopAnalysisExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final SimpleExecutorInfo info = getInfo();
+    final AbstractExecutorInfo info = getExecutorInfo();
 
     info.setBasePathname(basePath.toString());
 
