@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterReadsLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterSamplesLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.local.SoapMapReadsLocalStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -153,14 +154,12 @@ public class LocalAnalysisExecutor extends Executor {
 
     final StepsRegistery registery = StepsRegistery.getInstance();
 
+    registery.addStepType(ExecInfoLogStep.class);
     registery.addStepType(FilterReadsLocalStep.class);
     registery.addStepType(SoapMapReadsLocalStep.class);
     registery.addStepType(FilterSamplesLocalStep.class);
     registery.addStepType(ExpressionLocalStep.class);
     registery.addStepType(AnaDiffLocalMain.class);
-
-    // Log executor information
-    info.logInfo();
   }
 
 }
