@@ -43,7 +43,9 @@ public abstract class Executor {
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private Command command;
-  private SimpleExecutorInfo info = new SimpleExecutorInfo();
+  private List<Step> steps;
+  // private SimpleExecutorInfo info;
+  private final StepsRegistery registery = StepsRegistery.getInstance();
 
   private long startTimeCurrentStep;
 
@@ -57,15 +59,6 @@ public abstract class Executor {
    */
   protected Command getCommand() {
     return this.command;
-  }
-
-  /**
-   * Get the information object
-   * @return the information object
-   */
-  protected SimpleExecutorInfo getInfo() {
-
-    return this.info;
   }
 
   //
@@ -95,13 +88,22 @@ public abstract class Executor {
    * @return a Step object
    * @throws EoulsanException if the step does not exits
    */
-  protected abstract Step getStep(final String stepName);
+  public Step getStep(String stepName) {
+
+    return this.registery.getStep(stepName);
+  }
 
   /**
    * Write the log file of the result of a step
    * @param result Step result
    */
   protected abstract void writeStepLogs(final StepResult result);
+
+  /**
+   * Get the executorInfo
+   * @return the ExecutorInfo
+   */
+  protected abstract AbstractExecutorInfo getExecutorInfo();
 
   //
   // Private methods
@@ -129,24 +131,33 @@ public abstract class Executor {
 
   /**
    * Create the list of steps
-   * @return a list of steps
    * @throws EoulsanException if an error occurs while creating the step
    */
-  private List<Step> createSteps() throws EoulsanException {
+  private void createSteps() throws EoulsanException {
 
-    final List<Step> result = new ArrayList<Step>();
+    this.steps = new ArrayList<Step>();
     final Command c = this.command;
 
-    for (String stepName : c.getStepNames()) {
+    for (String stepName : c.getStepNames())
+      this.steps.add(findStep(stepName));
+  }
 
-      final Step s = findStep(stepName);
+  /**
+   * Initialize the list of steps
+   * @throws EoulsanException if an error occurs while creating the step
+   */
+  private void initSteps() throws EoulsanException {
+
+    final Command c = this.command;
+
+    for (Step s : this.steps) {
+
+      final String stepName = s.getName();
+
       logger.info("Configure " + stepName + " step.");
       s.configure(c.getStepParameters(stepName), c.getGlobalParameters());
-
-      result.add(s);
     }
 
-    return result;
   }
 
   /**
@@ -160,8 +171,11 @@ public abstract class Executor {
     if (this.command == null)
       throw new EoulsanException("The command is null");
 
+    // Get executor info
+    final AbstractExecutorInfo info = getExecutorInfo();
+
     // Check base path
-    if (this.info.getBasePathname() == null)
+    if (info.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Load design
@@ -177,10 +191,18 @@ public abstract class Executor {
           "Nothing to do, no samples found in design file");
 
     // Add executor info
-    getInfo().addCommandInfo(command);
+    info.addCommandInfo(command);
 
     // Create steps
-    final List<Step> steps = createSteps();
+    createSteps();
+
+    // TODO insert here terminal steps (ex upload hdfs, upload S3, start
+    // local/Amazon hadoop
+    // TODO insert here check order step
+    // TODO insert here check input files
+
+    // Init steps
+    initSteps();
 
     logger.info("Date: " + new Date(System.currentTimeMillis()));
     logger.info("Host: " + SystemUtils.getHostName());
@@ -198,7 +220,7 @@ public abstract class Executor {
     for (Step s : steps) {
 
       logStartStep(s.getName());
-      final StepResult r = s.execute(design, this.info);
+      final StepResult r = s.execute(design, info);
       logEndStep(s.getName());
 
       if (r == null) {
@@ -218,7 +240,7 @@ public abstract class Executor {
           System.err.println("\n=== Stack Trace ===");
           r.getException().printStackTrace();
           System.err.println("\n===");
-          }
+        }
 
         success = false;
         break;
