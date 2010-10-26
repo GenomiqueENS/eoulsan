@@ -24,6 +24,8 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -42,10 +44,17 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
+import fr.ens.transcriptome.eoulsan.io.ProgressCounterInputStream;
+import fr.ens.transcriptome.eoulsan.io.ProgressCounterOutputstream;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.CopyDataSource;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * This class allow to copy and transform data in a distributed manner.
+ * @author Laurent Jourdren
+ */
 public class DataSourceDistCp {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -87,9 +96,17 @@ public class DataSourceDistCp {
 
       final long startTime = System.currentTimeMillis();
 
+      final InputStream is =
+          new ProgressCounterInputStream(DataSourceUtils.identifyDataSource(
+              srcPathname).getInputStream(), context.getCounter(
+              COUNTER_GROUP_NAME, "bytes read in input file"));
+
+      final OutputStream os =
+          new ProgressCounterOutputstream(destFs.create(destPath), context
+              .getCounter(COUNTER_GROUP_NAME, "bytes wrote in output file"));
+
       // Copy the file
-      new CopyDataSource(srcPathname, destPath.toString()).copy(destFs
-          .create(destPath));
+      new CopyDataSource(srcPathname, is, destPath.toString()).copy(os);
 
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
@@ -108,7 +125,6 @@ public class DataSourceDistCp {
       context.getCounter(COUNTER_GROUP_NAME, "Output file size").increment(
           destSize);
     }
-
   }
 
   public void copy(final Map<String, String> entries) throws IOException {
