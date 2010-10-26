@@ -27,7 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -57,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 public class HadoopExecAction implements Action {
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      new HashSet<Parameter>();
+      Collections.emptySet();
 
   @Override
   public void action(final String[] args) {
