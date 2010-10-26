@@ -22,6 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -110,6 +111,9 @@ public class MainCLI {
         "display information about the license of this software");
 
     options.addOption(OptionBuilder.withArgName("file").hasArg()
+        .withDescription("configuration file to use").create("conf"));
+
+    options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("external log file").create("log"));
 
     options.addOption(OptionBuilder.withArgName("level").hasArg()
@@ -146,6 +150,18 @@ public class MainCLI {
 
       if (line.hasOption("license"))
         MainCLI.license();
+
+      // Load configuration if exists
+      try {
+        if (line.hasOption("conf")) {
+          Settings.loadSettings(new File(line.getOptionValue("conf")));
+          argsOptions += 2;
+        } else
+          Settings.loadSettings();
+      } catch (IOException e) {
+        logger.severe("Error while reading configuration file.");
+        System.exit(1);
+      }
 
       // Set Log file
       if (line.hasOption("log")) {
