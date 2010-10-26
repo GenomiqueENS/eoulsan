@@ -59,7 +59,7 @@ public class ParamParser {
    * @throws EoulsanException if an error occurs while parsing file
    */
   public Command parse() throws EoulsanException {
-    
+
     return parse(new Command());
   }
 
@@ -140,11 +140,17 @@ public class ParamParser {
               if (nStepNode.getNodeType() == Node.ELEMENT_NODE) {
 
                 final Element eStepElement = (Element) nStepNode;
-                final String stepName = getTagValue("name", eStepElement);
+                final String stepName = getTagValue("stepname", eStepElement);
+                final String stepClassName =
+                    getTagValue("stepclass", eStepElement);
                 final String skip =
                     eStepElement.getAttribute("skip").trim().toLowerCase();
 
                 if (!"true".equals(skip)) {
+
+                  if (stepClassName != null && !"".equals(stepClassName.trim()))
+                    StepsRegistery.getInstance().addStepType(stepName,
+                        stepClassName);
 
                   logger.info("Add step: " + stepName);
                   command.addStep(stepName, parseParameters(eStepElement,
