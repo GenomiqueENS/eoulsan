@@ -760,6 +760,15 @@ public class TranscriptAndExonFinder {
     return this.transcripts.keySet();
   }
 
+  /**
+   * Get the list of chromosomes in the annotation.
+   * @return a set with the list of chromosomes
+   */
+  public Set<String> getChromosomesIds() {
+
+    return this.chrZoneMap.keySet();
+  }
+
   //
   // Save
   //
@@ -794,6 +803,7 @@ public class TranscriptAndExonFinder {
    * Load the annotation.
    * @param is InputStream input stream
    */
+  @SuppressWarnings(value = "unchecked")
   public void load(final InputStream is) throws IOException {
 
     final ObjectInputStream ois = new ObjectInputStream(is);
@@ -843,7 +853,8 @@ public class TranscriptAndExonFinder {
    * @param annotationFile annotation file to use
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
-   * @throws BadBioEntryException if an invalid entry of the annotation file is found
+   * @throws BadBioEntryException if an invalid entry of the annotation file is
+   *           found
    */
   public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType) throws IOException, BadBioEntryException {
@@ -857,7 +868,8 @@ public class TranscriptAndExonFinder {
    * @param is annotation input stream to use
    * @param expressionType the expression type to filter
    * @throws IOException if an error occurs while creating the index
-   * @throws BadBioEntryException if an invalid entry of the annotation file is found
+   * @throws BadBioEntryException if an invalid entry of the annotation file is
+   *           found
    */
   public TranscriptAndExonFinder(final InputStream is,
       final String expressionType) throws IOException, BadBioEntryException {
