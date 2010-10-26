@@ -23,11 +23,9 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -38,6 +36,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -219,26 +218,18 @@ public class CommonHadoop extends Common {
    * @param globalProperties global parameter as a Properties object
    * @return a new Configuration object
    */
-  public static final Configuration createConfiguration(
-      final Properties globalProperties) {
-
-    if (globalProperties == null)
-      return null;
+  public static final Configuration createConfigurationFromSettings() {
 
     final Configuration conf = new Configuration();
 
-    final Enumeration<Object> e = globalProperties.keys();
-
-    while (e.hasMoreElements()) {
-
-      final String keyName = (String) e.nextElement();
+    for (String keyName : Settings.getSettingsNames()) {
 
       if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
 
         final String hadoopKey =
             keyName.substring(HADOOP_PARAMETER_PREFIX.length());
 
-        conf.set(hadoopKey, globalProperties.getProperty(keyName));
+        conf.set(hadoopKey, Settings.getSetting(keyName));
       }
     }
 
