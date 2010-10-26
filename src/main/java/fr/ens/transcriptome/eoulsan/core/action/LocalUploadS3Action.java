@@ -34,8 +34,8 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.LocalExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.SimpleExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -107,7 +107,7 @@ public class LocalUploadS3Action implements Action {
       step.configure(uploadParameters, new HashSet<Parameter>());
 
       // Create Executor information
-      final ExecutorInfo info = new SimpleExecutorInfo();
+      final ExecutorInfo info = new LocalExecutorInfo();
 
       final StepResult result = step.execute(design, info);
 
