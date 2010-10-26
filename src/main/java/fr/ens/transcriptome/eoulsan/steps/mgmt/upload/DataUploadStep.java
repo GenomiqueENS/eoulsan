@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
@@ -52,7 +53,7 @@ public abstract class DataUploadStep implements Step {
 
   /** Step name. */
   public static final String STEP_NAME = "_upload";
-  
+
   protected boolean uploadGemome = false;
 
   private String designURI;
@@ -202,6 +203,16 @@ public abstract class DataUploadStep implements Step {
   }
 
   @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {};
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
@@ -271,7 +282,7 @@ public abstract class DataUploadStep implements Step {
           // genomeIndexNewFilename));
 
           // indexFile.delete();
-          
+
           genomesMap.put(genome, genomeFU.getDest());
         }
         s.getMetadata().setGenome(genomesMap.get(genome));

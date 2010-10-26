@@ -27,6 +27,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 
 /**
  * This abstract class define and parse arguments for the filter samples step.
@@ -64,6 +65,22 @@ public abstract class FilterSamplesStep implements Step {
   public String getDescription() {
 
     return "This step filter samples.";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public String getLogName() {
+
+    return "filtersamples";
   }
 
   @Override

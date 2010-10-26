@@ -38,6 +38,8 @@ import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsStep;
@@ -59,6 +61,16 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
   public String getLogName() {
 
     return "filterreads";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {DataTypes.READS};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {DataTypes.FILTERED_READS};
   }
 
   @Override

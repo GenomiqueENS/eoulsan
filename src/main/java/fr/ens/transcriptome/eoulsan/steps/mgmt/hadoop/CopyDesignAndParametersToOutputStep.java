@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
@@ -55,10 +56,38 @@ public class CopyDesignAndParametersToOutputStep implements Step {
   public static final String STEP_NAME = "_copy_design_params_to_output";
 
   private Configuration conf;
-  
+
   //
   // Step methods
   //
+
+  @Override
+  public String getName() {
+
+    return STEP_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "Copy design and parameters file to output path.";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public String getLogName() {
+
+    return null;
+  }
 
   @Override
   public void configure(final Set<Parameter> stepParameters,
@@ -103,24 +132,6 @@ public class CopyDesignAndParametersToOutputStep implements Step {
     }
 
     return new StepResult(this, true, "");
-  }
-
-  @Override
-  public String getDescription() {
-
-    return "Copy design and parameters file to output path.";
-  }
-
-  @Override
-  public String getLogName() {
-
-    return null;
-  }
-
-  @Override
-  public String getName() {
-
-    return STEP_NAME;
   }
 
 }

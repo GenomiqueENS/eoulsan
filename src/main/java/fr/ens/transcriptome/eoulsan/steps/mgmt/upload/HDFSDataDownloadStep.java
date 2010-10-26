@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -51,6 +52,34 @@ public class HDFSDataDownloadStep implements Step {
   public static final String STEP_NAME = "_download";
 
   private Configuration conf;
+
+  @Override
+  public String getName() {
+
+    return STEP_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "Download output data from HDFS filesystem";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public String getLogName() {
+
+    return "download";
+  }
 
   @Override
   public void configure(final Set<Parameter> stepParameters,
@@ -134,24 +163,6 @@ public class HDFSDataDownloadStep implements Step {
       return new StepResult(this, e, "Error while download results: "
           + e.getMessage());
     }
-  }
-
-  @Override
-  public String getDescription() {
-
-    return "Download output data from HDFS filesystem";
-  }
-
-  @Override
-  public String getLogName() {
-
-    return "download";
-  }
-
-  @Override
-  public String getName() {
-
-    return STEP_NAME;
   }
 
 }

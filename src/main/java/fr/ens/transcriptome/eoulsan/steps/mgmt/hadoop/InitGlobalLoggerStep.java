@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -107,6 +108,34 @@ public class InitGlobalLoggerStep implements Step {
   //
 
   @Override
+  public String getName() {
+
+    return STEP_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "Initialize global logger";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {};
+  }
+
+  @Override
+  public String getLogName() {
+
+    return null;
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
@@ -150,24 +179,6 @@ public class InitGlobalLoggerStep implements Step {
     }
 
     return new StepResult(this, true, "");
-  }
-
-  @Override
-  public String getDescription() {
-
-    return "Initialize global logger";
-  }
-
-  @Override
-  public String getLogName() {
-
-    return null;
-  }
-
-  @Override
-  public String getName() {
-
-    return STEP_NAME;
   }
 
   //

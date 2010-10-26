@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
@@ -47,6 +48,16 @@ public class FakeStep implements Step {
   public String getDescription() {
 
     return "A fake step";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return null;
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return null;
   }
 
   @Override

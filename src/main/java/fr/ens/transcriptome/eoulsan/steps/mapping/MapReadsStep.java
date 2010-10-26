@@ -27,6 +27,8 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 
 /**
  * This abstract class define and parse arguments for the map reads step.
@@ -73,6 +75,16 @@ public abstract class MapReadsStep implements Step {
   public String getDescription() {
 
     return "This step map reads.";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {DataTypes.FILTERED_READS, DataTypes.SOAP_INDEX};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {DataTypes.FILTERED_SOAP_RESULTS};
   }
 
   @Override

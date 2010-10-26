@@ -30,6 +30,8 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
 
@@ -55,6 +57,16 @@ public class AnaDiffLocalMain implements Step {
   public String getDescription() {
 
     return "This class compute the differential analysis for the experiment.";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {DataTypes.EXPRESSION_RESULTS};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {DataTypes.ANADIF_RESULTS};
   }
 
   @Override
