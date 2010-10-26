@@ -23,15 +23,14 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Settings;
 
 /**
  * This class define the command object of Eoulsan.
@@ -200,24 +199,20 @@ public class Command {
    * Public constructor.
    */
   public Command() {
+
+    this(true);
   }
 
   /**
    * Public constructor.
-   * @param globalProperties global properties to add the the command
+   * @param addSettingsValues if all the settings must be added to global
+   *          properties
    */
-  public Command(final Properties globalProperties) {
+  public Command(final boolean addSettingsValues) {
 
-    if (globalProperties == null)
-      return;
-
-    final Enumeration<Object> e = globalProperties.keys();
-
-    while (e.hasMoreElements()) {
-
-      final String keyName = (String) e.nextElement();
-      addGlobalParameter(keyName, globalProperties.getProperty(keyName));
-    }
+    if (addSettingsValues)
+      for (String settingName : Settings.getSettingsNames())
+        addGlobalParameter(settingName, Settings.getSetting(settingName));
   }
 
 }
