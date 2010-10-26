@@ -45,19 +45,21 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class CopyDataSource {
 
-  private DataSource src;
+  // private DataSource src;
+  private InputStream is;
   private String srcContentType;
   private String srcContentEncoding;
 
+  private String src;
   private String dest;
   private String destContentType;
   private String destContentEncoding;
 
   private void identifyTypeAndEncoding() {
 
-    final String src = this.src.getSourceInfo();
-    this.srcContentEncoding = StringUtils.compressionExtension(src);
-    this.srcContentType = StringUtils.extensionWithoutCompressionExtension(src);
+    this.srcContentEncoding = StringUtils.compressionExtension(this.src);
+    this.srcContentType =
+        StringUtils.extensionWithoutCompressionExtension(this.src);
 
     this.destContentEncoding = StringUtils.compressionExtension(this.dest);
     this.destContentType =
@@ -75,7 +77,7 @@ public class CopyDataSource {
     if (os == null)
       throw new IOException("The output stream is null");
 
-    final InputStream is = this.src.getInputStream();
+    final InputStream is = this.is;
 
     if (this.srcContentType.equals(this.destContentType)
         && this.srcContentEncoding.equals(this.destContentEncoding)) {
@@ -163,6 +165,31 @@ public class CopyDataSource {
     if (dest == null)
       throw new NullPointerException("The destination is null");
 
+    this.is = src.getInputStream();
+    this.src = src.getSourceInfo();
+    this.dest = dest;
+
+    identifyTypeAndEncoding();
+  }
+
+  /**
+   * Constructor.
+   * @param src the datasource
+   * @param dest the destination
+   */
+  public CopyDataSource(final String src, final InputStream is,
+      final String dest) {
+
+    if (src == null)
+      throw new NullPointerException("The datasource is null");
+
+    if (dest == null)
+      throw new NullPointerException("The destination is null");
+
+    if (is == null)
+      throw new NullPointerException("The input stream is null");
+
+    this.is = is;
     this.src = src;
     this.dest = dest;
 

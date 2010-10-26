@@ -53,12 +53,6 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
   //
 
   @Override
-  public String getLogName() {
-
-    return "filtersamples";
-  }
-
-  @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
     final long startTime = System.currentTimeMillis();

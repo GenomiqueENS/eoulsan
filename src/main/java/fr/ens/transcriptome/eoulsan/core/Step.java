@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
 public interface Step {
@@ -40,6 +41,18 @@ public interface Step {
    * @return the description of the step
    */
   String getDescription();
+
+  /**
+   * Get the input data types.
+   * @return an array of DataType
+   */
+  DataType[] getInputTypes();
+
+  /**
+   * Get the output data types.
+   * @return an array of DataType
+   */
+  DataType[] getOutputType();
 
   /**
    * Get the name of the log file name for this step.

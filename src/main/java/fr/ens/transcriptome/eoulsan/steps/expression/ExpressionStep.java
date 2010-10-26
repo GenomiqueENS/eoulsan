@@ -27,13 +27,18 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 
 /**
  * This abstract class define and parse arguments for the expression step.
+ * 
  * @author Laurent Jourdren
  */
 public abstract class ExpressionStep implements Step {
 
+  public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
+  
   private static final String STEP_NAME = "expression";
   private static final String DEFAULT_GENOMIC_TYPE = "exon";
 
@@ -46,6 +51,7 @@ public abstract class ExpressionStep implements Step {
 
   /**
    * Get the genomic type
+   * 
    * @return Returns the genomicType
    */
   protected String getGenomicType() {
@@ -54,6 +60,7 @@ public abstract class ExpressionStep implements Step {
 
   /**
    * Get the temporary directory
+   * 
    * @return Returns the tmpDir
    */
   protected String getTmpDir() {
@@ -77,22 +84,32 @@ public abstract class ExpressionStep implements Step {
   }
 
   @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] { DataTypes.FILTERED_SOAP_RESULTS, DataTypes.ANNOTATION };
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] { DataTypes.EXPRESSION_RESULTS };
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
-      if ("genomictype".equals(p.getName()))
+      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
         this.genomicType = p.getStringValue();
       else
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException("Unknown parameter for " + getName()
+            + " step: " + p.getName());
 
     }
 
     if (this.genomicType == null)
-      throw new EoulsanException("Parent type in no set for "
-          + getName() + " step.");
+      throw new EoulsanException("Parent type in no set for " + getName()
+          + " step.");
 
     for (Parameter p : globalParameters) {
 

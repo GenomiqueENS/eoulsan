@@ -60,12 +60,6 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
   //
 
   @Override
-  public String getLogName() {
-
-    return "filtersamples";
-  }
-
-  @Override
   public void configure(Set<Parameter> stepParameters,
       Set<Parameter> globalParameters) throws EoulsanException {
 

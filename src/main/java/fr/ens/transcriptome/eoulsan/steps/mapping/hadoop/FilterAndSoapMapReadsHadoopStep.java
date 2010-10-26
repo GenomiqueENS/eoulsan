@@ -43,6 +43,8 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
@@ -107,6 +109,16 @@ public class FilterAndSoapMapReadsHadoopStep implements Step {
   public String getDescription() {
 
     return "This step filters reads.";
+  }
+
+  @Override
+  public DataType[] getInputTypes() {
+    return new DataType[] {DataTypes.READS};
+  }
+
+  @Override
+  public DataType[] getOutputType() {
+    return new DataType[] {DataTypes.FILTERED_SOAP_RESULTS};
   }
 
   @Override
