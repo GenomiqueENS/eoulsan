@@ -52,9 +52,9 @@ public abstract class AbstractExecutorInfo implements ExecutorInfo {
   private String executionName;
   private String designPathname;
   private String paramPathname;
-  private String commandName;
-  private String commandDescription;
-  private String commandAuthor;
+  private String commandName = "";
+  private String commandDescription = "";
+  private String commandAuthor = "";
 
   //
   // Getters
@@ -212,7 +212,7 @@ public abstract class AbstractExecutorInfo implements ExecutorInfo {
   public void setCommandDescription(final String commandDescription) {
 
     logger.info("Command description: " + commandDescription);
-    this.commandName = commandDescription;
+    this.commandDescription = commandDescription;
   }
 
   /**
