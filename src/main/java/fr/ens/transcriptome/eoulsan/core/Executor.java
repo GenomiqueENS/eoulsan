@@ -138,8 +138,10 @@ public abstract class Executor {
     this.steps = new ArrayList<Step>();
     final Command c = this.command;
 
-    for (String stepName : c.getStepNames())
+    for (String stepName : c.getStepNames()) {
+      logger.info("Create " + stepName + " step.");
       this.steps.add(findStep(stepName));
+    }
   }
 
   /**
