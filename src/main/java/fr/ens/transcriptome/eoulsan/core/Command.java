@@ -23,6 +23,7 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,9 @@ import fr.ens.transcriptome.eoulsan.Settings;
  * @author Laurent Jourdren
  */
 public class Command {
+
+  private static final Set<Parameter> EMPTY_SET_PARAMETER =
+      Collections.emptySet();
 
   private String name = "";
   private String description = "";
@@ -168,7 +172,9 @@ public class Command {
    */
   public Set<Parameter> getStepParameters(final String stepName) {
 
-    return this.stepsMap.get(stepName);
+    final Set<Parameter> result = this.stepsMap.get(stepName);
+
+    return result == null ? EMPTY_SET_PARAMETER : result;
   }
 
   /**
