@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * This class register all the step that can be used par the application.
  * @author Laurent Jourdren
  */
+@SuppressWarnings("unchecked")
 public class StepsRegistery {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -93,6 +94,7 @@ public class StepsRegistery {
    * @param stepName name of the step to add
    * @param className class name of the step to add
    */
+  @SuppressWarnings("static-access")
   public void addStepType(final String stepName, final String className) {
 
     if (stepName == null || "".equals(stepName) || className == null)
