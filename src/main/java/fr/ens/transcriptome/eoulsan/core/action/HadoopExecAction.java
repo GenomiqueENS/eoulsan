@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -73,20 +72,7 @@ public class HadoopExecAction implements Action {
 
     }
 
-    final Properties globalProperties = new Properties();
-    globalProperties.setProperty("hadoop.conf.fs.s3n.awsAccessKeyId",
-        "AKIAJPXBAOLESJ2TOABA");
-    globalProperties.setProperty("hadoop.conf.fs.s3n.awsSecretAccessKey",
-        "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");
-
-    globalProperties.setProperty("hadoop.conf.fs.ftp.user.hestia.ens.fr", "anonymous");
-    globalProperties.setProperty("hadoop.conf.fs.ftp.password.hestia.ens.fr",
-        "toto@toto.com");
-
-    final Configuration conf =
-        CommonHadoop.createConfiguration(globalProperties);
-
-    CommonHadoop.printConfiguration(conf, "fs.ftp.");
+    final Configuration conf = CommonHadoop.createConfigurationFromSettings();
 
     try {
 
@@ -130,7 +116,7 @@ public class HadoopExecAction implements Action {
           DesignUtils.readAndCheckDesign(designFs.open(designPath));
 
       // Create command object
-      final Command c = new Command(globalProperties);
+      final Command c = new Command();
 
       // Add init global logger Step
       c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
