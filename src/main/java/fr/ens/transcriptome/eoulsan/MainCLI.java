@@ -98,6 +98,7 @@ public class MainCLI {
    * Create options for command line
    * @return an Options object
    */
+  @SuppressWarnings("static-access")
   private static Options makeOptions() {
 
     // create Options object
