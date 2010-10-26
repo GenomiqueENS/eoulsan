@@ -10,12 +10,15 @@
 # Get the path to this script
 BASEDIR=`dirname $0`
 
-# Set the Teolenn libraries path
+# Set the Eoulsan libraries path
 LIBDIR=$BASEDIR/lib
 
-# Set the memory in MiB needed by Teolenn (only Java part, not external tools)
+# Set the memory in MiB needed by Eoulsan (only Java part, not external tools)
 # By Default 2048
 MEMORY=2048
+
+# Add here your plugins and dependencies
+PLUGINS=
 
 # Set the path to java
 JAVA_CMD=java
@@ -30,5 +33,5 @@ done
 # Launch Eoulsan
 $JAVA_CMD -server \
           -Xmx${MEMORY}m \
-          -cp $LIBCP \
+          -cp $LIBCP:$PLUGINS \
           fr.ens.transcriptome.eoulsan.Main $*
