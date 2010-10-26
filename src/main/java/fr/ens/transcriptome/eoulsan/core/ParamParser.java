@@ -140,7 +140,14 @@ public class ParamParser {
               if (nStepNode.getNodeType() == Node.ELEMENT_NODE) {
 
                 final Element eStepElement = (Element) nStepNode;
-                final String stepName = getTagValue("stepname", eStepElement);
+
+                String stepName = getTagValue("stepname", eStepElement);
+                if (stepName == null)
+                  stepName = getTagValue("name", eStepElement);
+                if (stepName == null)
+                  throw new EoulsanException(
+                      "Step name not found in parameter file.");
+
                 final String stepClassName =
                     getTagValue("stepclass", eStepElement);
                 final String skip =
@@ -154,7 +161,7 @@ public class ParamParser {
 
                   logger.info("Add step: " + stepName);
                   command.addStep(stepName, parseParameters(eStepElement,
-                      "parameters"));
+                      "parameters", stepName));
                 }
 
               }
@@ -166,7 +173,7 @@ public class ParamParser {
         // Parse globals parameters
         //
 
-        command.setGlobalParameters(parseParameters(eElement, "globals"));
+        command.setGlobalParameters(parseParameters(eElement, "globals", null));
 
       }
     }
@@ -179,8 +186,10 @@ public class ParamParser {
    * @param root root element to parse
    * @param elementName name of the element
    * @return a set of Parameter object
+   * @throws EoulsanException if the tags of the parameter are not found
    */
-  private Set<Parameter> parseParameters(final Element root, String elementName) {
+  private Set<Parameter> parseParameters(final Element root,
+      String elementName, final String stepName) throws EoulsanException {
 
     final Set<Parameter> result = new HashSet<Parameter>();
 
@@ -206,6 +215,17 @@ public class ParamParser {
             final String paramName = getTagValue("name", eStepElement);
             final String paramValue = getTagValue("value", eStepElement);
 
+            if (paramName == null)
+              throw new EoulsanException(
+                  "<name> Tag not found in parameter section of "
+                      + (stepName == null ? "global parameters" : stepName
+                          + " step") + " in parameter file.");
+            if (paramValue == null)
+              throw new EoulsanException(
+                  "<value> Tag not found in parameter section of "
+                      + (stepName == null ? "global parameters" : stepName
+                          + " step") + " in parameter file.");
+
             result.add(new Parameter(paramName == null ? null : paramName
                 .toLowerCase(), paramValue));
           }
@@ -223,12 +243,18 @@ public class ParamParser {
    * @param element root element
    * @return the value of the tag
    */
-  private static String getTagValue(String tag, Element element) {
+  private static String getTagValue(final String tag, final Element element) {
 
-    NodeList nl = element.getElementsByTagName(tag).item(0).getChildNodes();
-    Node nValue = nl.item(0);
+    final NodeList nl = element.getChildNodes();
+    for (int i = 0; i < nl.getLength(); i++) {
 
-    return nValue.getNodeValue();
+      final Node n = nl.item(i);
+      if (n.getNodeType() == Node.ELEMENT_NODE && tag.equals(n.getNodeName()))
+        return n.getTextContent();
+
+    }
+
+    return null;
   }
 
   //
