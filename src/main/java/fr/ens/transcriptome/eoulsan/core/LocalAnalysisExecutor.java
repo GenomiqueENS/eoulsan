@@ -48,13 +48,13 @@ public class LocalAnalysisExecutor extends Executor {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  private AbstractExecutorInfo info = new LocalExecutorInfo();
   private final File designFile;
-  private final StepsRegistery registery = new StepsRegistery();
 
   @Override
-  protected Step getStep(String stepName) {
+  protected AbstractExecutorInfo getExecutorInfo() {
 
-    return this.registery.getStep(stepName);
+    return this.info;
   }
 
   @Override
@@ -80,7 +80,8 @@ public class LocalAnalysisExecutor extends Executor {
     try {
 
       final File logDir =
-          new File(this.designFile.getParent(), getInfo().getExecutionName());
+          new File(this.designFile.getParent(), getExecutorInfo()
+              .getExecutionName());
 
       if (!logDir.exists())
         logDir.mkdirs();
@@ -129,7 +130,7 @@ public class LocalAnalysisExecutor extends Executor {
 
     this.designFile = designFile;
 
-    final SimpleExecutorInfo info = getInfo();
+    final AbstractExecutorInfo info = getExecutorInfo();
     info.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
     info.setDesignPathname(designFile.getAbsolutePath());
@@ -150,11 +151,13 @@ public class LocalAnalysisExecutor extends Executor {
     // Register local steps
     //
 
-    this.registery.addStepType(FilterReadsLocalStep.class);
-    this.registery.addStepType(SoapMapReadsLocalStep.class);
-    this.registery.addStepType(FilterSamplesLocalStep.class);
-    this.registery.addStepType(ExpressionLocalStep.class);
-    this.registery.addStepType(AnaDiffLocalMain.class);
+    final StepsRegistery registery = StepsRegistery.getInstance();
+
+    registery.addStepType(FilterReadsLocalStep.class);
+    registery.addStepType(SoapMapReadsLocalStep.class);
+    registery.addStepType(FilterSamplesLocalStep.class);
+    registery.addStepType(ExpressionLocalStep.class);
+    registery.addStepType(AnaDiffLocalMain.class);
 
     // Log executor information
     info.logInfo();
