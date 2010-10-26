@@ -28,18 +28,45 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class register all the step that can be used par the application.
+ * @author Laurent Jourdren
+ */
 public class StepsRegistery {
 
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
+  private static StepsRegistery instance;
+
+  /**
+   * Get the instance of the StepRegistery.
+   * @return the singleton for StepRegistery
+   */
+  public static StepsRegistery getInstance() {
+
+    if (instance == null)
+      instance = new StepsRegistery();
+
+    return instance;
+  }
 
   private Map<String, Class> registery = new HashMap<String, Class>();
 
   /**
    * Add a step
-   * @param name name of the step
    * @param clazz Class of the step
    */
   public void addStepType(final Class clazz) {
+
+    addStepType(null, clazz);
+  }
+
+  /**
+   * Add a step
+   * @param stepName name of the step
+   * @param clazz Class of the step
+   */
+  public void addStepType(final String stepName, final Class clazz) {
 
     if (clazz == null)
       return;
@@ -48,7 +75,8 @@ public class StepsRegistery {
 
     if (s != null) {
 
-      final String lowerName = s.getName().toLowerCase();
+      final String lowerName =
+          (stepName == null ? s.getName() : stepName).trim().toLowerCase();
 
       if (this.registery.containsKey(lowerName))
         logger.warning("Step "
@@ -58,6 +86,31 @@ public class StepsRegistery {
       logger.finest("Add " + s.getName() + " to step registery");
     } else
       logger.warning("Addon " + clazz.getName() + " is not a step class");
+  }
+
+  /**
+   * Add a step.
+   * @param stepName name of the step to add
+   * @param className class name of the step to add
+   */
+  public void addStepType(final String stepName, final String className) {
+
+    if (stepName == null || "".equals(stepName) || className == null)
+      return;
+
+    try {
+      Class clazz = StepsRegistery.class.forName(className);
+
+      addStepType(stepName, clazz);
+
+      logger.info("Add external measurement: " + stepName);
+
+    } catch (ClassNotFoundException e) {
+
+      logger.severe("Cannot find " + className + " for step addon");
+      throw new RuntimeException("Cannot find " + className + " for step addon");
+
+    }
   }
 
   private Step testClassType(final Class clazz) {
@@ -116,6 +169,29 @@ public class StepsRegistery {
       return null;
     }
 
+  }
+
+  /**
+   * Test if a step exists in the registery.
+   * @param stepName step to test
+   * @return true if the step exits in the registery
+   */
+  public boolean isStep(final String stepName) {
+
+    if (stepName == null)
+      return false;
+
+    return this.registery.containsKey(stepName.toLowerCase());
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Private constructor.
+   */
+  private StepsRegistery() {
   }
 
 }
