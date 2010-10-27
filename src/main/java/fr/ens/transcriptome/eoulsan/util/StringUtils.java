@@ -543,7 +543,7 @@ public final class StringUtils {
     final double ti = gi * 1024;
 
     if (bytes < ki)
-      return String.format("%.2f B", bytes);
+      return String.format("%d B", bytes);
 
     if (bytes < mi)
       return String.format("%.2f KiB", bytes / ki);
