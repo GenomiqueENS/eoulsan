@@ -428,7 +428,7 @@ public class BinaryFastQWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public BinaryFastQWriter(final File outputFile) throws FileNotFoundException {
+  public BinaryFastQWriter(final File outputFile) throws IOException {
 
     this.os = FileUtils.createOutputStream(outputFile);
   }
@@ -438,7 +438,7 @@ public class BinaryFastQWriter {
    * @param outputFilename name of the file to use
    */
   public BinaryFastQWriter(final String outputFilename)
-      throws FileNotFoundException {
+      throws IOException {
 
     this.os = FileUtils.createOutputStream(outputFilename);
   }
