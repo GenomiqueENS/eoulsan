@@ -68,11 +68,11 @@ public class Globals {
   public static final boolean DEBUG = false;
 
   // Platforms where Eoulsan is available
-  public static String[][] AVAILABLE_BINARY_ARCH =
+  public static final String[][] AVAILABLE_BINARY_ARCH =
       { {"linux", "amd64"}, {"linux", "x86_64"}};
 
   // Platforms alias
-  public static String[][] AVAILABLE_BINARY_ARCH_ALIAS =
+  public static final String[][] AVAILABLE_BINARY_ARCH_ALIAS =
       {{"linux", "x86_64", "linux", "amd64"}};
 
   /** Format of the log. */
