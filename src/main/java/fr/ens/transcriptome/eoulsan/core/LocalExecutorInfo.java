@@ -26,6 +26,16 @@ public class LocalExecutorInfo extends AbstractExecutorInfo {
   }
 
   @Override
+  public InputStream getRawInputStream(final DataType dt, final Sample sample)
+      throws IOException {
+
+    final String src = getPathname(dt, sample);
+    File f = new File(src);
+
+    return FileUtils.createInputStream(f);
+  }
+
+  @Override
   public OutputStream getOutputStream(DataType dt, Sample sample)
       throws IOException {
 

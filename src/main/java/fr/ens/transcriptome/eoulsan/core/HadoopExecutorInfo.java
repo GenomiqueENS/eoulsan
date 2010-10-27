@@ -29,6 +29,17 @@ public class HadoopExecutorInfo extends AbstractExecutorInfo {
 
     return decompressInputStreamIsNeeded(fs.open(p), src);
   }
+  
+  @Override
+  public InputStream getRawInputStream(final DataType dt, final Sample sample)
+      throws IOException {
+
+    final String src = getPathname(dt, sample);
+    final Path p = new Path(src);
+    final FileSystem fs = p.getFileSystem(this.conf);
+
+    return fs.open(p);
+  }
 
   @Override
   public OutputStream getOutputStream(final DataType dt, final Sample sample)
