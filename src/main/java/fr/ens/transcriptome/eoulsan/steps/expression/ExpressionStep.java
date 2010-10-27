@@ -25,8 +25,8 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 
@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
  * 
  * @author Laurent Jourdren
  */
-public abstract class ExpressionStep implements Step {
+public abstract class ExpressionStep extends AbstractStep {
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   
