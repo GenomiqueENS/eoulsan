@@ -25,8 +25,8 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 
@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
  * This abstract class define and parse arguments for the filter reads step.
  * @author Laurent Jourdren
  */
-public abstract class FilterReadsStep implements Step {
+public abstract class FilterReadsStep extends AbstractStep {
 
   private static final String STEP_NAME = "filterreads";
 

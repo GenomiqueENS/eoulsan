@@ -25,18 +25,17 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.local;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
  * This step add execution information in log file in local mode.
  * @author Laurent Jourdren
  */
-public class ExecInfoLogStep implements Step {
+public class ExecInfoLogStep extends AbstractStep {
 
   /** Step name. */
   public static final String STEP_NAME = "_exec_info_log";
@@ -53,18 +52,7 @@ public class ExecInfoLogStep implements Step {
     return "Add information to log";
   }
 
-  @Override
-  public DataType[] getInputTypes() {
-
-    return null;
-  }
-
-  @Override
-  public DataType[] getOutputType() {
-
-    return null;
-  }
-
+ 
   @Override
   public String getLogName() {
 

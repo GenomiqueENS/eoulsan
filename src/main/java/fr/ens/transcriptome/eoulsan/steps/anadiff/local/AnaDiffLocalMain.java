@@ -23,12 +23,10 @@
 package fr.ens.transcriptome.eoulsan.steps.anadiff.local;
 
 import java.io.File;
-import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
@@ -39,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
  * This class define the step of differential analysis in local mode.
  * @author Laurent Jourdren
  */
-public class AnaDiffLocalMain implements Step {
+public class AnaDiffLocalMain extends AbstractStep {
 
   private static final String STEP_NAME = "anadiff";
 
@@ -67,17 +65,6 @@ public class AnaDiffLocalMain implements Step {
   @Override
   public DataType[] getOutputType() {
     return new DataType[] {DataTypes.ANADIF_RESULTS};
-  }
-
-  @Override
-  public String getLogName() {
-
-    return STEP_NAME;
-  }
-
-  @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) {
   }
 
   @Override
