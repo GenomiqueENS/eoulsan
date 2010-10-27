@@ -43,10 +43,22 @@ public abstract class AbstractStep implements Step {
 
   @Override
   public Version getVersion() {
-    
+
     return Globals.APP_VERSION;
   }
-  
+
+  @Override
+  public Version getRequiedEoulsanVersion() {
+
+    return Globals.APP_VERSION;
+  }
+
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.BOTH;
+  }
+
   @Override
   public DataType[] getInputTypes() {
 

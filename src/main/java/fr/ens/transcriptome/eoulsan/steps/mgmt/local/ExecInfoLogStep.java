@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
@@ -52,7 +53,12 @@ public class ExecInfoLogStep extends AbstractStep {
     return "Add information to log";
   }
 
- 
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.LOCAL;
+  }
+
   @Override
   public String getLogName() {
 

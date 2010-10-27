@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
@@ -53,6 +54,12 @@ public class HDFSDataUploadStep extends DataUploadStep {
   public String getDescription() {
 
     return "Upload data to HDFS filesystem";
+  }
+  
+  @Override
+  public ExecutionMode getExecutionMode() {
+    
+    return Step.ExecutionMode.HADOOP;
   }
 
   //

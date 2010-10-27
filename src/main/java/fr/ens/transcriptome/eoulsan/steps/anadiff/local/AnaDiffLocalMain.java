@@ -27,6 +27,7 @@ import java.io.File;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
@@ -55,6 +56,12 @@ public class AnaDiffLocalMain extends AbstractStep {
   public String getDescription() {
 
     return "This class compute the differential analysis for the experiment.";
+  }
+
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.LOCAL;
   }
 
   @Override

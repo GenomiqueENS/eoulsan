@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
@@ -109,6 +110,12 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
   public String getDescription() {
 
     return "This step filters reads.";
+  }
+
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.HADOOP;
   }
 
   @Override

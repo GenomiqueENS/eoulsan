@@ -33,6 +33,7 @@ import com.amazonaws.auth.PropertiesCredentials;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -48,6 +49,12 @@ public class S3DataUploadStep extends DataUploadStep {
   //
   // Step method
   //
+
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.LOCAL;
+  }
 
   @Override
   public String getDescription() {
