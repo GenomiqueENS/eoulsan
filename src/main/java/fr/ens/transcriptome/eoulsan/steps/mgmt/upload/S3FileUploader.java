@@ -204,7 +204,8 @@ public class S3FileUploader implements FileUploader {
           + " KiB/s)");
 
       if (this.temporaryFile)
-        this.file.delete();
+        if (!this.file.delete())
+          logger.warning("Can not remove temporary file: "+this.file.getAbsolutePath());
     }
 
     /**
@@ -292,7 +293,7 @@ public class S3FileUploader implements FileUploader {
    * will be uploaded to S3.
    * @author Laurent Jourdren
    */
-  private class S3OutputStream extends OutputStream {
+  private static final class S3OutputStream extends OutputStream {
 
     private OutputStream os;
 
