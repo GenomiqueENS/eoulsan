@@ -79,7 +79,7 @@ public class TFQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public TFQWriter(final File outputFile) throws FileNotFoundException {
+  public TFQWriter(final File outputFile) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFile);
   }
@@ -88,7 +88,7 @@ public class TFQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public TFQWriter(final String outputFilename) throws FileNotFoundException {
+  public TFQWriter(final String outputFilename) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFilename);
   }
