@@ -68,6 +68,12 @@ public class InitGlobalLoggerStep implements Step {
   /** Step name. */
   public static final String STEP_NAME = "_init_global_logger";
 
+  private static final String CPUINFO_FILE_PATH = "/proc/cpuinfo";
+  private static final String MEMINFO_FILE_PATH = "/proc/meminfo";
+  private static final String ROOT_PATH = "/";
+  private static final String VAR_PATH = "/var";
+  private static final String TMP_PATH = "/tmp";
+
   private Configuration conf;
 
   /**
@@ -205,8 +211,8 @@ public class InitGlobalLoggerStep implements Step {
 
     final Path logPath = new Path(info.getLogPathname());
 
-    final File cpuinfo = new File("/proc/cpuinfo");
-    final File meminfo = new File("/proc/meminfo");
+    final File cpuinfo = new File(CPUINFO_FILE_PATH);
+    final File meminfo = new File(MEMINFO_FILE_PATH);
 
     copyFile(cpuinfo, logPath, conf);
     copyFile(meminfo, logPath, conf);
@@ -217,9 +223,9 @@ public class InitGlobalLoggerStep implements Step {
     parseCpuinfo();
     parseMeminfo();
 
-    df(new File("/"), conf);
-    df(new File("/tmp"), conf);
-    df(new File("/var"), conf);
+    df(new File(ROOT_PATH), conf);
+    df(new File(TMP_PATH), conf);
+    df(new File(VAR_PATH), conf);
 
     final String hadoopTmp = conf.get("hadoop.tmp.dir");
     if (hadoopTmp != null)
@@ -231,7 +237,7 @@ public class InitGlobalLoggerStep implements Step {
     final Map<String, String> map = new HashMap<String, String>();
 
     final HadoopFileParser hfp =
-        new HadoopFileParser(new File("/proc/cpuinfo")) {
+        new HadoopFileParser(new File(CPUINFO_FILE_PATH)) {
 
           @Override
           protected void parse(String line) {
@@ -276,7 +282,7 @@ public class InitGlobalLoggerStep implements Step {
     final Map<String, String> map = new HashMap<String, String>();
 
     final HadoopFileParser hfp =
-        new HadoopFileParser(new File("/proc/meminfo")) {
+        new HadoopFileParser(new File(MEMINFO_FILE_PATH)) {
 
           @Override
           protected void parse(String line) {
