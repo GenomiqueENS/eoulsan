@@ -200,10 +200,10 @@ public class FileUtils {
    * Utility method to create a fast OutputStream from a file.
    * @param filename Name of the file to read
    * @return an OutputStream
-   * @throws FileNotFoundException if the file is not found
+   * @throws IOException if the file is not found
    */
   public static final OutputStream createOutputStream(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     if (filename == null)
       throw new NullPointerException("The filename is null.");
@@ -215,16 +215,18 @@ public class FileUtils {
    * Utility method to create a fast OutputStream from a file.
    * @param file File to read
    * @return an InputStream
-   * @throws FileNotFoundException if the file is not found
+   * @throws IOException if the file is not found
    */
   public static final OutputStream createOutputStream(final File file)
-      throws FileNotFoundException {
+      throws IOException {
 
     if (file == null)
       throw new NullPointerException("The file is null.");
 
     if (file.isFile())
-      file.delete();
+      if (!file.delete())
+        throw new IOException("Can not remove existing file: "
+            + file.getAbsolutePath());
 
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
@@ -268,7 +270,7 @@ public class FileUtils {
    * Utility method to create fast BufferedReader.
    * @param is InputStream to read
    * @return a BufferedReader
-   * @throws FileNotFoundException if the file is not found
+   * @throws IOException if the file is not found
    */
   public static final BufferedReader createBufferedReader(final InputStream is)
       throws FileNotFoundException {
@@ -284,10 +286,10 @@ public class FileUtils {
    * safe-thread. The created file use ISO-8859-1 encoding.
    * @param filename Name of the file to write
    * @return a BufferedWriter
-   * @throws FileNotFoundException if the file is not found
+   * @throws IOException if the file is not found
    */
   public static final UnSynchronizedBufferedWriter createBufferedWriter(
-      final String filename) throws FileNotFoundException {
+      final String filename) throws IOException {
 
     if (filename == null)
       throw new NullPointerException("The filename is null");
@@ -300,10 +302,10 @@ public class FileUtils {
    * safe-thread. The created file use ISO-8859-1 encoding.
    * @param file File to write
    * @return a BufferedWriter
-   * @throws FileNotFoundException if the file is not found
+   * @throws IOException if the file is not found
    */
   public static final UnSynchronizedBufferedWriter createBufferedWriter(
-      final File file) throws FileNotFoundException {
+      final File file) throws IOException {
 
     final OutputStream os = createOutputStream(file);
 
@@ -346,7 +348,9 @@ public class FileUtils {
 
     // Remove file if exists
     if (file.exists())
-      file.delete();
+      if (!file.delete())
+        throw new IOException("Can not remove existing file: "
+            + file.getAbsolutePath());
 
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
@@ -373,7 +377,9 @@ public class FileUtils {
 
     // Remove file if exists
     if (file.exists())
-      file.delete();
+      if (!file.delete())
+        throw new IOException("Can not remove existing file: "
+            + file.getAbsolutePath());
 
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
@@ -469,7 +475,10 @@ public class FileUtils {
       if (!overwrite)
         return false;
 
-      myDestFile.delete();
+      if (!myDestFile.delete())
+        throw new IOException("Can not remove existing file: "
+            + myDestFile.getAbsolutePath());
+
     }
 
     final FileChannel inChannel = new FileInputStream(srcFile).getChannel();
