@@ -34,12 +34,12 @@ public class Utils {
    * @param map Map to reverse
    * @return The reverse map
    */
-  public static Map<String, Set<String>> reverseMap(Map<String, String> map) {
+  public static Map<String, Set<String>> reverseMap(final Map<String, String> map) {
 
     if (map == null)
       return null;
 
-    Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+    final Map<String, Set<String>> result = new HashMap<String, Set<String>>();
 
     for (Map.Entry<String, String> e : map.entrySet()) {
 
@@ -47,7 +47,7 @@ public class Utils {
 
       final String value = e.getValue();
 
-      if (!result.containsValue(value)) {
+      if (!result.containsKey(value)) {
         set = new HashSet<String>();
         result.put(value, set);
       } else
