@@ -270,6 +270,7 @@ public class SoapMapReadsMapper implements
   public final void close() throws IOException {
 
     logger.info("Start of close() of the mapper.");
+
     // Close the data file
     this.writer.close();
 
@@ -324,9 +325,13 @@ public class SoapMapReadsMapper implements
     parseSOAPResults(outputFile, unmapFile, this.collector, this.reporter);
 
     // Remove temporary files
-    outputFile.delete();
+    if (!outputFile.delete())
+      logger.warning("Can not delete SOAP output file: "
+          + outputFile.getAbsolutePath());
     // unmapFile.delete();
-    this.dataFile.delete();
+    if (!this.dataFile.delete())
+      logger.warning("Can not delete SOAP input file: "
+          + this.dataFile.getAbsolutePath());
 
     logger.info("End of close() of the mapper.");
   }
