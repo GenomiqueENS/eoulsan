@@ -28,16 +28,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
@@ -49,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * partition.
  * @author Laurent Jourdren
  */
-public abstract class DataUploadStep implements Step {
+public abstract class DataUploadStep extends AbstractStep {
 
   /** Step name. */
   public static final String STEP_NAME = "_upload";
@@ -200,22 +196,6 @@ public abstract class DataUploadStep implements Step {
   public String getName() {
 
     return STEP_NAME;
-  }
-
-  @Override
-  public DataType[] getInputTypes() {
-    return new DataType[] {};
-  }
-
-  @Override
-  public DataType[] getOutputType() {
-    return new DataType[] {};
-  }
-
-  @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
-
   }
 
   /**

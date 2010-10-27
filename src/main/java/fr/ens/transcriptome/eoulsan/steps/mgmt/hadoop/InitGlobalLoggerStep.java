@@ -46,12 +46,11 @@ import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -60,7 +59,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class initialize the global logger
  * @author Laurent Jourdren
  */
-public class InitGlobalLoggerStep implements Step {
+public class InitGlobalLoggerStep extends AbstractStep {
 
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -123,16 +122,6 @@ public class InitGlobalLoggerStep implements Step {
   public String getDescription() {
 
     return "Initialize global logger";
-  }
-
-  @Override
-  public DataType[] getInputTypes() {
-    return new DataType[] {};
-  }
-
-  @Override
-  public DataType[] getOutputType() {
-    return new DataType[] {};
   }
 
   @Override

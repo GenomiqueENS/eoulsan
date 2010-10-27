@@ -39,10 +39,10 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-public class FilterAndSoapMapReadsHadoopMain2 implements Step {
+public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
   private static final String STEP_NAME = "filterandmapreads2";
 
@@ -116,12 +116,6 @@ public class FilterAndSoapMapReadsHadoopMain2 implements Step {
   @Override
   public DataType[] getOutputType() {
     return new DataType[] {DataTypes.FILTERED_SOAP_RESULTS};
-  }
-
-  @Override
-  public String getLogName() {
-
-    return "filtersoapmapreads";
   }
 
   @Override

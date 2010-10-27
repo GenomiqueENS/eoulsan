@@ -23,44 +23,43 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 
 /**
- * This step is a fake step.
+ * This class define an abstract Step.
  * @author Laurent Jourdren
  */
-public class FakeStep extends AbstractStep {
-
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+public abstract class AbstractStep implements Step {
 
   @Override
-  public String getName() {
+  public String getDescription() {
 
-    return "fakestep";
+    return "Description of " + getName();
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) {
+  public DataType[] getInputTypes() {
 
-    for (Parameter p : stepParameters)
-      logger.info("s: " + p.getName() + "\t" + p.getStringValue());
-
-    for (Parameter p : globalParameters)
-      logger.info("g: " + p.getName() + "\t" + p.getStringValue());
-
+    return null;
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public DataType[] getOutputType() {
 
-    logger.info("execute design: " + design);
+    return null;
+  }
 
-    return new StepResult(this, true, null);
+  @Override
+  public String getLogName() {
+
+    return getName();
+  }
+
+  @Override
+  public void configure(final Set<Parameter> stepParameters,
+      final Set<Parameter> globalParameters) throws EoulsanException {
   }
 
 }
