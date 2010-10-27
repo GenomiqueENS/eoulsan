@@ -71,12 +71,13 @@ public class GFFWriter extends GFFEntry {
   }
 
   /**
-   * Close the writer
+   * Close the writer.
+   * @throws IOException if an error occurs while closing the writer
    */
-  public void close() {
+  public void close() throws IOException {
 
     this.sb = null;
-    this.close();
+    this.writer.close();
   }
 
   //
@@ -108,7 +109,7 @@ public class GFFWriter extends GFFEntry {
    * Public constructor.
    * @param outputFile file to use
    */
-  public GFFWriter(final File outputFile) throws FileNotFoundException {
+  public GFFWriter(final File outputFile) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFile);
   }
@@ -117,7 +118,7 @@ public class GFFWriter extends GFFEntry {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public GFFWriter(final String outputFilename) throws FileNotFoundException {
+  public GFFWriter(final String outputFilename) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFilename);
   }
