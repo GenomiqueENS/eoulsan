@@ -83,12 +83,14 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
       final StringBuilder sb = new StringBuilder();
 
       // Compute ration and filter samples
-      for (String sample : sampleInputMapReads.keySet()) {
+      for (Map.Entry<String, Long> e : sampleInputMapReads.entrySet()) {
 
+        final String sample = e.getKey();
+        
         if (!soapAlignementWithOneLocus.containsKey(sample))
           continue;
 
-        final long inputReads = sampleInputMapReads.get(sample);
+        final long inputReads = e.getValue();
         final long oneLocus = soapAlignementWithOneLocus.get(sample);
 
         final double ratio = (double) oneLocus / (double) inputReads;
