@@ -91,7 +91,7 @@ public interface ExecutorInfo {
   void logInfo();
 
   /**
-   * Get the pathname for a DataType and a Sample
+   * Get the pathname for a DataType and a Sample.
    * @param dt the DataType of the source
    * @param sample the sample for the source
    * @return a String with the pathname
@@ -99,7 +99,7 @@ public interface ExecutorInfo {
   String getPathname(DataType dt, Sample sample);
 
   /**
-   * Create an InputStream to load data
+   * Create an InputStream to load data.
    * @param dt the DataType of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
@@ -107,7 +107,16 @@ public interface ExecutorInfo {
   InputStream getInputStream(DataType dt, Sample sample) throws IOException;
 
   /**
-   * Create an OutputStream to load data
+   * Create a raw InputStream (without decompression of input data) to load
+   * data.
+   * @param dt the DataType of the data to load
+   * @param sample the sample
+   * @return an InputStream corresponding to DataType and Sample
+   */
+  InputStream getRawInputStream(DataType dt, Sample sample) throws IOException;
+
+  /**
+   * Create an OutputStream to load data.
    * @param dt the DataType of the data to write
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
