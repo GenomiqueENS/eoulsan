@@ -27,6 +27,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Set;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class define a lock to prevent execution of a process simultaneously on
@@ -34,6 +37,9 @@ import java.util.Set;
  * @author Laurent Jourdren
  */
 public class ExecLock {
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private static final String LOCK_EXTENSION = ".lock";
   private static final String PID_EXTENSION = ".pid";
@@ -103,9 +109,13 @@ public class ExecLock {
    */
   public void unlock() {
 
-    lockFile.delete();
-    pidLockFile.delete();
-    pidFile.delete();
+    if (!lockFile.delete())
+      logger.warning("Can not delete lock file: " + lockFile.getAbsolutePath());
+    if (!pidLockFile.delete())
+      logger.warning("Can not delete pid lock file: "
+          + pidLockFile.getAbsolutePath());
+    if (!pidFile.delete())
+      logger.warning("Can not delete pid file: " + pidFile.getAbsolutePath());
     lock = false;
     sleep(10000);
   }
