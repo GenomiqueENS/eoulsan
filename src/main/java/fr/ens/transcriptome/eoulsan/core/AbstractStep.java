@@ -25,7 +25,9 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define an abstract Step.
@@ -39,6 +41,12 @@ public abstract class AbstractStep implements Step {
     return "Description of " + getName();
   }
 
+  @Override
+  public Version getVersion() {
+    
+    return Globals.APP_VERSION;
+  }
+  
   @Override
   public DataType[] getInputTypes() {
 
