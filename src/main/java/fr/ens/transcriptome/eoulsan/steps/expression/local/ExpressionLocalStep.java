@@ -25,8 +25,10 @@ package fr.ens.transcriptome.eoulsan.steps.expression.local;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -36,6 +38,9 @@ import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 
 public class ExpressionLocalStep extends ExpressionStep {
+
+  /** Logger */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public String getLogName() {
@@ -98,7 +103,9 @@ public class ExpressionLocalStep extends ExpressionStep {
         fetc.saveFinalResults(expressionFile);
 
         // Remove expression Temp file
-        expressionTmpFile.delete();
+        if (!expressionTmpFile.delete())
+          logger.warning("Can not delete expression temporary file: "
+              + expressionTmpFile.getAbsolutePath());
 
         // Add counters for this sample to log file
         log.append(epmr.getReporter().countersValuesToString(
