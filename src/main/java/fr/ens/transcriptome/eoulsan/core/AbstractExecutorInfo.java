@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class AbstractExecutorInfo implements ExecutorInfo {
 
-  protected static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private String basePathname;
   private String logPathname;
