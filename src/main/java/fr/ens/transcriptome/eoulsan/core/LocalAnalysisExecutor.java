@@ -85,7 +85,10 @@ public class LocalAnalysisExecutor extends Executor {
               .getExecutionName());
 
       if (!logDir.exists())
-        logDir.mkdirs();
+        if (!logDir.mkdirs()) {
+          throw new IOException("Can not create log directory: "
+              + logDir.getAbsolutePath());
+        }
 
       final String logFilename = result.getStep().getLogName();
 
