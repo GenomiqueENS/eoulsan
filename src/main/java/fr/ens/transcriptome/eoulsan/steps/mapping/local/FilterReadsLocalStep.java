@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
@@ -43,6 +44,12 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 public final class FilterReadsLocalStep extends FilterReadsStep {
 
+  @Override
+  public ExecutionMode getExecutionMode() {
+    
+    return Step.ExecutionMode.LOCAL;
+  }
+  
   @Override
   public String getLogName() {
 

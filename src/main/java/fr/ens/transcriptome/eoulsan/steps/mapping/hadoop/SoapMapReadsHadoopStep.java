@@ -37,6 +37,7 @@ import org.apache.hadoop.mapred.lib.IdentityReducer;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -142,6 +143,12 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
   //
   // Step methods
   // 
+
+  @Override
+  public ExecutionMode getExecutionMode() {
+
+    return Step.ExecutionMode.HADOOP;
+  }
 
   @Override
   public String getLogName() {

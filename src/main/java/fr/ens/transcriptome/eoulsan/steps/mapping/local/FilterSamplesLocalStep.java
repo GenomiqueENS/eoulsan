@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
@@ -52,6 +53,12 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
   // Step methods
   //
 
+  @Override
+  public ExecutionMode getExecutionMode() {
+    
+    return Step.ExecutionMode.LOCAL;
+  }
+  
   @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
