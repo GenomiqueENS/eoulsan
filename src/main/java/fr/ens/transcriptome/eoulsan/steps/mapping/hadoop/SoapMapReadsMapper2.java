@@ -206,7 +206,7 @@ public class SoapMapReadsMapper2 extends Mapper<LongWritable, Text, Text, Text> 
     // Download genome reference
 
     lock.lock();
-    File soapIndexZipDir = installSoapIndex(new Path(soapIndexZipPath), conf);
+    final File soapIndexZipDir = installSoapIndex(new Path(soapIndexZipPath), conf);
     lock.unlock();
 
     if (soapIndexZipPath == null) {
