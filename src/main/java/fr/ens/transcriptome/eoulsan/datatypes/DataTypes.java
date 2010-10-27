@@ -24,14 +24,12 @@ package fr.ens.transcriptome.eoulsan.datatypes;
 
 /**
  * This class contains all the built-in datatypes for Eoulsan:
- * 
- * @author jourdren
- * 
+ * @author Laurent Jourdren
  */
 public class DataTypes {
 
   /** Reads datatype. */
-  public static final DataType READS = new DataType() {
+  public static final DataType READS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -53,7 +51,7 @@ public class DataTypes {
   };
 
   /** Filtered reads datatype. */
-  public static final DataType FILTERED_READS = new DataType() {
+  public static final DataType FILTERED_READS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -75,7 +73,7 @@ public class DataTypes {
   };
 
   /** SOAP index data type. */
-  public static final DataType SOAP_INDEX = new DataType() {
+  public static final DataType SOAP_INDEX = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -103,7 +101,7 @@ public class DataTypes {
   };
 
   /** Filtered SOAP results. */
-  public static final DataType FILTERED_SOAP_RESULTS = new DataType() {
+  public static final DataType FILTERED_SOAP_RESULTS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -125,7 +123,7 @@ public class DataTypes {
   };
 
   /** SOAP results datatype. */
-  public static final DataType SOAP_RESULTS = new DataType() {
+  public static final DataType SOAP_RESULTS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -147,7 +145,7 @@ public class DataTypes {
   };
 
   /** Expression results datatype. */
-  public static final DataType EXPRESSION_RESULTS = new DataType() {
+  public static final DataType EXPRESSION_RESULTS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -169,7 +167,7 @@ public class DataTypes {
   };
 
   /** Annotation datatype. */
-  public static final DataType ANNOTATION = new DataType() {
+  public static final DataType ANNOTATION = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -197,7 +195,7 @@ public class DataTypes {
   };
 
   /** Anadiff results datatype. */
-  public static final DataType ANADIF_RESULTS = new DataType() {
+  public static final DataType ANADIF_RESULTS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -225,7 +223,7 @@ public class DataTypes {
   };
 
   /** Genome datatype. */
-  public static final DataType GENOME = new DataType() {
+  public static final DataType GENOME = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
@@ -253,7 +251,7 @@ public class DataTypes {
   };
 
   /** Unmap reads results datatype. */
-  public static final DataType UNMAP_READS = new DataType() {
+  public static final DataType UNMAP_READS = new AbstractDataType() {
 
     @Override
     public String getDefaultExtention() {
