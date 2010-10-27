@@ -57,8 +57,8 @@ public class MainCLI {
   public static void version() {
 
     System.out.println(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-        + " on " + Globals.APP_BUILD_DATE + ")");
+        + " version " + Globals.APP_VERSION_STRING + " ("
+        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
     System.exit(0);
   }
 

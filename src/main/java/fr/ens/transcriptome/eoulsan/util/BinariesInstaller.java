@@ -134,7 +134,8 @@ public class BinariesInstaller {
     final String inputPath = "/" + os.replace(" ", "") + "/" + arch;
 
     final String outputPath =
-        "/tmp/" + Globals.APP_NAME_LOWER_CASE + "/" + Globals.APP_VERSION;
+        "/tmp/"
+            + Globals.APP_NAME_LOWER_CASE + "/" + Globals.APP_VERSION_STRING;
 
     // Test if the file is allready installed
     if (new File(outputPath, binaryFilename).isFile()) {

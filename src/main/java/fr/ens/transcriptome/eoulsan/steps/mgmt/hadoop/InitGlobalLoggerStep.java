@@ -152,8 +152,8 @@ public class InitGlobalLoggerStep extends AbstractStep {
       logger.setLevel(Globals.LOG_LEVEL);
 
       logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-          + " on " + Globals.APP_BUILD_DATE + ")");
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
       info.logInfo();
 
     } catch (IOException e) {
