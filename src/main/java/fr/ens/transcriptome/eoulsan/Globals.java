@@ -33,6 +33,8 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import fr.ens.transcriptome.eoulsan.util.Version;
+
 public class Globals {
 
   private static Properties manifestProperties;
@@ -49,7 +51,10 @@ public class Globals {
       "fr.ens.transcriptome." + APP_NAME_LOWER_CASE;
 
   /** The version of the application. */
-  public static final String APP_VERSION = getVersion();
+  public static final String APP_VERSION_STRING = getVersion();
+  
+  /** The version of the application. */
+  public static final Version APP_VERSION = new Version(APP_VERSION_STRING);
 
   /** The built number of the application. */
   public static final String APP_BUILD_NUMBER = getBuiltNumber();
@@ -59,7 +64,7 @@ public class Globals {
 
   /** The prefix for temporary files. */
   public static final String TEMP_PREFIX =
-      APP_NAME_LOWER_CASE + "-" + APP_VERSION + "-" + APP_BUILD_NUMBER + "-";
+      APP_NAME_LOWER_CASE + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
 
   /** The log level of the application. */
   public static final Level LOG_LEVEL = Level.INFO; // Level.OFF;
@@ -102,7 +107,7 @@ public class Globals {
   /** About string, plain text version. */
   public static final String ABOUT_TXT =
       Globals.APP_NAME
-          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
+          + " version " + Globals.APP_VERSION_STRING + " (" + Globals.APP_BUILD_NUMBER
           + ")" + " is a pipeline for RNAseq analysis.\n"
           + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
           + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"

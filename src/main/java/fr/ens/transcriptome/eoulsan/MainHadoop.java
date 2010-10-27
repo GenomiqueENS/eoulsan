@@ -37,8 +37,8 @@ public class MainHadoop {
     int exitCode = -1;
 
     System.out.println(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-        + ")");
+        + " version " + Globals.APP_VERSION_STRING + " ("
+        + Globals.APP_BUILD_NUMBER + ")");
 
     final ProgramDriver pgd = new ProgramDriver();
 
@@ -62,8 +62,10 @@ public class MainHadoop {
       //
       // pgd.addClass("newupload", HDFSDataUpload.class, "Upload data.");
 
-      pgd.addClass("exec", HadoopExecAction.class, "Execute " + Globals.APP_NAME);
-      //pgd.addClass("exec", UploadDesignDataHadoopMain.class, "Execute " + Globals.APP_NAME);
+      pgd.addClass("exec", HadoopExecAction.class, "Execute "
+          + Globals.APP_NAME);
+      // pgd.addClass("exec", UploadDesignDataHadoopMain.class, "Execute " +
+      // Globals.APP_NAME);
       pgd.driver(args);
 
       // success

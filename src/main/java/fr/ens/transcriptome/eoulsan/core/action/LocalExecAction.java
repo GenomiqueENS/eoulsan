@@ -45,9 +45,9 @@ public class LocalExecAction implements Action {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-  
+
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-    Collections.emptySet();
+      Collections.emptySet();
 
   @Override
   public void action(final String[] args) {
@@ -66,8 +66,8 @@ public class LocalExecAction implements Action {
     final File designFile = new File(args[1]);
 
     logger.info(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-        + " on " + Globals.APP_BUILD_DATE + ")");
+        + " version " + Globals.APP_VERSION_STRING + " ("
+        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
     logger.info("Parameter file: " + paramFile);
     logger.info("Design file: " + designFile);
 
@@ -84,10 +84,10 @@ public class LocalExecAction implements Action {
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
       final Command c = new Command();
-      
+
       // Add execution info to log Step
       c.addStep(ExecInfoLogStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
-      
+
       pp.parse(c);
 
       // Execute

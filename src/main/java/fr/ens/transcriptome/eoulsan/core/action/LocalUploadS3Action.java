@@ -85,8 +85,8 @@ public class LocalUploadS3Action implements Action {
       final URI destURI = new URI(args[2]);
 
       logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION + " (" + Globals.APP_BUILD_NUMBER
-          + " on " + Globals.APP_BUILD_DATE + ")");
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
       logger.info("Parameter file: " + paramURI);
       logger.info("Design file: " + designURI);
       logger.info("Destination : " + destURI);

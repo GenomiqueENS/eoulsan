@@ -83,7 +83,8 @@ public class Settings {
     final String home = System.getProperty("user.home");
 
     if (os.toLowerCase().startsWith("windows"))
-      return home + File.separator + "Application Data" + File.separator
+      return home
+          + File.separator + "Application Data" + File.separator
           + Globals.APP_NAME_LOWER_CASE + ".conf";
 
     return home + File.separator + "." + Globals.APP_NAME_LOWER_CASE;
@@ -107,8 +108,9 @@ public class Settings {
 
     FileOutputStream fos = new FileOutputStream(file);
 
-    properties.store(fos, " " + Globals.APP_NAME + " version "
-        + Globals.APP_VERSION + " configuration file");
+    properties.store(fos, " "
+        + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+        + " configuration file");
     fos.close();
   }
 
