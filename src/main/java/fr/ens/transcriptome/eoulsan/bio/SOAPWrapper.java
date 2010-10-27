@@ -82,7 +82,8 @@ public class SOAPWrapper {
     ProcessUtils.exec(cmd, DEBUG);
 
     // Remove symbolic link
-    tmpGenomeFile.delete();
+    if (!tmpGenomeFile.delete())
+    logger.warning("Cannot remove symbolic link while after creating SOAP index");
 
     final long endTime = System.currentTimeMillis();
 
@@ -107,7 +108,8 @@ public class SOAPWrapper {
 
     final File result = makeIndexInZipFile(genomeTmpFile);
 
-    genomeTmpFile.delete();
+    if (!genomeTmpFile.delete())
+      logger.warning("Cannot delete temporary index zip file");
 
     return result;
   }
