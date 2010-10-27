@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
+package fr.ens.transcriptome.eoulsan.bio;
 
 /**
  * This class define a method to compute tm for oligonucletides.
