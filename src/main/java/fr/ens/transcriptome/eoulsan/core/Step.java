@@ -27,6 +27,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 public interface Step {
 
@@ -42,6 +43,12 @@ public interface Step {
    */
   String getDescription();
 
+  /** 
+   * Get version of the Step.
+   * @return a Version object with the version of the Step
+   */
+  Version getVersion();
+  
   /**
    * Get the input data types.
    * @return an array of DataType
