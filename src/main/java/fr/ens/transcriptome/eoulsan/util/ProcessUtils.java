@@ -41,7 +41,9 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public final class ProcessUtils {
 
+  /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
   private static Random random;
 
   public static class ProcessResult {
@@ -136,10 +138,12 @@ public final class ProcessUtils {
 
     try {
       final int result = p.waitFor();
-      f.delete();
+      if (!f.delete())
+        logger.warning("Can not remove sh script: " + f.getAbsolutePath());
       return result;
     } catch (InterruptedException e) {
-      f.delete();
+      if (!f.delete())
+        logger.warning("Can not remove sh script: " + f.getAbsolutePath());
       throw new IOException(e.getMessage());
     }
   }
@@ -167,14 +171,12 @@ public final class ProcessUtils {
 
     final StringBuilder stdout = new StringBuilder();
     final StringBuilder stderr = new StringBuilder();
-    
+
     try {
 
       final InputStream std = p.getInputStream();
       final BufferedReader stdr =
           new BufferedReader(new InputStreamReader(std));
-
-      
 
       String stdoutLine = null;
 
@@ -198,16 +200,19 @@ public final class ProcessUtils {
 
       final int exitValue = p.waitFor();
 
-      f.delete();
+      if (!f.delete())
+        logger.warning("Can not remove sh script: " + f.getAbsolutePath());
 
       // Return result
       return new ProcessResult(exitValue, stdout.toString(), stderr.toString());
 
     } catch (IOException e) {
-      f.delete();
+      if (!f.delete())
+        logger.warning("Can not remove sh script: " + f.getAbsolutePath());
       throw e;
     } catch (InterruptedException e) {
-      f.delete();
+      if (!f.delete())
+        logger.warning("Can not remove sh script: " + f.getAbsolutePath());
       throw new IOException(e.getMessage());
     }
   }

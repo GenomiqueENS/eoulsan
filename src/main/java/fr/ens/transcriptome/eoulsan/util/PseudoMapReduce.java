@@ -33,12 +33,18 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class implements a pseudo map-reduce framework.
  * @author Laurent Jourdren
  */
 public abstract class PseudoMapReduce {
+
+  /** Logger. */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private File tmpDir;
   private File mapOutputFile;
@@ -175,8 +181,10 @@ public abstract class PseudoMapReduce {
             + StringUtils.bashEscaping(this.mapOutputFile.getAbsolutePath());
 
     final boolean result = ProcessUtils.system(cmd) == 0;
-    this.mapOutputFile.delete();
-    
+    if (!this.mapOutputFile.delete())
+      logger.warning("Can not delete map output file: "
+          + this.mapOutputFile.getAbsolutePath());
+
     return result;
   }
 
@@ -255,7 +263,9 @@ public abstract class PseudoMapReduce {
 
     br.close();
     bw.close();
-    this.sortOutputFile.delete();
+    if (!this.sortOutputFile.delete())
+      logger.warning("Can not delete sort output file: "
+          + this.sortOutputFile.getAbsolutePath());
   }
 
 }
