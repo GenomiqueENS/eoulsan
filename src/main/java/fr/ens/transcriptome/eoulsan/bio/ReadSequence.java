@@ -99,7 +99,7 @@ public class ReadSequence extends Sequence {
     for (int i = 0; i < len; i++)
       score += quality.charAt(i) - 64;
 
-    return score / len;
+    return score / (double) len;
   }
 
   /**
