@@ -183,7 +183,8 @@ public class ExpressionHadoopStep extends ExpressionStep {
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
-    exonIndexFile.delete();
+    if (!exonIndexFile.delete())
+      logger.warning("Can not delete exon index file: "+ exonIndexFile.getAbsolutePath());
 
     return exonsIndexPath;
   }
