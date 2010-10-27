@@ -72,12 +72,42 @@ public class FinalExpressionTranscriptsCreator {
       if (o == null)
         return 1;
 
-      final int diff = o.alignementCount - this.alignementCount;
+      int diff = o.alignementCount - this.alignementCount;
 
       if (diff != 0)
         return diff;
 
-      return transcript.getName().compareTo(o.transcript.getName());
+      diff = transcript.getName().compareTo(o.transcript.getName());
+
+      if (diff != 0)
+        return diff;
+
+      diff = o.baseNotCovered - this.baseNotCovered;
+
+      if (diff != 0)
+        return diff;
+
+      return (int) (o.ratio - this.ratio);
+
+    }
+
+    public boolean equals(final Object o) {
+
+      if (o == null)
+        return false;
+
+      if (!(o instanceof ExpressionTranscript))
+        return false;
+
+      final ExpressionTranscript et = (ExpressionTranscript) o;
+
+      if (this.alignementCount == et.alignementCount
+          && this.transcript.equals(et.transcript)
+          && this.baseNotCovered == et.baseNotCovered
+          && Math.abs(this.ratio - et.ratio) < .0000001)
+        return true;
+
+      return false;
     }
 
     @Override

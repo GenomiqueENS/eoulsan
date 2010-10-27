@@ -192,9 +192,44 @@ public class TranscriptAndExonFinder {
 
     }
 
+    @Override
     public String toString() {
 
       return "[c=" + count + " s=" + start + " e=" + end + "]";
+    }
+
+    //
+    // Other methods
+    //
+
+    private static final boolean stringEquals(final String s1, final String s2) {
+
+      if (s1 == null && s2 == null)
+        return true;
+
+      if (s1 == null || s2 == null)
+        return false;
+
+      return s1.equals(s2);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == null)
+        return false;
+
+      if (!(o instanceof Transcript))
+        return false;
+
+      final Transcript t = (Transcript) o;
+
+      return stringEquals(t.name, this.name)
+          && stringEquals(t.type, this.type)
+          && stringEquals(t.chromosome, this.chromosome)
+          && t.count == this.count && t.start == this.start
+          && t.end == this.end && t.strand == this.strand
+          && t.length == this.length;
     }
 
     //
