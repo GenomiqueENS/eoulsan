@@ -116,7 +116,8 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
 
         filterSoapResult(alignmentFile, resultFile, reporter);
         countUnmap(unmapFile, reporter);
-        alignmentFile.delete();
+        if (!alignmentFile.delete())
+          logger.warning("Can not delete alignment file: "+alignmentFile.getAbsolutePath());
 
         // Add counters for this sample to log file
         log.append(reporter.countersValuesToString(COUNTER_GROUP,
