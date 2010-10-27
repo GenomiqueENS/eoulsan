@@ -49,12 +49,13 @@ public class FastQWriter extends ReadSequenceWriter {
   }
 
   /**
-   * Close the writer
+   * Close the writer.
+   * @throws IOException if an error occurs while closing the writer
    */
   @Override
-  public void close() {
+  public void close() throws IOException {
 
-    this.close();
+    this.writer.close();
   }
 
   //
@@ -86,7 +87,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public FastQWriter(final File outputFile) throws FileNotFoundException {
+  public FastQWriter(final File outputFile) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFile);
   }
@@ -95,7 +96,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public FastQWriter(final String outputFilename) throws FileNotFoundException {
+  public FastQWriter(final String outputFilename) throws IOException {
 
     this.writer = FileUtils.createBufferedWriter(outputFilename);
   }
