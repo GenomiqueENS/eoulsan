@@ -52,7 +52,7 @@ public class Globals {
 
   /** The version of the application. */
   public static final String APP_VERSION_STRING = getVersion();
-  
+
   /** The version of the application. */
   public static final Version APP_VERSION = new Version(APP_VERSION_STRING);
 
@@ -64,13 +64,16 @@ public class Globals {
 
   /** The prefix for temporary files. */
   public static final String TEMP_PREFIX =
-      APP_NAME_LOWER_CASE + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
+      APP_NAME_LOWER_CASE
+          + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
 
   /** The log level of the application. */
   public static final Level LOG_LEVEL = Level.INFO; // Level.OFF;
 
   /** Set the debug mode. */
-  public static final boolean DEBUG = false;
+  public static final boolean DEBUG =
+      APP_VERSION_STRING.endsWith("-SNAPSHOT")
+          || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
 
   // Platforms where Eoulsan is available
   public static final String[][] AVAILABLE_BINARY_ARCH =
@@ -107,8 +110,9 @@ public class Globals {
   /** About string, plain text version. */
   public static final String ABOUT_TXT =
       Globals.APP_NAME
-          + " version " + Globals.APP_VERSION_STRING + " (" + Globals.APP_BUILD_NUMBER
-          + ")" + " is a pipeline for RNAseq analysis.\n"
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + ")"
+          + " is a pipeline for RNAseq analysis.\n"
           + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
           + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
           + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
@@ -129,6 +133,9 @@ public class Globals {
 
   /** Default locale of the application. */
   public static final Locale DEFAULT_LOCALE = Locale.US;
+
+  /** Print stack trace default. */
+  public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
   //
   // Methods
@@ -197,7 +204,7 @@ public class Globals {
    * Set the default Local of the application
    */
   public static void setDefaultLocale() {
-    
+
     Locale.setDefault(DEFAULT_LOCALE);
   }
 
