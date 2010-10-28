@@ -24,25 +24,23 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.datatypes.DataType;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class define an abstract ExecutorInfo. TODO Rename to
- * AbstractExecutorInfo
+ * This class define an simple ExecutorInfo.
  * @author jourdren
  */
-public abstract class AbstractExecutorInfo implements ExecutorInfo {
+public class SimpleExecutorInfo implements ExecutorInfo {
 
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
 
@@ -257,9 +255,7 @@ public abstract class AbstractExecutorInfo implements ExecutorInfo {
                 cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
   }
 
-  //
-  // Other methods
-  //
+
 
   /**
    * Add executor information to log.
@@ -302,26 +298,30 @@ public abstract class AbstractExecutorInfo implements ExecutorInfo {
             + dt.getDefaultExtention());
   }
 
-  /**
-   * Decompress an inputStream if needed.
-   * @param is the InputStream
-   * @param source source of the inputStream
-   * @return a InputStream with decompression integrated or not
-   * @throws IOException if an error occurs while creating decompressor
-   *           InputStream
-   */
-  protected InputStream decompressInputStreamIsNeeded(final InputStream is,
-      final String source) throws IOException {
+  @Override
+  public InputStream getInputStream(final DataType dt, final Sample sample)
+      throws IOException {
 
-    final String extension = StringUtils.compressionExtension(source);
+    final String src = getPathname(dt, sample);
 
-    if (Common.GZIP_EXTENSION.equals(extension))
-      return CompressionFactory.createGZipInputStream(is);
+    return EoulsanRuntime.getRuntime().getInputStream(src);
+  }
 
-    if (Common.BZIP2_EXTENSION.equals(extension))
-      return CompressionFactory.createBZip2InputStream(is);
+  @Override
+  public InputStream getRawInputStream(final DataType dt, final Sample sample)
+      throws IOException {
 
-    return is;
+    final String src = getPathname(dt, sample);
+
+    return EoulsanRuntime.getRuntime().getRawInputStream(src);
+  }
+
+  @Override
+  public OutputStream getOutputStream(final DataType dt, final Sample sample)
+      throws IOException {
+
+    return EoulsanRuntime.getRuntime().getOutputStream(
+        getPathname(dt, sample));
   }
 
   //
@@ -331,7 +331,7 @@ public abstract class AbstractExecutorInfo implements ExecutorInfo {
   /**
    * Public constructor.
    */
-  protected AbstractExecutorInfo() {
+  public SimpleExecutorInfo() {
 
     createExecutionName();
   }

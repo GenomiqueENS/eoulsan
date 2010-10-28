@@ -62,10 +62,10 @@ public class HadoopAnalysisExecutor extends Executor {
   private Configuration conf;
   private Path designPath;
   private Design design;
-  private HadoopExecutorInfo info;
+  private SimpleExecutorInfo info;
 
   @Override
-  protected AbstractExecutorInfo getExecutorInfo() {
+  protected SimpleExecutorInfo getExecutorInfo() {
 
     return this.info;
   }
@@ -217,7 +217,7 @@ public class HadoopAnalysisExecutor extends Executor {
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.info = new HadoopExecutorInfo(conf);
+    this.info = new SimpleExecutorInfo();
 
     //
     // Register local steps
@@ -288,7 +288,7 @@ public class HadoopAnalysisExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final AbstractExecutorInfo info = getExecutorInfo();
+    final SimpleExecutorInfo info = getExecutorInfo();
 
     info.setBasePathname(basePath.toString());
 

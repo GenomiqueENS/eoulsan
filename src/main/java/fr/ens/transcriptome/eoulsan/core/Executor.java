@@ -103,7 +103,7 @@ public abstract class Executor {
    * Get the executorInfo
    * @return the ExecutorInfo
    */
-  protected abstract AbstractExecutorInfo getExecutorInfo();
+  protected abstract SimpleExecutorInfo getExecutorInfo();
 
   //
   // Private methods
@@ -174,7 +174,7 @@ public abstract class Executor {
       throw new EoulsanException("The command is null");
 
     // Get executor info
-    final AbstractExecutorInfo info = getExecutorInfo();
+    final SimpleExecutorInfo info = getExecutorInfo();
 
     // Check base path
     if (info.getBasePathname() == null)

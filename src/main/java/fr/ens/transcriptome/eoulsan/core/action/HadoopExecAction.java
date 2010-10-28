@@ -35,7 +35,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Executor;
@@ -59,6 +62,15 @@ public class HadoopExecAction implements Action {
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
       Collections.emptySet();
 
+  /**
+   * Main method. This method is called by MainHadoop.
+   * @param args command line arguments
+   */
+  public static void main(final String[] args) {
+
+    new HadoopExecAction().action(args);
+  }
+
   @Override
   public void action(final String[] args) {
 
@@ -69,12 +81,12 @@ public class HadoopExecAction implements Action {
           + Globals.APP_NAME_LOWER_CASE + " exec param.xml design.txt");
 
       System.exit(1);
-
     }
 
-    final Configuration conf = CommonHadoop.createConfigurationFromSettings();
-
     try {
+
+      // Initialize The application
+      final Configuration conf = init();
 
       // Get the command line argumnts
       final String paramPathname = args[0];
@@ -145,33 +157,56 @@ public class HadoopExecAction implements Action {
 
     } catch (FileNotFoundException e) {
 
-      System.err.println("File not found: " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
+      errorExit(e, "File not found: " + e.getMessage());
 
     } catch (EoulsanException e) {
 
-      System.err.println("Error while executing "
+      errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
 
     } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
+
+      errorExit(e, "Error: " + e.getMessage());
 
     } catch (URISyntaxException e) {
-      System.err.println("Error: " + e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
+
+      errorExit(e, "Error: " + e.getMessage());
     }
 
   }
 
-  public static void main(final String[] args) {
+  /**
+   * Configure the application.
+   * @return a Hadoop configuration object
+   * @throws EoulsanException if an error occurs while reading settings
+   */
+  private Configuration init() throws EoulsanException {
 
-    new HadoopExecAction().action(args);
+    try {
+      // Create and load settings
+      final Settings settings = new Settings();
+
+      // Create Hadoop configuration object
+      final Configuration conf =
+          CommonHadoop.createConfigurationFromSettings(settings);
+
+      // Initialize runtime
+      HadoopEoulsanRuntime.init(settings, conf);
+
+      return conf;
+    } catch (IOException e) {
+      throw new EoulsanException("Error while reading settings: "
+          + e.getMessage());
+    }
+  }
+
+  private static final void errorExit(final Exception e, final String msg) {
+
+    System.err.println(msg);
+
+    if (EoulsanRuntime.getSettings().isPrintStackTrace())
+      e.printStackTrace();
+    System.exit(1);
   }
 
 }
