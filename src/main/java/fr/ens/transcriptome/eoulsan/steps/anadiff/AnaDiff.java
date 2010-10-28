@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -47,33 +48,19 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class AnaDiff {
 
+  /** Logger. */
+  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
   private static final String ANADIFF_SCRIPT = "/anadiff.R";
 
   private Design design;
   private File expressionFilesDirectory;
 
-  private String readStaticScript() {
-
-    final StringBuilder sb = new StringBuilder();
-
-    final InputStream is = AnaDiff.class.getResourceAsStream(ANADIFF_SCRIPT);
-
-    try {
-      final BufferedReader br = FileUtils.createBufferedReader(is);
-
-      String line;
-
-      while ((line = br.readLine()) != null) {
-
-        sb.append(line);
-        sb.append('\n');
-      }
-    } catch (IOException e) {
-    }
-
-    return sb.toString();
-  }
-
+  /**
+   * Execute the analysis.
+   * @throws EoulsanException if an error occurs while creating or executing the
+   *           R script
+   */
   public void run() throws EoulsanException {
 
     final Map<String, Integer> conditionsMap = new HashMap<String, Integer>();
@@ -137,28 +124,69 @@ public class AnaDiff {
       writeWithoutBiologicalReplicate(sb, rSampleIds, rSampleNames,
           rCondIndexes, rCondNames);
 
-    try {
-      final File rScript = File.createTempFile("anadiff", ".R");
+    final File rScript;
 
-      System.out.println("rScript: " + rScript.getAbsolutePath());
+    try {
+      rScript = File.createTempFile("anadiff", ".R");
+
+      logger.fine("rScript: " + rScript.getAbsolutePath());
 
       Writer writer = FileUtils.createBufferedWriter(rScript);
       writer.write(sb.toString());
       writer.close();
 
+    } catch (IOException e) {
+
+      throw new EoulsanException("Error while creating R script in anadiff: "
+          + e.getMessage());
+    }
+
+    try {
       ProcessUtils.exec("/usr/bin/R -f "
           + StringUtils.bashEscaping(rScript.getAbsolutePath()), false);
 
       // rScript.delete();
 
     } catch (IOException e) {
-      System.err.println(e.getMessage());
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      throw new EoulsanException("Error while executing R script in anadiff: "
+          + e.getMessage());
     }
 
   }
 
+  /**
+   * Read the static part of the the generated script.
+   * @return a String with the static part of the script
+   */
+  private String readStaticScript() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    final InputStream is = AnaDiff.class.getResourceAsStream(ANADIFF_SCRIPT);
+
+    try {
+      final BufferedReader br = FileUtils.createBufferedReader(is);
+
+      String line;
+
+      while ((line = br.readLine()) != null) {
+
+        sb.append(line);
+        sb.append('\n');
+      }
+    } catch (IOException e) {
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Test if there is biological replicates
+   * @param rCondIndexes R conditions indexes
+   * @param rCondRep R condition replicat
+   * @return true if there is some biological replicates
+   */
   private boolean isBiologicalReplicates(List<Integer> rCondIndexes,
       final List<String> rCondRep) {
 
@@ -187,6 +215,14 @@ public class AnaDiff {
     return false;
   }
 
+  /**
+   * Write the load data part of the R script
+   * @param sb StringBuilder to use to write data
+   * @param rSampleIds R samples ids
+   * @param rSampleNames R samples names
+   * @param rCondIndexes R conditions indexes
+   * @param rCondNames R conditions names
+   */
   private void writeLoadData(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<Integer> rCondIndexes, final List<String> rCondNames) {
@@ -256,6 +292,14 @@ public class AnaDiff {
 
   }
 
+  /**
+   * Write code without biological replicates.
+   * @param sb StringBuilder to use
+   * @param rSampleIds R samples ids
+   * @param rSampleNames R samples names
+   * @param rCondIndexes R conditions indexes
+   * @param rCondNames R conditions names
+   */
   private void writeWithoutBiologicalReplicate(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<Integer> rCondIndexes, final List<String> rCondNames) {
@@ -295,6 +339,15 @@ public class AnaDiff {
 
   }
 
+  /**
+   * Write code without biological replicates.
+   * @param sb StringBuilder to use
+   * @param rSampleIds R samples ids
+   * @param rSampleNames R samples names
+   * @param rCondIndexes R conditions indexes
+   * @param rCondNames R conditions names
+   * @param RCondRep R conditions replicates
+   */
   private void writeWithBiologicalReplicate(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<Integer> rCondIndexes, final List<String> rCondNames,
