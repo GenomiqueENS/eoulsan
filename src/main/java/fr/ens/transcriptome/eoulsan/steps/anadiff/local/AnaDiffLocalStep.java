@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
  * This class define the step of differential analysis in local mode.
  * @author Laurent Jourdren
  */
-public class AnaDiffLocalMain extends AbstractStep {
+public class AnaDiffLocalStep extends AbstractStep {
 
   private static final String STEP_NAME = "anadiff";
 
