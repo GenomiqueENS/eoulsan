@@ -52,7 +52,6 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.Step.ExecutionMode;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -161,7 +160,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
       logger.info(Globals.APP_NAME
           + " version " + Globals.APP_VERSION_STRING + " ("
-          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Hadoop mode.");
       info.logInfo();
 
     } catch (IOException e) {
