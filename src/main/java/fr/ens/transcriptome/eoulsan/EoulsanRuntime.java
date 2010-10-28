@@ -55,6 +55,15 @@ public class EoulsanRuntime {
   }
 
   /**
+   * Test if an instance of the runtime is set
+   * @return true if an instance of the EoulsanRuntime is set
+   */
+  public static boolean isRuntime() {
+
+    return instance != null;
+  }
+
+  /**
    * Set the EoulsanRuntime instance. This method can be only call once at the
    * startup of the application.
    * @param runtime the Eoulsan runtime object
