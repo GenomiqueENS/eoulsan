@@ -15,7 +15,9 @@ import java.util.logging.Logger;
  */
 public class Settings {
 
+  /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  
   private static final String MAIN_PREFIX_KEY = "main.";
   private final Properties properties = new Properties();
 
