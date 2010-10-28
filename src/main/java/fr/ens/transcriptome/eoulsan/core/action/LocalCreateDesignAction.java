@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.core.action;
 
 import java.io.FileNotFoundException;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
@@ -49,11 +50,11 @@ public class LocalCreateDesignAction implements Action {
     Design design = db.getDesign();
 
     if (design.getSampleCount() == 0) {
-      System.err
-          .println("Error: Nothing to create, no file found.  Use the -h option to get more information.");
-      System.err.println("usage: "
-          + Globals.APP_NAME_LOWER_CASE + " createdesign files");
-      System.exit(1);
+      Common
+          .showErrorMessageAndExit("Error: Nothing to create, no file found.\n"
+              + "  Use the -h option to get more information.\n" + "usage: "
+              + Globals.APP_NAME_LOWER_CASE + " createdesign files");
+
     }
 
     try {
@@ -62,11 +63,9 @@ public class LocalCreateDesignAction implements Action {
       dw.write(design);
 
     } catch (FileNotFoundException e) {
-      System.err.println("File not found: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (EoulsanIOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "File not found: " + e.getMessage());
     }
 
   }

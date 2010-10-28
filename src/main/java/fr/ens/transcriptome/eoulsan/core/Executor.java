@@ -215,7 +215,6 @@ public abstract class Executor {
     logger.info("Java version: " + System.getProperty("java.version"));
     logger.info("Log level: " + logger.getLevel());
 
-    boolean success = true;
     final long startTime = System.currentTimeMillis();
 
     // Execute steps
@@ -227,8 +226,7 @@ public abstract class Executor {
 
       if (r == null) {
         logger.severe("No result for step: " + s.getName());
-        System.err.println("No result for step: " + s.getName());
-        System.exit(1);
+        throw new EoulsanException("No result for step: " + s.getName());
       }
 
       // Write step logs
@@ -237,30 +235,15 @@ public abstract class Executor {
       // End of the analysis if the analysis fail
       if (!r.isSuccess()) {
         logger.severe("Fail of the analysis: " + r.getErrorMessage());
+        logEndAnalysis(false, startTime);
 
-        if (r.getException() != null) {
-          System.err.println("\n=== Stack Trace ===");
-          r.getException().printStackTrace();
-          System.err.println("\n===");
-        }
-
-        success = false;
-        break;
+        throw new EoulsanException("Fail of the analysis: "
+            + r.getErrorMessage());
       }
 
     }
 
-    final long endTime = System.currentTimeMillis();
-
-    logger.info("End of the analysis in "
-        + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
-
-    if (!success) {
-      System.err.println("Error during analysis.");
-      System.exit(1);
-    } else
-      logger.info("Successful analysis");
-
+    logEndAnalysis(true, startTime);
   }
 
   //
@@ -290,6 +273,21 @@ public abstract class Executor {
         + " in "
         + StringUtils.toTimeHumanReadable(endTimePhase
             - this.startTimeCurrentStep) + " s.");
+  }
+
+  /**
+   * Log the state and the time of the analysis
+   * @param success true if analysis was successful
+   * @param startTime start time of the analysis is milliseconds since Java
+   *          epoch
+   */
+  private void logEndAnalysis(final boolean success, final long startTime) {
+
+    final long endTime = System.currentTimeMillis();
+
+    logger.info(success ? "Successful" : "Unsuccessful"
+        + " end of the analysis in "
+        + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
   }
 
 }

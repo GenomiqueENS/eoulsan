@@ -34,8 +34,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
@@ -74,14 +74,10 @@ public class HadoopExecAction implements Action {
   @Override
   public void action(final String[] args) {
 
-    if (args.length != 3) {
-
-      System.err.println("Invalid number of arguments.");
-      System.err.println("usage: "
-          + Globals.APP_NAME_LOWER_CASE + " exec param.xml design.txt");
-
-      System.exit(1);
-    }
+    if (args.length != 3)
+      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
+          + "usage: " + Globals.APP_NAME_LOWER_CASE
+          + " exec param.xml design.txt");
 
     try {
 
@@ -157,20 +153,20 @@ public class HadoopExecAction implements Action {
 
     } catch (FileNotFoundException e) {
 
-      errorExit(e, "File not found: " + e.getMessage());
+      Common.errorExit(e, "File not found: " + e.getMessage());
 
     } catch (EoulsanException e) {
 
-      errorExit(e, "Error while executing "
+      Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
 
     } catch (IOException e) {
 
-      errorExit(e, "Error: " + e.getMessage());
+      Common.errorExit(e, "Error: " + e.getMessage());
 
     } catch (URISyntaxException e) {
 
-      errorExit(e, "Error: " + e.getMessage());
+      Common.errorExit(e, "Error: " + e.getMessage());
     }
 
   }
@@ -198,15 +194,6 @@ public class HadoopExecAction implements Action {
       throw new EoulsanException("Error while reading settings: "
           + e.getMessage());
     }
-  }
-
-  private static final void errorExit(final Exception e, final String msg) {
-
-    System.err.println(msg);
-
-    if (EoulsanRuntime.getSettings().isPrintStackTrace())
-      e.printStackTrace();
-    System.exit(1);
   }
 
 }

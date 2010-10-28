@@ -25,14 +25,13 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.steps.anadiff.local.AnaDiffLocalMain;
+import fr.ens.transcriptome.eoulsan.steps.anadiff.local.AnaDiffLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterReadsLocalStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterSamplesLocalStep;
@@ -45,9 +44,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class LocalAnalysisExecutor extends Executor {
-
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private SimpleExecutorInfo info = new SimpleExecutorInfo();
   private final File designFile;
@@ -104,9 +100,7 @@ public class LocalAnalysisExecutor extends Executor {
 
     } catch (IOException e) {
 
-      logger.severe("Unable to create log file for "
-          + result.getStep() + " step.");
-      System.err.println("Unable to create log file for "
+      Common.showAndLogErrorMessage("Unable to create log file for "
           + result.getStep() + " step.");
     }
 
@@ -162,7 +156,7 @@ public class LocalAnalysisExecutor extends Executor {
     registery.addStepType(SoapMapReadsLocalStep.class);
     registery.addStepType(FilterSamplesLocalStep.class);
     registery.addStepType(ExpressionLocalStep.class);
-    registery.addStepType(AnaDiffLocalMain.class);
+    registery.addStepType(AnaDiffLocalStep.class);
   }
 
 }

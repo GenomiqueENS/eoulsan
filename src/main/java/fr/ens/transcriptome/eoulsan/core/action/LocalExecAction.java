@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Command;
@@ -52,22 +53,17 @@ public class LocalExecAction implements Action {
   @Override
   public void action(final String[] args) {
 
-    if (args.length != 2) {
-
-      System.err.println("Invalid number of arguments.");
-      System.err.println("usage: "
-          + Globals.APP_NAME_LOWER_CASE + " exec param.xml design.txt");
-
-      System.exit(1);
-
-    }
+    if (args.length != 2)
+      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
+          + "usage: " + Globals.APP_NAME_LOWER_CASE
+          + " exec param.xml design.txt");
 
     final File paramFile = new File(args[0]);
     final File designFile = new File(args[1]);
 
     logger.info(Globals.APP_NAME
         + " version " + Globals.APP_VERSION_STRING + " ("
-        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
+        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Local mode.");
     logger.info("Parameter file: " + paramFile);
     logger.info("Design file: " + designFile);
 
@@ -95,15 +91,10 @@ public class LocalExecAction implements Action {
       e.execute();
 
     } catch (FileNotFoundException e) {
-      System.err.println("File not found: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (EoulsanException e) {
-
-      e.printStackTrace();
-
-      System.err.println("Error while executing "
+      Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-      System.exit(1);
     }
 
   }
