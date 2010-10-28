@@ -215,21 +215,25 @@ public class CommonHadoop extends Common {
 
   /**
    * Create a new Configuration object from global parameters
-   * @param globalProperties global parameter as a Properties object
+   * @param settings Settings of the application
    * @return a new Configuration object
    */
-  public static final Configuration createConfigurationFromSettings() {
+  public static final Configuration createConfigurationFromSettings(
+      final Settings settings) {
+
+    if (settings == null)
+      return null;
 
     final Configuration conf = new Configuration();
 
-    for (String keyName : Settings.getSettingsNames()) {
+    for (String keyName : settings.getSettingsNames()) {
 
       if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
 
         final String hadoopKey =
             keyName.substring(HADOOP_PARAMETER_PREFIX.length());
 
-        conf.set(hadoopKey, Settings.getSetting(keyName));
+        conf.set(hadoopKey, settings.getSetting(keyName));
       }
     }
 

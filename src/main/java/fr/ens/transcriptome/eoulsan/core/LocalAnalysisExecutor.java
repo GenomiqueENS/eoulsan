@@ -49,11 +49,11 @@ public class LocalAnalysisExecutor extends Executor {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private AbstractExecutorInfo info = new LocalExecutorInfo();
+  private SimpleExecutorInfo info = new SimpleExecutorInfo();
   private final File designFile;
 
   @Override
-  protected AbstractExecutorInfo getExecutorInfo() {
+  protected SimpleExecutorInfo getExecutorInfo() {
 
     return this.info;
   }
@@ -134,7 +134,7 @@ public class LocalAnalysisExecutor extends Executor {
 
     this.designFile = designFile;
 
-    final AbstractExecutorInfo info = getExecutorInfo();
+    final SimpleExecutorInfo info = getExecutorInfo();
     info.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
     info.setDesignPathname(designFile.getAbsolutePath());

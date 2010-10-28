@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 
 /**
@@ -216,9 +217,15 @@ public class Command {
    */
   public Command(final boolean addSettingsValues) {
 
-    if (addSettingsValues)
-      for (String settingName : Settings.getSettingsNames())
-        addGlobalParameter(settingName, Settings.getSetting(settingName));
+    
+    
+    if (addSettingsValues) {
+      
+      final Settings settings = EoulsanRuntime.getRuntime().getSettings();
+      
+      for (String settingName : settings.getSettingsNames())
+        addGlobalParameter(settingName, settings.getSetting(settingName));
+    }
   }
 
 }

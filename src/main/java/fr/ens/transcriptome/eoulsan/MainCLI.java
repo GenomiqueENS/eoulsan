@@ -154,11 +154,18 @@ public class MainCLI {
 
       // Load configuration if exists
       try {
+        
+        final Settings settings;
+        
         if (line.hasOption("conf")) {
-          Settings.loadSettings(new File(line.getOptionValue("conf")));
+          settings = new Settings(new File(line.getOptionValue("conf")));
           argsOptions += 2;
         } else
-          Settings.loadSettings();
+          settings = new Settings();
+        
+        // Initialize the runtime
+        LocalEoulsanRuntime.init(settings);
+        
       } catch (IOException e) {
         logger.severe("Error while reading configuration file.");
         System.exit(1);
