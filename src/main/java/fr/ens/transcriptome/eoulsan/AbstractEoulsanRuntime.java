@@ -29,6 +29,10 @@ import java.io.OutputStream;
 import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * This class define an absract EoulsanRuntime.
+ * @author Laurent Jourdren
+ */
 public abstract class AbstractEoulsanRuntime {
 
   private Settings settings;
