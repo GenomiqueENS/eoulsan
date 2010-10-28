@@ -896,13 +896,6 @@ public class DistCp implements Tool {
     }
   }
 
-  public static void main(String[] args) throws Exception {
-    JobConf job = new JobConf(DistCp.class);
-    DistCp distcp = new DistCp(job);
-    int res = ToolRunner.run(distcp, args);
-    System.exit(res);
-  }
-
   /**
    * Make a path relative with respect to a root path. absPath is always assumed
    * to descend from root. Otherwise returned path is null.
