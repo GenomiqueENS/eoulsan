@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -35,7 +34,6 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -44,9 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 public class CommonHadoop extends Common {
-
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
       "fs.s3n.awsSecretAccessKey";
@@ -84,26 +79,6 @@ public class CommonHadoop extends Common {
       throw new IOException("More than one genome file found.");
 
     return genomePaths.get(0);
-  }
-
-  /**
-   * Show an error message and exit program.
-   * @param message
-   */
-  public static void error(final String message) {
-
-    logger.severe(message);
-    System.err.println(message);
-    System.exit(1);
-  }
-
-  /**
-   * Show an error message and exit program.
-   * @param message
-   */
-  public static void error(final String message, final Exception e) {
-
-    error(message + e.getMessage());
   }
 
   /**

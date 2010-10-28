@@ -52,35 +52,6 @@ public class MainCLI {
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   /**
-   * Show version of the application.
-   */
-  public static void version() {
-
-    System.out.println(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION_STRING + " ("
-        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
-    System.exit(0);
-  }
-
-  /**
-   * Show licence information about this application.
-   */
-  public static void about() {
-
-    System.out.println(Globals.ABOUT_TXT);
-    System.exit(0);
-  }
-
-  /**
-   * Show information about this application.
-   */
-  public static void license() {
-
-    System.out.println(Globals.LICENSE_TXT);
-    System.exit(0);
-  }
-
-  /**
    * Show command line help.
    * @param options Options of the software
    */
@@ -91,7 +62,7 @@ public class MainCLI {
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE + " [options] design",
         options);
 
-    System.exit(0);
+    Common.exit(0);
   }
 
   /**
@@ -140,35 +111,40 @@ public class MainCLI {
       // parse the command line arguments
       CommandLine line = parser.parse(options, args);
 
+      // Help option
       if (line.hasOption("help"))
         help(options);
 
+      // About option
       if (line.hasOption("about"))
-        MainCLI.about();
+        Common.showMessageAndExit(Globals.ABOUT_TXT);
 
+      // Version option
       if (line.hasOption("version"))
-        MainCLI.version();
+        Common.showMessageAndExit(Globals.APP_NAME
+            + " version " + Globals.APP_VERSION_STRING + " ("
+            + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
 
+      // Licence option
       if (line.hasOption("license"))
-        MainCLI.license();
+        Common.showMessageAndExit(Globals.LICENSE_TXT);
 
       // Load configuration if exists
       try {
-        
+
         final Settings settings;
-        
+
         if (line.hasOption("conf")) {
           settings = new Settings(new File(line.getOptionValue("conf")));
           argsOptions += 2;
         } else
           settings = new Settings();
-        
+
         // Initialize the runtime
         LocalEoulsanRuntime.init(settings);
-        
+
       } catch (IOException e) {
-        logger.severe("Error while reading configuration file.");
-        System.exit(1);
+        Common.errorExit(e, "Error while reading configuration file.");
       }
 
       // Set Log file
@@ -183,8 +159,8 @@ public class MainCLI {
 
           logger.addHandler(fh);
         } catch (IOException e) {
-          logger.severe("Error while creating log file: " + e.getMessage());
-          System.exit(1);
+          Common.errorExit(e, "Error while creating log file: "
+              + e.getMessage());
         }
       }
 
@@ -206,8 +182,8 @@ public class MainCLI {
       }
 
     } catch (ParseException e) {
-      System.err.println(e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     return argsOptions;
@@ -236,17 +212,14 @@ public class MainCLI {
 
     if (args == null || args.length == argsOptions) {
 
-      System.err
-          .println("This program needs one argument. Use the -h option to get more information.");
-      System.err.println("usage:\n\t"
+      Common.showErrorMessageAndExit("This program needs one argument."
+          + " Use the -h option to get more information.\n" + "usage:\n\t"
           + Globals.APP_NAME_LOWER_CASE
-          + " createdesign fastq_files fasta_file gff_gfile");
-      System.err.println("usage:\n\t"
+          + " createdesign fastq_files fasta_file gff_gfile\n" + "usage:\n\t"
           + Globals.APP_NAME_LOWER_CASE
-          + " createdesign exec param.xml design.txt");
-      System.err.println("usage:\n\t"
+          + " createdesign exec param.xml design.txt" + "usage:\n\t"
           + Globals.APP_NAME_LOWER_CASE + " uploads3 param.xml design.txt");
-      System.exit(1);
+
     }
 
     final String action = args[argsOptions].trim().toLowerCase();

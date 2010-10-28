@@ -27,15 +27,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -55,9 +54,6 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 public class HadoopAnalysisExecutor extends Executor {
-
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private Configuration conf;
   private Path designPath;
@@ -119,9 +115,7 @@ public class HadoopAnalysisExecutor extends Executor {
 
     } catch (IOException e) {
 
-      logger.severe("Unable to create log file for "
-          + result.getStep() + " step.");
-      System.err.println("Unable to create log file for "
+      Common.showAndLogErrorMessage("Unable to create log file for "
           + result.getStep() + " step.");
     }
 

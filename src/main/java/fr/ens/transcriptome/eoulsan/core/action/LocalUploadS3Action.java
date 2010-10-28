@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -86,7 +87,7 @@ public class LocalUploadS3Action implements Action {
 
       logger.info(Globals.APP_NAME
           + " version " + Globals.APP_VERSION_STRING + " ("
-          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Local mode.");
       logger.info("Parameter file: " + paramURI);
       logger.info("Design file: " + designURI);
       logger.info("Destination : " + destURI);
@@ -111,20 +112,16 @@ public class LocalUploadS3Action implements Action {
 
       final StepResult result = step.execute(design, info);
 
-      if (result.getException() != null) {
-        System.err.println("Error: " + result.getException().getMessage());
-        System.exit(1);
-      }
+      if (result.getException() != null)
+        Common.errorExit(result.getException(), "Error: "
+            + result.getException().getMessage());
 
     } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "Error: " + e.getMessage());
     } catch (EoulsanException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "Error: " + e.getMessage());
     } catch (URISyntaxException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.exit(1);
+      Common.errorExit(e, "Error: " + e.getMessage());
     }
 
   }

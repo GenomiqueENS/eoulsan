@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -35,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 @SuppressWarnings("unchecked")
 public class StepsRegistery {
 
+  /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private static StepsRegistery instance;
@@ -130,11 +132,11 @@ public class StepsRegistery {
       return null;
 
     } catch (InstantiationException e) {
-      logger.severe("Can't create instance of "
+      Common.showAndLogErrorMessage("Can't create instance of "
           + clazz.getName()
           + ". Maybe your class doesn't have a void constructor.");
     } catch (IllegalAccessException e) {
-      logger.severe("Can't access to " + clazz.getName());
+      Common.showAndLogErrorMessage("Can't access to " + clazz.getName());
     }
 
     return null;

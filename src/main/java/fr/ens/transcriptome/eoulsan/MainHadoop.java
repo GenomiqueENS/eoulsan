@@ -34,48 +34,20 @@ public class MainHadoop {
 
   public static void main(final String[] args) {
 
-    int exitCode = -1;
-
-    System.out.println(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION_STRING + " ("
-        + Globals.APP_BUILD_NUMBER + ")");
-
     final ProgramDriver pgd = new ProgramDriver();
 
     try {
 
-      // pgd.addClass("uploaddesigndata", UploadDesignDataHadoopMain.class,
-      // "Upload design data.");
-      // pgd.addClass("filterreads", FilterReadsHadoopMain.class,
-      // "Filter reads.");
-      // pgd.addClass("soapmapreads", SoapMapReadsHadoopMain.class,
-      // "Map reads on genome with SOAP.");
-      // pgd.addClass("filterandsoapmapreads",
-      // FilterAndSoapMapReadsHadoopMain.class,
-      // "Filter and map reads on genome with SOAP.");
-      // pgd.addClass("filterandsoapmapreads2",
-      // FilterAndSoapMapReadsHadoopMain2.class,
-      // "Filter and map reads on genome with SOAP.");
-      // pgd.addClass("filtersamples", FilterSamplesHadoopMain.class,
-      // "Filter samples.");
-      // pgd.addClass("expression", ExpressionHadoopMain.class, "Expression.");
-      //
-      // pgd.addClass("newupload", HDFSDataUpload.class, "Upload data.");
-
       pgd.addClass("exec", HadoopExecAction.class, "Execute "
           + Globals.APP_NAME);
-      // pgd.addClass("exec", UploadDesignDataHadoopMain.class, "Execute " +
-      // Globals.APP_NAME);
+
       pgd.driver(args);
 
-      // success
-      exitCode = 0;
     } catch (Throwable e) {
-      // TODO Auto-generated catch block
+      System.err.println(e);
       e.printStackTrace();
     }
 
-    System.exit(exitCode);
   }
 
 }
