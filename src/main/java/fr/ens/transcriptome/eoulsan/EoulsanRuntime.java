@@ -70,7 +70,7 @@ public class EoulsanRuntime {
    */
   static void setInstance(final AbstractEoulsanRuntime runtime) {
 
-    if (runtime != null)
+    if (instance != null)
       throw new EoulsanRuntimeException(
           "An Eoulsan Runtime already exists. Cannot change the current instance.");
 
