@@ -61,9 +61,7 @@ public class LocalExecAction implements Action {
     final File paramFile = new File(args[0]);
     final File designFile = new File(args[1]);
 
-    logger.info(Globals.APP_NAME
-        + " version " + Globals.APP_VERSION_STRING + " ("
-        + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Local mode.");
+    logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
     logger.info("Design file: " + designFile);
 

@@ -26,9 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -62,6 +67,12 @@ public class Globals {
   /** The build date of the application. */
   public static final String APP_BUILD_DATE = getBuiltDate();
 
+  /** The welcome message. */
+  public static final String WELCOME_MSG =
+      Globals.APP_NAME
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")";
+
   /** The prefix for temporary files. */
   public static final String TEMP_PREFIX =
       APP_NAME_LOWER_CASE
@@ -76,12 +87,14 @@ public class Globals {
           || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
 
   // Platforms where Eoulsan is available
-  public static final String[][] AVAILABLE_BINARY_ARCH =
-      { {"linux", "amd64"}, {"linux", "x86_64"}};
+  public static final Set<String> AVAILABLE_BINARY_ARCH =
+      Collections.unmodifiableSet(new HashSet<String>(Arrays
+          .asList(new String[] {"linux\tamd64", "linux\tx86_64"})));
 
   // Platforms alias
-  public static final String[][] AVAILABLE_BINARY_ARCH_ALIAS =
-      {{"linux", "x86_64", "linux", "amd64"}};
+  public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
+      Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64",
+          "linux\tamd64"));
 
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {

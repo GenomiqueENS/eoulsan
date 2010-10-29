@@ -25,10 +25,12 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+
 public final class SystemUtils {
 
   private static String HADOOP_CLASS_TO_TEST = "org.apache.hadoop.io.Text";
-  
+
   /**
    * Get the name of the host.
    * @return The name of the host
@@ -117,8 +119,7 @@ public final class SystemUtils {
       return false;
     }
   }
-  
-  
+
   /**
    * Test if Eoulsan is in Hadoop mode
    * @return true if Eoulsan is in Hadoop mode
@@ -126,6 +127,18 @@ public final class SystemUtils {
   public static boolean isHadoop() {
 
     return isClass(HADOOP_CLASS_TO_TEST);
+  }
+
+  /**
+   * Check if the application is available for current platform.
+   * @return true if the application is available for current platform
+   */
+  public static boolean isApplicationAvailableForCurrentArch() {
+
+    final String os = System.getProperty("os.name").toLowerCase();
+    final String arch = System.getProperty("os.arch").toLowerCase();
+
+    return Globals.AVAILABLE_BINARY_ARCH.contains(os + "\t" + arch);
   }
 
   //
