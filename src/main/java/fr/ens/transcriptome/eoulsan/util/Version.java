@@ -136,13 +136,24 @@ public final class Version implements Comparable<Version> {
     if (version.endsWith("-SNAPSHOT"))
       v = version.replaceAll("-SNAPSHOT", "");
 
-    if (v.matches("^\\s*\\d+\\s*\\.\\s*\\d+\\s*\\.\\s*\\d+\\s*$")) {
-      String[] ch = v.split("\\.");
-      setVersion(Integer.parseInt(ch[0].trim()),
-          Integer.parseInt(ch[1].trim()), Integer.parseInt(ch[2].trim()));
-    } else
+    final String[] fields = v.split("\\.");
+    int major = 0;
+    int minor = 0;
+    int revision = 0;
+
+    try {
+      if (fields.length > 0)
+        major = Integer.parseInt(fields[0].trim());
+      if (fields.length > 1)
+        minor = Integer.parseInt(fields[1].trim());
+      if (fields.length > 2)
+        revision = Integer.parseInt(fields[2].trim());
+    } catch (NumberFormatException e) {
       throw new InvalidParameterException("Invalid version format in string: "
           + version);
+    }
+
+    setVersion(major, minor, revision);
   }
 
   /**
