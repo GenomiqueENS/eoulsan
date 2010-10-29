@@ -127,10 +127,10 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.HADOOP;
   }
-  
+
   @Override
   public String getLogName() {
 
@@ -158,9 +158,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
           Globals.LOG_FORMATTER));
       logger.setLevel(Globals.LOG_LEVEL);
 
-      logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION_STRING + " ("
-          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Hadoop mode.");
+      logger.info(Globals.WELCOME_MSG + " Hadoop mode.");
       info.logInfo();
 
     } catch (IOException e) {

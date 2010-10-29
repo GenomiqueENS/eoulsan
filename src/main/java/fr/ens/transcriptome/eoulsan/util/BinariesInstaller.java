@@ -27,10 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -97,41 +93,26 @@ public class BinariesInstaller {
     if (!SystemUtils.isUnix())
       throw new IOException("Can only install binaries on *nix systems.");
 
-    String os = System.getProperty("os.name").toLowerCase();
-    String arch = System.getProperty("os.arch").toLowerCase();
+    final String os = System.getProperty("os.name").toLowerCase();
+    final String arch = System.getProperty("os.arch").toLowerCase();
 
     logger.fine("Try to install \""
         + binaryFilename + "\" for " + os + " (" + arch + ")");
 
-    final Map<String, Set<String>> archs = new HashMap<String, Set<String>>();
-    for (int i = 0; i < Globals.AVAILABLE_BINARY_ARCH.length; i++) {
+    String osArchKey = os + "\t" + arch;
 
-      final String aOs = Globals.AVAILABLE_BINARY_ARCH[i][0];
-      final String aArch = Globals.AVAILABLE_BINARY_ARCH[i][1];
-      if (!archs.containsKey(aOs))
-        archs.put(aOs, new HashSet<String>());
-      archs.get(aOs).add(aArch);
-    }
-
-    if (!archs.containsKey(os) || !archs.get(os).contains(arch))
+    // Check if platform is allowed
+    if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
       throw new FileNotFoundException(
           "There is no executable for your plateform ("
               + os + ") included in " + Globals.APP_NAME);
 
     // Change the os and arch if alias
-    for (int i = 0; i < Globals.AVAILABLE_BINARY_ARCH_ALIAS.length; i++) {
+    if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey))
+      osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
 
-      final String aOs = Globals.AVAILABLE_BINARY_ARCH_ALIAS[i][0];
-      final String aArch = Globals.AVAILABLE_BINARY_ARCH_ALIAS[i][0];
-
-      if (aOs.equals(os) && aArch.equals(aArch)) {
-        os = Globals.AVAILABLE_BINARY_ARCH_ALIAS[i][2];
-        arch = Globals.AVAILABLE_BINARY_ARCH_ALIAS[i][3];
-        break;
-      }
-    }
-
-    final String inputPath = "/" + os.replace(" ", "") + "/" + arch;
+    final String inputPath =
+        "/" + osArchKey.replace(" ", "").replace('\t', '/');
 
     final String outputPath =
         "/tmp/"
