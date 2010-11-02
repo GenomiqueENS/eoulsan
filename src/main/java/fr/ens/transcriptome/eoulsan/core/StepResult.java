@@ -128,7 +128,7 @@ public class StepResult {
 
     this(step, success, createLogMessage(startTime, logMsg));
   }
-  
+
   /**
    * Public constructor.
    * @param step the step for this result
@@ -140,7 +140,7 @@ public class StepResult {
       final long startTime, final String logMsg, final String errorMsg) {
 
     this(step, success, createLogMessage(startTime, logMsg));
-    this.errorMessage= errorMsg;
+    this.errorMessage = errorMsg;
   }
 
   /**
@@ -179,6 +179,17 @@ public class StepResult {
       final String errorMsg) {
 
     this(step, exception, errorMsg, null);
+  }
+
+  /**
+   * Public constructor.
+   * @param step the step for this result
+   * @param Exception exception of the error
+   * @param errorMsg Error message
+   */
+  public StepResult(final Step step, final Exception exception) {
+
+    this(step, exception, exception.getMessage(), null);
   }
 
 }
