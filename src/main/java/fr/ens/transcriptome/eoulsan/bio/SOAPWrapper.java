@@ -241,4 +241,13 @@ public class SOAPWrapper {
     return cmd;
   }
 
+  //
+  // Constructor
+  //
+  
+  /**
+   * No constructor.
+   */
+  private SOAPWrapper(){
+  }
 }
