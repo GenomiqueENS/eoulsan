@@ -135,6 +135,8 @@ public final class Version implements Comparable<Version> {
     String v = version.trim();
     if (version.endsWith("-SNAPSHOT"))
       v = version.replaceAll("-SNAPSHOT", "");
+    else if ("UNKNOWN_VERSION".equals(v))
+      v = "0.0.0";
 
     final String[] fields = v.split("\\.");
     int major = 0;
@@ -241,6 +243,8 @@ public final class Version implements Comparable<Version> {
    * Public constructor.
    */
   public Version() {
+    
+    this(null);
   }
 
   /**
@@ -250,6 +254,7 @@ public final class Version implements Comparable<Version> {
    * @param revision The number of revision of the version
    */
   public Version(final int major, final int minor, final int revision) {
+    
     setVersion(major, minor, revision);
   }
 
@@ -258,6 +263,7 @@ public final class Version implements Comparable<Version> {
    * @param version The version to set
    */
   public Version(final String version) {
+    
     setVersion(version);
   }
 
