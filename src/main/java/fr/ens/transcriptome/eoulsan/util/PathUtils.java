@@ -189,6 +189,54 @@ public final class PathUtils {
   }
 
   /**
+   * Create an output stream from a path.
+   * @param path Path of the file to open
+   * @param conf configuration
+   * @return an InputStream
+   * @throws IOException if an error occurs while creating InputStream
+   */
+  public static final OutputStream createOutputStream(final Path path,
+      final Configuration conf) throws IOException {
+
+    if (path == null)
+      throw new NullPointerException("Path to create is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(conf);
+
+    if (fs == null)
+      throw new IOException(
+          "Unable to create InputSteam, The FileSystem is null");
+
+    return fs.create(path);
+  }
+
+  /**
+   * Get the length of a file.
+   * @param path Path of the file to open
+   * @param conf configuration
+   * @return an InputStream
+   * @throws IOException if an error occurs while creating InputStream
+   */
+  public static final long getSize(final Path path, final Configuration conf)
+      throws IOException {
+
+    if (path == null)
+      throw new NullPointerException("Path to create is null");
+    if (conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(conf);
+
+    if (fs == null)
+      throw new IOException(
+          "Unable to create InputSteam, The FileSystem is null");
+
+    return fs.getFileStatus(path).getLen();
+  }
+
+  /**
    * Copy a file from a path to a local file. Don't remove original file.
    * @param srcPath Path of the file to copy
    * @param destFile Destination file
