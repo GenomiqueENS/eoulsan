@@ -81,5 +81,10 @@ public abstract class AbstractStep implements Step {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
   }
+  
+  @Override
+  public boolean isTerminalStep() {
+    return false;
+  }
 
 }

@@ -101,4 +101,10 @@ public interface Step {
    */
   StepResult execute(Design design, ExecutorInfo info);
 
+  /**
+   * Test if the workflow must end after this step.
+   * @return true if this step the last step of the workflow
+   */
+  boolean isTerminalStep();
+  
 }
