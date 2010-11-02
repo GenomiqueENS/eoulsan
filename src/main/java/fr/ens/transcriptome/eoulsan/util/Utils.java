@@ -22,8 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,27 +38,62 @@ public class Utils {
    * @param map Map to reverse
    * @return The reverse map
    */
-  public static Map<String, Set<String>> reverseMap(final Map<String, String> map) {
+  public static <K, V> Map<V, Set<K>> reverseMap(final Map<K, V> map) {
 
     if (map == null)
       return null;
 
-    final Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+    final Map<V, Set<K>> result = new HashMap<V, Set<K>>();
 
-    for (Map.Entry<String, String> e : map.entrySet()) {
+    for (Map.Entry<K, V> e : map.entrySet()) {
 
-      final Set<String> set;
+      final Set<K> set;
 
-      final String value = e.getValue();
+      final V value = e.getValue();
 
       if (!result.containsKey(value)) {
-        set = new HashSet<String>();
+        set = new HashSet<K>();
         result.put(value, set);
       } else
         set = result.get(value);
 
       set.add(e.getKey());
     }
+
+    return result;
+  }
+
+  /**
+   * Create an unmodifiableSet from an array
+   * @param array array with the values of the output Set
+   * @return an unmodifiableSet with the values of the array or null if the
+   *         array is null
+   */
+  public static <E> Set<E> unmodifiableSet(final E[] array) {
+
+    if (array == null)
+      return null;
+
+    final List<E> list = Arrays.asList(array);
+
+    return Collections.unmodifiableSet(new HashSet<E>(list));
+  }
+
+  /**
+   * Return a list without null elements.
+   * @param list input list
+   * @return a list without null elements
+   */
+  public static <E> List<E> listWithoutNull(final List<E> list) {
+
+    if (list == null)
+      return null;
+
+    final List<E> result = new ArrayList<E>();
+
+    for (E e : list)
+      if (e != null)
+        result.add(e);
 
     return result;
   }
