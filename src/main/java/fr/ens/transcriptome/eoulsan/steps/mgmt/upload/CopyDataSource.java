@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.TFQReader;
 import fr.ens.transcriptome.eoulsan.bio.io.TFQWriter;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
-import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -90,9 +90,8 @@ public class CopyDataSource {
 
       // Create the output stream for the copy
       final OutputStream compressedOs =
-          CompressionFactory.getCompressionOutputStream(os,
-              this.destContentEncoding);
-
+          CompressionType.getCompressionTypeByContentEncoding(
+              this.destContentEncoding).createOutputStream(os);
       FileUtils.copy(is, compressedOs);
       return;
     }
@@ -104,8 +103,8 @@ public class CopyDataSource {
 
       // Create the output stream for the copy
       final OutputStream compressedOs =
-          CompressionFactory.getCompressionOutputStream(os,
-              this.destContentEncoding);
+        CompressionType.getCompressionTypeByContentEncoding(
+            this.destContentEncoding).createOutputStream(os);
 
       final ReadSequenceReader reader;
       if (".fq".equals(this.srcContentType))

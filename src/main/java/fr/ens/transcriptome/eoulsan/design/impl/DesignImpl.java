@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 public class DesignImpl implements Design {
 
@@ -119,8 +120,8 @@ public class DesignImpl implements Design {
     this.samples.put(sampleName, slideId);
     this.samplesReverse.put(slideId, sampleName);
     this.samplesOrder.add(sampleName);
-    
-    int id = slideId+1;
+
+    int id = slideId + 1;
     while (this.ids.containsValue(id))
       id++;
     this.ids.put(slideId, id);
@@ -418,11 +419,17 @@ public class DesignImpl implements Design {
       throw new EoulsanRuntimeException("The sample doesn't exists");
 
     if (this.ids.containsValue(id))
-      throw new EoulsanRuntimeException("The identifier already exists: "+id);
+      throw new EoulsanRuntimeException("The identifier already exists: " + id);
 
     final int sampleId = this.samples.get(sampleName);
 
     this.ids.put(sampleId, id);
   }
 
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(this.samplesOrder, this.samples, this.ids, this.sources,
+        this.metadataFields, this.metadataOrder, this.metadataData, this.countSamples, this.countLabels);
+  }
 }

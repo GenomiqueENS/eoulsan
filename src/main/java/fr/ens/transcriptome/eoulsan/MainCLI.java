@@ -141,10 +141,12 @@ public class MainCLI {
           settings = new Settings();
 
         // Initialize the runtime
-        LocalEoulsanRuntime.init(settings);
+        LocalEoulsanRuntime.newEoulsanRuntime(settings);
 
       } catch (IOException e) {
         Common.errorExit(e, "Error while reading configuration file.");
+      } catch (EoulsanException e) {
+        Common.errorExit(e, e.getMessage());
       }
 
       // Set Log file

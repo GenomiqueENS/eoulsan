@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.design.impl;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 public class SampleImpl implements Sample {
 
@@ -135,6 +136,32 @@ public class SampleImpl implements Sample {
 
   //
   // Other methods
+  //
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(this.design, this.sampleId);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+
+    if (o == null)
+      return false;
+
+    if (o instanceof SampleImpl) {
+
+      final SampleImpl that = (SampleImpl) o;
+      return that.design == this.design && that.sampleId == this.sampleId;
+    }
+
+    return false;
+
+  }
+
+  //
+  // Constructor
   //
 
   SampleImpl(final DesignImpl design, final int slideId) {

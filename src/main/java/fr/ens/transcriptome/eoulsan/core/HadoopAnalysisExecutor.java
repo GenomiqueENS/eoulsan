@@ -38,15 +38,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndSoapMapReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterSamplesHadoopStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SoapMapReadsHadoopStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -212,22 +203,6 @@ public class HadoopAnalysisExecutor extends Executor {
 
     this.conf = conf;
     this.info = new SimpleExecutorInfo();
-
-    //
-    // Register local steps
-    //
-
-    final StepsRegistery registery = StepsRegistery.getInstance();
-
-    registery.addStepType(HDFSDataUploadStep.class);
-    registery.addStepType(FilterReadsHadoopStep.class);
-    registery.addStepType(SoapMapReadsHadoopStep.class);
-    registery.addStepType(FilterAndSoapMapReadsHadoopStep.class);
-    registery.addStepType(FilterSamplesHadoopStep.class);
-    registery.addStepType(ExpressionHadoopStep.class);
-    registery.addStepType(HDFSDataDownloadStep.class);
-    registery.addStepType(CopyDesignAndParametersToOutputStep.class);
-    registery.addStepType(InitGlobalLoggerStep.class);
   }
 
   /**
@@ -261,7 +236,7 @@ public class HadoopAnalysisExecutor extends Executor {
    */
   public HadoopAnalysisExecutor(final Configuration conf,
       final Command command, final Design design, final Path designPath,
-      final Path paramPath, final Path basePath) throws IOException {
+      final Path paramPath) throws IOException {
 
     this(conf);
 
@@ -276,15 +251,12 @@ public class HadoopAnalysisExecutor extends Executor {
     if (designPath == null)
       throw new NullPointerException("The design path is null.");
 
-    if (basePath == null)
-      throw new NullPointerException("The base path is null.");
-
     this.design = design;
     this.designPath = designPath;
 
     final SimpleExecutorInfo info = getExecutorInfo();
 
-    info.setBasePathname(basePath.toString());
+    info.setBasePathname(this.designPath.getParent().toString());
 
     final Path logPath =
         new Path(this.designPath.getParent().toString()

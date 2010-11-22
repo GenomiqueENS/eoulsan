@@ -22,8 +22,6 @@
 
 package fr.ens.transcriptome.eoulsan.datatypes;
 
-import fr.ens.transcriptome.eoulsan.design.Sample;
-
 /**
  * Define an abstract DataType.
  * @author Laurent Jourdren
@@ -37,20 +35,13 @@ public abstract class AbstractDataType implements DataType {
   }
 
   @Override
-  public String[] getExtensions() {
-
-    return new String[] {getDefaultExtention()};
-  }
-
-  @Override
-  public String getSourcePathForSample(final Sample sample,
-      final String ExecInfo) {
-
-    return null;
-  }
-
-  @Override
   public boolean isOneFilePerAnalysis() {
+
+    return false;
+  }
+
+  @Override
+  public boolean isDataTypeFromDesignFile() {
 
     return false;
   }

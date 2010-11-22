@@ -32,12 +32,6 @@ public class DataTypes {
   public static final DataType READS = new AbstractDataType() {
 
     @Override
-    public String getDefaultExtention() {
-
-      return ".fq";
-    }
-
-    @Override
     public String getName() {
 
       return "reads";
@@ -48,16 +42,17 @@ public class DataTypes {
 
       return "reads_";
     }
+
+    @Override
+    public boolean isDataTypeFromDesignFile() {
+
+      return true;
+    }
+
   };
 
   /** Filtered reads datatype. */
   public static final DataType FILTERED_READS = new AbstractDataType() {
-
-    @Override
-    public String getDefaultExtention() {
-
-      return ".fq";
-    }
 
     @Override
     public String getName() {
@@ -70,16 +65,11 @@ public class DataTypes {
 
       return "filteredlfastq_";
     }
+
   };
 
   /** SOAP index data type. */
   public static final DataType SOAP_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getDefaultExtention() {
-
-      return ".zip";
-    }
 
     @Override
     public String getName() {
@@ -104,12 +94,6 @@ public class DataTypes {
   public static final DataType FILTERED_SOAP_RESULTS = new AbstractDataType() {
 
     @Override
-    public String getDefaultExtention() {
-
-      return ".soap";
-    }
-
-    @Override
     public String getName() {
 
       return "filtered_soap_results";
@@ -124,12 +108,6 @@ public class DataTypes {
 
   /** SOAP results datatype. */
   public static final DataType SOAP_RESULTS = new AbstractDataType() {
-
-    @Override
-    public String getDefaultExtention() {
-
-      return ".soap";
-    }
 
     @Override
     public String getName() {
@@ -148,12 +126,6 @@ public class DataTypes {
   public static final DataType EXPRESSION_RESULTS = new AbstractDataType() {
 
     @Override
-    public String getDefaultExtention() {
-
-      return ".txt";
-    }
-
-    @Override
     public String getName() {
 
       return "expression";
@@ -170,12 +142,6 @@ public class DataTypes {
   public static final DataType ANNOTATION = new AbstractDataType() {
 
     @Override
-    public String getDefaultExtention() {
-
-      return ".gff";
-    }
-
-    @Override
     public String getName() {
 
       return "annotation";
@@ -188,20 +154,21 @@ public class DataTypes {
     }
 
     @Override
+    public boolean isDataTypeFromDesignFile() {
+
+      return true;
+    }
+
+    @Override
     public boolean isOneFilePerAnalysis() {
 
       return true;
     }
+
   };
 
   /** Anadiff results datatype. */
   public static final DataType ANADIF_RESULTS = new AbstractDataType() {
-
-    @Override
-    public String getDefaultExtention() {
-
-      return ".txt";
-    }
 
     @Override
     public String getName() {
@@ -226,12 +193,6 @@ public class DataTypes {
   public static final DataType GENOME = new AbstractDataType() {
 
     @Override
-    public String getDefaultExtention() {
-
-      return ".fasta";
-    }
-
-    @Override
     public String getName() {
 
       return "genome";
@@ -244,20 +205,21 @@ public class DataTypes {
     }
 
     @Override
+    public boolean isDataTypeFromDesignFile() {
+
+      return true;
+    }
+
+    @Override
     public boolean isOneFilePerAnalysis() {
 
       return true;
     }
+
   };
 
   /** Unmap reads results datatype. */
   public static final DataType UNMAP_READS = new AbstractDataType() {
-
-    @Override
-    public String getDefaultExtention() {
-
-      return ".fasta";
-    }
 
     @Override
     public String getName() {

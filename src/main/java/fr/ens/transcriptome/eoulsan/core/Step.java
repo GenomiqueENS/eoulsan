@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -66,16 +66,16 @@ public interface Step {
   ExecutionMode getExecutionMode();
 
   /**
-   * Get the input data types.
-   * @return an array of DataType
+   * Get the input data format.
+   * @return an array of DataFormat
    */
-  DataType[] getInputTypes();
+  DataFormat[] getInputFormats();
 
   /**
-   * Get the output data types.
-   * @return an array of DataType
+   * Get the output data format.
+   * @return an array of DataFormat
    */
-  DataType[] getOutputType();
+  DataFormat[] getOutputFormats();
 
   /**
    * Get the name of the log file name for this step.
@@ -106,5 +106,5 @@ public interface Step {
    * @return true if this step the last step of the workflow
    */
   boolean isTerminalStep();
-  
+
 }

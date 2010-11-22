@@ -33,6 +33,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
 
 /**
  * This class define the command object of Eoulsan.
@@ -40,8 +41,8 @@ import fr.ens.transcriptome.eoulsan.Settings;
  */
 public class Command {
 
-  private static final Set<Parameter> EMPTY_SET_PARAMETER =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
+      .emptySet();
 
   private String name = "";
   private String description = "";
@@ -185,6 +186,18 @@ public class Command {
    */
   public void addGlobalParameter(final String key, final String value) {
 
+    addGlobalParameter(key, value, false);
+  }
+
+  /**
+   * Add a global parameter.
+   * @param key key of the parameter
+   * @param value value of the parameter
+   * @param callFromConstructor true if call from constructor
+   */
+  private void addGlobalParameter(final String key, final String value,
+      final boolean callFromConstructor) {
+
     if (key == null || value == null)
       return;
 
@@ -196,6 +209,10 @@ public class Command {
 
     final Parameter p = new Parameter(keyTrimmed, valueTrimmed);
     this.globalParameters.add(p);
+
+    if (!callFromConstructor)
+      DataProtocolRegistry.getInstance().parseGlobalParameter(keyTrimmed,
+          valueTrimmed);
   }
 
   //
@@ -217,12 +234,10 @@ public class Command {
    */
   public Command(final boolean addSettingsValues) {
 
-    
-    
     if (addSettingsValues) {
-      
+
       final Settings settings = EoulsanRuntime.getRuntime().getSettings();
-      
+
       for (String settingName : settings.getSettingsNames())
         addGlobalParameter(settingName, settings.getSetting(settingName));
     }

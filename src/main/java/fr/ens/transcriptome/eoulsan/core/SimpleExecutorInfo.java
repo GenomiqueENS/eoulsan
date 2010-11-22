@@ -30,18 +30,21 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define an simple ExecutorInfo.
- * @author jourdren
+ * @author Laurent Jourdren
  */
 public class SimpleExecutorInfo implements ExecutorInfo {
 
+  /** Logger. */
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private String basePathname;
@@ -53,90 +56,61 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
+  private WorkflowDescription workflow;
 
   //
   // Getters
   //
 
-  /**
-   * Get the base path
-   * @return Returns the basePath
-   */
   @Override
   public String getBasePathname() {
     return this.basePathname;
   }
 
-  /**
-   * Get the log path
-   * @return Returns the log Path
-   */
   @Override
   public String getLogPathname() {
     return this.logPathname;
   }
 
-  /**
-   * Get the output path
-   * @return Returns the output Path
-   */
   @Override
   public String getOutputPathname() {
     return this.outputPathname;
   }
 
-  /**
-   * Get the execution name.
-   * @return the execution name
-   */
   @Override
   public String getExecutionName() {
     return this.executionName;
   }
 
-  /**
-   * Get the design path.
-   * @return the design path
-   */
   @Override
   public String getDesignPathname() {
     return this.designPathname;
   }
 
-  /**
-   * Get the parameter path.
-   * @return the parameter path
-   */
   @Override
   public String getParameterPathname() {
     return this.paramPathname;
   }
 
-  /**
-   * Get the command name.
-   * @return the command name
-   */
   @Override
   public String getCommandName() {
     return this.commandName;
   }
 
-  /**
-   * Get command description.
-   * @return the command description
-   */
   @Override
   public String getCommandDescription() {
     return this.commandDescription;
   }
 
-  /**
-   * Get the command author.
-   * @return the command author
-   */
   @Override
   public String getCommandAuthor() {
     return this.commandAuthor;
+  }
+
+  @Override
+  public WorkflowDescription getWorkflow() {
+
+    return this.workflow;
   }
 
   //
@@ -237,6 +211,15 @@ public class SimpleExecutorInfo implements ExecutorInfo {
     setCommandAuthor(command.getAuthor());
   }
 
+  /**
+   * Set the workflow of the execution
+   * @param workflow the workflow to set
+   */
+  public void setWorkflow(final WorkflowDescription workflow) {
+
+    this.workflow = workflow;
+  }
+
   //
   // Other methods
   //
@@ -255,11 +238,6 @@ public class SimpleExecutorInfo implements ExecutorInfo {
                 cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
   }
 
-
-
-  /**
-   * Add executor information to log.
-   */
   @Override
   public void logInfo() {
 
@@ -277,51 +255,74 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   }
 
   @Override
-  public String getPathname(final DataType dt, final Sample sample) {
+  public AbstractEoulsanRuntime getRuntime() {
 
-    if (dt == null || sample == null)
+    return EoulsanRuntime.getRuntime();
+  }
+
+  @Override
+  public Logger getLogger() {
+
+    return logger;
+  }
+
+  @Override
+  public String getDataFilename(final DataFormat df, final Sample sample) {
+
+    final DataFile file = getDataFile(df, sample);
+
+    return file == null ? null : file.getSource();
+  }
+
+  @Override
+  public DataFile getDataFile(final DataFormat df, final Sample sample) {
+
+    if (df == null || sample == null)
       return null;
 
-    if (dt == DataTypes.READS)
-      return sample.getSource();
+    if (df.getType() == DataTypes.READS)
+      return new DataFile(sample.getSource());
 
-    if (dt == DataTypes.GENOME)
-      return sample.getMetadata().getGenome();
+    if (df.getType() == DataTypes.GENOME)
+      return new DataFile(sample.getMetadata().getGenome());
 
-    if (dt == DataTypes.ANNOTATION)
-      return sample.getMetadata().getAnnotation();
+    if (df.getType() == DataTypes.ANNOTATION)
+      return new DataFile(sample.getMetadata().getAnnotation());
 
-    return this.getBasePathname()
-        + "/"
-        + dt.getPrefix()
-        + (dt.isOneFilePerAnalysis() ? "1" : sample.getId()
-            + dt.getDefaultExtention());
+    return new DataFile(this.getBasePathname()
+        + "/" + df.getType().getPrefix()
+        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+        + df.getDefaultExtention());
   }
 
   @Override
-  public InputStream getInputStream(final DataType dt, final Sample sample)
+  public InputStream getInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    final String src = getPathname(dt, sample);
+    final DataFile file = getDataFile(df, sample);
 
-    return EoulsanRuntime.getRuntime().getInputStream(src);
+    if (file == null)
+      return null;
+
+    return file.open();
   }
 
   @Override
-  public InputStream getRawInputStream(final DataType dt, final Sample sample)
+  public InputStream getRawInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    final String src = getPathname(dt, sample);
+    final DataFile file = getDataFile(df, sample);
 
-    return EoulsanRuntime.getRuntime().getRawInputStream(src);
+    return file == null ? null : file.rawOpen();
   }
 
   @Override
-  public OutputStream getOutputStream(final DataType dt, final Sample sample)
+  public OutputStream getOutputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    return EoulsanRuntime.getRuntime().getOutputStream(
-        getPathname(dt, sample));
+    final DataFile file = getDataFile(df, sample);
+
+    return file == null ? null : file.create();
   }
 
   //

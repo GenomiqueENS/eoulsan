@@ -169,10 +169,6 @@ public class CommonHadoop extends Common {
 
     final Configuration conf = new Configuration();
 
-    if (conf == null)
-      throw new EoulsanException(
-          "Try to create configuration object for Hadoop but result is null.");
-
     for (Parameter p : globalParameters) {
 
       final String keyName = p.getName();

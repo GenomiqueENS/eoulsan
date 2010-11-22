@@ -26,7 +26,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -34,6 +34,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 public abstract class AbstractStep implements Step {
+
+
 
   @Override
   public String getDescription() {
@@ -60,13 +62,13 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public DataType[] getInputTypes() {
+  public DataFormat[] getInputFormats() {
 
     return null;
   }
 
   @Override
-  public DataType[] getOutputType() {
+  public DataFormat[] getOutputFormats() {
 
     return null;
   }
@@ -81,7 +83,7 @@ public abstract class AbstractStep implements Step {
   public void configure(final Set<Parameter> stepParameters,
       final Set<Parameter> globalParameters) throws EoulsanException {
   }
-  
+
   @Override
   public boolean isTerminalStep() {
     return false;

@@ -40,6 +40,8 @@ import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MapReadsStep;
@@ -55,7 +57,7 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-  
+
   public static String PROGRAM_NAME = "soapmapreads";
   public static final String COUNTER_GROUP = "Map reads with SOAP";
 
@@ -65,10 +67,10 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
 
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.LOCAL;
   }
-  
+
   @Override
   public String getLogName() {
 
@@ -113,9 +115,24 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
             new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
                 + s.getId() + Common.SOAP_RESULT_EXTENSION);
 
-        // Create SOAP index if necessary
-        if (!soapIndexDir.exists())
-          SOAPWrapper.makeIndex(new File(genomeFilename), soapIndexDir);
+        if (!soapIndexDir.exists()) {
+
+          DataFormat df = DataFormats.SOAP_INDEX_ZIP;
+
+          final File soapIndexArchive =
+              new File(df.getType().getPrefix()
+                  + genomes.get(genomeFilename) + df.getDefaultExtention());
+
+          if (!soapIndexArchive.exists())
+            throw new IOException("No index for the mapper found: "
+                + soapIndexArchive);
+
+          if (!soapIndexDir.mkdir())
+            throw new IOException("Can't create directory for SOAP index: "
+                + soapIndexDir);
+
+          FileUtils.unzip(soapIndexArchive, soapIndexDir);
+        }
 
         SOAPWrapper.map(inputFile, soapIndexDir, alignmentFile, unmapFile,
             Common.SOAP_ARGS_DEFAULT, getThreads() == -1 ? Runtime.getRuntime()
@@ -124,7 +141,8 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
         filterSoapResult(alignmentFile, resultFile, reporter);
         countUnmap(unmapFile, reporter);
         if (!alignmentFile.delete())
-          logger.warning("Can not delete alignment file: "+alignmentFile.getAbsolutePath());
+          logger.warning("Can not delete alignment file: "
+              + alignmentFile.getAbsolutePath());
 
         // Add counters for this sample to log file
         log.append(reporter.countersValuesToString(COUNTER_GROUP,
@@ -179,15 +197,14 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
         continue;
 
       try {
-      aln.parseResultLine(trimmedLine);
-      }
-      catch (BadBioEntryException e) {
+        aln.parseResultLine(trimmedLine);
+      } catch (BadBioEntryException e) {
         reporter.incrCounter(COUNTER_GROUP, "invalid soap output", 1);
         logger.info("Invalid soap output entry: "
             + e.getMessage() + " line='" + e.getEntry() + "'");
         continue;
       }
-      
+
       reporter.incrCounter(COUNTER_GROUP, "soap alignments", 1);
 
       final String currentSequenceId = aln.getSequenceId();

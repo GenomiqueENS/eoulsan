@@ -25,8 +25,11 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 public interface ExecutorInfo {
@@ -91,35 +94,61 @@ public interface ExecutorInfo {
   void logInfo();
 
   /**
+   * Get EoulsanRuntime.
+   * @return the EoulsanRuntime
+   */
+  AbstractEoulsanRuntime getRuntime();
+
+  /**
+   * Get the logger.
+   * @return the logger
+   */
+  Logger getLogger();
+
+  /**
+   * Get the workflow description
+   * @return the workflow description
+   */
+  WorkflowDescription getWorkflow();
+  
+  /**
    * Get the pathname for a DataType and a Sample.
-   * @param dt the DataType of the source
+   * @param df the DataFormat of the source
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getPathname(DataType dt, Sample sample);
+  String getDataFilename(DataFormat df, Sample sample);
+
+  /**
+   * Get the DataFile for a DataType and a Sample.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a String with the pathname
+   */
+  DataFile getDataFile(DataFormat df, Sample sample);
 
   /**
    * Create an InputStream to load data.
-   * @param dt the DataType of the data to load
+   * @param ds the DataFormat of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  InputStream getInputStream(DataType dt, Sample sample) throws IOException;
+  InputStream getInputStream(DataFormat df, Sample sample) throws IOException;
 
   /**
    * Create a raw InputStream (without decompression of input data) to load
    * data.
-   * @param dt the DataType of the data to load
+   * @param dt the DataFormat of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  InputStream getRawInputStream(DataType dt, Sample sample) throws IOException;
+  InputStream getRawInputStream(DataFormat df, Sample sample) throws IOException;
 
   /**
    * Create an OutputStream to load data.
-   * @param dt the DataType of the data to write
+   * @param dt the DataFormat of the data to write
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  OutputStream getOutputStream(DataType dt, Sample sample) throws IOException;
+  OutputStream getOutputStream(DataFormat df, Sample sample) throws IOException;
 }

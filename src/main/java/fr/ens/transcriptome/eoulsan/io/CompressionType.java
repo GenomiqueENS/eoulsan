@@ -28,66 +28,159 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
- * This allow to create InputStreams and OutputStream for Gzip and Bzip2
+ * This ennum allow to create InputStreams and OutputStream for Gzip and Bzip2
  * according environment (local or hadoop mode).
  * @author Laurent Jourdren
  */
-public class CompressionFactory {
+public enum CompressionType {
+
+  GZIP("gzip", ".gz"), BZIP2("bzip2", ".bz2"), NONE ("", "") ;
+
+  private String contentEncoding;
+  private String extension;
+
+  //
+  // Getters
+  //
+
+  /**
+   * Get the content encoding for this type
+   * @return a String with the content type
+   */
+  public String getContentEncoding() {
+
+    return this.contentEncoding;
+  }
+
+  /**
+   * Get the extension for this type
+   * @return a String with the extension
+   */
+  public String getExtension() {
+
+    return this.extension;
+  }
+
+  //
+  // Other methods
+  //
 
   /**
    * Get the compression input stream required by a content encoding
    * @param is the input stream
-   * @param contentEncoding the content encoding
    * @return an input stream
    * @throws IOException if an error occurs while creating the input stream
    */
-  public static InputStream getCompressionInputStream(final InputStream is,
-      final String contentEncoding) throws IOException {
+  public InputStream createInputStream(final InputStream is) throws IOException {
 
-    if (contentEncoding == null || "".equals(contentEncoding))
-      return is;
+    if (is == null)
+      return null;
 
-    if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
+    switch (this) {
+
+    case GZIP:
       return createGZipInputStream(is);
 
-    if (".bz2".equals(contentEncoding) || "bz2".equals(contentEncoding))
+    case BZIP2:
       return createBZip2InputStream(is);
+      
+    case NONE:
+      return is;
 
-    throw new IOException(
-        "Unable to find a compression input stream for this content encoding: "
-            + contentEncoding);
+    default:
+      return null;
+
+    }
+
   }
 
   /**
-   * Get the compression output stream required by a content encoding
+   * Get the compression output stream required by a content encoding.
    * @param os the output stream
-   * @param contentEncoding the content encoding
    * @return an output stream
    * @throws IOException if an error occurs while creating the input stream
    */
-  public static OutputStream getCompressionOutputStream(final OutputStream os,
-      final String contentEncoding) throws IOException {
+  public OutputStream createOutputStream(final OutputStream os)
+      throws IOException {
 
-    if (contentEncoding == null || "".equals(contentEncoding))
-      return os;
+    if (os == null)
+      return null;
 
-    if (".gz".equals(contentEncoding) || "gz".equals(contentEncoding))
+    switch (this) {
+
+    case GZIP:
       return createGZipOutputStream(os);
 
-    if (".bz2".equals(contentEncoding) || "bz2".equals(contentEncoding))
+    case BZIP2:
       return createBZip2OutputStream(os);
+      
+    case NONE:
+      return os;
 
-    throw new IOException(
-        "Unable to find a compression output stream for this content encoding: "
-            + contentEncoding);
+    default:
+      return null;
+
+    }
+
   }
 
   //
-  // InputStreams
+  // Static methods
   //
+
+  /**
+   * Get a compression type from the content encoding.
+   * @param contentType the contentType to search
+   * @return the requested CompressionType
+   */
+  public static CompressionType getCompressionTypeByContentEncoding(
+      final String contentType) {
+
+    if (contentType == null)
+      return null;
+
+    for (CompressionType ct : CompressionType.values())
+      if (contentType.equals(ct.contentEncoding))
+        return ct;
+
+    return NONE;
+  }
+
+  /**
+   * Get a compression type from an extension.
+   * @param extension the contentType to search
+   * @return the requested CompressionType
+   */
+  public static CompressionType getCompressionTypeByExtension(
+      final String extension) {
+
+    if (extension == null)
+      return null;
+
+    for (CompressionType ct : CompressionType.values())
+      if (extension.equals(ct.extension))
+        return ct;
+
+    return NONE;
+  }
+
+  /**
+   * Get a compression type from a filename
+   * @param extension the contentType to search
+   * @return the requested CompressionType
+   */
+  public static CompressionType getCompressionTypeByFilename(
+      final String filename) {
+
+    if (filename == null)
+      return null;
+
+    return getCompressionTypeByExtension(StringUtils.extension(filename));
+  }
 
   /**
    * Create a GZip input stream.
@@ -157,4 +250,19 @@ public class CompressionFactory {
         "Unable to find a class to create a BZip2InputStream.");
   }
 
-}
+  //
+  // Constructor
+  //
+
+  /**
+   * Constructor.
+   * @param contentEncoding content encoding of the compression
+   * @param extension extension for the compression
+   */
+  CompressionType(final String contentEncoding, final String extension) {
+
+    this.contentEncoding = contentEncoding;
+    this.extension = extension;
+  }
+
+};
