@@ -12,7 +12,6 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -113,7 +112,7 @@ class PathDataProtocol extends AbstractDataProtocol {
     this.conf = hadoopRuntime.getConfiguration();
 
     if (conf == null)
-      throw new NullArgumentException("The Hadoop configuration object is null");
+      throw new NullPointerException("The Hadoop configuration object is null");
   }
 
 }

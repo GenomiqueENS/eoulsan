@@ -2,7 +2,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import java.util.regex.Pattern;
 
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -51,7 +50,7 @@ public class TrimReadFilter extends AbstractReadFilter {
   public boolean accept(final ReadSequence read) {
 
     if (read == null)
-      throw new NullArgumentException("The read is null");
+      throw new NullPointerException("The read is null");
 
     trim(read);
 

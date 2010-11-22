@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -13,7 +12,7 @@ public class ValidReadFilter extends AbstractReadFilter {
   public boolean accept(final ReadSequence read) {
 
     if (read == null)
-      throw new NullArgumentException("The read is null");
+      throw new NullPointerException("The read is null");
 
     return read.check();
   }
