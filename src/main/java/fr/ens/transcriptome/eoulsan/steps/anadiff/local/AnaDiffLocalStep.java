@@ -29,8 +29,8 @@ import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
-import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
 
@@ -65,13 +65,13 @@ public class AnaDiffLocalStep extends AbstractStep {
   }
 
   @Override
-  public DataType[] getInputTypes() {
-    return new DataType[] {DataTypes.EXPRESSION_RESULTS};
+  public DataFormat[] getInputFormats() {
+    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TXT};
   }
 
   @Override
-  public DataType[] getOutputType() {
-    return new DataType[] {DataTypes.ANADIF_RESULTS};
+  public DataFormat[] getOutputFormats() {
+    return new DataFormat[] {DataFormats.ANADIF_RESULTS_TXT};
   }
 
   @Override

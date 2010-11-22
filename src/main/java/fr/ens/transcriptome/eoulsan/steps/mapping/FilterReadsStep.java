@@ -27,8 +27,8 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
-import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 
 /**
  * This abstract class define and parse arguments for the filter reads step.
@@ -78,13 +78,13 @@ public abstract class FilterReadsStep extends AbstractStep {
   }
 
   @Override
-  public DataType[] getInputTypes() {
-    return new DataType[] {DataTypes.READS};
+  public DataFormat[] getInputFormats() {
+    return new DataFormat[] {DataFormats.READS_FASTQ};
   }
 
   @Override
-  public DataType[] getOutputType() {
-    return new DataType[] {DataTypes.FILTERED_READS};
+  public DataFormat[] getOutputFormats() {
+    return new DataFormat[] {DataFormats.FILTERED_READS_FASTQ};
   }
 
   @Override

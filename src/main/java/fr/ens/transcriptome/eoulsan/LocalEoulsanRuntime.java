@@ -22,9 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan
@@ -47,33 +51,35 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   @Override
   public InputStream getInputStream(String dataSource) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+
+    if (dataSource == null)
+      throw new NullPointerException("The datasource is null.");
+
+    final File file = new File(dataSource);
+
+    return decompressInputStreamIsNeeded(FileUtils.createInputStream(file),
+        dataSource);
   }
 
   @Override
   public InputStream getRawInputStream(String dataSource) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+    if (dataSource == null)
+      throw new NullPointerException("The datasource is null.");
+
+    final File file = new File(dataSource);
+
+    return FileUtils.createInputStream(file);
   }
 
   @Override
   public OutputStream getOutputStream(String dataSource) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
-  //
-  // Init method
-  //
+    if (dataSource == null)
+      throw new NullPointerException("The datasource is null.");
 
-  /**
-   * Initialize the runtime.
-   * @param settings Settings of the application
-   */
-  public static void init(final Settings settings) {
+    final File file = new File(dataSource);
 
-    EoulsanRuntime.setInstance(new LocalEoulsanRuntime(settings));
+    return FileUtils.createOutputStream(file);
   }
 
   //
@@ -81,10 +87,29 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   //
 
   /**
-   * Public constructor.
+   * Public constructor, initialize the runtime.
    * @param settings Settings of the application
    */
-  public LocalEoulsanRuntime(final Settings settings) {
+  public static final LocalEoulsanRuntime newEoulsanRuntime(
+      final Settings settings) {
+
+    // Create instance
+    final LocalEoulsanRuntime instance = new LocalEoulsanRuntime(settings);
+
+    // Set the instance
+    EoulsanRuntime.setInstance(instance);
+
+    // Register protocols from settings
+    DataProtocolRegistry.getInstance().registerProtocolsFromSettings();
+
+    return instance;
+  }
+
+  /**
+   * Private constructor.
+   * @param settings Settings of the application
+   */
+  private LocalEoulsanRuntime(final Settings settings) {
 
     super(settings);
   }

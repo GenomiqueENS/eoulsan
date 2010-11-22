@@ -46,7 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 public class FileUtils {
 
@@ -356,7 +356,7 @@ public class FileUtils {
     final FileChannel outChannel = outFile.getChannel();
 
     final OutputStream gzos =
-        CompressionFactory.createGZipOutputStream(Channels
+        CompressionType.createGZipOutputStream(Channels
             .newOutputStream(outChannel));
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(gzos,
@@ -1277,5 +1277,70 @@ public class FileUtils {
     }
 
   }
+  
+  /**
+   * Test if two stream are equals
+   * @param a First stream to compare
+   * @param b Second stream to compare
+   * @return true if the two stream are equals
+   * @throws IOException if an error occurs while reading the streams
+   */
+  public static boolean compareFile(final InputStream a, final InputStream b)
+      throws IOException {
+
+    if (a == null && b == null)
+      return true;
+    if (a == null || b == null)
+      return false;
+
+    boolean end = false;
+    boolean result = true;
+
+    while (!end) {
+
+      int ca = a.read();
+      int cb = b.read();
+
+      if (ca != cb) {
+        result = false;
+        end = true;
+      }
+
+      if (ca == -1)
+        end = true;
+
+    }
+
+    a.close();
+    b.close();
+
+    return result;
+  }
+
+  /**
+   * Test if two stream are equals
+   * @param filenameA First filename to compare
+   * @param filenameB Second filename to compare
+   * @return true if the two stream are equals
+   * @throws IOException if an error occurs while reading the streams
+   */
+  public static boolean compareFile(final String filenameA,
+      final String filenameB) throws IOException {
+    return compareFile(new FileInputStream(filenameA), new FileInputStream(
+        filenameB));
+  }
+
+  /**
+   * Test if two stream are equals
+   * @param fileA First filename to compare
+   * @param fileB Second filename to compare
+   * @return true if the two stream are equals
+   * @throws IOException if an error occurs while reading the streams
+   */
+  public static boolean compareFile(final File fileA, final File fileB)
+      throws IOException {
+    return compareFile(new FileInputStream(fileA), new FileInputStream(fileB));
+  }
+  
 
 }

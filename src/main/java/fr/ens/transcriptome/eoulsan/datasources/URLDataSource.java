@@ -32,7 +32,7 @@ import java.util.Properties;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.io.CompressionFactory;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -123,10 +123,10 @@ public class URLDataSource extends FileDataSource implements Serializable {
     final String extension = StringUtils.compressionExtension(this.url);
 
     if (Common.GZIP_EXTENSION.equals(extension))
-      return CompressionFactory.createGZipInputStream(is);
+      return CompressionType.createGZipInputStream(is);
 
     if (Common.BZIP2_EXTENSION.equals(extension))
-      return CompressionFactory.createBZip2InputStream(is);
+      return CompressionType.createBZip2InputStream(is);
 
     return is;
   }

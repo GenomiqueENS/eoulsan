@@ -30,6 +30,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan
  * in Hadoop mode.
@@ -101,25 +103,48 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   //
-  // Init method
-  //
-
-  /**
-   * Initialize the runtime.
-   * @param settings Settings of the application
-   * @param conf Hadoop configuration object
-   */
-  public static void init(final Settings settings, final Configuration conf) {
-
-    EoulsanRuntime.setInstance(new HadoopEoulsanRuntime(settings, conf));
-  }
-
-  //
   // Constructor
   //
 
   /**
-   * Public constructor.
+   * Public constructor, initialize the runtime.
+   * @param settings Settings of the application
+   */
+  public static final HadoopEoulsanRuntime newEoulsanRuntime(
+      final Configuration conf) throws IOException {
+
+    try {
+      return newEoulsanRuntime(new Settings(false), conf);
+    } catch (EoulsanException e) {
+
+      throw new IOException(e.getMessage());
+    }
+
+  }
+
+  /**
+   * Public constructor, initialize the runtime.
+   * @param settings Settings of the application
+   * @param conf Hadoop configuration object
+   */
+  public static final HadoopEoulsanRuntime newEoulsanRuntime(
+      final Settings settings, final Configuration conf) {
+
+    // Create instance
+    final HadoopEoulsanRuntime instance =
+        new HadoopEoulsanRuntime(settings, conf);
+
+    // Set the instance
+    EoulsanRuntime.setInstance(instance);
+
+    // Register protocols from settings
+    DataProtocolRegistry.getInstance().registerProtocolsFromSettings();
+
+    return instance;
+  }
+
+  /**
+   * Private constructor.
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */

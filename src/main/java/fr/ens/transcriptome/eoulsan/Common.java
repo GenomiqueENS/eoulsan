@@ -170,7 +170,7 @@ public class Common {
    */
   public static final void errorExit(final Exception e, final String message) {
 
-    errorExit(e, message);
+    errorExit(e, message, true);
   }
 
   /**

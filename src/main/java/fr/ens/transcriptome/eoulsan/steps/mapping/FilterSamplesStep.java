@@ -65,6 +65,9 @@ public abstract class FilterSamplesStep extends AbstractStep {
 
     return "This step filter samples.";
   }
+  
+  
+  
 
   @Override
   public void configure(final Set<Parameter> stepParameters,

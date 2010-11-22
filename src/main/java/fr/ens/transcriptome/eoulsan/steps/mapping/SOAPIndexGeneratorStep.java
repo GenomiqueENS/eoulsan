@@ -8,11 +8,11 @@ import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataType;
-import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.protocol.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class SOAPIndexGeneratorStep extends AbstractStep {
@@ -30,15 +30,15 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public DataType[] getInputTypes() {
+  public DataFormat[] getInputFormats() {
 
-    return new DataType[] {DataTypes.GENOME};
+    return new DataFormat[] {DataFormats.GENOME_FASTA};
   }
 
   @Override
-  public DataType[] getOutputType() {
+  public DataFormat[] getOutputFormats() {
 
-    return new DataType[] {DataTypes.SOAP_INDEX};
+    return new DataFormat[] {DataFormats.SOAP_INDEX_ZIP};
   }
 
   @Override
@@ -58,7 +58,7 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
         throw new EoulsanException("No sample found in design file.");
 
       final Sample s1 = design.getSamples().get(0);
-      if (s1.getMetadata().isGenomeField())
+      if (!s1.getMetadata().isGenomeField())
         throw new EoulsanException("No genome found in design file.");
 
       final String genomeSource = s1.getMetadata().getGenome();
@@ -67,26 +67,19 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
 
       // Create index file
       final File soapIndexFile =
-          SOAPWrapper.makeIndexInZipFile(info.getDataFile(DataTypes.GENOME, s1)
-              .open());
-
+          SOAPWrapper.makeIndexInZipFile(info.getDataFile(
+              DataFormats.GENOME_FASTA, s1).open());
+      System.out.println("\t-> "+soapIndexFile);
       // Get the output DataFile
       final DataFile soapIndexDataFile =
-          info.getDataFile(DataTypes.SOAP_INDEX, s1);
+          info.getDataFile(DataFormats.SOAP_INDEX_ZIP, s1);
+      System.out.println("\t-> "+soapIndexDataFile);
 
-      if (info.getRuntime().isAmazonMode()) {
+      FileUtils.copy(FileUtils.createInputStream(soapIndexFile),
+          soapIndexDataFile.create());
 
-        // In Hadoop mode copy the SOAP index
-
-        FileUtils.copy(FileUtils.createInputStream(soapIndexFile),
-            soapIndexDataFile.create());
-        if (!soapIndexFile.delete())
-          info.getLogger().severe("Unbable to delete temporary SOAP index.");
-      } else {
-
-        // In local mode move SOAP index
-        soapIndexFile.renameTo(new File(soapIndexDataFile.getSource()));
-      }
+      if (!soapIndexFile.delete())
+        info.getLogger().severe("Unbable to delete temporary SOAP index.");
 
     } catch (EoulsanException e) {
 

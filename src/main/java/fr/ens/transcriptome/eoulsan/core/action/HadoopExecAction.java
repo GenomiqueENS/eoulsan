@@ -45,12 +45,14 @@ import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopAnalysisExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.newupload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -105,7 +107,6 @@ public class HadoopExecAction implements Action {
       // Define destination URI
       final URI destURI = new URI(args[2]);
 
-      final Path basePath = new Path(destURI.toString());
       final Path paramPath = new Path(paramURI.toString());
       final Path designPath = new Path(designURI.toString());
 
@@ -130,7 +131,7 @@ public class HadoopExecAction implements Action {
       c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Add upload Step
-      c.addStep(HDFSDataUploadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
+      // c.addStep(HDFSDataUploadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Add Copy design and parameter file Step
       c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
@@ -147,9 +148,10 @@ public class HadoopExecAction implements Action {
 
       // Execute
       final Executor e =
-          new HadoopAnalysisExecutor(conf, c, design, designPath, paramPath,
-              basePath);
-      e.execute();
+          new HadoopAnalysisExecutor(conf, c, design, designPath, paramPath);
+
+      e.execute(Collections.singletonList((Step) new HadoopUploadStep(
+          new DataFile(destURI.toString()), conf)), null);
 
     } catch (FileNotFoundException e) {
 
@@ -187,7 +189,7 @@ public class HadoopExecAction implements Action {
           CommonHadoop.createConfigurationFromSettings(settings);
 
       // Initialize runtime
-      HadoopEoulsanRuntime.init(settings, conf);
+      HadoopEoulsanRuntime.newEoulsanRuntime(settings, conf);
 
       return conf;
     } catch (IOException e) {

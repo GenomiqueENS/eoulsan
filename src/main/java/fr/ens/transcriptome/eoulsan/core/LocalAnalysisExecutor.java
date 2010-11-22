@@ -31,12 +31,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.steps.anadiff.local.AnaDiffLocalStep;
-import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterReadsLocalStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterSamplesLocalStep;
-import fr.ens.transcriptome.eoulsan.steps.mapping.local.SoapMapReadsLocalStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -144,19 +138,6 @@ public class LocalAnalysisExecutor extends Executor {
 
     info.setOutputPathname(outputDir.getAbsolutePath());
     info.setLogPathname(logDir.getAbsolutePath());
-
-    //
-    // Register local steps
-    //
-
-    final StepsRegistery registery = StepsRegistery.getInstance();
-
-    registery.addStepType(ExecInfoLogStep.class);
-    registery.addStepType(FilterReadsLocalStep.class);
-    registery.addStepType(SoapMapReadsLocalStep.class);
-    registery.addStepType(FilterSamplesLocalStep.class);
-    registery.addStepType(ExpressionLocalStep.class);
-    registery.addStepType(AnaDiffLocalStep.class);
   }
 
 }
