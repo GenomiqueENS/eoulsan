@@ -30,40 +30,13 @@ package fr.ens.transcriptome.eoulsan;
 public class EoulsanError extends Error {
 
   /**
-   * Create a new NividicError with a message.
+   * Create a new EoulsanError with a message.
    * @param message the message
    */
   public EoulsanError(final String message) {
     super(message);
   }
-
-  /**
-   * Create a new NividicError with a cause.
-   * @param ex the Throwable that caused this NividicError
-   */
-  public EoulsanError(final Throwable ex) {
-    super(ex);
-  }
-
-  /**
-   * Create a new NividicError with a cause and a message.
-   * @param ex the Throwable that caused this NividicError
-   * @param message the message
-   * @deprecated Use NividicError(message, ex) instead.
-   */
-  public EoulsanError(final Throwable ex, final String message) {
-    this(message, ex);
-  }
-
-  /**
-   * Create a new NividicError with a cause and a message.
-   * @param message the message
-   * @param ex the Throwable that caused this NividicError
-   */
-  public EoulsanError(final String message, final Throwable ex) {
-    super(message, ex);
-  }
-
+  
   /**
    * Create a new NividicError.
    */

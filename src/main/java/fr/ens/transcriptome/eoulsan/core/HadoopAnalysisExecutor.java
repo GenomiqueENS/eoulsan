@@ -71,7 +71,7 @@ public class HadoopAnalysisExecutor extends Executor {
       return dr.read();
 
     } catch (IOException e) {
-      throw new EoulsanException("Error while reading design file: ", e);
+      throw new EoulsanException("Error while reading design file: " + e.getMessage());
     }
   }
 

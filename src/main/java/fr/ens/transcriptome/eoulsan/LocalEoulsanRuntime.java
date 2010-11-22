@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * in local mode.
  * @author Laurent Jourdren
  */
-public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
+public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   @Override
   public boolean isHadoopMode() {
@@ -50,10 +50,11 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getInputStream(String dataSource) throws IOException {
+  public InputStream getInputStream(final String dataSource) throws IOException {
 
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final File file = new File(dataSource);
 
@@ -62,9 +63,12 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getRawInputStream(String dataSource) throws IOException {
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+  public InputStream getRawInputStream(final String dataSource)
+      throws IOException {
+
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final File file = new File(dataSource);
 
@@ -72,10 +76,12 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public OutputStream getOutputStream(String dataSource) throws IOException {
+  public OutputStream getOutputStream(final String dataSource)
+      throws IOException {
 
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final File file = new File(dataSource);
 
@@ -90,8 +96,7 @@ public class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
    * Public constructor, initialize the runtime.
    * @param settings Settings of the application
    */
-  public static final LocalEoulsanRuntime newEoulsanRuntime(
-      final Settings settings) {
+  public static LocalEoulsanRuntime newEoulsanRuntime(final Settings settings) {
 
     // Create instance
     final LocalEoulsanRuntime instance = new LocalEoulsanRuntime(settings);

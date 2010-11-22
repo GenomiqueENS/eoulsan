@@ -40,33 +40,6 @@ public class EoulsanIOException extends EoulsanException {
   }
 
   /**
-   * Create a new NividicIOException with a cause.
-   * @param ex the Throwable that caused this NividicIOException
-   */
-  public EoulsanIOException(final Throwable ex) {
-    super(ex);
-  }
-
-  /**
-   * Create a new NividicIOException with a cause and a message.
-   * @param ex the Throwable that caused this NividicIOException
-   * @param message the message
-   * @deprecated use new NividicIOException(message, ex) instead
-   */
-  public EoulsanIOException(final Throwable ex, final String message) {
-    this(message, ex);
-  }
-
-  /**
-   * Create a new NividicIOException with a cause and a message.
-   * @param message the message
-   * @param ex the Throwable that caused this NividicIOException
-   */
-  public EoulsanIOException(final String message, final Throwable ex) {
-    super(message, ex);
-  }
-
-  /**
    * Create a new NividicIOException.
    */
   public EoulsanIOException() {

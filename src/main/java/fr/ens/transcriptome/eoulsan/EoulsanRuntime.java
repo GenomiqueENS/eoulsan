@@ -26,18 +26,19 @@ package fr.ens.transcriptome.eoulsan;
  * This class store the only Eoulsan runtime instance.
  * @author Laurent Jourdren
  */
-public class EoulsanRuntime {
+public final class EoulsanRuntime {
 
   private static AbstractEoulsanRuntime instance = null;
 
   /**
-   * Get the Eoulsan runtime instance
+   * Get the Eoulsan runtime instance.
    * @return the EoulsanRuntime instance
    */
   public static AbstractEoulsanRuntime getRuntime() {
 
-    if (instance == null)
+    if (instance == null) {
       throw new EoulsanRuntimeException("No Eoulsan has been set.");
+    }
 
     return instance;
   }
@@ -48,14 +49,15 @@ public class EoulsanRuntime {
    */
   public static Settings getSettings() {
 
-    if (instance == null)
+    if (instance == null) {
       throw new EoulsanRuntimeException("No Eoulsan has been set.");
+    }
 
     return instance.getSettings();
   }
 
   /**
-   * Test if an instance of the runtime is set
+   * Test if an instance of the runtime is set.
    * @return true if an instance of the EoulsanRuntime is set
    */
   public static boolean isRuntime() {
@@ -70,9 +72,10 @@ public class EoulsanRuntime {
    */
   static void setInstance(final AbstractEoulsanRuntime runtime) {
 
-    if (instance != null)
+    if (instance != null) {
       throw new EoulsanRuntimeException(
           "An Eoulsan Runtime already exists. Cannot change the current instance.");
+    }
 
     instance = runtime;
   }
@@ -85,6 +88,8 @@ public class EoulsanRuntime {
    * Private constructor.
    */
   private EoulsanRuntime() {
+
+    throw new IllegalStateException();
   }
 
 }

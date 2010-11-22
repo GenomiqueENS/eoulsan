@@ -15,10 +15,10 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * This class define a settings class.
  * @author Laurent Jourdren
  */
-public class Settings {
+public final class Settings {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String MAIN_PREFIX_KEY = "main.";
   private final Properties properties = new Properties();
@@ -40,7 +40,7 @@ public class Settings {
   private static final String RSERVE_SERVER_NAME_KEY =
       MAIN_PREFIX_KEY + "rserve.servername";
 
-  private static final Set<String> forbiddenKeys =
+  private static final Set<String> FORBIDDEN_KEYS =
       Utils.unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
 
@@ -55,7 +55,7 @@ public class Settings {
   public boolean isDebug() {
 
     final String value =
-        this.properties.getProperty(DEBUG_KEY, "" + Globals.DEBUG);
+        this.properties.getProperty(DEBUG_KEY, Boolean.toString(Globals.DEBUG));
 
     return Boolean.valueOf(value);
   }
@@ -67,8 +67,8 @@ public class Settings {
   public boolean isPrintStackTrace() {
 
     final String value =
-        this.properties.getProperty(PRINT_STACK_TRACE_KEY, ""
-            + Globals.PRINT_STACK_TRACE_DEFAULT);
+        this.properties.getProperty(PRINT_STACK_TRACE_KEY, Boolean
+            .toString(Globals.PRINT_STACK_TRACE_DEFAULT));
 
     return Boolean.valueOf(value);
   }
@@ -112,15 +112,17 @@ public class Settings {
 
   /**
    * Get a setting value.
-   * @return setting value as a String
+   * @return settingName value as a String
    */
   public String getSetting(final String settingName) {
 
-    if (settingName == null)
+    if (settingName == null) {
       return null;
+    }
 
-    if (settingName.startsWith(MAIN_PREFIX_KEY))
+    if (settingName.startsWith(MAIN_PREFIX_KEY)) {
       return null;
+    }
 
     return this.properties.getProperty(settingName);
   }
@@ -133,9 +135,11 @@ public class Settings {
 
     final Set<String> result = new HashSet<String>();
 
-    for (String key : this.properties.stringPropertyNames())
-      if (!key.startsWith(MAIN_PREFIX_KEY))
+    for (String key : this.properties.stringPropertyNames()) {
+      if (!key.startsWith(MAIN_PREFIX_KEY)) {
         result.add(key);
+      }
+    }
 
     return result;
   }
@@ -169,8 +173,9 @@ public class Settings {
    */
   public void setAWSAccessKey(final String value) {
 
-    if (value == null)
+    if (value == null) {
       return;
+    }
 
     this.properties.setProperty(AWS_ACCESS_KEY, value);
     this.properties.setProperty(HADOOP_AWS_ACCESS_KEY, value);
@@ -182,8 +187,9 @@ public class Settings {
    */
   public void setAWSSecretKey(final String value) {
 
-    if (value == null)
+    if (value == null) {
       return;
+    }
 
     this.properties.setProperty(AWS_SECRET_KEY, value);
     this.properties.setProperty(HADOOP_AWS_SECRET_KEY, value);
@@ -195,7 +201,7 @@ public class Settings {
    */
   public void setRServeServerEnabled(final boolean enable) {
 
-    this.properties.setProperty(RSERVE_ENABLED_KEY, "" + enable);
+    this.properties.setProperty(RSERVE_ENABLED_KEY, Boolean.toString(enable));
   }
 
   /**
@@ -215,8 +221,9 @@ public class Settings {
   public void setSetting(final String settingName, final String settingValue) {
 
     if (settingName == null
-        || settingValue == null || forbiddenKeys.contains(settingName))
+        || settingValue == null || FORBIDDEN_KEYS.contains(settingName)) {
       return;
+    }
 
     this.properties.setProperty(settingName, settingValue);
   }
@@ -234,16 +241,17 @@ public class Settings {
     final String os = System.getProperty("os.name");
     final String home = System.getProperty("user.home");
 
-    if (os.toLowerCase().startsWith("windows"))
+    if (os.toLowerCase(Globals.DEFAULT_LOCALE).startsWith("windows")) {
       return home
           + File.separator + "Application Data" + File.separator
           + Globals.APP_NAME_LOWER_CASE + ".conf";
+    }
 
     return home + File.separator + "." + Globals.APP_NAME_LOWER_CASE;
   }
 
   /**
-   * Save application options
+   * Save application options.
    * @throws IOException if an error occurs while writing results
    */
   public void saveSettings() throws IOException {
@@ -252,13 +260,13 @@ public class Settings {
   }
 
   /**
-   * Save application options
-   * @param file File to save.
+   * Save application options.
+   * @param file File to save
    * @throws IOException if an error occurs while writing settings
    */
   public void saveSettings(final File file) throws IOException {
 
-    FileOutputStream fos = new FileOutputStream(file);
+    final FileOutputStream fos = new FileOutputStream(file);
 
     this.properties.store(fos, " "
         + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
@@ -267,21 +275,22 @@ public class Settings {
   }
 
   /**
-   * Load application options
+   * Load application options.
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
   public void loadSettings() throws IOException, EoulsanException {
 
     final File confFile = new File(getConfigurationFilePath());
-    if (!confFile.exists())
-      logger.config("No configuration file found.");
-    else
+    if (confFile.exists()) {
       loadSettings(confFile);
+    } else {
+      LOGGER.config("No configuration file found.");
+    }
   }
 
   /**
-   * Load application options
+   * Load application options.
    * @param file file to save
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
@@ -289,17 +298,18 @@ public class Settings {
   public void loadSettings(final File file) throws IOException,
       EoulsanException {
 
-    logger.info("Load configuration file: " + file.getAbsolutePath());
-    FileInputStream fis = new FileInputStream(file);
+    LOGGER.info("Load configuration file: " + file.getAbsolutePath());
+    final FileInputStream fis = new FileInputStream(file);
 
     this.properties.load(fis);
     fis.close();
 
-    for (String key : this.properties.stringPropertyNames())
-      if (forbiddenKeys.contains(key)) {
+    for (String key : this.properties.stringPropertyNames()) {
+      if (FORBIDDEN_KEYS.contains(key)) {
         throw new EoulsanException("Forbiden key found in configuration file: "
             + key);
       }
+    }
 
   }
 
@@ -307,6 +317,9 @@ public class Settings {
   // Default values
   //
 
+  /**
+   * Set some default settings.
+   */
   private void init() {
 
     this.properties.setProperty(AWS_ACCESS_KEY, "AKIAJPXBAOLESJ2TOABA");

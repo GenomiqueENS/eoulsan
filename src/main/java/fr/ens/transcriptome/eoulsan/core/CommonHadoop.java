@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * This class define common constants and other methods specific to Hadoop mode.
  * @author Laurent Jourdren
  */
-public class CommonHadoop extends Common {
+public class CommonHadoop {
 
   public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
       "fs.s3n.awsSecretAccessKey";
@@ -71,8 +71,7 @@ public class CommonHadoop extends Common {
       throw new NullPointerException("Base path is null");
 
     final List<Path> genomePaths =
-        PathUtils.listPathsBySuffix(basePath, CommonHadoop.FASTA_EXTENSION,
-            conf);
+        PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
     if (genomePaths.size() == 0)
       throw new IOException("Genome file not found.");
     if (genomePaths.size() > 1)
@@ -91,7 +90,7 @@ public class CommonHadoop extends Common {
       final String data) throws IOException {
 
     final FileSystem fs = logPath.getFileSystem(new Configuration());
-    writeLog(fs.create(logPath), startTime, data);
+    Common.writeLog(fs.create(logPath), startTime, data);
   }
 
   /**

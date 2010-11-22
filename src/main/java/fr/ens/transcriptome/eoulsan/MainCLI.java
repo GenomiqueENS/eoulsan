@@ -46,10 +46,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * Main class in local mode.
  * @author Laurent Jourdren
  */
-public class MainCLI {
+public final class MainCLI {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /**
    * Show command line help.
@@ -58,7 +58,7 @@ public class MainCLI {
   private static void help(final Options options) {
 
     // Show help message
-    HelpFormatter formatter = new HelpFormatter();
+    final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE + " [options] design",
         options);
 
@@ -109,25 +109,29 @@ public class MainCLI {
     try {
 
       // parse the command line arguments
-      CommandLine line = parser.parse(options, args);
+      final CommandLine line = parser.parse(options, args);
 
       // Help option
-      if (line.hasOption("help"))
+      if (line.hasOption("help")) {
         help(options);
+      }
 
       // About option
-      if (line.hasOption("about"))
+      if (line.hasOption("about")) {
         Common.showMessageAndExit(Globals.ABOUT_TXT);
+      }
 
       // Version option
-      if (line.hasOption("version"))
+      if (line.hasOption("version")) {
         Common.showMessageAndExit(Globals.APP_NAME
             + " version " + Globals.APP_VERSION_STRING + " ("
             + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
+      }
 
       // Licence option
-      if (line.hasOption("license"))
+      if (line.hasOption("license")) {
         Common.showMessageAndExit(Globals.LICENSE_TXT);
+      }
 
       // Load configuration if exists
       try {
@@ -137,8 +141,9 @@ public class MainCLI {
         if (line.hasOption("conf")) {
           settings = new Settings(new File(line.getOptionValue("conf")));
           argsOptions += 2;
-        } else
+        } else {
           settings = new Settings();
+        }
 
         // Initialize the runtime
         LocalEoulsanRuntime.newEoulsanRuntime(settings);
@@ -154,12 +159,12 @@ public class MainCLI {
 
         argsOptions += 2;
         try {
-          Handler fh = new FileHandler(line.getOptionValue("log"));
+          final Handler fh = new FileHandler(line.getOptionValue("log"));
           fh.setFormatter(Globals.LOG_FORMATTER);
-          logger.setLevel(Globals.LOG_LEVEL);
-          logger.setUseParentHandlers(false);
+          LOGGER.setLevel(Globals.LOG_LEVEL);
+          LOGGER.setUseParentHandlers(false);
 
-          logger.addHandler(fh);
+          LOGGER.addHandler(fh);
         } catch (IOException e) {
           Common.errorExit(e, "Error while creating log file: "
               + e.getMessage());
@@ -171,11 +176,11 @@ public class MainCLI {
 
         argsOptions += 2;
         try {
-          logger.setLevel(Level.parse(line.getOptionValue("loglevel")
+          LOGGER.setLevel(Level.parse(line.getOptionValue("loglevel")
               .toUpperCase()));
         } catch (IllegalArgumentException e) {
 
-          logger
+          LOGGER
               .warning("Unknown log level ("
                   + line.getOptionValue("loglevel")
                   + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
@@ -206,8 +211,8 @@ public class MainCLI {
   public static void main(final String[] args) {
 
     // Set log level
-    logger.setLevel(Globals.LOG_LEVEL);
-    logger.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
+    LOGGER.setLevel(Globals.LOG_LEVEL);
+    LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
     // Parse the command line
     final int argsOptions = parseCommandLine(args);
@@ -228,12 +233,23 @@ public class MainCLI {
     final String[] arguments =
         StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
 
-    if ("exec".equals(action))
+    if ("exec".equals(action)) {
       new LocalExecAction().action(arguments);
-    else if ("createdesign".equals(action))
+    } else if ("createdesign".equals(action)) {
       new LocalCreateDesignAction().action(arguments);
-    else if ("uploads3".equals(action))
+    } else if ("uploads3".equals(action)) {
       new LocalUploadS3Action().action(arguments);
+    }
 
   }
+
+  //
+  // Constructor
+  //
+
+  private MainCLI() {
+
+    throw new IllegalStateException();
+  }
+
 }

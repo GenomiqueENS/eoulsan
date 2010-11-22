@@ -37,10 +37,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class define common constants.
  * @author Laurent Jourdren
  */
-public class Common {
+public final class Common {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static final String FASTA_EXTENSION = ".fasta";
   public static final String READS_SUBDIR = "reads";
@@ -89,8 +89,9 @@ public class Common {
    */
   public static int getSampleId(final String sampleSource) {
 
-    if (sampleSource == null || "".equals(sampleSource))
+    if (sampleSource == null || "".equals(sampleSource)) {
       return -1;
+    }
 
     final String basename = StringUtils.basename(sampleSource);
     final int pos = basename.lastIndexOf('_');
@@ -127,8 +128,9 @@ public class Common {
   public static void writeLog(final File file, final long startTime,
       final String data) throws IOException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File for log file is null.");
+    }
 
     writeLog(FileUtils.createOutputStream(file), startTime, data);
   }
@@ -142,17 +144,17 @@ public class Common {
     System.out.println(message);
     exit(0);
   }
-  
+
   /**
    * Show and log an error message.
    * @param message message to show and log
    */
-  public static final void showAndLogErrorMessage(final String message) {
-    
-    logger.severe(message);
-    System.err.println(message);    
+  public static void showAndLogErrorMessage(final String message) {
+
+    LOGGER.severe(message);
+    System.err.println(message);
   }
-  
+
   /**
    * Show a message and then exit.
    * @param message the message to show
@@ -168,7 +170,7 @@ public class Common {
    * @param e Exception
    * @param message message to show to the use
    */
-  public static final void errorExit(final Exception e, final String message) {
+  public static void errorExit(final Exception e, final String message) {
 
     errorExit(e, message, true);
   }
@@ -179,19 +181,20 @@ public class Common {
    * @param message message to show to the use
    * @param logMessage true if message must be logged
    */
-  public static final void errorExit(final Exception e, final String message,
+  public static void errorExit(final Exception e, final String message,
       final boolean logMessage) {
 
-    if (logMessage)
-      logger.severe(message);
+    if (logMessage) {
+      LOGGER.severe(message);
+    }
 
     System.err.println("\n=== " + Globals.APP_NAME + " Error ===");
     System.err.println(message);
 
-    if (!EoulsanRuntime.isRuntime())
+    if (!EoulsanRuntime.isRuntime()
+        || EoulsanRuntime.getSettings().isPrintStackTrace()) {
       printStackTrace(e);
-    else if (EoulsanRuntime.getSettings().isPrintStackTrace())
-      printStackTrace(e);
+    }
 
     exit(1);
   }
@@ -200,23 +203,29 @@ public class Common {
    * Print the stack trace for an exception.
    * @param e Exception
    */
-  private static final void printStackTrace(final Exception e) {
+  private static void printStackTrace(final Exception e) {
 
     System.err.println("\n=== " + Globals.APP_NAME + " Debug Stack Trace ===");
     e.printStackTrace();
     System.err.println();
   }
 
-  
-  
-  
   /**
    * Exit the application.
    * @param exitCode exit code
    */
-  public static void exit(int exitCode) {
+  public static void exit(final int exitCode) {
 
     System.exit(exitCode);
+  }
+
+  //
+  // Constructor
+  //
+
+  private Common() {
+
+    throw new IllegalStateException();
   }
 
 }

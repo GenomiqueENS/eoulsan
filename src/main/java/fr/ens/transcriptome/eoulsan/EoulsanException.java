@@ -30,38 +30,12 @@ package fr.ens.transcriptome.eoulsan;
 public class EoulsanException extends Exception {
 
   /**
-   * Create a new NividicException with a message.
+   * Create a new EoulsanException with a message.
    * @param message the message
    */
   public EoulsanException(final String message) {
+
     super(message);
-  }
-
-  /**
-   * Create a new NividicException with a cause.
-   * @param ex the Throwable that caused this NividicException
-   */
-  public EoulsanException(final Throwable ex) {
-    super(ex);
-  }
-
-  /**
-   * Create a new NividicException with a cause and a message.
-   * @param ex the Throwable that caused this NividicException
-   * @param message the message
-   * @deprecated use new NividicException(message, ex) instead
-   */
-  public EoulsanException(final Throwable ex, final String message) {
-    this(message, ex);
-  }
-
-  /**
-   * Create a new NividicException with a cause and a message.
-   * @param message the message
-   * @param ex the Throwable that caused this NividicException
-   */
-  public EoulsanException(final String message, final Throwable ex) {
-    super(message, ex);
   }
 
   /**

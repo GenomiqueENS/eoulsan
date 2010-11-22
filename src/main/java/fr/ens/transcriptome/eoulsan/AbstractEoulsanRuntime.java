@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class AbstractEoulsanRuntime {
 
-  private Settings settings;
+  private final Settings settings;
 
   /**
    * Get Settings.
@@ -99,11 +99,13 @@ public abstract class AbstractEoulsanRuntime {
 
     final String extension = StringUtils.compressionExtension(source);
 
-    if (Common.GZIP_EXTENSION.equals(extension))
+    if (Common.GZIP_EXTENSION.equals(extension)) {
       return CompressionType.createGZipInputStream(is);
+    }
 
-    if (Common.BZIP2_EXTENSION.equals(extension))
+    if (Common.BZIP2_EXTENSION.equals(extension)) {
       return CompressionType.createBZip2InputStream(is);
+    }
 
     return is;
   }
@@ -114,8 +116,9 @@ public abstract class AbstractEoulsanRuntime {
 
   protected AbstractEoulsanRuntime(final Settings settings) {
 
-    if (settings == null)
+    if (settings == null) {
       throw new EoulsanError("The settings are null");
+    }
 
     this.settings = settings;
   }
