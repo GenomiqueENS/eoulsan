@@ -180,8 +180,8 @@ public final class StringUtils {
     if (filename.endsWith(".bz2"))
       return filename.substring(0, filename.length() - 4);
 
-    if (filename.endsWith(".zip"))
-      return filename.substring(0, filename.length() - 4);
+    // if (filename.endsWith(".zip"))
+    // return filename.substring(0, filename.length() - 4);
 
     if (filename.endsWith(".deflate"))
       return filename.substring(0, filename.length() - 8);
@@ -574,6 +574,49 @@ public final class StringUtils {
         return true;
 
     return false;
+  }
+
+  /**
+   * Get the content type of a file for common file extensions
+   * @param extension extension to use
+   * @return the content type of an empty string if the content type was not
+   *         found
+   */
+  public static final String getCommonContentTypeFromExtension(
+      final String extension) {
+
+    if (extension == null)
+      return null;
+
+    final String lower = extension.toLowerCase();
+
+    if (".htm".equals(lower) || ".html".equals(lower))
+      return "text/html";
+
+    if (".xml".equals(lower))
+      return "text/xml";
+
+    if (".txt".equals(lower)
+        || ".pl".equals(lower) || ".pm".equals(lower) || ".py".equals(lower)
+        || ".r".equals(lower) || ".rb".equals(lower) || ".java".equals(lower))
+      return "text/plain";
+
+    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower))
+      return "image/jpeg";
+
+    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower))
+      return "image/jpeg";
+
+    if (".tif".equals(lower) || ".tiff".equals(lower))
+      return "image/tiff";
+
+    if (".png".equals(lower))
+      return "image/png";
+
+    if (".pdf".equals(lower))
+      return "application/pdf";
+
+    return "";
   }
 
 }
