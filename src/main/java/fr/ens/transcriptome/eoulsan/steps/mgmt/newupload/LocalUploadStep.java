@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.newupload;
 import java.io.IOException;
 import java.util.Map;
 
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
 
@@ -46,7 +45,7 @@ public class LocalUploadStep extends UploadStep {
   protected void copy(final Map<DataFile, DataFile> files) throws IOException {
 
     if (files == null)
-      throw new NullArgumentException("The files argument is null.");
+      throw new NullPointerException("The files argument is null.");
 
     for (Map.Entry<DataFile, DataFile> e : files.entrySet())
       new DataFormatConverter(e.getKey(), e.getValue()).convert();

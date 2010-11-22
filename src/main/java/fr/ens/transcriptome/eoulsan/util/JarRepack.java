@@ -10,8 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
-
 public class JarRepack {
 
   /** The default size of the buffer. */
@@ -91,11 +89,11 @@ public class JarRepack {
   public JarRepack(final File inFile, final File outFile) throws IOException {
 
     if (inFile == null) {
-      throw new NullArgumentException("the inFile argument is null.");
+      throw new NullPointerException("the inFile argument is null.");
     }
 
     if (outFile == null) {
-      throw new NullArgumentException("the outFile argument is null.");
+      throw new NullPointerException("the outFile argument is null.");
     }
 
     this.zos = new ZipOutputStream(new FileOutputStream(outFile));

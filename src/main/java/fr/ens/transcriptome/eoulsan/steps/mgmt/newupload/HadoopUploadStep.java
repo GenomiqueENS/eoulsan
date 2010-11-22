@@ -32,7 +32,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
@@ -87,7 +86,7 @@ public class HadoopUploadStep extends UploadStep {
   protected void copy(final Map<DataFile, DataFile> files) throws IOException {
 
     if (files == null)
-      throw new NullArgumentException("The files argument is null.");
+      throw new NullPointerException("The files argument is null.");
 
     // Copy local files
 
