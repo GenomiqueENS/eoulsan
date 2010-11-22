@@ -37,9 +37,9 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
  * in Hadoop mode.
  * @author Laurent Jourdren
  */
-public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
+public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
-  private Configuration conf;
+  private final Configuration conf;
 
   /**
    * Get Hadoop configuration.
@@ -69,8 +69,9 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   @Override
   public InputStream getInputStream(final String dataSource) throws IOException {
 
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final Path p = new Path(dataSource);
     final FileSystem fs = p.getFileSystem(this.conf);
@@ -81,8 +82,9 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   @Override
   public InputStream getRawInputStream(String dataSource) throws IOException {
 
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final Path p = new Path(dataSource);
     final FileSystem fs = p.getFileSystem(this.conf);
@@ -93,8 +95,9 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   @Override
   public OutputStream getOutputStream(String dataSource) throws IOException {
 
-    if (dataSource == null)
-      throw new NullPointerException("The datasource is null.");
+    if (dataSource == null) {
+      throw new IllegalArgumentException("The datasource is null.");
+    }
 
     final Path p = new Path(dataSource);
     final FileSystem fs = p.getFileSystem(this.conf);
@@ -110,7 +113,7 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * Public constructor, initialize the runtime.
    * @param settings Settings of the application
    */
-  public static final HadoopEoulsanRuntime newEoulsanRuntime(
+  public static  HadoopEoulsanRuntime newEoulsanRuntime(
       final Configuration conf) throws IOException {
 
     try {
@@ -127,7 +130,7 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  public static final HadoopEoulsanRuntime newEoulsanRuntime(
+  public static HadoopEoulsanRuntime newEoulsanRuntime(
       final Settings settings, final Configuration conf) {
 
     // Create instance
@@ -152,8 +155,9 @@ public class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
     super(settings);
 
-    if (conf == null)
-      throw new NullPointerException("The configuration is null");
+    if (conf == null) {
+      throw new IllegalArgumentException("The configuration is null");
+    }
 
     this.conf = conf;
   }

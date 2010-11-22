@@ -40,7 +40,7 @@ import java.util.logging.LogRecord;
 
 import fr.ens.transcriptome.eoulsan.util.Version;
 
-public class Globals {
+public final class Globals {
 
   private static Properties manifestProperties;
   private static final String MANIFEST_PROPERTIES_FILE = "/manifest.txt";
@@ -99,7 +99,8 @@ public class Globals {
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
 
-    private final DateFormat df = new SimpleDateFormat("yyyy.MM.dd kk:mm:ss");
+    private final DateFormat df =
+        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", DEFAULT_LOCALE);
 
     public String format(final LogRecord record) {
       return record.getLevel()
@@ -151,43 +152,50 @@ public class Globals {
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
   //
+  // Private constants
+  //
+
+  private static final String UNKNOWN_VERSION = "UNKNOWN_VERSION";
+  private static final String UNKNOWN_BUILD = "UNKNOWN_BUILD";
+  private static final String UNKNOWN_DATE = "UNKNOWN_DATE";
+
+  //
   // Methods
   //
 
   private static String getVersion() {
 
-    String s = getManifestProperty("Specification-Version");
+    final String version = getManifestProperty("Specification-Version");
 
-    return s != null ? s : "UNKNOWN_VERSION";
+    return version != null ? version : UNKNOWN_VERSION;
   }
 
   private static String getBuiltNumber() {
 
-    String s = getManifestProperty("Implementation-Version");
+    final String builtNumber = getManifestProperty("Implementation-Version");
 
-    return s != null ? s : "UNKNOWN_BUILD";
+    return builtNumber != null ? builtNumber : UNKNOWN_BUILD;
   }
 
   private static String getBuiltDate() {
 
-    final String unknown = "UNKNOWN_DATE";
+    final String builtDate = getManifestProperty("Built-Date");
 
-    String s = getManifestProperty("Built-Date");
-
-    return s != null ? s : unknown;
+    return builtDate != null ? builtDate : UNKNOWN_DATE;
   }
 
   private static String getWebSiteURL() {
 
-    String s = getManifestProperty("url");
+    final String url = getManifestProperty("url");
 
-    return s != null ? s : WEBSITE_URL_DEFAULT;
+    return url != null ? url : WEBSITE_URL_DEFAULT;
   }
 
   private static String getManifestProperty(final String propertyKey) {
 
-    if (propertyKey == null)
+    if (propertyKey == null) {
       return null;
+    }
 
     readManifest();
 
@@ -196,17 +204,19 @@ public class Globals {
 
   private static synchronized void readManifest() {
 
-    if (manifestProperties != null)
+    if (manifestProperties != null) {
       return;
+    }
 
     try {
       manifestProperties = new Properties();
 
-      InputStream is =
+      final InputStream is =
           Globals.class.getResourceAsStream(MANIFEST_PROPERTIES_FILE);
 
-      if (is == null)
+      if (is == null) {
         return;
+      }
 
       manifestProperties.load(is);
     } catch (IOException e) {
@@ -229,5 +239,7 @@ public class Globals {
    * Private constructor.
    */
   private Globals() {
+
+    throw new IllegalStateException();
   }
 }

@@ -29,7 +29,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  * the classpath launch Hadoop main class else run local main class.
  * @author Laurent Jourdren
  */
-public class Main {
+public final class Main {
 
   /**
    * Get in a string with all arch
@@ -42,10 +42,13 @@ public class Main {
     boolean first = true;
 
     for (String osArch : Globals.AVAILABLE_BINARY_ARCH) {
-      if (first)
+
+      if (first) {
         first = false;
-      else
+      } else {
         sb.append(", ");
+      }
+
       sb.append(osArch.replace('\t', '/'));
     }
 
@@ -59,20 +62,31 @@ public class Main {
   public static void main(final String[] args) {
 
     // Test if the application can run with current platform
-    if (!SystemUtils.isApplicationAvailableForCurrentArch())
+    if (!SystemUtils.isApplicationAvailableForCurrentArch()) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
           + "\n" + Globals.APP_NAME
           + " is not available for your platform. Required platforms: "
           + availableArchsToString() + ".");
+    }
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
 
     // Select the application execution mode
-    if (SystemUtils.isHadoop())
+    if (SystemUtils.isHadoop()) {
       MainHadoop.main(args);
-    else
+    } else {
       MainCLI.main(args);
+    }
+  }
+  
+  //
+  // Constructor
+  //
+  
+  private Main() {
+    
+    throw new IllegalStateException();
   }
 
 }

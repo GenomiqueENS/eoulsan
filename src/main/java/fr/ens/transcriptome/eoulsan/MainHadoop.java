@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.core.action.HadoopExecAction;
  * Main class in Hadoop mode.
  * @author Laurent Jourdren
  */
-public class MainHadoop {
+public final class MainHadoop {
 
   public static void main(final String[] args) {
 
@@ -48,6 +48,15 @@ public class MainHadoop {
       e.printStackTrace();
     }
 
+  }
+
+  //
+  // Constructor
+  //
+
+  private MainHadoop() {
+
+    throw new IllegalStateException();
   }
 
 }
