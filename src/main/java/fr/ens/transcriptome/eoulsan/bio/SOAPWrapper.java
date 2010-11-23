@@ -38,17 +38,17 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * object
  * @author Laurent Jourdren
  */
-public class SOAPWrapper {
+public final class SOAPWrapper {
 
-  /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
   private static final boolean DEBUG = true;
 
   private static String soapPath;
   private static String indexerPath;
 
   /**
-   * Create the soap index in a directory
+   * Create the soap index in a directory.
    * @param genomeFile path to the genome file
    * @param outputDir output directory for the index
    * @throws IOException if an error occurs while creating the index
@@ -56,21 +56,27 @@ public class SOAPWrapper {
   public static void makeIndex(final File genomeFile, final File outputDir)
       throws IOException {
 
-    if (genomeFile == null)
-      throw new NullPointerException("genome file is null");
+    if (genomeFile == null) {
+      throw new IllegalArgumentException("genome file is null");
+    }
 
-    if (outputDir == null)
-      throw new NullPointerException("output directory is null");
+    if (outputDir == null) {
+      throw new IllegalArgumentException("output directory is null");
+    }
 
-    logger.info("Start computing SOAP index for " + genomeFile);
+    LOGGER.info("Start computing SOAP index for " + genomeFile);
     final long startTime = System.currentTimeMillis();
 
-    if (indexerPath == null)
-      indexerPath = BinariesInstaller.install("2bwt-builder");
+    synchronized (indexerPath) {
 
-    if (!outputDir.exists())
-      if (!outputDir.mkdir())
-        throw new IOException("Unable to create directory for genome index");
+      if (indexerPath == null) {
+        indexerPath = BinariesInstaller.install("2bwt-builder");
+      }
+    }
+
+    if (!outputDir.exists() && !outputDir.mkdir()) {
+      throw new IOException("Unable to create directory for genome index");
+    }
 
     final File tmpGenomeFile = new File(outputDir, genomeFile.getName());
 
@@ -82,61 +88,71 @@ public class SOAPWrapper {
     ProcessUtils.exec(cmd, DEBUG);
 
     // Remove symbolic link
-    if (!tmpGenomeFile.delete())
-    logger.warning("Cannot remove symbolic link while after creating SOAP index");
+    if (!tmpGenomeFile.delete()) {
+      LOGGER
+          .warning("Cannot remove symbolic link while after creating SOAP index");
+    }
 
     final long endTime = System.currentTimeMillis();
 
-    logger.info("Create the SOAP index in "
+    LOGGER.info("Create the SOAP index in "
         + StringUtils.toTimeHumanReadable(endTime - startTime));
 
   }
 
   /**
-   * Create the soap index in a zip archive
-   * @param genomeFile path to the genome file
+   * Create the soap index in a zip archive.
+   * @param is InputStream to use for the genome file
    * @throws IOException if an error occurs while creating the index
    */
   public static File makeIndexInZipFile(final InputStream is)
       throws IOException {
 
-    logger.info("Copy genome to local disk before computating index");
+    LOGGER.info("Copy genome to local disk before computating index");
 
-    File genomeTmpFile =
+    final File genomeTmpFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", "");
     FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
     final File result = makeIndexInZipFile(genomeTmpFile);
 
-    if (!genomeTmpFile.delete())
-      logger.warning("Cannot delete temporary index zip file");
+    if (!genomeTmpFile.delete()) {
+      LOGGER.warning("Cannot delete temporary index zip file");
+    }
 
     return result;
   }
 
   /**
-   * Create the soap index in a zip archive
+   * Create the soap index in a zip archive.
    * @param genomeFile path to the genome file
+   * @return a File object with the path of the result zip file
    * @throws IOException if an error occurs while creating the index
    */
   public static File makeIndexInZipFile(final File genomeFile)
       throws IOException {
 
-    logger.info("Start index computation");
+    LOGGER.info("Start index computation");
 
-    if (indexerPath == null)
-      indexerPath = BinariesInstaller.install("2bwt-builder");
+    synchronized (indexerPath) {
+
+      if (indexerPath == null) {
+        indexerPath = BinariesInstaller.install("2bwt-builder");
+      }
+    }
 
     final File tmpDir =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE
             + "-soap-genomeindexdir", "");
 
-    if (!(tmpDir.delete()))
+    if (!(tmpDir.delete())) {
       throw new IOException("Could not delete temp file ("
           + tmpDir.getAbsolutePath() + ")");
+    }
 
-    if (!tmpDir.mkdir())
+    if (!tmpDir.mkdir()) {
       throw new IOException("Unable to create directory for genome index");
+    }
 
     makeIndex(genomeFile, tmpDir);
 
@@ -150,7 +166,7 @@ public class SOAPWrapper {
     // Remove temporary directory
     FileUtils.removeDirectory(tmpDir);
 
-    logger.info("End index computation");
+    LOGGER.info("End index computation");
 
     return indexZipFile;
   }
@@ -169,16 +185,21 @@ public class SOAPWrapper {
       final File outputFile, final File unmapFile, final String soapArgs,
       final int nbSoapThreads) throws IOException {
 
-    if (soapPath == null)
-      soapPath = BinariesInstaller.install("soap");
+    synchronized (soapPath) {
+
+      if (soapPath == null) {
+        soapPath = BinariesInstaller.install("soap");
+      }
+    }
 
     FileUtils.checkExistingDirectoryFile(soapIndexDir, "SOAP index directory");
 
     final File[] indexFiles =
         FileUtils.listFilesByExtension(soapIndexDir, ".index.amb");
 
-    if (indexFiles == null || indexFiles.length != 1)
+    if (indexFiles == null || indexFiles.length != 1) {
       throw new IOException("Unable to get index file for SOAP");
+    }
 
     // Get the path to the index
     final String ambFile = indexFiles[0].getAbsolutePath();
@@ -192,19 +213,18 @@ public class SOAPWrapper {
             + outputFile.getAbsolutePath() + " -u "
             + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
 
-    logger.info(cmd);
+    LOGGER.info(cmd);
 
     final int exitValue = ProcessUtils.sh(cmd);
 
-    if (exitValue != 0)
+    if (exitValue != 0) {
       throw new IOException("Bad error result for SOAP execution: " + exitValue);
+    }
   }
 
   /**
    * Create a soap command line for mapping reads using soap in pipe mode.
    * @param soapIndexDir soap index file
-   * @param outputFile output alignment file
-   * @param unmapFile output unmap file
    * @param soapArgs soap arguments
    * @param nbSoapThreads number of threads to use
    * @throws IOException if an error occurs while mapping reads
@@ -212,16 +232,20 @@ public class SOAPWrapper {
   public static String mapPipe(final File soapIndexDir, final String soapArgs,
       final int nbSoapThreads) throws IOException {
 
-    if (soapPath == null)
-      soapPath = BinariesInstaller.install("soap-pipe");
+    synchronized (soapPath) {
+      if (soapPath == null) {
+        soapPath = BinariesInstaller.install("soap-pipe");
+      }
+    }
 
     FileUtils.checkExistingDirectoryFile(soapIndexDir, "SOAP index directory");
 
     final File[] indexFiles =
         FileUtils.listFilesByExtension(soapIndexDir, ".index.amb");
 
-    if (indexFiles == null || indexFiles.length != 1)
+    if (indexFiles == null || indexFiles.length != 1) {
       throw new IOException("Unable to get index file for SOAP");
+    }
 
     // Get the path to the index
     final String ambFile = indexFiles[0].getAbsolutePath();
@@ -233,7 +257,7 @@ public class SOAPWrapper {
             + " -D " + ambFile.substring(0, ambFile.length() - 4) + " -o "
             + "fakealign.txt" + " -u " + "fakeunmap.fasta";
 
-    logger.info(cmd);
+    LOGGER.info(cmd);
 
     // final String soapOutput = ProcessUtils.execToString(cmd);
     // logger.info(soapOutput);
@@ -244,10 +268,12 @@ public class SOAPWrapper {
   //
   // Constructor
   //
-  
+
   /**
    * No constructor.
    */
-  private SOAPWrapper(){
+  private SOAPWrapper() {
+
+    throw new IllegalStateException();
   }
 }

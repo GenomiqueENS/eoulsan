@@ -11,10 +11,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class IlluminaReadId {
 
-  private static final Pattern PATTERN = Pattern
-      .compile("^([a-zA-Z0-9\\-]+):(\\d+):(\\d+):(\\d+):(\\d+)#(\\d+)/(\\d)$");
-
-  // HWUSI-EAS100R:6:73:941:1973#0/1
+  private static final Pattern PATTERN =
+      Pattern
+          .compile("^([a-zA-Z0-9\\-]+):(\\d+):(\\d+):(\\d+):(\\d+)#(\\d+)/(\\d)$");
 
   private String instrumentId;
   private int flowCellLane;
@@ -28,7 +27,7 @@ public class IlluminaReadId {
    * Get instrument id.
    * @return a String with the instrument id
    */
-  public String getInstrumentId() {
+  public final String getInstrumentId() {
     return instrumentId;
   }
 
@@ -36,7 +35,7 @@ public class IlluminaReadId {
    * Get the flowcell lane.
    * @return the flowcell lane
    */
-  public int getFlowCellLane() {
+  public final int getFlowCellLane() {
     return flowCellLane;
   }
 
@@ -44,7 +43,7 @@ public class IlluminaReadId {
    * Get the tile number within the flowcell lane.
    * @return the tile number within the flowcell lane
    */
-  public int getTileNumberInFlowCellLane() {
+  public final int getTileNumberInFlowCellLane() {
     return tileNumberInFlowCellLane;
   }
 
@@ -52,7 +51,7 @@ public class IlluminaReadId {
    * Get 'x'-coordinate of the cluster within the tile.
    * @return the 'x'-coordinate of the cluster within the tile
    */
-  public int getXClusterCoordinateInTile() {
+  public final int getXClusterCoordinateInTile() {
     return xClusterCoordinateInTile;
   }
 
@@ -60,7 +59,7 @@ public class IlluminaReadId {
    * Get 'y'-coordinate of the cluster within the tile.
    * @return the 'y'-coordinate of the cluster within the tile
    */
-  public int getYClusterCoordinateInTile() {
+  public final int getYClusterCoordinateInTile() {
     return yClusterCoordinateInTile;
   }
 
@@ -68,7 +67,7 @@ public class IlluminaReadId {
    * Get index number for a multiplexed sample.
    * @return index number for a multiplexed sample, 0 for no indexing
    */
-  public int getMultiplexedSample() {
+  public final int getMultiplexedSample() {
     return multiplexedSample;
   }
 
@@ -77,7 +76,7 @@ public class IlluminaReadId {
    * @return the the member of a pair, /1 or /2 (paired-end or mate-pair reads
    *         only)
    */
-  public int getPairMember() {
+  public final int getPairMember() {
     return pairMember;
   }
 
@@ -86,27 +85,29 @@ public class IlluminaReadId {
   //
 
   /**
-   * Parse an Illumina id string
-   * @param s String with the Illumina id
+   * Parse an Illumina id string.
+   * @param readId String with the Illumina id
    * @throws EoulsanException if the id is not an Illumina id
    */
-  public void parse(final String s) throws EoulsanException {
+  public final void parse(final String readId) throws EoulsanException {
 
-    if (s == null)
-      throw new NullPointerException("The string to parse is null");
+    if (readId == null) {
+      throw new IllegalArgumentException("The string to parse is null");
+    }
 
-    Matcher m = PATTERN.matcher(s.trim());
+    final Matcher matcher = PATTERN.matcher(readId.trim());
 
-    if (!m.lookingAt())
-      throw new EoulsanException("Invalid illumina id: " + s);
+    if (!matcher.lookingAt()) {
+      throw new EoulsanException("Invalid illumina id: " + readId);
+    }
 
-    this.instrumentId = m.group(1);
-    this.flowCellLane = Integer.parseInt(m.group(2));
-    this.tileNumberInFlowCellLane = Integer.parseInt(m.group(3));
-    this.xClusterCoordinateInTile = Integer.parseInt(m.group(4));
-    this.yClusterCoordinateInTile = Integer.parseInt(m.group(5));
-    this.multiplexedSample = Integer.parseInt(m.group(6));
-    this.pairMember = Integer.parseInt(m.group(7));
+    this.instrumentId = matcher.group(1);
+    this.flowCellLane = Integer.parseInt(matcher.group(2));
+    this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
+    this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
+    this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
+    this.multiplexedSample = Integer.parseInt(matcher.group(6));
+    this.pairMember = Integer.parseInt(matcher.group(7));
   }
 
   //
@@ -115,12 +116,12 @@ public class IlluminaReadId {
 
   /**
    * Public constructor.
-   * @param s String with Illumina id to parse
+   * @param readId String with Illumina id to parse
    * @throws EoulsanException if the id is not an Illumina id
    */
-  public IlluminaReadId(final String s) throws EoulsanException {
+  public IlluminaReadId(final String readId) throws EoulsanException {
 
-    parse(s);
+    parse(readId);
   }
 
 }

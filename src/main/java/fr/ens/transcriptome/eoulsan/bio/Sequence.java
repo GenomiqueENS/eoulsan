@@ -22,7 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 
+/**
+ * This class define a Sequence.
+ * @author Laurent Jourdren
+ */
 public class Sequence {
 
   protected int id;
@@ -37,7 +42,7 @@ public class Sequence {
    * Get the id of the sequence.
    * @return the id of the sequence
    */
-  public int getId() {
+  public final int getId() {
     return this.id;
   }
 
@@ -45,7 +50,7 @@ public class Sequence {
    * Set the name of the sequence.
    * @return the name of the sequence
    */
-  public String getName() {
+  public final String getName() {
     return this.name;
   }
 
@@ -63,7 +68,7 @@ public class Sequence {
   //
 
   /**
-   * Set the id of the sequence
+   * Set the id of the sequence.
    * @param id id to set
    */
   public void setId(final int id) {
@@ -71,7 +76,7 @@ public class Sequence {
   }
 
   /**
-   * Set the name of the sequence
+   * Set the name of the sequence.
    * @param name the name to set
    */
   public void setName(final String name) {
@@ -96,8 +101,9 @@ public class Sequence {
    */
   public int length() {
 
-    if (this.sequence == null)
+    if (this.sequence == null) {
       return 0;
+    }
 
     return this.sequence.length();
   }
@@ -128,8 +134,9 @@ public class Sequence {
    */
   public final float getGCPercent() {
 
-    if (this.sequence == null)
+    if (this.sequence == null) {
       return Float.NaN;
+    }
 
     final int len = this.sequence.length();
 
@@ -137,8 +144,9 @@ public class Sequence {
 
     for (int i = 0; i < len; i++) {
 
-      if (this.sequence.charAt(i) == 'G' || this.sequence.charAt(i) == 'C')
+      if (this.sequence.charAt(i) == 'G' || this.sequence.charAt(i) == 'C') {
         count++;
+      }
     }
 
     return (float) count / (float) len;
@@ -147,7 +155,7 @@ public class Sequence {
   /**
    * Set the sequence as the reverse complement.
    */
-  public void reverseComplement() {
+  public final void reverseComplement() {
 
     this.sequence = reverseComplement(this.sequence);
   }
@@ -159,8 +167,9 @@ public class Sequence {
    */
   public static final String reverseComplement(final String sequence) {
 
-    if (sequence == null)
+    if (sequence == null) {
       return null;
+    }
 
     final int len = sequence.length();
     final StringBuilder sb = new StringBuilder(len);
@@ -195,7 +204,7 @@ public class Sequence {
         break;
 
       default:
-        throw new RuntimeException("Invalid character in sequence: '"
+        throw new EoulsanRuntimeException("Invalid character in sequence: '"
             + sequence.charAt(i) + "'");
       }
 
@@ -220,6 +229,8 @@ public class Sequence {
    * Public constructor.
    */
   public Sequence() {
+
+    super();
   }
 
   /**
