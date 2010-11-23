@@ -34,6 +34,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -69,13 +70,11 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
     final int sampleId = sample.getId();
-    final int genomeId =
-        CommonHadoop.getSampleId(sample.getMetadata().getGenome());
+    final int genomeId = Common.getSampleId(sample.getMetadata().getGenome());
 
     final Path inputPath =
         CommonHadoop.selectDirectoryOrFile(new Path(basePath,
-            CommonHadoop.SAMPLE_FILTERED_PREFIX + sampleId),
-            CommonHadoop.FASTQ_EXTENSION);
+            Common.SAMPLE_FILTERED_PREFIX + sampleId), Common.FASTQ_EXTENSION);
 
     // Set Job name
     conf.setJobName("Map reads with SOAP ("
@@ -89,9 +88,10 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
             .toString());
 
     // Set unmap chuck dir path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
-            + sampleId).toString());
+    conf
+        .set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
+            new Path(basePath, Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
+                + sampleId).toString());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
@@ -100,7 +100,7 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
     // Set unmap output file path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
         .newPathWithOtherExtension(new Path(basePath, sample.getSource()),
-            CommonHadoop.UNMAP_EXTENSION).toString());
+            Common.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
     conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", "1");
@@ -135,7 +135,7 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath,
-        CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;
   }

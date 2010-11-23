@@ -33,6 +33,7 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -150,7 +151,7 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
     FileInputFormat.setInputPaths(conf, new Path(basePath, sample.getSource()));
 
     // Set the input format
-    if (sample.getSource().endsWith(CommonHadoop.FASTQ_EXTENSION))
+    if (sample.getSource().endsWith(Common.FASTQ_EXTENSION))
       conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class

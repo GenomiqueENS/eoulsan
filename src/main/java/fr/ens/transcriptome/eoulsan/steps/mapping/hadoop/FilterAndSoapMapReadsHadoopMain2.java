@@ -208,7 +208,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
     final int sampleId = sample.getId();
     final int genomeId =
-        CommonHadoop.getSampleId(sample.getMetadata().getGenome());
+        Common.getSampleId(sample.getMetadata().getGenome());
 
     final String source = sample.getSource();
 
@@ -231,7 +231,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
     // Set unmap chuck dir path
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
+        new Path(basePath, Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
             + sampleId).toString());
 
     // Set unmap chuck prefix
@@ -241,7 +241,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
     // Set unmap output file path
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
         .newPathWithOtherExtension(new Path(basePath, sample.getSource()),
-            CommonHadoop.UNMAP_EXTENSION).toString());
+            Common.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
@@ -290,7 +290,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
     // Set the output Path
     FileOutputFormat.setOutputPath(job, new Path(basePath,
-        CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return job;
   }
