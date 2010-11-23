@@ -56,18 +56,18 @@ public class GFFEntry {
   //
 
   /**
-   * Get the id
+   * Get the id.
    * @return the id
    */
-  public int getId() {
+  public final int getId() {
     return id;
   }
 
   /**
-   * Get the seqId
+   * Get the seqId.
    * @return the seqId
    */
-  public String getSeqId() {
+  public final String getSeqId() {
     return seqId;
   }
 
@@ -75,7 +75,7 @@ public class GFFEntry {
    * Get the source.
    * @return The source
    */
-  public String getSource() {
+  public final String getSource() {
     return source;
   }
 
@@ -83,7 +83,7 @@ public class GFFEntry {
    * Get the type.
    * @return the type
    */
-  public String getType() {
+  public final String getType() {
     return type;
   }
 
@@ -91,7 +91,7 @@ public class GFFEntry {
    * Get the start position.
    * @return the start position
    */
-  public int getStart() {
+  public final int getStart() {
     return start;
   }
 
@@ -99,54 +99,56 @@ public class GFFEntry {
    * Get the end position.
    * @return the end position
    */
-  public int getEnd() {
+  public final int getEnd() {
     return end;
   }
 
   /**
-   * Get the score
+   * Get the score.
    * @return the score
    */
-  public double getScore() {
+  public final double getScore() {
     return score;
   }
 
   /**
-   * Get the strand
+   * Get the strand.
    * @return the strand
    */
-  public char getStrand() {
+  public final char getStrand() {
     return strand;
   }
 
   /**
-   * Get the phase
+   * Get the phase.
    * @return the phase
    */
-  public int getPhase() {
+  public final int getPhase() {
     return phase;
   }
 
   /**
-   * Get metadata keys names
+   * Get metadata keys names.
    * @return the metadata keys names
    */
-  public Set<String> getMetadataKeyNames() {
+  public final Set<String> getMetadataKeyNames() {
 
-    if (this.metaData == null)
+    if (this.metaData == null) {
       return Collections.emptySet();
+    }
 
     return Collections.unmodifiableSet(this.metaData.keySet());
   }
 
   /**
-   * Get attributes names
+   * Get attributes names.
    * @return the attributes names
    */
-  public Set<String> getAttributesNames() {
+  public final Set<String> getAttributesNames() {
 
-    if (this.attributes == null)
+    if (this.attributes == null) {
       return Collections.emptySet();
+    }
 
     return Collections.unmodifiableSet(this.attributes.keySet());
   }
@@ -156,10 +158,11 @@ public class GFFEntry {
    * @param key key name of the metadata
    * @return true if the entry in the meta data exists
    */
-  public boolean isMetaDataEntry(final String key) {
+  public final boolean isMetaDataEntry(final String key) {
 
-    if (key == null)
+    if (key == null) {
       return false;
+    }
 
     return this.metaData.containsKey(key);
   }
@@ -169,38 +172,41 @@ public class GFFEntry {
    * @param attributeName name of the attribute
    * @return true if the attribute exits
    */
-  public boolean isAttribute(final String attributeName) {
+  public final boolean isAttribute(final String attributeName) {
 
-    if (attributeName == null || this.attributes == null)
+    if (attributeName == null || this.attributes == null) {
       return false;
+    }
 
     return this.attributes.containsKey(attributeName);
   }
 
   /**
-   * Get a metadata entry value
+   * Get a metadata entry value.
    * @param key name of the metadata entry
    * @return the value of the attribute or null if the attribute name does not
    *         exists
    */
-  public String getMetadataEntryValue(final String key) {
+  public final String getMetadataEntryValue(final String key) {
 
-    if (key == null)
+    if (key == null) {
       return null;
+    }
 
     return this.metaData.get(key);
   }
 
   /**
-   * Get attribute value
+   * Get attribute value.
    * @param attributeName name of the attribute
    * @return the value of the attribute or null if the attribute name does not
    *         exists
    */
-  public String getAttributeValue(final String attributeName) {
+  public final String getAttributeValue(final String attributeName) {
 
-    if (attributeName == null || this.attributes == null)
+    if (attributeName == null || this.attributes == null) {
       return null;
+    }
 
     return this.attributes.get(attributeName);
   }
@@ -210,79 +216,82 @@ public class GFFEntry {
   //
 
   /**
-   * Set the id
+   * Set the id.
    * @param id the id of the entry
    */
-  public void setId(final int id) {
+  public final void setId(final int id) {
 
     this.id = id;
   }
 
   /**
-   * Set the seqId
+   * Set the seqId.
    * @param seqId the sequence id of the entry
    */
-  public void setSeqId(final String seqId) {
+  public final void setSeqId(final String seqId) {
 
-    if (seqId == null || ".".equals(seqId))
+    if (seqId == null || ".".equals(seqId)) {
       this.seqId = "";
-    else
+    } else {
       this.seqId = seqId;
+    }
   }
 
   /**
-   * Set the source of the entry
+   * Set the source of the entry.
    * @param source the source of the entry
    */
-  public void setSource(final String source) {
+  public final void setSource(final String source) {
 
-    if (source == null || ".".equals(source))
+    if (source == null || ".".equals(source)) {
       this.source = "";
-    else
+    } else {
       this.source = source;
+    }
   }
 
   /**
-   * Set the type of the entry
+   * Set the type of the entry.
    * @param type the type of the entry
    */
-  public void setType(final String type) {
+  public final void setType(final String type) {
 
-    if (type == null || ".".equals(type))
+    if (type == null || ".".equals(type)) {
       this.type = "";
-    else
+    } else {
       this.type = type;
+    }
   }
 
   /**
-   * Set the start position of the entry
+   * Set the start position of the entry.
    * @param start the start position
    */
-  public void setStart(final int start) {
+  public final void setStart(final int start) {
     this.start = start;
   }
 
   /**
-   * Set the end of the position
+   * Set the end of the position.
    * @param end the end position
    */
-  public void setEnd(final int end) {
+  public final void setEnd(final int end) {
     this.end = end;
   }
 
   /**
-   * Set the score of the position
+   * Set the score of the position.
    * @param score the score of the position
    */
-  public void setScore(final double score) {
+  public final void setScore(final double score) {
     this.score = score;
   }
 
   /**
-   * Set the strand of the position
+   * Set the strand of the position.
    * @param strand the strand of the position
    */
-  public void setStrand(final char strand) {
+  public final void setStrand(final char strand) {
 
     switch (strand) {
 
@@ -299,27 +308,29 @@ public class GFFEntry {
   }
 
   /**
-   * Set the phase of the entry
+   * Set the phase of the entry.
    * @param phase the phase
    */
-  public void setPhase(final int phase) {
+  public final void setPhase(final int phase) {
 
-    if (phase < 0 || phase > 2)
+    if (phase < 0 || phase > 2) {
       this.phase = -1;
-    else
+    } else {
       this.phase = phase;
+    }
   }
 
   /**
-   * Get metadata entry value
+   * Get metadata entry value.
    * @param key name of key of the metadata entry
    * @param value The value
    * @return true if the value is correctly added to the metadata
    */
-  public boolean setMetaDataEntry(final String key, final String value) {
+  public final boolean setMetaDataEntry(final String key, final String value) {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return false;
+    }
 
     this.metaData.put(key, value);
 
@@ -327,20 +338,22 @@ public class GFFEntry {
   }
 
   /**
-   * Get attribute value
+   * Get attribute value.
    * @param attributeName name of the attribute
    * @param value The value
    * @return true if the value is correctly added to the attributes of the entry
    *         exists
    */
-  public boolean setAttributeValue(final String attributeName,
+  public final boolean setAttributeValue(final String attributeName,
       final String value) {
 
-    if (attributeName == null || value == null)
+    if (attributeName == null || value == null) {
       return false;
+    }
 
-    if (this.attributes == null)
+    if (this.attributes == null) {
       this.attributes = new LinkedHashMap<String, String>();
+    }
 
     this.attributes.put(attributeName, value);
 
@@ -348,27 +361,29 @@ public class GFFEntry {
   }
 
   /**
-   * Remove a metadata entry
+   * Remove a metadata entry.
    * @param key key of the metadata entry to remove
    * @return true if the entry is removed
    */
-  public boolean removeMetaDataEntry(final String key) {
+  public final boolean removeMetaDataEntry(final String key) {
 
-    if (this.metaData.containsKey(key))
+    if (this.metaData.containsKey(key)) {
       return false;
+    }
 
     return this.metaData.remove(key) != null;
   }
 
   /**
-   * Remove an attribute
+   * Remove an attribute.
    * @param attributeName attribute to remove
    * @return true if the attribute is removed
    */
-  public boolean removeAttribute(final String attributeName) {
+  public final boolean removeAttribute(final String attributeName) {
 
-    if (this.attributes == null || this.attributes.containsKey(attributeName))
+    if (this.attributes == null || this.attributes.containsKey(attributeName)) {
       return false;
+    }
 
     return this.attributes.remove(attributeName) != null;
   }
@@ -378,21 +393,27 @@ public class GFFEntry {
   //
 
   /**
-   * Clear the entry
+   * Clear the entry.
    */
-  public void clear() {
+  public final void clear() {
 
-    this.seqId = this.source = this.type = "";
+    this.seqId = "";
+    this.source = "";
+    this.type = "";
     this.start = Integer.MIN_VALUE;
     this.end = Integer.MAX_VALUE;
     this.score = Double.NaN;
     this.strand = '.';
     this.phase = -1;
-    if (this.attributes != null)
+    if (this.attributes != null) {
       this.attributes.clear();
+    }
   }
 
-  public void clearMetaData() {
+  /**
+   * Clear metadata of the entry.
+   */
+  public final void clearMetaData() {
 
     this.metaData.clear();
   }
@@ -405,7 +426,7 @@ public class GFFEntry {
    * Test if the entry is valid.
    * @return true if the entry is valid
    */
-  public boolean isValidEntry() {
+  public final boolean isValidEntry() {
 
     return seqId == null
         && source != null && type != null && isValidStartAndEnd()
@@ -416,16 +437,19 @@ public class GFFEntry {
    * Test if the start and end position values are valids.
    * @return true if the positions are valids
    */
-  public boolean isValidStartAndEnd() {
+  public final boolean isValidStartAndEnd() {
 
-    if (this.start == Integer.MIN_VALUE || this.end == Integer.MAX_VALUE)
+    if (this.start == Integer.MIN_VALUE || this.end == Integer.MAX_VALUE) {
       return false;
+    }
 
-    if (this.start < 1)
+    if (this.start < 1) {
       return false;
+    }
 
-    if (this.end < this.start)
+    if (this.end < this.start) {
       return false;
+    }
 
     return true;
   }
@@ -434,7 +458,7 @@ public class GFFEntry {
    * Test if the strand is valid.
    * @return true if the strand is valid
    */
-  public boolean isValidStrand() {
+  public final boolean isValidStrand() {
 
     switch (this.strand) {
 
@@ -452,15 +476,17 @@ public class GFFEntry {
    * Test if the phase is valid.
    * @return true if the phase is valid
    */
-  public boolean isValidPhase() {
+  public final boolean isValidPhase() {
 
     if ("CDS".equals(this.type)) {
 
-      if (this.phase == -1)
+      if (this.phase == -1) {
         return false;
+      }
 
-    } else if (this.phase != -1)
+    } else if (this.phase != -1) {
       return false;
+    }
 
     return true;
   }
@@ -469,10 +495,11 @@ public class GFFEntry {
   // Parsing / Write methods
   //
 
-  private static final int parseInt(final String s, final int defaultValue) {
+  private static int parseInt(final String s, final int defaultValue) {
 
-    if (s == null)
+    if (s == null) {
       return defaultValue;
+    }
 
     try {
       return Integer.parseInt(s.trim());
@@ -484,8 +511,9 @@ public class GFFEntry {
   private static final double parseDouble(final String s,
       final double defaultValue) {
 
-    if (s == null)
+    if (s == null) {
       return defaultValue;
+    }
 
     try {
       return Double.parseDouble(s.trim());
@@ -496,22 +524,28 @@ public class GFFEntry {
 
   private final void parseAttributes(final String attributesField) {
 
-    if (this.attributes != null)
+    if (this.attributes != null) {
       this.attributes.clear();
+    }
 
-    if (attributesField == null)
+    if (attributesField == null) {
       return;
+    }
+
+    if ("".equals(attributesField) || ".".equals(attributesField)) {
+      return;
+    }
 
     final String s = attributesField.trim();
-    if (attributesField.equals("") || attributesField.equals("."))
-      return;
 
     final String[] fields = SEMI_COMA_SPLIT_PATTERN.split(s);
     for (String f : fields) {
 
       final int indexEquals = f.indexOf('=');
-      if (indexEquals == -1)
+      if (indexEquals == -1) {
         continue;
+      }
+
       final String key = f.substring(0, indexEquals).trim();
       final String value = f.substring(indexEquals + 1).trim();
 
@@ -521,18 +555,20 @@ public class GFFEntry {
   }
 
   /**
-   * Parse a GFF entry
+   * Parse a GFF entry.
    * @param s String to parse
    */
   public void parse(final String s) throws BadBioEntryException {
 
-    if (s == null)
-      throw new NullPointerException("String to parse is null");
+    if (s == null) {
+      throw new IllegalArgumentException("String to parse is null");
+    }
 
-    if (this.parsedFields == null)
+    if (this.parsedFields == null) {
       this.parsedFields = new String[9];
-    else
+    } else {
       Arrays.fill(this.parsedFields, null);
+    }
 
     final String[] fields = this.parsedFields;
 
@@ -561,8 +597,9 @@ public class GFFEntry {
 
   private String attributesToString() {
 
-    if (this.attributes == null || this.attributes.size() == 0)
+    if (this.attributes == null || this.attributes.size() == 0) {
       return ".";
+    }
 
     final StringBuilder sb = new StringBuilder();
 
@@ -570,10 +607,11 @@ public class GFFEntry {
 
     for (Map.Entry<String, String> e : this.attributes.entrySet()) {
 
-      if (first)
+      if (first) {
         first = false;
-      else
+      } else {
         sb.append(';');
+      }
 
       sb.append(StringUtils.protectGFF(e.getKey()));
       sb.append('=');
@@ -584,7 +622,7 @@ public class GFFEntry {
   }
 
   /**
-   * Overide toString().
+   * Override toString().
    * @return the GFF entry in GFF3 format
    */
   public String toString() {

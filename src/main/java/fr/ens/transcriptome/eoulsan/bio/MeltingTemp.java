@@ -198,11 +198,13 @@ public class MeltingTemp {
     float deltas = 0;
 
     // RNA
-    if (stri.startsWith("G") || stri.startsWith("C")) {
+
+    final char firstChar = stri.charAt(0);
+
+    if (firstChar == 'G' || firstChar == 'C') {
       deltah = deltah - 3.61f;
       deltas = deltas - 1.5f;
-    } else if (stri.startsWith("A")
-        || stri.startsWith("T") || stri.startsWith("U")) {
+    } else if (firstChar == 'A' || firstChar == 'T' || firstChar == 'U') {
       deltah = deltah - 3.72f;
       deltas = deltas + 10.5f;
     }
@@ -232,9 +234,10 @@ public class MeltingTemp {
 
     while (true) {
 
-      int i = st.indexOf(p, x);
-      if (i == -1)
+      final int i = st.indexOf(p, x);
+      if (i == -1) {
         break;
+      }
 
       ocu = ocu + 1;
       x = i + 1;

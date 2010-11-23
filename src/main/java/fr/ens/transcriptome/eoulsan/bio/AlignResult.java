@@ -22,7 +22,6 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -33,13 +32,14 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class AlignResult {
 
-  private List<String> fields = new ArrayList<String>();
+  /** List with fields values. */
+  private List<String> fields;
 
   /**
-   * Get the sequence id of the read
+   * Get the sequence id of the read.
    * @return the sequence id of the read
    */
-  public String getSequenceId() {
+  public final String getSequenceId() {
 
     return this.fields.get(0);
   }
@@ -48,7 +48,7 @@ public class AlignResult {
    * Get the sequence of the read.
    * @return the sequence of the read
    */
-  public String getSequence() {
+  public final String getSequence() {
 
     return this.fields.get(1);
   }
@@ -57,7 +57,7 @@ public class AlignResult {
    * Get the quality of the read.
    * @return the quality of the read
    */
-  public String getQuality() {
+  public final String getQuality() {
 
     return this.fields.get(2);
   }
@@ -66,30 +66,25 @@ public class AlignResult {
    * Get the number of hits of the alignment.
    * @return the number of hits of the alignment
    */
-  public int getNumberOfHits() {
+  public final int getNumberOfHits() throws NumberFormatException {
 
-    try {
-      return Integer.parseInt(this.fields.get(3));
-    } catch (NumberFormatException e) {
-      System.err.println(fields);
-      throw e;
-    }
+    return Integer.parseInt(this.fields.get(3));
   }
 
   /**
    * Get the read length.
    * @return the read length
    */
-  public int getReadLength() {
+  public final int getReadLength() {
 
     return Integer.parseInt(this.fields.get(5));
   }
 
   /**
-   * Get the pairend flag
+   * Get the pairend flag.
    * @return the pairend flag
    */
-  public char getPairendFlag() {
+  public final char getPairendFlag() {
 
     return this.fields.get(4).charAt(0);
   }
@@ -98,7 +93,7 @@ public class AlignResult {
    * Test if the alignment is on the direct(+) chain of the reference.
    * @return true if the alignment is on the direct(+) chain of the reference.
    */
-  public boolean isDirectStrand() {
+  public final boolean isDirectStrand() {
 
     return "+".equals(this.fields.get(6));
   }
@@ -107,7 +102,7 @@ public class AlignResult {
    * Get the chromosome of the match.
    * @return the chromosome of the match
    */
-  public String getChromosome() {
+  public final String getChromosome() {
 
     return this.fields.get(7);
   }
@@ -116,7 +111,7 @@ public class AlignResult {
    * Get the location of the match on the chromosome. Counted from 1 in bp.
    * @return the location
    */
-  public int getLocation() {
+  public final int getLocation() {
 
     return Integer.parseInt(this.fields.get(8));
   }
@@ -125,7 +120,7 @@ public class AlignResult {
    * Get the hit type. 0 is for exact match. If > 0 the number of mismatches.
    * @return the hit type.
    */
-  public int getHitType() {
+  public final int getHitType() {
 
     return Integer.parseInt(this.fields.get(9));
   }
@@ -138,21 +133,24 @@ public class AlignResult {
    * Parse line.
    * @param line Line to parse
    */
-  public void parseResultLine(final String line) throws BadBioEntryException {
+  public final void parseResultLine(final String line)
+      throws BadBioEntryException {
 
-    if (line == null)
-      throw new NullPointerException("line is null");
+    if (line == null) {
+      throw new IllegalArgumentException("line is null");
+    }
 
-    final List<String> fields = StringUtils.fastSplit(line, this.fields);
+    this.fields = StringUtils.fastSplit(line, this.fields);
 
-    if (fields == null)
+    if (this.fields == null) {
       throw new BadBioEntryException("The parsing of the line is null", line);
+    }
 
-    if (fields.size() < 11)
+    if (this.fields.size() < 11) {
       throw new BadBioEntryException("Invalid number of field "
-          + fields.size() + " (11 expected) ", line);
+          + this.fields.size() + " (11 expected) ", line);
+    }
 
-    this.fields = fields;
   }
 
 }

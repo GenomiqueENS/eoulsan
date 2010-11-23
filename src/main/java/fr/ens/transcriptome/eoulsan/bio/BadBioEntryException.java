@@ -29,7 +29,8 @@ package fr.ens.transcriptome.eoulsan.bio;
  */
 public class BadBioEntryException extends Exception {
 
-  private String entry;
+  /** Entry at the origin of the exception. */
+  private final String entry;
 
   //
   // Getter
@@ -39,7 +40,7 @@ public class BadBioEntryException extends Exception {
    * Return the entry at the origin of the exception.
    * @return a String with the invalid entry
    */
-  public String getEntry() {
+  public final String getEntry() {
 
     return entry;
   }
@@ -48,6 +49,11 @@ public class BadBioEntryException extends Exception {
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   * @param message message with the origin of the exception
+   * @param entry the entry at the origin of the exception
+   */
   public BadBioEntryException(final String message, final String entry) {
 
     super(message);

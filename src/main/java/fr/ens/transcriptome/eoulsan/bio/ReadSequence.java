@@ -58,13 +58,14 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Set the ReadSequence with the values of another readsequence
+   * Set the ReadSequence with the values of another ReadSequence.
    * @param rs ReadSequence to use to set the values of this ReadSequence
    */
   public final void set(final ReadSequence rs) {
 
-    if (rs == null)
+    if (rs == null) {
       return;
+    }
 
     this.setId(rs.getId());
     this.setName(rs.getName());
@@ -80,7 +81,7 @@ public class ReadSequence extends Sequence {
    * Test if a ReadSequence is valid. Only check if all fields are not null.
    * @return true if the ReadSequence is valid
    */
-  public boolean isFastQValid() {
+  public final boolean isFastQValid() {
 
     return this.name != null && this.sequence != null && this.quality != null;
   }
@@ -89,27 +90,30 @@ public class ReadSequence extends Sequence {
    * Compute mean quality score of the read. Illumina version.
    * @return the mean quality score of the read.
    */
-  public double meanQuality() {
+  public final double meanQuality() {
 
-    if (this.quality == null)
+    if (this.quality == null) {
       return Double.NaN;
+    }
 
     int score = 0;
     final int len = quality.length();
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++) {
       score += quality.charAt(i) - 64;
+    }
 
     return score / (double) len;
   }
 
   /**
-   * Return the sequence in FastQ format
+   * Return the sequence in FastQ format.
    * @return a String with the sequence in FastQ format
    */
-  public String toFastQ() {
+  public final String toFastQ() {
 
-    if (this.name == null || this.sequence == null || this.quality == null)
+    if (this.name == null || this.sequence == null || this.quality == null) {
       return null;
+    }
 
     return '@'
         + this.name + '\n' + this.sequence + '\n' + '+' + this.name + '\n'
@@ -117,25 +121,28 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Return the sequence in TFQ format
+   * Return the sequence in TFQ format.
    * @return a String with the sequence in FastQ format
    */
-  public String toTFQ() {
+  public final String toTFQ() {
 
     return toTFQ(true);
   }
 
   /**
-   * Return the sequence in TFQ format
+   * Return the sequence in TFQ format.
+   * @param withId true if id must be added to the result
    * @return a String with the sequence in FastQ format
    */
-  public String toTFQ(final boolean withId) {
+  public final String toTFQ(final boolean withId) {
 
-    if (this.name == null || this.sequence == null || this.quality == null)
+    if (this.name == null || this.sequence == null || this.quality == null) {
       return null;
+    }
 
-    if (withId)
+    if (withId) {
       return this.name + '\t' + this.sequence + '\t' + this.quality + '\n';
+    }
 
     return '\t' + this.sequence + '\t' + this.quality + '\n';
   }
@@ -144,16 +151,16 @@ public class ReadSequence extends Sequence {
    * Return the key for the read (the name).
    * @return a string with the name of the read as the key
    */
-  public String toOutKey() {
+  public final String toOutKey() {
 
     return this.name;
   }
 
   /**
-   * Return the value for the read (the sequence + the quality)
+   * Return the value for the read (the sequence + the quality).
    * @return a string with the sequence and the quality of the read as the value
    */
-  public String toOutValue() {
+  public final String toOutValue() {
 
     return this.sequence + "\t" + this.quality;
   }
@@ -162,10 +169,11 @@ public class ReadSequence extends Sequence {
    * Parse a FastQ sequence.
    * @param fastQ FastQ sequence to parse
    */
-  public void parseFastQ(final String fastQ) {
+  public final void parseFastQ(final String fastQ) {
 
-    if (fastQ == null)
+    if (fastQ == null) {
       return;
+    }
 
     final int indexCR1 = fastQ.indexOf('\n');
     final int indexCR2 = fastQ.indexOf('\n', indexCR1 + 1);
@@ -177,13 +185,14 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Parse a read
+   * Parse a read.
    * @param s String to parse
    */
-  public void parse(final String s) {
+  public final void parse(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return;
+    }
 
     final int indexTab1 = s.indexOf('\t');
     final int indexTab2 = s.indexOf('\t', indexTab1 + 1);
@@ -194,14 +203,15 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Parse a read in key/value format
+   * Parse a read in key/value format.
    * @param key key to parse
    * @param value value to parse
    */
-  public void parseKeyValue(final String key, final String value) {
+  public final void parseKeyValue(final String key, final String value) {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     this.name = key;
 
@@ -210,36 +220,48 @@ public class ReadSequence extends Sequence {
     this.quality = value.substring(indexTab + 1);
   }
 
-  public void checkWithException() throws EoulsanException {
+  public final void checkWithException() throws EoulsanException {
 
-    if (this.name == null)
-      throw new NullPointerException("The name of the sequence is null");
-    if (this.sequence == null)
-      throw new NullPointerException("The sequence is null");
-    if (this.quality == null)
-      throw new NullPointerException(
+    if (this.name == null) {
+      throw new IllegalArgumentException("The name of the sequence is null");
+    }
+    if (this.sequence == null) {
+      throw new IllegalArgumentException("The sequence is null");
+    }
+    if (this.quality == null) {
+      throw new IllegalArgumentException(
           "The quality string of the sequence is null");
+    }
 
-    if (this.sequence.length() == 0)
-      throw new NullPointerException("The sequence length equals 0");
+    if (this.sequence.length() == 0) {
+      throw new IllegalArgumentException("The sequence length equals 0");
+    }
 
-    if (this.quality.length() == 0)
-      throw new NullPointerException(
+    if (this.quality.length() == 0) {
+      throw new IllegalArgumentException(
           "The length of quality string of the sequence equals 0");
+    }
 
-    if (this.sequence.length() != this.quality.length())
+    if (this.sequence.length() != this.quality.length()) {
       throw new EoulsanException(
           "The length of sequence and quality string are not equals");
+    }
 
-    if (!checkCharString(this.quality, (char) 33, (char) 126))
+    if (!checkCharString(this.quality, (char) 33, (char) 126)) {
       throw new EoulsanException(
           "The length of sequence and quality string are not equals");
+    }
 
-    if (!checkBases(this.sequence))
+    if (!checkBases(this.sequence)) {
       throw new EoulsanException("Invalid bases in sequence");
+    }
 
   }
 
+  /**
+   * Check the Read.
+   * @return true if the values of the read is ok
+   */
   public boolean check() {
 
     return this.name != null
@@ -258,8 +280,9 @@ public class ReadSequence extends Sequence {
     for (int i = 0; i < len; i++) {
 
       final char c = s.charAt(i);
-      if (c < intervalLow || c > intervalHigh)
+      if (c < intervalLow || c > intervalHigh) {
         return false;
+      }
     }
 
     return true;
@@ -295,6 +318,7 @@ public class ReadSequence extends Sequence {
    * Public constructor.
    */
   public ReadSequence() {
+    super();
   }
 
   /**
