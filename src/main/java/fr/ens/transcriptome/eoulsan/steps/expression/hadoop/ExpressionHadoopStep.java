@@ -95,12 +95,12 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
     final int sampleId = sample.getId();
     final int genomeId =
-        CommonHadoop.getSampleId(sample.getMetadata().getGenome());
+        Common.getSampleId(sample.getMetadata().getGenome());
 
     final Path inputPath =
         CommonHadoop.selectDirectoryOrFile(new Path(basePath,
-            CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId),
-            CommonHadoop.SOAP_RESULT_EXTENSION);
+            Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId),
+            Common.SOAP_RESULT_EXTENSION);
 
     logger.fine("sample: " + sample);
     logger.fine("inputPath.getName(): " + inputPath.getName());
@@ -155,7 +155,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath,
-        CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX + sampleId));
+        Common.SAMPLE_EXPRESSION_FILE_PREFIX + sampleId));
 
     return conf;
   }
@@ -204,7 +204,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
       final int sampleId = sample.getId();
       final int genomeId =
-          CommonHadoop.getSampleId(sample.getMetadata().getGenome());
+          Common.getSampleId(sample.getMetadata().getGenome());
       final long readsUsed =
           rj.getCounters().getGroup(ExpressionMapper.COUNTER_GROUP).getCounter(
               "reads used");
@@ -224,10 +224,10 @@ public class ExpressionHadoopStep extends ExpressionStep {
       }
 
       final Path outputDirPath =
-          new Path(basePath, CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX
+          new Path(basePath, Common.SAMPLE_EXPRESSION_FILE_PREFIX
               + sampleId);
       final Path resultPath =
-          new Path(basePath, CommonHadoop.SAMPLE_EXPRESSION_FILE_PREFIX
+          new Path(basePath, Common.SAMPLE_EXPRESSION_FILE_PREFIX
               + sampleId + Common.EXPRESSION_FILE_SUFFIX);
 
       fetc.initializeExpressionResults();

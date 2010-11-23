@@ -35,6 +35,7 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
@@ -206,7 +207,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     final int sampleId = sample.getId();
     final int genomeId =
-        CommonHadoop.getSampleId(sample.getMetadata().getGenome());
+        Common.getSampleId(sample.getMetadata().getGenome());
 
     final Path inputPath = new Path(basePath, sample.getSource());
 
@@ -234,7 +235,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, CommonHadoop.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
+        new Path(basePath, Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
             + sampleId).toString());
 
     // Set unmap chuck prefix
@@ -244,7 +245,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     // Set unmap output file path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
         .newPathWithOtherExtension(new Path(basePath, sample.getSource()),
-            CommonHadoop.UNMAP_EXTENSION).toString());
+            Common.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
     // conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
@@ -266,7 +267,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format
-    if (sample.getSource().endsWith(CommonHadoop.FASTQ_EXTENSION))
+    if (sample.getSource().endsWith(Common.FASTQ_EXTENSION))
       conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class
@@ -286,7 +287,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(basePath,
-        CommonHadoop.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;
   }
