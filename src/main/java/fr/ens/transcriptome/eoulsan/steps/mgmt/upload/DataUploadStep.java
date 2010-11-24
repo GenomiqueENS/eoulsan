@@ -29,11 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
@@ -226,8 +225,8 @@ public abstract class DataUploadStep extends AbstractStep {
 
         // Copy the sample
         final String sampleNewFilename =
-            CommonHadoop.SAMPLE_FILE_PREFIX
-                + s.getId() + Common.FASTQ_EXTENSION;
+            info.getDataFile(DataFormats.READS_FASTQ, s).getSource();
+
         final FileUploader sampleFU =
             getFastqUploader(s.getSource(), sampleNewFilename);
         files.add(sampleFU);
@@ -241,16 +240,18 @@ public abstract class DataUploadStep extends AbstractStep {
 
           // Add genome file
           final String genomeNewFilename =
-              CommonHadoop.GENOME_FILE_PREFIX
-                  + genomesCount + Common.FASTA_EXTENSION;
+              info.getDataFile(DataFormats.GENOME_FASTA, s).getSource();
+
           final FileUploader genomeFU =
               getFastaUploader(genome, genomeNewFilename);
           files.add(genomeFU);
 
           // Create and add genome index file
           final String genomeIndexNewFilename =
-              CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX
-                  + genomesCount + CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX;
+              info.getDataFile(DataFormats.SOAP_INDEX_ZIP, s).getSource();
+
+          ;
+
           files.add(getIndexUploader(genome, genomeIndexNewFilename));
 
           // final File indexFile = SOAPWrapper.makeIndexInZipFile(new
@@ -275,8 +276,8 @@ public abstract class DataUploadStep extends AbstractStep {
 
           // Add annotation file
           final String newAnnotationFilename =
-              CommonHadoop.ANNOTATION_FILE_PREFIX
-                  + annotationsCount + Common.GFF_EXTENSION;
+            info.getDataFile(DataFormats.ANNOTATION_GFF, s).getSource();
+              
           final FileUploader annotationFU =
               getGFFUploader(annotation, newAnnotationFilename);
           files.add(annotationFU);

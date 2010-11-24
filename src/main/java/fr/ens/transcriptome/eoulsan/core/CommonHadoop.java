@@ -49,12 +49,6 @@ public class CommonHadoop {
       "fs.s3n.awsAccessKeyId";
 
   public static final int CHECK_COMPLETION_TIME = 5000;
-  public static final String SAMPLE_FILE_PREFIX = "sample_";
-  public static final String GENOME_FILE_PREFIX = "genome_";
-  public static final String GENOME_SOAP_INDEX_FILE_PREFIX =
-      "genome_soap_index_";
-  public static final String GENOME_SOAP_INDEX_FILE_SUFFIX = ".zip";
-  public static final String ANNOTATION_FILE_PREFIX = "annotation_";
   public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
 
   /**
