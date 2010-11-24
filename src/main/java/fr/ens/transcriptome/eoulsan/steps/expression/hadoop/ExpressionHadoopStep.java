@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
@@ -94,8 +95,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
     final JobConf conf = new JobConf(ExpressionHadoopStep.class);
 
     final int sampleId = sample.getId();
-    final int genomeId =
-        Common.getSampleId(sample.getMetadata().getGenome());
+    final int genomeId = Common.getSampleId(sample.getMetadata().getGenome());
 
     final Path inputPath =
         CommonHadoop.selectDirectoryOrFile(new Path(basePath,
@@ -116,7 +116,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
     conf.set("mapred.child.java.opts", "-Xmx1024m");
 
     final Path exonsIndexPath =
-        new Path(basePath, CommonHadoop.ANNOTATION_FILE_PREFIX
+        new Path(basePath, DataFormats.ANNOTATION_GFF.getType().getPrefix()
             + genomeId + SERIALIZED_DATA_EXTENSION);
 
     if (!PathUtils.isFile(exonsIndexPath, conf))
@@ -185,7 +185,8 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
     if (!exonIndexFile.delete())
-      logger.warning("Can not delete exon index file: "+ exonIndexFile.getAbsolutePath());
+      logger.warning("Can not delete exon index file: "
+          + exonIndexFile.getAbsolutePath());
 
     return exonsIndexPath;
   }
@@ -203,8 +204,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
       final RunningJob rj = e.getValue();
 
       final int sampleId = sample.getId();
-      final int genomeId =
-          Common.getSampleId(sample.getMetadata().getGenome());
+      final int genomeId = Common.getSampleId(sample.getMetadata().getGenome());
       final long readsUsed =
           rj.getCounters().getGroup(ExpressionMapper.COUNTER_GROUP).getCounter(
               "reads used");
@@ -215,7 +215,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
       if (genomeId != lastGenomeId) {
 
         final Path exonsIndexPath =
-            new Path(basePath, CommonHadoop.ANNOTATION_FILE_PREFIX
+            new Path(basePath, DataFormats.ANNOTATION_GFF.getType().getPrefix()
                 + genomeId + SERIALIZED_DATA_EXTENSION);
 
         fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
@@ -224,8 +224,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
       }
 
       final Path outputDirPath =
-          new Path(basePath, Common.SAMPLE_EXPRESSION_FILE_PREFIX
-              + sampleId);
+          new Path(basePath, Common.SAMPLE_EXPRESSION_FILE_PREFIX + sampleId);
       final Path resultPath =
           new Path(basePath, Common.SAMPLE_EXPRESSION_FILE_PREFIX
               + sampleId + Common.EXPRESSION_FILE_SUFFIX);
@@ -247,10 +246,10 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.HADOOP;
   }
-  
+
   @Override
   public String getLogName() {
 

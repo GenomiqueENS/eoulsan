@@ -121,7 +121,8 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ, DataFormats.READS_TFQ};
+    return new DataFormat[] {DataFormats.READS_FASTQ, DataFormats.READS_TFQ,
+        DataFormats.SOAP_INDEX_ZIP};
   }
 
   @Override
@@ -158,13 +159,11 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
   @Override
   public StepResult execute(final Design design, final ExecutorInfo info) {
 
-    final Path basePath = new Path(info.getBasePathname());
-
     // Create the list of jobs to run
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs.add(createJobConf(basePath, s, getLengthThreshold(),
+      jobconfs.add(createJobConf(info, s, getLengthThreshold(),
           getQualityThreshold()));
 
     try {
@@ -199,17 +198,15 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
    * @param sample sample to process
    * @return a new JobConf object
    */
-  private static JobConf createJobConf(final Path basePath,
+  private static JobConf createJobConf(final ExecutorInfo info,
       final Sample sample, final int lengthThreshold,
       final double qualityThreshold) {
 
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
     final int sampleId = sample.getId();
-    final int genomeId =
-        Common.getSampleId(sample.getMetadata().getGenome());
 
-    final Path inputPath = new Path(basePath, sample.getSource());
+    final Path inputPath = new Path(info.getBasePathname(), sample.getSource());
 
     // Set Job name
     conf.setJobName("Filter and map reads with SOAP ("
@@ -225,8 +222,8 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(basePath, CommonHadoop.GENOME_SOAP_INDEX_FILE_PREFIX
-            + genomeId + CommonHadoop.GENOME_SOAP_INDEX_FILE_SUFFIX);
+        new Path(info.getDataFile(DataFormats.SOAP_INDEX_ZIP, sample)
+            .getSource());
 
     conf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", genomeIndex
         .toString());
@@ -235,8 +232,8 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(basePath, Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX
-            + sampleId).toString());
+        new Path(info.getBasePathname(),
+            Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId).toString());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
@@ -244,7 +241,8 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set unmap output file path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
-        .newPathWithOtherExtension(new Path(basePath, sample.getSource()),
+        .newPathWithOtherExtension(
+            new Path(info.getBasePathname(), sample.getSource()),
             Common.UNMAP_EXTENSION).toString());
 
     // Set the number of threads for soap
@@ -286,7 +284,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(basePath,
+    FileOutputFormat.setOutputPath(conf, new Path(info.getBasePathname(),
         Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
 
     return conf;

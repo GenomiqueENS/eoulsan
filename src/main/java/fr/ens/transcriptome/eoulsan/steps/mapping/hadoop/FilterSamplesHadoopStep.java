@@ -80,17 +80,17 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
     final long startTime = System.currentTimeMillis();
 
     final double threshold = getThreshold() / 100.0;
-    final Path basePath = new Path(info.getBasePathname());
+    final Path logDirPath = new Path(info.getLogPathname());
 
     try {
 
       final Configuration conf = this.conf;
-      final FileSystem fs = basePath.getFileSystem(conf);
+      final FileSystem fs = logDirPath.getFileSystem(conf);
       // Read soapmapreads.log
-      Path logPath = new Path(basePath, "soapmapreads.log");
+      Path logPath = new Path(logDirPath, "soapmapreads.log");
       if (!PathUtils.exists(logPath, conf))
-        logPath = new Path(basePath, "filtersoapmapreads.log");
-
+        logPath = new Path(logDirPath, "filterandmapreads.log");
+                                        
       logger.info("Read log: " + logPath);
       LogReader logReader = new LogReader(fs.open(logPath));
       final Reporter reporter = logReader.read();
