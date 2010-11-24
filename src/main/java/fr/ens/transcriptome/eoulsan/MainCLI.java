@@ -39,6 +39,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.core.action.LocalCreateDesignAction;
 import fr.ens.transcriptome.eoulsan.core.action.LocalExecAction;
+import fr.ens.transcriptome.eoulsan.core.action.LocalHadoopExecAction;
 import fr.ens.transcriptome.eoulsan.core.action.LocalUploadS3Action;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -235,6 +236,8 @@ public final class MainCLI {
 
     if ("exec".equals(action)) {
       new LocalExecAction().action(arguments);
+    } else if ("hadoopexec".equals(action)) {
+      new LocalHadoopExecAction().action(arguments);
     } else if ("createdesign".equals(action)) {
       new LocalCreateDesignAction().action(arguments);
     } else if ("uploads3".equals(action)) {
