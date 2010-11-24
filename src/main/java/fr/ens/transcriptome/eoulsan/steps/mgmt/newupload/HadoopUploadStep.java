@@ -26,12 +26,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
@@ -46,9 +44,6 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public class HadoopUploadStep extends UploadStep {
 
-  /** Logger */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
-  
   private Configuration conf;
 
   @Override
@@ -99,11 +94,8 @@ public class HadoopUploadStep extends UploadStep {
       final DataFile src = e.getKey();
       final DataFile dest = e.getValue();
 
-      logger.info(e.toString());
-      logger.info("srcProtocol: " + e.getKey().getProtocol() +"\t"+fileProtocol);
-      
       if (e.getKey().getProtocol() == fileProtocol) {
-        
+
         new DataFormatConverter(src, dest).convert();
         stdCopyFiles.add(src);
       }
