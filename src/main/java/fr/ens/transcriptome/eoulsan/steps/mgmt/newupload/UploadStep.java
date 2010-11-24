@@ -22,6 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.newupload;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 
 /**
  * This class define a abstract step class for files uploading.
@@ -72,11 +74,19 @@ public abstract class UploadStep extends AbstractStep {
     for (Sample sample : design.getSamples())
       files.addAll(findDataFiles(sample, info));
 
-    System.out.println("files: " + files);
     removeNotExistingDataFile(files);
+
+    File repackagedJarFile = null;
 
     try {
 
+      // Repackage the jar file if necessary
+      if (!info.getRuntime().isHadoopMode()) {
+        repackagedJarFile = HadoopJarRepackager.repack();
+        files.add(new DataFile(repackagedJarFile.getAbsolutePath()));
+      }
+
+      // Copy all files
       copy(reWriteDesign(design, files));
 
     } catch (IOException e) {
@@ -87,7 +97,25 @@ public abstract class UploadStep extends AbstractStep {
     // The base path is now the place where files where uploaded.
     fullContext.setBasePathname(getDest().toString());
 
+    // The path to the jar file
+    if (!info.getRuntime().isHadoopMode()) {
+      fullContext.setJarPathname(getDest().toString()
+          + "/" + repackagedJarFile.getName());
+    }
+
     return new StepResult(this, startTime, files.toString());
+  }
+
+  @Override
+  public String getName() {
+
+    return "Upload";
+  }
+
+  @Override
+  public boolean isTerminalStep() {
+
+    return false;
   }
 
   //
@@ -244,18 +272,6 @@ public abstract class UploadStep extends AbstractStep {
       result.put(file, getUploadedDataFile(file));
 
     return result;
-  }
-
-  @Override
-  public String getName() {
-
-    return "Upload";
-  }
-
-  @Override
-  public boolean isTerminalStep() {
-
-    return false;
   }
 
   //
