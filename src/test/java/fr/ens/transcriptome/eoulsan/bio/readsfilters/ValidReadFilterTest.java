@@ -1,11 +1,11 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 public class ValidReadFilterTest {
@@ -18,7 +18,7 @@ public class ValidReadFilterTest {
     try {
       filter.accept(null);
       assertTrue(false);
-    } catch (NullArgumentException e) {
+    } catch (NullPointerException e) {
       assertTrue(true);
     }
 
