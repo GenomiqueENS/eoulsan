@@ -53,6 +53,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   private String executionName;
   private String designPathname;
   private String paramPathname;
+  private String jarPathname;
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
@@ -90,6 +91,11 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   @Override
   public String getParameterPathname() {
     return this.paramPathname;
+  }
+
+  @Override
+  public String getJarPathname() {
+    return this.jarPathname;
   }
 
   @Override
@@ -139,7 +145,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
 
   /**
    * Set the output path
-   * @param logPathname The log Path to set
+   * @param logPathname The output Path to set
    */
   public void setOutputPathname(final String outputPath) {
 
@@ -149,7 +155,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
 
   /**
    * Set the design path
-   * @param designPathname The log Path to set
+   * @param designPathname The design Path to set
    */
   public void setDesignPathname(final String designPathname) {
 
@@ -159,12 +165,22 @@ public class SimpleExecutorInfo implements ExecutorInfo {
 
   /**
    * Set the parameter path
-   * @param paramPathname The log Path to set
+   * @param paramPathname The parameter Path to set
    */
   public void setParameterPathname(final String paramPathname) {
 
     logger.info("Parameter path: " + paramPathname);
     this.paramPathname = paramPathname;
+  }
+
+  /**
+   * Set the jar path
+   * @param jarPathname The jar Path to set
+   */
+  public void setJarPathname(final String jarPathname) {
+
+    logger.info("Jar path: " + jarPathname);
+    this.jarPathname = jarPathname;
   }
 
   /**
