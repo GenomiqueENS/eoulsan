@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.NullArgumentException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 public class PairCheckReadFilterTest {
@@ -19,7 +18,7 @@ public class PairCheckReadFilterTest {
     try {
       filter.accept(null);
       assertTrue(true);
-    } catch (NullArgumentException e) {
+    } catch (NullPointerException e) {
       assertTrue(false);
     }
 
@@ -31,21 +30,21 @@ public class PairCheckReadFilterTest {
     try {
       assertFalse(filter.accept(null, read2));
       assertTrue(false);
-    } catch (NullArgumentException e) {
+    } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       assertFalse(filter.accept(read1, null));
       assertTrue(false);
-    } catch (NullArgumentException e) {
+    } catch (NullPointerException e) {
       assertTrue(true);
     }
     
     try {
       assertFalse(filter.accept(null, null));
       assertTrue(false);
-    } catch (NullArgumentException e) {
+    } catch (NullPointerException e) {
       assertTrue(true);
     }
     
