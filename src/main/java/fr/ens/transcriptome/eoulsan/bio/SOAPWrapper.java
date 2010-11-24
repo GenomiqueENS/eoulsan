@@ -47,6 +47,8 @@ public final class SOAPWrapper {
   private static String soapPath;
   private static String indexerPath;
 
+  private static final String SYNC = SOAPWrapper.class.getName();
+
   /**
    * Create the soap index in a directory.
    * @param genomeFile path to the genome file
@@ -67,9 +69,8 @@ public final class SOAPWrapper {
     LOGGER.info("Start computing SOAP index for " + genomeFile);
     final long startTime = System.currentTimeMillis();
 
-    synchronized (indexerPath) {
-
-      if (indexerPath == null) {
+    if (indexerPath == null) {
+      synchronized (SYNC) {
         indexerPath = BinariesInstaller.install("2bwt-builder");
       }
     }
@@ -134,9 +135,8 @@ public final class SOAPWrapper {
 
     LOGGER.info("Start index computation");
 
-    synchronized (indexerPath) {
-
-      if (indexerPath == null) {
+    if (indexerPath == null) {
+      synchronized (SYNC) {
         indexerPath = BinariesInstaller.install("2bwt-builder");
       }
     }
@@ -185,9 +185,8 @@ public final class SOAPWrapper {
       final File outputFile, final File unmapFile, final String soapArgs,
       final int nbSoapThreads) throws IOException {
 
-    synchronized (soapPath) {
-
-      if (soapPath == null) {
+    if (soapPath == null) {
+      synchronized (SYNC) {
         soapPath = BinariesInstaller.install("soap");
       }
     }
@@ -232,8 +231,8 @@ public final class SOAPWrapper {
   public static String mapPipe(final File soapIndexDir, final String soapArgs,
       final int nbSoapThreads) throws IOException {
 
-    synchronized (soapPath) {
-      if (soapPath == null) {
+    if (soapPath == null) {
+      synchronized (SYNC) {
         soapPath = BinariesInstaller.install("soap-pipe");
       }
     }
