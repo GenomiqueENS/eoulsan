@@ -86,6 +86,32 @@ public final class HadoopJarRepackager {
     hjr.doIt(destJarFile);
   }
 
+  /**
+   * Repackage the jar application only if the repackaged file does not exist.
+   * @return the File repackaged jar file
+   * @throws IOException if an error occurs while repackage the application
+   */
+  public static File repack() throws IOException {
+
+    File result = new File(createRepackagedJarName());
+
+    if (!result.exists()) {
+      repack(result);
+    }
+
+    return result;
+  }
+
+  private static String createRepackagedJarName() {
+
+    return Globals.APP_NAME_LOWER_CASE
+        + "-"
+        + Globals.APP_VERSION_STRING
+        + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER + "-" : "")
+        + System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim()
+            .hashCode() + ".jar";
+  }
+
   //
   // Constructor
   //
