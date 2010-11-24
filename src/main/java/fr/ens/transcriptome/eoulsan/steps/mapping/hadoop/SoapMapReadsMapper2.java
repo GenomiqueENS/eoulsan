@@ -22,6 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,7 +150,7 @@ public class SoapMapReadsMapper2 extends Mapper<LongWritable, Text, Text, Text> 
       final FileSystem fs = FileSystem.get(unmapDirPath.toUri(), conf);
       final Path unmapPath =
           new Path(unmapDirPath, UUID.randomUUID().toString()
-              + Common.FASTA_EXTENSION);
+              + UNMAP_READS_FASTA.getDefaultExtention());
 
       this.writer = new OutputStreamWriter(fs.create(unmapPath), CHARSET);
     }

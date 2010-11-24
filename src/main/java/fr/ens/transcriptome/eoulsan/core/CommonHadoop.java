@@ -24,7 +24,6 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,21 +57,21 @@ public class CommonHadoop {
    * @return the genome file path
    * @throws IOException if the genome file can't be identified
    */
-  public static Path getGenomeFilePath(final Path basePath,
-      final Configuration conf) throws IOException {
-
-    if (basePath == null)
-      throw new NullPointerException("Base path is null");
-
-    final List<Path> genomePaths =
-        PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
-    if (genomePaths.size() == 0)
-      throw new IOException("Genome file not found.");
-    if (genomePaths.size() > 1)
-      throw new IOException("More than one genome file found.");
-
-    return genomePaths.get(0);
-  }
+//  public static Path getGenomeFilePath(final Path basePath,
+//      final Configuration conf) throws IOException {
+//
+//    if (basePath == null)
+//      throw new NullPointerException("Base path is null");
+//
+//    final List<Path> genomePaths =
+//        PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
+//    if (genomePaths.size() == 0)
+//      throw new IOException("Genome file not found.");
+//    if (genomePaths.size() > 1)
+//      throw new IOException("More than one genome file found.");
+//
+//    return genomePaths.get(0);
+//  }
 
   /**
    * Write log data.

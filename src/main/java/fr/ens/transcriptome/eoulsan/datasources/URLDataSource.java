@@ -30,7 +30,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -106,7 +105,7 @@ public class URLDataSource extends FileDataSource implements Serializable {
       }
     } catch (IOException e) {
       throw new EoulsanRuntimeException("IO error while reading URL data: "
-          + url + " ("+e.getMessage()+")");
+          + url + " (" + e.getMessage() + ")");
     }
 
   }
@@ -122,13 +121,8 @@ public class URLDataSource extends FileDataSource implements Serializable {
 
     final String extension = StringUtils.compressionExtension(this.url);
 
-    if (Common.GZIP_EXTENSION.equals(extension))
-      return CompressionType.createGZipInputStream(is);
-
-    if (Common.BZIP2_EXTENSION.equals(extension))
-      return CompressionType.createBZip2InputStream(is);
-
-    return is;
+    return CompressionType.getCompressionTypeByExtension(extension)
+        .createInputStream(is);
   }
 
   //

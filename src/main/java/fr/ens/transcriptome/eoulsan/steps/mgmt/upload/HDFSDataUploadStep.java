@@ -11,6 +11,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_TFQ;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -25,7 +27,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
@@ -33,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DataSourceDistCp;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -55,10 +57,10 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
     return "Upload data to HDFS filesystem";
   }
-  
+
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.HADOOP;
   }
 
@@ -93,7 +95,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
     final String outputFilename;
     final String ext = StringUtils.extension(filename);
 
-    if (Common.GZIP_EXTENSION.equals(ext) || Common.BZIP2_EXTENSION.equals(ext))
+    if (CompressionType.GZIP.getExtension().equals(ext)
+        || CompressionType.BZIP2.getExtension().equals(ext))
       outputFilename =
           StringUtils.filenameWithoutCompressionExtension(filename);
     else
@@ -151,7 +154,8 @@ public class HDFSDataUploadStep extends DataUploadStep {
 
     final String s = StringUtils.filenameWithoutCompressionExtension(filename);
     final String out =
-        StringUtils.filenameWithoutExtension(s) + Common.TFQ_EXTENSION;
+        StringUtils.filenameWithoutExtension(s)
+            + READS_TFQ.getDefaultExtention();
 
     return getUploader(src, out);
   }

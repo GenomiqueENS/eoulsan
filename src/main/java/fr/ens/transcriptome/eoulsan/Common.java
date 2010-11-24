@@ -42,36 +42,6 @@ public final class Common {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  public static final String FASTA_EXTENSION = ".fasta";
-  public static final String READS_SUBDIR = "reads";
-  public static final String FASTQ_EXTENSION = ".fq";
-  public static final String TFQ_EXTENSION = ".tfq";
-  public static final String GFF_EXTENSION = ".gff";
-  public static final String SOAP_INDEX_ZIP_FILE_EXTENSION = ".soapindex.zip";
-  public static final String READS_FILTERED_EXTENSION = ".readsfiltered";
-  public static final String SOAP_RESULT_EXTENSION = ".soapaln";
-  public static final String UNMAP_EXTENSION = ".unmap";
-  public static final String ALL_UNMAP_FILE = "all" + UNMAP_EXTENSION;
-  public static final String ALL_SOAP_RESULT_FILE =
-      "all" + SOAP_RESULT_EXTENSION;
-  public static final String EXPRESSION_FILE_SUFFIX = ".txt";
-
-  public static final String BZIP2_EXTENSION = ".bz2";
-  public static final String GZIP_EXTENSION = ".gz";
-
-  public static final String SAMPLE_PREFIX = "sample_";
-  public static final String SAMPLE_FILTERED_PREFIX = "sample_filtered_";
-  public static final String SAMPLE_SOAP_ALIGNMENT_PREFIX =
-      "sample_soap_alignment_";
-  public static final String SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX =
-      "sample_soap_unmap_";
-  public static final String GENOME_SOAP_INDEX_DIR_PREFIX =
-      "genome_soap_index_";
-
-  public static final String SAMPLE_EXPRESSION_FILE_PREFIX =
-      "sample_expression_";
-  public static final String SAMPLE_EXPRESSION_FILE_SUFFIX = ".txt";
-
   public static final String S3_PROTOCOL = "s3n";
 
   public static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";

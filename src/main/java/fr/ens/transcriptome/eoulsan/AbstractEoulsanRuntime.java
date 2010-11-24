@@ -99,15 +99,8 @@ public abstract class AbstractEoulsanRuntime {
 
     final String extension = StringUtils.compressionExtension(source);
 
-    if (Common.GZIP_EXTENSION.equals(extension)) {
-      return CompressionType.createGZipInputStream(is);
-    }
-
-    if (Common.BZIP2_EXTENSION.equals(extension)) {
-      return CompressionType.createBZip2InputStream(is);
-    }
-
-    return is;
+    return CompressionType.getCompressionTypeByExtension(extension)
+        .createInputStream(is);
   }
 
   //

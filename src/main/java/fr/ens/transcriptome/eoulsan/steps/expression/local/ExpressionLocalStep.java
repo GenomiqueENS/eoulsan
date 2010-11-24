@@ -22,12 +22,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -43,13 +45,12 @@ public class ExpressionLocalStep extends ExpressionStep {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.LOCAL;
   }
-  
+
   @Override
   public String getLogName() {
 
@@ -84,16 +85,15 @@ public class ExpressionLocalStep extends ExpressionStep {
         }
 
         final File alignmentFile =
-            new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + s.getId() + Common.SOAP_RESULT_EXTENSION);
+            new File(info.getDataFilename(SOAP_RESULTS_TXT, s));
 
         final File expressionTmpFile =
-            new File(Common.SAMPLE_EXPRESSION_FILE_PREFIX
-                + s.getId() + Common.SOAP_RESULT_EXTENSION + ".tmp");
+            new File(info.getDataFilename(SOAP_RESULTS_TXT, s)
+                + ".tmp");
 
         final File expressionFile =
-            new File(Common.SAMPLE_EXPRESSION_FILE_PREFIX
-                + s.getId() + Common.SAMPLE_EXPRESSION_FILE_SUFFIX);
+            new File(info
+                .getDataFilename(EXPRESSION_RESULTS_TXT, s));
 
         if (getTmpDir() != null)
           epmr.setMapReduceTemporaryDirectory(new File(getTmpDir()));

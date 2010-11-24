@@ -22,6 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_TFQ;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,6 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -41,7 +44,6 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsStep;
@@ -73,12 +75,12 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ, DataFormats.READS_TFQ};
+    return new DataFormat[] {READS_FASTQ, READS_TFQ};
   }
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_READS_FASTQ};
+    return new DataFormat[] {FILTERED_READS_FASTQ};
   }
 
   @Override
@@ -151,7 +153,7 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
     FileInputFormat.setInputPaths(conf, new Path(basePath, sample.getSource()));
 
     // Set the input format
-    if (sample.getSource().endsWith(Common.FASTQ_EXTENSION))
+    if (sample.getSource().endsWith(READS_FASTQ.getDefaultExtention()))
       conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class

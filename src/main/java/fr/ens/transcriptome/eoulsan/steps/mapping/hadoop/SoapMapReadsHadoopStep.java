@@ -22,6 +22,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +39,11 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MapReadsStep;
@@ -70,11 +73,11 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
 
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
-    final int sampleId = sample.getId();
-
     final Path inputPath =
-        CommonHadoop.selectDirectoryOrFile(new Path(info.getBasePathname(),
-            Common.SAMPLE_FILTERED_PREFIX + sampleId), Common.FASTQ_EXTENSION);
+        CommonHadoop.selectDirectoryOrFile(new Path(info.getDataFile(
+            FILTERED_READS_FASTQ, sample)
+            .getSourceWithoutExtension()), FILTERED_READS_FASTQ
+            .getDefaultExtention());
 
     // Set Job name
     conf.setJobName("Map reads with SOAP ("
@@ -82,12 +85,12 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
 
     // Set genome reference path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", info
-        .getDataFile(DataFormats.SOAP_INDEX_ZIP, sample).getSource());
+        .getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     // Set unmap chuck dir path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(info.getBasePathname(),
-            Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId).toString());
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", info
+        .getDataFile(UNMAP_READS_FASTA, sample)
+        .getSourceWithoutExtension());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
@@ -97,7 +100,7 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
         .newPathWithOtherExtension(
             new Path(info.getBasePathname(), sample.getSource()),
-            Common.UNMAP_EXTENSION).toString());
+            UNMAP_READS_FASTA.getDefaultExtention()).toString());
 
     // Set the number of threads for soap
     conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", "1");
@@ -131,8 +134,10 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(info.getBasePathname(),
-        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+    FileOutputFormat.setOutputPath(conf, new Path(
+
+    info.getDataFile(SOAP_RESULTS_TXT, sample)
+        .getSourceWithoutExtension()));
 
     return conf;
   }
