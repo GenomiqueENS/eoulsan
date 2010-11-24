@@ -96,6 +96,9 @@ public final class Globals {
       Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64",
           "linux\tamd64"));
 
+  /** Default locale of the application. */
+  public static final Locale DEFAULT_LOCALE = Locale.US;
+
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
 
@@ -145,8 +148,12 @@ public final class Globals {
 
   public static final String DEFAULT_FILE_ENCODING = "UTF-8";
 
-  /** Default locale of the application. */
-  public static final Locale DEFAULT_LOCALE = Locale.US;
+  /**
+   * The name of the system property that contains the list of libraries to
+   * repack for hadoop mode.
+   */
+  public static final String LIBS_TO_HADOOP_REPACK_PROPERTY =
+      "eoulsan.hadoop.libs";
 
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
