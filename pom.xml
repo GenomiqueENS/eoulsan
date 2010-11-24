@@ -6,12 +6,12 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4</version>
+	<version>0.5-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for RNA-seq analysis.
 	</description>
-	<url>http://transcriptome.ens.fr/eoulsan</url>
+	<url>http://hestia.ens.fr/eoulsan-stable</url>
 
 	<properties>
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?</didyouknow>
@@ -134,6 +134,17 @@
 			<url>http://download.java.net/maven/1</url>
 			<layout>legacy</layout>
 		</repository>
+
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>CHiBi</id>
+			<name>CHibi repository</name>
+			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
+			<url>http://www.chibi.ubc.ca/maven2</url>
+			<!--layout>legacy</layout-->
+		</repository>
 	</repositories>
 
 	<scm>
@@ -150,11 +161,16 @@
 
 
 	<dependencies>
-		<dependency>
+		<!--dependency>
 			<groupId>hadoop</groupId>
 			<artifactId>hadoop</artifactId>
 			<version>0.20.2</version>
 			<scope>compile</scope>
+		</dependency-->
+		<dependency>
+			<groupId>org.apache.mahout.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>0.20.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -187,6 +203,54 @@
 			<version>1.6.1</version>
 			<scope>compile</scope>
 		</dependency-->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.0.008</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<!--version>1.1.1</version-->
+			<version>1.0.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<!--dependency>
+			<groupId>rosuda</groupId>
+			<artifactId>JRclient</artifactId>
+			<version>RE817</version>
+			<scope>compile</scope>
+                </dependency-->
+		<dependency>
+			<groupId>RoSuDA</groupId>
+			<artifactId>JRclient</artifactId>
+			 <version>RF503</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.0.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.3</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r07</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -207,6 +271,16 @@
 				<directory>src/test/java/files</directory>
 			</testResource>
 		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<!--version>2.4</version-->
+		 	       </plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -281,7 +355,7 @@
 								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar" tofile="${basedir}/target/dist/lib/${pom.artifactId}.jar" />
 								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}"/>
 
-								<tar destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
+								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
 									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
 										<include name="*/**"/>
 										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
@@ -316,7 +390,7 @@
 								</copy>
 								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
 
-								<tar tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
+								<tar longfile="gnu" tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
 
 									<tarfileset dir="${basedir}/target/dist-src"  mode="755" username="nobody" group="nobody">
 										<include name="*/**"/>
@@ -438,6 +512,76 @@
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>commons-cli.jar</destFileName>
 						                </artifactItem>
+								<artifactItem>
+						                  <groupId>com.amazonaws</groupId>
+						                  <artifactId>aws-java-sdk</artifactId>
+						                  <version>1.0.008</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>aws-java-sdk.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.commons</groupId>
+						                  <artifactId>commons-compress</artifactId>
+						                  <version>1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>common-compress.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>commons-logging</groupId>
+						                  <artifactId>commons-logging</artifactId>
+						                  <version>1.1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-logging.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>commons-httpclient</groupId>
+						                  <artifactId>commons-httpclient</artifactId>
+						                  <version>3.0.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-httpclient.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>commons-codec</groupId>
+						                  <artifactId>commons-codec</artifactId>
+						                  <version>1.3</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-codec.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>RoSuDA</groupId>
+						                  <artifactId>JRclient</artifactId>
+						                  <version>RF503</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>common-codec.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>com.google.guava</groupId>
+						                  <artifactId>guava</artifactId>
+						                  <version>r07</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>guava.jar</destFileName>
+						                </artifactItem>
 					              </artifactItems>
 					              <!-- other configurations here -->
 				            </configuration>
@@ -453,6 +597,11 @@
 					<outputEncoding>iso-8859-1</outputEncoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -467,7 +616,7 @@
 
 	<reporting>
 		<plugins>
-			<plugin>
+			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
@@ -507,6 +656,59 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-docck-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.3.1</version>
+			</plugin-->
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<!--configuration>
+					<configLocation>checkstyle.xml</configLocation>
+				</configuration-->
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<!--version>2.4</version-->
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<!--version>2.0.1</version-->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javancss-maven-plugin</artifactId>
+				<!--version>2.0-beta-2</version-->
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+			</plugin>
+			
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>ckjm-maven-plugin</artifactId>
+			</plugin-->
+
+
+			<!--plugin>
+				<groupId>net.sf.xradar</groupId>
+				<artifactId>maven-xradar-plugin</artifactId>
+				<version>1.2.2</version>
+		        </plugin-->
+
 			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
