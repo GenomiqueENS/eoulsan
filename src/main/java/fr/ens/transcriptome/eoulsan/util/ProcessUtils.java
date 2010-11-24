@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -321,7 +322,7 @@ public final class ProcessUtils {
       sb.append('\n');
     }
 
-    InputStream err = p.getInputStream();
+    InputStream err = p.getErrorStream();
     BufferedReader errr = new BufferedReader(new InputStreamReader(err));
 
     String l2 = null;
@@ -449,6 +450,63 @@ public final class ProcessUtils {
     } catch (InterruptedException e) {
     }
 
+  }
+
+  /**
+   * This class allow to write on a PrintStream the content of a BuffeReader
+   * @author Laurent Jourdren
+   */
+  private static final class ProcessThreadOutput implements Runnable {
+
+    final BufferedReader reader;
+    final PrintStream pw;
+
+    @Override
+    public void run() {
+
+      String l = null;
+
+      try {
+        while ((l = this.reader.readLine()) != null) {
+          this.pw.println(l);
+        }
+      } catch (IOException e) {
+
+        e.printStackTrace();
+      }
+    }
+
+    ProcessThreadOutput(final BufferedReader reader, final PrintStream pw) {
+      this.reader = reader;
+      this.pw = pw;
+    }
+
+  }
+
+  /**
+   * Execute a command and write the content of the standard output and error to
+   * System.out and System.err.
+   * @param cmd Command to execute
+   * @throws IOException if an error occurs while executing the command
+   */
+  public static void execThreadOutput(final String cmd) throws IOException {
+
+    logger.fine("execute (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final long startTime = System.currentTimeMillis();
+
+    Process p = Runtime.getRuntime().exec(cmd);
+
+    final BufferedReader stdr =
+        new BufferedReader(new InputStreamReader(p.getInputStream()));
+    final BufferedReader errr =
+        new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+    new Thread(new ProcessThreadOutput(stdr, System.out)).run();
+    new Thread(new ProcessThreadOutput(errr, System.err)).run();
+
+    logEndTime(p, cmd, startTime);
   }
 
   private ProcessUtils() {
