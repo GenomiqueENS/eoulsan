@@ -89,6 +89,12 @@ public interface ExecutorInfo {
   String getParameterPathname();
 
   /**
+   * Get the application jar path.
+   * @return Returns the jar path
+   */
+  String getJarPathname();
+
+  /**
    * Add executor information to log.
    */
   void logInfo();
@@ -110,7 +116,7 @@ public interface ExecutorInfo {
    * @return the workflow description
    */
   WorkflowDescription getWorkflow();
-  
+
   /**
    * Get the pathname for a DataType and a Sample.
    * @param df the DataFormat of the source
@@ -142,7 +148,8 @@ public interface ExecutorInfo {
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  InputStream getRawInputStream(DataFormat df, Sample sample) throws IOException;
+  InputStream getRawInputStream(DataFormat df, Sample sample)
+      throws IOException;
 
   /**
    * Create an OutputStream to load data.
