@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -48,11 +48,13 @@ public class DesignBuilder {
     if (file == null || !file.exists() || !file.isFile())
       return;
 
-    if (file.getName().endsWith(Common.FASTQ_EXTENSION))
+    if (file.getName().endsWith(DataFormats.READS_FASTQ.getDefaultExtention()))
       this.fastqList.add(file);
-    else if (file.getName().endsWith(Common.FASTA_EXTENSION))
+    else if (file.getName().endsWith(
+        DataFormats.GENOME_FASTA.getDefaultExtention()))
       this.genomeFile = file;
-    else if (file.getName().endsWith(Common.GFF_EXTENSION))
+    else if (file.getName().endsWith(
+        DataFormats.ANNOTATION_GFF.getDefaultExtention()))
       this.gffFile = file;
   }
 

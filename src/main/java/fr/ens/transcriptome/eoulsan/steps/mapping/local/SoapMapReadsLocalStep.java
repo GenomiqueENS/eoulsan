@@ -22,6 +22,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MapReadsStep;
@@ -96,28 +100,25 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
         final Reporter reporter = new Reporter();
 
         final File soapIndexDir =
-            new File(Common.GENOME_SOAP_INDEX_DIR_PREFIX
+            new File(SOAP_INDEX_ZIP.getType().getPrefix()
                 + genomes.get(genomeFilename));
 
         final File inputFile =
-            new File(Common.SAMPLE_FILTERED_PREFIX
-                + s.getId() + Common.FASTQ_EXTENSION);
+            new File(info.getDataFilename(FILTERED_READS_FASTQ, s));
 
         final File alignmentFile =
-            new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + s.getId() + Common.SOAP_RESULT_EXTENSION + ".tmp");
+            new File(info.getDataFilename(SOAP_RESULTS_TXT, s)
+                + ".tmp");
 
         final File unmapFile =
-            new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + s.getId() + Common.UNMAP_EXTENSION);
+            new File(info.getDataFilename(UNMAP_READS_FASTA, s));
 
         final File resultFile =
-            new File(Common.SAMPLE_SOAP_ALIGNMENT_PREFIX
-                + s.getId() + Common.SOAP_RESULT_EXTENSION);
+            new File(info.getDataFilename(SOAP_RESULTS_TXT, s));
 
         if (!soapIndexDir.exists()) {
 
-          DataFormat df = DataFormats.SOAP_INDEX_ZIP;
+          DataFormat df = SOAP_INDEX_ZIP;
 
           final File soapIndexArchive =
               new File(df.getType().getPrefix()

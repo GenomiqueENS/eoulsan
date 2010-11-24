@@ -22,11 +22,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -46,10 +47,10 @@ public final class FilterReadsLocalStep extends FilterReadsStep {
 
   @Override
   public ExecutionMode getExecutionMode() {
-    
+
     return Step.ExecutionMode.LOCAL;
   }
-  
+
   @Override
   public String getLogName() {
 
@@ -69,8 +70,7 @@ public final class FilterReadsLocalStep extends FilterReadsStep {
         final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
-            new File(Common.SAMPLE_FILTERED_PREFIX
-                + s.getId() + Common.FASTQ_EXTENSION);
+            new File(info.getDataFilename(FILTERED_READS_FASTQ, s));
 
         if (getLengthThreshold() != -1)
           filter.setLengthThreshold(getLengthThreshold());

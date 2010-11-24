@@ -22,6 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +42,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
@@ -46,12 +52,10 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
@@ -117,12 +121,12 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ, DataFormats.READS_TFQ};
+    return new DataFormat[] {READS_FASTQ, READS_TFQ};
   }
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_SOAP_RESULTS_TXT};
+    return new DataFormat[] {FILTERED_SOAP_RESULTS_TXT};
   }
 
   @Override
@@ -206,8 +210,6 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    final int sampleId = sample.getId();
-
     final String source = sample.getSource();
 
     final Path inputPath = new Path(info.getBasePathname(), source);
@@ -222,22 +224,19 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
     // Set genome reference path
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", info
-        .getDataFile(DataFormats.SOAP_INDEX_ZIP, sample).getSource());
+        .getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     // Set unmap chuck dir path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(info.getBasePathname(),
-            Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId).toString());
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", info
+        .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set unmap chuck prefix
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
         UNMAP_CHUNK_PREFIX);
 
     // Set unmap output file path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
-        .newPathWithOtherExtension(
-            new Path(info.getBasePathname(), sample.getSource()),
-            Common.UNMAP_EXTENSION).toString());
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", info
+        .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set the number of threads for soap
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
@@ -264,7 +263,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
     final String sampleExtension =
         StringUtils.extension(StringUtils
             .filenameWithoutCompressionExtension(source));
-    if (Common.FASTQ_EXTENSION.equals(sampleExtension))
+    if (READS_FASTQ.getDefaultExtention().equals(sampleExtension))
       job.setInputFormatClass(FastQFormatNew.class);
     else
       job.setInputFormatClass(TextInputFormat.class);
@@ -285,8 +284,8 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
     job.setNumReduceTasks(1);
 
     // Set the output Path
-    FileOutputFormat.setOutputPath(job, new Path(info.getBasePathname(),
-        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+    FileOutputFormat.setOutputPath(job, new Path(info.getDataFile(
+        SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return job;
   }

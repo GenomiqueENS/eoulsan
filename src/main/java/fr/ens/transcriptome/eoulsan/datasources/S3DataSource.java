@@ -30,7 +30,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -99,17 +98,12 @@ public final class S3DataSource implements DataSource {
 
       final String extension = StringUtils.compressionExtension(this.pathname);
 
-      if (Common.GZIP_EXTENSION.equals(extension))
-        return CompressionType.createGZipInputStream(is);
-
-      if (Common.BZIP2_EXTENSION.equals(extension))
-        return CompressionType.createBZip2InputStream(is);
-
-      return is;
+      return CompressionType.getCompressionTypeByExtension(extension)
+          .createInputStream(is);
 
     } catch (IOException e) {
       throw new EoulsanRuntimeException("IO error while reading URL data: "
-          + pathname);
+          + pathname + "(" + e.getMessage() + ")");
     }
 
   }

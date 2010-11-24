@@ -22,6 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -36,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -100,7 +103,7 @@ public class S3DataUploadStep extends DataUploadStep {
     final String extension = StringUtils.extension(src);
     final S3FileUploader fu;
 
-    if (Common.BZIP2_EXTENSION.equals(extension)) {
+    if (CompressionType.BZIP2.getExtension().equals(extension)) {
 
       fu = new S3FileUploader(this.awsCredentials);
       fu.init(new FileDataSource(src), getDestURI() + "/" + filename);
@@ -108,7 +111,7 @@ public class S3DataUploadStep extends DataUploadStep {
 
       fu = new S3Bzip2FileUploader(this.awsCredentials);
       fu.init(DataSourceUtils.identifyDataSource(src), getDestURI()
-          + "/" + filename + Common.BZIP2_EXTENSION);
+          + "/" + filename + CompressionType.BZIP2.getExtension());
       fu.setContentType("text/plain");
 
     }
@@ -122,17 +125,18 @@ public class S3DataUploadStep extends DataUploadStep {
     final String extension = StringUtils.extension(src);
     final S3FileUploader fu;
 
-    if (Common.BZIP2_EXTENSION.equals(extension)) {
+    if (CompressionType.BZIP2.getExtension().equals(extension)) {
 
       fu = new S3FileUploader(this.awsCredentials);
       fu.init(new FileDataSource(src), getDestURI()
-          + "/" + filename + Common.BZIP2_EXTENSION);
+          + "/" + filename + CompressionType.BZIP2.getExtension());
     } else {
 
       fu = new S3Bzip2FileUploader(this.awsCredentials);
       fu.init(DataSourceUtils.identifyDataSource(src), getDestURI()
           + "/" + StringUtils.filenameWithoutExtension(filename)
-          + Common.FASTQ_EXTENSION + Common.BZIP2_EXTENSION);
+          + READS_FASTQ.getDefaultExtention()
+          + CompressionType.BZIP2.getExtension());
       fu.setContentType("text/plain");
     }
 
@@ -145,7 +149,7 @@ public class S3DataUploadStep extends DataUploadStep {
 
     final S3FileUploader fu = new S3Bzip2FileUploader(this.awsCredentials);
     fu.init(DataSourceUtils.identifyDataSource(src), getDestURI()
-        + "/" + filename + Common.BZIP2_EXTENSION);
+        + "/" + filename + CompressionType.BZIP2.getExtension());
     fu.setContentType("text/plain");
 
     return fu;

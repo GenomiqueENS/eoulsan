@@ -22,6 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +42,6 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
@@ -46,12 +52,10 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This class is the main class for the filter and mapping program of the reads
@@ -121,13 +125,12 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ, DataFormats.READS_TFQ,
-        DataFormats.SOAP_INDEX_ZIP};
+    return new DataFormat[] {READS_FASTQ, READS_TFQ, SOAP_INDEX_ZIP};
   }
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_SOAP_RESULTS_TXT};
+    return new DataFormat[] {FILTERED_SOAP_RESULTS_TXT};
   }
 
   @Override
@@ -204,8 +207,6 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
-    final int sampleId = sample.getId();
-
     final Path inputPath = new Path(info.getBasePathname(), sample.getSource());
 
     // Set Job name
@@ -222,8 +223,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(info.getDataFile(DataFormats.SOAP_INDEX_ZIP, sample)
-            .getSource());
+        new Path(info.getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     conf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", genomeIndex
         .toString());
@@ -231,19 +231,16 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     DistributedCache.addCacheFile(genomeIndex.toUri(), conf);
 
     // Set unmap chuck dir path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
-        new Path(info.getBasePathname(),
-            Common.SAMPLE_SOAP_UNMAP_ALIGNMENT_PREFIX + sampleId).toString());
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", info
+        .getDataFile(UNMAP_READS_FASTA, sample).getSourceWithoutExtension());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
         UNMAP_CHUNK_PREFIX);
 
     // Set unmap output file path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", PathUtils
-        .newPathWithOtherExtension(
-            new Path(info.getBasePathname(), sample.getSource()),
-            Common.UNMAP_EXTENSION).toString());
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", info
+        .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set the number of threads for soap
     // conf.set(Globals.PARAMETER_PREFIX + ".soap.nb.threads", ""
@@ -265,7 +262,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     FileInputFormat.setInputPaths(conf, inputPath);
 
     // Set the input format
-    if (sample.getSource().endsWith(Common.FASTQ_EXTENSION))
+    if (sample.getSource().endsWith(READS_FASTQ.getDefaultExtention()))
       conf.setInputFormat(FastqInputFormat.class);
 
     // Set the Mapper class
@@ -284,10 +281,9 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(info.getBasePathname(),
-        Common.SAMPLE_SOAP_ALIGNMENT_PREFIX + sampleId));
+    FileOutputFormat.setOutputPath(conf, new Path(info.getDataFile(
+        SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return conf;
   }
-
 }

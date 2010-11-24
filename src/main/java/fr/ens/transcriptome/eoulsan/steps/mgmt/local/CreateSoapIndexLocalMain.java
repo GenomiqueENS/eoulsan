@@ -22,12 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.local;
 
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -71,7 +72,7 @@ public class CreateSoapIndexLocalMain {
         count++;
 
         SOAPWrapper.makeIndex(new File(genomeFilenameTrimed), new File(
-            Common.GENOME_SOAP_INDEX_DIR_PREFIX + count));
+            SOAP_INDEX_ZIP.getType().getPrefix() + count));
 
         genomesIndex.put(genomeFilenameTrimed, count);
       }

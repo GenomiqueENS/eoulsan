@@ -252,6 +252,34 @@ public class DataFormats {
 
   };
 
+  /** Annotation data format. */
+  public static final DataFormat ANNOTATION_SERIAL = new AbstractDataFormat() {
+
+    public DataType getType() {
+
+      return DataTypes.ANNOTATION;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".data";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return "annotation_serial";
+    }
+
+    @Override
+    public boolean isChecker() {
+
+      return false;
+    }
+
+  };
+
   /** Anadiff results data format. */
   public static final DataFormat ANADIF_RESULTS_TXT = new AbstractDataFormat() {
 
