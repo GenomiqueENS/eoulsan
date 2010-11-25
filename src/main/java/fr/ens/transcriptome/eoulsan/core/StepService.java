@@ -112,27 +112,6 @@ public class StepService {
   }
 
   /**
-   * Creates a new instance of DictionaryService
-   */
-  @SuppressWarnings("unchecked")
-  private StepService() {
-
-    final Set<Class<? extends Annotation>> autorisedAnnotations;
-
-    if (EoulsanRuntime.getRuntime().isAmazonMode()) {
-      autorisedAnnotations =
-          Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
-    } else {
-      autorisedAnnotations =
-          Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
-    }
-
-    loader =
-        ServiceLoader.load(Step.class, new ServiceClassLoader(
-            autorisedAnnotations));
-  }
-
-  /**
    * Retrieve the singleton static instance of StepService.
    * @return A StepService instance
    */
@@ -171,6 +150,31 @@ public class StepService {
     }
 
     return null;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Private constructor.
+   */
+  @SuppressWarnings("unchecked")
+  private StepService() {
+
+    final Set<Class<? extends Annotation>> autorisedAnnotations;
+
+    if (EoulsanRuntime.getRuntime().isAmazonMode()) {
+      autorisedAnnotations =
+          Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
+    } else {
+      autorisedAnnotations =
+          Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
+    }
+
+    loader =
+        ServiceLoader.load(Step.class, new ServiceClassLoader(
+            autorisedAnnotations));
   }
 
 }
