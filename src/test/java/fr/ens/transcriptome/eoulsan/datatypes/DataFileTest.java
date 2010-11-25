@@ -163,6 +163,56 @@ public class DataFileTest {
     assertEquals("toto.txt", df.getName());
   }
 
+  
+  @Test
+  public void testGetSourceWithoutExtension() {
+    
+    String filename = "toto.txt";
+    DataFile df = new DataFile(filename);
+    assertEquals("toto", df.getSourceWithoutExtension());
+
+    filename = "/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "file:///home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("file:///home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "file:/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("file:/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "http://www.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("http://www.toto.com/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "http:/www.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("http:/www.toto.com/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "ftp://ftp.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("ftp://ftp.toto.com/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "ftp:/ftp.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("ftp:/ftp.toto.com/home/toto/toto", df.getSourceWithoutExtension());
+
+    filename = "ftp://login:passwd@ftp.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals("ftp://login:passwd@ftp.toto.com/home/toto/toto", df.getSourceWithoutExtension());
+    
+    filename = "ftp://login:passwd@ftp.toto.com/home/titi/toto";
+    df = new DataFile(filename);
+    assertEquals("ftp://login:passwd@ftp.toto.com/home/titi/toto", df.getSourceWithoutExtension());
+    
+    filename = "ftp://login:passwd@ftp.toto.com/home/titi/";
+    df = new DataFile(filename);
+    assertEquals("ftp://login:passwd@ftp.toto.com/home/titi/", df.getSourceWithoutExtension());
+    
+  }
+  
   @Test
   public void testGetProtocol() throws IOException {
 

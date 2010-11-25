@@ -128,7 +128,7 @@ public final class StringUtils {
     final int pos = shortName.lastIndexOf('.');
 
     if (pos == -1)
-      return "";
+      return filename;
 
     return filename.substring(0, pos);
   }
