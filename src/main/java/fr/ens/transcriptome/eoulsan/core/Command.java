@@ -33,7 +33,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 
 /**
  * This class define the command object of Eoulsan.

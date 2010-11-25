@@ -1,4 +1,7 @@
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+
+import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 
 
 class SimpleDataFileMetadata implements DataFileMetadata{

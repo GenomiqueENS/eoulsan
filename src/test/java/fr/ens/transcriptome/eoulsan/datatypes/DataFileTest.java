@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 
 public class DataFileTest {
 

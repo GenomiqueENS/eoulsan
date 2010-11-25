@@ -35,8 +35,8 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
-import fr.ens.transcriptome.eoulsan.datatypes.DataProtocol;
-import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
