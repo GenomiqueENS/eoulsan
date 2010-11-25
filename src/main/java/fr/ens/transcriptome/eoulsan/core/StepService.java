@@ -144,7 +144,7 @@ public class StepService {
         }
       } catch (ServiceConfigurationError e) {
         LOGGER.info("Class for step cannot be load in "
-            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getClass());
+            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
       }
 
     }
@@ -164,7 +164,7 @@ public class StepService {
 
     final Set<Class<? extends Annotation>> autorisedAnnotations;
 
-    if (EoulsanRuntime.getRuntime().isAmazonMode()) {
+    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
       autorisedAnnotations =
           Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
     } else {
