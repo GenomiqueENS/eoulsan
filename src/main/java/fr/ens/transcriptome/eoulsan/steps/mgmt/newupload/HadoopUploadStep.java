@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocol;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
@@ -89,7 +89,7 @@ public class HadoopUploadStep extends UploadStep {
 
     final Set<DataFile> stdCopyFiles = new HashSet<DataFile>();
     final DataProtocol fileProtocol =
-        DataProtocolRegistry.getInstance().getProtocol("file");
+        DataProtocolService.getInstance().getProtocol("file");
 
     for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 

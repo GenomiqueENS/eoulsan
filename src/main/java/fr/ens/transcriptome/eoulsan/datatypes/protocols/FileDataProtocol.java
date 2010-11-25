@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
@@ -19,7 +20,14 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class implements a File Protocol.
  * @author Laurent jourdren
  */
-class FileDataProtocol extends AbstractDataProtocol {
+@HadoopCompatible
+public class FileDataProtocol extends AbstractDataProtocol {
+
+  @Override
+  public String getName() {
+
+    return "file";
+  }
 
   /**
    * Get Convert a DataFile object to a File object

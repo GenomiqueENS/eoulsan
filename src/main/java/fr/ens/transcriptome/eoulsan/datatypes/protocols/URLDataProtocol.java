@@ -11,7 +11,7 @@ import java.net.URLConnection;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
 
-class URLDataProtocol extends AbstractDataProtocol {
+public abstract class URLDataProtocol extends AbstractDataProtocol {
 
   private URLConnection createConnection(final DataFile src) throws IOException {
 

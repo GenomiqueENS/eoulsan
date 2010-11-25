@@ -18,7 +18,7 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
-class PathDataProtocol extends AbstractDataProtocol {
+public abstract class PathDataProtocol extends AbstractDataProtocol {
 
   private Configuration conf;
 

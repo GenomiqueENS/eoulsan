@@ -21,13 +21,19 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-class S3DataProtocol implements DataProtocol {
+/**
+ * This class define the s3 protocol in local mode.
+ * @author Laurent Jourdren
+ */
+@LocalOnly
+public class S3DataProtocol implements DataProtocol {
 
   /** Logger */
   private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -222,6 +228,12 @@ class S3DataProtocol implements DataProtocol {
   //
   // Protocol methods
   //
+
+  @Override
+  public String getName() {
+
+    return "s3";
+  }
 
   @Override
   public InputStream getData(final DataFile src) throws IOException {

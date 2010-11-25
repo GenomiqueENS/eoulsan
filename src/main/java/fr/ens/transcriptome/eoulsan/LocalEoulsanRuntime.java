@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -103,9 +102,6 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
     // Set the instance
     EoulsanRuntime.setInstance(instance);
-
-    // Register protocols from settings
-    DataProtocolRegistry.getInstance().registerProtocolsFromSettings();
 
     return instance;
   }
