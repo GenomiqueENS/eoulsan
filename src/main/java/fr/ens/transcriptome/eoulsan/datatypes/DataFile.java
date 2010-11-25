@@ -53,7 +53,11 @@ public class DataFile {
    */
   public String getSourceWithoutExtension() {
 
-    return StringUtils.filenameWithoutExtension(this.src);
+    final String newName = StringUtils.filenameWithoutExtension(this.name);
+    final String result =
+        this.src.substring(0, this.src.length() - this.name.length()) + newName;
+
+    return result;
   }
 
   /**
