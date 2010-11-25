@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.action;
+package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.FileNotFoundException;
 
