@@ -30,7 +30,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan

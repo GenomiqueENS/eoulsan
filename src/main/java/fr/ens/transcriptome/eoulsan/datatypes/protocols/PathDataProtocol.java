@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.datatypes.protocols;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +12,9 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 

@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.datatypes.protocols;
 
 import java.util.HashMap;
 import java.util.Map;

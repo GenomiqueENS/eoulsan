@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

@@ -1,8 +1,10 @@
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.datatypes.protocols;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
+import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
