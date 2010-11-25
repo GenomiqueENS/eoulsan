@@ -46,6 +46,7 @@ import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -60,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class initialize the global logger
  * @author Laurent Jourdren
  */
+@HadoopOnly
 public class InitGlobalLoggerStep extends AbstractStep {
 
   /** Logger. */

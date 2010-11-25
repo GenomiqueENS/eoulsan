@@ -32,13 +32,13 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.Step.ExecutionMode;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * This step copy design and parameter file to output directory.
  * @author Laurent Jourdren
  */
+@HadoopOnly
 public class CopyDesignAndParametersToOutputStep extends AbstractStep {
 
   /** Logger. */

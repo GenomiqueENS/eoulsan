@@ -32,8 +32,6 @@ class Workflow implements WorkflowDescription {
   /** Logger */
   private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private final StepsRegistery registery = StepsRegistery.getInstance();
-
   private List<Step> steps;
 
   private Command command;
@@ -44,23 +42,6 @@ class Workflow implements WorkflowDescription {
       new HashMap<Sample, Set<DataFormat>>();
   private final Map<Sample, Set<DataFormat>> globalOutputDataFormats =
       new HashMap<Sample, Set<DataFormat>>();
-
-  // private Set<DataType> dataTypesNotGenerated = new HashSet<DataType>();
-  // private Set<DataType> dataTypesOnlyGenerated = new HashSet<DataType>();
-  // private Set<DataType> dataTypesReUsed = new HashSet<DataType>();
-  // private Set<DataType> dataTypesUsed = new HashSet<DataType>();
-  // private Set<DataType> dataTypesGenerated = new HashSet<DataType>();
-  // private List<DataType> dataTypesUsedOrder = new ArrayList<DataType>();
-  //
-  // private Set<DataFormat> dataFormatsNotGenerated = new
-  // HashSet<DataFormat>();
-  // private Set<DataFormat> dataFormatsOnlyGenerated = new
-  // HashSet<DataFormat>();
-  // private Set<DataFormat> dataFormatsReUsed = new HashSet<DataFormat>();
-  // private Set<DataFormat> dataFormatsUsed = new HashSet<DataFormat>();
-  // private Set<DataFormat> dataFormatsGenerated = new HashSet<DataFormat>();
-  // private List<DataFormat> dataFormatsUsedOrder = new
-  // ArrayList<DataFormat>();
 
   //
   // Getters
@@ -98,7 +79,7 @@ class Workflow implements WorkflowDescription {
    */
   private Step getStep(String stepName) {
 
-    return this.registery.getStep(stepName);
+    return StepService.getInstance().getStep(stepName);
   }
 
   //
@@ -132,239 +113,6 @@ class Workflow implements WorkflowDescription {
   //
   // Checks methods
   //
-
-  // private void fillDataTypeCategories() throws EoulsanException {
-  //
-  // dataTypesNotGenerated.clear();
-  // dataTypesOnlyGenerated.clear();
-  // dataTypesUsed.clear();
-  // dataTypesReUsed.clear();
-  // dataTypesOnlyGenerated.clear();
-  // dataTypesGenerated.clear();
-  // dataTypesUsedOrder.clear();
-  //
-  // dataFormatsNotGenerated.clear();
-  // dataFormatsOnlyGenerated.clear();
-  // dataFormatsUsed.clear();
-  // dataFormatsReUsed.clear();
-  // dataFormatsOnlyGenerated.clear();
-  // dataFormatsGenerated.clear();
-  // dataFormatsUsedOrder.clear();
-  //
-  // for (Step s : this.steps) {
-  //
-  // // Input DataType
-  // for (DataType dt : Utils.unmodifiableSet(s.getInputTypes())) {
-  //
-  // this.dataTypesUsed.add(dt);
-  // this.dataTypesUsedOrder.add(dt);
-  // if (this.dataTypesGenerated.contains(dt))
-  // this.dataTypesReUsed.add(dt);
-  // }
-  //
-  // // Input DataFormat
-  // for (DataFormat df : Utils.unmodifiableSet(s.getInputFormats())) {
-  //
-  // this.dataFormatsUsed.add(df);
-  // this.dataFormatsUsedOrder.add(df);
-  // if (this.dataFormatsGenerated.contains(df))
-  // this.dataFormatsReUsed.add(df);
-  // }
-  //
-  // // Output DataType
-  // for (DataType dt : Utils.unmodifiableSet(s.getOutputType())) {
-  //
-  // if (this.dataTypesUsed.contains(dt))
-  // throw new EoulsanException("Step "
-  // + s.getName() + " generate \"" + dt.getName()
-  // + "\" ressource after it is needed.");
-  // this.dataTypesGenerated.add(dt);
-  // }
-  //
-  // // Output DataFormat
-  // for (DataFormat df : Utils.unmodifiableSet(s.getOutputFormats())) {
-  // if (this.dataFormatsUsed.contains(df))
-  // throw new EoulsanException("Step "
-  // + s.getName() + " generate \"" + df.getFormatName()
-  // + "\" ressource after it is needed.");
-  // this.dataFormatsGenerated.add(df);
-  // }
-  // }
-  //
-  // dataTypesNotGenerated.addAll(dataTypesUsed);
-  // dataTypesNotGenerated.removeAll(dataTypesGenerated);
-  // dataTypesOnlyGenerated.addAll(dataTypesGenerated);
-  // dataTypesOnlyGenerated.removeAll(dataTypesReUsed);
-  //
-  // dataFormatsNotGenerated.addAll(dataFormatsUsed);
-  // dataFormatsNotGenerated.removeAll(dataFormatsGenerated);
-  // dataFormatsOnlyGenerated.addAll(dataFormatsGenerated);
-  // dataFormatsOnlyGenerated.removeAll(dataFormatsReUsed);
-  // }
-  //
-  // private void checkIfOutputsExists() throws EoulsanException {
-  //
-  // final Design design = this.design;
-  // final ExecutorInfo info = this.info;
-  //
-  // final Set<DataFormat> formats =
-  // new HashSet<DataFormat>(this.dataFormatsGenerated);
-  //
-  // for (DataFormat df : formats)
-  // for (Sample sample : design.getSamples()) {
-  //
-  // final String dataFilename = info.getDataFilename(df, sample);
-  // if (!checkDataFilename(dataFilename))
-  // throw new EoulsanException("No data for \""
-  // + df + "\" type and sample \"" + sample.getName());
-  // }
-  //
-  // }
-  //
-  // private void checkIfInputsExists() throws EoulsanException {
-  //
-  // final Design design = this.design;
-  // final ExecutorInfo info = this.info;
-  //
-  // if (design.getSampleCount() == 0)
-  // throw new EoulsanException("No Sample available in design.");
-  //
-  // int lastStepCount = 0;
-  // SampleMetadata sm = design.getSamples().get(0).getMetadata();
-  // Set<DataType> types;
-  //
-  // do {
-  //
-  // lastStepCount = steps.size();
-  // fillDataTypeCategories();
-  // types = new HashSet<DataType>(this.dataTypesNotGenerated);
-  //
-  // // Remove reads DataSource, always provided by design file
-  // types.remove(DataTypes.READS);
-  //
-  // // Remove Genome if provided by design file
-  // if (sm.isGenomeField())
-  // types.remove(DataTypes.GENOME);
-  //
-  // // Remove annotation if provided by design file
-  // if (sm.isAnnotationField())
-  // types.remove(DataTypes.ANNOTATION);
-  //
-  // if (types.size() > 0)
-  //
-  // for (DataType dt : types) {
-  //
-  // final List<String> dataFilenamesNotFound = new ArrayList<String>();
-  //
-  // // Search for DataFile of DataType for samples of the design
-  // for (Sample s : design.getSamples()) {
-  //
-  // final String dataFilename = info.getDataFilename(dt, s);
-  // if (!checkDataFilename(dataFilename))
-  // dataFilenamesNotFound.add(dataFilename);
-  // }
-  //
-  // // If all the files of this DataType are present for this samples : OK
-  // if (dt.isOneFilePerAnalysis() && dataFilenamesNotFound.size() == 1) {
-  // types.remove(dt);
-  // continue;
-  // }
-  //
-  // if (!dt.isOneFilePerAnalysis() && dataFilenamesNotFound.size() > 0) {
-  //
-  // // If all the files of this DataType are present for this samples :
-  // // OK
-  // if (dataFilenamesNotFound.size() == design.getSampleCount()) {
-  // types.remove(dt);
-  // continue;
-  // }
-  // throw new EoulsanException("Source \""
-  // + dataFilenamesNotFound.get(0) + " not found.");
-  // }
-  //
-  // // No file is provided of this DataType in the design
-  // // May be adding a DataType generator will solve the issue
-  //
-  // final Step s = dt.getGenerator();
-  // if (s != null)
-  // steps.add(0, s);
-  //
-  // }
-  //
-  // } while (steps.size() > lastStepCount);
-  //
-  // if (types.size() > 0)
-  // throw new EoulsanException("No data for \""
-  // + types.iterator().next().toString() + "\" found.");
-  //
-  // }
-  //
-  // private boolean checkDataFilename(final String dataFilename) {
-  //
-  // final DataFile df = new DataFile(dataFilename);
-  //
-  // return df.exists();
-  // }
-  //
-  // private void checkInputData(final Step step,
-  // final Set<DataType> typesToCheck, final CheckStorage checkInfo)
-  // throws EoulsanException {
-  //
-  // final Design design = this.design;
-  // final ExecutorInfo info = this.info;
-  //
-  // final DataType[] inTypes = step.getInputTypes();
-  //
-  // if (inTypes == null)
-  // return;
-  //
-  // final Command c = this.command;
-  //
-  // Set<DataType> typesToRemove = new HashSet<DataType>();
-  //
-  // for (DataType dt : inTypes)
-  // if (typesToCheck.contains(dt)) {
-  //
-  // Checker checker = dt.getChecker();
-  // if (c == null)
-  // continue;
-  //
-  // // Configure checker
-  // checker.configure(c.getStepParameters(step.getName()), c
-  // .getGlobalParameters());
-  //
-  // // Check
-  // checker.check(design, info, checkInfo);
-  //
-  // typesToRemove.add(dt);
-  // }
-  //
-  // typesToCheck.removeAll(typesToRemove);
-  // }
-  //
-  // private void checkInputsData() throws EoulsanException {
-  //
-  // final List<Step> steps = this.steps;
-  //
-  // final Set<DataFormat> formatsToCheck =
-  // new HashSet<DataFormat>(this.dataFormatsNotGenerated);
-  // final Set<DataFormat> formatsToCheckWithChecker = new
-  // HashSet<DataFormat>();
-  //
-  // for (DataFormat df : formatsToCheck) {
-  //
-  // final Checker checker = df.getChecker();
-  // if (checker != null)
-  // formatsToCheckWithChecker.add(df);
-  //
-  // }
-  //
-  // final CheckStorage checkInfo = new CheckStorage();
-  //
-  // for (Step s : steps)
-  // checkInputData(s, formatsToCheckWithChecker, checkInfo);
-  //
-  // }
 
   private void scanWorkflow() throws EoulsanException {
 

@@ -148,16 +148,10 @@ public class ParamParser {
                   throw new EoulsanException(
                       "Step name not found in parameter file.");
 
-                final String stepClassName =
-                    getTagValue("stepclass", eStepElement);
                 final String skip =
                     eStepElement.getAttribute("skip").trim().toLowerCase();
 
                 if (!"true".equals(skip)) {
-
-                  if (stepClassName != null && !"".equals(stepClassName.trim()))
-                    StepsRegistery.getInstance().addStepType(stepName,
-                        stepClassName);
 
                   logger.info("Add step: " + stepName);
                   command.addStep(stepName, parseParameters(eStepElement,

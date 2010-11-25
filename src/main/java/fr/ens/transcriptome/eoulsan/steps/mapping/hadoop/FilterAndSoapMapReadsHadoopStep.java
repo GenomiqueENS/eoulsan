@@ -44,6 +44,7 @@ import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -63,6 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
+@HadoopOnly
 public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
   private static final String STEP_NAME = "filterandmapreads";

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
@@ -42,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * This class define a Step for Hadoop file uploading.
  * @author Laurent Jourdren
  */
+@HadoopOnly
 public class HadoopUploadStep extends UploadStep {
 
   private Configuration conf;

@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
@@ -57,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
+@LocalOnly
 public class SoapMapReadsLocalStep extends MapReadsStep {
 
   /** Logger */

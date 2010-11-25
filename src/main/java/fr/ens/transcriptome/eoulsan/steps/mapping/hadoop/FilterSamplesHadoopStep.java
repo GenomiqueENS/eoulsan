@@ -33,6 +33,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -49,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * mode.
  * @author Laurent Jourdren
  */
+@HadoopOnly
 public class FilterSamplesHadoopStep extends FilterSamplesStep {
 
   /** Logger */

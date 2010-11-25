@@ -50,6 +50,7 @@ import org.apache.hadoop.mapred.TextInputFormat;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
@@ -73,6 +74,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
+@HadoopOnly
 public class ExpressionHadoopStep extends ExpressionStep {
 
   /** Logger */

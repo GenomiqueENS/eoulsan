@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -44,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * mode.
  * @author Laurent Jourdren
  */
+@LocalOnly
 public class FilterSamplesLocalStep extends FilterSamplesStep {
 
   /** Logger */

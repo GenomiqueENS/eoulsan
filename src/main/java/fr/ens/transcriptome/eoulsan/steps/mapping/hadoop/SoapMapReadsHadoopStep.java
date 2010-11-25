@@ -40,6 +40,7 @@ import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -57,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
+@HadoopOnly
 public class SoapMapReadsHadoopStep extends MapReadsStep {
 
   private static final String UNMAP_CHUNK_PREFIX = "soap-unmap-";

@@ -1,0 +1,29 @@
+# Filter reads steps
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterReadsHadoopStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterReadsLocalStep
+
+
+# Mapping reads steps
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SoapMapReadsHadoopStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.SoapMapReadsLocalStep
+
+# Filter and mapping steps
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndSoapMapReadsHadoopStep
+
+# Filter samples
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterSamplesHadoopStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.FilterSamplesLocalStep
+
+# Expression steps
+fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
+fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
+
+# Anadiff steps
+fr.ens.transcriptome.eoulsan.steps.AnaDiffLocalStep
+
+# Management steps
+fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.ExecInfoLogStep

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -40,6 +41,11 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 
+/**
+ * This class is the step to compute expression in local mode.
+ * @author Laurent Jourdren
+ */
+@LocalOnly
 public class ExpressionLocalStep extends ExpressionStep {
 
   /** Logger */
@@ -88,12 +94,10 @@ public class ExpressionLocalStep extends ExpressionStep {
             new File(info.getDataFilename(SOAP_RESULTS_TXT, s));
 
         final File expressionTmpFile =
-            new File(info.getDataFilename(SOAP_RESULTS_TXT, s)
-                + ".tmp");
+            new File(info.getDataFilename(SOAP_RESULTS_TXT, s) + ".tmp");
 
         final File expressionFile =
-            new File(info
-                .getDataFilename(EXPRESSION_RESULTS_TXT, s));
+            new File(info.getDataFilename(EXPRESSION_RESULTS_TXT, s));
 
         if (getTmpDir() != null)
           epmr.setMapReduceTemporaryDirectory(new File(getTmpDir()));
