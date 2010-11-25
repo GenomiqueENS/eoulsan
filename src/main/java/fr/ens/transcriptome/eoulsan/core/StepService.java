@@ -143,7 +143,7 @@ public class StepService {
           return step;
         }
       } catch (ServiceConfigurationError e) {
-        LOGGER.info("Class for step cannot be load in "
+        LOGGER.fine("Class for step cannot be load in "
             + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
       }
 
