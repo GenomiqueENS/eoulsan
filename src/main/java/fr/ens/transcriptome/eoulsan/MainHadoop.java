@@ -75,7 +75,7 @@ public final class MainHadoop {
           + "usage: " + Globals.APP_NAME_LOWER_CASE
           + " exec param.xml design.txt");
 
-    if ("exec".equals(args[0])) {
+    if (!"exec".equals(args[0])) {
       Common.showErrorMessageAndExit("Unknow command: "
           + args[0] + ".\n" + "usage: " + Globals.APP_NAME_LOWER_CASE
           + " exec param.xml design.txt");
@@ -206,8 +206,6 @@ public final class MainHadoop {
    * Private constructor.
    */
   private MainHadoop() {
-
-    throw new IllegalStateException();
   }
 
 }
