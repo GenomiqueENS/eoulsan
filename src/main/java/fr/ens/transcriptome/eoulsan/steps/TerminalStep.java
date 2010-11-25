@@ -1,5 +1,6 @@
 package fr.ens.transcriptome.eoulsan.steps;
 
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -10,6 +11,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
  * workflow will stop.
  * @author Laurent Jourdren
  */
+@HadoopCompatible
 public class TerminalStep extends AbstractStep {
 
   @Override

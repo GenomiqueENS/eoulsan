@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -36,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
  * This step is a fake step.
  * @author Laurent Jourdren
  */
+@HadoopCompatible
 public class FakeStep extends AbstractStep {
 
   /** Logger */

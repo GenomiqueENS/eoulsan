@@ -29,6 +29,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -45,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * This class implements DataUpload for upload data to HDFS.
  * @author Laurent Jourdren
  */
+@HadoopOnly
 public class HDFSDataUploadStep extends DataUploadStep {
 
   /** Logger */

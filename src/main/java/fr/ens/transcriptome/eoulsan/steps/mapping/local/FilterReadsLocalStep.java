@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -43,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
+@LocalOnly
 public final class FilterReadsLocalStep extends FilterReadsStep {
 
   @Override
