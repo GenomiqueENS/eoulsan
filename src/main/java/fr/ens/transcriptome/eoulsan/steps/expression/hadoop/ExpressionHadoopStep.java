@@ -22,7 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.ANNOTATION_SERIAL;
+import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
 
@@ -114,7 +114,8 @@ public class ExpressionHadoopStep extends ExpressionStep {
     conf.set("mapred.child.java.opts", "-Xmx1024m");
 
     final Path exonsIndexPath =
-        new Path(info.getDataFilename(ANNOTATION_SERIAL, sample));
+        new Path(info.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+    logger.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, conf))
       createExonsIndex(new Path(info.getBasePathname(), sample.getMetadata()
@@ -150,8 +151,8 @@ public class ExpressionHadoopStep extends ExpressionStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(info.getDataFilename(
-        EXPRESSION_RESULTS_TXT, sample)));
+    FileOutputFormat.setOutputPath(conf, new Path(info.getDataFile(
+        EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return conf;
   }
@@ -176,7 +177,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
         new TranscriptAndExonFinder(is, expressionType);
     final File exonIndexFile =
         FileUtils.createFileInTempDir(StringUtils.basename(gffPath.getName())
-            + ANNOTATION_SERIAL.getDefaultExtention());
+            + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
@@ -211,8 +212,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
       if (genomeId != lastGenomeId) {
 
         final Path exonsIndexPath =
-            new Path(info
-                .getDataFilename(ANNOTATION_SERIAL, sample));
+            new Path(info.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
 
         fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
@@ -224,8 +224,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
               .getSourceWithoutExtension());
 
       final Path resultPath =
-          new Path(info.getDataFilename(EXPRESSION_RESULTS_TXT,
-              sample));
+          new Path(info.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fetc.initializeExpressionResults();
 

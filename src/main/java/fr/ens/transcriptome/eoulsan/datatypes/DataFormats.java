@@ -253,11 +253,11 @@ public class DataFormats {
   };
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_SERIAL = new AbstractDataFormat() {
+  public static final DataFormat ANNOTATION_INDEX_SERIAL = new AbstractDataFormat() {
 
     public DataType getType() {
 
-      return DataTypes.ANNOTATION;
+      return DataTypes.ANNOTATION_INDEX;
     }
 
     @Override
@@ -269,7 +269,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "annotation_serial";
+      return "annotation_index_serial";
     }
 
     @Override
