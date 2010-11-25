@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
+import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolService;
 
 public class DataFileTest {
 
@@ -217,7 +217,7 @@ public class DataFileTest {
   @Test
   public void testGetProtocol() throws IOException {
 
-    DataProtocolRegistry registry = DataProtocolRegistry.getInstance();
+    DataProtocolService registry = DataProtocolService.getInstance();
 
     assertTrue(registry.isProtocol("file"));
     assertTrue(registry.isProtocol("http"));

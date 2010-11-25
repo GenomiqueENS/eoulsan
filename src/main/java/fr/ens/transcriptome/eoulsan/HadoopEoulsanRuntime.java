@@ -30,8 +30,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolRegistry;
-
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan
  * in Hadoop mode.
@@ -113,8 +111,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * Public constructor, initialize the runtime.
    * @param settings Settings of the application
    */
-  public static  HadoopEoulsanRuntime newEoulsanRuntime(
-      final Configuration conf) throws IOException {
+  public static HadoopEoulsanRuntime newEoulsanRuntime(final Configuration conf)
+      throws IOException {
 
     try {
       return newEoulsanRuntime(new Settings(false), conf);
@@ -130,8 +128,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  public static HadoopEoulsanRuntime newEoulsanRuntime(
-      final Settings settings, final Configuration conf) {
+  public static HadoopEoulsanRuntime newEoulsanRuntime(final Settings settings,
+      final Configuration conf) {
 
     // Create instance
     final HadoopEoulsanRuntime instance =
@@ -139,9 +137,6 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
     // Set the instance
     EoulsanRuntime.setInstance(instance);
-
-    // Register protocols from settings
-    DataProtocolRegistry.getInstance().registerProtocolsFromSettings();
 
     return instance;
   }

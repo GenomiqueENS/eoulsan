@@ -14,6 +14,12 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
 public interface DataProtocol {
 
   /**
+   * Get Protocol name.
+   * @return the name of the protocol
+   */
+  String getName();
+
+  /**
    * Create an InputStream from the source.
    * @param src source to use
    * @return an InputStream

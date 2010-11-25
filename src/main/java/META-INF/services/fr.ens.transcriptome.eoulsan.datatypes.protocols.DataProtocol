@@ -1,0 +1,11 @@
+# Local protocols
+fr.ens.transcriptome.eoulsan.datatypes.protocols.FTPURLDataProtocol
+fr.ens.transcriptome.eoulsan.datatypes.protocols.HTTPURLDataProtocol
+fr.ens.transcriptome.eoulsan.datatypes.protocols.S3DataProtocol
+
+# Hadoop protocols
+fr.ens.transcriptome.eoulsan.datatypes.protocols.HDFSPathDataProtocol
+fr.ens.transcriptome.eoulsan.datatypes.protocols.FTPPathDataProtocol
+fr.ens.transcriptome.eoulsan.datatypes.protocols.HTTPPathDataProtocol
+fr.ens.transcriptome.eoulsan.datatypes.protocols.S3PathDataProtocol
+
