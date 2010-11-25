@@ -37,10 +37,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import fr.ens.transcriptome.eoulsan.core.action.LocalCreateDesignAction;
-import fr.ens.transcriptome.eoulsan.core.action.LocalExecAction;
-import fr.ens.transcriptome.eoulsan.core.action.LocalHadoopExecAction;
-import fr.ens.transcriptome.eoulsan.core.action.LocalUploadS3Action;
+import fr.ens.transcriptome.eoulsan.actions.LocalCreateDesignAction;
+import fr.ens.transcriptome.eoulsan.actions.LocalExecAction;
+import fr.ens.transcriptome.eoulsan.actions.LocalHadoopExecAction;
+import fr.ens.transcriptome.eoulsan.actions.LocalUploadS3Action;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
