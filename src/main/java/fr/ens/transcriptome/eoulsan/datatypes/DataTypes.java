@@ -166,6 +166,35 @@ public class DataTypes {
     }
 
   };
+  
+  /** Annotation datatype. */
+  public static final DataType ANNOTATION_INDEX = new AbstractDataType() {
+
+    @Override
+    public String getName() {
+
+      return "annotation_index";
+    }
+
+    @Override
+    public String getPrefix() {
+
+      return "annotation_index_";
+    }
+
+    @Override
+    public boolean isDataTypeFromDesignFile() {
+
+      return false;
+    }
+
+    @Override
+    public boolean isOneFilePerAnalysis() {
+
+      return true;
+    }
+
+  };
 
   /** Anadiff results datatype. */
   public static final DataType ANADIF_RESULTS = new AbstractDataType() {
