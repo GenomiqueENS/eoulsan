@@ -113,19 +113,21 @@ public class StepService {
 
   /**
    * Retrieve the singleton static instance of StepService.
+   * @param hadoopMode true if this service must return hadoopCompatible Steps
    * @return A StepService instance
    */
-  public static synchronized StepService getInstance() {
+  public static synchronized StepService getInstance(final boolean hadoopMode) {
 
     if (service == null) {
-      service = new StepService();
+      service = new StepService(hadoopMode);
     }
 
     return service;
   }
 
   /**
-   * Retrieve definitions from the first provider that contains the word.
+   * Get a Step object from its name.
+   * @param stepName name of the step to retrieve
    */
   public Step getStep(final String stepName) {
 
@@ -158,13 +160,14 @@ public class StepService {
 
   /**
    * Private constructor.
+   * @param hadoopMode true if this service must return hadoopCompatible Steps
    */
   @SuppressWarnings("unchecked")
-  private StepService() {
+  private StepService(final boolean hadoopMode) {
 
     final Set<Class<? extends Annotation>> autorisedAnnotations;
 
-    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
+    if (hadoopMode) {
       autorisedAnnotations =
           Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
     } else {
