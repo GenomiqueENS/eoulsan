@@ -174,7 +174,7 @@ public class DataFormatRegistry {
     if (underscorePos != -1) {
 
       final String prefix = f.substring(0, underscorePos + 1);
-      DataFormat df = getDataFormat(prefix, ext);
+      final DataFormat df = getDataFormat(prefix, ext);
 
       if (df != null)
         return df;
