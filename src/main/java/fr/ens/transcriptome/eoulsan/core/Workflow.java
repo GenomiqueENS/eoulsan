@@ -36,9 +36,10 @@ class Workflow implements WorkflowDescription {
 
   private List<Step> steps;
 
-  private Command command;
-  private Design design;
-  private Context context;
+  private final Command command;
+  private final Design design;
+  private final Context context;
+  private final boolean hadoopMode;
 
   private final Map<Sample, Set<DataFormat>> globalInputDataFormats =
       new HashMap<Sample, Set<DataFormat>>();
@@ -81,7 +82,7 @@ class Workflow implements WorkflowDescription {
    */
   private Step getStep(String stepName) {
 
-    return StepService.getInstance().getStep(stepName);
+    return StepService.getInstance(this.hadoopMode).getStep(stepName);
   }
 
   //
@@ -500,7 +501,7 @@ class Workflow implements WorkflowDescription {
   //
 
   public Workflow(final Command command, final Design design,
-      final Context context) throws EoulsanException {
+      final Context context, final boolean hadoopMode) throws EoulsanException {
 
     if (command == null)
       throw new NullPointerException("The command is null.");
@@ -514,6 +515,7 @@ class Workflow implements WorkflowDescription {
     this.command = command;
     this.design = design;
     this.context = context;
+    this.hadoopMode = hadoopMode;
 
     // Create the basic steps
     createSteps();
