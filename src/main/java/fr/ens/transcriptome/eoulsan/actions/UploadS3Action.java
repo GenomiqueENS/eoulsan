@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * This class define the Local Upload S3 Action.
  * @author Laurent Jourdren
  */
-public class LocalUploadS3Action implements Action {
+public class UploadS3Action implements Action {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);

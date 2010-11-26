@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * This class launch Eoulsan in hadoop mode.
  * @author Laurent Jourdren
  */
-public class LocalHadoopExecAction implements Action {
+public class HadoopExecAction implements Action {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);

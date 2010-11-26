@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
  * This class define an action to create design file.
  * @author Laurent Jourdren
  */
-public class LocalCreateDesignAction implements Action {
+public class CreateDesignAction implements Action {
 
   /**
    * Create soap index action.
