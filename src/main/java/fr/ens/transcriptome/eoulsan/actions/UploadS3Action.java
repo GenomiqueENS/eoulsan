@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.newupload.LocalUploadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
 
 /**
  * This class define the Local Upload S3 Action.
