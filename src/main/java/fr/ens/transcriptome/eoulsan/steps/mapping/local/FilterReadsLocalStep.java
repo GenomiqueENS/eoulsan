@@ -34,7 +34,6 @@ import fr.ens.transcriptome.eoulsan.datasources.DataSource;
 import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -46,12 +45,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 @LocalOnly
 public final class FilterReadsLocalStep extends FilterReadsStep {
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.LOCAL;
-  }
 
   @Override
   public String getLogName() {

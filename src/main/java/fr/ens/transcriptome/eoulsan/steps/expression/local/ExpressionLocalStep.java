@@ -36,7 +36,6 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
@@ -50,12 +49,6 @@ public class ExpressionLocalStep extends ExpressionStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.LOCAL;
-  }
 
   @Override
   public String getLogName() {

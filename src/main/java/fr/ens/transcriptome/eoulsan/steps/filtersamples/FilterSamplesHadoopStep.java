@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -60,12 +59,6 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
   //
   // Step methods
   //
-  
-  @Override
-  public ExecutionMode getExecutionMode() {
-    
-    return Step.ExecutionMode.HADOOP;
-  }
 
   @Override
   public void configure(Set<Parameter> stepParameters,
@@ -91,7 +84,7 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
       Path logPath = new Path(logDirPath, "soapmapreads.log");
       if (!PathUtils.exists(logPath, conf))
         logPath = new Path(logDirPath, "filterandmapreads.log");
-                                        
+
       logger.info("Read log: " + logPath);
       LogReader logReader = new LogReader(fs.open(logPath));
       final Reporter reporter = logReader.read();

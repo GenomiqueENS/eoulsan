@@ -33,10 +33,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 
 public interface Step {
 
-  enum ExecutionMode {
-    LOCAL, HADOOP, BOTH
-  };
-
   /**
    * Get the name of the step.
    * @return the name of the step
@@ -60,12 +56,6 @@ public interface Step {
    * @return a Version object with the required version of the Step
    */
   Version getRequiedEoulsanVersion();
-
-  /**
-   * Get the execution mode of the Step.
-   * @return the execution mode of the Step
-   */
-  ExecutionMode getExecutionMode();
 
   /**
    * Get the input data format.

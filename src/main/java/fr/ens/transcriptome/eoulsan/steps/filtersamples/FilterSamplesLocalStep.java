@@ -35,7 +35,6 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
@@ -54,12 +53,6 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
   // Step methods
   //
 
-  @Override
-  public ExecutionMode getExecutionMode() {
-    
-    return Step.ExecutionMode.LOCAL;
-  }
-  
   @Override
   public StepResult execute(final Design design, final Context context) {
 
@@ -94,7 +87,7 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
       for (Map.Entry<String, Long> e : sampleInputMapReads.entrySet()) {
 
         final String sample = e.getKey();
-        
+
         if (!soapAlignementWithOneLocus.containsKey(sample))
           continue;
 

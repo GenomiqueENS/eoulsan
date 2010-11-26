@@ -52,7 +52,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -125,12 +124,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
   public String getDescription() {
 
     return "Initialize global logger";
-  }
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.HADOOP;
   }
 
   @Override

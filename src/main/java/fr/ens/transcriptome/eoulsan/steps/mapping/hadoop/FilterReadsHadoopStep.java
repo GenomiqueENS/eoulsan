@@ -45,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
@@ -62,12 +61,6 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
   //
   // Step methods
   // 
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.HADOOP;
-  }
 
   @Override
   public String getLogName() {

@@ -36,8 +36,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public abstract class AbstractStep implements Step {
 
-
-
   @Override
   public String getDescription() {
 
@@ -54,12 +52,6 @@ public abstract class AbstractStep implements Step {
   public Version getRequiedEoulsanVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.BOTH;
   }
 
   @Override

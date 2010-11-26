@@ -30,7 +30,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
@@ -53,12 +52,6 @@ public class ExecInfoLogStep extends AbstractStep {
   public String getDescription() {
 
     return "Add information to log";
-  }
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.LOCAL;
   }
 
   @Override
