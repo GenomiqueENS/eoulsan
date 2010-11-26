@@ -25,10 +25,10 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
 /**
  * This abstract class define and parse arguments for the expression step.
