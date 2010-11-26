@@ -45,6 +45,12 @@ public interface Context {
   String getCommandName();
 
   /**
+   * Get the job name.
+   * @return the job name
+   */
+  String getJobName();
+
+  /**
    * Get command description.
    * @return the command description
    */

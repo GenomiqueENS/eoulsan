@@ -54,10 +54,13 @@ public class SimpleContext implements Context {
   private String designPathname;
   private String paramPathname;
   private String jarPathname;
+  private String jobName = "";
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
   private WorkflowDescription workflow;
+
+  private String objectCreationDate;
 
   //
   // Getters
@@ -96,6 +99,11 @@ public class SimpleContext implements Context {
   @Override
   public String getJarPathname() {
     return this.jarPathname;
+  }
+  
+  @Override
+  public String getJobName() {
+    return this.jobName;
   }
 
   @Override
@@ -191,6 +199,7 @@ public class SimpleContext implements Context {
 
     logger.info("Command name: " + commandName);
     this.commandName = commandName;
+    this.jobName = commandName +"-"+ this.objectCreationDate;
   }
 
   /**
@@ -245,13 +254,13 @@ public class SimpleContext implements Context {
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
     cal.setTime(new Date(System.currentTimeMillis()));
 
-    this.executionName =
-        Globals.APP_NAME_LOWER_CASE
-            + "-"
-            + String.format("%04d%02d%02d-%02d%02d%02d",
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal
-                    .get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+    this.objectCreationDate =
+        String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR), cal
+            .get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal
+            .get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
+            .get(Calendar.SECOND));
+
+    this.executionName = Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
   }
 
   @Override
