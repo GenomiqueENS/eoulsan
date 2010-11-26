@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.local;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
  * This step add execution information in log file in local mode.
  * @author Laurent Jourdren
  */
-@LocalOnly
+@HadoopCompatible
 public class ExecInfoLogStep extends AbstractStep {
 
   /** Step name. */
