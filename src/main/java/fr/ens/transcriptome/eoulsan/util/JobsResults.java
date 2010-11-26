@@ -25,8 +25,8 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This class define the result of a Hadoop MapReduce Job. It contains the log

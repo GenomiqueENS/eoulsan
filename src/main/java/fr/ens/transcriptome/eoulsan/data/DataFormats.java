@@ -26,7 +26,7 @@ import fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.checkers.GenomeChecker;
 import fr.ens.transcriptome.eoulsan.checkers.ReadsChecker;
-import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.mapping.SOAPIndexGeneratorStep;
 
 public class DataFormats {

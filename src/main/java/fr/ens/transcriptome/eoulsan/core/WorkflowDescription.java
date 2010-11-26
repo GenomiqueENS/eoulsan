@@ -5,6 +5,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 
 public interface WorkflowDescription {
 
