@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.Step;
@@ -45,8 +46,6 @@ public abstract class Executor {
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
   private Command command;
-
-  // private SimpleExecutorInfo info;
 
   private long startTimeCurrentStep;
 
@@ -107,11 +106,27 @@ public abstract class Executor {
 
   /**
    * run Eoulsan.
+   * @param firstSteps steps to add at the begin the workflow
+   * @param endSteps steps to add at the end the workflow
    * @throws EoulsanException if an error occurs while creating of executing
    *           steps
    */
   public void execute(final List<Step> firstSteps, final List<Step> endSteps)
       throws EoulsanException {
+
+    execute(firstSteps, endSteps, EoulsanRuntime.getRuntime().isHadoopMode());
+  }
+
+  /**
+   * run Eoulsan.
+   * @param firstSteps steps to add at the begin the workflow
+   * @param endSteps steps to add at the end the workflow
+   * @param hadoopMode true if the steps must be compatible with Hadoop mode
+   * @throws EoulsanException if an error occurs while creating of executing
+   *           steps
+   */
+  public void execute(final List<Step> firstSteps, final List<Step> endSteps,
+      final boolean hadoopMode) throws EoulsanException {
 
     // Check command object
     if (this.command == null)
@@ -140,7 +155,7 @@ public abstract class Executor {
     info.addCommandInfo(command);
 
     // Create the workflow
-    final Workflow workflow = new Workflow(command, design, info);
+    final Workflow workflow = new Workflow(command, design, info, hadoopMode);
 
     // Add the workflow to ExecutorInfo
     info.setWorkflow(workflow);
