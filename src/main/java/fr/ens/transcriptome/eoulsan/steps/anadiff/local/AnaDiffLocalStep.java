@@ -27,7 +27,7 @@ import java.io.File;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
@@ -77,7 +77,7 @@ public class AnaDiffLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     try {
       final long startTime = System.currentTimeMillis();

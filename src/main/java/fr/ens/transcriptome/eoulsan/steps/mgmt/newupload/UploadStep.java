@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
-import fr.ens.transcriptome.eoulsan.core.SimpleExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
@@ -62,17 +62,17 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
 
     // Save and change base pathname
-    final SimpleExecutorInfo fullContext = (SimpleExecutorInfo) info;
+    final SimpleContext fullContext = (SimpleContext) context;
 
     final Set<DataFile> files = new HashSet<DataFile>();
 
     for (Sample sample : design.getSamples())
-      files.addAll(findDataFiles(sample, info));
+      files.addAll(findDataFiles(sample, context));
 
     removeNotExistingDataFile(files);
 
@@ -81,7 +81,7 @@ public abstract class UploadStep extends AbstractStep {
     try {
 
       // Repackage the jar file if necessary
-      if (!info.getRuntime().isHadoopMode()) {
+      if (!context.getRuntime().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
         files.add(new DataFile(repackagedJarFile.getAbsolutePath()));
       }
@@ -98,7 +98,7 @@ public abstract class UploadStep extends AbstractStep {
     fullContext.setBasePathname(getDest().toString());
 
     // The path to the jar file
-    if (!info.getRuntime().isHadoopMode()) {
+    if (!context.getRuntime().isHadoopMode()) {
       fullContext.setJarPathname(getDest().toString()
           + "/" + repackagedJarFile.getName());
     }
@@ -157,16 +157,16 @@ public abstract class UploadStep extends AbstractStep {
   /**
    * Find DataFiles used by the steps of a Workflow for a sample
    * @param sample sample
-   * @param info Context object
+   * @param context Execution context
    * @return a set of DataFile used by the workflow for the sample
    */
-  private Set<DataFile> findDataFiles(Sample sample, final ExecutorInfo info) {
+  private Set<DataFile> findDataFiles(Sample sample, final Context context) {
 
     boolean afterThis = false;
 
     final Set<DataFile> result = new HashSet<DataFile>();
 
-    for (Step s : info.getWorkflow().getSteps()) {
+    for (Step s : context.getWorkflow().getSteps()) {
 
       if (afterThis) {
 
@@ -174,7 +174,7 @@ public abstract class UploadStep extends AbstractStep {
         if (formats != null)
 
           for (DataFormat df : formats)
-            result.add(info.getDataFile(df, sample));
+            result.add(context.getDataFile(df, sample));
 
       } else if (s == this)
         afterThis = true;

@@ -27,7 +27,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -73,9 +73,9 @@ public class ExecInfoLogStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, ExecutorInfo info) {
+  public StepResult execute(Design design, Context context) {
 
-    info.logInfo();
+    context.logInfo();
 
     return new StepResult(this, true, "");
   }

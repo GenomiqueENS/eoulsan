@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
@@ -84,7 +84,7 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -106,17 +106,17 @@ public class SoapMapReadsLocalStep extends MapReadsStep {
                 + genomes.get(genomeFilename));
 
         final File inputFile =
-            new File(info.getDataFilename(FILTERED_READS_FASTQ, s));
+            new File(context.getDataFilename(FILTERED_READS_FASTQ, s));
 
         final File alignmentFile =
-            new File(info.getDataFilename(SOAP_RESULTS_TXT, s)
+            new File(context.getDataFilename(SOAP_RESULTS_TXT, s)
                 + ".tmp");
 
         final File unmapFile =
-            new File(info.getDataFilename(UNMAP_READS_FASTA, s));
+            new File(context.getDataFilename(UNMAP_READS_FASTA, s));
 
         final File resultFile =
-            new File(info.getDataFilename(SOAP_RESULTS_TXT, s));
+            new File(context.getDataFilename(SOAP_RESULTS_TXT, s));
 
         if (!soapIndexDir.exists()) {
 

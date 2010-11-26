@@ -29,7 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datasources.DataSource;
@@ -60,7 +60,7 @@ public final class FilterReadsLocalStep extends FilterReadsStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -72,7 +72,7 @@ public final class FilterReadsLocalStep extends FilterReadsStep {
         final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
-            new File(info.getDataFilename(FILTERED_READS_FASTQ, s));
+            new File(context.getDataFilename(FILTERED_READS_FASTQ, s));
 
         if (getLengthThreshold() != -1)
           filter.setLengthThreshold(getLengthThreshold());

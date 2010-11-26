@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -62,12 +62,12 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
   }
   
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
 
     final double threshold = getThreshold() / 100.0;
-    final File logDir = new File(info.getLogPathname());
+    final File logDir = new File(context.getLogPathname());
 
     try {
       // Read filterreads.log

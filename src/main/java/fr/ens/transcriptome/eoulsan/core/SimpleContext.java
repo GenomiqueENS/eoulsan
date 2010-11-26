@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
  * This class define an simple ExecutorInfo.
  * @author Laurent Jourdren
  */
-public class SimpleExecutorInfo implements ExecutorInfo {
+public class SimpleContext implements Context {
 
   /** Logger. */
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -348,7 +348,7 @@ public class SimpleExecutorInfo implements ExecutorInfo {
   /**
    * Public constructor.
    */
-  public SimpleExecutorInfo() {
+  public SimpleContext() {
 
     createExecutionName();
   }

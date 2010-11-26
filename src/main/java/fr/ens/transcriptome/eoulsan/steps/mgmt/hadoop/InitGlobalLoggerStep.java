@@ -49,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -147,11 +147,11 @@ public class InitGlobalLoggerStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     final Configuration conf = this.conf;
     final Path loggerPath =
-        new Path(info.getLogPathname(), Globals.APP_NAME_LOWER_CASE + ".log");
+        new Path(context.getLogPathname(), Globals.APP_NAME_LOWER_CASE + ".log");
 
     try {
 
@@ -161,7 +161,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
       logger.setLevel(Globals.LOG_LEVEL);
 
       logger.info(Globals.WELCOME_MSG + " Hadoop mode.");
-      info.logInfo();
+      context.logInfo();
 
     } catch (IOException e) {
       logger.severe("Unable to configure global logger: " + loggerPath);
@@ -170,9 +170,9 @@ public class InitGlobalLoggerStep extends AbstractStep {
     HadoopInfo();
 
     try {
-      copyCpuinfoAndMeminfo(info, conf);
+      copyCpuinfoAndMeminfo(context, conf);
       sysInfo(conf);
-      dfsInfo(info, conf);
+      dfsInfo(context, conf);
     } catch (IOException e) {
       logger
           .severe("Error while getting system information: " + e.getMessage());
@@ -202,10 +202,10 @@ public class InitGlobalLoggerStep extends AbstractStep {
     PathUtils.copyLocalFileToPath(file, output, conf);
   }
 
-  private void copyCpuinfoAndMeminfo(final ExecutorInfo info,
+  private void copyCpuinfoAndMeminfo(final Context context,
       final Configuration conf) throws IOException {
 
-    final Path logPath = new Path(info.getLogPathname());
+    final Path logPath = new Path(context.getLogPathname());
 
     final File cpuinfo = new File(CPUINFO_FILE_PATH);
     final File meminfo = new File(MEMINFO_FILE_PATH);
@@ -311,10 +311,10 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
   }
 
-  private static final void dfsInfo(final ExecutorInfo info,
+  private static final void dfsInfo(final Context context,
       final Configuration conf) throws IOException {
 
-    final Path basePath = new Path(info.getBasePathname());
+    final Path basePath = new Path(context.getBasePathname());
     final FileSystem fs = basePath.getFileSystem(conf);
 
     if (fs instanceof DistributedFileSystem) {

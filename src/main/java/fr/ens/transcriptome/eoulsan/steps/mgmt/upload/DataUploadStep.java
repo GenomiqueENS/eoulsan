@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -203,14 +203,14 @@ public abstract class DataUploadStep extends AbstractStep {
   // protected void upload(final URI paramURI, final Design design)
   // throws IOException, EoulsanIOException {
   @Override
-  public StepResult execute(Design design, final ExecutorInfo info) {
+  public StepResult execute(Design design, final Context context) {
 
     final List<FileUploader> files = new ArrayList<FileUploader>();
     final long startTime = System.currentTimeMillis();
 
-    setDesignURI(info.getDesignPathname());
-    setParamURI(info.getParameterPathname());
-    setDestURI(info.getBasePathname());
+    setDesignURI(context.getDesignPathname());
+    setParamURI(context.getParameterPathname());
+    setDestURI(context.getBasePathname());
 
     // Create output dir
 
@@ -225,7 +225,7 @@ public abstract class DataUploadStep extends AbstractStep {
 
         // Copy the sample
         final String sampleNewFilename =
-            info.getDataFile(DataFormats.READS_FASTQ, s).getSource();
+            context.getDataFile(DataFormats.READS_FASTQ, s).getSource();
 
         final FileUploader sampleFU =
             getFastqUploader(s.getSource(), sampleNewFilename);
@@ -240,7 +240,7 @@ public abstract class DataUploadStep extends AbstractStep {
 
           // Add genome file
           final String genomeNewFilename =
-              info.getDataFile(DataFormats.GENOME_FASTA, s).getSource();
+              context.getDataFile(DataFormats.GENOME_FASTA, s).getSource();
 
           final FileUploader genomeFU =
               getFastaUploader(genome, genomeNewFilename);
@@ -248,7 +248,7 @@ public abstract class DataUploadStep extends AbstractStep {
 
           // Create and add genome index file
           final String genomeIndexNewFilename =
-              info.getDataFile(DataFormats.SOAP_INDEX_ZIP, s).getSource();
+              context.getDataFile(DataFormats.SOAP_INDEX_ZIP, s).getSource();
 
           ;
 
@@ -276,7 +276,7 @@ public abstract class DataUploadStep extends AbstractStep {
 
           // Add annotation file
           final String newAnnotationFilename =
-            info.getDataFile(DataFormats.ANNOTATION_GFF, s).getSource();
+            context.getDataFile(DataFormats.ANNOTATION_GFF, s).getSource();
               
           final FileUploader annotationFU =
               getGFFUploader(annotation, newAnnotationFilename);
@@ -316,7 +316,7 @@ public abstract class DataUploadStep extends AbstractStep {
       final StringBuilder sb = new StringBuilder();
       sb.append("paramURI: "
           + paramURI + "\ndesignURI: " + getDesignURI() + "\ndestURI: "
-          + info.getBasePathname() + "\n");
+          + context.getBasePathname() + "\n");
 
       for (FileUploader f : files) {
         sb.append("Upload ");

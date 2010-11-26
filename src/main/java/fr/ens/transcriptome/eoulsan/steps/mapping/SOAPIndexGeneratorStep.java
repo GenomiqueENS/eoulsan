@@ -6,7 +6,7 @@ import java.io.IOException;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.SOAPWrapper;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
@@ -48,7 +48,7 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
 
@@ -67,19 +67,19 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
 
       // Create index file
       final File soapIndexFile =
-          SOAPWrapper.makeIndexInZipFile(info.getDataFile(
+          SOAPWrapper.makeIndexInZipFile(context.getDataFile(
               DataFormats.GENOME_FASTA, s1).open());
       System.out.println("\t-> "+soapIndexFile);
       // Get the output DataFile
       final DataFile soapIndexDataFile =
-          info.getDataFile(DataFormats.SOAP_INDEX_ZIP, s1);
+          context.getDataFile(DataFormats.SOAP_INDEX_ZIP, s1);
       System.out.println("\t-> "+soapIndexDataFile);
 
       FileUtils.copy(FileUtils.createInputStream(soapIndexFile),
           soapIndexDataFile.create());
 
       if (!soapIndexFile.delete())
-        info.getLogger().severe("Unbable to delete temporary SOAP index.");
+        context.getLogger().severe("Unbable to delete temporary SOAP index.");
 
     } catch (EoulsanException e) {
 

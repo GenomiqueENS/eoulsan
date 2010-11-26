@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.SimpleExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -107,10 +107,10 @@ public class LocalUploadS3Action implements Action {
           new S3DataUploadStep(new File(userDir, ".credentials"));
       step.configure(uploadParameters, new HashSet<Parameter>());
 
-      // Create Executor information
-      final ExecutorInfo info = new SimpleExecutorInfo();
+      // Create Execution context
+      final Context context = new SimpleContext();
 
-      final StepResult result = step.execute(design, info);
+      final StepResult result = step.execute(design, context);
 
       if (result.getException() != null)
         Common.errorExit(result.getException(), "Error: "

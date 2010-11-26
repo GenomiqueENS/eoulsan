@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+
 @HadoopOnly
 public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
 
@@ -158,9 +159,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
-
-    // final Path basePath = new Path(info.getBasePathname());
+  public StepResult execute(final Design design, final Context context) {
 
     // Create configuration object
     final Configuration conf = this.conf;
@@ -170,8 +169,8 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
       // Create the list of jobs to run
       final List<Job> jobs = new ArrayList<Job>(design.getSampleCount());
       for (Sample s : design.getSamples())
-        jobs
-            .add(createJobConf(conf, info, s, lengthThreshold, qualityThreshold));
+        jobs.add(createJobConf(conf, context, s, lengthThreshold,
+            qualityThreshold));
 
       final long startTime = System.currentTimeMillis();
 
@@ -206,14 +205,14 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
    * @throws IOException if an error occurs while creating the job
    */
   private static Job createJobConf(final Configuration parentConf,
-      final ExecutorInfo info, final Sample sample, final int lengthThreshold,
+      final Context context, final Sample sample, final int lengthThreshold,
       final double qualityThreshold) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     final String source = sample.getSource();
 
-    final Path inputPath = new Path(info.getBasePathname(), source);
+    final Path inputPath = new Path(context.getBasePathname(), source);
 
     if (lengthThreshold >= 0)
       jobConf.set(Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold",
@@ -224,11 +223,11 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
           "" + qualityThreshold);
 
     // Set genome reference path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", info
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", context
         .getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     // Set unmap chuck dir path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", info
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", context
         .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set unmap chuck prefix
@@ -236,7 +235,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
         UNMAP_CHUNK_PREFIX);
 
     // Set unmap output file path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", info
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", context
         .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set the number of threads for soap
@@ -285,7 +284,7 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
     job.setNumReduceTasks(1);
 
     // Set the output Path
-    FileOutputFormat.setOutputPath(job, new Path(info.getDataFile(
+    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
         SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return job;

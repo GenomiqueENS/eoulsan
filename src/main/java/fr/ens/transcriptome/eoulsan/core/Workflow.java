@@ -36,7 +36,7 @@ class Workflow implements WorkflowDescription {
 
   private Command command;
   private Design design;
-  private ExecutorInfo info;
+  private Context context;
 
   private final Map<Sample, Set<DataFormat>> globalInputDataFormats =
       new HashMap<Sample, Set<DataFormat>>();
@@ -116,7 +116,7 @@ class Workflow implements WorkflowDescription {
 
   private void scanWorkflow() throws EoulsanException {
 
-    final ExecutorInfo info = this.info;
+    final Context context = this.context;
 
     final Set<DataFile> checkedDatafile = new HashSet<DataFile>();
     final Map<DataFormat, Checker> checkers =
@@ -215,9 +215,9 @@ class Workflow implements WorkflowDescription {
 
       for (DataFormat df : cartNotGenerated) {
 
-        final DataFile file = info.getDataFile(df, s);
+        final DataFile file = context.getDataFile(df, s);
         if (!checkedDatafile.contains(file)) {
-          if (!info.getDataFile(df, s).exists()) {
+          if (!context.getDataFile(df, s).exists()) {
 
             if (df.isGenerator()) {
 
@@ -239,9 +239,9 @@ class Workflow implements WorkflowDescription {
       // Check if outputs already exists
       for (DataFormat df : cartGenerated) {
 
-        final DataFile file = info.getDataFile(df, s);
+        final DataFile file = context.getDataFile(df, s);
         if (!checkedDatafile.contains(file)) {
-          if (info.getDataFile(df, s).exists())
+          if (context.getDataFile(df, s).exists())
             throw new EoulsanException("For sample "
                 + s.getId() + ", generated \"" + df.getFormatName()
                 + "\" already exists.");
@@ -281,7 +281,7 @@ class Workflow implements WorkflowDescription {
 
             c.configure(this.command.getStepParameters(step.getName()),
                 this.command.getGlobalParameters());
-            c.check(this.design, this.info, checkStore);
+            c.check(this.design, this.context, checkStore);
 
           }
         }
@@ -498,7 +498,7 @@ class Workflow implements WorkflowDescription {
   //
 
   public Workflow(final Command command, final Design design,
-      final ExecutorInfo info) throws EoulsanException {
+      final Context context) throws EoulsanException {
 
     if (command == null)
       throw new NullPointerException("The command is null.");
@@ -506,12 +506,12 @@ class Workflow implements WorkflowDescription {
     if (design == null)
       throw new NullPointerException("The design is null.");
 
-    if (info == null)
-      throw new NullPointerException("The ExecutorInfo is null.");
+    if (context == null)
+      throw new NullPointerException("The execution context is null.");
 
     this.command = command;
     this.design = design;
-    this.info = info;
+    this.context = context;
 
     // Create the basic steps
     createSteps();
