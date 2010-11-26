@@ -1,11 +1,11 @@
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 
 /**
  * This interface define a protocol.

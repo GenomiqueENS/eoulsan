@@ -33,9 +33,9 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataTypes;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**

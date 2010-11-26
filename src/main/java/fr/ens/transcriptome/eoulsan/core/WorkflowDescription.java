@@ -3,7 +3,7 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.List;
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 public interface WorkflowDescription {

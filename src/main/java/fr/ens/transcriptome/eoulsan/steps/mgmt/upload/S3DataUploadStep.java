@@ -22,7 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
 import java.io.IOException;

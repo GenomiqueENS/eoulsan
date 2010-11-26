@@ -22,7 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.local;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_INDEX_ZIP;
 
 import java.io.File;
 import java.io.IOException;

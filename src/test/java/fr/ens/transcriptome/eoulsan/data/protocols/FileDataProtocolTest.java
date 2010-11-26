@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -40,11 +40,11 @@ import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.FileDataProtocol;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class FileDataProtocolTest {

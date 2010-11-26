@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;

@@ -22,9 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsStep;

@@ -22,7 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.UNMAP_READS_FASTA;
 
 import java.io.File;
 import java.io.IOException;

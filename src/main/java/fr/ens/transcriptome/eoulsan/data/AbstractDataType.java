@@ -20,21 +20,35 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
-
-import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+package fr.ens.transcriptome.eoulsan.data;
 
 /**
- * This class define the HTTP protocol in Hadoop mode.
+ * Define an abstract DataType.
  * @author Laurent Jourdren
  */
-@HadoopOnly
-public class HTTPPathDataProtocol extends PathDataProtocol{
+public abstract class AbstractDataType implements DataType {
 
   @Override
-  public String getName() {
-   
-    return "http";
+  public String getDescription() {
+
+    return getName();
+  }
+
+  @Override
+  public boolean isOneFilePerAnalysis() {
+
+    return false;
+  }
+
+  @Override
+  public boolean isDataTypeFromDesignFile() {
+
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    return getName();
   }
 
 }

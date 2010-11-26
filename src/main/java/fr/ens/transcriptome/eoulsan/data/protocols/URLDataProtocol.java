@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,8 +8,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 
 public abstract class URLDataProtocol extends AbstractDataProtocol {
 

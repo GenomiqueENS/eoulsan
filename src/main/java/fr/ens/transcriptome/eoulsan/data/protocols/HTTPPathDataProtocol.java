@@ -20,21 +20,21 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 
 /**
- * This class define the FTP protocol in Hadoop mode.
+ * This class define the HTTP protocol in Hadoop mode.
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class FTPPathDataProtocol extends PathDataProtocol{
+public class HTTPPathDataProtocol extends PathDataProtocol{
 
   @Override
   public String getName() {
-
-    return "ftp";
+   
+    return "http";
   }
-  
+
 }

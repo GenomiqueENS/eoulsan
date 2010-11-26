@@ -22,7 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
 
 import java.io.File;
 import java.io.FileNotFoundException;

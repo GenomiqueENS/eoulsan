@@ -20,21 +20,21 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 
 /**
- * This class define the http protocol in local mode.
+ * This class define the ftp protocol in local mode.
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class HTTPURLDataProtocol extends URLDataProtocol{
+public class FTPURLDataProtocol extends URLDataProtocol{
 
   @Override
   public String getName() {
     
-    return "http";
+    return "ftp";
   }
-  
+
 }

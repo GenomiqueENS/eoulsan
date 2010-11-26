@@ -20,35 +20,21 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.data.protocols;
+
+import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 
 /**
- * Define an abstract DataType.
+ * This class define the FTP protocol in Hadoop mode.
  * @author Laurent Jourdren
  */
-public abstract class AbstractDataType implements DataType {
+@HadoopOnly
+public class FTPPathDataProtocol extends PathDataProtocol{
 
   @Override
-  public String getDescription() {
+  public String getName() {
 
-    return getName();
+    return "ftp";
   }
-
-  @Override
-  public boolean isOneFilePerAnalysis() {
-
-    return false;
-  }
-
-  @Override
-  public boolean isDataTypeFromDesignFile() {
-
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return getName();
-  }
-
+  
 }

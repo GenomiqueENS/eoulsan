@@ -22,8 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.EXPRESSION_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_RESULTS_TXT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
