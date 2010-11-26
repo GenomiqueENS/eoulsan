@@ -73,19 +73,21 @@ public final class Main {
     Globals.setDefaultLocale();
 
     // Select the application execution mode
-    if (SystemUtils.isHadoop()) {
-      MainHadoop.main(args);
-    } else {
+    final String eoulsanMode = System.getProperty(Globals.LAUNCH_MODE_PROPERTY);
+
+    if (eoulsanMode != null && eoulsanMode.equals("local")) {
       MainCLI.main(args);
+    } else {
+      MainHadoop.main(args);
     }
   }
-  
+
   //
   // Constructor
   //
-  
+
   private Main() {
-    
+
     throw new IllegalStateException();
   }
 
