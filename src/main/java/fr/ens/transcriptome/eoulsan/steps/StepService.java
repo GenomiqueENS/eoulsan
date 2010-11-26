@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.steps;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;

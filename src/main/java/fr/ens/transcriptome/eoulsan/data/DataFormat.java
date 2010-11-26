@@ -23,8 +23,8 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 
 public interface DataFormat {
 
