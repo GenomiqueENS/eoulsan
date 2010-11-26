@@ -314,26 +314,6 @@ public final class Settings {
   }
 
   //
-  // Default values
-  //
-
-  /**
-   * Set some default settings.
-   */
-  private void init() {
-
-    this.properties.setProperty(AWS_ACCESS_KEY, "AKIAJPXBAOLESJ2TOABA");
-    this.properties.setProperty(AWS_SECRET_KEY,
-        "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");
-
-    this.properties.setProperty("hadoop.conf.fs.ftp.user.hestia.ens.fr",
-        "anonymous");
-    this.properties.setProperty("hadoop.conf.fs.ftp.password.hestia.ens.fr",
-        "toto@toto.com");
-
-  }
-
-  //
   // Constructor
   //
 
@@ -359,7 +339,6 @@ public final class Settings {
       EoulsanException {
 
     if (!loadDefaultConfigurationFile) {
-      init();
       loadSettings();
     }
   }
@@ -372,7 +351,6 @@ public final class Settings {
    */
   public Settings(final File file) throws IOException, EoulsanException {
 
-    init();
     loadSettings(file);
   }
 
