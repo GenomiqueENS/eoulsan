@@ -49,12 +49,12 @@ public class HadoopAnalysisExecutor extends Executor {
   private Configuration conf;
   private Path designPath;
   private Design design;
-  private SimpleExecutorInfo info;
+  private SimpleContext context;
 
   @Override
-  protected SimpleExecutorInfo getExecutorInfo() {
+  protected SimpleContext getExecutorInfo() {
 
-    return this.info;
+    return this.context;
   }
 
   @Override
@@ -202,7 +202,7 @@ public class HadoopAnalysisExecutor extends Executor {
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.info = new SimpleExecutorInfo();
+    this.context = new SimpleContext();
   }
 
   /**
@@ -254,27 +254,27 @@ public class HadoopAnalysisExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final SimpleExecutorInfo info = getExecutorInfo();
+    final SimpleContext context = getExecutorInfo();
 
-    info.setBasePathname(this.designPath.getParent().toString());
+    context.setBasePathname(this.designPath.getParent().toString());
 
     final Path logPath =
         new Path(this.designPath.getParent().toString()
-            + "/" + info.getExecutionName());
+            + "/" + context.getExecutionName());
 
     final Path outputPath =
         new Path(this.designPath.getParent().toString()
-            + "/" + info.getExecutionName());
+            + "/" + context.getExecutionName());
 
     if (!logPath.getFileSystem(conf).exists(logPath))
       PathUtils.mkdirs(logPath, conf);
     if (!outputPath.getFileSystem(conf).exists(outputPath))
       PathUtils.mkdirs(outputPath, conf);
 
-    info.setLogPathname(logPath.toString());
-    info.setOutputPathname(outputPath.toString());
-    info.setDesignPathname(designPath.toString());
-    info.setParameterPathname(paramPath.toString());
+    context.setLogPathname(logPath.toString());
+    context.setOutputPathname(outputPath.toString());
+    context.setDesignPathname(designPath.toString());
+    context.setParameterPathname(paramPath.toString());
   }
 
 }

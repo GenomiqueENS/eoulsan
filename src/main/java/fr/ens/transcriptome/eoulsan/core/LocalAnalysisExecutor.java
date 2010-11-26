@@ -39,13 +39,13 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class LocalAnalysisExecutor extends Executor {
 
-  private SimpleExecutorInfo info = new SimpleExecutorInfo();
+  private SimpleContext context = new SimpleContext();
   private final File designFile;
 
   @Override
-  protected SimpleExecutorInfo getExecutorInfo() {
+  protected SimpleContext getExecutorInfo() {
 
-    return this.info;
+    return this.context;
   }
 
   @Override
@@ -122,22 +122,22 @@ public class LocalAnalysisExecutor extends Executor {
 
     this.designFile = designFile;
 
-    final SimpleExecutorInfo info = getExecutorInfo();
-    info.setBasePathname(designFile.getAbsoluteFile().getParentFile()
+    final SimpleContext context = getExecutorInfo();
+    context.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
-    info.setDesignPathname(designFile.getAbsolutePath());
-    info.setParameterPathname(paramFile.getAbsolutePath());
+    context.setDesignPathname(designFile.getAbsolutePath());
+    context.setParameterPathname(paramFile.getAbsolutePath());
 
     final File logDir =
         new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + info.getExecutionName());
+            + "/" + context.getExecutionName());
 
     final File outputDir =
         new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + info.getExecutionName());
+            + "/" + context.getExecutionName());
 
-    info.setOutputPathname(outputDir.getAbsolutePath());
-    info.setLogPathname(logDir.getAbsolutePath());
+    context.setOutputPathname(outputDir.getAbsolutePath());
+    context.setLogPathname(logDir.getAbsolutePath());
   }
 
 }

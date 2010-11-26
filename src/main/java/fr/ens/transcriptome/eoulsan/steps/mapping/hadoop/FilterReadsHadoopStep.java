@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
@@ -86,10 +86,10 @@ public class FilterReadsHadoopStep extends FilterReadsStep {
   }
 
   @Override
-  public StepResult execute(Design design, final ExecutorInfo info) {
+  public StepResult execute(Design design, final Context context) {
 
     // Set the base path
-    final Path basePath = new Path(info.getBasePathname());
+    final Path basePath = new Path(context.getBasePathname());
 
     // Create the list of jobs to run
     final List<JobConf> jobconfs =

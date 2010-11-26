@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -87,25 +87,25 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, ExecutorInfo info) {
+  public StepResult execute(Design design, Context context) {
 
     logger.info("Start copying results.");
     logger.info("inpath="
-        + info.getBasePathname() + "\toutpath=" + info.getOutputPathname());
+        + context.getBasePathname() + "\toutpath=" + context.getOutputPathname());
 
     final long startTime = System.currentTimeMillis();
     final Configuration conf = this.conf;
 
-    if (info.getBasePathname() == null)
+    if (context.getBasePathname() == null)
       throw new NullPointerException("The input path is null");
 
-    if (info.getOutputPathname() == null)
+    if (context.getOutputPathname() == null)
       throw new NullPointerException("The output path is null");
 
     try {
 
-      final Path inPath = new Path(info.getBasePathname());
-      final Path outPath = new Path(info.getOutputPathname());
+      final Path inPath = new Path(context.getBasePathname());
+      final Path outPath = new Path(context.getOutputPathname());
 
       if (!PathUtils.isExistingDirectoryFile(inPath, conf))
         throw new EoulsanException("The base directory is not a directory: "

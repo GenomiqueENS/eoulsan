@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -162,13 +162,13 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     // Create the list of jobs to run
     final List<JobConf> jobconfs =
         new ArrayList<JobConf>(design.getSampleCount());
     for (Sample s : design.getSamples())
-      jobconfs.add(createJobConf(info, s, getLengthThreshold(),
+      jobconfs.add(createJobConf(context, s, getLengthThreshold(),
           getQualityThreshold()));
 
     try {
@@ -203,13 +203,13 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
    * @param sample sample to process
    * @return a new JobConf object
    */
-  private static JobConf createJobConf(final ExecutorInfo info,
+  private static JobConf createJobConf(final Context context,
       final Sample sample, final int lengthThreshold,
       final double qualityThreshold) {
 
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
-    final Path inputPath = new Path(info.getBasePathname(), sample.getSource());
+    final Path inputPath = new Path(context.getBasePathname(), sample.getSource());
 
     // Set Job name
     conf.setJobName("Filter and map reads with SOAP ("
@@ -225,7 +225,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(info.getDataFile(SOAP_INDEX_ZIP, sample).getSource());
+        new Path(context.getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     conf.set(Globals.PARAMETER_PREFIX + ".soap.indexzipfilepath", genomeIndex
         .toString());
@@ -233,7 +233,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     DistributedCache.addCacheFile(genomeIndex.toUri(), conf);
 
     // Set unmap chuck dir path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", info
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", context
         .getDataFile(UNMAP_READS_FASTA, sample).getSourceWithoutExtension());
 
     // Set unmap chuck prefix
@@ -241,7 +241,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
         UNMAP_CHUNK_PREFIX);
 
     // Set unmap output file path
-    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", info
+    conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.path", context
         .getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set the number of threads for soap
@@ -283,7 +283,7 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(info.getDataFile(
+    FileOutputFormat.setOutputPath(conf, new Path(context.getDataFile(
         SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return conf;

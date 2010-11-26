@@ -30,7 +30,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -64,13 +64,13 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Design design, final ExecutorInfo info,
+  public boolean check(final Design design, final Context context,
       final CheckStore checkInfo) throws EoulsanException {
     if (design == null)
       throw new NullPointerException("The design is null");
 
-    if (info == null)
-      throw new NullPointerException("The executor info is null");
+    if (context == null)
+      throw new NullPointerException("The execution context is null");
 
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
@@ -88,7 +88,7 @@ public class AnnotationChecker implements Checker {
     final InputStream is;
 
     try {
-      is = info.getInputStream(DataFormats.ANNOTATION_GFF, s);
+      is = context.getInputStream(DataFormats.ANNOTATION_GFF, s);
 
       final TranscriptAndExonFinder ef =
           new TranscriptAndExonFinder(is, this.genomicType);
@@ -99,7 +99,7 @@ public class AnnotationChecker implements Checker {
 
       // TODO compare chromosomes names
       final Set<String> genomeChromosomes =
-          getGenomeChromosomes(design, info, checkInfo);
+          getGenomeChromosomes(design, context, checkInfo);
 
       if (genomeChromosomes != null) {
 
@@ -123,14 +123,14 @@ public class AnnotationChecker implements Checker {
 
   @SuppressWarnings("unchecked")
   private Set<String> getGenomeChromosomes(final Design design,
-      final ExecutorInfo info, final CheckStore checkInfo)
+      final Context context, final CheckStore checkInfo)
       throws EoulsanException {
 
     Object o = checkInfo.get(GenomeChecker.INFO_CHROMOSOME);
 
     if (o == null) {
 
-      DataFormats.GENOME_FASTA.getChecker().check(design, info, checkInfo);
+      DataFormats.GENOME_FASTA.getChecker().check(design, context, checkInfo);
       o = checkInfo.get(GenomeChecker.INFO_CHROMOSOME);
 
       if (o == null)

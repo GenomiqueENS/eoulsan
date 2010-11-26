@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -95,13 +95,13 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     final Configuration conf = this.conf;
 
-    final Path designPath = new Path(info.getDesignPathname());
-    final Path paramPath = new Path(info.getParameterPathname());
-    final Path outputPath = new Path(info.getOutputPathname());
+    final Path designPath = new Path(context.getDesignPathname());
+    final Path paramPath = new Path(context.getParameterPathname());
+    final Path outputPath = new Path(context.getOutputPathname());
 
     final Path outputDesignPath = new Path(outputPath, designPath.getName());
     final Path outputParamPath = new Path(outputPath, paramPath.getName());

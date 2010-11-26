@@ -33,7 +33,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -55,14 +55,14 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Design design, final ExecutorInfo info,
+  public boolean check(final Design design, final Context context,
       final CheckStore checkInfo) throws EoulsanException {
 
     if (design == null)
       throw new NullPointerException("The design is null");
 
-    if (info == null)
-      throw new NullPointerException("The executor info is null");
+    if (context == null)
+      throw new NullPointerException("The execution context is null");
 
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
@@ -80,7 +80,7 @@ public class GenomeChecker implements Checker {
     final InputStream is;
 
     try {
-      is = info.getInputStream(DataFormats.GENOME_FASTA, s);
+      is = context.getInputStream(DataFormats.GENOME_FASTA, s);
 
       checkInfo.add(INFO_CHROMOSOME, checkGenomeFile(is));
 

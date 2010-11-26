@@ -2,7 +2,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
@@ -21,7 +21,7 @@ public class TerminalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, ExecutorInfo info) {
+  public StepResult execute(Design design, Context context) {
 
     return new StepResult(this, System.currentTimeMillis(), "Terminal step.");
   }

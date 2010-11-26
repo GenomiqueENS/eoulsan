@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.checkers;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
@@ -54,10 +54,10 @@ public interface Checker {
   /**
    * Launch the check.
    * @param design the design to use
-   * @param info Executor information
+   * @param context Execution context
    * @throws EoulsanException if an error occurs while executing step
    */
-  boolean check(Design design, ExecutorInfo info, CheckStore checkInfo)
+  boolean check(Design design, Context context, CheckStore checkInfo)
       throws EoulsanException;
 
 }

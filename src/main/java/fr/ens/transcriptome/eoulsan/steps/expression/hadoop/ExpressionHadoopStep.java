@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -90,7 +90,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
    * @throws IOException if an error occurs while creating job
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
-  private static final JobConf createJobConf(final ExecutorInfo info,
+  private static final JobConf createJobConf(final Context context,
       final Sample sample, final String genomicType) throws IOException,
       BadBioEntryException {
 
@@ -98,7 +98,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
     final JobConf conf = new JobConf(ExpressionHadoopStep.class);
 
     final Path inputPath =
-        CommonHadoop.selectDirectoryOrFile(new Path(info.getDataFile(
+        CommonHadoop.selectDirectoryOrFile(new Path(context.getDataFile(
             SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()),
             SOAP_RESULTS_TXT.getDefaultExtention());
 
@@ -116,11 +116,11 @@ public class ExpressionHadoopStep extends ExpressionStep {
     conf.set("mapred.child.java.opts", "-Xmx1024m");
 
     final Path exonsIndexPath =
-        new Path(info.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+        new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
     logger.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, conf))
-      createExonsIndex(new Path(info.getBasePathname(), sample.getMetadata()
+      createExonsIndex(new Path(context.getBasePathname(), sample.getMetadata()
           .getAnnotation()), genomicType, exonsIndexPath, conf);
 
     // Set the path to the exons index
@@ -153,7 +153,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
     conf.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(conf, new Path(info.getDataFile(
+    FileOutputFormat.setOutputPath(conf, new Path(context.getDataFile(
         EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return conf;
@@ -191,7 +191,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
   }
 
   private static final void createFinalExpressionTranscriptsFile(
-      final ExecutorInfo info, final Map<Sample, RunningJob> jobconfs,
+      final Context context, final Map<Sample, RunningJob> jobconfs,
       final Configuration conf) throws IOException {
 
     int lastGenomeId = -1;
@@ -208,13 +208,13 @@ public class ExpressionHadoopStep extends ExpressionStep {
               "reads used");
 
       final FileSystem fs =
-          new Path(info.getBasePathname()).getFileSystem(conf);
+          new Path(context.getBasePathname()).getFileSystem(conf);
 
       // Load the annotation index
       if (genomeId != lastGenomeId) {
 
         final Path exonsIndexPath =
-            new Path(info.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+            new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
 
         fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
@@ -222,11 +222,11 @@ public class ExpressionHadoopStep extends ExpressionStep {
       }
 
       final Path outputDirPath =
-          new Path(info.getDataFile(EXPRESSION_RESULTS_TXT, sample)
+          new Path(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
               .getSourceWithoutExtension());
 
       final Path resultPath =
-          new Path(info.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fetc.initializeExpressionResults();
 
@@ -264,7 +264,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     // Create the list of jobs to run
     final Map<Sample, RunningJob> jobsRunning =
@@ -279,7 +279,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
 
       for (Sample s : design.getSamples()) {
 
-        final JobConf jconf = createJobConf(info, s, getGenomicType());
+        final JobConf jconf = createJobConf(context, s, getGenomicType());
 
         if (jc == null)
           jc = new JobClient(jconf);
@@ -291,7 +291,7 @@ public class ExpressionHadoopStep extends ExpressionStep {
               CommonHadoop.CHECK_COMPLETION_TIME,
               ExpressionMapper.COUNTER_GROUP);
 
-      createFinalExpressionTranscriptsFile(info, jobsRunning, this.conf);
+      createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
 
       return jobsResults.getStepResult(this, startTime);
 

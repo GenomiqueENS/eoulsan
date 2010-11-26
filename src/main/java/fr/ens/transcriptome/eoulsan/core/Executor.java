@@ -88,10 +88,10 @@ public abstract class Executor {
   protected abstract void writeStepLogs(final StepResult result);
 
   /**
-   * Get the executorInfo
-   * @return the ExecutorInfo
+   * Get the execution context
+   * @return the Context
    */
-  protected abstract SimpleExecutorInfo getExecutorInfo();
+  protected abstract SimpleContext getExecutorInfo();
 
   /**
    * run Eoulsan.
@@ -115,8 +115,8 @@ public abstract class Executor {
     if (this.command == null)
       throw new EoulsanException("The command is null");
 
-    // Get executor info
-    final SimpleExecutorInfo info = getExecutorInfo();
+    // Get execution context
+    final SimpleContext info = getExecutorInfo();
 
     // Check base path
     if (info.getBasePathname() == null)

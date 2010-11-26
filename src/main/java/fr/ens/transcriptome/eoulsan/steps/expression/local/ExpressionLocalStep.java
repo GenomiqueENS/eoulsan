@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -64,7 +64,7 @@ public class ExpressionLocalStep extends ExpressionStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final ExecutorInfo info) {
+  public StepResult execute(final Design design, final Context context) {
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -91,13 +91,13 @@ public class ExpressionLocalStep extends ExpressionStep {
         }
 
         final File alignmentFile =
-            new File(info.getDataFilename(SOAP_RESULTS_TXT, s));
+            new File(context.getDataFilename(SOAP_RESULTS_TXT, s));
 
         final File expressionTmpFile =
-            new File(info.getDataFilename(SOAP_RESULTS_TXT, s) + ".tmp");
+            new File(context.getDataFilename(SOAP_RESULTS_TXT, s) + ".tmp");
 
         final File expressionFile =
-            new File(info.getDataFilename(EXPRESSION_RESULTS_TXT, s));
+            new File(context.getDataFilename(EXPRESSION_RESULTS_TXT, s));
 
         if (getTmpDir() != null)
           epmr.setMapReduceTemporaryDirectory(new File(getTmpDir()));

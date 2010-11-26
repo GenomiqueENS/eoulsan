@@ -32,7 +32,11 @@ import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
 import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
-public interface ExecutorInfo {
+/**
+ * This interface define a context.
+ * @author Laurent Jourdren
+ */
+public interface Context {
 
   /**
    * Get the command name.

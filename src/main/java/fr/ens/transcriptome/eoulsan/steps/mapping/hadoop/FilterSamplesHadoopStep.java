@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.ExecutorInfo;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -77,12 +77,12 @@ public class FilterSamplesHadoopStep extends FilterSamplesStep {
   }
 
   @Override
-  public StepResult execute(Design design, final ExecutorInfo info) {
+  public StepResult execute(Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
 
     final double threshold = getThreshold() / 100.0;
-    final Path logDirPath = new Path(info.getLogPathname());
+    final Path logDirPath = new Path(context.getLogPathname());
 
     try {
 
