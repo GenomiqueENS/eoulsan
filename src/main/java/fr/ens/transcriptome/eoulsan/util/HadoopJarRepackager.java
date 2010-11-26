@@ -61,7 +61,7 @@ public final class HadoopJarRepackager {
     final JarRepack jarRepack = new JarRepack(this.srcJar, destJarFile);
     for (File file : this.jarFiles) {
       jarRepack.addFile(file, DIR_IN_JAR + file.getName());
-      LOGGER.info("Add in repackaged jar file: " + this.srcJar);
+      LOGGER.fine("Add in repackaged jar file: " + file.getName());
     }
 
     jarRepack.close();
