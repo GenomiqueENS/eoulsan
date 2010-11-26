@@ -28,8 +28,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.datasources.FileDataSource;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.mapping.FilterReadsConstants;
 import fr.ens.transcriptome.eoulsan.steps.mapping.ReadsFilter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -44,7 +43,7 @@ public class FilterReadsLocal {
 
   public static final String COUNTER_GROUP = "Filter reads";
 
-  private DataSource fastqDS;
+  private DataFile fastqDF;
   private int lengthThreshold = FilterReadsConstants.LENGTH_THRESHOLD;
   private double qualityThreshold = FilterReadsConstants.LENGTH_THRESHOLD;
 
@@ -58,7 +57,7 @@ public class FilterReadsLocal {
 
     final Writer writer = FileUtils.createBufferedWriter(outputFile);
     final BufferedReader br =
-        FileUtils.createBufferedReader(this.fastqDS.getInputStream());
+        FileUtils.createBufferedReader(this.fastqDF.open());
 
     final StringBuilder sb = new StringBuilder();
     final ReadSequence read = new ReadSequence();
@@ -159,19 +158,19 @@ public class FilterReadsLocal {
 
     if (fastqFile == null)
       throw new NullPointerException("The input fastq file is null.");
-    this.fastqDS = new FileDataSource(fastqFile);
+    this.fastqDF = new DataFile(fastqFile.getPath());
   }
 
   /**
    * Public constructor.
    * @param fastqFile fastq file to parse
    */
-  public FilterReadsLocal(final DataSource ds) {
+  public FilterReadsLocal(final DataFile df) {
 
-    if (ds == null)
+    if (df == null)
       throw new NullPointerException("The data source is null.");
 
-    this.fastqDS = ds;
+    this.fastqDF = df;
   }
 
 }

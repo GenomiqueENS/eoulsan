@@ -35,8 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
@@ -148,9 +147,12 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     List<String> filenames = data.get(FILENAME_FIELD);
     for (int i = 0; i < count; i++) {
 
-      DataSource source =
-          DataSourceUtils.identifyDataSource(this.baseDir, filenames.get(i));
-      design.setSource(names.get(i), source.toString());
+      try {
+        design.setSource(names.get(i), createDataFile(this.baseDir,
+            filenames.get(i)).getSource());
+      } catch (IOException e) {
+        throw new EoulsanIOException("Invalid source :" + filenames.get(i));
+      }
     }
 
     for (String fd : fieldnames) {
@@ -169,6 +171,31 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     }
 
     return design;
+  }
+
+  /**
+   * Identify the type of the DataFile from the source.
+   * @param baseDir baseDir of the source if this a file
+   * @param source source to identify
+   * @return a new DataFile object
+   * @throws IOException
+   */
+  public static DataFile createDataFile(final String baseDir,
+      final String source) throws IOException {
+
+    if (source == null)
+      throw new IOException("The source is null.");
+
+    final DataFile df = new DataFile(source);
+    if (!df.getProtocol().equals("file"))
+      return df;
+
+    final String src = df.getSource();
+    if (src.startsWith("file:/") || src.startsWith("/"))
+      return df;
+
+    return new DataFile(new File(baseDir, source).getPath());
+
   }
 
   //

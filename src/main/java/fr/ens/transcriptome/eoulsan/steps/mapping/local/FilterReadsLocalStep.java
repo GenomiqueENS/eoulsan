@@ -30,8 +30,7 @@ import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.datasources.DataSource;
-import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -62,7 +61,7 @@ public final class FilterReadsLocalStep extends FilterReadsStep {
       for (Sample s : design.getSamples()) {
 
         final Reporter reporter = new Reporter();
-        final DataSource ds = DataSourceUtils.identifyDataSource(s.getSource());
+        final DataFile ds = new DataFile(s.getSource());
         final FilterReadsLocal filter = new FilterReadsLocal(ds);
         final File outputFile =
             new File(context.getDataFilename(FILTERED_READS_FASTQ, s));

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.datasources.DataSourceUtils;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
@@ -248,8 +248,7 @@ public class DesignImpl implements Design {
 
     String ds = this.sources.get(id);
 
-    return ds == null ? "" : DataSourceUtils.identifyDataSource(ds)
-        .getSourceInfo();
+    return ds == null ? "" : new DataFile(ds).getSource();
   }
 
   @Override
@@ -429,7 +428,8 @@ public class DesignImpl implements Design {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(this.samplesOrder, this.samples, this.ids, this.sources,
-        this.metadataFields, this.metadataOrder, this.metadataData, this.countSamples, this.countLabels);
+    return Utils.hashCode(this.samplesOrder, this.samples, this.ids,
+        this.sources, this.metadataFields, this.metadataOrder,
+        this.metadataData, this.countSamples, this.countLabels);
   }
 }
