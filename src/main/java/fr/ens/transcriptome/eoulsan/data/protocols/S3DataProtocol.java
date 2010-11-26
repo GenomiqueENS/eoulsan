@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class S3DataProtocol implements DataProtocol {
 
   /** Logger */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String S3_PROTOCOL_PREFIX = Common.S3_PROTOCOL + "://";
 
@@ -149,7 +149,7 @@ public class S3DataProtocol implements DataProtocol {
      */
     public void upload() {
 
-      logger.info("Upload data to " + s3url.getSource());
+      LOGGER.info("Upload data to " + s3url.getSource());
       final ObjectMetadata md = new ObjectMetadata();
 
       if (this.metadata.getContentType() != null)
@@ -163,7 +163,7 @@ public class S3DataProtocol implements DataProtocol {
       final PutObjectRequest or =
           new PutObjectRequest(s3url.bucket, s3url.getFilePath(), this.is, md);
 
-      logger.info("Upload: "
+      LOGGER.fine("Upload: "
           + this.s3url + " (" + md.getContentType() + ", "
           + md.getContentEncoding() + " " + this.metadata.getContentLength()
           + " bytes)");
@@ -178,11 +178,12 @@ public class S3DataProtocol implements DataProtocol {
         tryCount++;
 
         try {
-          s3.putObject(or);
+
+          getS3().putObject(or);
           uploadOk = true;
         } catch (AmazonClientException e) {
           ace = e;
-          logger.info("Error while uploading "
+          LOGGER.warning("Error while uploading "
               + this.s3url + " (Attempt " + tryCount + ")");
 
           try {
@@ -203,7 +204,7 @@ public class S3DataProtocol implements DataProtocol {
       final int speedKiB =
           (int) (this.metadata.getContentLength() / (duration / 1000.0) / 1024.0);
 
-      logger.info("Upload of "
+      LOGGER.info("Upload of "
           + this.s3url + " (" + this.metadata.getContentLength()
           + " bytes) in " + StringUtils.toTimeHumanReadable(duration)
           + " ms. (" + speedKiB + " KiB/s)");
@@ -267,7 +268,7 @@ public class S3DataProtocol implements DataProtocol {
         new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
 
         if (!f.delete())
-          logger.severe("Can not delete temporarry file: "
+          LOGGER.severe("Can not delete temporarry file: "
               + f.getAbsolutePath());
       }
 
