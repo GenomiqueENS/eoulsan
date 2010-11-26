@@ -155,6 +155,9 @@ public final class Globals {
   public static final String LIBS_TO_HADOOP_REPACK_PROPERTY =
       "eoulsan.hadoop.libs";
 
+  /** Launch mode property. */
+  public static final String LAUNCH_MODE_PROPERTY = "eoulsan.launch.mode";
+
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
