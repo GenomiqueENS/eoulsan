@@ -24,7 +24,9 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.newupload;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
@@ -36,6 +38,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 @LocalOnly
 public class LocalUploadStep extends UploadStep {
 
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  
   @Override
   protected DataFile getUploadedDataFile(final DataFile file, final int id)
       throws IOException {
@@ -49,8 +54,10 @@ public class LocalUploadStep extends UploadStep {
     if (files == null)
       throw new NullPointerException("The files argument is null.");
 
-    for (Map.Entry<DataFile, DataFile> e : files.entrySet())
+    for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+      LOGGER.info("Convert "+e.getKey()+" to "+ e.getValue());
       new DataFormatConverter(e.getKey(), e.getValue()).convert();
+    }
 
   }
 
