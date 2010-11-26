@@ -23,26 +23,26 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
+import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.Executor;
+import fr.ens.transcriptome.eoulsan.core.LocalAnalysisExecutor;
+import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.SimpleContext;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.DesignUtils;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.FakeS3ProtocolFactory;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.S3DataUploadStep;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.newupload.LocalUploadStep;
 
 /**
  * This class define the Local Upload S3 Action.
@@ -53,75 +53,54 @@ public class UploadS3Action implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
+
   @Override
   public void action(final String[] args) {
 
-    final File userDir = new File(System.getProperty("user.dir"));
+    if (args.length != 3)
+      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
+          + "usage: " + Globals.APP_NAME_LOWER_CASE
+          + " s3upload param.xml design.txt s3://mybucket/test");
+
+    final File paramFile = new File(args[0]);
+    final File designFile = new File(args[1]);
+    final DataFile dest = new DataFile(args[2]);
+
+    logger.info(Globals.WELCOME_MSG + " Local mode.");
+    logger.info("Parameter file: " + paramFile);
+    logger.info("Design file: " + designFile);
 
     try {
 
-      URL.setURLStreamHandlerFactory(new FakeS3ProtocolFactory());
+      // Test if param file exists
+      if (!paramFile.exists())
+        throw new FileNotFoundException(paramFile.toString());
 
-      // DataUploadStep du = new S3DataUploadStep(new File(userDir,
-      // ".credentials"));
+      // Test if design file exists
+      if (!designFile.exists())
+        throw new FileNotFoundException(designFile.toString());
 
-      final String paramPathname = args[0];
-      final String designPathname = args[1];
+      // Parse param file
+      final ParamParser pp = new ParamParser(paramFile);
+      final Command c = new Command();
 
-      // Define parameter URI
-      final URI paramURI;
-      if (paramPathname.indexOf("://") != -1)
-        paramURI = new URI(paramPathname);
-      else
-        paramURI = new File(paramPathname).getAbsoluteFile().toURI();
+      // Add execution info to log Step
+      c.addStep(ExecInfoLogStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
-      // Define design URI
-      final URI designURI;
-      if (designPathname.indexOf("://") != -1)
-        designURI = new URI(designPathname);
-      else
-        designURI = new File(designPathname).getAbsoluteFile().toURI();
+      pp.parse(c);
 
-      // Define destination URI
-      final URI destURI = new URI(args[2]);
+      // Execute
+      final Executor e = new LocalAnalysisExecutor(c, designFile, paramFile);
+      e.execute(Lists.newArrayList((Step) new LocalUploadStep(dest),
+          (Step) new TerminalStep()), null, true);
 
-      logger.info(Globals.APP_NAME
-          + " version " + Globals.APP_VERSION_STRING + " ("
-          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ") Local mode.");
-      logger.info("Parameter file: " + paramURI);
-      logger.info("Design file: " + designURI);
-      logger.info("Destination : " + destURI);
-
-      // Read design file
-      final Design design =
-          DesignUtils.readAndCheckDesign(FileUtils.createInputStream(new File(
-              designURI)));
-
-      // Add upload Step
-      final Set<Parameter> uploadParameters = new HashSet<Parameter>();
-      uploadParameters.add(new Parameter("basepath", destURI.toString()));
-      uploadParameters.add(new Parameter("parampath", paramURI.toString()));
-      uploadParameters.add(new Parameter("designpath", destURI.toString()));
-
-      final S3DataUploadStep step =
-          new S3DataUploadStep(new File(userDir, ".credentials"));
-      step.configure(uploadParameters, new HashSet<Parameter>());
-
-      // Create Execution context
-      final Context context = new SimpleContext();
-
-      final StepResult result = step.execute(design, context);
-
-      if (result.getException() != null)
-        Common.errorExit(result.getException(), "Error: "
-            + result.getException().getMessage());
-
-    } catch (IOException e) {
-      Common.errorExit(e, "Error: " + e.getMessage());
+    } catch (FileNotFoundException e) {
+      Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (EoulsanException e) {
-      Common.errorExit(e, "Error: " + e.getMessage());
-    } catch (URISyntaxException e) {
-      Common.errorExit(e, "Error: " + e.getMessage());
+      Common.errorExit(e, "Error while executing "
+          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
 
   }

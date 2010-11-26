@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.SimpleContext;
@@ -36,8 +38,12 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 
 /**
@@ -45,6 +51,9 @@ import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
  * @author Laurent Jourdren
  */
 public abstract class UploadStep extends AbstractStep {
+
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private DataFile dest;
 
@@ -86,10 +95,39 @@ public abstract class UploadStep extends AbstractStep {
         files.add(new DataFile(repackagedJarFile.getAbsolutePath()));
       }
 
-      // Copy all files
-      copy(reWriteDesign(design, files));
+      // Add all files to upload in a map
+      final Map<DataFile, DataFile> filesToCopy = reWriteDesign(design, files);
+
+      // Create a new design file
+      final File newDesignFile = writeTempDesignFile(design);
+      final DataFile uploadedDesignDataFile =
+          getUploadedDataFile(new DataFile(context.getDesignPathname()));
+      filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()),
+          uploadedDesignDataFile);
+
+      // Add parameter file to the list of file to upload
+      final DataFile currentParamDataFile =
+          new DataFile(context.getParameterPathname());
+      final DataFile uploadedParamDataFile =
+          getUploadedDataFile(currentParamDataFile);
+      filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
+
+      // Copy the file
+      copy(filesToCopy);
+
+      // Remove temporary design file
+      if (!newDesignFile.delete()) {
+        LOGGER.warning("Cannot remove temporary desihn file: " + newDesignFile);
+      }
+
+      // Change the path of design and parameter file in the context
+      fullContext.setDesignPathname(uploadedDesignDataFile.getSource());
+      fullContext.setParameterPathname(uploadedParamDataFile.getSource());
 
     } catch (IOException e) {
+
+      return new StepResult(this, e);
+    } catch (EoulsanIOException e) {
 
       return new StepResult(this, e);
     }
@@ -270,6 +308,25 @@ public abstract class UploadStep extends AbstractStep {
 
     for (DataFile file : filesToCopy)
       result.put(file, getUploadedDataFile(file));
+
+    return result;
+  }
+
+  /**
+   * Write temporary design file
+   * @param design Design object
+   * @return the temporary design file
+   * @throws EoulsanIOException if an error occurs while writing the design file
+   * @throws IOException if an error occurs while writing the design file
+   */
+  private File writeTempDesignFile(final Design design)
+      throws EoulsanIOException, IOException {
+
+    final File result = FileUtils.createTempFile("design-", ".txt");
+
+    DesignWriter writer =
+        new SimpleDesignWriter(FileUtils.createOutputStream(result));
+    writer.write(design);
 
     return result;
   }
