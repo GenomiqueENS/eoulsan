@@ -37,10 +37,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import fr.ens.transcriptome.eoulsan.actions.LocalCreateDesignAction;
-import fr.ens.transcriptome.eoulsan.actions.LocalExecAction;
-import fr.ens.transcriptome.eoulsan.actions.LocalHadoopExecAction;
-import fr.ens.transcriptome.eoulsan.actions.LocalUploadS3Action;
+import fr.ens.transcriptome.eoulsan.actions.CreateDesignAction;
+import fr.ens.transcriptome.eoulsan.actions.ExecAction;
+import fr.ens.transcriptome.eoulsan.actions.HadoopExecAction;
+import fr.ens.transcriptome.eoulsan.actions.UploadS3Action;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -235,13 +235,13 @@ public final class MainCLI {
         StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
 
     if ("exec".equals(action)) {
-      new LocalExecAction().action(arguments);
+      new ExecAction().action(arguments);
     } else if ("hadoopexec".equals(action)) {
-      new LocalHadoopExecAction().action(arguments);
+      new HadoopExecAction().action(arguments);
     } else if ("createdesign".equals(action)) {
-      new LocalCreateDesignAction().action(arguments);
+      new CreateDesignAction().action(arguments);
     } else if ("uploads3".equals(action)) {
-      new LocalUploadS3Action().action(arguments);
+      new UploadS3Action().action(arguments);
     }
 
   }

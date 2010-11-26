@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
  * This class define the Local exec Action.
  * @author Laurent Jourdren
  */
-public class LocalExecAction implements Action {
+public class ExecAction implements Action {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
