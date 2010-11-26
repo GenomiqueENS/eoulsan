@@ -240,9 +240,12 @@ public final class MainCLI {
       new HadoopExecAction().action(arguments);
     } else if ("createdesign".equals(action)) {
       new CreateDesignAction().action(arguments);
-    } else if ("uploads3".equals(action)) {
+    } else if ("s3upload".equals(action)) {
       new UploadS3Action().action(arguments);
-    }
+    } else
+      Common.showErrorMessageAndExit("Unknown action: "
+          + action + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
+          + " -help for more help.\n");
 
   }
 
