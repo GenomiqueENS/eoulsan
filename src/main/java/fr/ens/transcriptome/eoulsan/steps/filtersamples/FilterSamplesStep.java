@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mapping;
+package fr.ens.transcriptome.eoulsan.steps.filtersamples;
 
 import java.util.Set;
 

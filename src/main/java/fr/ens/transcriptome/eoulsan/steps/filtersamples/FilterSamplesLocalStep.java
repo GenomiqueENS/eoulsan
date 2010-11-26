@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mapping.local;
+package fr.ens.transcriptome.eoulsan.steps.filtersamples;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
-import fr.ens.transcriptome.eoulsan.steps.mapping.FilterSamplesStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
