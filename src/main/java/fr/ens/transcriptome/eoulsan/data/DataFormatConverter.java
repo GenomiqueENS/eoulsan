@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class DataFormatConverter {
 
   /** Logger */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private DataFormat inFormat;
   private DataFormat outFormat;
@@ -53,6 +53,12 @@ public class DataFormatConverter {
   final DataFile outFile;
 
   public void convert() throws IOException {
+
+    if (this.outFormat == null) {
+
+      FileUtils.copy(inFile.rawOpen(), outFile.create());
+      return;
+    }
 
     if (this.inFormat.getType() != this.outFormat.getType())
       throw new IOException("Can convert data from different DataType.");
@@ -63,7 +69,7 @@ public class DataFormatConverter {
     final CompressionType destCT =
         CompressionType.getCompressionTypeByFilename(outFile.getName());
 
-    logger.info("Convert "
+    LOGGER.fine("Convert "
         + inFile + " (" + inFormat + "/" + srcCT + ") to " + outFile + " ("
         + outFormat + "/" + destCT + ").");
 
@@ -157,9 +163,6 @@ public class DataFormatConverter {
 
     if (outFile == null)
       throw new NullPointerException("The output file format is null");
-
-    if (outFormat == null)
-      throw new NullPointerException("The output format format is null");
 
     this.outFile = outFile;
     this.outFormat = outFormat;
