@@ -27,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.util.SystemUtils;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
 /**
  * This class provides utility methods for DataSource.
@@ -58,7 +58,8 @@ public final class DataSourceUtils {
     if (source == null)
       return null;
 
-    if (source.startsWith(Common.S3_PROTOCOL + "://") && SystemUtils.isHadoop())
+    if (source.startsWith(Common.S3_PROTOCOL + "://")
+        && EoulsanRuntime.getRuntime().isHadoopMode())
       return new S3DataSource(source);
 
     if (source.startsWith("file:/"))
