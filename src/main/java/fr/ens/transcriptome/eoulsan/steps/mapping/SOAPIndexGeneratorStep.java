@@ -42,12 +42,6 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public ExecutionMode getExecutionMode() {
-
-    return ExecutionMode.BOTH;
-  }
-
-  @Override
   public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
@@ -69,11 +63,11 @@ public class SOAPIndexGeneratorStep extends AbstractStep {
       final File soapIndexFile =
           SOAPWrapper.makeIndexInZipFile(context.getDataFile(
               DataFormats.GENOME_FASTA, s1).open());
-      System.out.println("\t-> "+soapIndexFile);
+      System.out.println("\t-> " + soapIndexFile);
       // Get the output DataFile
       final DataFile soapIndexDataFile =
           context.getDataFile(DataFormats.SOAP_INDEX_ZIP, s1);
-      System.out.println("\t-> "+soapIndexDataFile);
+      System.out.println("\t-> " + soapIndexDataFile);
 
       FileUtils.copy(FileUtils.createInputStream(soapIndexFile),
           soapIndexDataFile.create());

@@ -53,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
@@ -117,12 +116,6 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
   public String getDescription() {
 
     return "This step filters reads.";
-  }
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.HADOOP;
   }
 
   @Override
@@ -209,7 +202,8 @@ public class FilterAndSoapMapReadsHadoopStep extends AbstractStep {
 
     final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
 
-    final Path inputPath = new Path(context.getBasePathname(), sample.getSource());
+    final Path inputPath =
+        new Path(context.getBasePathname(), sample.getSource());
 
     // Set Job name
     conf.setJobName("Filter and map reads with SOAP ("

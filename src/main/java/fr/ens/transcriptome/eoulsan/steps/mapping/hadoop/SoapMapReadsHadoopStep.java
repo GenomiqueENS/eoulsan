@@ -45,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
@@ -77,9 +76,8 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
 
     final Path inputPath =
         CommonHadoop.selectDirectoryOrFile(new Path(context.getDataFile(
-            FILTERED_READS_FASTQ, sample)
-            .getSourceWithoutExtension()), FILTERED_READS_FASTQ
-            .getDefaultExtention());
+            FILTERED_READS_FASTQ, sample).getSourceWithoutExtension()),
+            FILTERED_READS_FASTQ.getDefaultExtention());
 
     // Set Job name
     conf.setJobName("Map reads with SOAP ("
@@ -91,8 +89,7 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
 
     // Set unmap chuck dir path
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", context
-        .getDataFile(UNMAP_READS_FASTA, sample)
-        .getSourceWithoutExtension());
+        .getDataFile(UNMAP_READS_FASTA, sample).getSourceWithoutExtension());
 
     // Set unmap chuck prefix
     conf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
@@ -138,8 +135,7 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(conf, new Path(
 
-    context.getDataFile(SOAP_RESULTS_TXT, sample)
-        .getSourceWithoutExtension()));
+    context.getDataFile(SOAP_RESULTS_TXT, sample).getSourceWithoutExtension()));
 
     return conf;
   }
@@ -147,12 +143,6 @@ public class SoapMapReadsHadoopStep extends MapReadsStep {
   //
   // Step methods
   // 
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.HADOOP;
-  }
 
   @Override
   public String getLogName() {

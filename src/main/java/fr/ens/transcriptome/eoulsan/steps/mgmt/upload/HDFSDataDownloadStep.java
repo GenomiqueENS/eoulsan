@@ -40,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -68,12 +67,6 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public ExecutionMode getExecutionMode() {
-    
-    return Step.ExecutionMode.HADOOP;
-  }
-  
-  @Override
   public String getLogName() {
 
     return "download";
@@ -91,7 +84,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     logger.info("Start copying results.");
     logger.info("inpath="
-        + context.getBasePathname() + "\toutpath=" + context.getOutputPathname());
+        + context.getBasePathname() + "\toutpath="
+        + context.getOutputPathname());
 
     final long startTime = System.currentTimeMillis();
     final Configuration conf = this.conf;

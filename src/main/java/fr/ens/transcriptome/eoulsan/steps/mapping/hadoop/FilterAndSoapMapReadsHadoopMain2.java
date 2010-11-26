@@ -53,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
@@ -113,12 +112,6 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
   public String getDescription() {
 
     return "This step filters reads.";
-  }
-
-  @Override
-  public ExecutionMode getExecutionMode() {
-
-    return Step.ExecutionMode.HADOOP;
   }
 
   @Override
@@ -227,8 +220,8 @@ public class FilterAndSoapMapReadsHadoopMain2 extends AbstractStep {
         .getDataFile(SOAP_INDEX_ZIP, sample).getSource());
 
     // Set unmap chuck dir path
-    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir", context
-        .getDataFilename(UNMAP_READS_FASTA, sample));
+    jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix.dir",
+        context.getDataFilename(UNMAP_READS_FASTA, sample));
 
     // Set unmap chuck prefix
     jobConf.set(Globals.PARAMETER_PREFIX + ".soap.unmap.chunk.prefix",
