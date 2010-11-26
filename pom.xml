@@ -265,6 +265,10 @@
 			<resource>
 				<directory>src/main/java/files</directory>
 			</resource>
+			<resource>
+				<directory>src/main/java/META-INF</directory>
+				<targetPath>META-INF</targetPath>
+			</resource>
 		</resources>
 		<testResources>
 			<testResource>
@@ -581,6 +585,16 @@
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>guava.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.mahout.hadoop</groupId>
+						                  <artifactId>hadoop-core</artifactId>
+						                  <version>0.20.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>hadoop.jar</destFileName>
 						                </artifactItem>
 					              </artifactItems>
 					              <!-- other configurations here -->
