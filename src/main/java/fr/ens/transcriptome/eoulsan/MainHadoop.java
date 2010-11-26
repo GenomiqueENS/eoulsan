@@ -46,8 +46,8 @@ import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.newupload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
