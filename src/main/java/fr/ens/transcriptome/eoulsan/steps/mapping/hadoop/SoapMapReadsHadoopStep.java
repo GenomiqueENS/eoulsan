@@ -22,10 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.FILTERED_READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_INDEX_ZIP;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.UNMAP_READS_FASTA;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_INDEX_ZIP;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.UNMAP_READS_FASTA;
 
 import java.io.IOException;
 import java.util.ArrayList;

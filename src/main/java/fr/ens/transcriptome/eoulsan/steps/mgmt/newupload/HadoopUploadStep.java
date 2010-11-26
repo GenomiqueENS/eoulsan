@@ -31,12 +31,12 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormat;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormats;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocol;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolService;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**

@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;

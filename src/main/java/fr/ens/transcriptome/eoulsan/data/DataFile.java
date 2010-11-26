@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.data;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocol;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolService;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 

@@ -22,9 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.ANNOTATION_INDEX_SERIAL;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.EXPRESSION_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.datatypes.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_RESULTS_TXT;
 
 import java.io.File;
 import java.io.IOException;

@@ -20,21 +20,21 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
-import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 
 /**
- * This class define the s3 protocol in Hadoop mode.
+ * This class define the http protocol in local mode.
  * @author Laurent Jourdren
  */
-@HadoopOnly
-public class S3PathDataProtocol extends PathDataProtocol{
+@LocalOnly
+public class HTTPURLDataProtocol extends URLDataProtocol{
 
   @Override
   public String getName() {
     
-    return "s3";
+    return "http";
   }
-
+  
 }

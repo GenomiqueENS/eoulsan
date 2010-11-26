@@ -20,21 +20,21 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes.protocols;
+package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 
 /**
- * This class define the HDFS protocol in Hadoop mode.
+ * This class define the s3 protocol in Hadoop mode.
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class HDFSPathDataProtocol extends PathDataProtocol {
+public class S3PathDataProtocol extends PathDataProtocol{
 
   @Override
   public String getName() {
-
-    return "hdfs";
+    
+    return "s3";
   }
 
 }

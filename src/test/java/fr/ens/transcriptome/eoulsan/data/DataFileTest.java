@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.datatypes;
+package fr.ens.transcriptome.eoulsan.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -32,7 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.transcriptome.eoulsan.datatypes.protocols.DataProtocolService;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 
 public class DataFileTest {
 

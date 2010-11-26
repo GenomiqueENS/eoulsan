@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFile;
-import fr.ens.transcriptome.eoulsan.datatypes.DataFormatConverter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 
 /**
  * This class define a Step for local mode file uploading.
