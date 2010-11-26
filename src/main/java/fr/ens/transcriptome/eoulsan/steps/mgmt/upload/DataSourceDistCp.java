@@ -20,7 +20,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mgmt.newupload;
+package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
