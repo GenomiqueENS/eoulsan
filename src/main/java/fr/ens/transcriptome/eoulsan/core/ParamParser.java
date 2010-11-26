@@ -42,6 +42,7 @@ import org.xml.sax.SAXException;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -257,12 +258,23 @@ public class ParamParser {
   /**
    * Public constructor.
    * @param file the parameter file
+   * @throws FileNotFoundException if the file is not found
    */
   public ParamParser(final File file) throws FileNotFoundException {
 
     this(FileUtils.createInputStream(file));
   }
 
+  /**
+   * Public constructor.
+   * @param file the parameter file
+   * @throws IOException if an error occurs while opening the file
+   */
+  public ParamParser(final DataFile file) throws IOException {
+
+    this(file.open());
+  }
+  
   /**
    * Public constructor.
    * @param is Input stream
