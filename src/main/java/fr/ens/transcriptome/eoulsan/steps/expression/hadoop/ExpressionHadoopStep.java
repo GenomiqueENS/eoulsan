@@ -47,7 +47,6 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -193,7 +192,6 @@ public class ExpressionHadoopStep extends ExpressionStep {
       final Context context, final Map<Sample, RunningJob> jobconfs,
       final Configuration conf) throws IOException {
 
-    int lastGenomeId = -1;
     FinalExpressionTranscriptsCreator fetc = null;
 
     for (Map.Entry<Sample, RunningJob> e : jobconfs.entrySet()) {
@@ -201,7 +199,6 @@ public class ExpressionHadoopStep extends ExpressionStep {
       final Sample sample = e.getKey();
       final RunningJob rj = e.getValue();
 
-      final int genomeId = Common.getSampleId(sample.getMetadata().getGenome());
       final long readsUsed =
           rj.getCounters().getGroup(ExpressionMapper.COUNTER_GROUP).getCounter(
               "reads used");
@@ -210,15 +207,9 @@ public class ExpressionHadoopStep extends ExpressionStep {
           new Path(context.getBasePathname()).getFileSystem(conf);
 
       // Load the annotation index
-      if (genomeId != lastGenomeId) {
-
-        final Path exonsIndexPath =
-            new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
-
-        fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
-
-        lastGenomeId = genomeId;
-      }
+      final Path exonsIndexPath =
+          new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+      fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
       final Path outputDirPath =
           new Path(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
