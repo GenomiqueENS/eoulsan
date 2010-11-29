@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -80,7 +81,12 @@ public class GenomeChecker implements Checker {
     final InputStream is;
 
     try {
-      is = context.getInputStream(DataFormats.GENOME_FASTA, s);
+      final DataFile file = context.getDataFile(DataFormats.GENOME_FASTA, s);
+      
+      if (!file.exists())
+        return true;
+      
+      is = file.open();
 
       checkInfo.add(INFO_CHROMOSOME, checkGenomeFile(is));
 

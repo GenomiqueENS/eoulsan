@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -88,7 +89,12 @@ public class AnnotationChecker implements Checker {
     final InputStream is;
 
     try {
-      is = context.getInputStream(DataFormats.ANNOTATION_GFF, s);
+      final DataFile file = context.getDataFile(DataFormats.ANNOTATION_GFF, s);
+
+      if (!file.exists())
+        return true;
+
+      is = file.open();
 
       final TranscriptAndExonFinder ef =
           new TranscriptAndExonFinder(is, this.genomicType);
