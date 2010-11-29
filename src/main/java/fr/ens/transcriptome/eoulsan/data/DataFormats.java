@@ -253,32 +253,39 @@ public class DataFormats {
   };
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_INDEX_SERIAL = new AbstractDataFormat() {
+  public static final DataFormat ANNOTATION_INDEX_SERIAL =
+      new AbstractDataFormat() {
 
-    public DataType getType() {
+        public DataType getType() {
 
-      return DataTypes.ANNOTATION_INDEX;
-    }
+          return DataTypes.ANNOTATION_INDEX;
+        }
 
-    @Override
-    public String getDefaultExtention() {
+        @Override
+        public String getDefaultExtention() {
 
-      return ".data";
-    }
+          return ".ser";
+        }
 
-    @Override
-    public String getFormatName() {
+        @Override
+        public String getContentType() {
 
-      return "annotation_index_serial";
-    }
+          return "application/java-serialized-object";
+        }
 
-    @Override
-    public boolean isChecker() {
+        @Override
+        public String getFormatName() {
 
-      return false;
-    }
+          return "annotation_index_serial";
+        }
 
-  };
+        @Override
+        public boolean isChecker() {
+
+          return false;
+        }
+
+      };
 
   /** Anadiff results data format. */
   public static final DataFormat ANADIF_RESULTS_TXT = new AbstractDataFormat() {
