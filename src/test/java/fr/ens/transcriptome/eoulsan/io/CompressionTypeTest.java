@@ -87,4 +87,21 @@ public class CompressionTypeTest {
     assertEquals(null, CompressionType.getCompressionTypeByFilename(null));
   }
 
+  @Test
+  public void testRemoveCompressionExtension() {
+
+    assertEquals("/home/toto/toto", CompressionType
+        .removeCompressionExtension("/home/toto/toto.gz"));
+    assertEquals("toto", CompressionType.removeCompressionExtension("toto.gz"));
+    assertEquals("toto.txt", CompressionType
+        .removeCompressionExtension("toto.txt.gz"));
+    assertEquals("titi.txt", CompressionType
+        .removeCompressionExtension("titi.txt.bz2"));
+    assertEquals("titi.txt", CompressionType
+        .removeCompressionExtension("titi.txt"));
+    assertEquals("", CompressionType.removeCompressionExtension(""));
+    assertEquals(null, CompressionType.removeCompressionExtension(null));
+
+  }
+
 }
