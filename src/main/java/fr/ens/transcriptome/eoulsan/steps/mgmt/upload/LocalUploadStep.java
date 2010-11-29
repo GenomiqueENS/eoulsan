@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define a Step for local mode file uploading.
@@ -40,12 +41,23 @@ public class LocalUploadStep extends UploadStep {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-  
+
   @Override
   protected DataFile getUploadedDataFile(final DataFile file, final int id)
       throws IOException {
 
-    return new DataFile(getDest(), file.getName());
+    final String filename;
+
+    if (file.getName().endsWith(".zip")
+        || file.getName().endsWith(".jar") || file.getName().endsWith(".xml")
+        || file.getName().endsWith(".txt"))
+      filename = file.getName();
+    else
+      filename =
+          CompressionType.removeCompressionExtension(file.getName())
+              + CompressionType.BZIP2.getExtension();
+
+    return new DataFile(getDest(), filename);
   }
 
   @Override
@@ -55,8 +67,16 @@ public class LocalUploadStep extends UploadStep {
       throw new NullPointerException("The files argument is null.");
 
     for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
-      LOGGER.info("Convert "+e.getKey()+" to "+ e.getValue());
-      new DataFormatConverter(e.getKey(), e.getValue()).convert();
+
+      final DataFile src = e.getKey();
+      final DataFile dest = e.getValue();
+
+      if (src == null || dest == null) {
+        continue;
+      }
+
+      LOGGER.info("Convert " + src + " to " + dest);
+      new DataFormatConverter(src, dest).convert();
     }
 
   }

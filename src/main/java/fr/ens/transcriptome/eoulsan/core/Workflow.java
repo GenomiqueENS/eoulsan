@@ -1,5 +1,8 @@
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,9 +123,8 @@ class Workflow implements WorkflowDescription {
 
     final Context context = this.context;
 
-    final Set<DataFile> checkedDatafile = new HashSet<DataFile>();
-    final Map<DataFormat, Checker> checkers =
-        new HashMap<DataFormat, Checker>();
+    final Set<DataFile> checkedDatafile = newHashSet();
+    final Map<DataFormat, Checker> checkers = newHashMap();
 
     final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
     dfRegistry.register(DataFormats.READS_FASTQ);
@@ -134,21 +136,27 @@ class Workflow implements WorkflowDescription {
 
     for (Sample s : this.design.getSamples()) {
 
-      final Set<DataFormat> cart = new HashSet<DataFormat>();
-      final Set<DataFormat> cartUsed = new HashSet<DataFormat>();
-      final Set<DataFormat> cartReUsed = new HashSet<DataFormat>();
-      final Set<DataFormat> cartGenerated = new HashSet<DataFormat>();
-      final Set<DataFormat> cartNotGenerated = new HashSet<DataFormat>();
-      final Set<DataFormat> cartOnlyGenerated = new HashSet<DataFormat>();
+      final Set<DataFormat> cart = newHashSet();
+      final Set<DataFormat> cartUsed = newHashSet();
+      final Set<DataFormat> cartReUsed = newHashSet();
+      final Set<DataFormat> cartGenerated = newHashSet();
+      final Set<DataFormat> cartNotGenerated = newHashSet();
+      final Set<DataFormat> cartOnlyGenerated = newHashSet();
 
       // Add reads to the cart
       cart.add(getReadsDataFormat(s));
 
       // Add genome to the cart
-      cart.add(getGenomeDataFormat(s));
+      final DataFormat genomeFormat = getGenomeDataFormat(s);
+      if (genomeFormat != null) {
+        cart.add(genomeFormat);
+      }
 
       // Add annotation to the cart
-      cart.add(getAnnotationDataFormat(s));
+      final DataFormat annotationFormat = getAnnotationDataFormat(s);
+      if (annotationFormat != null) {
+        cart.add(annotationFormat);
+      }
 
       for (Step step : this.steps) {
 
@@ -373,17 +381,22 @@ class Workflow implements WorkflowDescription {
       throw new EoulsanException("For sample "
           + s.getId() + ", the genome source is null or empty.");
 
-    DataFormat readsDF;
-    try {
-      readsDF = new DataFile(genomeSource).getMetaData().getDataFormat();
+    final DataFile genomeFile = new DataFile(genomeSource);
+    if (!genomeFile.exists())
+      return null;
 
-      if (readsDF == null)
+    DataFormat genomeFormat;
+    try {
+      genomeFormat = genomeFile.getMetaData().getDataFormat();
+
+      if (genomeFormat == null)
         throw new EoulsanException("No DataFormat found for genome file: "
             + s.getSource());
 
-      return readsDF;
+      return genomeFormat;
 
     } catch (IOException e) {
+
       throw new EoulsanException("Unable to get genome metadata for: "
           + s.getSource());
     }
@@ -402,9 +415,14 @@ class Workflow implements WorkflowDescription {
       throw new EoulsanException("For sample "
           + s.getId() + ", the annotation source is null or empty.");
 
+    final DataFile annotationFile = new DataFile(annotationSource);
+    if (!annotationFile.exists()) {
+      return null;
+    }
+
     DataFormat annotDF;
     try {
-      annotDF = new DataFile(annotationSource).getMetaData().getDataFormat();
+      annotDF = annotationFile.getMetaData().getDataFormat();
 
       if (annotDF == null)
         throw new EoulsanException("No DataFormat found for annotation file: "

@@ -52,6 +52,9 @@ public class HadoopUploadStep extends UploadStep {
   protected DataFile getUploadedDataFile(final DataFile file, final int id)
       throws IOException {
 
+    if (file == null || !file.exists())
+      return null;
+
     final DataFile dest = getDest();
 
     DataFile result = null;
@@ -95,6 +98,10 @@ public class HadoopUploadStep extends UploadStep {
 
       final DataFile src = e.getKey();
       final DataFile dest = e.getValue();
+
+      if (src == null || dest == null) {
+        continue;
+      }
 
       if (e.getKey().getProtocol() == fileProtocol) {
 
