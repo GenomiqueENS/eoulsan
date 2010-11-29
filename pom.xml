@@ -206,7 +206,8 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
-			<version>1.0.008</version>
+			<!--version>1.0.008</version-->
+			<version>1.1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -533,7 +534,7 @@
 						                  <!--type></type-->
 				                                  <!--classifier> [classifier - optional] </classifier-->
 						                  <overWrite>true</overWrite>
-						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
 						                  <destFileName>common-compress.jar</destFileName>
 						                </artifactItem>
 								<artifactItem>
@@ -574,7 +575,7 @@
 				                                  <!--classifier> [classifier - optional] </classifier-->
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>common-codec.jar</destFileName>
+						                  <destFileName>JRclient.jar</destFileName>
 						                </artifactItem>
 								<artifactItem>
 						                  <groupId>com.google.guava</groupId>
