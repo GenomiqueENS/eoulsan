@@ -53,23 +53,6 @@ public final class Common {
       "soap alignment with only one hit";
 
   /**
-   * Get the identifier of the sample from the source path
-   * @param sample Sample to use
-   * @return the identifier of the source
-   */
-  public static int getSampleId(final String sampleSource) {
-
-    if (sampleSource == null || "".equals(sampleSource)) {
-      return -1;
-    }
-
-    final String basename = StringUtils.basename(sampleSource);
-    final int pos = basename.lastIndexOf('_');
-
-    return Integer.parseInt(basename.substring(pos + 1));
-  }
-
-  /**
    * Write log data.
    * @param os OutputStream of the log file
    * @param data data to write
