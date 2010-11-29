@@ -89,6 +89,12 @@ public abstract class UploadStep extends AbstractStep {
 
     try {
 
+      // Check if destination path already exists
+      if (getDest().exists()) {
+        throw new IOException("The uploading destination already exists: "
+            + getDest());
+      }
+
       // Repackage the jar file if necessary
       if (!context.getRuntime().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
