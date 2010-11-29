@@ -112,7 +112,7 @@ public abstract class UploadStep extends AbstractStep {
           getUploadedDataFile(currentParamDataFile);
       filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
 
-      // Copy the file
+      // Copy the files
       copy(filesToCopy);
 
       // Remove temporary design file
@@ -269,8 +269,8 @@ public abstract class UploadStep extends AbstractStep {
         genomesCount++;
 
         // Add genome file
-        DataFile genomeOldFile = new DataFile(genome);
-        DataFile genomeNewFile =
+        final DataFile genomeOldFile = new DataFile(genome);
+        final DataFile genomeNewFile =
             getUploadedDataFile(genomeOldFile, genomesCount);
 
         if (filesToCopy.contains(genomeOldFile)) {
@@ -279,7 +279,8 @@ public abstract class UploadStep extends AbstractStep {
           result.put(genomeOldFile, genomeNewFile);
         }
 
-        genomesMap.put(genome, genomeNewFile.getSource());
+        genomesMap.put(genome, genomeNewFile == null ? "" : genomeNewFile
+            .getSource());
       }
       s.getMetadata().setGenome(genomesMap.get(genome));
 
@@ -290,8 +291,9 @@ public abstract class UploadStep extends AbstractStep {
         annotationsCount++;
 
         // Add annotation file
-        DataFile annotationOldFile = new DataFile(annotation);
-        DataFile annotationNewFile =
+        final DataFile annotationOldFile = new DataFile(annotation);
+
+        final DataFile annotationNewFile =
             getUploadedDataFile(annotationOldFile, annotationsCount);
 
         if (filesToCopy.contains(annotationOldFile)) {
@@ -300,10 +302,10 @@ public abstract class UploadStep extends AbstractStep {
           result.put(annotationOldFile, annotationNewFile);
         }
 
-        annotationsMap.put(annotation, annotationNewFile.getSource());
+        annotationsMap.put(annotation, annotationNewFile == null
+            ? "" : annotationNewFile.getSource());
       }
       s.getMetadata().setAnnotation(annotationsMap.get(annotation));
-
     }
 
     for (DataFile file : filesToCopy)
