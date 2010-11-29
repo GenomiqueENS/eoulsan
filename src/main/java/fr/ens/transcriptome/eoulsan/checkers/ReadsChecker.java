@@ -68,7 +68,7 @@ public class ReadsChecker implements Checker {
       final InputStream is;
 
       try {
-        
+
         is = context.getInputStream(DataFormats.READS_FASTQ, s);
         checkReadsFile(is, MAX_READS_TO_CHECK);
 
