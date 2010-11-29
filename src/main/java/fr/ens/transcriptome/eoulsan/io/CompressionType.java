@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  */
 public enum CompressionType {
 
-  GZIP("gzip", ".gz"), BZIP2("bzip2", ".bz2"), NONE ("", "") ;
+  GZIP("gzip", ".gz"), BZIP2("bzip2", ".bz2"), NONE("", "");
 
   private String contentEncoding;
   private String extension;
@@ -87,7 +87,7 @@ public enum CompressionType {
 
     case BZIP2:
       return createBZip2InputStream(is);
-      
+
     case NONE:
       return is;
 
@@ -117,7 +117,7 @@ public enum CompressionType {
 
     case BZIP2:
       return createBZip2OutputStream(os);
-      
+
     case NONE:
       return os;
 
@@ -248,6 +248,35 @@ public enum CompressionType {
 
     throw new IOException(
         "Unable to find a class to create a BZip2InputStream.");
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Remove the compression extension to a string if exists.
+   * @param s String to process
+   * @return the String without the compression extension or the original String
+   *         id the String does not ends with a compression extension
+   */
+  public static String removeCompressionExtension(final String s) {
+
+    if (s == null)
+      return null;
+
+    for (CompressionType ct : CompressionType.values()) {
+
+      if (ct == NONE)
+        continue;
+
+      if (s.endsWith(ct.getExtension())) {
+
+        return s.substring(0, s.length() - ct.getExtension().length());
+      }
+    }
+
+    return s;
   }
 
   //
