@@ -38,6 +38,8 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -115,9 +117,10 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
           final String filename = p.getName();
 
-          if (filename.startsWith("sample_expression_")
-              && filename.endsWith(".txt"))
-            // || filename.endsWith(".log"))
+          final DataFormat df = DataFormats.EXPRESSION_RESULTS_TXT;
+
+          if (filename.startsWith(df.getType().getPrefix())
+              && filename.endsWith(df.getDefaultExtention()))
             return true;
 
           return false;
