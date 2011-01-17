@@ -22,34 +22,18 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
-
-import com.google.common.base.Preconditions;
-
-@SuppressWarnings("unchecked")
-public class HadoopReporterIncrementer implements ReporterIncrementer {
-
-  private final TaskInputOutputContext context;
-
-  @Override
-  public void incrCounter(String counterGroup, String counterName, long amount) {
-
-    context.getCounter(counterGroup, counterName).increment(amount);
-  }
-
-  //
-  // Constructor
-  //
+/**
+ * This interface allow to increment a counter in hadoop or local mode.
+ * @author Laurent Jourdren
+ */
+public interface ReporterIncrementer {
 
   /**
-   * Constructor.
-   * @param context context to use for counter incrementation
+   * Increment a counter.
+   * @param counterGroup group of the counter
+   * @param counter the counter to increment
+   * @param amount amount to add to the counter
    */
-  public HadoopReporterIncrementer(final TaskInputOutputContext context) {
-
-    Preconditions.checkNotNull(context, "Context is null");
-
-    this.context = context;
-  }
+  public void incrCounter(String counterGroup, String counterName, long amount);
 
 }
