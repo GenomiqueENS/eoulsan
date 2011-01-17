@@ -188,7 +188,17 @@ class Workflow implements WorkflowDescription {
                   cartReUsed.add(df);
 
                 found++;
+              } else {
+
+                if (context.getDataFile(df, s).exists()) {
+                  cart.add(df);
+                  cartNotGenerated.add(df);
+                  cartUsed.add(df);
+                  found++;
+                }
+
               }
+
             }
 
             if (found == 0) {
