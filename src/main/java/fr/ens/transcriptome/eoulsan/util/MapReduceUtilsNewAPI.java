@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
 public final class MapReduceUtilsNewAPI {
@@ -125,6 +126,37 @@ public final class MapReduceUtilsNewAPI {
         if (j.isComplete())
           completedJobs++;
     }
+  }
+
+  /**
+   * Parse a tabulated line to fill out text key and values.
+   * @param line line to parse
+   * @param outKey text out key
+   * @param outValue text out value
+   * @return true if the parsing is ok
+   */
+  public static final boolean parseKeyValue(final String line,
+      final Text outKey, final Text outValue) {
+
+    if (line == null) {
+
+      return false;
+    }
+
+    final int posTab = line.indexOf('\t');
+
+    if (posTab == -1) {
+
+      outKey.set(line);
+      outValue.clear();
+
+      return false;
+    }
+
+    outKey.set(line.substring(0, posTab));
+    outValue.set(line.substring(posTab + 1));
+
+    return true;
   }
 
   //
