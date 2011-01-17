@@ -24,12 +24,18 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.mapreduce.CounterGroup;
 import org.apache.hadoop.mapreduce.Job;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * This is the version for the new Hadoop API of JobsResults.
@@ -85,16 +91,25 @@ public class NewAPIJobsResults extends JobsResults {
 
                 final Iterator<org.apache.hadoop.mapreduce.Counter> it =
                     g.iterator();
+
+                final Map<String, Long> map = Maps.newHashMap();
+
                 while (it.hasNext()) {
 
                   org.apache.hadoop.mapreduce.Counter counter = it.next();
-                  sb.append('\t');
-                  sb.append(counter.getName());
-                  sb.append('=');
-                  sb.append(counter.getValue());
-                  sb.append('\n');
-
+                  map.put(counter.getName(), counter.getValue());
                 }
+
+                final List<String> names = Lists.newArrayList(map.keySet());
+                Collections.sort(names);
+                for (String name : names) {
+                  sb.append('\t');
+                  sb.append(name);
+                  sb.append('=');
+                  sb.append(map.get(name));
+                  sb.append('\n');
+                }
+
               }
             }
           }

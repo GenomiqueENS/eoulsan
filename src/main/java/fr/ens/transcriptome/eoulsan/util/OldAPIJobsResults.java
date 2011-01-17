@@ -24,13 +24,19 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.Counters.Counter;
 import org.apache.hadoop.mapred.Counters.Group;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * This is the version for the old Hadoop API of JobsResults.
@@ -84,16 +90,24 @@ public class OldAPIJobsResults extends JobsResults {
 
               final Group g = j.getCounters().getGroup(counterGroup);
               if (g != null) {
+
+                final Map<String, Long> map = Maps.newHashMap();
+
                 final Iterator<Counter> it = g.iterator();
                 while (it.hasNext()) {
 
-                  Counter counter = it.next();
-                  sb.append('\t');
-                  sb.append(counter.getName());
-                  sb.append('=');
-                  sb.append(counter.getValue());
-                  sb.append('\n');
+                  final Counter counter = it.next();
+                  map.put(counter.getName(), counter.getValue());
+                }
 
+                final List<String> names = Lists.newArrayList(map.keySet());
+                Collections.sort(names);
+                for (String name : names) {
+                  sb.append('\t');
+                  sb.append(name);
+                  sb.append('=');
+                  sb.append(map.get(name));
+                  sb.append('\n');
                 }
 
               }

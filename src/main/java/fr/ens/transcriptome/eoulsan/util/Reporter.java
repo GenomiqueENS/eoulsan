@@ -24,25 +24,23 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
 
 /**
  * This class implements a reporter class like Counter class in Hadoop
  * framework.
  * @author Laurent Jourdren
  */
-public class Reporter {
+public class Reporter implements ReporterIncrementer {
 
   private Map<String, Map<String, Long>> map =
       new HashMap<String, Map<String, Long>>();
 
-  /**
-   * Increment a counter.
-   * @param counterGroup group of the counter
-   * @param counter the counter to increment
-   * @param amount amount to add to the counter
-   */
+  @Override
   public void incrCounter(final String counterGroup, final String counter,
       final long amount) {
 
@@ -145,14 +143,19 @@ public class Reporter {
     }
 
     final Map<String, Long> group = this.map.get(counterGroup);
-    if (group != null)
-      for (Map.Entry<String, Long> e : group.entrySet()) {
+    if (group != null) {
+
+      final List<String> counterNames = Lists.newArrayList(group.keySet());
+      Collections.sort(counterNames);
+
+      for (String counterName : counterNames) {
         sb.append('\t');
-        sb.append(e.getKey());
+        sb.append(counterName);
         sb.append('=');
-        sb.append(e.getValue());
+        sb.append(group.get(counterName));
         sb.append('\n');
       }
+    }
 
     return sb.toString();
   }
@@ -162,7 +165,10 @@ public class Reporter {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (String counterGroup : getCounterGroups()) {
+    final List<String> groups = Lists.newArrayList(getCounterGroups());
+    Collections.sort(groups);
+
+    for (String counterGroup : groups) {
       sb.append(counterGroup);
       sb.append('\n');
       sb.append(countersValuesToString(counterGroup, null));
