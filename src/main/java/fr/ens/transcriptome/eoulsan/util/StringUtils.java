@@ -130,7 +130,8 @@ public final class StringUtils {
     if (pos == -1)
       return filename;
 
-    return filename.substring(0, pos);
+    return filename.substring(0, filename.length() - shortName.length())
+        + shortName.subSequence(0, pos);
   }
 
   /**
