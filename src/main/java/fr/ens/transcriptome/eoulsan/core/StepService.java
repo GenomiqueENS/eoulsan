@@ -179,6 +179,23 @@ public class StepService {
     loader =
         ServiceLoader.load(Step.class, new ServiceClassLoader(
             autorisedAnnotations));
+
+    // Log available steps
+    final Iterator<Step> it = this.loader.iterator();
+
+    while (it.hasNext()) {
+
+      try {
+        final Step step = it.next();
+
+        LOGGER.info("found step: "
+            + step.getName() + " (" + step.getClass().getName()+")");
+
+      } catch (ServiceConfigurationError e) {
+        LOGGER.fine("Class for step cannot be load in "
+            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
+      }
+    }
   }
 
 }
