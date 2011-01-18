@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.steps.mapping.SOAP2SAM;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
