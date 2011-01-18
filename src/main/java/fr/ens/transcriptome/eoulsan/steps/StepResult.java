@@ -87,16 +87,17 @@ public class StepResult {
     return errorMessage;
   }
 
-  private static String createLogMessage(final long startTime,
+  private static String createLogMessage(final Step step, long startTime,
       final String logMsg) {
 
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
 
-    return "Start time: "
-        + new Date(startTime) + "\nEnd time: " + new Date(endTime)
-        + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n"
-        + logMsg;
+    return "Step: "
+        + step.getName() + " [" + step.getClass().getCanonicalName()
+        + "]\nStart time: " + new Date(startTime) + "\nEnd time: "
+        + new Date(endTime) + "\nDuration: "
+        + StringUtils.toTimeHumanReadable(duration) + "\n" + logMsg;
   }
 
   //
@@ -126,7 +127,7 @@ public class StepResult {
   public StepResult(final Step step, final boolean success,
       final long startTime, final String logMsg) {
 
-    this(step, success, createLogMessage(startTime, logMsg));
+    this(step, success, createLogMessage(step, startTime, logMsg));
   }
 
   /**
@@ -139,7 +140,7 @@ public class StepResult {
   public StepResult(final Step step, final boolean success,
       final long startTime, final String logMsg, final String errorMsg) {
 
-    this(step, success, createLogMessage(startTime, logMsg));
+    this(step, success, createLogMessage(step, startTime, logMsg));
     this.errorMessage = errorMsg;
   }
 
@@ -151,7 +152,7 @@ public class StepResult {
    */
   public StepResult(final Step step, final long startTime, final String logMsg) {
 
-    this(step, true, createLogMessage(startTime, logMsg));
+    this(step, true, createLogMessage(step, startTime, logMsg));
   }
 
   /**
