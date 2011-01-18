@@ -164,11 +164,11 @@ public abstract class Executor {
     workflow.addFirstSteps(firstSteps);
     workflow.addEndSteps(endSteps);
 
-    // Check workflow
-    workflow.check();
-
     // Init steps of the workflow
     workflow.init();
+
+    // Check workflow
+    workflow.check();
 
     logger.info("Date: " + new Date(System.currentTimeMillis()));
     logger.info("Host: " + SystemUtils.getHostName());
