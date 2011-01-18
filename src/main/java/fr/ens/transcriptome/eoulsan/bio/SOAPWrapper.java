@@ -55,7 +55,7 @@ public final class SOAPWrapper {
    * @param outputDir output directory for the index
    * @throws IOException if an error occurs while creating the index
    */
-  public static void makeIndex(final File genomeFile, final File outputDir)
+  private static void makeIndex(final File genomeFile, final File outputDir)
       throws IOException {
 
     if (genomeFile == null) {
@@ -130,7 +130,7 @@ public final class SOAPWrapper {
    * @return a File object with the path of the result zip file
    * @throws IOException if an error occurs while creating the index
    */
-  public static File makeIndexInZipFile(final File genomeFile)
+  private static File makeIndexInZipFile(final File genomeFile)
       throws IOException {
 
     LOGGER.info("Start index computation");
