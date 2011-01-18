@@ -22,6 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.filtersamples;
 
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,13 +31,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.LogReader;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -44,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class FilterSamplesLocalStep extends FilterSamplesStep {
+public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -67,18 +69,18 @@ public class FilterSamplesLocalStep extends FilterSamplesStep {
       final Reporter filterReadsReporter = logReader.read();
 
       // Read soapmapreads.log
-      logReader = new LogReader(new File(logDir, "soapmapreads.log"));
+      logReader = new LogReader(new File(logDir, "samfilter.log"));
       final Reporter soapMapReadsReporter = logReader.read();
 
       // Get the input reads for each sample
       final Map<String, Long> sampleInputMapReads =
-          parseReporter(filterReadsReporter,
-              Common.READS_AFTER_FILTERING_COUNTER);
+          parseReporter(filterReadsReporter, OUTPUT_FILTERED_READS_COUNTER
+              .counterName());
 
       // Get the number of match with onlt one locus for each sample
       final Map<String, Long> soapAlignementWithOneLocus =
           parseReporter(soapMapReadsReporter,
-              Common.SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER);
+              MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName());
 
       int removedSampleCount = 0;
       final StringBuilder sb = new StringBuilder();
