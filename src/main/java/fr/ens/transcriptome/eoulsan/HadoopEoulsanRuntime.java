@@ -108,8 +108,9 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   //
 
   /**
-   * Public constructor, initialize the runtime.
-   * @param settings Settings of the application
+   * Public constructor, initialize the runtime. This constructor is useful in
+   * mappers or reducers for initialize Eoulsan DataProtocols.
+   * @param conf Hadoop configuration of the application
    */
   public static HadoopEoulsanRuntime newEoulsanRuntime(final Configuration conf)
       throws IOException {
