@@ -22,6 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.GOOD_QUALITY_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,7 +37,6 @@ import java.io.Writer;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -127,7 +133,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       try {
         final SAMRecord samRecord = parser.parseLine(line);
 
-        reporter.incrCounter(COUNTER_GROUP, "input alignments", 1);
+        reporter.incrCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER
+            .counterName(), 1);
 
         if (samRecord.getReadUnmappedFlag()) {
           reporter.incrCounter(COUNTER_GROUP, "unmapped reads", 1);
@@ -135,8 +142,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
           if (samRecord.getMappingQuality() >= mappingQualityThreshold) {
 
-            reporter.incrCounter(COUNTER_GROUP,
-                "alignments mapped and with good mapping quality", 1);
+            reporter.incrCounter(COUNTER_GROUP, GOOD_QUALITY_ALIGNMENTS_COUNTER
+                .counterName(), 1);
 
             final String id = samRecord.getReadName();
 
@@ -148,14 +155,14 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
                 writer.write(lastLine + "\n");
                 reporter.incrCounter(COUNTER_GROUP,
-                    Common.ALIGNEMENTS_AFTER_FILTERING_COUNTER, 1);
+                    OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
 
               } else if (lastIdCount > 1) {
 
                 reporter.incrCounter(COUNTER_GROUP,
-                    "alignments rejected by filters", 1);
+                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
                 reporter.incrCounter(COUNTER_GROUP,
-                    "alignments with more than one match", 1);
+                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
               }
 
               lastIdCount = 1;
@@ -165,15 +172,15 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
           } else {
 
             reporter.incrCounter(COUNTER_GROUP,
-                "alignments rejected by filters", 1);
+                ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
           }
 
         }
 
       } catch (SAMFormatException e) {
 
-        reporter.incrCounter(COUNTER_GROUP, "alignments in invalid sam format",
-            1);
+        reporter.incrCounter(COUNTER_GROUP, ALIGNMENTS_WITH_INVALID_SAM_FORMAT
+            .counterName(), 1);
       }
 
       lastLine = line;
@@ -182,14 +189,15 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     if (lastIdCount == 1) {
 
       writer.write(lastLine + "\n");
-      reporter.incrCounter(COUNTER_GROUP,
-          Common.ALIGNEMENTS_AFTER_FILTERING_COUNTER, 1);
+      reporter.incrCounter(COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER
+          .counterName(), 1);
 
     } else if (lastIdCount > 1) {
 
-      reporter.incrCounter(COUNTER_GROUP, "alignments rejected by filters", 1);
       reporter.incrCounter(COUNTER_GROUP,
-          "alignments with more than one match", 1);
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
+      reporter.incrCounter(COUNTER_GROUP, ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER
+          .counterName(), 1);
     }
 
     // Close files

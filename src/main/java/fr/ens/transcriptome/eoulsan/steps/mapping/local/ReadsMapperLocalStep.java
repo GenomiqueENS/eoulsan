@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -150,7 +151,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         entriesParsed++;
 
-        reporter.incrCounter(COUNTER_GROUP, "output mapping alignments", 1);
+        reporter.incrCounter(COUNTER_GROUP,
+            MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName(), 1);
       }
 
     }

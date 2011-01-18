@@ -23,11 +23,13 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
@@ -112,15 +114,17 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     try {
       while (reader.readEntry()) {
 
-        reporter.incrCounter(COUNTER_GROUP, "input raw reads", 1);
+        reporter.incrCounter(COUNTER_GROUP,
+            INPUT_RAW_READS_COUNTER.counterName(), 1);
 
         if (filter.accept(reader)) {
           writer.set(reader);
           writer.write();
           reporter.incrCounter(COUNTER_GROUP,
-              Common.READS_AFTER_FILTERING_COUNTER, 1);
+              OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
         } else {
-          reporter.incrCounter(COUNTER_GROUP, "reads rejected by filters", 1);
+          reporter.incrCounter(COUNTER_GROUP,
+              READS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
         }
 
       }
