@@ -107,6 +107,20 @@ public class DataFile {
     return this.protocolPrefixInSource;
   }
 
+  /**
+   * Test if the DataFile use the defaultProtocol.
+   * @return true if the DataFile use the default protocol
+   */
+  public boolean isDefaultProtocol() {
+
+    try {
+      return DataProtocolService.getInstance().getDefaultProtocol().equals(
+          getProtocol());
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
   //
   // Other methods
   //
@@ -230,7 +244,6 @@ public class DataFile {
     // Looking for the protocol
     this.protocolPrefixInSource = findProtocol(source);
     final DataProtocolService registery = DataProtocolService.getInstance();
-    //final DataProtocolRegistry registery = DataProtocolRegistry.getInstance();
 
     if (protocolPrefixInSource == null)
       this.protocol = registery.getDefaultProtocol();
@@ -254,6 +267,10 @@ public class DataFile {
       this.name = source.substring(lastSlashPos + 1);
 
   }
+
+  //
+  // Object methods overrides
+  //
 
   @Override
   public boolean equals(final Object o) {
