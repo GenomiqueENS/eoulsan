@@ -89,12 +89,12 @@ public class DataSourceDistCp {
         registry.register(DataFormats.ANNOTATION_GFF);
         registry.register(DataFormats.EXPRESSION_RESULTS_TXT);
         registry.register(DataFormats.FILTERED_READS_FASTQ);
-        registry.register(DataFormats.FILTERED_SOAP_RESULTS_TXT);
+        registry.register(DataFormats.FILTERED_MAPPER_RESULTS_SAM);
         registry.register(DataFormats.GENOME_FASTA);
         registry.register(DataFormats.READS_FASTQ);
         registry.register(DataFormats.READS_TFQ);
         registry.register(DataFormats.SOAP_INDEX_ZIP);
-        registry.register(DataFormats.SOAP_RESULTS_TXT);
+        registry.register(DataFormats.MAPPER_RESULTS_SAM);
         registry.register(DataFormats.UNMAP_READS_FASTA);
 
       } catch (EoulsanException e) {
