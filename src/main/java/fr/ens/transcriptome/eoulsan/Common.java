@@ -44,14 +44,6 @@ public final class Common {
 
   public static final String S3_PROTOCOL = "s3n";
 
-  public static final String SOAP_ARGS_DEFAULT = "-r 2 -l 28";
-
-  public static final String SOAP_INPUT_READS_COUNTER = "soap input reads";
-  public static final String READS_AFTER_FILTERING_COUNTER =
-      "reads after filtering";
-  public static final String SOAP_ALIGNEMENT_WITH_ONLY_ONE_HIT_COUNTER =
-      "soap alignment with only one hit";
-
   /**
    * Write log data.
    * @param os OutputStream of the log file
