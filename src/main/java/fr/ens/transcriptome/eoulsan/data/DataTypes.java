@@ -63,7 +63,7 @@ public class DataTypes {
     @Override
     public String getPrefix() {
 
-      return "filteredlfastq_";
+      return "filtered_reads_";
     }
 
   };
@@ -90,35 +90,80 @@ public class DataTypes {
     }
   };
 
-  /** Filtered SOAP results. */
-  public static final DataType FILTERED_SOAP_RESULTS = new AbstractDataType() {
+  /** BWA index data type. */
+  public static final DataType BWA_INDEX = new AbstractDataType() {
 
     @Override
     public String getName() {
 
-      return "filtered_soap_results";
+      return "bwa_index";
     }
 
     @Override
     public String getPrefix() {
 
-      return "filtered_soap_results_";
+      return "bwa_index_";
+    }
+
+    @Override
+    public boolean isOneFilePerAnalysis() {
+
+      return true;
     }
   };
 
-  /** SOAP results datatype. */
-  public static final DataType SOAP_RESULTS = new AbstractDataType() {
+  /** Bowtie index data type. */
+  public static final DataType BOWTIE_INDEX = new AbstractDataType() {
 
     @Override
     public String getName() {
 
-      return "soap_results";
+      return "bowtie_index";
     }
 
     @Override
     public String getPrefix() {
 
-      return "soap_results_";
+      return "bowtie_index_";
+    }
+
+    @Override
+    public boolean isOneFilePerAnalysis() {
+
+      return true;
+    }
+  };
+
+  /** Filtered Mapper results. */
+  public static final DataType FILTERED_MAPPER_RESULTS =
+      new AbstractDataType() {
+
+        @Override
+        public String getName() {
+
+          return "filtered_mapper_results";
+        }
+
+        @Override
+        public String getPrefix() {
+
+          return "filtered_mapper_results_";
+        }
+      };
+
+  /** Mapper results datatype. */
+  public static final DataType MAPPER_RESULTS = new AbstractDataType() {
+
+    @Override
+    public String getName() {
+
+      return "mapper_results";
+    }
+
+    @Override
+    public String getPrefix() {
+
+      return "mapper_results_";
     }
   };
 
@@ -166,7 +211,7 @@ public class DataTypes {
     }
 
   };
-  
+
   /** Annotation datatype. */
   public static final DataType ANNOTATION_INDEX = new AbstractDataType() {
 
@@ -237,6 +282,29 @@ public class DataTypes {
     public boolean isDataTypeFromDesignFile() {
 
       return true;
+    }
+
+    @Override
+    public boolean isOneFilePerAnalysis() {
+
+      return true;
+    }
+
+  };
+
+  /** Genome description datatype. */
+  public static final DataType GENOME_DESC = new AbstractDataType() {
+
+    @Override
+    public String getName() {
+
+      return "genome_desc";
+    }
+
+    @Override
+    public String getPrefix() {
+
+      return "genome_desc_";
     }
 
     @Override

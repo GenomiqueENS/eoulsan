@@ -26,8 +26,9 @@ import fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.checkers.GenomeChecker;
 import fr.ens.transcriptome.eoulsan.checkers.ReadsChecker;
+import fr.ens.transcriptome.eoulsan.steps.GenomeDescriptionGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.mapping.SOAPIndexGeneratorStep;
+import fr.ens.transcriptome.eoulsan.steps.newmapping.hadoop.ReadsIndexGeneratorStep;
 
 public class DataFormats {
 
@@ -110,6 +111,28 @@ public class DataFormats {
 
       };
 
+  /** Filtered reads fasta data format. */
+  public static final DataFormat FILTERED_READS_TFQ = new AbstractDataFormat() {
+
+    public DataType getType() {
+
+      return DataTypes.FILTERED_READS;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".tfq";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return "filtered_read_tfq";
+    }
+
+  };
+
   /** SOAP index data format. */
   public static final DataFormat SOAP_INDEX_ZIP = new AbstractDataFormat() {
 
@@ -145,52 +168,132 @@ public class DataFormats {
     @Override
     public Step getGenerator() {
 
-      return new SOAPIndexGeneratorStep();
+      return new ReadsIndexGeneratorStep("soap");
     }
 
   };
 
-  /** Filtered SOAP data format. */
-  public static final DataFormat FILTERED_SOAP_RESULTS_TXT =
-      new AbstractDataFormat() {
-
-        public DataType getType() {
-
-          return DataTypes.FILTERED_SOAP_RESULTS;
-        }
-
-        @Override
-        public String getDefaultExtention() {
-
-          return ".soap";
-        }
-
-        @Override
-        public String getFormatName() {
-
-          return "filtered_soap_results";
-        }
-
-      };
-
-  /** SOAP results data format. */
-  public static final DataFormat SOAP_RESULTS_TXT = new AbstractDataFormat() {
+  /** BWA index data format. */
+  public static final DataFormat BWA_INDEX_ZIP = new AbstractDataFormat() {
 
     public DataType getType() {
 
-      return DataTypes.SOAP_RESULTS;
+      return DataTypes.BWA_INDEX;
     }
 
     @Override
     public String getDefaultExtention() {
 
-      return ".soap";
+      return ".zip";
     }
 
     @Override
     public String getFormatName() {
 
-      return "soap_results";
+      return "bwa_index_zip";
+    }
+
+    @Override
+    public String getContentType() {
+
+      return "application/zip";
+    }
+
+    @Override
+    public boolean isGenerator() {
+
+      return true;
+    }
+
+    @Override
+    public Step getGenerator() {
+
+      return new ReadsIndexGeneratorStep("bwa");
+    }
+
+  };
+
+  /** BWA index data format. */
+  public static final DataFormat BOWTIE_INDEX_ZIP = new AbstractDataFormat() {
+
+    public DataType getType() {
+
+      return DataTypes.BOWTIE_INDEX;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".zip";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return "bowtie_index_zip";
+    }
+
+    @Override
+    public String getContentType() {
+
+      return "application/zip";
+    }
+
+    @Override
+    public boolean isGenerator() {
+
+      return true;
+    }
+
+    @Override
+    public Step getGenerator() {
+
+      return new ReadsIndexGeneratorStep("bowtie");
+    }
+
+  };
+
+  /** Filtered SOAP data format. */
+  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM =
+      new AbstractDataFormat() {
+
+        public DataType getType() {
+
+          return DataTypes.FILTERED_MAPPER_RESULTS;
+        }
+
+        @Override
+        public String getDefaultExtention() {
+
+          return ".sam";
+        }
+
+        @Override
+        public String getFormatName() {
+
+          return "filtered_sam_results";
+        }
+
+      };
+
+  /** SOAP results data format. */
+  public static final DataFormat MAPPER_RESULTS_SAM = new AbstractDataFormat() {
+
+    public DataType getType() {
+
+      return DataTypes.MAPPER_RESULTS;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".sam";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return "sam_results";
     }
 
   };
@@ -339,6 +442,40 @@ public class DataFormats {
     public Checker getChecker() {
 
       return new GenomeChecker();
+    }
+
+  };
+
+  /** Genome data format. */
+  public static final DataFormat GENOME_DESC_TXT = new AbstractDataFormat() {
+
+    public DataType getType() {
+
+      return DataTypes.GENOME_DESC;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".txt";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return "genome_desc_txt";
+    }
+
+    @Override
+    public Step getGenerator() {
+
+      return new GenomeDescriptionGeneratorStep();
+    }
+
+    @Override
+    public boolean isGenerator() {
+
+      return true;
     }
 
   };
