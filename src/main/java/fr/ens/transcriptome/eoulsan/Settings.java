@@ -30,6 +30,8 @@ public final class Settings {
   private static final String PRINT_STACK_TRACE_KEY =
       MAIN_PREFIX_KEY + "printstacktrace";
 
+  private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
+
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
@@ -108,6 +110,15 @@ public final class Settings {
   public String getRServeServername() {
 
     return this.properties.getProperty(RSERVE_SERVER_NAME_KEY);
+  }
+
+  /**
+   * Get the temporary directory.
+   * @return The temporary directory
+   */
+  public String getTempDirectory() {
+
+    return this.properties.getProperty(TMP_DIR_KEY);
   }
 
   /**
@@ -214,6 +225,17 @@ public final class Settings {
   }
 
   /**
+   * Set the RServe server name.
+   * @param serverName The name of the RServe to use
+   */
+  public void setTempDirectory(final String tempDirectory) {
+
+    if (tempDirectory != null) {
+      this.properties.setProperty(TMP_DIR_KEY, tempDirectory);
+    }
+  }
+
+  /**
    * Set a setting value.
    * @param settingName name of the setting to set
    * @param settingValue value of the setting to set
@@ -313,6 +335,11 @@ public final class Settings {
 
   }
 
+  private void init() {
+
+    setTempDirectory(System.getProperty("java.io.tmpdir"));
+  }
+
   //
   // Constructor
   //
@@ -338,6 +365,8 @@ public final class Settings {
   Settings(final boolean loadDefaultConfigurationFile) throws IOException,
       EoulsanException {
 
+    init();
+
     if (!loadDefaultConfigurationFile) {
       loadSettings();
     }
@@ -351,6 +380,7 @@ public final class Settings {
    */
   public Settings(final File file) throws IOException, EoulsanException {
 
+    init();
     loadSettings(file);
   }
 
