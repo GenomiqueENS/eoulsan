@@ -22,6 +22,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.GOOD_QUALITY_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.MAPPER_WRITING_ERRORS;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.UNMAP_READS_COUNTER;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -112,7 +119,8 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
-    context.getCounter(this.counterGroup, "input alignments").increment(1);
+    context.getCounter(this.counterGroup,
+        INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
     final String line = value.toString();
 
@@ -120,7 +128,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       final SAMRecord samRecord = this.parser.parseLine(line);
 
       if (samRecord.getReadUnmappedFlag()) {
-        context.getCounter(this.counterGroup, "unmapped reads").increment(1);
+        context
+            .getCounter(this.counterGroup, UNMAP_READS_COUNTER.counterName())
+            .increment(1);
       } else {
 
         if (samRecord.getMappingQuality() >= mappingQualityThreshold) {
@@ -131,25 +141,26 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
           if (parseResult) {
             context.getCounter(this.counterGroup,
-                "alignments mapped and with good mapping quality").increment(1);
+                GOOD_QUALITY_ALIGNMENTS_COUNTER.counterName()).increment(1);
             context.write(this.outKey, this.outValue);
           } else {
-            context.getCounter(this.counterGroup, "errors in mapper writing")
-                .increment(1);
+            context.getCounter(this.counterGroup,
+                MAPPER_WRITING_ERRORS.counterName()).increment(1);
           }
 
         } else {
 
           context.getCounter(this.counterGroup,
-              "alignments rejected by filters").increment(1);
+              ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName())
+              .increment(1);
         }
 
       }
 
     } catch (SAMFormatException e) {
 
-      context.getCounter(this.counterGroup, "alignments in invalid sam format")
-          .increment(1);
+      context.getCounter(this.counterGroup,
+          ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName()).increment(1);
     }
   }
 

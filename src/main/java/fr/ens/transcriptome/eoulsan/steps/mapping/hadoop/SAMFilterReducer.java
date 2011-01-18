@@ -22,13 +22,16 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
@@ -69,13 +72,13 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     if (count == 1) {
       context.write(key, firstValue);
       context.getCounter(this.counterGroup,
-          Common.ALIGNEMENTS_AFTER_FILTERING_COUNTER).increment(1);
+          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName()).increment(1);
     } else {
 
-      context.getCounter(this.counterGroup, "alignments rejected by filters")
-          .increment(1);
       context.getCounter(this.counterGroup,
-          "alignments with more than one match").increment(1);
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(1);
+      context.getCounter(this.counterGroup,
+          ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName()).increment(1);
     }
 
   }

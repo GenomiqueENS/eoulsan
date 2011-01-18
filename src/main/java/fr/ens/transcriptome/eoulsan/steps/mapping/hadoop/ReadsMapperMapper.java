@@ -23,6 +23,8 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,7 +84,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException {
 
-    context.getCounter(this.counterGroup, "input mapping reads").increment(1);
+    context.getCounter(this.counterGroup,
+        INPUT_MAPPING_READS_COUNTER.counterName()).increment(1);
 
     fields.clear();
     for (String e : TAB_SPLITTER.split(value.toString())) {
@@ -279,8 +282,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         entriesParsed++;
 
         context.write(outKey, outValue);
-        context.getCounter(this.counterGroup, "output mapping alignments")
-            .increment(1);
+        context.getCounter(this.counterGroup,
+            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
       }
 
     }

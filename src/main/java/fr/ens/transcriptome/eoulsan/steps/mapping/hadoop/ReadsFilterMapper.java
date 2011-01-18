@@ -23,6 +23,9 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.util.MapReduceUtilsNewAPI.parseKeyValue;
 
 import java.io.IOException;
@@ -36,7 +39,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
@@ -128,7 +130,9 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
-    context.getCounter(this.counterGroup, "input raw reads").increment(1);
+    context
+        .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
+        .increment(1);
 
     final String line = value.toString();
 
@@ -155,10 +159,10 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         context.write(this.outKey, this.outValue);
         context.getCounter(this.counterGroup,
-            Common.READS_AFTER_FILTERING_COUNTER).increment(1);
+            OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {
-        context.getCounter(this.counterGroup, "reads rejected by filters")
-            .increment(1);
+        context.getCounter(this.counterGroup,
+            READS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(1);
       }
 
     } else if (fieldsSize == 6) {
@@ -180,10 +184,10 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         context.write(this.outKey, this.outValue);
         context.getCounter(this.counterGroup,
-            Common.READS_AFTER_FILTERING_COUNTER).increment(1);
+            OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {
-        context.getCounter(this.counterGroup, "reads rejected by filters")
-            .increment(1);
+        context.getCounter(this.counterGroup,
+            READS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(1);
       }
     }
 
