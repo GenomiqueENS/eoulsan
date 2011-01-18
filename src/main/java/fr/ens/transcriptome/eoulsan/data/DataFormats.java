@@ -28,7 +28,7 @@ import fr.ens.transcriptome.eoulsan.checkers.GenomeChecker;
 import fr.ens.transcriptome.eoulsan.checkers.ReadsChecker;
 import fr.ens.transcriptome.eoulsan.steps.GenomeDescriptionGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.newmapping.hadoop.ReadsIndexGeneratorStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsIndexGeneratorStep;
 
 public class DataFormats {
 
