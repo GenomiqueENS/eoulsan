@@ -21,4 +21,10 @@ public interface ReadFilter {
    */
   boolean accept(ReadSequence read1, ReadSequence read2);
 
+  /**
+   * Get the name of the filter.
+   * @return the name of the filter
+   */
+  String getName();
+
 }

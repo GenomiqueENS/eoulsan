@@ -46,8 +46,14 @@ public class PairCheckReadFilter extends AbstractReadFilter {
 
   @Override
   public boolean accept(ReadSequence read) {
-   
+
     return true;
+  }
+
+  @Override
+  public String getName() {
+
+    return "Pair check ReadFilter";
   }
 
 }
