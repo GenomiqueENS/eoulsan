@@ -111,13 +111,25 @@ public class ReadSequence extends Sequence {
    */
   public final String toFastQ() {
 
-    if (this.name == null || this.sequence == null || this.quality == null) {
+    return toFastQ(this.name, this.sequence, this.quality);
+  }
+
+  /**
+   * Return the sequence in FastQ format.
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   * @return a String with the sequence in FastQ format
+   */
+  public static final String toFastQ(final String name, final String sequence,
+      final String quality) {
+
+    if (name == null || sequence == null || quality == null) {
       return null;
     }
 
     return '@'
-        + this.name + '\n' + this.sequence + '\n' + '+' + this.name + '\n'
-        + this.quality + '\n';
+        + name + '\n' + sequence + '\n' + '+' + name + '\n' + quality + '\n';
   }
 
   /**
@@ -136,15 +148,42 @@ public class ReadSequence extends Sequence {
    */
   public final String toTFQ(final boolean withId) {
 
-    if (this.name == null || this.sequence == null || this.quality == null) {
+    return toTFQ(withId, this.name, this.sequence, this.quality);
+  }
+
+  /**
+   * Return the sequence in TFQ format.
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   * @return a String with the sequence in FastQ format
+   */
+  public static final String toTFQ(final String name, final String sequence,
+      final String quality) {
+
+    return toTFQ(true, name, sequence, quality);
+  }
+
+  /**
+   * Return the sequence in TFQ format.
+   * @param withId true if id must be added to the result
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   * @return a String with the sequence in FastQ format
+   */
+  public static final String toTFQ(final boolean withId, final String name,
+      final String sequence, final String quality) {
+
+    if (name == null || sequence == null || quality == null) {
       return null;
     }
 
     if (withId) {
-      return this.name + '\t' + this.sequence + '\t' + this.quality + '\n';
+      return name + '\t' + sequence + '\t' + quality + '\n';
     }
 
-    return '\t' + this.sequence + '\t' + this.quality + '\n';
+    return '\t' + sequence + '\t' + quality + '\n';
   }
 
   /**
