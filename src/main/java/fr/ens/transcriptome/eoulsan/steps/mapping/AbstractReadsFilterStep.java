@@ -23,23 +23,33 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
-/**
- * This abstract class define and parse arguments for the filter reads step.
- * @author Laurent Jourdren
- */
-public abstract class FilterReadsStep extends AbstractStep {
+public abstract class AbstractReadsFilterStep extends AbstractStep {
 
-  private static final String STEP_NAME = "filterreads";
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  protected static final String STEP_NAME = "filterreads";
+
+  protected static final String COUNTER_GROUP = "reads_filtering";
+
+  /** filter reads length threshold. */
+  public static final int LENGTH_THRESHOLD = 15;
+  
+  /** filter reads quality threshold. */
+  public static final double QUALITY_THRESHOLD = 15;
+  
   private int lengthThreshold = -1;
   private double qualityThreshold = -1;
+  private boolean pairEnd;
 
   //
   // Getters
@@ -59,6 +69,14 @@ public abstract class FilterReadsStep extends AbstractStep {
    */
   protected double getQualityThreshold() {
     return qualityThreshold;
+  }
+
+  /**
+   * Test if the step works in pair end mode.
+   * @return true if the pair end mode is enable
+   */
+  protected boolean isPairend() {
+    return this.pairEnd;
   }
 
   //
@@ -97,12 +115,20 @@ public abstract class FilterReadsStep extends AbstractStep {
         this.lengthThreshold = p.getIntValue();
       else if ("qualitythreshold".equals(p.getName()))
         this.qualityThreshold = p.getDoubleValue();
+      else if ("pairend".equals(p.getName()))
+        this.pairEnd = p.getBooleanValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
 
     }
 
+    // Log Step parameters
+    LOGGER
+        .info("In " + getName() + ", lengththreshold=" + this.lengthThreshold);
+    LOGGER.info("In "
+        + getName() + ", qualitythreshold=" + this.qualityThreshold);
+    LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
   }
 
 }
