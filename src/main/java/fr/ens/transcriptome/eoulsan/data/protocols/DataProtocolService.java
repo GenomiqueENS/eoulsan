@@ -139,9 +139,9 @@ public class DataProtocolService {
    * Get the default protocol.
    * @return the default DataProtocol
    */
-  public DataProtocol getDefaultProtocol() {
+  public FileDataProtocol getDefaultProtocol() {
 
-    return getProtocol(this.defaultProtocolName);
+    return (FileDataProtocol) getProtocol(this.defaultProtocolName);
   }
 
   /**
