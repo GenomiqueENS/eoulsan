@@ -54,9 +54,15 @@ public class TrimReadFilter extends AbstractReadFilter {
 
     trim(read);
 
-    return read.length() > lengthThreshold;
+    return read.length() > this.lengthThreshold;
   }
 
+  @Override
+  public String getName() {
+
+    return "Trim ReadFilter";
+  }
+  
   //
   // Constructor
   //

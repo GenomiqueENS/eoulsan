@@ -17,9 +17,15 @@ public class QualityReadFilter extends AbstractReadFilter {
     if (read == null)
       throw new NullPointerException("The read is null");
 
-    return read.meanQuality() > qualityThreshold;
+    return read.meanQuality() > this.qualityThreshold;
   }
 
+  @Override
+  public String getName() {
+
+    return "Quality ReadFilter";
+  }
+  
   //
   // Constructor
   //

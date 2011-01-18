@@ -17,4 +17,10 @@ public class ValidReadFilter extends AbstractReadFilter {
     return read.check();
   }
 
+  @Override
+  public String getName() {
+
+    return "Valid ReadFilter";
+  }
+
 }
