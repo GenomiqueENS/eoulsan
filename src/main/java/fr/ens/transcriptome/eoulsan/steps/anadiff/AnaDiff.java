@@ -74,10 +74,10 @@ public class AnaDiff {
     // Get samples ids, conditions names/indexes and replicat types
     for (Sample s : this.design.getSamples()) {
 
-      if (!s.getMetadata().isCondition())
+      if (!s.getMetadata().isConditionField())
         throw new EoulsanException("No condition field found in design file.");
 
-      if (!s.getMetadata().isReplicatType())
+      if (!s.getMetadata().isReplicatTypeField())
         throw new EoulsanException(
             "No ReplicatType field found in design file.");
 

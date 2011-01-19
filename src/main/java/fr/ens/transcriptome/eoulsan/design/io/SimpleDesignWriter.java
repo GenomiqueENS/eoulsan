@@ -34,7 +34,6 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
@@ -75,9 +74,6 @@ public class SimpleDesignWriter extends DesignWriter {
 
       for (String f : metadataFields) {
 
-        if (SampleMetadata.SLIDE_NUMBER_FIELD.equals(f))
-          continue;
-
         bw.append(SEPARATOR);
         bw.append(f);
       }
@@ -100,9 +96,6 @@ public class SimpleDesignWriter extends DesignWriter {
           bw.append(sourceInfo);
 
         for (String f : metadataFields) {
-
-          if (SampleMetadata.SLIDE_NUMBER_FIELD.equals(f))
-            continue;
 
           bw.append(SEPARATOR);
           bw.append(s.getMetadata().get(f));

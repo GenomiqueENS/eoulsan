@@ -25,7 +25,10 @@ package fr.ens.transcriptome.eoulsan.design;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
@@ -214,6 +217,59 @@ public final class DesignUtils {
           "Warning: The design contains more than one annotation file.");
 
     return design;
+  }
+
+  /**
+   * Remove optional description fields and obfuscate condition field.
+   * @param design design object to obfuscate
+   * @param removeReplicateInformation if replicate information must be removed
+   */
+  public static void obfuscate(final Design design,
+      final boolean removeReplicateInformation) {
+
+    if (design == null) {
+      return;
+    }
+
+    removeFieldIfExists(design, SampleMetadata.COMMENT_FIELD);
+    removeFieldIfExists(design, SampleMetadata.DATE_FIELD);
+    removeFieldIfExists(design, SampleMetadata.OPERATOR_FIELD);
+
+    if (removeReplicateInformation) {
+      removeFieldIfExists(design, SampleMetadata.CONDITION_FIELD);
+      removeFieldIfExists(design, SampleMetadata.REPLICAT_TYPE_FIELD);
+    }
+
+    final Map<String, Integer> map = Maps.newHashMap();
+    int count = 0;
+
+    for (Sample s : design.getSamples()) {
+
+      s.setName("s" + s.getId());
+
+      if (design.isMetadataField(SampleMetadata.CONDITION_FIELD)) {
+        final String cond = s.getMetadata().getCondition();
+
+        if (!map.containsKey(cond)) {
+          map.put(cond, ++count);
+        }
+
+        s.getMetadata().setCondition("c" + map.get(cond));
+      }
+    }
+  }
+
+  private static final void removeFieldIfExists(final Design design,
+      final String fieldName) {
+
+    if (design == null || fieldName == null) {
+      return;
+    }
+
+    if (design.isMetadataField(fieldName)) {
+      design.removeMetadataField(fieldName);
+    }
+
   }
 
 }
