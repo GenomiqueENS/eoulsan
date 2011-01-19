@@ -40,8 +40,6 @@ public interface SampleMetadata {
   String COMMENT_FIELD = "Comment";
   /** Date field. */
   String DATE_FIELD = "Date";
-  /** Slide Number field. */
-  String SLIDE_NUMBER_FIELD = "SildeNumber";
   /** Serial Number field. */
   String SERIAL_NUMBER_FIELD = "Serial number";
   /** Operator field. */
@@ -50,6 +48,8 @@ public interface SampleMetadata {
   String CONDITION_FIELD = "Condition";
   /** Operator field. */
   String REPLICAT_TYPE_FIELD = "ReplicateType";
+  /** UUID field. */
+  String UUID_TYPE_FIELD = "UUID";
 
   /**
    * Get a description.
@@ -84,112 +84,112 @@ public interface SampleMetadata {
 
   /**
    * Get the annotation relative to the sample.
-   * @return Returns the annaotation
+   * @return Returns the annotation
    */
   String getAnnotation();
 
   /**
-   * Get the date of the hybridation
+   * Get the date of the sample.
    * @return Returns the date
    */
   String getDate();
 
   /**
-   * Get the name of the operator
+   * Get the name of the operator.
    * @return Returns the operator
    */
   String getOperator();
 
   /**
-   * Get the slide number of the sample
-   * @return Returns the slide number
-   */
-  String getSampleNumber();
-
-  /**
-   * Get the serial number of the sample
+   * Get the serial number of the sample.
    * @return Returns the serialNumber
    */
   String getSerialNumber();
 
   /**
-   * Get the condition of the sample
+   * Get the condition of the sample.
    * @return Returns the condition
    */
   String getCondition();
 
   /**
-   * Get replicat type of the sample
+   * Get replicat type of the sample.
    * @return Returns the replicat
    */
   String getReplicatType();
+
+  /**
+   * Get UUID.
+   * @return Returns the UUID
+   */
+  String getUUID();
 
   /**
    * Set a field of the metadata.
    * @param field Field to set
    * @param value value to set
    */
-  void set(final String field, final String value);
+  void set(String field, String value);
 
   /**
    * Set the description.
    * @param description The description to set
    */
-  void setDescription(final String description);
+  void setDescription(String description);
 
   /**
    * Set the comment.
    * @param comment The comment to set
    */
-  void setComment(final String comment);
+  void setComment(String comment);
 
   /**
    * Set the genome file relative to the sample.
    * @param genome file to set
    */
-  void setGenome(final String genome);
+  void setGenome(String genome);
 
   /**
    * Set the annotation file relative to the sample.
    * @param annotation file to set
    */
-  void setAnnotation(final String annotation);
+  void setAnnotation(String annotation);
 
   /**
    * Set the hybridation date
    * @param date The date to set
    */
-  void setDate(final String date);
+  void setDate(String date);
 
   /**
-   * Set the name of the operator
+   * Set the name of the operator.
    * @param operator The operator to set
    */
-  void setOperator(final String operator);
+  void setOperator(String operator);
 
   /**
-   * Set the slide number of the sample
-   * @param slideNumber The slideNumber to set
-   */
-  void setSlideNumber(final int slideNumber);
-
-  /**
-   * Set the serial number of the sample
+   * Set the serial number of the sample.
    * @param serialNumber The serialNumber to set
    */
-  void setSerialNumber(final String serialNumber);
+  void setSerialNumber(String serialNumber);
 
   /**
-   * Set the condition of the sample
+   * Set the condition of the sample.
    * @param condition The condition to set
    */
-  void setCondition(final String condition);
+  void setCondition(String condition);
 
   /**
-   * Set the replicat type of the sample
+   * Set the replicat type of the sample.
    * @param replicatType The replicat type to set
    */
-  void setReplicatType(final String replicatType);
+  void setReplicatType(String replicatType);
+
+  /**
+   * Set the UUID of the sample.
+   * @param uuid
+   */
+  void setUUID(final String uuid);
 
   /**
    * Test if a field exists.
@@ -244,12 +244,17 @@ public interface SampleMetadata {
    * Test if the condition field exists.
    * @return true if the field exists
    */
-  boolean isCondition();
+  boolean isConditionField();
 
   /**
    * Test if the replicat type field exists.
    * @return true if the field exists
    */
-  boolean isReplicatType();
+  boolean isReplicatTypeField();
 
+  /**
+   * Test if the UUID field exists.
+   * @return true if the field exists
+   */
+  boolean isUUIDField();
 }

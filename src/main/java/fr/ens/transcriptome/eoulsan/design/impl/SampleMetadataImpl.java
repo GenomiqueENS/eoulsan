@@ -78,12 +78,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public String getSampleNumber() {
-
-    return get(SLIDE_NUMBER_FIELD);
-  }
-
-  @Override
   public String getSerialNumber() {
 
     return get(SERIAL_NUMBER_FIELD);
@@ -111,6 +105,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public String getReplicatType() {
 
     return get(REPLICAT_TYPE_FIELD);
+  }
+
+  @Override
+  public String getUUID() {
+
+    return get(UUID_TYPE_FIELD);
   }
 
   //
@@ -153,12 +153,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setSlideNumber(final int slideNumber) {
-
-    set(SLIDE_NUMBER_FIELD, "" + slideNumber);
-  }
-
-  @Override
   public void setSerialNumber(final String serialNumber) {
 
     set(SERIAL_NUMBER_FIELD, serialNumber);
@@ -187,6 +181,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public void setReplicatType(String replicatType) {
 
     set(REPLICAT_TYPE_FIELD, replicatType);
+  }
+
+  @Override
+  public void setUUID(final String uuid) {
+
+    set(UUID_TYPE_FIELD, uuid);
   }
 
   //
@@ -229,12 +229,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public boolean isSerialNumberField() {
-
-    return isField(SLIDE_NUMBER_FIELD);
-  }
-
-  @Override
   public boolean isAnnotationField() {
 
     return isField(ANNOTATION_FIELD);
@@ -247,15 +241,27 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public boolean isCondition() {
+  public boolean isSerialNumberField() {
+
+    return isField(SERIAL_NUMBER_FIELD);
+  }
+
+  @Override
+  public boolean isConditionField() {
 
     return isField(CONDITION_FIELD);
   }
 
   @Override
-  public boolean isReplicatType() {
+  public boolean isReplicatTypeField() {
 
     return isField(REPLICAT_TYPE_FIELD);
+  }
+
+  @Override
+  public boolean isUUIDField() {
+
+    return isField(UUID_TYPE_FIELD);
   }
 
   //

@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.design;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -100,6 +101,7 @@ public class DesignBuilder {
 
       smd.setCondition(sampleName);
       smd.setReplicatType("T");
+      smd.setUUID(UUID.randomUUID().toString());
 
     }
 
