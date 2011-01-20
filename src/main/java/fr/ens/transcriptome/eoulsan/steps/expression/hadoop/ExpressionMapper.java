@@ -22,6 +22,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,36 +34,45 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import net.sf.samtools.SAMFormatException;
+import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMRecord;
+
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.Mapper;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.Mapper;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.AlignResult;
-import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
+import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * Mapper for Expression computation
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-@SuppressWarnings("deprecation")
-public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> {
+public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-  public static final String COUNTER_GROUP = "Expression";
+  // Parameters keys
+  static final String GENOME_DESC_PATH_KEY =
+      Globals.PARAMETER_PREFIX + ".expression.genome.desc.file";
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  private String counterGroup;
+
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
-  private final AlignResult ar = new AlignResult();
+  // private final AlignResult ar = new AlignResult();
+
+  private final SAMParser parser = new SAMParser();
+
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
   private final Map<String, Exon> oneExonByParentId =
@@ -66,33 +80,40 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
 
   @Override
   public void map(final LongWritable key, final Text value,
-      final OutputCollector<Text, Text> output, final Reporter reporter)
-      throws IOException {
+      final Context context) throws IOException, InterruptedException {
+
+    final String line = value.toString();
+
+    final SAMRecord samRecord;
 
     try {
-      ar.parseResultLine(value.toString());
-    } catch (BadBioEntryException e) {
+      samRecord = this.parser.parseLine(line);
 
-      reporter.getCounter(COUNTER_GROUP, "invalid soap output entries")
-          .increment(1);
-      logger.info("Invalid soap output entry: "
-          + e.getMessage() + " line='" + e.getEntry() + "'");
+    } catch (SAMFormatException e) {
+
+      context.getCounter(this.counterGroup,
+          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+      logger.info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
       return;
     }
 
-    final String chr = ar.getChromosome();
-    final int start = ar.getLocation();
-    final int stop = start + ar.getReadLength();
+    final String chr = samRecord.getReferenceName();
+    final int start = samRecord.getAlignmentStart();
+    final int stop = samRecord.getAlignmentEnd() + 1;
 
     final Set<Exon> exons = tef.findExons(chr, start, stop);
 
-    reporter.incrCounter(COUNTER_GROUP, "read total", 1);
+    context.getCounter(this.counterGroup, TOTAL_READS_COUNTER.counterName())
+        .increment(1);
     if (exons == null) {
-      reporter.incrCounter(COUNTER_GROUP, "reads unused", 1);
+      context.getCounter(this.counterGroup, UNUSED_READS_COUNTER.counterName())
+          .increment(1);
       return;
     }
 
-    reporter.incrCounter(COUNTER_GROUP, "reads used", 1);
+    context.getCounter(this.counterGroup, USED_READS_COUNTER.counterName())
+        .increment(1);
     int count = 1;
     final int nbExons = exons.size();
 
@@ -108,18 +129,19 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       this.resultKey.set(e.getParentId());
       this.resultValue.set(e.getChromosome()
           + "\t" + e.getStart() + "\t" + e.getEnd() + "\t" + e.getStrand()
-          + "\t" + (count++) + "\t" + nbExons + "\t" + ar.getChromosome()
-          + "\t" + ar.getLocation() + "\t"
-          + (ar.getLocation() + ar.getReadLength()));
+          + "\t" + (count++) + "\t" + nbExons + "\t" + chr + "\t" + start
+          + "\t" + stop);
 
-      output.collect(this.resultKey, this.resultValue);
+      context.write(this.resultKey, this.resultValue);
     }
   }
 
   @Override
-  public void configure(final JobConf conf) {
+  public void setup(final Context context) {
 
     try {
+
+      final Configuration conf = context.getConfiguration();
 
       final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
 
@@ -136,6 +158,27 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
       final File indexFile = new File(localCacheFiles[0].toString());
       tef.load(indexFile);
 
+      // Counter group
+      this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
+      if (this.counterGroup == null) {
+        throw new IOException("No counter group defined");
+      }
+
+      // Get the genome description filename
+      final String genomeDescFile = conf.get(GENOME_DESC_PATH_KEY);
+
+      if (genomeDescFile == null) {
+        throw new IOException("No genome desc file set");
+      }
+
+      // Load genome description object
+      final GenomeDescription genomeDescription =
+          GenomeDescription.load(PathUtils.createInputStream(new Path(
+              genomeDescFile), conf));
+
+      // Set the chromosomes sizes in the parser
+      this.parser.setGenomeDescription(genomeDescription);
+
     } catch (IOException e) {
       logger.severe("Error while loading annotation data in Mapper: "
           + e.getMessage());
@@ -144,7 +187,7 @@ public class ExpressionMapper implements Mapper<LongWritable, Text, Text, Text> 
   }
 
   @Override
-  public void close() throws IOException {
+  public void cleanup(final Context context) throws IOException {
 
     this.tef.clear();
     this.oneExonByParentId.clear();
