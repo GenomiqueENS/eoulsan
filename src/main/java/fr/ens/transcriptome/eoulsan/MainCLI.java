@@ -39,6 +39,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.actions.AWSExecAction;
 import fr.ens.transcriptome.eoulsan.actions.CreateDesignAction;
+import fr.ens.transcriptome.eoulsan.actions.CreateHadoopJarAction;
 import fr.ens.transcriptome.eoulsan.actions.ExecAction;
 import fr.ens.transcriptome.eoulsan.actions.HadoopExecAction;
 import fr.ens.transcriptome.eoulsan.actions.UploadS3Action;
@@ -245,7 +246,8 @@ public final class MainCLI {
       new UploadS3Action().action(arguments);
     } else if ("awsexec".equals(action)) {
       new AWSExecAction().action(arguments);
-
+    } else if ("createhadoopjar".equals(action)) {
+      new CreateHadoopJarAction().action(arguments);
     } else
       Common.showErrorMessageAndExit("Unknown action: "
           + action + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
