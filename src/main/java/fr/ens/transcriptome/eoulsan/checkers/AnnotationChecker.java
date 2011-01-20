@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
+import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 
 public class AnnotationChecker implements Checker {
@@ -54,7 +54,7 @@ public class AnnotationChecker implements Checker {
       Set<Parameter> globalParameters) throws EoulsanException {
     for (Parameter p : stepParameters) {
 
-      if (ExpressionStep.GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
+      if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
         this.genomicType = p.getStringValue();
       else
         throw new EoulsanException("Unknown parameter for "
