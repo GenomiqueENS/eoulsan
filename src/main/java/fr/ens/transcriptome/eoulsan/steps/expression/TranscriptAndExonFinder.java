@@ -24,12 +24,14 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.Writer;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +40,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -49,6 +53,9 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class TranscriptAndExonFinder {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Map<String, Transcript> transcripts;
   private Map<String, ChromosomeZone> chrZoneMap;
@@ -680,6 +687,8 @@ public class TranscriptAndExonFinder {
   private void populateMapsFromGFFFile(final InputStream is,
       final String expressionType) throws IOException, BadBioEntryException {
 
+    LOGGER.info("Expression Type: " + expressionType);
+
     final GFFReader reader = new GFFReader(is);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
@@ -687,7 +696,11 @@ public class TranscriptAndExonFinder {
 
     final Map<String, String> idType = new HashMap<String, String>();
 
+    int count = 0;
+
     while (reader.readEntry()) {
+
+      count++;
 
       final String type = reader.getType();
 
@@ -754,6 +767,10 @@ public class TranscriptAndExonFinder {
     // Set the types of genes
     for (Map.Entry<String, Transcript> e : this.transcripts.entrySet())
       e.getValue().setType(idType.get(e.getKey()));
+
+    LOGGER.fine("Entries read: " + count);
+    LOGGER.fine("ChrZoneMap: " + this.chrZoneMap.size());
+    LOGGER.fine("Trancripts: " + this.transcripts.size());
   }
 
   /**
@@ -894,8 +911,7 @@ public class TranscriptAndExonFinder {
   public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType) throws IOException, BadBioEntryException {
 
-    populateMapsFromGFFFile(FileUtils.createInputStream(annotationFile),
-        expressionType);
+    this(FileUtils.createInputStream(annotationFile), expressionType);
   }
 
   /**
