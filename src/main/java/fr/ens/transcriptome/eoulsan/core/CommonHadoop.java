@@ -33,6 +33,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
@@ -49,6 +50,9 @@ public class CommonHadoop {
 
   public static final int CHECK_COMPLETION_TIME = 5000;
   public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
+  
+  public static final String COUNTER_GROUP_KEY =
+    Globals.PARAMETER_PREFIX + ".counter.group";
 
   /**
    * Retrieve the genome file name from the files of a directory
