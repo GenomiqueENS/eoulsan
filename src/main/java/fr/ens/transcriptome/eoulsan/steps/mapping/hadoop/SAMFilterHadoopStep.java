@@ -101,7 +101,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     final Path inputPath =
         new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource());
 
-    // Set counter group
+    // Set threshold quality
     jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY, Integer
         .toString(getMappingQualityThreshold()));
 

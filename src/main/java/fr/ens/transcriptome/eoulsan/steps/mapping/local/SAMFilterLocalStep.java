@@ -175,6 +175,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
                 ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
           }
 
+          lastLine = line;
         }
 
       } catch (SAMFormatException e) {
@@ -183,7 +184,6 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
             .counterName(), 1);
       }
 
-      lastLine = line;
     }
 
     if (lastIdCount == 1) {
