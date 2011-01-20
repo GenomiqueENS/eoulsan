@@ -22,8 +22,18 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_CHROMOSOME_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENT_ID_NOT_FOUND_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,9 +41,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import net.sf.samtools.SAMException;
+import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.AlignResult;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
@@ -51,12 +64,11 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-
-  public static final String COUNTER_GROUP = "Expression";
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private TranscriptAndExonFinder tef;
-  private final AlignResult ar = new AlignResult();
+  private final String counterGroup;
+  private final SAMParser parser;
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
 
@@ -77,29 +89,35 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   public void map(final String value, final List<String> output,
       final Reporter reporter) throws IOException {
 
+    final SAMRecord samRecord;
+
     try {
-      ar.parseResultLine(value.toString());
-    } catch (BadBioEntryException e) {
+      samRecord = parser.parseLine(value);
+    } catch (SAMException e) {
 
-      reporter.incrCounter(COUNTER_GROUP, "invalid soap output entries", 1);
-      logger.info("Invalid soap output entry: "
-          + e.getMessage() + " line='" + e.getEntry() + "'");
+      reporter.incrCounter(this.counterGroup, INVALID_SAM_ENTRIES_COUNTER
+          .counterName(), 1);
+      LOGGER.info("Invalid soap output entry: "
+          + e.getMessage() + " line='" + value + "'");
       return;
     }
 
-    final String chr = ar.getChromosome();
-    final int start = ar.getLocation();
-    final int stop = start + ar.getReadLength();
+    final String chr = samRecord.getReferenceName();
+    final int start = samRecord.getAlignmentStart();
+    final int end = samRecord.getAlignmentEnd() + 1;
 
-    final Set<Exon> exons = tef.findExons(chr, start, stop);
+    final Set<Exon> exons = tef.findExons(chr, start, end);
 
-    reporter.incrCounter(COUNTER_GROUP, "read total", 1);
+    reporter.incrCounter(this.counterGroup, TOTAL_READS_COUNTER.counterName(),
+        1);
     if (exons == null) {
-      reporter.incrCounter(COUNTER_GROUP, "reads unused", 1);
+      reporter.incrCounter(this.counterGroup, UNUSED_READS_COUNTER
+          .counterName(), 1);
       return;
     }
 
-    reporter.incrCounter(COUNTER_GROUP, "reads used", 1);
+    reporter
+        .incrCounter(this.counterGroup, USED_READS_COUNTER.counterName(), 1);
     int count = 1;
     final int nbExons = exons.size();
 
@@ -108,16 +126,17 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     for (Exon e : exons)
       oneExonByParentId.put(e.getParentId(), e);
 
-    for (Map.Entry<String, Exon> entry : oneExonByParentId.entrySet()) {
+    List<String> keysSorted = new ArrayList<String>(oneExonByParentId.keySet());
+    Collections.sort(keysSorted);
 
-      final Exon e = entry.getValue();
+    for (String key : keysSorted) {
+
+      final Exon e = oneExonByParentId.get(key);
 
       output.add(e.getParentId()
           + "\t" + e.getChromosome() + "\t" + e.getStart() + "\t" + e.getEnd()
           + "\t" + e.getStrand() + "\t" + (count++) + "\t" + nbExons + "\t"
-          + ar.getChromosome() + "\t" + ar.getLocation() + "\t"
-          + (ar.getLocation() + ar.getReadLength()));
-
+          + chr + "\t" + start + "\t" + end);
     }
   }
 
@@ -134,7 +153,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
     geneExpr.clear();
 
-    reporter.incrCounter(COUNTER_GROUP, "parent", 1);
+    reporter.incrCounter(this.counterGroup, PARENTS_COUNTER.counterName(), 1);
 
     final String parentId = key;
 
@@ -166,7 +185,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
       }
 
       if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
-        reporter.incrCounter(COUNTER_GROUP, "invalid chromosome", 1);
+        reporter.incrCounter(this.counterGroup, INVALID_CHROMOSOME_COUNTER
+            .counterName(), 1);
         continue;
       }
 
@@ -180,8 +200,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     final Transcript transcript = tef.getTranscript(parentId);
 
     if (transcript == null) {
-      reporter.incrCounter(COUNTER_GROUP, "Parent Id not found in exon range",
-          1);
+      reporter.incrCounter(this.counterGroup, PARENT_ID_NOT_FOUND_COUNTER
+          .counterName(), 1);
       return;
     }
 
@@ -228,11 +248,26 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * Load annotation information
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
+   * @param genomeDescFile genome description file\
+   * @param counterGroup counter group
    * @throws IOException if an error occurs while reading annotation file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   public ExpressionPseudoMapReduce(final File annotationFile,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final File genomeDescFile,
+      final String counterGroup) throws IOException, BadBioEntryException {
+
+    this.counterGroup = counterGroup;
+
+    // Create parser object
+    this.parser = new SAMParser();
+
+    // Load genome description object
+    final GenomeDescription genomeDescription =
+        GenomeDescription.load(genomeDescFile);
+
+    // Set the chromosomes sizes in the parser
+    this.parser.setGenomeDescription(genomeDescription);
 
     loadAnnotationFile(annotationFile, expressionType);
   }

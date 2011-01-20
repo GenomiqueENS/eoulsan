@@ -22,8 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.SOAP_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,10 +35,11 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionStep;
+import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 
 /**
@@ -45,16 +47,10 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class ExpressionLocalStep extends ExpressionStep {
+public class ExpressionLocalStep extends AbstractExpressionStep {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
-
-  @Override
-  public String getLogName() {
-
-    return "expression";
-  }
 
   @Override
   public StepResult execute(final Design design, final Context context) {
@@ -69,26 +65,36 @@ public class ExpressionLocalStep extends ExpressionStep {
 
       for (Sample s : design.getSamples()) {
 
-        final String annotationFilename =
-            s.getMetadata().getAnnotation().trim();
+        // Get annotation file
+        final File annotationFile =
+            new File(context.getDataFilename(ANNOTATION_GFF, s));
 
-        final String annotationKey = annotationFilename + " " + genomicType;
+        // Get genome desc file
+        final File genomeDescFile =
+            new File(context.getDataFilename(DataFormats.GENOME_DESC_TXT, s));
+
+        final String annotationKey =
+            annotationFile.getName() + " " + genomicType;
 
         if (!annotationKey.equals(lastAnnotationKey)) {
 
           epmr =
-              new ExpressionPseudoMapReduce(new File(annotationFilename),
-                  genomicType);
+              new ExpressionPseudoMapReduce(annotationFile, genomicType,
+                  genomeDescFile, COUNTER_GROUP);
 
           lastAnnotationKey = annotationKey;
         }
 
+        // Get alignment file
         final File alignmentFile =
-            new File(context.getDataFilename(SOAP_RESULTS_TXT, s));
+            new File(context.getDataFilename(FILTERED_MAPPER_RESULTS_SAM, s));
 
+        // Get expression temporary file
         final File expressionTmpFile =
-            new File(context.getDataFilename(SOAP_RESULTS_TXT, s) + ".tmp");
+            new File(context.getDataFilename(FILTERED_MAPPER_RESULTS_SAM, s)
+                + ".tmp");
 
+        // Get final expression file
         final File expressionFile =
             new File(context.getDataFilename(EXPRESSION_RESULTS_TXT, s));
 
@@ -103,8 +109,7 @@ public class ExpressionLocalStep extends ExpressionStep {
 
         fetc.initializeExpressionResults();
         fetc.loadPreResults(expressionTmpFile, epmr.getReporter()
-            .getCounterValue(ExpressionPseudoMapReduce.COUNTER_GROUP,
-                "reads used"));
+            .getCounterValue(COUNTER_GROUP, "reads used"));
         fetc.saveFinalResults(expressionFile);
 
         // Remove expression Temp file
@@ -114,7 +119,7 @@ public class ExpressionLocalStep extends ExpressionStep {
 
         // Add counters for this sample to log file
         log.append(epmr.getReporter().countersValuesToString(
-            ExpressionPseudoMapReduce.COUNTER_GROUP,
+            COUNTER_GROUP,
             "Expression computation ("
                 + s.getName() + ", " + alignmentFile.getName() + ", "
                 + s.getMetadata().getAnnotation() + ", " + genomicType + ")"));

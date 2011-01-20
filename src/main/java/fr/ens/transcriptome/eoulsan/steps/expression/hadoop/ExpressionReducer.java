@@ -22,6 +22,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_CHROMOSOME_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENT_ID_NOT_FOUND_COUNTER;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -30,12 +34,10 @@ import java.util.logging.Logger;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reducer;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.Reducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
@@ -46,27 +48,25 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-@SuppressWarnings("deprecation")
-public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
-
-  public static final String COUNTER_GROUP = "Expression";
+public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
+  private String counterGroup;
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
   private final Text outputValue = new Text();
 
   @Override
-  public void reduce(final Text key, Iterator<Text> values,
-      final OutputCollector<Text, Text> collector, final Reporter reporter)
-      throws IOException {
+  public void reduce(final Text key, Iterable<Text> values,
+      final Context context) throws IOException, InterruptedException {
 
     geneExpr.clear();
 
-    reporter.incrCounter(COUNTER_GROUP, "parent", 1);
+    context.getCounter(this.counterGroup, PARENTS_COUNTER.counterName())
+        .increment(1);
     final String parentId = key.toString();
 
     boolean first = true;
@@ -74,10 +74,12 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
     int count = 0;
 
-    while (values.hasNext()) {
+    final Iterator<Text> it = values.iterator();
+
+    while (it.hasNext()) {
 
       count++;
-      StringUtils.fastSplit(values.next().toString(), this.fields);
+      StringUtils.fastSplit(it.next().toString(), this.fields);
 
       final String exonChr = this.fields[0];
       final int exonStart = Integer.parseInt(this.fields[1]);
@@ -97,7 +99,8 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
       }
 
       if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
-        reporter.incrCounter(COUNTER_GROUP, "invalid chromosome", 1);
+        context.getCounter(this.counterGroup,
+            INVALID_CHROMOSOME_COUNTER.counterName()).increment(1);
         continue;
       }
 
@@ -111,8 +114,9 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
     final Transcript transcript = tef.getTranscript(parentId);
 
     if (transcript == null) {
-      reporter.incrCounter(COUNTER_GROUP, "Parent Id not found in exon range",
-          1);
+      context.getCounter(this.counterGroup,
+          PARENT_ID_NOT_FOUND_COUNTER.counterName()).increment(1);
+
       return;
     }
 
@@ -123,15 +127,23 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
 
     this.outputValue.set(result);
 
-    collector.collect(key, this.outputValue);
+    context.write(key, this.outputValue);
   }
 
   @Override
-  public void configure(final JobConf conf) {
+  public void setup(final Context context) throws IOException {
+
+    // Counter group
+    this.counterGroup =
+        context.getConfiguration().get(CommonHadoop.COUNTER_GROUP_KEY);
+    if (this.counterGroup == null) {
+      throw new IOException("No counter group defined");
+    }
 
     try {
 
-      final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+      final Path[] localCacheFiles =
+          DistributedCache.getLocalCacheFiles(context.getConfiguration());
 
       if (localCacheFiles == null || localCacheFiles.length == 0)
         throw new IOException("Unable to retrieve genome index");
@@ -155,9 +167,7 @@ public class ExpressionReducer implements Reducer<Text, Text, Text, Text> {
   }
 
   @Override
-  public void close() throws IOException {
-    // TODO Auto-generated method stub
-
+  public void cleanup(final Context context) throws IOException {
   }
 
 }
