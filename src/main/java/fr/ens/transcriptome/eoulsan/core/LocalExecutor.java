@@ -33,6 +33,8 @@ import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
+import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 
 /**
  * This class define an executor for local mode.
@@ -72,8 +74,7 @@ public class LocalExecutor extends Executor {
     try {
 
       final File logDir =
-          new File(this.designFile.getParent(), getContext()
-              .getJobId());
+          new File(this.designFile.getParent(), getContext().getJobId());
 
       if (!logDir.exists())
         if (!logDir.mkdirs()) {
@@ -126,14 +127,14 @@ public class LocalExecutor extends Executor {
     this.designFile = designFile;
 
     final SimpleContext context = getContext();
-    
+
     // Set the base path
     context.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
-    
+
     // Set the design path
     context.setDesignPathname(designFile.getAbsolutePath());
-    
+
     // Set the parameter path
     context.setParameterPathname(paramFile.getAbsolutePath());
 
@@ -147,16 +148,17 @@ public class LocalExecutor extends Executor {
 
     // Set the output path
     context.setOutputPathname(outputDir.getAbsolutePath());
-    
+
     // Set the log path
     context.setLogPathname(logDir.getAbsolutePath());
-    
+
     // Set the job description
     context.setJobDescription(jobDescription);
-    
+
     // Set job environment
-    // TODO
-    context.setJobEnvironment("Local Mode on ");
+    context.setJobEnvironment("Local Mode on "
+        + new LinuxCpuInfo().getModelName() + ", "
+        + new LinuxMemInfo().getMemTotal());
   }
 
 }

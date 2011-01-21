@@ -22,14 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -53,6 +48,8 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
+import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -76,39 +73,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
   private static final String TMP_PATH = "/tmp";
 
   private Configuration conf;
-
-  /**
-   * This class define a simple file Parser
-   * @author Laurent Jourdren
-   */
-  private static abstract class HadoopFileParser {
-
-    private BufferedReader br;
-
-    protected abstract void parse(final String line);
-
-    public void read() throws IOException {
-
-      String line = null;
-
-      while ((line = br.readLine()) != null)
-        parse(line);
-    }
-
-    //
-    // Constructor
-    //
-
-    public HadoopFileParser(final File file) throws IOException {
-
-      if (file == null)
-        throw new NullPointerException("The file is null");
-
-      this.br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-    }
-
-  }
 
   //
   // Step methods
@@ -223,37 +187,13 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
   private static final void parseCpuinfo() throws IOException {
 
-    final Map<String, String> map = new HashMap<String, String>();
+    final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
 
-    final HadoopFileParser hfp =
-        new HadoopFileParser(new File(CPUINFO_FILE_PATH)) {
-
-          @Override
-          protected void parse(String line) {
-
-            String[] fields = line.split(":");
-
-            if (fields[0].startsWith("model name"))
-              map.put("model name", fields[1].trim());
-            else if (fields[0].startsWith("processor"))
-              map.put("processor", fields[1].trim());
-            else if (fields[0].startsWith("cpu MHz"))
-              map.put("cpu MHz", fields[1].trim());
-            else if (fields[0].startsWith("bogomips"))
-              map.put("bogomips", fields[1].trim());
-            else if (fields[0].startsWith("cpu cores"))
-              map.put("cpu cores", fields[1].trim());
-
-          }
-        };
-
-    hfp.read();
-
-    final String modelName = map.get("model name");
-    final String processor = map.get("processor");
-    final String cpuMHz = map.get("cpu MHz");
-    final String bogomips = map.get("bogomips");
-    final String cores = map.get("cpu cores");
+    final String modelName = cpuinfo.getModelName();
+    final String processor = cpuinfo.getProcessor();
+    final String cpuMHz = cpuinfo.getCPUMHz();
+    final String bogomips = cpuinfo.getBogoMips();
+    final String cores = cpuinfo.getCores();
 
     logger.info("SYSINFO CPU model name: "
         + (modelName == null ? "NA" : modelName));
@@ -268,25 +208,8 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
   private static final void parseMeminfo() throws IOException {
 
-    final Map<String, String> map = new HashMap<String, String>();
-
-    final HadoopFileParser hfp =
-        new HadoopFileParser(new File(MEMINFO_FILE_PATH)) {
-
-          @Override
-          protected void parse(String line) {
-
-            String[] fields = line.split(":");
-
-            if (fields[0].startsWith("MemTotal")) {
-              map.put("MemTotal", fields[1].trim());
-            }
-          }
-        };
-
-    hfp.read();
-
-    final String memTotal = map.get("MemTotal");
+    final LinuxMemInfo meminfo = new LinuxMemInfo();
+    final String memTotal = meminfo.getMemTotal();
 
     logger.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
