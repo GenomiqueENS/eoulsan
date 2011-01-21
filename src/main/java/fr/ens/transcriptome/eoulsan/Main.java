@@ -62,7 +62,8 @@ public final class Main {
   public static void main(final String[] args) {
 
     // Test if the application can run with current platform
-    if (!SystemUtils.isApplicationAvailableForCurrentArch()) {
+    if (Globals.CHECK_PLATFORM_STARTUP
+        && !SystemUtils.isApplicationAvailableForCurrentArch()) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
           + "\n" + Globals.APP_NAME
           + " is not available for your platform. Required platforms: "
