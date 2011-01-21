@@ -122,7 +122,7 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
       logger.severe("Unable to copy design file to output path.");
     }
 
-    return new StepResult(this, true, "");
+    return new StepResult(context, true, "");
   }
 
 }

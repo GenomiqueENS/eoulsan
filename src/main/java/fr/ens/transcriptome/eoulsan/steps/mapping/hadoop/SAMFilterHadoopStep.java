@@ -68,19 +68,19 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      return jobsResults.getStepResult(this, startTime);
+      return jobsResults.getStepResult(context, startTime);
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     }
 
@@ -102,12 +102,12 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
         new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource());
 
     // Set threshold quality
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY, Integer
-        .toString(getMappingQualityThreshold()));
+    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
+        Integer.toString(getMappingQualityThreshold()));
 
     // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
-        DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
+        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -148,8 +148,10 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(
+        job,
+        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+            sample).getSource()));
 
     return job;
   }

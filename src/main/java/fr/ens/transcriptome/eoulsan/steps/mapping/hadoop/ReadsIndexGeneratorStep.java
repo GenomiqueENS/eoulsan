@@ -140,13 +140,13 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
     } catch (EoulsanException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     } catch (IOException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     }
 
-    return new StepResult(this, startTime, this.mapper.getMapperName()
+    return new StepResult(context, startTime, this.mapper.getMapperName()
         + " index creation");
   }
 

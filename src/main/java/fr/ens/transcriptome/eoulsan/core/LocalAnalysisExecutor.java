@@ -73,7 +73,7 @@ public class LocalAnalysisExecutor extends Executor {
 
       final File logDir =
           new File(this.designFile.getParent(), getExecutorInfo()
-              .getExecutionName());
+              .getJobId());
 
       if (!logDir.exists())
         if (!logDir.mkdirs()) {
@@ -131,11 +131,11 @@ public class LocalAnalysisExecutor extends Executor {
 
     final File logDir =
         new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + context.getExecutionName());
+            + "/" + context.getJobId());
 
     final File outputDir =
         new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + context.getExecutionName());
+            + "/" + context.getJobId());
 
     context.setOutputPathname(outputDir.getAbsolutePath());
     context.setLogPathname(logDir.getAbsolutePath());

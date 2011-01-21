@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class define an simple ExecutorInfo.
@@ -51,7 +52,7 @@ public class SimpleContext implements Context {
   private String basePathname;
   private String logPathname;
   private String outputPathname;
-  private String executionName;
+  private String jobId;
   private String designPathname;
   private String paramPathname;
   private String jarPathname;
@@ -63,6 +64,7 @@ public class SimpleContext implements Context {
   private String commandDescription = "";
   private String commandAuthor = "";
   private WorkflowDescription workflow;
+  private Step step;
 
   private String objectCreationDate;
 
@@ -86,8 +88,8 @@ public class SimpleContext implements Context {
   }
 
   @Override
-  public String getExecutionName() {
-    return this.executionName;
+  public String getJobId() {
+    return this.jobId;
   }
 
   @Override
@@ -144,6 +146,11 @@ public class SimpleContext implements Context {
   public WorkflowDescription getWorkflow() {
 
     return this.workflow;
+  }
+
+  @Override
+  public Step getCurrentStep() {
+    return this.step;
   }
 
   //
@@ -214,7 +221,7 @@ public class SimpleContext implements Context {
    * Set command name
    * @param commandName the command name
    */
-  public void setCommandName(final String commandName) {
+  void setCommandName(final String commandName) {
 
     logger.info("Command name: " + commandName);
     this.commandName = commandName;
@@ -225,7 +232,7 @@ public class SimpleContext implements Context {
    * Set command description
    * @param commandDescription the command name
    */
-  public void setCommandDescription(final String commandDescription) {
+  void setCommandDescription(final String commandDescription) {
 
     logger.info("Command description: " + commandDescription);
     this.commandDescription = commandDescription;
@@ -235,7 +242,7 @@ public class SimpleContext implements Context {
    * Set command author
    * @param commandAuthor the command name
    */
-  public void setCommandAuthor(final String commandAuthor) {
+  void setCommandAuthor(final String commandAuthor) {
 
     logger.info("Command author: " + commandAuthor);
     this.commandAuthor = commandAuthor;
@@ -245,7 +252,7 @@ public class SimpleContext implements Context {
    * Add information from command object.
    * @param command the command object
    */
-  public void addCommandInfo(final Command command) {
+  void addCommandInfo(final Command command) {
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -259,7 +266,7 @@ public class SimpleContext implements Context {
    * Set the workflow of the execution
    * @param workflow the workflow to set
    */
-  public void setWorkflow(final WorkflowDescription workflow) {
+  void setWorkflow(final WorkflowDescription workflow) {
 
     this.workflow = workflow;
   }
@@ -268,7 +275,7 @@ public class SimpleContext implements Context {
    * Set job description.
    * @param jobDescription job description
    */
-  public void setJobDescription(final String jobDescription) {
+  void setJobDescription(final String jobDescription) {
 
     logger.info("Job description: " + jobDescription);
     this.jobDescription = jobDescription;
@@ -278,10 +285,19 @@ public class SimpleContext implements Context {
    * Set job environment.
    * @param jobEnvironment job environment
    */
-  public void setJobEnvironment(final String jobEnvironment) {
+  void setJobEnvironment(final String jobEnvironment) {
 
     logger.info("Job environmnent: " + jobEnvironment);
     this.jobEnvironment = jobEnvironment;
+  }
+
+  /**
+   * Set the current step running.
+   * @param step step to set
+   */
+  void setStep(final Step step) {
+
+    this.step = step;
   }
 
   //
@@ -294,12 +310,12 @@ public class SimpleContext implements Context {
     cal.setTime(new Date(System.currentTimeMillis()));
 
     this.objectCreationDate =
-        String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR), cal
-            .get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal
-            .get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
-            .get(Calendar.SECOND));
+        String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
+            cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+            cal.get(Calendar.SECOND));
 
-    this.executionName =
+    this.jobId =
         Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
   }
 
@@ -312,7 +328,7 @@ public class SimpleContext implements Context {
     logger.info("EXECINFO Author: " + this.getCommandAuthor());
     logger.info("EXECINFO Description: " + this.getCommandDescription());
     logger.info("EXECINFO Command name: " + this.getCommandName());
-    logger.info("EXECINFO Exection name: " + this.getExecutionName());
+    logger.info("EXECINFO Exection name: " + this.getJobId());
 
     logger.info("EXECINFO Base path: " + this.getBasePathname());
     logger.info("EXECINFO Output path: " + this.getOutputPathname());

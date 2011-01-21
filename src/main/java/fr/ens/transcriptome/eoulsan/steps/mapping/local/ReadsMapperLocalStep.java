@@ -111,20 +111,22 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(COUNTER_GROUP,
+        log.append(reporter.countersValuesToString(
+            COUNTER_GROUP,
             "Mapping reads with "
                 + mapper.getMapperName() + " (" + s.getName() + ", "
                 + inFile.getName() + ")"));
       }
 
-      return new StepResult(this, startTime, log.toString());
+      return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
 
-      return new StepResult(this, e, "File not found: " + e.getMessage());
+      return new StepResult(context, e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(this, e, "error while filtering: " + e.getMessage());
+      return new StepResult(context, e, "error while filtering: "
+          + e.getMessage());
     }
   }
 

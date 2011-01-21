@@ -70,19 +70,19 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, getCounterGroup());
 
-      return jobsResults.getStepResult(this, startTime);
+      return jobsResults.getStepResult(context, startTime);
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     }
 
@@ -143,8 +143,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the number of threads for the mapper
     if (getMapperThreads() < 0) {
-      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
-          + getMapperThreads());
+      jobConf
+          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperThreads());
     }
 
     // Set mapper arguments
@@ -157,12 +157,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Set counter group
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY, Integer
-        .toString(getMappingQualityThreshold()));
+    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
+        Integer.toString(getMappingQualityThreshold()));
 
     // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
-        DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
+        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     // Set Job name
     // Create the job and its name
@@ -199,8 +199,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(
+        job,
+        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+            sample).getSource()));
 
     return job;
   }

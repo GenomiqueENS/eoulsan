@@ -78,19 +78,19 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      return jobsResults.getStepResult(this, startTime);
+      return jobsResults.getStepResult(context, startTime);
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     }
 
@@ -113,8 +113,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // final Path inputPath =
     // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
-        new Path(context
-            .getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
+        new Path(
+            context.getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
 
     // Set genome index reference path
     final Path genomeIndex =
@@ -184,8 +184,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }

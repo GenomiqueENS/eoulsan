@@ -74,8 +74,8 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
 
       // Get the input reads for each sample
       final Map<String, Long> sampleInputMapReads =
-          parseReporter(filterReadsReporter, OUTPUT_FILTERED_READS_COUNTER
-              .counterName());
+          parseReporter(filterReadsReporter,
+              OUTPUT_FILTERED_READS_COUNTER.counterName());
 
       // Get the number of match with onlt one locus for each sample
       final Map<String, Long> soapAlignementWithOneLocus =
@@ -109,12 +109,12 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
         }
       }
 
-      return new StepResult(this, startTime, "Sample(s) removed: "
+      return new StepResult(context, startTime, "Sample(s) removed: "
           + removedSampleCount + "\n" + sb.toString());
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while filtering samples: "
+      return new StepResult(context, e, "Error while filtering samples: "
           + e.getMessage());
     }
 
@@ -122,7 +122,7 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
 
   //
   // Other method
-  // 
+  //
 
   private static final Map<String, Long> parseReporter(final Reporter reporter,
       final String counter) {

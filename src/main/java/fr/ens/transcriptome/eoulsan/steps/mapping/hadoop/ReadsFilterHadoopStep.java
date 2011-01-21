@@ -59,7 +59,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
   //
   // Step methods
-  // 
+  //
 
   @Override
   public String getLogName() {
@@ -96,19 +96,19 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      return jobsResults.getStepResult(this, startTime);
+      return jobsResults.getStepResult(context, startTime);
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     }
 
@@ -178,11 +178,12 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set the number of reducers
-    //job.setNumReduceTasks(1);
+    // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.FILTERED_READS_TFQ, sample).getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getDataFile(DataFormats.FILTERED_READS_TFQ, sample)
+            .getSource()));
 
     return job;
   }

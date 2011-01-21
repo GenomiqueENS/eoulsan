@@ -173,7 +173,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
       e.printStackTrace();
     }
 
-    return new StepResult(this, true, "");
+    return new StepResult(context, true, "");
   }
 
   //

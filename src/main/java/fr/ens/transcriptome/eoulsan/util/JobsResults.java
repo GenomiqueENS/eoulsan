@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
@@ -84,16 +84,16 @@ public class JobsResults {
 
   /**
    * Get Step result.
-   * @param step The step for the result
+   * @param context context of the step
    * @param startTime the time of the start of the step
    * @return a new Step result object
    */
-  public StepResult getStepResult(final Step step, final long startTime) {
+  public StepResult getStepResult(final Context context, final long startTime) {
 
     if (isSuccessful())
-      return new StepResult(step, startTime, getLog());
+      return new StepResult(context, startTime, getLog());
 
-    return new StepResult(step, false, startTime, getLog(), getFailedJobs()
+    return new StepResult(context, false, startTime, getLog(), getFailedJobs()
         + " jobs failed");
   }
 

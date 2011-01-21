@@ -133,10 +133,10 @@ public abstract class Executor {
       throw new EoulsanException("The command is null");
 
     // Get execution context
-    final SimpleContext info = getExecutorInfo();
+    final SimpleContext context = getExecutorInfo();
 
     // Check base path
-    if (info.getBasePathname() == null)
+    if (context.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Load design
@@ -152,13 +152,14 @@ public abstract class Executor {
           "Nothing to do, no samples found in design file");
 
     // Add executor info
-    info.addCommandInfo(command);
+    context.addCommandInfo(command);
 
     // Create the workflow
-    final Workflow workflow = new Workflow(command, design, info, hadoopMode);
+    final Workflow workflow =
+        new Workflow(command, design, context, hadoopMode);
 
     // Add the workflow to ExecutorInfo
-    info.setWorkflow(workflow);
+    context.setWorkflow(workflow);
 
     // Insert terminal steps (e.g. upload hdfs/S3, start local/Amazon hadoop)
     workflow.addFirstSteps(firstSteps);
@@ -182,34 +183,39 @@ public abstract class Executor {
     final long startTime = System.currentTimeMillis();
 
     // Execute steps
-    for (Step s : workflow.getSteps()) {
+    for (Step step : workflow.getSteps()) {
 
-      logStartStep(s.getName());
-      final StepResult r = s.execute(design, info);
-      logEndStep(s.getName());
+      context.setStep(step);
+      logStartStep(step.getName());
 
-      if (r == null) {
-        logger.severe("No result for step: " + s.getName());
-        throw new EoulsanException("No result for step: " + s.getName());
+      // execute step
+      final StepResult result = step.execute(design, context);
+
+      logEndStep(step.getName());
+      context.setStep(null);
+
+      if (result == null) {
+        logger.severe("No result for step: " + step.getName());
+        throw new EoulsanException("No result for step: " + step.getName());
       }
 
       // Write step logs
-      writeStepLogs(r);
+      writeStepLogs(result);
 
       // End of the analysis if the analysis fail
-      if (!r.isSuccess()) {
-        logger.severe("Fail of the analysis: " + r.getErrorMessage());
+      if (!result.isSuccess()) {
+        logger.severe("Fail of the analysis: " + result.getErrorMessage());
         logEndAnalysis(false, startTime);
 
-        if (r.getException() != null)
-          Common.errorExit(r.getException(), r.getErrorMessage());
+        if (result.getException() != null)
+          Common.errorExit(result.getException(), result.getErrorMessage());
         else
-          Common.errorExit(new EoulsanException("Fail of the analysis."), r
-              .getErrorMessage());
+          Common.errorExit(new EoulsanException("Fail of the analysis."),
+              result.getErrorMessage());
       }
 
       // If the step is terminal step, end of the execution of the worflow
-      if (s.isTerminalStep())
+      if (step.isTerminalStep())
         break;
     }
 

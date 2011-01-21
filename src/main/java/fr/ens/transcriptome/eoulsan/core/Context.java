@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This interface define a context.
@@ -99,10 +100,10 @@ public interface Context {
   String getOutputPathname();
 
   /**
-   * Get the execution name.
-   * @return the execution name
+   * Get the job id.
+   * @return the job id
    */
-  String getExecutionName();
+  String getJobId();
 
   /**
    * Get the design path.
@@ -144,6 +145,12 @@ public interface Context {
    * @return the workflow description
    */
   WorkflowDescription getWorkflow();
+  
+  /**
+   * Get the current step.
+   * @return the current Step or null if no Step is currently running.
+   */
+  Step getCurrentStep();
 
   /**
    * Get the pathname for a DataType and a Sample.

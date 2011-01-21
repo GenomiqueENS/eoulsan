@@ -21,7 +21,7 @@ public class TerminalStep extends AbstractStep {
   @Override
   public StepResult execute(Design design, Context context) {
 
-    return new StepResult(this, System.currentTimeMillis(), "Terminal step.");
+    return new StepResult(context, System.currentTimeMillis(), "Terminal step.");
   }
 
   @Override

@@ -132,10 +132,10 @@ public abstract class UploadStep extends AbstractStep {
 
     } catch (IOException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     } catch (EoulsanIOException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     }
 
     // The base path is now the place where files where uploaded.
@@ -147,7 +147,7 @@ public abstract class UploadStep extends AbstractStep {
           + "/" + repackagedJarFile.getName());
     }
 
-    return new StepResult(this, startTime, files.toString());
+    return new StepResult(context, startTime, files.toString());
   }
 
   @Override
@@ -285,8 +285,8 @@ public abstract class UploadStep extends AbstractStep {
           result.put(genomeOldFile, genomeNewFile);
         }
 
-        genomesMap.put(genome, genomeNewFile == null ? "" : genomeNewFile
-            .getSource());
+        genomesMap.put(genome,
+            genomeNewFile == null ? "" : genomeNewFile.getSource());
       }
       s.getMetadata().setGenome(genomesMap.get(genome));
 

@@ -81,11 +81,11 @@ public class AnaDiffLocalStep extends AbstractStep {
       ad.run();
 
       // Write log file
-      return new StepResult(this, startTime, log.toString());
+      return new StepResult(context, startTime, log.toString());
 
     } catch (EoulsanException e) {
 
-      return new StepResult(this, e, "Error while analysis data: "
+      return new StepResult(context, e, "Error while analysis data: "
           + e.getMessage());
     }
 
