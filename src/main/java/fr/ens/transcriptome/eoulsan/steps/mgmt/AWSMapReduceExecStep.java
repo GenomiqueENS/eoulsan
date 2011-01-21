@@ -134,7 +134,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Set step config
     final StepConfig stepConfig =
-        new StepConfig().withName(context.getJobName() + "-step")
+        new StepConfig().withName(context.getJobId() + "-step")
             .withHadoopJarStep(hadoopJarStep)
             .withActionOnFailure("TERMINATE_JOB_FLOW");
 
@@ -159,7 +159,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Run flow
     final RunJobFlowRequest runFlowRequest =
-        new RunJobFlowRequest().withName(context.getJobName())
+        new RunJobFlowRequest().withName(context.getJobId())
             .withInstances(instances).withSteps(stepConfig)
             .withBootstrapActions(bootstrapActions);
 

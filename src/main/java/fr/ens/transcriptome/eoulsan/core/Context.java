@@ -46,12 +46,6 @@ public interface Context {
   String getCommandName();
 
   /**
-   * Get the job name.
-   * @return the job name
-   */
-  String getJobName();
-
-  /**
    * Get the UUID of the job.
    * @return the job UUID
    */
@@ -145,7 +139,7 @@ public interface Context {
    * @return the workflow description
    */
   WorkflowDescription getWorkflow();
-  
+
   /**
    * Get the current step.
    * @return the current Step or null if no Step is currently running.
