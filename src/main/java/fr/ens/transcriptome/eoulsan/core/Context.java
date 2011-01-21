@@ -51,6 +51,24 @@ public interface Context {
   String getJobName();
 
   /**
+   * Get the UUID of the job.
+   * @return the job UUID
+   */
+  String getJobUUID();
+
+  /**
+   * Get the job description.
+   * @return the job description
+   */
+  String getJobDescription();
+
+  /**
+   * Get the job environment.
+   * @return the job environment
+   */
+  String getJobEnvironment();
+
+  /**
    * Get command description.
    * @return the command description
    */

@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
@@ -55,6 +56,9 @@ public class SimpleContext implements Context {
   private String paramPathname;
   private String jarPathname;
   private String jobName = "";
+  private final String jobUUID = UUID.randomUUID().toString();
+  private String jobDescription = "";
+  private String jobEnvironment = "";
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
@@ -100,10 +104,25 @@ public class SimpleContext implements Context {
   public String getJarPathname() {
     return this.jarPathname;
   }
-  
+
   @Override
   public String getJobName() {
     return this.jobName;
+  }
+
+  @Override
+  public String getJobUUID() {
+    return this.jobUUID;
+  }
+
+  @Override
+  public String getJobDescription() {
+    return this.jobDescription;
+  }
+
+  @Override
+  public String getJobEnvironment() {
+    return this.jobEnvironment;
   }
 
   @Override
@@ -199,7 +218,7 @@ public class SimpleContext implements Context {
 
     logger.info("Command name: " + commandName);
     this.commandName = commandName;
-    this.jobName = commandName +"-"+ this.objectCreationDate;
+    this.jobName = commandName + "-" + this.objectCreationDate;
   }
 
   /**
@@ -245,6 +264,26 @@ public class SimpleContext implements Context {
     this.workflow = workflow;
   }
 
+  /**
+   * Set job description.
+   * @param jobDescription job description
+   */
+  public void setJobDescription(final String jobDescription) {
+
+    logger.info("Job description: " + jobDescription);
+    this.jobDescription = jobDescription;
+  }
+
+  /**
+   * Set job environment.
+   * @param jobEnvironment job environment
+   */
+  public void setJobEnvironment(final String jobEnvironment) {
+
+    logger.info("Job environmnent: " + jobEnvironment);
+    this.jobEnvironment = jobEnvironment;
+  }
+
   //
   // Other methods
   //
@@ -260,7 +299,8 @@ public class SimpleContext implements Context {
             .get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal
             .get(Calendar.SECOND));
 
-    this.executionName = Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
+    this.executionName =
+        Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
   }
 
   @Override
