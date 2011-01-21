@@ -56,7 +56,6 @@ public class SimpleContext implements Context {
   private String designPathname;
   private String paramPathname;
   private String jarPathname;
-  private String jobName = "";
   private final String jobUUID = UUID.randomUUID().toString();
   private String jobDescription = "";
   private String jobEnvironment = "";
@@ -105,11 +104,6 @@ public class SimpleContext implements Context {
   @Override
   public String getJarPathname() {
     return this.jarPathname;
-  }
-
-  @Override
-  public String getJobName() {
-    return this.jobName;
   }
 
   @Override
@@ -225,7 +219,6 @@ public class SimpleContext implements Context {
 
     logger.info("Command name: " + commandName);
     this.commandName = commandName;
-    this.jobName = commandName + "-" + this.objectCreationDate;
   }
 
   /**
@@ -315,8 +308,7 @@ public class SimpleContext implements Context {
             cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
             cal.get(Calendar.SECOND));
 
-    this.jobId =
-        Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
+    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
   }
 
   @Override
@@ -328,7 +320,11 @@ public class SimpleContext implements Context {
     logger.info("EXECINFO Author: " + this.getCommandAuthor());
     logger.info("EXECINFO Description: " + this.getCommandDescription());
     logger.info("EXECINFO Command name: " + this.getCommandName());
-    logger.info("EXECINFO Exection name: " + this.getJobId());
+
+    logger.info("EXECINFO Job Id: " + this.getJobId());
+    logger.info("EXECINFO Job UUID: " + this.getJobUUID());
+    logger.info("EXECINFO Job Description: " + this.getJobDescription());
+    logger.info("EXECINFO Job Environment: " + this.getJobEnvironment());
 
     logger.info("EXECINFO Base path: " + this.getBasePathname());
     logger.info("EXECINFO Output path: " + this.getOutputPathname());
