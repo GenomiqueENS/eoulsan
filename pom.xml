@@ -6,7 +6,7 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for RNA-seq analysis.
@@ -250,6 +250,12 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>r07</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.picard</groupId>
+			<artifactId>sam</artifactId>
+			<version>1.36</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -596,6 +602,16 @@
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
 						                  <destFileName>hadoop.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>net.sourceforge.picard</groupId>
+						                  <artifactId>sam</artifactId>
+						                  <version>1.36</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>sam.jar</destFileName>
 						                </artifactItem>
 					              </artifactItems>
 					              <!-- other configurations here -->
