@@ -108,10 +108,12 @@ public class LocalExecutor extends Executor {
   /**
    * Constructor
    * @param command command to execute
-   * @param design the path to the design filename
+   * @param designFile the path to the design file
+   * @param paramFile the path to the parameter file
+   * @param jobDescription the job description. can be null
    */
   public LocalExecutor(final Command command, final File designFile,
-      final File paramFile) {
+      final File paramFile, final String jobDescription) {
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -124,9 +126,15 @@ public class LocalExecutor extends Executor {
     this.designFile = designFile;
 
     final SimpleContext context = getContext();
+    
+    // Set the base path
     context.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
+    
+    // Set the design path
     context.setDesignPathname(designFile.getAbsolutePath());
+    
+    // Set the parameter path
     context.setParameterPathname(paramFile.getAbsolutePath());
 
     final File logDir =
@@ -137,8 +145,18 @@ public class LocalExecutor extends Executor {
         new File(designFile.getAbsoluteFile().getParent().toString()
             + "/" + context.getJobId());
 
+    // Set the output path
     context.setOutputPathname(outputDir.getAbsolutePath());
+    
+    // Set the log path
     context.setLogPathname(logDir.getAbsolutePath());
+    
+    // Set the job description
+    context.setJobDescription(jobDescription);
+    
+    // Set job environment
+    // TODO
+    context.setJobEnvironment("Local Mode on ");
   }
 
 }

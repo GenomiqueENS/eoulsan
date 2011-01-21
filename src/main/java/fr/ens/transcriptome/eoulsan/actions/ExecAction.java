@@ -47,8 +47,8 @@ public class ExecAction implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public void action(final String[] args) {
@@ -60,6 +60,7 @@ public class ExecAction implements Action {
 
     final File paramFile = new File(args[0]);
     final File designFile = new File(args[1]);
+    final String jobDescription = "no description";
 
     logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
@@ -85,7 +86,8 @@ public class ExecAction implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile);
+      final Executor e =
+          new LocalExecutor(c, designFile, paramFile, jobDescription);
       e.execute();
 
     } catch (FileNotFoundException e) {

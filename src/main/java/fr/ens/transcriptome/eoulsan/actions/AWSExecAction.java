@@ -50,8 +50,8 @@ public class AWSExecAction implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public void action(final String[] args) {
@@ -64,6 +64,7 @@ public class AWSExecAction implements Action {
     final File paramFile = new File(args[0]);
     final File designFile = new File(args[1]);
     final DataFile dest = new DataFile(args[2]);
+    final String jobDescription = "no description";
 
     logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
@@ -89,7 +90,8 @@ public class AWSExecAction implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile);
+      final Executor e =
+          new LocalExecutor(c, designFile, paramFile, jobDescription);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(dest),
           (Step) new AWSMapReduceExecStep(), (Step) new TerminalStep()), null,
           true);

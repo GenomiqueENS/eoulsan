@@ -72,7 +72,8 @@ public class HadoopExecutor extends Executor {
       return dr.read();
 
     } catch (IOException e) {
-      throw new EoulsanException("Error while reading design file: " + e.getMessage());
+      throw new EoulsanException("Error while reading design file: "
+          + e.getMessage());
     }
   }
 
@@ -211,8 +212,8 @@ public class HadoopExecutor extends Executor {
    * @param command command to execute
    * @param designPathname the path the design file
    */
-  public HadoopExecutor(final Configuration conf,
-      final Command command, final Path designPath) {
+  public HadoopExecutor(final Configuration conf, final Command command,
+      final Path designPath) {
 
     this(conf);
 
@@ -235,9 +236,10 @@ public class HadoopExecutor extends Executor {
    * @param designPathname the path the design file
    * @throws IOException if cannot create log or output directory
    */
-  public HadoopExecutor(final Configuration conf,
-      final Command command, final Design design, final Path designPath,
-      final Path paramPath) throws IOException {
+  public HadoopExecutor(final Configuration conf, final Command command,
+      final Design design, final Path designPath, final Path paramPath,
+      final String jobDescription, final String jobEnvironment)
+      throws IOException {
 
     this(conf);
 
@@ -257,6 +259,7 @@ public class HadoopExecutor extends Executor {
 
     final SimpleContext context = getContext();
 
+    // Set base pathname
     context.setBasePathname(this.designPath.getParent().toString());
 
     final Path logPath =
@@ -272,10 +275,23 @@ public class HadoopExecutor extends Executor {
     if (!outputPath.getFileSystem(conf).exists(outputPath))
       PathUtils.mkdirs(outputPath, conf);
 
+    // Set log pathname
     context.setLogPathname(logPath.toString());
+
+    // Set output pathname
     context.setOutputPathname(outputPath.toString());
+
+    // Set design file pathname
     context.setDesignPathname(designPath.toString());
+
+    // Set parameter file pathname
     context.setParameterPathname(paramPath.toString());
+
+    // Set the job description
+    context.setJobDescription(jobDescription);
+
+    // Set job environment
+    context.setJobEnvironment(jobEnvironment);
   }
 
 }

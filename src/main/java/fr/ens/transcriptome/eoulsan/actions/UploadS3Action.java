@@ -53,8 +53,8 @@ public class UploadS3Action implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public void action(final String[] args) {
@@ -92,7 +92,8 @@ public class UploadS3Action implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile);
+      final Executor e =
+          new LocalExecutor(c, designFile, paramFile, "Upload data to " + dest);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(dest),
           (Step) new TerminalStep()), null, true);
 
