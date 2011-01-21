@@ -65,6 +65,13 @@
             </action>
             
          </release>
+         
+         <release version="0.5" description="" date="2011-01-07">
+            <action dev="jourdren" type="fix">
+                Integer division was used in mean quality computation.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
