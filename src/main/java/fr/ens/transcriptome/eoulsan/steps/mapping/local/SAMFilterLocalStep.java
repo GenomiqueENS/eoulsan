@@ -82,14 +82,15 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
       }
 
-      return new StepResult(this, startTime, log.toString());
+      return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
 
-      return new StepResult(this, e, "File not found: " + e.getMessage());
+      return new StepResult(context, e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(this, e, "error while filtering: " + e.getMessage());
+      return new StepResult(context, e, "error while filtering: "
+          + e.getMessage());
     }
   }
 
@@ -133,8 +134,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       try {
         final SAMRecord samRecord = parser.parseLine(line);
 
-        reporter.incrCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER
-            .counterName(), 1);
+        reporter.incrCounter(COUNTER_GROUP,
+            INPUT_ALIGNMENTS_COUNTER.counterName(), 1);
 
         if (samRecord.getReadUnmappedFlag()) {
           reporter.incrCounter(COUNTER_GROUP, "unmapped reads", 1);
@@ -142,8 +143,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
           if (samRecord.getMappingQuality() >= mappingQualityThreshold) {
 
-            reporter.incrCounter(COUNTER_GROUP, GOOD_QUALITY_ALIGNMENTS_COUNTER
-                .counterName(), 1);
+            reporter.incrCounter(COUNTER_GROUP,
+                GOOD_QUALITY_ALIGNMENTS_COUNTER.counterName(), 1);
 
             final String id = samRecord.getReadName();
 
@@ -180,8 +181,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
       } catch (SAMFormatException e) {
 
-        reporter.incrCounter(COUNTER_GROUP, ALIGNMENTS_WITH_INVALID_SAM_FORMAT
-            .counterName(), 1);
+        reporter.incrCounter(COUNTER_GROUP,
+            ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), 1);
       }
 
     }
@@ -189,25 +190,28 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     if (lastIdCount == 1) {
 
       writer.write(lastLine + "\n");
-      reporter.incrCounter(COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER
-          .counterName(), 1);
+      reporter.incrCounter(COUNTER_GROUP,
+          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
 
     } else if (lastIdCount > 1) {
 
       reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
-      reporter.incrCounter(COUNTER_GROUP, ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER
-          .counterName(), 1);
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
     }
 
     // Close files
     br.close();
     writer.close();
 
-    return reporter.countersValuesToString(COUNTER_GROUP, "Filter SAM files ("
-        + sample.getName() + ", "
-        + context.getDataFile(DataFormats.MAPPER_RESULTS_SAM, sample).getName()
-        + ")");
+    return reporter.countersValuesToString(
+        COUNTER_GROUP,
+        "Filter SAM files ("
+            + sample.getName()
+            + ", "
+            + context.getDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
+                .getName() + ")");
   }
 
 }

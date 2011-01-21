@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import java.util.Date;
 
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -87,17 +88,21 @@ public class StepResult {
     return errorMessage;
   }
 
-  private static String createLogMessage(final Step step, long startTime,
+  private static String createLogMessage(final Context context, long startTime,
       final String logMsg) {
 
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
+    final Step step = context.getCurrentStep();
 
-    return "Step: "
-        + step.getName() + " [" + step.getClass().getCanonicalName()
-        + "]\nStart time: " + new Date(startTime) + "\nEnd time: "
-        + new Date(endTime) + "\nDuration: "
-        + StringUtils.toTimeHumanReadable(duration) + "\n" + logMsg;
+    return "Job name: "
+        + context.getJobName() + "\nJob Id:" + context.getJobId() + " ["
+        + context.getJobUUID() + "]\nJob description: "
+        + context.getJobDescription() + "\nStep: " + step.getName() + " ["
+        + step.getClass().getCanonicalName() + "]\nStart time: "
+        + new Date(startTime) + "\nEnd time: " + new Date(endTime)
+        + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n"
+        + logMsg;
   }
 
   //
@@ -106,91 +111,93 @@ public class StepResult {
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param success true if the step is successful
    * @param logMsg log message
    */
-  public StepResult(final Step step, final boolean success, final String logMsg) {
+  public StepResult(final Context context, final boolean success,
+      final String logMsg) {
 
-    this.step = step;
+    this.step = context.getCurrentStep();
     this.success = success;
     this.logMessage = logMsg;
   }
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param startTime the time of the start of the step
    * @param success true if the step is successful
    * @param logMsg log message
    */
-  public StepResult(final Step step, final boolean success,
+  public StepResult(final Context context, final boolean success,
       final long startTime, final String logMsg) {
 
-    this(step, success, createLogMessage(step, startTime, logMsg));
+    this(context, success, createLogMessage(context, startTime, logMsg));
   }
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param startTime the time of the start of the step
    * @param success true if the step is successful
    * @param logMsg log message
    */
-  public StepResult(final Step step, final boolean success,
+  public StepResult(final Context context, final boolean success,
       final long startTime, final String logMsg, final String errorMsg) {
 
-    this(step, success, createLogMessage(step, startTime, logMsg));
+    this(context, success, createLogMessage(context, startTime, logMsg));
     this.errorMessage = errorMsg;
   }
 
   /**
    * Public constructor for a successful step
-   * @param step the step for this result
+   * @param context context of the step result
    * @param startTime the time of the start of the step
    * @param logMsg log message
    */
-  public StepResult(final Step step, final long startTime, final String logMsg) {
+  public StepResult(final Context context, final long startTime,
+      final String logMsg) {
 
-    this(step, true, createLogMessage(step, startTime, logMsg));
+    this(context, true, createLogMessage(context, startTime, logMsg));
   }
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param Exception exception of the error
    * @param errorMsg Error message
    * @param logMsg log message
    */
-  public StepResult(final Step step, final Exception exception,
+  public StepResult(final Context context, final Exception exception,
       final String errorMsg, final String logMsg) {
 
-    this(step, false, logMsg);
+    this(context, false, logMsg);
     this.exception = exception;
     this.errorMessage = errorMsg;
   }
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param Exception exception of the error
    * @param errorMsg Error message
    */
-  public StepResult(final Step step, final Exception exception,
+  public StepResult(final Context context, final Exception exception,
       final String errorMsg) {
 
-    this(step, exception, errorMsg, null);
+    this(context, exception, errorMsg, null);
   }
 
   /**
    * Public constructor.
-   * @param step the step for this result
+   * @param context context of the step result
    * @param Exception exception of the error
    * @param errorMsg Error message
    */
-  public StepResult(final Step step, final Exception exception) {
+  public StepResult(final Context context, final Exception exception) {
 
-    this(step, exception, exception.getMessage(), null);
+    this(context, exception, exception.getMessage(), null);
   }
 
 }

@@ -117,8 +117,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
     // Get the credentials
     final Settings settings = EoulsanRuntime.getSettings();
     final AWSCredentials credentials =
-        new BasicAWSCredentials(settings.getAWSAccessKey(), settings
-            .getAWSSecretKey());
+        new BasicAWSCredentials(settings.getAWSAccessKey(),
+            settings.getAWSSecretKey());
 
     // Create the Amazon MapReduce object
     final AmazonElasticMapReduce mapReduceClient =
@@ -135,14 +135,15 @@ public class AWSMapReduceExecStep extends AbstractStep {
     // Set step config
     final StepConfig stepConfig =
         new StepConfig().withName(context.getJobName() + "-step")
-            .withHadoopJarStep(hadoopJarStep).withActionOnFailure(
-                "TERMINATE_JOB_FLOW");
+            .withHadoopJarStep(hadoopJarStep)
+            .withActionOnFailure("TERMINATE_JOB_FLOW");
 
     // Set the instance
     final JobFlowInstancesConfig instances =
         new JobFlowInstancesConfig().withInstanceCount(this.nInstances)
-            .withMasterInstanceType(this.instanceType).withSlaveInstanceType(
-                this.instanceType).withHadoopVersion(this.hadoopVersion);
+            .withMasterInstanceType(this.instanceType)
+            .withSlaveInstanceType(this.instanceType)
+            .withHadoopVersion(this.hadoopVersion);
 
     // Configure hadoop
     final ScriptBootstrapActionConfig scriptBootstrapAction =
@@ -158,9 +159,9 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Run flow
     final RunJobFlowRequest runFlowRequest =
-        new RunJobFlowRequest().withName(context.getJobName()).withInstances(
-            instances).withSteps(stepConfig).withBootstrapActions(
-            bootstrapActions);
+        new RunJobFlowRequest().withName(context.getJobName())
+            .withInstances(instances).withSteps(stepConfig)
+            .withBootstrapActions(bootstrapActions);
 
     if (logPathname != null && !"".equals(this.logPathname))
       runFlowRequest.withLogUri(this.logPathname);
@@ -175,7 +176,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
     final String jobFlowId = runJobFlowResult.getJobFlowId();
     LOGGER.info("Ran job flow with id: " + jobFlowId);
 
-    return new StepResult(this, startTime, "Launch of Amazon MapReduce Job "
+    return new StepResult(context, startTime, "Launch of Amazon MapReduce Job "
         + jobFlowId);
   }
 

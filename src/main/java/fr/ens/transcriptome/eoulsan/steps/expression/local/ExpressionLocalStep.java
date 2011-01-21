@@ -104,8 +104,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         epmr.doReduce(expressionTmpFile);
 
         final FinalExpressionTranscriptsCreator fetc =
-            new FinalExpressionTranscriptsCreator(epmr
-                .getTranscriptAndExonFinder());
+            new FinalExpressionTranscriptsCreator(
+                epmr.getTranscriptAndExonFinder());
 
         fetc.initializeExpressionResults();
         fetc.loadPreResults(expressionTmpFile, epmr.getReporter()
@@ -127,17 +127,18 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       }
 
       // Write log file
-      return new StepResult(this, startTime, log.toString());
+      return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
 
-      return new StepResult(this, e, "File not found: " + e.getMessage());
+      return new StepResult(context, e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while filtering: " + e.getMessage());
+      return new StepResult(context, e, "Error while filtering: "
+          + e.getMessage());
     } catch (BadBioEntryException e) {
 
-      return new StepResult(this, e, "Invalid annotation entry: "
+      return new StepResult(context, e, "Invalid annotation entry: "
           + e.getEntry());
     }
   }

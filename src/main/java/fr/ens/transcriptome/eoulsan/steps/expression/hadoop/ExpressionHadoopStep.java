@@ -110,8 +110,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
-        DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
         new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
@@ -157,9 +157,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
-        + ".tmp"));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context
+            .getDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
+            .getSourceWithoutExtension()
+            + ".tmp"));
 
     return job;
   }
@@ -219,8 +221,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       final Path outputDirPath =
           new Path(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
-              .getSourceWithoutExtension()
-              + ".tmp");
+              .getSourceWithoutExtension() + ".tmp");
 
       final Path resultPath =
           new Path(context.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
@@ -281,22 +282,22 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
 
-      return jobsResults.getStepResult(this, startTime);
+      return jobsResults.getStepResult(context, startTime);
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(this, e, "Error while running job: "
+      return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     } catch (BadBioEntryException e) {
 
-      return new StepResult(this, e, "Invalid annotation entry: "
+      return new StepResult(context, e, "Invalid annotation entry: "
           + e.getEntry());
     } catch (ClassNotFoundException e) {
-      return new StepResult(this, e, "Class not found: " + e.getMessage());
+      return new StepResult(context, e, "Class not found: " + e.getMessage());
     }
 
   }

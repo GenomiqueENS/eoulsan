@@ -70,7 +70,7 @@ public class ExecInfoLogStep extends AbstractStep {
 
     context.logInfo();
 
-    return new StepResult(this, true, "");
+    return new StepResult(context, true, "");
   }
 
 }

@@ -64,7 +64,7 @@ public class FakeStep extends AbstractStep {
 
     logger.info("execute design: " + design);
 
-    return new StepResult(this, true, null);
+    return new StepResult(context, true, null);
   }
 
 }

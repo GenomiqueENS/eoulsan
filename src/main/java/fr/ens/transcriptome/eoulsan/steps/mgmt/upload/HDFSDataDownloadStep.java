@@ -147,15 +147,15 @@ public class HDFSDataDownloadStep extends AbstractStep {
           PathUtils.copy(ip, op, conf);
         }
 
-      return new StepResult(this, startTime, logMsg.toString());
+      return new StepResult(context, startTime, logMsg.toString());
 
     } catch (EoulsanException e) {
 
-      return new StepResult(this, e, "Error while download results: "
+      return new StepResult(context, e, "Error while download results: "
           + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while download results: "
+      return new StepResult(context, e, "Error while download results: "
           + e.getMessage());
     }
   }

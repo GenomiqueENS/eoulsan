@@ -81,14 +81,15 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
             "Filter reads (" + s.getName() + ", " + inFile + ")"));
       }
 
-      return new StepResult(this, startTime, log.toString());
+      return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
 
-      return new StepResult(this, e, "File not found: " + e.getMessage());
+      return new StepResult(context, e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(this, e, "error while filtering: " + e.getMessage());
+      return new StepResult(context, e, "error while filtering: "
+          + e.getMessage());
     }
   }
 

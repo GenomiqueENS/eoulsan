@@ -143,12 +143,12 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
 
       }
 
-      return new StepResult(this, startTime, "Sample(s) removed: "
+      return new StepResult(context, startTime, "Sample(s) removed: "
           + removedSampleCount + "\n" + sb.toString());
 
     } catch (IOException e) {
 
-      return new StepResult(this, e, "Error while filtering samples: "
+      return new StepResult(context, e, "Error while filtering samples: "
           + e.getMessage());
 
     }

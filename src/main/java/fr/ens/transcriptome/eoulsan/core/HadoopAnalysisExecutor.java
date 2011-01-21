@@ -261,11 +261,11 @@ public class HadoopAnalysisExecutor extends Executor {
 
     final Path logPath =
         new Path(this.designPath.getParent().toString()
-            + "/" + context.getExecutionName());
+            + "/" + context.getJobId());
 
     final Path outputPath =
         new Path(this.designPath.getParent().toString()
-            + "/" + context.getExecutionName());
+            + "/" + context.getJobId());
 
     if (!logPath.getFileSystem(conf).exists(logPath))
       PathUtils.mkdirs(logPath, conf);

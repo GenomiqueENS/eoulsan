@@ -107,16 +107,16 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
     } catch (BadBioEntryException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     } catch (EoulsanException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     } catch (IOException e) {
 
-      return new StepResult(this, e);
+      return new StepResult(context, e);
     }
 
-    return new StepResult(this, startTime, "Genome description creation");
+    return new StepResult(context, startTime, "Genome description creation");
   }
 
 }
