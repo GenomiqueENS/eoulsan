@@ -86,12 +86,15 @@ public final class Globals {
       APP_VERSION_STRING.endsWith("-SNAPSHOT")
           || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
 
-  // Platforms where Eoulsan is available
+  /** Check platform at startup. */
+  public static final boolean CHECK_PLATFORM_STARTUP = true;
+  
+  /** Platforms where Eoulsan is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH =
       Collections.unmodifiableSet(new HashSet<String>(Arrays
           .asList(new String[] {"linux\tamd64", "linux\tx86_64"})));
 
-  // Platforms alias
+  /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
       Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64",
           "linux\tamd64"));
