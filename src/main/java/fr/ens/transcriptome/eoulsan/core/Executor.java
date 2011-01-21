@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 public abstract class Executor {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Command command;
 
@@ -171,14 +171,14 @@ public abstract class Executor {
     // Check workflow
     workflow.check();
 
-    logger.info("Date: " + new Date(System.currentTimeMillis()));
-    logger.info("Host: " + SystemUtils.getHostName());
-    logger.info("Operating system name: " + System.getProperty("os.name"));
-    logger.info("Operating system arch: " + System.getProperty("os.arch"));
-    logger
+    LOGGER.info("Date: " + new Date(System.currentTimeMillis()));
+    LOGGER.info("Host: " + SystemUtils.getHostName());
+    LOGGER.info("Operating system name: " + System.getProperty("os.name"));
+    LOGGER.info("Operating system arch: " + System.getProperty("os.arch"));
+    LOGGER
         .info("Operating system version: " + System.getProperty("os.version"));
-    logger.info("Java version: " + System.getProperty("java.version"));
-    logger.info("Log level: " + logger.getLevel());
+    LOGGER.info("Java version: " + System.getProperty("java.version"));
+    LOGGER.info("Log level: " + LOGGER.getLevel());
 
     final long startTime = System.currentTimeMillis();
 
@@ -195,7 +195,7 @@ public abstract class Executor {
       context.setStep(null);
 
       if (result == null) {
-        logger.severe("No result for step: " + step.getName());
+        LOGGER.severe("No result for step: " + step.getName());
         throw new EoulsanException("No result for step: " + step.getName());
       }
 
@@ -204,7 +204,7 @@ public abstract class Executor {
 
       // End of the analysis if the analysis fail
       if (!result.isSuccess()) {
-        logger.severe("Fail of the analysis: " + result.getErrorMessage());
+        LOGGER.severe("Fail of the analysis: " + result.getErrorMessage());
         logEndAnalysis(false, startTime);
 
         if (result.getException() != null)
@@ -233,7 +233,7 @@ public abstract class Executor {
   private void logStartStep(final String stepName) {
 
     this.startTimeCurrentStep = System.currentTimeMillis();
-    logger.info("Start " + stepName + " step.");
+    LOGGER.info("Start " + stepName + " step.");
   }
 
   /**
@@ -244,7 +244,7 @@ public abstract class Executor {
 
     final long endTimePhase = System.currentTimeMillis();
 
-    logger.info("Process step "
+    LOGGER.info("Process step "
         + stepName
         + " in "
         + StringUtils.toTimeHumanReadable(endTimePhase
@@ -261,7 +261,7 @@ public abstract class Executor {
 
     final long endTime = System.currentTimeMillis();
 
-    logger.info(success ? "Successful" : "Unsuccessful"
+    LOGGER.info(success ? "Successful" : "Unsuccessful"
         + " end of the analysis in "
         + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
   }
