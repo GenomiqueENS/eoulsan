@@ -38,13 +38,13 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * This class define an executor for local mode.
  * @author Laurent Jourdren
  */
-public class LocalAnalysisExecutor extends Executor {
+public class LocalExecutor extends Executor {
 
   private SimpleContext context = new SimpleContext();
   private final File designFile;
 
   @Override
-  protected SimpleContext getExecutorInfo() {
+  protected SimpleContext getContext() {
 
     return this.context;
   }
@@ -72,7 +72,7 @@ public class LocalAnalysisExecutor extends Executor {
     try {
 
       final File logDir =
-          new File(this.designFile.getParent(), getExecutorInfo()
+          new File(this.designFile.getParent(), getContext()
               .getJobId());
 
       if (!logDir.exists())
@@ -110,7 +110,7 @@ public class LocalAnalysisExecutor extends Executor {
    * @param command command to execute
    * @param design the path to the design filename
    */
-  public LocalAnalysisExecutor(final Command command, final File designFile,
+  public LocalExecutor(final Command command, final File designFile,
       final File paramFile) {
 
     if (command == null)
@@ -123,7 +123,7 @@ public class LocalAnalysisExecutor extends Executor {
 
     this.designFile = designFile;
 
-    final SimpleContext context = getExecutorInfo();
+    final SimpleContext context = getContext();
     context.setBasePathname(designFile.getAbsoluteFile().getParentFile()
         .getAbsolutePath());
     context.setDesignPathname(designFile.getAbsolutePath());

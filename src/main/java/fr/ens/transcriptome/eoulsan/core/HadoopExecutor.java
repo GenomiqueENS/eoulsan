@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  * This class define an executor for hadoop mode.
  * @author Laurent Jourdren
  */
-public class HadoopAnalysisExecutor extends Executor {
+public class HadoopExecutor extends Executor {
 
   private Configuration conf;
   private Path designPath;
@@ -53,7 +53,7 @@ public class HadoopAnalysisExecutor extends Executor {
   private SimpleContext context;
 
   @Override
-  protected SimpleContext getExecutorInfo() {
+  protected SimpleContext getContext() {
 
     return this.context;
   }
@@ -84,8 +84,8 @@ public class HadoopAnalysisExecutor extends Executor {
 
     try {
 
-      final Path logPath = new Path(getExecutorInfo().getLogPathname());
-      final Path basePath = new Path(getExecutorInfo().getBasePathname());
+      final Path logPath = new Path(getContext().getLogPathname());
+      final Path basePath = new Path(getContext().getBasePathname());
       final FileSystem logFs = logPath.getFileSystem(this.conf);
       final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
@@ -153,7 +153,7 @@ public class HadoopAnalysisExecutor extends Executor {
 
     final Writer writer = new OutputStreamWriter(fs.create(catPath));
 
-    final Path basePath = new Path(getExecutorInfo().getBasePathname());
+    final Path basePath = new Path(getContext().getBasePathname());
     final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
     final StringBuilder sb = new StringBuilder();
@@ -197,7 +197,7 @@ public class HadoopAnalysisExecutor extends Executor {
   /**
    * Private constructor.
    */
-  private HadoopAnalysisExecutor(final Configuration conf) {
+  private HadoopExecutor(final Configuration conf) {
 
     if (conf == null)
       throw new NullPointerException("The configuration is null.");
@@ -211,7 +211,7 @@ public class HadoopAnalysisExecutor extends Executor {
    * @param command command to execute
    * @param designPathname the path the design file
    */
-  public HadoopAnalysisExecutor(final Configuration conf,
+  public HadoopExecutor(final Configuration conf,
       final Command command, final Path designPath) {
 
     this(conf);
@@ -225,7 +225,7 @@ public class HadoopAnalysisExecutor extends Executor {
       throw new NullPointerException("The design path is null.");
 
     this.designPath = designPath;
-    getExecutorInfo().setBasePathname(designPath.getParent().toString());
+    getContext().setBasePathname(designPath.getParent().toString());
 
   }
 
@@ -235,7 +235,7 @@ public class HadoopAnalysisExecutor extends Executor {
    * @param designPathname the path the design file
    * @throws IOException if cannot create log or output directory
    */
-  public HadoopAnalysisExecutor(final Configuration conf,
+  public HadoopExecutor(final Configuration conf,
       final Command command, final Design design, final Path designPath,
       final Path paramPath) throws IOException {
 
@@ -255,7 +255,7 @@ public class HadoopAnalysisExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final SimpleContext context = getExecutorInfo();
+    final SimpleContext context = getContext();
 
     context.setBasePathname(this.designPath.getParent().toString());
 

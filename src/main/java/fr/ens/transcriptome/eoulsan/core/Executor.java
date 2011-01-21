@@ -92,7 +92,7 @@ public abstract class Executor {
    * Get the execution context
    * @return the Context
    */
-  protected abstract SimpleContext getExecutorInfo();
+  protected abstract SimpleContext getContext();
 
   /**
    * run Eoulsan.
@@ -133,7 +133,7 @@ public abstract class Executor {
       throw new EoulsanException("The command is null");
 
     // Get execution context
-    final SimpleContext context = getExecutorInfo();
+    final SimpleContext context = getContext();
 
     // Check base path
     if (context.getBasePathname() == null)

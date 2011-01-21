@@ -37,7 +37,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Executor;
-import fr.ens.transcriptome.eoulsan.core.HadoopAnalysisExecutor;
+import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -148,7 +148,7 @@ public final class MainHadoop {
 
       // Execute
       final Executor e =
-          new HadoopAnalysisExecutor(conf, c, design, designPath, paramPath);
+          new HadoopExecutor(conf, c, design, designPath, paramPath);
 
       e.execute(Collections.singletonList((Step) new HadoopUploadStep(
           new DataFile(destURI.toString()), conf)), null);
