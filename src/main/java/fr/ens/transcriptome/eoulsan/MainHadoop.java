@@ -56,8 +56,8 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public final class MainHadoop {
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   /**
    * Main method. This method is called by MainHadoop.
@@ -81,14 +81,17 @@ public final class MainHadoop {
           + " exec param.xml design.txt");
     }
 
+    // Get the command line argumnts
+    final String paramPathname = args[1];
+    final String designPathname = args[2];
+    final String destPathname = args[3];
+    final String jobDescription = "no description";
+    final String jobEnvironment = "no enviromnent set";
+
     try {
 
       // Initialize The application
       final Configuration conf = init();
-
-      // Get the command line argumnts
-      final String paramPathname = args[1];
-      final String designPathname = args[2];
 
       // Define parameter URI
       final URI paramURI;
@@ -105,7 +108,7 @@ public final class MainHadoop {
         designURI = new File(designPathname).getAbsoluteFile().toURI();
 
       // Define destination URI
-      final URI destURI = new URI(args[3]);
+      final URI destURI = new URI(destPathname);
 
       final Path paramPath = new Path(paramURI.toString());
       final Path designPath = new Path(designURI.toString());
@@ -148,7 +151,8 @@ public final class MainHadoop {
 
       // Execute
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath);
+          new HadoopExecutor(conf, c, design, designPath, paramPath,
+              jobDescription, jobEnvironment);
 
       e.execute(Collections.singletonList((Step) new HadoopUploadStep(
           new DataFile(destURI.toString()), conf)), null);

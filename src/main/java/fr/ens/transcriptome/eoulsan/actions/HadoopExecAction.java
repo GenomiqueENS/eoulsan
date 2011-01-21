@@ -55,6 +55,12 @@ public class HadoopExecAction implements Action {
     final String designFile = arguments[1];
     final String hdfsPath = arguments[2];
 
+    run(paramFile, designFile, hdfsPath);
+  }
+
+  private void run(final String paramFile, final String designFile,
+      final String hdfsPath) {
+
     try {
 
       File repackagedJarFile = HadoopJarRepackager.repack();
