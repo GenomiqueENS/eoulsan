@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
-import fr.ens.transcriptome.eoulsan.core.LocalAnalysisExecutor;
+import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -89,7 +89,7 @@ public class AWSExecAction implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e = new LocalAnalysisExecutor(c, designFile, paramFile);
+      final Executor e = new LocalExecutor(c, designFile, paramFile);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(dest),
           (Step) new AWSMapReduceExecStep(), (Step) new TerminalStep()), null,
           true);
