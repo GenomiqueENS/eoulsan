@@ -51,6 +51,16 @@ public class ExecAction implements Action {
       .emptySet();
 
   @Override
+  public String getName() {
+    return "exec";
+  }
+
+  @Override
+  public String getDescription() {
+    return "execute " + Globals.APP_NAME + " in local mode.";
+  }
+
+  @Override
   public void action(final String[] args) {
 
     if (args.length != 2)

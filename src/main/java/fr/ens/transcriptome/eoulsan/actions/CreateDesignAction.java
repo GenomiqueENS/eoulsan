@@ -38,6 +38,16 @@ import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
  */
 public class CreateDesignAction implements Action {
 
+  @Override
+  public String getName() {
+    return "createdesign";
+  }
+
+  @Override
+  public String getDescription() {
+    return "create a design file from a list of files.";
+  }
+
   /**
    * Create soap index action.
    * @param args command line parameters for exec action

@@ -57,6 +57,16 @@ public class UploadS3Action implements Action {
       .emptySet();
 
   @Override
+  public String getName() {
+    return "s3upload";
+  }
+
+  @Override
+  public String getDescription() {
+    return "upload data on Amazon S3.";
+  }
+
+  @Override
   public void action(final String[] args) {
 
     if (args.length != 3)

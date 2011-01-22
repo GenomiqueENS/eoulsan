@@ -35,6 +35,16 @@ import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 public class CreateHadoopJarAction implements Action {
 
   @Override
+  public String getName() {
+    return "createhadoopjar";
+  }
+
+  @Override
+  public String getDescription() {
+    return "create a jar file for hadoop with all dependencies include.";
+  }
+
+  @Override
   public void action(final String[] arguments) {
 
     try {

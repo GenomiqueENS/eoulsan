@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -37,7 +38,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.actions.AWSExecAction;
+import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.CreateDesignAction;
 import fr.ens.transcriptome.eoulsan.actions.CreateHadoopJarAction;
 import fr.ens.transcriptome.eoulsan.actions.ExecAction;
@@ -58,12 +62,18 @@ public final class MainCLI {
    * Show command line help.
    * @param options Options of the software
    */
-  private static void help(final Options options) {
+  private static void help(final Options options, final List<Action> actions) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE + " [options] design",
-        options);
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
+        + " [options] command arguments", options);
+
+    System.out.println("Available commands:");
+    for (Action action : actions) {
+      System.out.println("\t- "
+          + action.getName() + "\t" + action.getDescription());
+    }
 
     Common.exit(0);
   }
@@ -100,9 +110,11 @@ public final class MainCLI {
   /**
    * Parse the options of the command line
    * @param args command line arguments
+   * @param action available actions
    * @return the number of optional arguments
    */
-  private static int parseCommandLine(final String args[]) {
+  private static int parseCommandLine(final String args[],
+      final List<Action> actions) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -116,7 +128,7 @@ public final class MainCLI {
 
       // Help option
       if (line.hasOption("help")) {
-        help(options);
+        help(options, actions);
       }
 
       // About option
@@ -169,8 +181,8 @@ public final class MainCLI {
 
           LOGGER.addHandler(fh);
         } catch (IOException e) {
-          Common.errorExit(e, "Error while creating log file: "
-              + e.getMessage());
+          Common.errorExit(e,
+              "Error while creating log file: " + e.getMessage());
         }
       }
 
@@ -192,8 +204,8 @@ public final class MainCLI {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     return argsOptions;
@@ -217,41 +229,44 @@ public final class MainCLI {
     LOGGER.setLevel(Globals.LOG_LEVEL);
     LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
-    // Parse the command line
-    final int argsOptions = parseCommandLine(args);
+    // Define available actions
+    final List<Action> actions =
+        Lists.newArrayList(new CreateDesignAction(), new ExecAction(),
+            new HadoopExecAction(), new CreateHadoopJarAction(),
+            new UploadS3Action(), new AWSExecAction());
 
+    // Parse the command line
+    final int argsOptions = parseCommandLine(args, actions);
+
+    // No arguments found
     if (args == null || args.length == argsOptions) {
 
       Common.showErrorMessageAndExit("This program needs one argument."
-          + " Use the -h option to get more information.\n" + "usage:\n\t"
-          + Globals.APP_NAME_LOWER_CASE
-          + " createdesign fastq_files fasta_file gff_gfile\n" + "usage:\n\t"
-          + Globals.APP_NAME_LOWER_CASE
-          + " createdesign exec param.xml design.txt" + "usage:\n\t"
-          + Globals.APP_NAME_LOWER_CASE + " uploads3 param.xml design.txt");
-
+          + " Use the -h option to get more information.\n");
     }
 
-    final String action = args[argsOptions].trim().toLowerCase();
+    final String actionName = args[argsOptions].trim().toLowerCase();
     final String[] arguments =
         StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
 
-    if ("exec".equals(action)) {
-      new ExecAction().action(arguments);
-    } else if ("hadoopexec".equals(action)) {
-      new HadoopExecAction().action(arguments);
-    } else if ("createdesign".equals(action)) {
-      new CreateDesignAction().action(arguments);
-    } else if ("s3upload".equals(action)) {
-      new UploadS3Action().action(arguments);
-    } else if ("awsexec".equals(action)) {
-      new AWSExecAction().action(arguments);
-    } else if ("createhadoopjar".equals(action)) {
-      new CreateHadoopJarAction().action(arguments);
-    } else
+    // Search action
+    boolean actionFound = false;
+    for (Action action : actions) {
+
+      if (action.getName().equals(actionName)) {
+
+        action.action(arguments);
+        actionFound = true;
+        break;
+      }
+    }
+
+    // Action not found
+    if (!actionFound) {
       Common.showErrorMessageAndExit("Unknown action: "
-          + action + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
+          + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
           + " -help for more help.\n");
+    }
 
   }
 
