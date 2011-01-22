@@ -54,6 +54,16 @@ public class AWSExecAction implements Action {
       .emptySet();
 
   @Override
+  public String getName() {
+    return "awsexec";
+  }
+
+  @Override
+  public String getDescription() {
+    return "execute eoulsan on Amazon cloud.";
+  }
+
+  @Override
   public void action(final String[] args) {
 
     if (args.length != 3)

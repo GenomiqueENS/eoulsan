@@ -43,6 +43,16 @@ public class HadoopExecAction implements Action {
   private static final String HADOOP_CMD = "hadoop jar ";
 
   @Override
+  public String getName() {
+    return "hadoopexec";
+  }
+
+  @Override
+  public String getDescription() {
+    return "execute " + Globals.APP_NAME + " on local hadoop cluster.";
+  }
+
+  @Override
   public void action(final String[] arguments) {
 
     if (arguments.length != 3) {

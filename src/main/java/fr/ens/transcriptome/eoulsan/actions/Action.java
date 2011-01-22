@@ -28,6 +28,22 @@ package fr.ens.transcriptome.eoulsan.actions;
  */
 public interface Action {
 
+  /**
+   * Get the name of the action.
+   * @return the name of the action
+   */
+  public String getName();
+
+  /**
+   * Get action description.
+   * @return the description description
+   */
+  public String getDescription();
+
+  /**
+   * Execute action.
+   * @param arguments arguments of the action.
+   */
   public void action(String[] arguments);
 
 }
