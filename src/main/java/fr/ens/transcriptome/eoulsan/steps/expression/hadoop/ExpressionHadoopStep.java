@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -50,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -154,7 +154,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     job.setOutputValueClass(Text.class);
 
     // Set the number of reducers
-    //job.setNumReduceTasks(1);
+    // job.setNumReduceTasks(1);
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
@@ -219,18 +219,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
-      final Path outputDirPath =
-          new Path(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
-              .getSourceWithoutExtension() + ".tmp");
-
+      // Set the result path
       final Path resultPath =
           new Path(context.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fetc.initializeExpressionResults();
 
-      for (FileStatus fstatus : fs.listStatus(outputDirPath))
-        if (!fstatus.getPath().getName().startsWith("_"))
-          fetc.loadPreResults(fs.open(fstatus.getPath()), readsUsed);
+      // Load map-reduce results
+      fetc.loadPreResults(
+          new DataFile(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
+              .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));
     }
