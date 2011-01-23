@@ -20,7 +20,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 public abstract class PathDataProtocol extends AbstractDataProtocol {
 
-  private Configuration conf;
+  protected Configuration conf;
 
   /**
    * Get Convert a DataFile object to a Path object
