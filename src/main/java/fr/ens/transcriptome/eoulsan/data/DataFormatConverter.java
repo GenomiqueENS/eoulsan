@@ -158,7 +158,7 @@ public class DataFormatConverter {
     this.inFile = inFile;
     this.inFormat = inFile.getMetaData().getDataFormat();
 
-    if (inFile == null)
+    if (inFormat == null)
       throw new NullPointerException("The input file format is null");
 
     if (outFile == null)
