@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -58,6 +59,13 @@ public final class MainCLI {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  // Define available actions
+  private static final List<Action> ACTIONS =
+      Collections.unmodifiableList(Lists.newArrayList(new CreateDesignAction(),
+          new ExecAction(), new HadoopExecAction(),
+          new CreateHadoopJarAction(), new UploadS3Action(),
+          new AWSExecAction()));
+
   /**
    * Show command line help.
    * @param options Options of the software
@@ -71,7 +79,7 @@ public final class MainCLI {
 
     System.out.println("Available commands:");
     for (Action action : actions) {
-      System.out.println("\t- "
+      System.out.println(" - "
           + action.getName() + "\t" + action.getDescription());
     }
 
@@ -124,7 +132,7 @@ public final class MainCLI {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, args);
+      final CommandLine line = parser.parse(options, args, true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -181,8 +189,8 @@ public final class MainCLI {
 
           LOGGER.addHandler(fh);
         } catch (IOException e) {
-          Common.errorExit(e,
-              "Error while creating log file: " + e.getMessage());
+          Common.errorExit(e, "Error while creating log file: "
+              + e.getMessage());
         }
       }
 
@@ -204,8 +212,8 @@ public final class MainCLI {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     return argsOptions;
@@ -229,14 +237,8 @@ public final class MainCLI {
     LOGGER.setLevel(Globals.LOG_LEVEL);
     LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
-    // Define available actions
-    final List<Action> actions =
-        Lists.newArrayList(new CreateDesignAction(), new ExecAction(),
-            new HadoopExecAction(), new CreateHadoopJarAction(),
-            new UploadS3Action(), new AWSExecAction());
-
     // Parse the command line
-    final int argsOptions = parseCommandLine(args, actions);
+    final int argsOptions = parseCommandLine(args, ACTIONS);
 
     // No arguments found
     if (args == null || args.length == argsOptions) {
@@ -251,7 +253,7 @@ public final class MainCLI {
 
     // Search action
     boolean actionFound = false;
-    for (Action action : actions) {
+    for (Action action : ACTIONS) {
 
       if (action.getName().equals(actionName)) {
 

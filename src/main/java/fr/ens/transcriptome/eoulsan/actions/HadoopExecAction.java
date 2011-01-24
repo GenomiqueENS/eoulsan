@@ -22,9 +22,19 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -54,32 +64,131 @@ public class HadoopExecAction implements Action {
 
   @Override
   public void action(final String[] arguments) {
+    
+    final Options options = makeOptions();
+    final CommandLineParser parser = new GnuParser();
 
-    if (arguments.length != 3) {
-      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
-          + "usage: " + Globals.APP_NAME_LOWER_CASE
-          + " hadoopexec param.xml design.txt hdfs://example.org/test");
+    String jobDescription = null;
+
+    int argsOptions = 0;
+
+    try {
+
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, arguments, true);
+
+      // Help option
+      if (line.hasOption("help")) {
+        help(options);
+      }
+
+      if (line.hasOption("d")) {
+
+        jobDescription = line.getOptionValue("d");
+        argsOptions += 2;
+      }
+
+    } catch (ParseException e) {
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
-    final String paramFile = arguments[0];
-    final String designFile = arguments[1];
-    final String hdfsPath = arguments[2];
+    if (arguments.length != argsOptions + 2) {
+      help(options);
+    }
 
-    run(paramFile, designFile, hdfsPath);
+    final File paramFile = new File(arguments[argsOptions]);
+    final File designFile = new File(arguments[argsOptions + 1]);
+    final String hdfsPath = arguments[argsOptions + 2];
+
+    // Execute program in hadoop mode
+    run(paramFile, designFile, hdfsPath, jobDescription);
   }
 
-  private void run(final String paramFile, final String designFile,
-      final String hdfsPath) {
+  //
+  // Command line parsing
+  //
 
+  /**
+   * Create options for command line
+   * @return an Options object
+   */
+  @SuppressWarnings("static-access")
+  private Options makeOptions() {
+
+    // create Options object
+    final Options options = new Options();
+
+    // Help option
+    options.addOption("h", "help", false, "display this help");
+
+    // Description option
+    options.addOption(OptionBuilder.withArgName("description").hasArg()
+        .withDescription("job description").withLongOpt("desc").create('d'));
+
+    return options;
+  }
+
+  /**
+   * Show command line help.
+   * @param options Options of the software
+   */
+  private void help(final Options options) {
+
+    // Show help message
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
+        + ".sh " + getName() + " [options] param.xml design.txt hdfs://server/path",
+        options);
+
+    Common.exit(0);
+  }
+
+  //
+  // Execution
+  //
+
+  /**
+   * Run Eoulsan in hadoop mode.
+   * @param paramFile parameter file
+   * @param designFile design file
+   * @param hdfsPath path of data on hadoop file system
+   * @param jobDescription job description
+   */
+  private void run(final File paramFile, final File designFile,
+      final String hdfsPath, final String jobDescription) {
+
+    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(designFile, "designFile is null");
+    checkNotNull(hdfsPath, "hdfsPath is null");
+    
     try {
 
       File repackagedJarFile = HadoopJarRepackager.repack();
 
       LOGGER.info("Launch Eoulsan in Hadoop mode.");
 
-      ProcessUtils.execThreadOutput(HADOOP_CMD
-          + repackagedJarFile.getCanonicalPath() + " exec " + paramFile + " "
-          + designFile + " " + hdfsPath);
+      // Create command line
+      final StringBuilder sb = new StringBuilder();
+      sb.append(HADOOP_CMD);
+      sb.append(repackagedJarFile.getCanonicalPath());
+      sb.append(" exec ");
+
+      if (jobDescription != null) {
+        sb.append("-d \"");
+        sb.append(jobDescription.trim());
+        sb.append("\" ");
+      }
+
+      sb.append("-e \"local hadoop cluster\" ");
+      sb.append(paramFile);
+      sb.append(" ");
+      sb.append(designFile);
+      sb.append(" ");
+      sb.append(hdfsPath);
+
+      // execute hadoop
+      ProcessUtils.execThreadOutput(sb.toString());
 
     } catch (IOException e) {
       Common.errorExit(e, "Error while executing "
@@ -87,5 +196,4 @@ public class HadoopExecAction implements Action {
     }
 
   }
-
 }
