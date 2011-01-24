@@ -22,6 +22,8 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,6 +32,13 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -56,8 +65,8 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public final class MainHadoop {
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   /**
    * Main method. This method is called by MainHadoop.
@@ -65,29 +74,129 @@ public final class MainHadoop {
    */
   public static void main(final String[] args) {
 
-    new MainHadoop().action(args);
-  }
+    final Options options = makeOptions();
+    final CommandLineParser parser = new GnuParser();
 
-  public void action(final String[] args) {
+    String jobDescription = null;
+    String jobEnvironment = null;
 
-    if (args.length != 4)
-      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
-          + "usage: " + Globals.APP_NAME_LOWER_CASE
-          + " exec param.xml design.txt");
+    int argsOptions = 0;
 
-    if (!"exec".equals(args[0])) {
-      Common.showErrorMessageAndExit("Unknow command: "
-          + args[0] + ".\n" + "usage: " + Globals.APP_NAME_LOWER_CASE
-          + " exec param.xml design.txt");
+    try {
+
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, args, true);
+
+      // Help option
+      if (line.hasOption("help")) {
+        help(options);
+      }
+
+      if (line.hasOption("d")) {
+
+        jobDescription = line.getOptionValue("d");
+        argsOptions += 2;
+      }
+
+      if (line.hasOption("e")) {
+
+        jobEnvironment = line.getOptionValue("e");
+        argsOptions += 2;
+      }
+
+    } catch (ParseException e) {
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
-    // Get the command line argumnts
-    final String paramPathname = args[1];
-    final String designPathname = args[2];
-    final String destPathname = args[3];
-    final String jobDescription = "no description";
-    final String jobEnvironment = "no enviromnent set";
+    if (args.length != argsOptions + 3) {
+      help(options);
+    }
 
+    // Get the command line arguments
+    final String paramPathname = args[argsOptions];
+    final String designPathname = args[argsOptions + 2];
+    final String destPathname = args[argsOptions + 3];
+
+    // Execute program in hadoop mode
+    run(paramPathname, designPathname, destPathname, jobDescription,
+        jobEnvironment);
+  }
+
+  //
+  // Command line parsing
+  //
+
+  /**
+   * Create options for command line
+   * @return an Options object
+   */
+  @SuppressWarnings("static-access")
+  private static Options makeOptions() {
+
+    // create Options object
+    final Options options = new Options();
+
+    // Help option
+    options.addOption("h", "help", false, "display this help");
+
+    // Description option
+    options.addOption(OptionBuilder.withArgName("description").hasArg()
+        .withDescription("job description").withLongOpt("desc").create('d'));
+
+    return options;
+  }
+
+  /**
+   * Show command line help.
+   * @param options Options of the software
+   */
+  private static void help(final Options options) {
+
+    // Show help message
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp("hadoop -jar "
+        + Globals.APP_NAME_LOWER_CASE
+        + ".jar  [options] param.xml design.txt hdfs://server/path", options);
+
+    Common.exit(0);
+  }
+
+  //
+  // Execution
+  //
+
+  /**
+   * Run Eoulsan in hadoop mode
+   * @param paramPathname parameter file
+   * @param designPathname design file
+   * @param destPathname data path
+   * @param jobDescription job description
+   * @param jobEnvironment job environment
+   */
+  private static void run(final String paramPathname,
+      final String designPathname, final String destPathname,
+      final String jobDescription, final String jobEnvironment) {
+
+    checkNotNull(paramPathname, "paramPathname is null");
+    checkNotNull(designPathname, "designPathname is null");
+    checkNotNull(destPathname, "destPathname is null");
+    
+    final String desc;
+    final String env;
+    
+    if (jobDescription==null) {
+      desc = "no job description";
+    } else {
+      desc=jobDescription;
+    }
+    
+    if (jobEnvironment==null) {
+      env = "no enviromnent description";
+    } else {
+      env=jobDescription;
+    }
+    
     try {
 
       // Initialize The application
@@ -152,7 +261,7 @@ public final class MainHadoop {
       // Execute
       final Executor e =
           new HadoopExecutor(conf, c, design, designPath, paramPath,
-              jobDescription, jobEnvironment);
+              desc, env);
 
       e.execute(Collections.singletonList((Step) new HadoopUploadStep(
           new DataFile(destURI.toString()), conf)), null);
@@ -182,7 +291,7 @@ public final class MainHadoop {
    * @return a Hadoop configuration object
    * @throws EoulsanException if an error occurs while reading settings
    */
-  private Configuration init() throws EoulsanException {
+  private static Configuration init() throws EoulsanException {
 
     try {
       // Create and load settings

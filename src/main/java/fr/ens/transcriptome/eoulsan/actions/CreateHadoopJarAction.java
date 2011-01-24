@@ -24,6 +24,13 @@ package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.IOException;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
@@ -47,6 +54,30 @@ public class CreateHadoopJarAction implements Action {
   @Override
   public void action(final String[] arguments) {
 
+    final Options options = makeOptions();
+    final CommandLineParser parser = new GnuParser();
+
+    int argsOptions = 0;
+
+    try {
+
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, arguments, true);
+
+      // Help option
+      if (line.hasOption("help")) {
+        help(options);
+      }
+
+    } catch (ParseException e) {
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
+    }
+
+    if (arguments.length != argsOptions) {
+      help(options);
+    }
+
     try {
 
       HadoopJarRepackager.repack();
@@ -56,6 +87,39 @@ public class CreateHadoopJarAction implements Action {
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
 
+  }
+
+  //
+  // Command line parsing
+  //
+
+  /**
+   * Create options for command line
+   * @return an Options object
+   */
+  private Options makeOptions() {
+
+    // create Options object
+    final Options options = new Options();
+
+    // Help option
+    options.addOption("h", "help", false, "display this help");
+
+    return options;
+  }
+
+  /**
+   * Show command line help.
+   * @param options Options of the software
+   */
+  private void help(final Options options) {
+
+    // Show help message
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + getName(),
+        options);
+
+    Common.exit(0);
   }
 
 }

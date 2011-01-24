@@ -22,11 +22,21 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import com.google.common.collect.Lists;
 
@@ -50,8 +60,8 @@ public class AWSExecAction implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   @Override
   public String getName() {
@@ -64,21 +74,116 @@ public class AWSExecAction implements Action {
   }
 
   @Override
-  public void action(final String[] args) {
+  public void action(final String[] arguments) {
 
-    if (args.length != 3)
-      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
-          + "usage: " + Globals.APP_NAME_LOWER_CASE
-          + " awsexec param.xml design.txt s3://mybucket/test");
+    final Options options = makeOptions();
+    final CommandLineParser parser = new GnuParser();
 
-    final File paramFile = new File(args[0]);
-    final File designFile = new File(args[1]);
-    final DataFile dest = new DataFile(args[2]);
-    final String jobDescription = "no description";
+    String jobDescription = null;
 
+    int argsOptions = 0;
+
+    try {
+
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, arguments, true);
+
+      // Help option
+      if (line.hasOption("help")) {
+        help(options);
+      }
+
+      if (line.hasOption("d")) {
+
+        jobDescription = line.getOptionValue("d");
+        argsOptions += 2;
+      }
+
+    } catch (ParseException e) {
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
+    }
+
+    if (arguments.length != argsOptions + 2) {
+      help(options);
+    }
+
+    final File paramFile = new File(arguments[argsOptions]);
+    final File designFile = new File(arguments[argsOptions + 1]);
+    final DataFile s3Path = new DataFile(arguments[argsOptions + 2]);
+
+    // Execute program in AWS mode
+    run(paramFile, designFile, s3Path, jobDescription);
+  }
+
+  //
+  // Command line parsing
+  //
+
+  /**
+   * Create options for command line
+   * @return an Options object
+   */
+  @SuppressWarnings("static-access")
+  private Options makeOptions() {
+
+    // create Options object
+    final Options options = new Options();
+
+    // Help option
+    options.addOption("h", "help", false, "display this help");
+
+    // Description option
+    options.addOption(OptionBuilder.withArgName("description").hasArg()
+        .withDescription("job description").withLongOpt("desc").create('d'));
+
+    return options;
+  }
+
+  /**
+   * Show command line help.
+   * @param options Options of the software
+   */
+  private void help(final Options options) {
+
+    // Show help message
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
+        + ".sh " + getName()
+        + " [options] param.xml design.txt s3://mybucket/test", options);
+
+    Common.exit(0);
+  }
+
+  //
+  // Execution
+  //
+
+  /**
+   * Run Eoulsan in hadoop mode.
+   * @param paramFile parameter file
+   * @param designFile design file
+   * @param s3Path path of data on S3 file system
+   * @param jobDescription job description
+   */
+  private void run(final File paramFile, final File designFile,
+      final DataFile s3Path, final String jobDescription) {
+
+    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(designFile, "designFile is null");
+    checkNotNull(s3Path, "s3Path is null");
+    
     logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
     logger.info("Design file: " + designFile);
+
+    final String desc;
+
+    if (jobDescription == null) {
+      desc = "no job description";
+    } else {
+      desc = jobDescription.trim();
+    }
 
     try {
 
@@ -100,9 +205,8 @@ public class AWSExecAction implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e =
-          new LocalExecutor(c, designFile, paramFile, jobDescription);
-      e.execute(Lists.newArrayList((Step) new LocalUploadStep(dest),
+      final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
+      e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
           (Step) new AWSMapReduceExecStep(), (Step) new TerminalStep()), null,
           true);
 
@@ -112,6 +216,7 @@ public class AWSExecAction implements Action {
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
+
   }
 
 }

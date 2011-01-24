@@ -22,11 +22,21 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -47,8 +57,12 @@ public class ExecAction implements Action {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
+
+  //
+  // Action methods
+  //
 
   @Override
   public String getName() {
@@ -61,16 +75,108 @@ public class ExecAction implements Action {
   }
 
   @Override
-  public void action(final String[] args) {
+  public void action(final String[] arguments) {
 
-    if (args.length != 2)
-      Common.showErrorMessageAndExit("Invalid number of arguments.\n"
-          + "usage: " + Globals.APP_NAME_LOWER_CASE
-          + " exec param.xml design.txt");
+    final Options options = makeOptions();
+    final CommandLineParser parser = new GnuParser();
 
-    final File paramFile = new File(args[0]);
-    final File designFile = new File(args[1]);
-    final String jobDescription = "no description";
+    String jobDescription = null;
+
+    int argsOptions = 0;
+
+    try {
+
+      // parse the command line arguments
+      final CommandLine line = parser.parse(options, arguments, true);
+
+      // Help option
+      if (line.hasOption("help")) {
+        help(options);
+      }
+
+      if (line.hasOption("d")) {
+
+        jobDescription = line.getOptionValue("d");
+        argsOptions += 2;
+      }
+
+    } catch (ParseException e) {
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
+    }
+
+    if (arguments.length != argsOptions + 2) {
+      help(options);
+    }
+
+    final File paramFile = new File(arguments[argsOptions]);
+    final File designFile = new File(arguments[argsOptions + 1]);
+
+    // Execute program in local mode
+    run(paramFile, designFile, jobDescription);
+  }
+
+  //
+  // Command line parsing
+  //
+
+  /**
+   * Create options for command line
+   * @return an Options object
+   */
+  @SuppressWarnings("static-access")
+  private Options makeOptions() {
+
+    // create Options object
+    final Options options = new Options();
+
+    // Help option
+    options.addOption("h", "help", false, "display this help");
+
+    // Description option
+    options.addOption(OptionBuilder.withArgName("description").hasArg()
+        .withDescription("job description").withLongOpt("desc").create('d'));
+
+    return options;
+  }
+
+  /**
+   * Show command line help.
+   * @param options Options of the software
+   */
+  private void help(final Options options) {
+
+    // Show help message
+    final HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
+        + ".sh " + getName() + " [options] param.xml design.txt", options);
+
+    Common.exit(0);
+  }
+
+  //
+  // Execution
+  //
+
+  /**
+   * Run Eoulsan
+   * @param paramFile parameter file
+   * @param designFile design file
+   * @param jobDescription job description
+   */
+  private void run(final File paramFile, final File designFile,
+      final String jobDescription) {
+
+    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(designFile, "designFile is null");
+
+    final String desc;
+
+    if (jobDescription == null) {
+      desc = "no job description";
+    } else {
+      desc = jobDescription.trim();
+    }
 
     logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
@@ -96,8 +202,7 @@ public class ExecAction implements Action {
       pp.parse(c);
 
       // Execute
-      final Executor e =
-          new LocalExecutor(c, designFile, paramFile, jobDescription);
+      final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
       e.execute();
 
     } catch (FileNotFoundException e) {
