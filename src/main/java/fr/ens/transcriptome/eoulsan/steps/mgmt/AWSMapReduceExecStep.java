@@ -22,6 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -37,6 +38,7 @@ import com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest;
 import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
 import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -109,16 +111,44 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     final long startTime = System.currentTimeMillis();
 
+    // Envrionment argument
+    final StringBuilder sb = new StringBuilder();
+    sb.append("hadoopVersion=");
+    sb.append(this.hadoopVersion);
+    sb.append(", ");
+
+    sb.append("nInstances=");
+    sb.append(this.nInstances);
+    sb.append(", ");
+
+    sb.append("instanceType=");
+    sb.append(this.instanceType);
+    sb.append(", ");
+
+    sb.append("endpoint=");
+    sb.append(this.endpoint);
+    sb.append(", ");
+
+    sb.append("logPathname=");
+    sb.append(this.logPathname);
+
     // Command arguments
-    final String[] eoulsanArgs =
-        new String[] {"exec", context.getParameterPathname(),
-            context.getDesignPathname(), "hdfs:///test"};
+    final List<String> eoulsanArgsList = Lists.newArrayList();
+    eoulsanArgsList.add("-d");
+    eoulsanArgsList.add(context.getJobDescription());
+    eoulsanArgsList.add("-e");
+    eoulsanArgsList.add(sb.toString());
+    eoulsanArgsList.add(context.getParameterPathname());
+    eoulsanArgsList.add(context.getDesignPathname());
+    eoulsanArgsList.add("hdfs:///test");
+
+    final String[] eoulsanArgs = eoulsanArgsList.toArray(new String[0]);
 
     // Get the credentials
     final Settings settings = EoulsanRuntime.getSettings();
     final AWSCredentials credentials =
-        new BasicAWSCredentials(settings.getAWSAccessKey(),
-            settings.getAWSSecretKey());
+        new BasicAWSCredentials(settings.getAWSAccessKey(), settings
+            .getAWSSecretKey());
 
     // Create the Amazon MapReduce object
     final AmazonElasticMapReduce mapReduceClient =
@@ -135,15 +165,14 @@ public class AWSMapReduceExecStep extends AbstractStep {
     // Set step config
     final StepConfig stepConfig =
         new StepConfig().withName(context.getJobId() + "-step")
-            .withHadoopJarStep(hadoopJarStep)
-            .withActionOnFailure("TERMINATE_JOB_FLOW");
+            .withHadoopJarStep(hadoopJarStep).withActionOnFailure(
+                "TERMINATE_JOB_FLOW");
 
     // Set the instance
     final JobFlowInstancesConfig instances =
         new JobFlowInstancesConfig().withInstanceCount(this.nInstances)
-            .withMasterInstanceType(this.instanceType)
-            .withSlaveInstanceType(this.instanceType)
-            .withHadoopVersion(this.hadoopVersion);
+            .withMasterInstanceType(this.instanceType).withSlaveInstanceType(
+                this.instanceType).withHadoopVersion(this.hadoopVersion);
 
     // Configure hadoop
     final ScriptBootstrapActionConfig scriptBootstrapAction =
@@ -159,9 +188,9 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Run flow
     final RunJobFlowRequest runFlowRequest =
-        new RunJobFlowRequest().withName(context.getJobId())
-            .withInstances(instances).withSteps(stepConfig)
-            .withBootstrapActions(bootstrapActions);
+        new RunJobFlowRequest().withName(context.getJobId()).withInstances(
+            instances).withSteps(stepConfig).withBootstrapActions(
+            bootstrapActions);
 
     if (logPathname != null && !"".equals(this.logPathname))
       runFlowRequest.withLogUri(this.logPathname);
