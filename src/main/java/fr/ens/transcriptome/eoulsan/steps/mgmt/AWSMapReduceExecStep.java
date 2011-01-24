@@ -134,6 +134,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Command arguments
     final List<String> eoulsanArgsList = Lists.newArrayList();
+    eoulsanArgsList.add("exec");
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");

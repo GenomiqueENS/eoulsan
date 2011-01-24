@@ -65,8 +65,8 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public final class MainHadoop {
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   /**
    * Main method. This method is called by MainHadoop.
@@ -105,16 +105,20 @@ public final class MainHadoop {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
-    if (args.length != argsOptions + 3) {
+    if (args.length != argsOptions + 4) {
       help(options);
     }
 
+    if (!"exec".equals(args[argsOptions])) {
+      Common.showErrorMessageAndExit("Unknown command: " + args[argsOptions]);
+    }
+
     // Get the command line arguments
-    final String paramPathname = args[argsOptions];
+    final String paramPathname = args[argsOptions + 1];
     final String designPathname = args[argsOptions + 2];
     final String destPathname = args[argsOptions + 3];
 
@@ -181,22 +185,22 @@ public final class MainHadoop {
     checkNotNull(paramPathname, "paramPathname is null");
     checkNotNull(designPathname, "designPathname is null");
     checkNotNull(destPathname, "destPathname is null");
-    
+
     final String desc;
     final String env;
-    
-    if (jobDescription==null) {
+
+    if (jobDescription == null) {
       desc = "no job description";
     } else {
-      desc=jobDescription;
+      desc = jobDescription;
     }
-    
-    if (jobEnvironment==null) {
+
+    if (jobEnvironment == null) {
       env = "no enviromnent description";
     } else {
-      env=jobDescription;
+      env = jobDescription;
     }
-    
+
     try {
 
       // Initialize The application
@@ -260,8 +264,7 @@ public final class MainHadoop {
 
       // Execute
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath,
-              desc, env);
+          new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env);
 
       e.execute(Collections.singletonList((Step) new HadoopUploadStep(
           new DataFile(destURI.toString()), conf)), null);
