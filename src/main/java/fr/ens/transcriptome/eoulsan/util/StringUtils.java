@@ -490,7 +490,7 @@ public final class StringUtils {
 
     final int newLen = array.length - elementsToRemove;
     final String[] result = new String[newLen];
-    System.arraycopy(array, 1, result, 0, newLen);
+    System.arraycopy(array, elementsToRemove, result, 0, newLen);
 
     return result;
   }
