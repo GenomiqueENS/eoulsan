@@ -30,9 +30,12 @@ public class FileConcatInputStreamTest {
     files.add(writeFile(777, 222));
     files.add(writeFile(888, 255));
 
+    final int total = 1000 + 1500 + 777 + 888;
+
     final InputStream is = new FileConcatInputStream(files);
     final BufferedReader br = FileUtils.createBufferedReader(is);
     String line = null;
+    int count = 0;
 
     while ((line = br.readLine()) != null) {
 
@@ -48,8 +51,10 @@ public class FileConcatInputStreamTest {
 
         assertEquals(r, fields[1].length());
       }
-
+      count++;
     }
+
+    assertEquals(total, count);
 
     br.close();
 
