@@ -42,6 +42,11 @@ public final class Settings {
   private static final String RSERVE_SERVER_NAME_KEY =
       MAIN_PREFIX_KEY + "rserve.servername";
 
+  private static final String OBFUSCATE_DESIGN_KEY =
+      MAIN_PREFIX_KEY + "design.obfuscate";
+  private static final String REMOVE_REPLICATE_INFO_KEY =
+      MAIN_PREFIX_KEY + "design.remove.replicate.info";
+
   private static final Set<String> FORBIDDEN_KEYS =
       Utils.unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -119,6 +124,26 @@ public final class Settings {
   public String getTempDirectory() {
 
     return this.properties.getProperty(TMP_DIR_KEY);
+  }
+
+  /**
+   * Test if design must be obfuscated
+   * @return true if design must be obfuscated
+   */
+  public boolean isObfuscateDesign() {
+
+    return Boolean.parseBoolean(this.properties
+        .getProperty(OBFUSCATE_DESIGN_KEY));
+  }
+
+  /**
+   * Test if replicate information must be removed from design.
+   * @return true if replicate information must be removed
+   */
+  public boolean isRemoveReplicateInfo() {
+
+    return Boolean.parseBoolean(this.properties
+        .getProperty(REMOVE_REPLICATE_INFO_KEY));
   }
 
   /**
@@ -233,6 +258,26 @@ public final class Settings {
     if (tempDirectory != null) {
       this.properties.setProperty(TMP_DIR_KEY, tempDirectory);
     }
+  }
+
+  /**
+   * Set if the design must be obfuscated
+   * @param obfuscate true if the design must be obfuscated
+   */
+  public void setObfuscateDesign(final boolean obfuscate) {
+
+    this.properties.setProperty(OBFUSCATE_DESIGN_KEY, Boolean
+        .toString(obfuscate));
+  }
+
+  /**
+   * Set if the replicate information must be removed from the design.
+   * @param remove true if the replicate information must be remove
+   */
+  public void setRemoveDesignInfo(final boolean remove) {
+
+    this.properties.setProperty(REMOVE_REPLICATE_INFO_KEY, Boolean
+        .toString(remove));
   }
 
   /**

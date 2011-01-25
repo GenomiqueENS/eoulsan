@@ -31,11 +31,13 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
@@ -103,6 +105,13 @@ public abstract class UploadStep extends AbstractStep {
 
       // Add all files to upload in a map
       final Map<DataFile, DataFile> filesToCopy = reWriteDesign(design, files);
+
+      final Settings settings = context.getRuntime().getSettings();
+
+      // Obfuscate design is needed
+      if (settings.isObfuscateDesign()) {
+        DesignUtils.obfuscate(design, settings.isRemoveReplicateInfo());
+      }
 
       // Create a new design file
       final File newDesignFile = writeTempDesignFile(design);
@@ -285,8 +294,8 @@ public abstract class UploadStep extends AbstractStep {
           result.put(genomeOldFile, genomeNewFile);
         }
 
-        genomesMap.put(genome,
-            genomeNewFile == null ? "" : genomeNewFile.getSource());
+        genomesMap.put(genome, genomeNewFile == null ? "" : genomeNewFile
+            .getSource());
       }
       s.getMetadata().setGenome(genomesMap.get(genome));
 
