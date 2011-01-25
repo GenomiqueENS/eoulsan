@@ -26,18 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.model.InstanceType;
-import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduce;
-import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient;
-import com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig;
-import com.amazonaws.services.elasticmapreduce.model.HadoopJarStepConfig;
-import com.amazonaws.services.elasticmapreduce.model.JobFlowInstancesConfig;
-import com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest;
-import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
-import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
-import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -50,6 +39,8 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.util.AWSMapReduceBuilder;
+import fr.ens.transcriptome.eoulsan.util.AWSMapReduceJob;
 
 /**
  * This class launch Eoulsan on Amazon MapReduce.
@@ -62,6 +53,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final int COUNTDOWN_START = 30;
+
+  private static final int SECONDS_WAIT_BETWEEN_CHECKS = 30;
 
   /** Version of hadoop to use with AWS MapReduce. */
   private String hadoopVersion = "0.20";
@@ -77,6 +70,9 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
   /** Log path to use with AWS MapReduce. */
   private String logPathname = "s3n://sgdb-test/awslog";
+
+  /** Wait the end of AWS Job. */
+  private boolean waitJob = false;
 
   @Override
   public void configure(Set<Parameter> stepParameters,
@@ -99,6 +95,9 @@ public class AWSMapReduceExecStep extends AbstractStep {
       if ("aws.mapreduce.log.path".equals(param.getName()))
         this.logPathname = param.getStringValue().trim();
 
+      if ("aws.mapreduce.wait.job".equals(param.getName()))
+        this.waitJob = param.getBooleanValue();
+
     }
 
     if (this.nInstances == -1)
@@ -110,6 +109,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
   public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
+
+    final Settings settings = EoulsanRuntime.getSettings();
 
     // Envrionment argument
     final StringBuilder sb = new StringBuilder();
@@ -145,66 +146,52 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     final String[] eoulsanArgs = eoulsanArgsList.toArray(new String[0]);
 
-    // Get the credentials
-    final Settings settings = EoulsanRuntime.getSettings();
-    final AWSCredentials credentials =
-        new BasicAWSCredentials(settings.getAWSAccessKey(), settings
-            .getAWSSecretKey());
+    // AWS builder
+    final AWSMapReduceBuilder builder = new AWSMapReduceBuilder();
 
-    // Create the Amazon MapReduce object
-    final AmazonElasticMapReduce mapReduceClient =
-        new AmazonElasticMapReduceClient(credentials);
+    // Set Job flow name
+    builder.withJobFlowName(context.getJobDescription());
 
-    // Set the end point
-    mapReduceClient.setEndpoint(this.endpoint);
+    // Set the credentials
+    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSsecretKey(
+        settings.getAWSSecretKey());
 
-    // Set the hadoop jar step
-    final HadoopJarStepConfig hadoopJarStep =
-        new HadoopJarStepConfig().withJar(context.getJarPathname()).withArgs(
-            eoulsanArgs);
+    // Set end point
+    builder.withEndpoint(this.endpoint);
 
-    // Set step config
-    final StepConfig stepConfig =
-        new StepConfig().withName(context.getJobId() + "-step")
-            .withHadoopJarStep(hadoopJarStep).withActionOnFailure(
-                "TERMINATE_JOB_FLOW");
+    // Set command
+    builder.withJarLocation(context.getJarPathname()).withJarArguments(
+        eoulsanArgs);
 
-    // Set the instance
-    final JobFlowInstancesConfig instances =
-        new JobFlowInstancesConfig().withInstanceCount(this.nInstances)
-            .withMasterInstanceType(this.instanceType).withSlaveInstanceType(
-                this.instanceType).withHadoopVersion(this.hadoopVersion);
+    // Set Instances
+    builder.withMasterInstanceType(this.instanceType).withSlavesInstanceType(
+        this.instanceType).withInstancesNumber(this.nInstances);
 
-    // Configure hadoop
-    final ScriptBootstrapActionConfig scriptBootstrapAction =
-        new ScriptBootstrapActionConfig()
-            .withPath(
-                "s3n://eu-west-1.elasticmapreduce/bootstrap-actions/configure-hadoop")
-            .withArgs("--site-key-value",
-                "mapred.tasktracker.map.tasks.maximum=2");
+    // Set Hadoop version
+    builder.withHadoopVersion(this.hadoopVersion);
 
-    final BootstrapActionConfig bootstrapActions =
-        new BootstrapActionConfig().withName("Configure hadoop")
-            .withScriptBootstrapAction(scriptBootstrapAction);
+    // Set log path
+    builder.withLogPathname(this.logPathname);
 
-    // Run flow
-    final RunJobFlowRequest runFlowRequest =
-        new RunJobFlowRequest().withName(context.getJobId()).withInstances(
-            instances).withSteps(stepConfig).withBootstrapActions(
-            bootstrapActions);
-
-    if (logPathname != null && !"".equals(this.logPathname))
-      runFlowRequest.withLogUri(this.logPathname);
+    // Create job
+    final AWSMapReduceJob job = builder.create();
 
     showCountDown(COUNTDOWN_START);
 
     LOGGER.info("Start Amazon MapReduce job.");
 
-    final RunJobFlowResult runJobFlowResult =
-        mapReduceClient.runJobFlow(runFlowRequest);
+    // Run job
+    final String jobFlowId = job.runJob();
 
-    final String jobFlowId = runJobFlowResult.getJobFlowId();
     LOGGER.info("Ran job flow with id: " + jobFlowId);
+
+    if (this.waitJob) {
+
+      job.waitForJob(SECONDS_WAIT_BETWEEN_CHECKS);
+
+      return new StepResult(context, startTime, "End of Amazon MapReduce Job "
+          + jobFlowId);
+    }
 
     return new StepResult(context, startTime, "Launch of Amazon MapReduce Job "
         + jobFlowId);
