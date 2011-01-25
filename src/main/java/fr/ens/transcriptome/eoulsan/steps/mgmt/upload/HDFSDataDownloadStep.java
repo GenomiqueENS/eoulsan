@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -138,13 +139,28 @@ public class HDFSDataDownloadStep extends AbstractStep {
         }
       }
 
+      // If no file to copy, do nothing
       if (files.size() > 0) {
-        final Path jobPath =
-            PathUtils.createTempPath(new Path(context.getBasePathname()),
-                "distcp-", "", this.conf);
 
-        DataSourceDistCp distCp = new DataSourceDistCp(this.conf, jobPath);
-        distCp.copy(files);
+        if (new DataFile(context.getOutputPathname()).isDefaultProtocol()) {
+
+          // Local FileSystem output
+          for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+
+            // Copy the file
+            new DataFormatConverter(e.getKey(), e.getValue()).convert();
+          }
+
+        } else {
+
+          // Use distributed copy if output is not on local FileSystem
+          final Path jobPath =
+              PathUtils.createTempPath(new Path(context.getBasePathname()),
+                  "distcp-", "", this.conf);
+
+          DataSourceDistCp distCp = new DataSourceDistCp(this.conf, jobPath);
+          distCp.copy(files);
+        }
       }
 
       /*
@@ -198,8 +214,9 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     final DataFile outFile =
-        new DataFile(new Path(new Path(context.getOutputPathname()),
-            inFile.getName() + CompressionType.BZIP2.getExtension()).toString());
+        new DataFile(new Path(new Path(context.getOutputPathname()), inFile
+            .getName()
+            + CompressionType.BZIP2.getExtension()).toString());
 
     files.put(inFile, outFile);
   }
@@ -214,8 +231,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     final List<DataFormat> result = Lists.newArrayList();
 
     final String list =
-        context.getRuntime().getSettings()
-            .getSetting(DATAFORMATS_TO_DOWNLOAD_SETTING);
+        context.getRuntime().getSettings().getSetting(
+            DATAFORMATS_TO_DOWNLOAD_SETTING);
 
     if (list == null) {
       return result;
