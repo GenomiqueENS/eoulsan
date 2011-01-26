@@ -145,7 +145,7 @@ public class SampleImpl implements Sample {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
 
     if (o == null)
       return false;
@@ -153,7 +153,8 @@ public class SampleImpl implements Sample {
     if (o instanceof SampleImpl) {
 
       final SampleImpl that = (SampleImpl) o;
-      return that.design == this.design && that.sampleId == this.sampleId;
+
+      return that.design.equals(this.design) && that.sampleId == this.sampleId;
     }
 
     return false;
