@@ -148,6 +148,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
           for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 
             // Copy the file
+            LOGGER.info("Copy " + e.getKey() + " to " + e.getValue());
             new DataFormatConverter(e.getKey(), e.getValue()).convert();
           }
 
@@ -163,24 +164,16 @@ public class HDFSDataDownloadStep extends AbstractStep {
         }
       }
 
-      /*
-       * final FileSystem inFs = inPath.getFileSystem(conf); final FileSystem
-       * outFs = outPath.getFileSystem(conf); final FileStatus[] files =
-       * inFs.listStatus(inPath, new PathFilter() {
-       * @Override public boolean accept(final Path p) { final String filename =
-       * p.getName(); final DataFormat df = DataFormats.EXPRESSION_RESULTS_TXT;
-       * if (filename.startsWith(df.getType().getPrefix()) &&
-       * filename.endsWith(df.getDefaultExtention())) return true; return false;
-       * } }); // Create output path is does not exists if
-       * (!outFs.exists(outPath)) outFs.mkdirs(outPath); final StringBuilder
-       * logMsg = new StringBuilder(); if (files != null) for (FileStatus f :
-       * files) { final Path ip = f.getPath(); final Path op = new Path(outPath,
-       * ip.getName()); String msg = "Copy " + ip + " to " + op;
-       * logger.info(msg); logMsg.append(msg); logMsg.append("\n");
-       * PathUtils.copy(ip, op, conf); }
-       */
+      final StringBuilder logMsg = new StringBuilder();
+      for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+        logMsg.append("Copy ");
+        logMsg.append(e.getKey());
+        logMsg.append(" to ");
+        logMsg.append(e.getValue());
+        logMsg.append('\n');
+      }
 
-      return new StepResult(context, startTime, files.keySet().toString());
+      return new StepResult(context, startTime, logMsg.toString());
 
     } catch (EoulsanException e) {
 
@@ -248,7 +241,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     for (String dataFormatName : fields) {
 
-      final DataFormat df = registry.getDataFormat(dataFormatName);
+      final DataFormat df = registry.getDataFormatFromName(dataFormatName);
       if (df != null) {
         result.add(df);
       }

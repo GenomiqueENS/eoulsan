@@ -140,7 +140,7 @@ public class DataFormatConverter {
       throws IOException {
 
     this(inFile, outFile, outFile == null ? null : DataFormatRegistry
-        .getInstance().getDataFormat(outFile.getName()));
+        .getInstance().getDataFormatFromFilename(outFile.getName()));
   }
 
   /**
