@@ -51,7 +51,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class ParamParser {
 
-  private Logger logger = Logger.getLogger(Globals.APP_NAME);
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private InputStream is;
 
@@ -154,9 +155,11 @@ public class ParamParser {
 
                 if (!"true".equals(skip)) {
 
-                  logger.info("Add step: " + stepName);
-                  command.addStep(stepName, parseParameters(eStepElement,
-                      "parameters", stepName));
+                  final Set<Parameter> parameters =
+                      parseParameters(eStepElement, "parameters", stepName);
+
+                  LOGGER.info("Add step: " + stepName + " " + parameters);
+                  command.addStep(stepName, parameters);
                 }
 
               }
@@ -274,7 +277,7 @@ public class ParamParser {
 
     this(file.open());
   }
-  
+
   /**
    * Public constructor.
    * @param is Input stream
