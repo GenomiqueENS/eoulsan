@@ -34,6 +34,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -507,6 +509,32 @@ public final class ProcessUtils {
     new Thread(new ProcessThreadOutput(errr, System.err)).run();
 
     logEndTime(p, cmd, startTime);
+  }
+
+  /**
+   * Execute a command and write the content of the standard output and error to
+   * System.out and System.err.
+   * @param cmd array with the command to execute
+   * @throws IOException if an error occurs while executing the command
+   */
+  public static void execThreadOutput(final String[] cmd) throws IOException {
+
+    logger.fine("execute (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final long startTime = System.currentTimeMillis();
+
+    Process p = Runtime.getRuntime().exec(cmd);
+
+    final BufferedReader stdr =
+        new BufferedReader(new InputStreamReader(p.getInputStream()));
+    final BufferedReader errr =
+        new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+    new Thread(new ProcessThreadOutput(stdr, System.out)).run();
+    new Thread(new ProcessThreadOutput(errr, System.err)).run();
+
+    logEndTime(p, Joiner.on(' ').join(cmd), startTime);
   }
 
   private ProcessUtils() {
