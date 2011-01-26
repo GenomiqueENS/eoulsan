@@ -144,17 +144,19 @@ public class Command {
     if (stepName == null)
       throw new EoulsanException("The name of the step is null.");
 
-    if ("".equals(stepName))
+    final String stepNameLower = stepName.toLowerCase().trim();
+
+    if ("".equals(stepNameLower))
       throw new EoulsanException("The name of the step is empty.");
 
-    if (this.stepsMap.containsKey(stepName))
+    if (this.stepsMap.containsKey(stepNameLower))
       throw new EoulsanException("The step already exists: " + stepName);
 
     if (parameters == null)
       throw new EoulsanException("The parameters are null.");
 
-    this.stepNamesList.add(stepName);
-    this.stepsMap.put(stepName, parameters);
+    this.stepNamesList.add(stepNameLower);
+    this.stepsMap.put(stepNameLower, parameters);
   }
 
   /**
