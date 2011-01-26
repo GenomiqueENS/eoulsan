@@ -95,9 +95,10 @@ public class StepResult {
     final long duration = endTime - startTime;
     final Step step = context.getCurrentStep();
 
-    return "Job Id:"
+    return "Job Id: "
         + context.getJobId() + " [" + context.getJobUUID()
-        + "]\nJob description: " + context.getJobDescription() + "\nStep: "
+        + "]\nJob description: " + context.getJobDescription()
+        + "\nJob environment: " + context.getJobEnvironment() + "\nStep: "
         + step.getName() + " [" + step.getClass().getCanonicalName()
         + "]\nStart time: " + new Date(startTime) + "\nEnd time: "
         + new Date(endTime) + "\nDuration: "
