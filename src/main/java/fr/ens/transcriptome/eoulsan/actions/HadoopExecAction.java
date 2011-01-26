@@ -26,6 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -35,6 +36,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -50,8 +53,6 @@ public class HadoopExecAction implements Action {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String HADOOP_CMD = "hadoop jar ";
-
   @Override
   public String getName() {
     return "hadoopexec";
@@ -64,7 +65,7 @@ public class HadoopExecAction implements Action {
 
   @Override
   public void action(final String[] arguments) {
-    
+
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
@@ -93,7 +94,7 @@ public class HadoopExecAction implements Action {
           + e.getMessage());
     }
 
-    if (arguments.length != argsOptions + 2) {
+    if (arguments.length != argsOptions + 3) {
       help(options);
     }
 
@@ -138,8 +139,8 @@ public class HadoopExecAction implements Action {
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName() + " [options] param.xml design.txt hdfs://server/path",
-        options);
+        + ".sh " + getName()
+        + " [options] param.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }
@@ -161,7 +162,7 @@ public class HadoopExecAction implements Action {
     checkNotNull(paramFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(hdfsPath, "hdfsPath is null");
-    
+
     try {
 
       File repackagedJarFile = HadoopJarRepackager.repack();
@@ -169,26 +170,28 @@ public class HadoopExecAction implements Action {
       LOGGER.info("Launch Eoulsan in Hadoop mode.");
 
       // Create command line
-      final StringBuilder sb = new StringBuilder();
-      sb.append(HADOOP_CMD);
-      sb.append(repackagedJarFile.getCanonicalPath());
-      sb.append(" exec ");
+      final List<String> argsList = Lists.newArrayList();
+
+      argsList.add("hadoop");
+      argsList.add("jar");
+      argsList.add(repackagedJarFile.getCanonicalPath());
+      argsList.add("exec");
 
       if (jobDescription != null) {
-        sb.append("-d \"");
-        sb.append(jobDescription.trim());
-        sb.append("\" ");
+        argsList.add("-d");
+        argsList.add(jobDescription.trim());
       }
 
-      sb.append("-e \"local hadoop cluster\" ");
-      sb.append(paramFile);
-      sb.append(" ");
-      sb.append(designFile);
-      sb.append(" ");
-      sb.append(hdfsPath);
+      argsList.add("-e");
+      argsList.add("local hadoop cluster");
+      argsList.add(paramFile.toString());
+      argsList.add(designFile.toString());
+      argsList.add(hdfsPath);
+
+      final String[] args = argsList.toArray(new String[0]);
 
       // execute hadoop
-      ProcessUtils.execThreadOutput(sb.toString());
+      ProcessUtils.execThreadOutput(args);
 
     } catch (IOException e) {
       Common.errorExit(e, "Error while executing "
