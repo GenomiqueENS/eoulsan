@@ -55,7 +55,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 public class HDFSDataDownloadStep extends AbstractStep {
 
   // Logger
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /**
    * Key in the settings to use to save the list of DataFormat of the files to
@@ -97,8 +97,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
   @Override
   public StepResult execute(Design design, Context context) {
 
-    logger.info("Start copying results.");
-    logger.info("inpath="
+    LOGGER.info("Start copying results.");
+    LOGGER.info("inpath="
         + context.getBasePathname() + "\toutpath="
         + context.getOutputPathname());
 
