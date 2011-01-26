@@ -103,6 +103,12 @@ public class Parameter {
     return Boolean.parseBoolean(this.value);
   }
 
+  @Override
+  public String toString() {
+
+    return this.name + "=" + this.value;
+  }
+
   //
   // Constructor
   //
@@ -117,10 +123,12 @@ public class Parameter {
     if (name == null)
       throw new NullPointerException("Parameter name can't be null");
 
+    final String nameLower = name.toLowerCase().trim();
+
     if (value == null)
       throw new NullPointerException("Parameter value can't be null");
 
-    if ("".equals(name))
+    if ("".equals(nameLower))
       throw new IllegalArgumentException("Parameter name can't be empty");
 
     this.name = name;
