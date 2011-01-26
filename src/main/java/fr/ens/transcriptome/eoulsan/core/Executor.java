@@ -214,7 +214,7 @@ public abstract class Executor {
               result.getErrorMessage());
       }
 
-      // If the step is terminal step, end of the execution of the worflow
+      // If the step is terminal step, end of the execution of the workflow
       if (step.isTerminalStep())
         break;
     }
@@ -261,7 +261,7 @@ public abstract class Executor {
 
     final long endTime = System.currentTimeMillis();
 
-    LOGGER.info(success ? "Successful" : "Unsuccessful"
+    LOGGER.info((success ? "Successful" : "Unsuccessful")
         + " end of the analysis in "
         + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
   }
