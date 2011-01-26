@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * Main class in Hadoop mode.
@@ -65,8 +66,8 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
  */
 public final class MainHadoop {
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   /**
    * Main method. This method is called by MainHadoop.
@@ -77,6 +78,12 @@ public final class MainHadoop {
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
+    if (args.length == 0 || !"exec".equals(args[0])) {
+      help(options);
+    }
+
+    final String[] arguments = StringUtils.arrayWithoutFirstElement(args);
+
     String jobDescription = null;
     String jobEnvironment = null;
 
@@ -85,7 +92,7 @@ public final class MainHadoop {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, args, true);
+      final CommandLine line = parser.parse(options, arguments, true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -105,22 +112,18 @@ public final class MainHadoop {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
-    if (args.length != argsOptions + 4) {
+    if (arguments.length != argsOptions + 3) {
       help(options);
     }
 
-    if (!"exec".equals(args[argsOptions])) {
-      Common.showErrorMessageAndExit("Unknown command: " + args[argsOptions]);
-    }
-
     // Get the command line arguments
-    final String paramPathname = args[argsOptions + 1];
-    final String designPathname = args[argsOptions + 2];
-    final String destPathname = args[argsOptions + 3];
+    final String paramPathname = arguments[argsOptions];
+    final String designPathname = arguments[argsOptions + 1];
+    final String destPathname = arguments[argsOptions + 2];
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,
@@ -147,6 +150,11 @@ public final class MainHadoop {
     // Description option
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
+
+    // Description option
+    options.addOption(OptionBuilder.withArgName("environment").hasArg()
+        .withDescription("environment description").withLongOpt("desc").create(
+            'e'));
 
     return options;
   }
