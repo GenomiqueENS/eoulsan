@@ -170,7 +170,6 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
         continue;
 
       final String sample = group.substring(pos1 + 1, pos2).trim();
-      LOGGER.info("sample: " + sample + "\tcounter group: " + counterGroup);
 
       result.put(sample, reporter.getCounterValue(group, counterGroup));
 
