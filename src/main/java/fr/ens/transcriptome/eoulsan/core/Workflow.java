@@ -486,13 +486,19 @@ class Workflow implements WorkflowDescription {
 
     final Command c = this.command;
     final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
+    final Set<Parameter> globalParameters = c.getGlobalParameters();
+
+    LOGGER.info("Init all step with global parameters: " + globalParameters);
 
     for (Step step : this.steps) {
 
       final String stepName = step.getName();
+      final Set<Parameter> stepParameters = c.getStepParameters(stepName);
 
-      LOGGER.info("Configure " + stepName + " step.");
-      step.configure(c.getStepParameters(stepName), c.getGlobalParameters());
+      LOGGER.info("Configure "
+          + stepName + " step with step parameters: " + stepParameters);
+
+      step.configure(stepParameters, globalParameters);
 
       // Register input and output formats
       dfRegistry.register(step.getInputFormats());
