@@ -307,10 +307,6 @@ class Workflow implements WorkflowDescription {
 
   private void checkStepInOutFormat(final Step step) throws EoulsanException {
 
-    final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
-    dfRegistry.register(step.getInputFormats());
-    dfRegistry.register(step.getOutputFormats());
-
     final Map<DataType, Set<DataFormat>> map =
         getDataFormatByDataType(step.getOutputFormats());
 
@@ -489,13 +485,18 @@ class Workflow implements WorkflowDescription {
   public void init() throws EoulsanException {
 
     final Command c = this.command;
+    final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
 
-    for (Step s : this.steps) {
+    for (Step step : this.steps) {
 
-      final String stepName = s.getName();
+      final String stepName = step.getName();
 
       LOGGER.info("Configure " + stepName + " step.");
-      s.configure(c.getStepParameters(stepName), c.getGlobalParameters());
+      step.configure(c.getStepParameters(stepName), c.getGlobalParameters());
+
+      // Register input and output formats
+      dfRegistry.register(step.getInputFormats());
+      dfRegistry.register(step.getOutputFormats());
     }
 
   }
