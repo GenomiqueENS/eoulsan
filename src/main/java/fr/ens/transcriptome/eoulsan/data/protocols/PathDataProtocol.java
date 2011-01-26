@@ -59,7 +59,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
     final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
     result.setContentLength(status.getLen());
     result.setLastModified(status.getModificationTime());
-    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormat(
+    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormatFromFilename(
         src.getName()));
 
     final CompressionType ct =

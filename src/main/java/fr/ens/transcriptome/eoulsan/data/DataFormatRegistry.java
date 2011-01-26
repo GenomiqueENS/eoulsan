@@ -22,6 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -136,7 +137,8 @@ public class DataFormatRegistry {
    * @param extension the extension of the file without compression extension
    * @return a DataFormat or null if the DataFormat was not found
    */
-  public DataFormat getDataFormat(final String prefix, final String extension) {
+  public DataFormat getDataFormatFromFilename(final String prefix,
+      final String extension) {
 
     if (prefix == null)
       throw new NullPointerException("The prefix is null");
@@ -154,7 +156,7 @@ public class DataFormatRegistry {
    * @param filename the filename of the file
    * @return a DataFormat or null if the DataFormat was not found
    */
-  public DataFormat getDataFormat(final String filename) {
+  public DataFormat getDataFormatFromFilename(final String filename) {
 
     if (filename == null)
       throw new NullPointerException("The filename is null");
@@ -174,7 +176,7 @@ public class DataFormatRegistry {
     if (underscorePos != -1) {
 
       final String prefix = f.substring(0, underscorePos + 1);
-      final DataFormat df = getDataFormat(prefix, ext);
+      final DataFormat df = getDataFormatFromFilename(prefix, ext);
 
       if (df != null)
         return df;
@@ -187,6 +189,31 @@ public class DataFormatRegistry {
             return df;
 
     return null;
+  }
+
+  /**
+   * Get a DataFormat from its name.
+   * @param dataFormatName the name of the DataFormat to get
+   * @return a DataFormat if found or null
+   */
+  public DataFormat getDataFormatFromName(final String dataFormatName) {
+
+    if (dataFormatName == null) {
+      return null;
+    }
+
+    for (DataFormat df : this.formats) {
+      if (df.getFormatName().equals(dataFormatName)) {
+        return df;
+      }
+    }
+
+    return null;
+  }
+
+  public Set<DataFormat> getAllFormats() {
+
+    return Collections.unmodifiableSet(this.formats);
   }
 
   //

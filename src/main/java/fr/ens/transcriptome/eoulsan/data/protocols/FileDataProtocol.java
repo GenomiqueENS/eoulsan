@@ -74,7 +74,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     result.setLastModified(f.lastModified());
 
     final DataFormat format =
-        DataFormatRegistry.getInstance().getDataFormat(src.getName());
+        DataFormatRegistry.getInstance().getDataFormatFromFilename(src.getName());
 
     result.setDataFormat(format);
 

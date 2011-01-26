@@ -289,7 +289,7 @@ public class S3DataProtocol implements DataProtocol {
     result.setLastModified(md.getLastModified().getTime());
     result.setContentType(md.getContentType());
     result.setContentEncoding(md.getContentEncoding());
-    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormat(
+    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormatFromFilename(
         src.getName()));
 
     return result;
