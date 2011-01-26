@@ -76,9 +76,12 @@ public class DefineDataFormatToDownload extends AbstractStep {
     final Set<DataFormat> formats = Sets.newHashSet();
     final DataFormatRegistry registery = DataFormatRegistry.getInstance();
 
-    LOGGER.info("available formats: " + registery.getAllFormats());
-
     for (String format : fields) {
+
+      if ("".equals(format.trim())) {
+        continue;
+      }
+
       final DataFormat df = registery.getDataFormatFromName(format.trim());
       if (df == null) {
         throw new EoulsanException("Format not found : " + format.trim());
