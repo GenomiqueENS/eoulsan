@@ -206,7 +206,7 @@ public final class MainHadoop {
     if (jobEnvironment == null) {
       env = "no enviromnent description";
     } else {
-      env = jobDescription;
+      env = jobEnvironment;
     }
 
     try {
