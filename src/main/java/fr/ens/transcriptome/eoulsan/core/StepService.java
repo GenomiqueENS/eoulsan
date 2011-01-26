@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -132,6 +133,12 @@ public class StepService {
    */
   public Step getStep(final String stepName) {
 
+    if (stepName == null) {
+      return null;
+    }
+
+    final String stepNameLower = stepName.toLowerCase().trim();
+
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
     final Iterator<Step> it = this.loader.iterator();
@@ -141,7 +148,7 @@ public class StepService {
       try {
         final Step step = it.next();
 
-        if (step.getName().equals(stepName)) {
+        if (step.getName().equals(stepNameLower)) {
 
           return step;
         }
@@ -188,8 +195,15 @@ public class StepService {
       try {
         final Step step = it.next();
 
+        final String stepName = step.getName();
+
+        if (stepName == null || !stepName.toLowerCase().trim().equals(stepName)) {
+          throw new EoulsanRuntimeException("Invalid name of step: "
+              + stepName + " (Uppercase and spaces are forbidden).");
+        }
+
         LOGGER.info("found step: "
-            + step.getName() + " (" + step.getClass().getName()+")");
+            + stepName + " (" + step.getClass().getName() + ")");
 
       } catch (ServiceConfigurationError e) {
         LOGGER.fine("Class for step cannot be load in "
@@ -197,5 +211,4 @@ public class StepService {
       }
     }
   }
-
 }
