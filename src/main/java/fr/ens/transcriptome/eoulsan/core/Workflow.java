@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Maps;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
@@ -34,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 class Workflow implements WorkflowDescription {
 
   /** Logger */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private List<Step> steps;
 
@@ -43,10 +45,10 @@ class Workflow implements WorkflowDescription {
   private final Context context;
   private final boolean hadoopMode;
 
-  private final Map<Sample, Set<DataFormat>> globalInputDataFormats =
-      new HashMap<Sample, Set<DataFormat>>();
-  private final Map<Sample, Set<DataFormat>> globalOutputDataFormats =
-      new HashMap<Sample, Set<DataFormat>>();
+  private final Map<Integer, Set<DataFormat>> globalInputDataFormats =
+      Maps.newHashMap();
+  private final Map<Integer, Set<DataFormat>> globalOutputDataFormats =
+      Maps.newHashMap();
 
   //
   // Getters
@@ -64,7 +66,7 @@ class Workflow implements WorkflowDescription {
     if (sample == null)
       throw new NullPointerException("Sample is null");
 
-    return this.globalInputDataFormats.get(sample);
+    return this.globalInputDataFormats.get(sample.getId());
   }
 
   @Override
@@ -73,7 +75,7 @@ class Workflow implements WorkflowDescription {
     if (sample == null)
       throw new NullPointerException("Sample is null");
 
-    return this.globalOutputDataFormats.get(sample);
+    return this.globalOutputDataFormats.get(sample.getId());
   }
 
   /**
@@ -188,16 +190,11 @@ class Workflow implements WorkflowDescription {
                   cartReUsed.add(df);
 
                 found++;
-              } else {
-
-                if (context.getDataFile(df, s).exists()) {
-                  cart.add(df);
-                  cartNotGenerated.add(df);
-                  cartUsed.add(df);
-                  found++;
-                }
-
-              }
+              } /*
+                 * else { // To comment to prevent bug if
+                 * (context.getDataFile(df, s).exists()) { cart.add(df);
+                 * cartNotGenerated.add(df); cartUsed.add(df); found++; } }
+                 */
 
             }
 
@@ -272,10 +269,10 @@ class Workflow implements WorkflowDescription {
       cartOnlyGenerated.addAll(cartGenerated);
       cartOnlyGenerated.removeAll(cartReUsed);
 
-      globalInputDataFormats.put(s, Collections
+      globalInputDataFormats.put(s.getId(), Collections
           .unmodifiableSet(cartNotGenerated));
-      globalOutputDataFormats.put(s, Collections
-          .unmodifiableSet(cartOnlyGenerated));
+      globalOutputDataFormats.put(s.getId(), Collections
+          .unmodifiableSet(cartGenerated));
 
       if (firstSample)
         firstSample = false;
@@ -480,7 +477,7 @@ class Workflow implements WorkflowDescription {
     final Command c = this.command;
 
     for (String stepName : c.getStepNames()) {
-      logger.info("Create " + stepName + " step.");
+      LOGGER.info("Create " + stepName + " step.");
       this.steps.add(findStep(stepName));
     }
   }
@@ -497,7 +494,7 @@ class Workflow implements WorkflowDescription {
 
       final String stepName = s.getName();
 
-      logger.info("Configure " + stepName + " step.");
+      LOGGER.info("Configure " + stepName + " step.");
       s.configure(c.getStepParameters(stepName), c.getGlobalParameters());
     }
 
