@@ -15,7 +15,12 @@ public class TerminalStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "Terminal";
+    return "terminal";
+  }
+
+  @Override
+  public String getLogName() {
+    return null;
   }
 
   @Override
