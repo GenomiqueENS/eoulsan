@@ -79,7 +79,7 @@ public abstract class AbstractFilterSamplesStep extends AbstractStep {
 
     }
 
-    if (this.threshold <= 0)
+    if (this.threshold < 0)
       throw new EoulsanException("The thresold is not set.");
 
   }
