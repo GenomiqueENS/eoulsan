@@ -29,7 +29,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
@@ -53,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
@@ -86,6 +89,7 @@ public final class MainHadoop {
 
     String jobDescription = null;
     String jobEnvironment = null;
+    boolean uploadOnly = false;
 
     int argsOptions = 0;
 
@@ -111,6 +115,12 @@ public final class MainHadoop {
         argsOptions += 2;
       }
 
+      if (line.hasOption("upload")) {
+
+        uploadOnly = true;
+        argsOptions += 1;
+      }
+
     } catch (ParseException e) {
       Common.errorExit(e, "Error while parsing parameter file: "
           + e.getMessage());
@@ -127,7 +137,7 @@ public final class MainHadoop {
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,
-        jobEnvironment);
+        jobEnvironment, uploadOnly);
   }
 
   //
@@ -151,10 +161,13 @@ public final class MainHadoop {
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
 
-    // Description option
+    // Environment option
     options.addOption(OptionBuilder.withArgName("environment").hasArg()
         .withDescription("environment description").withLongOpt("desc").create(
             'e'));
+
+    // UploadOnly option
+    options.addOption("upload", false, "upload only");
 
     return options;
   }
@@ -185,10 +198,12 @@ public final class MainHadoop {
    * @param destPathname data path
    * @param jobDescription job description
    * @param jobEnvironment job environment
+   * @param uploadOnly true if execution must end after upload
    */
   private static void run(final String paramPathname,
       final String designPathname, final String destPathname,
-      final String jobDescription, final String jobEnvironment) {
+      final String jobDescription, final String jobEnvironment,
+      final boolean uploadOnly) {
 
     checkNotNull(paramPathname, "paramPathname is null");
     checkNotNull(designPathname, "designPathname is null");
@@ -254,9 +269,6 @@ public final class MainHadoop {
       // Add init global logger Step
       c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
-      // Add upload Step
-      // c.addStep(HDFSDataUploadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
-
       // Add Copy design and parameter file Step
       c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
           EMPTY_PARAMEMETER_SET);
@@ -270,12 +282,24 @@ public final class MainHadoop {
       // Add download Step
       c.addStep(HDFSDataDownloadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
-      // Execute
+      // Create executor
       final Executor e =
           new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env);
 
-      e.execute(Collections.singletonList((Step) new HadoopUploadStep(
-          new DataFile(destURI.toString()), conf)), null);
+      // Create upload step
+      final Step uploadStep =
+          new HadoopUploadStep(new DataFile(destURI.toString()), conf);
+
+      // Add terminal step if upload only
+      final List<Step> firstSteps;
+      if (uploadOnly) {
+        firstSteps = Arrays.asList(new Step[] {uploadStep, new TerminalStep()});
+      } else {
+        firstSteps = Collections.singletonList(uploadStep);
+      }
+
+      // Execute
+      e.execute(firstSteps, null);
 
     } catch (FileNotFoundException e) {
 
