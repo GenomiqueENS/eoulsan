@@ -70,6 +70,7 @@ public class HadoopExecAction implements Action {
     final CommandLineParser parser = new GnuParser();
 
     String jobDescription = null;
+    boolean uploadOnly = false;
 
     int argsOptions = 0;
 
@@ -89,6 +90,12 @@ public class HadoopExecAction implements Action {
         argsOptions += 2;
       }
 
+      if (line.hasOption("upload")) {
+
+        uploadOnly = true;
+        argsOptions += 1;
+      }
+
     } catch (ParseException e) {
       Common.errorExit(e, "Error while parsing parameter file: "
           + e.getMessage());
@@ -103,7 +110,7 @@ public class HadoopExecAction implements Action {
     final String hdfsPath = arguments[argsOptions + 2];
 
     // Execute program in hadoop mode
-    run(paramFile, designFile, hdfsPath, jobDescription);
+    run(paramFile, designFile, hdfsPath, jobDescription, uploadOnly);
   }
 
   //
@@ -126,6 +133,9 @@ public class HadoopExecAction implements Action {
     // Description option
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
+
+    // UploadOnly option
+    options.addOption("upload", false, "upload only");
 
     return options;
   }
@@ -155,9 +165,11 @@ public class HadoopExecAction implements Action {
    * @param designFile design file
    * @param hdfsPath path of data on hadoop file system
    * @param jobDescription job description
+   * @param uploadOnly true if execution must end after upload
    */
   private void run(final File paramFile, final File designFile,
-      final String hdfsPath, final String jobDescription) {
+      final String hdfsPath, final String jobDescription,
+      final boolean uploadOnly) {
 
     checkNotNull(paramFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
@@ -180,6 +192,10 @@ public class HadoopExecAction implements Action {
       if (jobDescription != null) {
         argsList.add("-d");
         argsList.add(jobDescription.trim());
+      }
+
+      if (uploadOnly) {
+        argsList.add("-upload");
       }
 
       argsList.add("-e");
