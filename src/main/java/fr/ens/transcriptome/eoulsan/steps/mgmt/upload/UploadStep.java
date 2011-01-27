@@ -162,7 +162,7 @@ public abstract class UploadStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "Upload";
+    return "upload";
   }
 
   @Override
