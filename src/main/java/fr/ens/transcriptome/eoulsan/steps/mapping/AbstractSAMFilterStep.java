@@ -40,7 +40,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String STEP_NAME = "samfilter";
+  private static final String STEP_NAME = "filtersam";
 
   private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
   protected static final String COUNTER_GROUP = "sam_filtering";
