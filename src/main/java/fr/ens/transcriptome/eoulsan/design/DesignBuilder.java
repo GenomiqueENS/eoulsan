@@ -49,13 +49,15 @@ public class DesignBuilder {
     if (file == null || !file.exists() || !file.isFile())
       return;
 
-    if (file.getName().endsWith(DataFormats.READS_FASTQ.getDefaultExtention()))
+    final String filename =
+        StringUtils.filenameWithoutCompressionExtension(file.getName());
+
+    if (filename.endsWith(DataFormats.READS_FASTQ.getDefaultExtention()))
       this.fastqList.add(file);
-    else if (file.getName().endsWith(
-        DataFormats.GENOME_FASTA.getDefaultExtention()))
+    else if (filename.endsWith(DataFormats.GENOME_FASTA.getDefaultExtention()))
       this.genomeFile = file;
-    else if (file.getName().endsWith(
-        DataFormats.ANNOTATION_GFF.getDefaultExtention()))
+    else if (filename
+        .endsWith(DataFormats.ANNOTATION_GFF.getDefaultExtention()))
       this.gffFile = file;
   }
 
