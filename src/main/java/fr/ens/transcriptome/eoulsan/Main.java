@@ -22,7 +22,6 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class is the main class. Check the environment, if Hadoop library is in
@@ -32,43 +31,10 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 public final class Main {
 
   /**
-   * Get in a string with all arch
-   * @return a string with
-   */
-  public static String availableArchsToString() {
-
-    final StringBuilder sb = new StringBuilder();
-
-    boolean first = true;
-
-    for (String osArch : Globals.AVAILABLE_BINARY_ARCH) {
-
-      if (first) {
-        first = false;
-      } else {
-        sb.append(", ");
-      }
-
-      sb.append(osArch.replace('\t', '/'));
-    }
-
-    return sb.toString();
-  }
-
-  /**
    * Main method of the program.
    * @param args command line arguments
    */
   public static void main(final String[] args) {
-
-    // Test if the application can run with current platform
-    if (Globals.CHECK_PLATFORM_STARTUP
-        && !SystemUtils.isApplicationAvailableForCurrentArch()) {
-      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
-          + "\n" + Globals.APP_NAME
-          + " is not available for your platform. Required platforms: "
-          + availableArchsToString() + ".");
-    }
 
     // Set the default local for all the application
     Globals.setDefaultLocale();

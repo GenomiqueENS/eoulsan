@@ -55,13 +55,17 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.AWSMapReduceExecStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
 
-public class AWSExecAction implements Action {
+/**
+ * This class define an action that execute Eoulsan on AWS MapReduce.
+ * @author Laurent Jourdren
+ */
+public class AWSExecAction extends AbstractAction {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public String getName() {
@@ -71,6 +75,12 @@ public class AWSExecAction implements Action {
   @Override
   public String getDescription() {
     return "execute eoulsan on Amazon cloud.";
+  }
+
+  @Override
+  public boolean isCurrentArchCompatible() {
+
+    return true;
   }
 
   @Override
@@ -100,8 +110,8 @@ public class AWSExecAction implements Action {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 2) {
@@ -172,7 +182,7 @@ public class AWSExecAction implements Action {
     checkNotNull(paramFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
-    
+
     logger.info(Globals.WELCOME_MSG + " Local mode.");
     logger.info("Parameter file: " + paramFile);
     logger.info("Design file: " + designFile);

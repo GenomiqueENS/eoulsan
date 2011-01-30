@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * This class launch Eoulsan in hadoop mode.
  * @author Laurent Jourdren
  */
-public class HadoopExecAction implements Action {
+public class HadoopExecAction extends AbstractAction {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -97,8 +97,8 @@ public class HadoopExecAction implements Action {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -187,7 +187,7 @@ public class HadoopExecAction implements Action {
       argsList.add("hadoop");
       argsList.add("jar");
       argsList.add(repackagedJarFile.getCanonicalPath());
-      argsList.add("exec");
+      argsList.add(ExecJarHadoopAction.ACTION_NAME);
 
       if (jobDescription != null) {
         argsList.add("-d");

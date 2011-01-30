@@ -24,8 +24,6 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -39,15 +37,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.google.common.collect.Lists;
-
-import fr.ens.transcriptome.eoulsan.actions.AWSExecAction;
 import fr.ens.transcriptome.eoulsan.actions.Action;
-import fr.ens.transcriptome.eoulsan.actions.CreateDesignAction;
-import fr.ens.transcriptome.eoulsan.actions.CreateHadoopJarAction;
-import fr.ens.transcriptome.eoulsan.actions.ExecAction;
-import fr.ens.transcriptome.eoulsan.actions.HadoopExecAction;
-import fr.ens.transcriptome.eoulsan.actions.UploadS3Action;
+import fr.ens.transcriptome.eoulsan.actions.ActionService;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -59,18 +50,11 @@ public final class MainCLI {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  // Define available actions
-  private static final List<Action> ACTIONS =
-      Collections.unmodifiableList(Lists.newArrayList(new CreateDesignAction(),
-          new ExecAction(), new HadoopExecAction(),
-          new CreateHadoopJarAction(), new UploadS3Action(),
-          new AWSExecAction()));
-
   /**
    * Show command line help.
    * @param options Options of the software
    */
-  private static void help(final Options options, final List<Action> actions) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
@@ -78,9 +62,17 @@ public final class MainCLI {
         + " [options] command arguments", options);
 
     System.out.println("Available commands:");
-    for (Action action : actions) {
-      System.out.println(" - "
-          + action.getName() + "\t" + action.getDescription());
+    for (Action action : ActionService.getInstance().getActions()) {
+
+      if (!action.isHadoopJarMode()) {
+
+        System.out.println(" - "
+            + action.getName()
+            + "\t"
+            + action.getDescription()
+            + (!action.isCurrentArchCompatible()
+                ? " (not availlable for your platform)." : ""));
+      }
     }
 
     Common.exit(0);
@@ -118,11 +110,9 @@ public final class MainCLI {
   /**
    * Parse the options of the command line
    * @param args command line arguments
-   * @param action available actions
    * @return the number of optional arguments
    */
-  private static int parseCommandLine(final String args[],
-      final List<Action> actions) {
+  private static int parseCommandLine(final String args[]) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -136,7 +126,7 @@ public final class MainCLI {
 
       // Help option
       if (line.hasOption("help")) {
-        help(options, actions);
+        help(options);
       }
 
       // About option
@@ -189,8 +179,8 @@ public final class MainCLI {
 
           LOGGER.addHandler(fh);
         } catch (IOException e) {
-          Common.errorExit(e, "Error while creating log file: "
-              + e.getMessage());
+          Common.errorExit(e,
+              "Error while creating log file: " + e.getMessage());
         }
       }
 
@@ -212,8 +202,8 @@ public final class MainCLI {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     return argsOptions;
@@ -238,7 +228,7 @@ public final class MainCLI {
     LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
     // Parse the command line
-    final int argsOptions = parseCommandLine(args, ACTIONS);
+    final int argsOptions = parseCommandLine(args);
 
     // No arguments found
     if (args == null || args.length == argsOptions) {
@@ -247,29 +237,56 @@ public final class MainCLI {
           + " Use the -h option to get more information.\n");
     }
 
+    // Set action name and arguments
     final String actionName = args[argsOptions].trim().toLowerCase();
     final String[] arguments =
         StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
 
     // Search action
-    boolean actionFound = false;
-    for (Action action : ACTIONS) {
+    final Action action = ActionService.getInstance().getAction(actionName);
 
-      if (action.getName().equals(actionName)) {
-
-        action.action(arguments);
-        actionFound = true;
-        break;
-      }
-    }
-
-    // Action not found
-    if (!actionFound) {
+    // Action not found ?
+    if (action == null || action.isHadoopJarMode()) {
       Common.showErrorMessageAndExit("Unknown action: "
           + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
           + " -help for more help.\n");
     }
 
+    // Test if action can be executed with current platform
+    if (!action.isCurrentArchCompatible()) {
+      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
+          + "\nThe " + action.getName() + " of " + Globals.APP_NAME
+          + " is not available for your platform. Required platforms: "
+          + availableArchsToString() + ".");
+
+    }
+
+    // Run action
+    action.action(arguments);
+  }
+
+  /**
+   * Get in a string with all arch
+   * @return a string with
+   */
+  private static String availableArchsToString() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+
+    for (String osArch : Globals.AVAILABLE_BINARY_ARCH) {
+
+      if (first) {
+        first = false;
+      } else {
+        sb.append(", ");
+      }
+
+      sb.append(osArch.replace('\t', '/'));
+    }
+
+    return sb.toString();
   }
 
   //

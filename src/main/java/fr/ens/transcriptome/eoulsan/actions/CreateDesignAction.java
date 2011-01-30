@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
  * This class define an action to create design file.
  * @author Laurent Jourdren
  */
-public class CreateDesignAction implements Action {
+public class CreateDesignAction extends AbstractAction {
 
   @Override
   public String getName() {
@@ -53,6 +53,12 @@ public class CreateDesignAction implements Action {
   @Override
   public String getDescription() {
     return "create a design file from a list of files.";
+  }
+
+  @Override
+  public boolean isCurrentArchCompatible() {
+
+    return true;
   }
 
   /**
@@ -76,8 +82,8 @@ public class CreateDesignAction implements Action {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     DesignBuilder db = new DesignBuilder(arguments);

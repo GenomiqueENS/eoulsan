@@ -46,4 +46,22 @@ public interface Action {
    */
   public void action(String[] arguments);
 
+  /**
+   * Test if the action can be executed in hadoop Jar mode.
+   * @return true if the action can be executed in hadoop Jar mode
+   */
+  public boolean isHadoopJarMode();
+
+  /**
+   * Test if the action can be executed with current platform.
+   * @return true if the action can be executed with current platform
+   */
+  public boolean isCurrentArchCompatible();
+
+  /**
+   * Test if the action must be hidden from the list of available actions.
+   * @return true if the action must be hidden
+   */
+  public boolean isHidden();
+
 }
