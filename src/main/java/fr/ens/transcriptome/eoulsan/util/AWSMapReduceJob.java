@@ -267,7 +267,7 @@ public class AWSMapReduceJob {
    * Set the AWS access key.
    * @param AWSSecretKey set AWS secret key
    */
-  void setAWSsecretKey(final String AWSSecretKey) {
+  void setAWSSecretKey(final String AWSSecretKey) {
     this.AWSSecretKey = AWSSecretKey;
   }
 
@@ -302,15 +302,15 @@ public class AWSMapReduceJob {
     // Set step config
     final StepConfig stepConfig =
         new StepConfig().withName(this.jobFlowName + "-step")
-            .withHadoopJarStep(hadoopJarStep).withActionOnFailure(
-                "TERMINATE_JOB_FLOW");
+            .withHadoopJarStep(hadoopJarStep)
+            .withActionOnFailure("TERMINATE_JOB_FLOW");
 
     // Set the instance
     final JobFlowInstancesConfig instances =
         new JobFlowInstancesConfig().withInstanceCount(this.nInstances)
             .withMasterInstanceType(this.masterInstanceType)
-            .withSlaveInstanceType(this.slavesInstanceType).withHadoopVersion(
-                this.hadoopVersion);
+            .withSlaveInstanceType(this.slavesInstanceType)
+            .withHadoopVersion(this.hadoopVersion);
 
     // Configure hadoop
     final ScriptBootstrapActionConfig scriptBootstrapAction =
@@ -326,9 +326,9 @@ public class AWSMapReduceJob {
 
     // Run flow
     this.runFlowRequest =
-        new RunJobFlowRequest().withName(this.jobFlowName).withInstances(
-            instances).withSteps(stepConfig).withBootstrapActions(
-            bootstrapActions);
+        new RunJobFlowRequest().withName(this.jobFlowName)
+            .withInstances(instances).withSteps(stepConfig)
+            .withBootstrapActions(bootstrapActions);
 
     if (this.logPathname != null && !"".equals(this.logPathname))
       this.runFlowRequest.withLogUri(this.logPathname);
@@ -350,7 +350,7 @@ public class AWSMapReduceJob {
     // Set the end point
     mapReduceClient.setEndpoint(this.endpoint);
 
-    this.runFlowResult = mapReduceClient.runJobFlow(runFlowRequest);
+    this.runFlowResult = mapReduceClient.runJobFlow(this.runFlowRequest);
 
     return this.runFlowResult.getJobFlowId();
   }

@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -135,7 +136,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     // Command arguments
     final List<String> eoulsanArgsList = Lists.newArrayList();
-    eoulsanArgsList.add("exec");
+    eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
@@ -153,7 +154,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
     builder.withJobFlowName(context.getJobDescription());
 
     // Set the credentials
-    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSsecretKey(
+    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSSecretKey(
         settings.getAWSSecretKey());
 
     // Set end point
@@ -164,8 +165,9 @@ public class AWSMapReduceExecStep extends AbstractStep {
         eoulsanArgs);
 
     // Set Instances
-    builder.withMasterInstanceType(this.instanceType).withSlavesInstanceType(
-        this.instanceType).withInstancesNumber(this.nInstances);
+    builder.withMasterInstanceType(this.instanceType)
+        .withSlavesInstanceType(this.instanceType)
+        .withInstancesNumber(this.nInstances);
 
     // Set Hadoop version
     builder.withHadoopVersion(this.hadoopVersion);

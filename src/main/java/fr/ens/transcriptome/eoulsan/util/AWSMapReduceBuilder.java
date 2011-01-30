@@ -171,12 +171,12 @@ public class AWSMapReduceBuilder {
    * Set the AWS access key.
    * @param AWSSecretKey set AWS secret key
    */
-  public AWSMapReduceBuilder withAWSsecretKey(final String AWSSecretKey) {
+  public AWSMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
 
     if (created)
       throw new IllegalStateException();
 
-    this.result.setAWSAccessKey(AWSSecretKey);
+    this.result.setAWSSecretKey(AWSSecretKey);
 
     return this;
   }
