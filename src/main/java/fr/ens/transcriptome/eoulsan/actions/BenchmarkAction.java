@@ -149,11 +149,6 @@ public class BenchmarkAction extends AbstractAction {
 
     LOGGER.info("Prepare Amazon MapReduce job");
 
-    if (false) {
-      System.out.println("=== halt !!! ===");
-      System.exit(0);
-    }
-
     final long startTime = System.currentTimeMillis();
 
     // Envrionment argument
@@ -179,9 +174,7 @@ public class BenchmarkAction extends AbstractAction {
 
     // Command arguments
     final List<String> eoulsanArgsList = Lists.newArrayList();
-    // TODO change me
-    // eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
-    eoulsanArgsList.add("exec");
+    eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(jobDescription);
     eoulsanArgsList.add("-e");
