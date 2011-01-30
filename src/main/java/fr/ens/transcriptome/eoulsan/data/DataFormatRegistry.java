@@ -56,6 +56,11 @@ public class DataFormatRegistry {
     if (df.getFormatName() == null)
       throw new EoulsanException("The DataFormat "
           + df.getClass().getName() + " as no name.");
+    
+    if (!df.getFormatName().toLowerCase().trim().equals(df.getFormatName())) {
+      throw new EoulsanException("The DataFormat name can't contains upper case character"
+          + df.getClass().getName() + " as no name.");
+    }
 
     final DataType dt = df.getType();
 
