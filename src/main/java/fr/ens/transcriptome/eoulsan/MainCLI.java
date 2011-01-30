@@ -64,7 +64,7 @@ public final class MainCLI {
     System.out.println("Available commands:");
     for (Action action : ActionService.getInstance().getActions()) {
 
-      if (!action.isHadoopJarMode()) {
+      if (!action.isHadoopJarMode() && !action.isHidden()) {
 
         System.out.println(" - "
             + action.getName()
