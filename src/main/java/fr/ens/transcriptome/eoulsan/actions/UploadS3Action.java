@@ -57,13 +57,13 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
  * This class define the Local Upload S3 Action.
  * @author Laurent Jourdren
  */
-public class UploadS3Action implements Action {
+public class UploadS3Action extends AbstractAction {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public String getName() {
@@ -73,6 +73,12 @@ public class UploadS3Action implements Action {
   @Override
   public String getDescription() {
     return "upload data on Amazon S3.";
+  }
+
+  @Override
+  public boolean isCurrentArchCompatible() {
+
+    return true;
   }
 
   @Override
@@ -94,8 +100,8 @@ public class UploadS3Action implements Action {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 2) {
