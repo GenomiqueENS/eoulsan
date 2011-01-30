@@ -25,6 +25,10 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+/**
+ * This class define a service to retrieve a SequenceReadsMapper
+ * @author Laurent Jourdren
+ */
 public class SequenceReadsMapperService {
 
   private static SequenceReadsMapperService service;
@@ -35,8 +39,8 @@ public class SequenceReadsMapperService {
   //
 
   /**
-   * Retrieve the singleton static instance of StepService.
-   * @return A StepService instance
+   * Retrieve the singleton static instance of SequenceReadsMapperService.
+   * @return A SequenceReadsMapperService instance
    */
   public static synchronized SequenceReadsMapperService getInstance() {
 
@@ -83,7 +87,7 @@ public class SequenceReadsMapperService {
   //
 
   /**
-   * Private protocol.
+   * Private constructor.
    */
   private SequenceReadsMapperService() {
 
