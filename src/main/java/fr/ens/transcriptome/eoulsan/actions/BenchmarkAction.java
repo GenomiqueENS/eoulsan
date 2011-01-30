@@ -89,7 +89,8 @@ public class BenchmarkAction extends AbstractAction {
       final String dir = BASE_DIR + genome + "/";
       final String designFile = dir + "design-two.txt";
       final String mapper = "soap";
-      final String paramFile = dir + "param-" + mapper + ".txt";
+      final String paramFile =
+          dir + "param-" + genome + "-aws-" + mapper + ".xml";
       final String desc = genome + " data with " + mapper;
 
       exec(settings, instanceType, instanceCount, paramFile, designFile, desc);
@@ -104,7 +105,8 @@ public class BenchmarkAction extends AbstractAction {
       //
       // for (String mapper : mappers) {
       //
-      // final String paramFile = dir + "param-" + mapper + ".txt";
+      // final String paramFile = dir + "param-"+ genome+ "-aws-" + mapper +
+      // ".xml";
       // final String desc = genome + " data with " + mapper;
       //
       // exec(settings, instanceType, instanceCount, paramFile, designFile,
@@ -138,16 +140,6 @@ public class BenchmarkAction extends AbstractAction {
     LOGGER.addHandler(fh);
     LOGGER.addHandler(new ConsoleHandler());
     LOGGER.info("--- Start at " + new Date() + " ---");
-
-  }
-
-  /**
-   * Main method.
-   * @param args command line arguments
-   * @throws IOException if an error occurs
-   * @throws EoulsanException if an error occurs
-   */
-  public static void main(String[] args) throws IOException, EoulsanException {
 
   }
 
@@ -187,7 +179,9 @@ public class BenchmarkAction extends AbstractAction {
 
     // Command arguments
     final List<String> eoulsanArgsList = Lists.newArrayList();
-    eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
+    // TODO change me
+    // eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
+    eoulsanArgsList.add("exec");
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(jobDescription);
     eoulsanArgsList.add("-e");
@@ -206,7 +200,7 @@ public class BenchmarkAction extends AbstractAction {
     LOGGER.info("Job description: " + jobDescription);
 
     // Set the credentials
-    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSsecretKey(
+    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSSecretKey(
         settings.getAWSSecretKey());
     LOGGER.info("AWS access key: " + settings.getAWSAccessKey());
     LOGGER.info("AWS secret key: " + settings.getAWSSecretKey());
@@ -271,6 +265,19 @@ public class BenchmarkAction extends AbstractAction {
 
     }
 
+  }
+
+  //
+  // Main method()
+  //
+
+  /**
+   * Main method.
+   * @param args command line arguments
+   */
+  public static void main(final String[] args) {
+
+    new BenchmarkAction().action(args);
   }
 
 }
