@@ -30,10 +30,22 @@ import fr.ens.transcriptome.eoulsan.steps.GenomeDescriptionGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsIndexGeneratorStep;
 
+/**
+ * This class contains the defintion of some DataFormats.
+ * @author Laurent Jourdren
+ */
 public class DataFormats {
 
+  private static final DataFormatRegistry resgistry = DataFormatRegistry
+      .getInstance();
+
   /** Reads fastq data format. */
-  public static final DataFormat READS_FASTQ = new AbstractDataFormat() {
+  public static final DataFormat READS_FASTQ = resgistry
+      .getDataFormatFromName(ReadsFastqDataFormat.FORMAT_NAME);
+
+  public static final class ReadsFastqDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "reads_fastq";
 
     public DataType getType() {
 
@@ -49,7 +61,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "reads_fastq";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -67,7 +79,12 @@ public class DataFormats {
   };
 
   /** Reads tfq data format. */
-  public static final DataFormat READS_TFQ = new AbstractDataFormat() {
+  public static final DataFormat READS_TFQ = resgistry
+      .getDataFormatFromName(ReadsTfqDataFormat.FORMAT_NAME);
+
+  public static final class ReadsTfqDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "reads_tfq";
 
     public DataType getType() {
 
@@ -83,36 +100,47 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "reads_tfq";
+      return FORMAT_NAME;
     }
 
   };
 
   /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_FASTQ =
-      new AbstractDataFormat() {
+  public static final DataFormat FILTERED_READS_FASTQ = resgistry
+      .getDataFormatFromName(FilteredReadsFastqDataFormat.FORMAT_NAME);
 
-        public DataType getType() {
+  public static final class FilteredReadsFastqDataFormat extends
+      AbstractDataFormat {
 
-          return DataTypes.FILTERED_READS;
-        }
+    public static final String FORMAT_NAME = "filtered_read_fastq";
 
-        @Override
-        public String getDefaultExtention() {
+    public DataType getType() {
 
-          return ".fq";
-        }
+      return DataTypes.FILTERED_READS;
+    }
 
-        @Override
-        public String getFormatName() {
+    @Override
+    public String getDefaultExtention() {
 
-          return "filtered_read_fastq";
-        }
+      return ".fq";
+    }
 
-      };
+    @Override
+    public String getFormatName() {
+
+      return FORMAT_NAME;
+    }
+
+  };
 
   /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_TFQ = new AbstractDataFormat() {
+  public static final DataFormat FILTERED_READS_TFQ = resgistry
+      .getDataFormatFromName(FilteredReadsTfqDataFormat.FORMAT_NAME);
+
+  public static final class FilteredReadsTfqDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "filtered_read_tfq";
 
     public DataType getType() {
 
@@ -128,13 +156,18 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "filtered_read_tfq";
+      return FORMAT_NAME;
     }
 
   };
 
   /** SOAP index data format. */
-  public static final DataFormat SOAP_INDEX_ZIP = new AbstractDataFormat() {
+  public static final DataFormat SOAP_INDEX_ZIP = resgistry
+      .getDataFormatFromName(SOAPIndexZipDataFormat.FORMAT_NAME);
+
+  public static final class SOAPIndexZipDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "soap_index_zip";
 
     public DataType getType() {
 
@@ -150,7 +183,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "soap_index_zip";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -174,7 +207,12 @@ public class DataFormats {
   };
 
   /** BWA index data format. */
-  public static final DataFormat BWA_INDEX_ZIP = new AbstractDataFormat() {
+  public static final DataFormat BWA_INDEX_ZIP = resgistry
+      .getDataFormatFromName(BWAIndexZipDataFormat.FORMAT_NAME);
+
+  public static final class BWAIndexZipDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "bwa_index_zip";
 
     public DataType getType() {
 
@@ -190,7 +228,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "bwa_index_zip";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -214,7 +252,12 @@ public class DataFormats {
   };
 
   /** BWA index data format. */
-  public static final DataFormat BOWTIE_INDEX_ZIP = new AbstractDataFormat() {
+  public static final DataFormat BOWTIE_INDEX_ZIP = resgistry
+      .getDataFormatFromName(BowtieIndexZipDataFormat.FORMAT_NAME);
+
+  public static final class BowtieIndexZipDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "bowtie_index_zip";
 
     public DataType getType() {
 
@@ -230,7 +273,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "bowtie_index_zip";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -253,31 +296,70 @@ public class DataFormats {
 
   };
 
-  /** Filtered SOAP data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM =
-      new AbstractDataFormat() {
+  /** Filtered SAM data format. */
+  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = resgistry
+      .getDataFormatFromName(FilteredMapperResultsSamDataFormat.FORMAT_NAME);
 
-        public DataType getType() {
+  public static final class FilteredMapperResultsSamDataFormat extends
+      AbstractDataFormat {
 
-          return DataTypes.FILTERED_MAPPER_RESULTS;
-        }
+    public static final String FORMAT_NAME = "filtered_sam_results";
 
-        @Override
-        public String getDefaultExtention() {
+    public DataType getType() {
 
-          return ".sam";
-        }
+      return DataTypes.FILTERED_MAPPER_RESULTS;
+    }
 
-        @Override
-        public String getFormatName() {
+    @Override
+    public String getDefaultExtention() {
 
-          return "filtered_sam_results";
-        }
+      return ".sam";
+    }
 
-      };
+    @Override
+    public String getFormatName() {
 
-  /** SOAP results data format. */
-  public static final DataFormat MAPPER_RESULTS_SAM = new AbstractDataFormat() {
+      return FORMAT_NAME;
+    }
+
+  };
+
+  /** Filtered BAM data format. */
+  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM = resgistry
+      .getDataFormatFromName(FilteredMapperResultsBamDataFormat.FORMAT_NAME);
+
+  public static final class FilteredMapperResultsBamDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "filtered_bam_results";
+
+    public DataType getType() {
+
+      return DataTypes.FILTERED_MAPPER_RESULTS;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".bam";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return FORMAT_NAME;
+    }
+
+  };
+
+  /** SAM results data format. */
+  public static final DataFormat MAPPER_RESULTS_SAM = resgistry
+      .getDataFormatFromName(MapperResultsSamDataFormat.FORMAT_NAME);
+
+  public static final class MapperResultsSamDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "sam_results";
 
     public DataType getType() {
 
@@ -293,36 +375,74 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "sam_results";
+      return FORMAT_NAME;
+    }
+
+  };
+
+  /** BAM results data format. */
+  public static final DataFormat MAPPER_RESULTS_BAM = resgistry
+      .getDataFormatFromName(MapperResultsBamDataFormat.FORMAT_NAME);
+
+  public static final class MapperResultsBamDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "bam_results";
+
+    public DataType getType() {
+
+      return DataTypes.MAPPER_RESULTS;
+    }
+
+    @Override
+    public String getDefaultExtention() {
+
+      return ".bam";
+    }
+
+    @Override
+    public String getFormatName() {
+
+      return FORMAT_NAME;
     }
 
   };
 
   /** Expression results data format. */
-  public static final DataFormat EXPRESSION_RESULTS_TXT =
-      new AbstractDataFormat() {
+  public static final DataFormat EXPRESSION_RESULTS_TXT = resgistry
+      .getDataFormatFromName(ExpressionResultsTxtDataFormat.FORMAT_NAME);
 
-        public DataType getType() {
+  public static final class ExpressionResultsTxtDataFormat extends
+      AbstractDataFormat {
 
-          return DataTypes.EXPRESSION_RESULTS;
-        }
+    public static final String FORMAT_NAME = "expression";
 
-        @Override
-        public String getDefaultExtention() {
+    public DataType getType() {
 
-          return ".txt";
-        }
+      return DataTypes.EXPRESSION_RESULTS;
+    }
 
-        @Override
-        public String getFormatName() {
+    @Override
+    public String getDefaultExtention() {
 
-          return "expression";
-        }
+      return ".txt";
+    }
 
-      };
+    @Override
+    public String getFormatName() {
+
+      return FORMAT_NAME;
+    }
+
+  };
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_GFF = new AbstractDataFormat() {
+  public static final DataFormat ANNOTATION_GFF = resgistry
+      .getDataFormatFromName(AnnotationGffDataFormat.FORMAT_NAME);
+
+  public static final class AnnotationGffDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "annotation";
 
     public DataType getType() {
 
@@ -338,7 +458,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "annotation";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -356,42 +476,53 @@ public class DataFormats {
   };
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_INDEX_SERIAL =
-      new AbstractDataFormat() {
+  public static final DataFormat ANNOTATION_INDEX_SERIAL = resgistry
+      .getDataFormatFromName(AnnotationIndexSerialDataFormat.FORMAT_NAME);
 
-        public DataType getType() {
+  public static final class AnnotationIndexSerialDataFormat extends
+      AbstractDataFormat {
 
-          return DataTypes.ANNOTATION_INDEX;
-        }
+    public static final String FORMAT_NAME = "annotation_index_serial";
 
-        @Override
-        public String getDefaultExtention() {
+    public DataType getType() {
 
-          return ".ser";
-        }
+      return DataTypes.ANNOTATION_INDEX;
+    }
 
-        @Override
-        public String getContentType() {
+    @Override
+    public String getDefaultExtention() {
 
-          return "application/java-serialized-object";
-        }
+      return ".ser";
+    }
 
-        @Override
-        public String getFormatName() {
+    @Override
+    public String getContentType() {
 
-          return "annotation_index_serial";
-        }
+      return "application/java-serialized-object";
+    }
 
-        @Override
-        public boolean isChecker() {
+    @Override
+    public String getFormatName() {
 
-          return false;
-        }
+      return FORMAT_NAME;
+    }
 
-      };
+    @Override
+    public boolean isChecker() {
+
+      return false;
+    }
+
+  };
 
   /** Anadiff results data format. */
-  public static final DataFormat ANADIF_RESULTS_TXT = new AbstractDataFormat() {
+  public static final DataFormat ANADIF_RESULTS_TXT = resgistry
+      .getDataFormatFromName(AnafifResultsTxtDataFormat.FORMAT_NAME);
+
+  public static final class AnafifResultsTxtDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "anadiff_results";
 
     public DataType getType() {
 
@@ -407,13 +538,18 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "anadiff_results";
+      return FORMAT_NAME;
     }
 
   };
 
   /** Genome data format. */
-  public static final DataFormat GENOME_FASTA = new AbstractDataFormat() {
+  public static final DataFormat GENOME_FASTA = resgistry
+      .getDataFormatFromName(GenomeFastaDataFormat.FORMAT_NAME);
+
+  public static final class GenomeFastaDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "genome";
 
     public DataType getType() {
 
@@ -429,7 +565,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "genome";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -447,7 +583,12 @@ public class DataFormats {
   };
 
   /** Genome data format. */
-  public static final DataFormat GENOME_DESC_TXT = new AbstractDataFormat() {
+  public static final DataFormat GENOME_DESC_TXT = resgistry
+      .getDataFormatFromName(GenomeDescTxtDataFormat.FORMAT_NAME);
+
+  public static final class GenomeDescTxtDataFormat extends AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "genome_desc_txt";
 
     public DataType getType() {
 
@@ -463,7 +604,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "genome_desc_txt";
+      return FORMAT_NAME;
     }
 
     @Override
@@ -481,7 +622,13 @@ public class DataFormats {
   };
 
   /** Unmap reads results data format. */
-  public static final DataFormat UNMAP_READS_FASTA = new AbstractDataFormat() {
+  public static final DataFormat UNMAP_READS_FASTA = resgistry
+      .getDataFormatFromName(UnMapReadsFastaDataFormat.FORMAT_NAME);
+
+  public static final class UnMapReadsFastaDataFormat extends
+      AbstractDataFormat {
+
+    public static final String FORMAT_NAME = "unmap_fasta";
 
     public DataType getType() {
 
@@ -497,7 +644,7 @@ public class DataFormats {
     @Override
     public String getFormatName() {
 
-      return "unmap";
+      return FORMAT_NAME;
     }
 
   };

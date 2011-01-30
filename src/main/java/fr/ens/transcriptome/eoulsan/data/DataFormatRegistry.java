@@ -25,10 +25,14 @@ package fr.ens.transcriptome.eoulsan.data;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -37,6 +41,9 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class DataFormatRegistry {
+
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Set<DataFormat> formats = new HashSet<DataFormat>();
   private Map<String, DataFormat> map = new HashMap<String, DataFormat>();
@@ -50,16 +57,35 @@ public class DataFormatRegistry {
    */
   public void register(final DataFormat df) throws EoulsanException {
 
+    register(df, false);
+  }
+
+  /**
+   * Register a DataFormat.
+   * @param df the DataFormat to register
+   * @param callFromConstructor true if method is call from constructor
+   * @throws EoulsanException if the DataFormat is not valid
+   */
+  private void register(final DataFormat df, final boolean callFromConstructor)
+      throws EoulsanException {
+
     if (df == null || formats.contains(df))
       return;
 
     if (df.getFormatName() == null)
       throw new EoulsanException("The DataFormat "
           + df.getClass().getName() + " as no name.");
-    
+
     if (!df.getFormatName().toLowerCase().trim().equals(df.getFormatName())) {
-      throw new EoulsanException("The DataFormat name can't contains upper case character"
-          + df.getClass().getName() + " as no name.");
+      throw new EoulsanException(
+          "The DataFormat name can't contains upper case character"
+              + df.getClass().getName() + " as no name.");
+    }
+
+    for (DataFormat format : this.formats) {
+      if (format.getFormatName().equals(df.getFormatName()))
+        throw new EoulsanException("A DataFormat named "
+            + df.getFormatName() + " is already registered.");
     }
 
     final DataType dt = df.getType();
@@ -90,8 +116,6 @@ public class DataFormatRegistry {
           "The no default extension is provided for DataFormat: "
               + df.getFormatName());
 
-    formats.add(df);
-
     boolean defaultExtensionFound = false;
 
     for (String suffix : extensions) {
@@ -109,12 +133,19 @@ public class DataFormatRegistry {
 
       final String key = prefix + "\t" + suffix;
 
-      if (this.map.containsKey(key))
+      if (this.map.containsKey(key)) {
         throw new EoulsanException(
             "The DataFormat registry already contains entry for prefix \""
                 + prefix + "\" and extension \"" + suffix + "\"");
-      this.map.put(key, df);
+      }
 
+      if (!callFromConstructor)
+        throw new EoulsanException("This DataFormat "
+            + df.getFormatName()
+            + " is not registered as a spi service. Cannot register it.");
+
+      formats.add(df);
+      this.map.put(key, df);
     }
 
     if (!defaultExtensionFound)
@@ -245,6 +276,24 @@ public class DataFormatRegistry {
    * Private constructor.
    */
   private DataFormatRegistry() {
+
+    final Iterator<DataFormat> it =
+        ServiceLoader.load(DataFormat.class).iterator();
+
+    while (it.hasNext()) {
+
+      final DataFormat df = it.next();
+
+      try {
+
+        register(it.next(), true);
+
+      } catch (EoulsanException e) {
+        LOGGER.warning("Connot register "
+            + df.getFormatName() + ": " + e.getMessage());
+      }
+    }
+
   }
 
 }
