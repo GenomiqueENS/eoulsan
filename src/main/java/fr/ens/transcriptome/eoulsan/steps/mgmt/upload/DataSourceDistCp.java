@@ -40,14 +40,12 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -57,7 +55,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class DataSourceDistCp {
 
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private final Configuration conf;
   private final Path jobPath;
@@ -65,41 +64,12 @@ public class DataSourceDistCp {
   public static final class DistCpMapper extends
       Mapper<LongWritable, Text, Text, Text> {
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.apache.hadoop.mapreduce.Mapper#setup(org.apache.hadoop.mapreduce.
-     * Mapper.Context)
-     */
     @Override
-    protected void setup(Context context) throws IOException,
+    protected void setup(final Context context) throws IOException,
         InterruptedException {
 
-      super.setup(context);
-
-      HadoopEoulsanRuntime.newEoulsanRuntime(context.getConfiguration());
-
-      DataFormatRegistry registry = DataFormatRegistry.getInstance();
-
-      // TODO remove this code once spi for DataFormat will be implemented
-
-      try {
-
-        registry.register(DataFormats.ANADIF_RESULTS_TXT);
-        registry.register(DataFormats.ANNOTATION_GFF);
-        registry.register(DataFormats.EXPRESSION_RESULTS_TXT);
-        registry.register(DataFormats.FILTERED_READS_FASTQ);
-        registry.register(DataFormats.FILTERED_MAPPER_RESULTS_SAM);
-        registry.register(DataFormats.GENOME_FASTA);
-        registry.register(DataFormats.READS_FASTQ);
-        registry.register(DataFormats.READS_TFQ);
-        registry.register(DataFormats.SOAP_INDEX_ZIP);
-        registry.register(DataFormats.MAPPER_RESULTS_SAM);
-        registry.register(DataFormats.UNMAP_READS_FASTA);
-
-      } catch (EoulsanException e) {
-
-        throw new IOException(e.getMessage());
+      if (!EoulsanRuntime.isRuntime()) {
+        HadoopEoulsanRuntime.newEoulsanRuntime(context.getConfiguration());
       }
 
     }
@@ -130,7 +100,7 @@ public class DataSourceDistCp {
       final FileStatus fStatusSrc = srcFs.getFileStatus(srcPath);
       final long srcSize = fStatusSrc == null ? 0 : fStatusSrc.getLen();
 
-      logger.info("Start copy "
+      LOGGER.info("Start copy "
           + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
 
       final long startTime = System.currentTimeMillis();
@@ -148,7 +118,7 @@ public class DataSourceDistCp {
       final double speed =
           destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
 
-      logger.info("End copy "
+      LOGGER.info("End copy "
           + srcPathname + " to " + destPath + " in "
           + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
           + " bytes, " + ((int) speed) + " bytes/s)\n");
@@ -173,7 +143,7 @@ public class DataSourceDistCp {
 
     //
     // Create entries for distcp
-    // 
+    //
 
     final FileSystem fs = tmpInputDir.getFileSystem(conf);
     fs.mkdirs(tmpInputDir);
