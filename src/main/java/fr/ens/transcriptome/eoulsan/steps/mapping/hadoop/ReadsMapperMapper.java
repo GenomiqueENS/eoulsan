@@ -61,13 +61,13 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameter keys
-  static final String MAPPER_NAME_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.name";
+  static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.name";
   static final String PAIR_END_KEY = ReadsFilterMapper.PAIR_END_KEY;
-  static final String MAPPER_ARGS_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.args";
-  static final String MAPPER_THREADS_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.nb.threads";
+  static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.args";
+  static final String MAPPER_THREADS_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.nb.threads";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
 
@@ -220,7 +220,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       // Set index directory
       final File archiveIndexDir =
-          new File("/tmp/" + getIndexLocalName(this.archiveIndexFile));
+          new File(context.getConfiguration().get("hadoop.tmp.dir")
+              + "/" + getIndexLocalName(this.archiveIndexFile));
+
+      LOGGER.info("Genome index directory where decompressed: "
+          + archiveIndexDir);
 
       // Process to mapping
       mapper.map(this.archiveIndexFile, archiveIndexDir);
