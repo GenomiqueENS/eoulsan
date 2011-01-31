@@ -302,15 +302,15 @@ public class AWSMapReduceJob {
     // Set step config
     final StepConfig stepConfig =
         new StepConfig().withName(this.jobFlowName + "-step")
-            .withHadoopJarStep(hadoopJarStep)
-            .withActionOnFailure("TERMINATE_JOB_FLOW");
+            .withHadoopJarStep(hadoopJarStep).withActionOnFailure(
+                "TERMINATE_JOB_FLOW");
 
     // Set the instance
     final JobFlowInstancesConfig instances =
         new JobFlowInstancesConfig().withInstanceCount(this.nInstances)
             .withMasterInstanceType(this.masterInstanceType)
-            .withSlaveInstanceType(this.slavesInstanceType)
-            .withHadoopVersion(this.hadoopVersion);
+            .withSlaveInstanceType(this.slavesInstanceType).withHadoopVersion(
+                this.hadoopVersion);
 
     // Configure hadoop
     final ScriptBootstrapActionConfig scriptBootstrapAction =
@@ -326,9 +326,9 @@ public class AWSMapReduceJob {
 
     // Run flow
     this.runFlowRequest =
-        new RunJobFlowRequest().withName(this.jobFlowName)
-            .withInstances(instances).withSteps(stepConfig)
-            .withBootstrapActions(bootstrapActions);
+        new RunJobFlowRequest().withName(this.jobFlowName).withInstances(
+            instances).withSteps(stepConfig).withBootstrapActions(
+            bootstrapActions);
 
     if (this.logPathname != null && !"".equals(this.logPathname))
       this.runFlowRequest.withLogUri(this.logPathname);
@@ -386,8 +386,11 @@ public class AWSMapReduceJob {
 
         state = executionStatusDetail.getState();
 
+        LOGGER.info("State of the job "
+            + this.runFlowResult.getJobFlowId() + ": " + state);
+
       } while (state != null
-          && !state.equals("COMPLETE") && !state.equals("FAILED")
+          && !state.equals("COMPLETED") && !state.equals("FAILED")
           && !state.equals("TERMINATED"));
 
     } catch (InterruptedException e) {
