@@ -371,6 +371,7 @@ public class AWSMapReduceJob {
             .getJobFlowId());
 
     String state = null;
+    String lastState = null;
 
     try {
 
@@ -387,15 +388,19 @@ public class AWSMapReduceJob {
 
         state = executionStatusDetail.getState();
 
-        LOGGER.info("State of the job "
-            + this.runFlowResult.getJobFlowId() + ": " + state);
+        if (lastState==null || !lastState.equals(state)) {
+
+          LOGGER.info("State of the job "
+              + this.runFlowResult.getJobFlowId() + ": " + state);
+          lastState = state;
+        }
 
       } while (state != null
           && !state.equals("COMPLETED") && !state.equals("FAILED")
           && !state.equals("TERMINATED"));
 
       return state;
-      
+
     } catch (InterruptedException e) {
       LOGGER
           .warning("Error while waiting AWS MapReduce Job: " + e.getMessage());
