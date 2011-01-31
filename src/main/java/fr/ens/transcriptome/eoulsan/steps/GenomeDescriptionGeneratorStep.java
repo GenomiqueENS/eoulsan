@@ -58,6 +58,12 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
+  public String getLogName() {
+
+    return null;
+  }
+
+  @Override
   public DataFormat[] getInputFormats() {
 
     return new DataFormat[] {DataFormats.GENOME_FASTA};
