@@ -173,6 +173,8 @@ public class DataSourceDistCp {
       final Path f =
           new Path(tmpInputDir, "distcp-" + nf.format(count) + ".cp");
 
+      LOGGER.info("Task copy " + inFile + " in " + f.toString());
+
       BufferedWriter bw =
           new BufferedWriter(new OutputStreamWriter(fs.create(f)));
 
