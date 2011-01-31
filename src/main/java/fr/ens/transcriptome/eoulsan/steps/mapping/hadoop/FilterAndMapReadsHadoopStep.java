@@ -108,7 +108,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
 
     // timeout
-    jobConf.set("mapred.task.timeout", "" + 30 * 60 * 1000);
+    jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
 
     //
     // Reads filters parameters
