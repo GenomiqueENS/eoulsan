@@ -358,11 +358,12 @@ public class AWSMapReduceJob {
   /**
    * Wait the end of the job
    * @param secondBetweenChecking number of seconds to wait between 2 checks
+   * @return the final state of the job
    */
-  public void waitForJob(final int secondBetweenChecking) {
+  public String waitForJob(final int secondBetweenChecking) {
 
     if (this.runFlowResult == null) {
-      return;
+      return null;
     }
 
     final DescribeJobFlowsRequest describeJobFlowsRequest =
@@ -393,11 +394,14 @@ public class AWSMapReduceJob {
           && !state.equals("COMPLETED") && !state.equals("FAILED")
           && !state.equals("TERMINATED"));
 
+      return state;
+      
     } catch (InterruptedException e) {
       LOGGER
           .warning("Error while waiting AWS MapReduce Job: " + e.getMessage());
     }
 
+    return null;
   }
 
   //
