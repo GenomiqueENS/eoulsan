@@ -76,6 +76,7 @@ public abstract class UploadStep extends AbstractStep {
   public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
+    final StringBuilder log = new StringBuilder();
 
     // Save and change base pathname
     final SimpleContext fullContext = (SimpleContext) context;
@@ -127,6 +128,15 @@ public abstract class UploadStep extends AbstractStep {
           getUploadedDataFile(currentParamDataFile);
       filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
 
+      // Create log entry
+      for (Map.Entry<DataFile, DataFile> e : filesToCopy.entrySet()) {
+        log.append("Copy ");
+        log.append(e.getKey());
+        log.append(" to ");
+        log.append(e.getValue());
+        log.append('\n');
+      }
+
       // Copy the files
       copy(filesToCopy);
 
@@ -156,7 +166,7 @@ public abstract class UploadStep extends AbstractStep {
           + "/" + repackagedJarFile.getName());
     }
 
-    return new StepResult(context, startTime, files.toString());
+    return new StepResult(context, startTime, log.toString());
   }
 
   @Override
