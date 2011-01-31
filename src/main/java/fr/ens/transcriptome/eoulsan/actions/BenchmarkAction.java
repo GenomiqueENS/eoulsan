@@ -49,13 +49,27 @@ public class BenchmarkAction extends AbstractAction {
       "eu-west-1.elasticmapreduce.amazonaws.com";
   private static final String LOG_PATH = "s3://sgdb-test/awslog";
   private static final String HADOOP_VERSION = "0.20";
-  private static final String JAR_LOCATION = "s3://sgdb-test/benchmarks/"
-      + "eoulsan-0.6-BENCHMARK.jar ";
+  private static final String JAR_LOCATION =
+      "s3://sgdb-test/benchmarks/" + "eoulsan-0.6-BENCHMARK.jar ";
 
   private static final String BASE_DIR = "s3n://sgdb-test/benchmarks/";
 
-  private static final String MEM_INSTANCE = InstanceType.M1Xlarge.toString();
-  private static final String CPU_INSTANCE = InstanceType.C1Xlarge.toString();
+  private enum instancesEnum {
+    MEM_INSTANCE(InstanceType.M1Xlarge.toString()), CPU_INSTANCE(
+        InstanceType.C1Xlarge.toString()), MEDIUM_INSTANCE(InstanceType.M1Large
+        .toString());
+
+    final String name;
+
+    public String toString() {
+      return name;
+    }
+
+    private instancesEnum(String name) {
+      this.name = name;
+    }
+
+  }
 
   private static final int COUNTDOWN_START = 30;
   private static final int SECONDS_WAIT_BETWEEN_CHECKS = 30;
@@ -82,38 +96,49 @@ public class BenchmarkAction extends AbstractAction {
       // Load settings
       final Settings settings = new Settings();
 
-      final String instanceType = MEM_INSTANCE;
-      final int instanceCount = 3;
+      // final String instanceType = instancesEnum.MEM_INSTANCE.toString();
+      // final int instanceCount = 3;
 
-      final String genome = "candida";
-      final String dir = BASE_DIR + genome + "/";
-      final String designFile = dir + "design-two.txt";
-      final String mapper = "soap";
-      final String paramFile =
-          dir + "param-" + genome + "-aws-" + mapper + ".xml";
-      final String desc = genome + " data with " + mapper;
-
-      exec(settings, instanceType, instanceCount, paramFile, designFile, desc);
-
-      // final String[] genomes = {"candida", "trichoderma", "mouse"};
-      // final String[] mappers = {"soap", "bwa", "bowtie"};
-      //
-      // for (String genome : genomes) {
-      //
+      // final String genome = "candida";
       // final String dir = BASE_DIR + genome + "/";
-      // final String designFile = dir + "design.txt";
-      //
-      // for (String mapper : mappers) {
-      //
-      // final String paramFile = dir + "param-"+ genome+ "-aws-" + mapper +
-      // ".xml";
+      // final String designFile = dir + "design-two.txt";
+      // final String mapper = "soap";
+      // final String paramFile =
+      // dir + "param-" + genome + "-aws-" + mapper + ".xml";
       // final String desc = genome + " data with " + mapper;
-      //
+
       // exec(settings, instanceType, instanceCount, paramFile, designFile,
       // desc);
-      // }
-      //
-      // }
+
+      // Test sur la souris en 1er, 3 mappers, 3 instances
+
+      final String[] genomes = {"mouse"};
+      final String[] mappers = {"soap", "bwa", "bowtie"};
+      final int instanceCount = 9;
+
+      for (String genome : genomes) {
+
+        final String dir = BASE_DIR + genome + "/";
+        final String designFile = dir + "design.txt";
+
+        for (instancesEnum instance : instancesEnum.values()) {
+
+          for (String mapper : mappers) {
+
+            final String paramFile =
+                dir + "param-" + genome + "-aws-" + mapper + ".xml";
+            final String desc =
+                genome + " data with " + mapper + " on " + instance.toString();
+
+            System.out.println(paramFile);
+            System.out.println(desc);
+
+            // exec(settings, instance.toString(), instanceCount, paramFile,
+            // designFile, desc);
+          }
+
+        }
+      }
 
       LOGGER.info("--- End at " + new Date() + " ---");
     } catch (IOException e) {
@@ -208,8 +233,8 @@ public class BenchmarkAction extends AbstractAction {
     LOGGER.info("Jar arguments: " + Arrays.toString(eoulsanArgs));
 
     // Set Instances
-    builder.withMasterInstanceType(instanceType)
-        .withSlavesInstanceType(instanceType).withInstancesNumber(nInstances);
+    builder.withMasterInstanceType(instanceType).withSlavesInstanceType(
+        instanceType).withInstancesNumber(nInstances);
     LOGGER.info("Instance type: " + instanceType);
     LOGGER.info("Instance number: " + nInstances);
 
@@ -233,11 +258,12 @@ public class BenchmarkAction extends AbstractAction {
 
     LOGGER.info("Ran job flow with id: " + jobFlowId);
 
-    job.waitForJob(SECONDS_WAIT_BETWEEN_CHECKS);
+    final String jobStatus = job.waitForJob(SECONDS_WAIT_BETWEEN_CHECKS);
     final long endTime = System.currentTimeMillis();
 
     LOGGER.info("End of Amazon MapReduce Job "
-        + jobFlowId + " (duration: " + (endTime - startTime) + " ms");
+        + jobFlowId + " with status " + jobStatus + " (duration: "
+        + (endTime - startTime) + " ms).");
 
   }
 
