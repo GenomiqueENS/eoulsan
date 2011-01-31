@@ -165,9 +165,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
         eoulsanArgs);
 
     // Set Instances
-    builder.withMasterInstanceType(this.instanceType)
-        .withSlavesInstanceType(this.instanceType)
-        .withInstancesNumber(this.nInstances);
+    builder.withMasterInstanceType(this.instanceType).withSlavesInstanceType(
+        this.instanceType).withInstancesNumber(this.nInstances);
 
     // Set Hadoop version
     builder.withHadoopVersion(this.hadoopVersion);
@@ -189,14 +188,21 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
     if (this.waitJob) {
 
-      job.waitForJob(SECONDS_WAIT_BETWEEN_CHECKS);
+      final String jobStatus = job.waitForJob(SECONDS_WAIT_BETWEEN_CHECKS);
+
+      if ("FAILED".equals(jobStatus)) {
+
+        return new StepResult(context, false, startTime,
+            "End of Amazon MapReduce Job "
+                + jobFlowId + " with " + jobStatus + " status.");
+      }
 
       return new StepResult(context, startTime, "End of Amazon MapReduce Job "
-          + jobFlowId);
+          + jobFlowId + " with " + jobStatus + " status.");
     }
 
     return new StepResult(context, startTime, "Launch of Amazon MapReduce Job "
-        + jobFlowId);
+        + jobFlowId + ".");
   }
 
   @Override
