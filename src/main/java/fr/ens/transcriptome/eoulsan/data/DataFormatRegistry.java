@@ -286,7 +286,8 @@ public class DataFormatRegistry {
 
       try {
 
-        register(it.next(), true);
+        LOGGER.fine("try to register format: " + df);
+        register(df, true);
 
       } catch (EoulsanException e) {
         LOGGER.warning("Connot register "
