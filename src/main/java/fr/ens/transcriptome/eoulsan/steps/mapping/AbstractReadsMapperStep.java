@@ -43,6 +43,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   protected static final String STEP_NAME = "mapreads";
 
   protected static final String COUNTER_GROUP = "reads_mapping";
+  
+  public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
 
   private SequenceReadsMapper mapper;
   private String mapperArguments;

@@ -47,6 +47,9 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private static final String STEP_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
+  protected static final int HADOOP_TIMEOUT =
+      AbstractReadsMapperStep.HADOOP_TIMEOUT;
+
   private int lengthThreshold = -1;
   private double qualityThreshold = -1;
   private boolean pairEnd;
@@ -137,7 +140,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
   //
   // Step methods
-  // 
+  //
 
   @Override
   public String getName() {
