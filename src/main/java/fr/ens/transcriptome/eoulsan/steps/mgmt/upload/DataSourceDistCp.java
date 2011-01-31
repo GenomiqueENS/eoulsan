@@ -25,6 +25,10 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -39,6 +43,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
@@ -148,16 +154,29 @@ public class DataSourceDistCp {
     final FileSystem fs = tmpInputDir.getFileSystem(conf);
     fs.mkdirs(tmpInputDir);
 
+    // Sort files by size
+    final List<DataFile> inFiles = Lists.newArrayList(entries.keySet());
+    sortInFilesByDescSize(inFiles);
+
+    // Set the format for the id of the copy task
+    final NumberFormat nf = NumberFormat.getInstance();
+    nf.setMinimumIntegerDigits(Integer.toString(inFiles.size()).length());
+    nf.setGroupingUsed(false);
+
     int count = 0;
-    for (Map.Entry<DataFile, DataFile> e : entries.entrySet()) {
+    for (DataFile inFile : inFiles) {
 
       count++;
-      final Path f = new Path(tmpInputDir, "distcp-" + count + ".cp");
+
+      final DataFile outFile = entries.get(inFile);
+
+      final Path f =
+          new Path(tmpInputDir, "distcp-" + nf.format(count) + ".cp");
 
       BufferedWriter bw =
           new BufferedWriter(new OutputStreamWriter(fs.create(f)));
 
-      bw.write(e.getKey().getSource() + "\t" + e.getValue().getSource() + "\n");
+      bw.write(inFile.getSource() + "\t" + outFile.getSource() + "\n");
       bw.close();
     }
 
@@ -177,6 +196,39 @@ public class DataSourceDistCp {
 
     if (!job.isSuccessful())
       throw new IOException("Unable to copy files using DataSourceDistCp.");
+  }
+
+  /**
+   * Sort a list of DataFile by dissident order.
+   * @param inFiles list of DataFile to sort
+   */
+  private void sortInFilesByDescSize(final List<DataFile> inFiles) {
+
+    Collections.sort(inFiles, new Comparator<DataFile>() {
+
+      @Override
+      public int compare(final DataFile f1, DataFile f2) {
+
+        long size1;
+
+        try {
+          size1 = f1.getMetaData().getContentLength();
+        } catch (IOException e) {
+          size1 = -1;
+        }
+
+        long size2;
+        try {
+          size2 = f2.getMetaData().getContentLength();
+        } catch (IOException e) {
+          size2 = -1;
+        }
+
+        return ((Long) size1).compareTo(size2) * -1;
+      }
+
+    });
+
   }
 
   private static Job createJobConf(final Configuration parentConf,

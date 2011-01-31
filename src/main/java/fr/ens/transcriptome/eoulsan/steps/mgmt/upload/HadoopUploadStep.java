@@ -23,17 +23,12 @@
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -99,13 +94,10 @@ public class HadoopUploadStep extends UploadStep {
     final DataProtocol fileProtocol =
         DataProtocolService.getInstance().getProtocol("file");
 
-    // Sort the file according file size
-    final List<DataFile> inFiles = Lists.newArrayList(files.keySet());
-    sortInFilesByDescSize(inFiles);
+    for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 
-    for (DataFile src : inFiles) {
-
-      final DataFile dest = files.get(src);
+      final DataFile src = e.getKey();
+      final DataFile dest = e.getValue();
 
       if (src == null || dest == null) {
         continue;
@@ -130,39 +122,6 @@ public class HadoopUploadStep extends UploadStep {
       DataSourceDistCp distCp = new DataSourceDistCp(this.conf, jobPath);
       distCp.copy(files);
     }
-  }
-
-  /**
-   * Sort a list of DataFile by dissident order.
-   * @param inFiles list of DataFile to sort
-   */
-  private void sortInFilesByDescSize(final List<DataFile> inFiles) {
-
-    Collections.sort(inFiles, new Comparator<DataFile>() {
-
-      @Override
-      public int compare(final DataFile f1, DataFile f2) {
-
-        long size1;
-
-        try {
-          size1 = f1.getMetaData().getContentLength();
-        } catch (IOException e) {
-          size1 = -1;
-        }
-
-        long size2;
-        try {
-          size2 = f2.getMetaData().getContentLength();
-        } catch (IOException e) {
-          size2 = -1;
-        }
-
-        return ((Long) size1).compareTo(size2) * -1;
-      }
-
-    });
-
   }
 
   //
