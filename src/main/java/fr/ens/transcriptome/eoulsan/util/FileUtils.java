@@ -288,7 +288,7 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws IOException if the file is not found
    */
-  public static final UnSynchronizedBufferedWriter createBufferedWriter(
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final String filename) throws IOException {
 
     if (filename == null)

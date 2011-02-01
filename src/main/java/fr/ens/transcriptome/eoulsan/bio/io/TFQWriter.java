@@ -90,7 +90,7 @@ public class TFQWriter extends ReadSequenceWriter {
    */
   public TFQWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFilename);
+    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
   }
 
 }
