@@ -307,6 +307,9 @@ public abstract class AbstractSequenceReadsMapper implements
           FileUtils.createTempFile(getTempDirectory(),
               Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
 
+      LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
+      LOGGER.info("Temporary reads/2 file: " + this.readsFile1);
+
       this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
       this.readsWriter2 = FileUtils.createBufferedWriter(this.readsFile2);
 
@@ -325,6 +328,8 @@ public abstract class AbstractSequenceReadsMapper implements
               ".fq");
 
       this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
+
+      LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
 
       this.noReadWritten = false;
     }
