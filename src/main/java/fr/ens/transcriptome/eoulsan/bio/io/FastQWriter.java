@@ -98,7 +98,7 @@ public class FastQWriter extends ReadSequenceWriter {
    */
   public FastQWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFilename);
+    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
   }
 
 }

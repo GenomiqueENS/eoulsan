@@ -120,6 +120,6 @@ public class GFFWriter extends GFFEntry {
    */
   public GFFWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFilename);
+    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
   }
 }
