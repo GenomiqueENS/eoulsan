@@ -29,8 +29,8 @@ public abstract class AbstractSequenceReadsMapper implements
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String SYNC =
-      AbstractSequenceReadsMapper.class.getName();
+  private static final String SYNC = AbstractSequenceReadsMapper.class
+      .getName();
 
   protected abstract String getIndexerExecutable();
 
@@ -247,6 +247,8 @@ public abstract class AbstractSequenceReadsMapper implements
         throw new IOException("Can't create directory for "
             + getMapperName() + " index: " + archiveIndexDir);
 
+      LOGGER.info("Unzip archiveIndexFile "
+          + archiveIndexFile + " in " + archiveIndexDir);
       FileUtils.unzip(archiveIndexFile, archiveIndexDir);
     }
 
