@@ -120,7 +120,7 @@ public abstract class PseudoMapReduce {
 
     final BufferedReader br = new BufferedReader(new InputStreamReader(is));
     final UnSynchronizedBufferedWriter bw =
-        FileUtils.createBufferedWriter(this.mapOutputFile);
+        FileUtils.createFastBufferedWriter(this.mapOutputFile);
 
     final List<String> results = new ArrayList<String>();
     String line;

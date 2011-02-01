@@ -131,7 +131,7 @@ public class AnaDiff {
 
       logger.fine("rScript: " + rScript.getAbsolutePath());
 
-      Writer writer = FileUtils.createBufferedWriter(rScript);
+      Writer writer = FileUtils.createFastBufferedWriter(rScript);
       writer.write(sb.toString());
       writer.close();
 

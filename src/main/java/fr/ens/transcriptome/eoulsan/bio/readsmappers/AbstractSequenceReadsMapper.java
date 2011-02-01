@@ -294,8 +294,8 @@ public abstract class AbstractSequenceReadsMapper implements
           FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads2-",
               ".fq");
 
-      this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
-      this.readsWriter2 = FileUtils.createBufferedWriter(this.readsFile2);
+      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
+      this.readsWriter2 = FileUtils.createFastBufferedWriter(this.readsFile2);
 
       this.noReadWritten = false;
     }
@@ -311,7 +311,7 @@ public abstract class AbstractSequenceReadsMapper implements
           FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads1-",
               ".fq");
 
-      this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
+      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
 
       this.noReadWritten = false;
     }

@@ -132,7 +132,7 @@ public class FlatFasta {
         if (writer != null)
           writer.close();
         writer =
-            FileUtils.createBufferedWriter(new File(this.flatFilesDir, chrName
+            FileUtils.createFastBufferedWriter(new File(this.flatFilesDir, chrName
                 + FLAT_FASTA_EXT));
       } else {
 

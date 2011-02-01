@@ -120,7 +120,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Get Writer
     final Writer writer =
-        FileUtils.createBufferedWriter(context.getDataFile(
+        FileUtils.createFastBufferedWriter(context.getDataFile(
             DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).create());
 
     String line = null;

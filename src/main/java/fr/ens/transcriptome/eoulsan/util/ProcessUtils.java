@@ -128,7 +128,7 @@ public final class ProcessUtils {
   public static int sh(final String cmd) throws IOException {
 
     File f = File.createTempFile("sh-", ".sh");
-    UnSynchronizedBufferedWriter bw = FileUtils.createBufferedWriter(f);
+    UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
     bw.write("#!/bin/sh\n");
     bw.write(cmd);
     bw.close();
@@ -161,7 +161,7 @@ public final class ProcessUtils {
       throws IOException {
 
     File f = File.createTempFile("sh-", ".sh");
-    UnSynchronizedBufferedWriter bw = FileUtils.createBufferedWriter(f);
+    UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
     bw.write("#!/bin/sh\n");
     bw.write(cmd);
     bw.close();
