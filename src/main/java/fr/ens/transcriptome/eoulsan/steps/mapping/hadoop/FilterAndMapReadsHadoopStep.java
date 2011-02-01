@@ -110,6 +110,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // timeout
     jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
 
+    // Don't reuse JVM
+    jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
+
     //
     // Reads filters parameters
     //
@@ -157,12 +160,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Set counter group
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
-        Integer.toString(getMappingQualityThreshold()));
+    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY, Integer
+        .toString(getMappingQualityThreshold()));
 
     // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
+        DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     // Set Job name
     // Create the job and its name
@@ -199,10 +202,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
-            sample).getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
+        DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }
