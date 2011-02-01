@@ -102,7 +102,7 @@ public class GFFWriter extends GFFEntry {
    */
   public GFFWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createBufferedWriter(os);
+    this.writer = FileUtils.createFastBufferedWriter(os);
   }
 
   /**
@@ -111,7 +111,7 @@ public class GFFWriter extends GFFEntry {
    */
   public GFFWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFile);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile);
   }
 
   /**

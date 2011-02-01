@@ -294,7 +294,7 @@ public class FileUtils {
     if (filename == null)
       throw new NullPointerException("The filename is null");
 
-    return createBufferedWriter(new File(filename));
+    return createFastBufferedWriter(new File(filename));
   }
 
   /**
@@ -304,7 +304,7 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws IOException if the file is not found
    */
-  public static final UnSynchronizedBufferedWriter createBufferedWriter(
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final File file) throws IOException {
 
     final OutputStream os = createOutputStream(file);
@@ -323,7 +323,7 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws FileNotFoundException if the file is not found
    */
-  public static final UnSynchronizedBufferedWriter createBufferedWriter(
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final OutputStream os) throws FileNotFoundException {
 
     if (os == null)
@@ -340,7 +340,7 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws IOException if an error occurs while creating the Writer
    */
-  public static final UnSynchronizedBufferedWriter createBufferedGZipWriter(
+  public static final UnSynchronizedBufferedWriter createFastBufferedGZipWriter(
       final File file) throws IOException {
 
     if (file == null)
@@ -957,7 +957,7 @@ public class FileUtils {
     if (outputFile == null)
       throw new NullPointerException("Output file is null");
 
-    UnSynchronizedBufferedWriter writer = createBufferedWriter(outputFile);
+    UnSynchronizedBufferedWriter writer = createFastBufferedWriter(outputFile);
 
     for (File f : files) {
 

@@ -113,7 +113,7 @@ public class GenomeDescription {
 
     Preconditions.checkNotNull(os, "OutputStream is null");
 
-    final Writer writer = FileUtils.createBufferedWriter(os);
+    final Writer writer = FileUtils.createFastBufferedWriter(os);
 
     for (String seqName : getSequencesNames()) {
 

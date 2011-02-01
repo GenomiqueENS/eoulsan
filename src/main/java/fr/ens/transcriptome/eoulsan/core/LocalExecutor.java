@@ -86,7 +86,7 @@ public class LocalExecutor extends Executor {
 
       final Writer writer =
           FileUtils
-              .createBufferedWriter(new File(logDir, logFilename + ".log"));
+              .createFastBufferedWriter(new File(logDir, logFilename + ".log"));
 
       if (result.getLogMessage() != null)
         writer.write(result.getLogMessage());

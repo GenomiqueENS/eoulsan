@@ -80,7 +80,7 @@ public class FastQWriter extends ReadSequenceWriter {
    */
   public FastQWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createBufferedWriter(os);
+    this.writer = FileUtils.createFastBufferedWriter(os);
   }
 
   /**
@@ -89,7 +89,7 @@ public class FastQWriter extends ReadSequenceWriter {
    */
   public FastQWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFile);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile);
   }
 
   /**

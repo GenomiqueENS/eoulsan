@@ -72,7 +72,7 @@ public class TFQWriter extends ReadSequenceWriter {
    */
   public TFQWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createBufferedWriter(os);
+    this.writer = FileUtils.createFastBufferedWriter(os);
   }
 
   /**
@@ -81,7 +81,7 @@ public class TFQWriter extends ReadSequenceWriter {
    */
   public TFQWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createBufferedWriter(outputFile);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile);
   }
 
   /**
