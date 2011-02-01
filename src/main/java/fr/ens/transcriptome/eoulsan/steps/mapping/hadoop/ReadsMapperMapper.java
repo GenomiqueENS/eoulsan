@@ -200,9 +200,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     LOGGER.info("Start of cleanup() of the mapper.");
 
-    // Close the data file
-    this.mapper.closeInput();
-
     context.setStatus("Wait free JVM for running "
         + this.mapper.getMapperName());
     final long waitStartTime = System.currentTimeMillis();
@@ -218,6 +215,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
             + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
                 - waitStartTime) + " before running "
             + this.mapper.getMapperName());
+
+    // Close the data file
+    this.mapper.closeInput();
 
     context.setStatus("Run " + this.mapper.getMapperName());
 
