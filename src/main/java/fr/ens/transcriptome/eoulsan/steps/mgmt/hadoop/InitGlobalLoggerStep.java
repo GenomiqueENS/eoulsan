@@ -180,9 +180,15 @@ public class InitGlobalLoggerStep extends AbstractStep {
     df(new File(TMP_PATH), conf);
     df(new File(VAR_PATH), conf);
 
+    // Log the usage of the hadoop temporary directory partition
     final String hadoopTmp = conf.get("hadoop.tmp.dir");
     if (hadoopTmp != null)
       df(new File(hadoopTmp), conf);
+
+    // Log the usage of the Java temporary directory partition
+    final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+    if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory())
+      df(tmpDir, conf);
   }
 
   private static final void parseCpuinfo() throws IOException {
