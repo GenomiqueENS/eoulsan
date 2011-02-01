@@ -150,7 +150,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
 
     // No JVM task resuse
-    // job. setNumTasksToExecutePerJvm(1);
+    jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
 
     // Create the job and its name
     final Job job =
