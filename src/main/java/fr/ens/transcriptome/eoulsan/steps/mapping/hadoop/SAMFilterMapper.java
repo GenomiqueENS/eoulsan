@@ -41,6 +41,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -54,10 +55,10 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
-  static final String MAPPING_QUALITY_THRESOLD_KEY =
-      Globals.PARAMETER_PREFIX + ".samfilter.mapping.quality.threshold";
-  static final String GENOME_DESC_PATH_KEY =
-      Globals.PARAMETER_PREFIX + ".samfilter.genome.desc.file";
+  static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
+      + ".samfilter.mapping.quality.threshold";
+  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
+      + ".samfilter.genome.desc.file";
 
   private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
 
@@ -78,7 +79,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     final Configuration conf = context.getConfiguration();
 
     // Initialize Eoulsan DataProtocols
-    HadoopEoulsanRuntime.newEoulsanRuntime(conf);
+    if (!EoulsanRuntime.isRuntime()) {
+      HadoopEoulsanRuntime.newEoulsanRuntime(conf);
+    }
 
     // Counter group
     this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
