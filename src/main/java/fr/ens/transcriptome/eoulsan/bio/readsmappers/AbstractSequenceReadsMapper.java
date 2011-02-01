@@ -48,6 +48,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private int threadsNumber;
   private String mapperArguments;
+  private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
   private int entriesWritten;
 
@@ -79,6 +80,12 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.pairEnd;
   }
 
+  @Override
+  public File getTempDirectory() {
+
+    return this.tempDir;
+  }
+
   //
   // Setters
   //
@@ -98,6 +105,12 @@ public abstract class AbstractSequenceReadsMapper implements
 
       this.mapperArguments = arguments;
     }
+  }
+
+  @Override
+  public void setTempDirectory(final File tempDirectory) {
+
+    this.tempDir = tempDirectory;
   }
 
   //
@@ -288,11 +301,11 @@ public abstract class AbstractSequenceReadsMapper implements
     if (noReadWritten) {
 
       this.readsFile1 =
-          FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads1-",
-              ".fq");
+          FileUtils.createTempFile(getTempDirectory(),
+              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
       this.readsFile2 =
-          FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads2-",
-              ".fq");
+          FileUtils.createTempFile(getTempDirectory(),
+              Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
 
       this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
       this.readsWriter2 = FileUtils.createBufferedWriter(this.readsFile2);

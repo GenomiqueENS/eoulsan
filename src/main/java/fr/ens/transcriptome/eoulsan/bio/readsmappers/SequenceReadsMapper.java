@@ -63,6 +63,10 @@ public interface SequenceReadsMapper {
   String getMapperArguments();
 
   void setMapperArguments(String arguments);
+  
+  File getTempDirectory();
+  
+  void setTempDirectory(File tempDirectory);
 
   //
   // Mapping methods
