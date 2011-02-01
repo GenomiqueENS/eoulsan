@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -360,6 +361,88 @@ public class FileUtils {
             .newOutputStream(outChannel));
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(gzos,
+        Charset.forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param filename Name of the file to write
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(final String filename)
+      throws IOException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null");
+
+    return createBufferedWriter(new File(filename));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param file File to write
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(final File file)
+      throws IOException {
+
+    final OutputStream os = createOutputStream(file);
+
+    if (os == null)
+      return null;
+
+    return new BufferedWriter(new OutputStreamWriter(os, Charset
+        .forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param os OutputStream to write
+   * @return a BufferedWriter
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(final OutputStream os)
+      throws FileNotFoundException {
+
+    if (os == null)
+      throw new NullPointerException("The output stream is null");
+
+    return new BufferedWriter(new OutputStreamWriter(os, Charset
+        .forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param file File to write
+   * @return a BufferedWriter
+   * @throws IOException if an error occurs while creating the Writer
+   */
+  public static final BufferedWriter createBufferedGZipWriter(
+      final File file) throws IOException {
+
+    if (file == null)
+      return null;
+
+    // Remove file if exists
+    if (file.exists())
+      if (!file.delete())
+        throw new IOException("Can not remove existing file: "
+            + file.getAbsolutePath());
+
+    final FileOutputStream outFile = new FileOutputStream(file);
+    final FileChannel outChannel = outFile.getChannel();
+
+    final OutputStream gzos =
+        CompressionType.createGZipOutputStream(Channels
+            .newOutputStream(outChannel));
+
+    return new BufferedWriter(new OutputStreamWriter(gzos,
         Charset.forName(CHARSET)));
   }
 
@@ -1277,7 +1360,7 @@ public class FileUtils {
     }
 
   }
-  
+
   /**
    * Test if two stream are equals
    * @param a First stream to compare
@@ -1341,6 +1424,5 @@ public class FileUtils {
       throws IOException {
     return compareFile(new FileInputStream(fileA), new FileInputStream(fileB));
   }
-  
 
 }
