@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.io.ProgressCounterOutputstream;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -70,8 +68,23 @@ public class DataSourceDistCp {
   private final Configuration conf;
   private final Path jobPath;
 
+  /**
+   * This inner class define the mapper class for DataSourceDistCp map-reduce
+   * job.
+   * @author Laurent Jourdren
+   */
   public static final class DistCpMapper extends
       Mapper<LongWritable, Text, Text, Text> {
+
+    private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
+
+    /**
+     * Internal class to store an exception if occurs while coping.
+     * @author Laurent Jourdren
+     */
+    private static final class MyIOException {
+      public IOException ioexception;
+    }
 
     @Override
     protected void setup(final Context context) throws IOException,
@@ -83,13 +96,6 @@ public class DataSourceDistCp {
 
     }
 
-    private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
-
-    private static final class MyIOException {
-      
-      public IOException ioexception;      
-    }
-    
     @Override
     protected void map(final LongWritable key, final Text value, Context context)
         throws IOException, InterruptedException {
@@ -122,43 +128,9 @@ public class DataSourceDistCp {
       final DataFile src = new DataFile(srcPathname);
       final DataFile dest = new DataFile(destPath.toString());
 
-      // // Add a progress counter to output stream
-      // final OutputStream os =
-      // new ProgressCounterOutputstream(dest.create(), context.getCounter(
-      // COUNTER_GROUP_NAME, "bytes written"));
-      //
-      // // Copy the file
-      // new DataFormatConverter(src, dest, os).convert();
+      // Copy the file
+      copy(src, dest, context);
 
-      final MyIOException exp = new MyIOException();
-      
-      final Thread t = new Thread(new Runnable() {
-        
-        @Override
-        public void run() {
-          try {
-            new DataFormatConverter(src, dest).convert();
-          } catch (IOException e) {
-            exp.ioexception =e;
-          }
-        }
-      });
-      
-      t.start();
-      
-      final Counter counter =context.getCounter(COUNTER_GROUP_NAME, "5seconds");
-      
-      while (t.isAlive()) {
-        Thread.sleep(5000);
-        counter.increment(1);
-      }
-      
-      // Throw Exception if needed
-      if (exp.ioexception!=null) {
-        throw exp.ioexception;
-      }
-      
-      
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
       final FileStatus fStatusDest = destFs.getFileStatus(destPath);
@@ -176,6 +148,55 @@ public class DataSourceDistCp {
       context.getCounter(COUNTER_GROUP_NAME, "Output file size").increment(
           destSize);
     }
+
+    /**
+     * Copy the file using a Thread and inform Hadoop of the live of the copy
+     * with a counter.
+     * @param src source
+     * @param dest destination
+     * @param context context object
+     * @throws InterruptedException if another thread has interrupted the
+     *           current thread
+     * @throws IOException if an error occurs while copying data
+     */
+    private static final void copy(final DataFile src, final DataFile dest,
+        final Context context) throws InterruptedException, IOException {
+
+      // Define a wrapper object to store exception if needed
+      final MyIOException exp = new MyIOException();
+
+      // Create the thread for copy
+      final Thread t = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            new DataFormatConverter(src, dest).convert();
+          } catch (IOException e) {
+            exp.ioexception = e;
+          }
+        }
+      });
+
+      // Start thread
+      t.start();
+
+      // Create counter
+      final Counter counter =
+          context.getCounter(COUNTER_GROUP_NAME, "5_seconds");
+
+      // Sleep and increment counter until the end of copy
+      while (t.isAlive()) {
+        Thread.sleep(5000);
+        counter.increment(1);
+      }
+
+      // Throw Exception if needed
+      if (exp.ioexception != null) {
+        throw exp.ioexception;
+      }
+    }
+
   }
 
   public void copy(final Map<DataFile, DataFile> entries) throws IOException {
