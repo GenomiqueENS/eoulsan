@@ -76,6 +76,7 @@ public final class ProgressCounterOutputstream extends OutputStream {
   @Override
   public final void close() throws IOException {
 
+    out.flush();
     out.close();
     counter.increment(this.sum);
   }
