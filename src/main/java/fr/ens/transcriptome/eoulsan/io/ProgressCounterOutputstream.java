@@ -22,21 +22,23 @@
 
 package fr.ens.transcriptome.eoulsan.io;
 
-import java.io.FilterOutputStream;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.hadoop.mapreduce.Counter;
 
 /**
- * This class implements a FilterOutputStream that inform Hadoop of the progress
- * of task using counters.
+ * This class implements an OutputStream that inform Hadoop of the progress of
+ * task using counters.
  * @author Laurent Jourdren
  */
-public final class ProgressCounterOutputstream extends FilterOutputStream {
+public final class ProgressCounterOutputstream extends OutputStream {
 
   private static final int MAX = 10 * 1024 * 1024;
 
+  private final OutputStream out;
   private final Counter counter;
   private int sum;
 
@@ -48,28 +50,33 @@ public final class ProgressCounterOutputstream extends FilterOutputStream {
   public final void write(final byte[] b, final int off, final int len)
       throws IOException {
 
-    super.write(b, off, len);
+    out.write(b, off, len);
     incrementCounter(len);
   }
 
   @Override
   public final void write(final byte[] b) throws IOException {
 
-    super.write(b);
+    out.write(b);
     incrementCounter(b.length);
   }
 
   @Override
   public final void write(final int b) throws IOException {
 
-    super.write(b);
+    out.write(b);
     incrementCounter(1);
+  }
+
+  @Override
+  public void flush() throws IOException {
+    out.flush();
   }
 
   @Override
   public final void close() throws IOException {
 
-    super.close();
+    out.close();
     counter.increment(this.sum);
   }
 
@@ -95,10 +102,10 @@ public final class ProgressCounterOutputstream extends FilterOutputStream {
   public ProgressCounterOutputstream(final OutputStream os,
       final Counter counter) {
 
-    super(os);
+    checkNotNull(os, "OutputStream is null");
+    checkNotNull(counter, "The counter to use is null.");
 
-    if (counter == null)
-      throw new NullPointerException("The counter to use is null.");
+    this.out = os;
     this.counter = counter;
   }
 
