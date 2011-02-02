@@ -33,11 +33,11 @@ import org.apache.hadoop.mapreduce.Counter;
  * of task using counters.
  * @author Laurent Jourdren
  */
-public class ProgressCounterOutputstream extends FilterOutputStream {
+public final class ProgressCounterOutputstream extends FilterOutputStream {
 
   private static final int MAX = 10 * 1024 * 1024;
 
-  private Counter counter;
+  private final Counter counter;
   private int sum;
 
   //
@@ -45,7 +45,7 @@ public class ProgressCounterOutputstream extends FilterOutputStream {
   //
 
   @Override
-  public void write(final byte[] b, final int off, final int len)
+  public final void write(final byte[] b, final int off, final int len)
       throws IOException {
 
     super.write(b, off, len);
@@ -53,24 +53,24 @@ public class ProgressCounterOutputstream extends FilterOutputStream {
   }
 
   @Override
-  public void write(final byte[] b) throws IOException {
+  public final void write(final byte[] b) throws IOException {
 
     super.write(b);
     incrementCounter(b.length);
   }
 
   @Override
-  public void write(final int b) throws IOException {
+  public final void write(final int b) throws IOException {
 
     super.write(b);
     incrementCounter(1);
   }
 
   @Override
-  public void close() throws IOException {
+  public final void close() throws IOException {
 
     super.close();
-    incrementCounter(0);
+    counter.increment(this.sum);
   }
 
   //
@@ -81,7 +81,7 @@ public class ProgressCounterOutputstream extends FilterOutputStream {
 
     this.sum += bytes;
 
-    if (bytes == 0 || this.sum > MAX) {
+    if (this.sum > MAX) {
       counter.increment(this.sum);
       this.sum = 0;
     }
