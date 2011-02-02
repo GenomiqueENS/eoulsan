@@ -39,6 +39,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -84,6 +85,11 @@ public class DataSourceDistCp {
 
     private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
 
+    private static final class MyIOException {
+      
+      public IOException ioexception;      
+    }
+    
     @Override
     protected void map(final LongWritable key, final Text value, Context context)
         throws IOException, InterruptedException {
@@ -116,14 +122,43 @@ public class DataSourceDistCp {
       final DataFile src = new DataFile(srcPathname);
       final DataFile dest = new DataFile(destPath.toString());
 
-      // Add a progress counter to output stream
-      final OutputStream os =
-          new ProgressCounterOutputstream(dest.create(), context.getCounter(
-              COUNTER_GROUP_NAME, "bytes written"));
+      // // Add a progress counter to output stream
+      // final OutputStream os =
+      // new ProgressCounterOutputstream(dest.create(), context.getCounter(
+      // COUNTER_GROUP_NAME, "bytes written"));
+      //
+      // // Copy the file
+      // new DataFormatConverter(src, dest, os).convert();
 
-      // Copy the file
-      new DataFormatConverter(src, dest, os).convert();
-
+      final MyIOException exp = new MyIOException();
+      
+      final Thread t = new Thread(new Runnable() {
+        
+        @Override
+        public void run() {
+          try {
+            new DataFormatConverter(src, dest).convert();
+          } catch (IOException e) {
+            exp.ioexception =e;
+          }
+        }
+      });
+      
+      t.start();
+      
+      final Counter counter =context.getCounter(COUNTER_GROUP_NAME, "5seconds");
+      
+      while (t.isAlive()) {
+        Thread.sleep(5000);
+        counter.increment(1);
+      }
+      
+      // Throw Exception if needed
+      if (exp.ioexception!=null) {
+        throw exp.ioexception;
+      }
+      
+      
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
       final FileStatus fStatusDest = destFs.getFileStatus(destPath);
