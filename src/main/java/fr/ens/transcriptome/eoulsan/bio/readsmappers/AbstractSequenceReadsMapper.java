@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class abstract implements a generic Mapper.
@@ -40,8 +40,8 @@ public abstract class AbstractSequenceReadsMapper implements
   private File readsFile1;
   private File readsFile2;
 
-  private BufferedWriter readsWriter1;
-  private BufferedWriter readsWriter2;
+  private UnSynchronizedBufferedWriter readsWriter1;
+  private UnSynchronizedBufferedWriter readsWriter2;
 
   private boolean noReadWritten = true;
   private boolean pairEnd = false;
@@ -310,8 +310,8 @@ public abstract class AbstractSequenceReadsMapper implements
       LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
       LOGGER.info("Temporary reads/2 file: " + this.readsFile1);
 
-      this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
-      this.readsWriter2 = FileUtils.createBufferedWriter(this.readsFile2);
+      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
+      this.readsWriter2 = FileUtils.createFastBufferedWriter(this.readsFile2);
 
       this.noReadWritten = false;
     }
@@ -327,7 +327,7 @@ public abstract class AbstractSequenceReadsMapper implements
           FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads1-",
               ".fq");
 
-      this.readsWriter1 = FileUtils.createBufferedWriter(this.readsFile1);
+      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
 
       LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
 
