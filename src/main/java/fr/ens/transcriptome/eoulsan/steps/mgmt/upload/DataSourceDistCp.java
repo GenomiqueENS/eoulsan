@@ -24,6 +24,7 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -53,6 +54,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
+import fr.ens.transcriptome.eoulsan.io.ProgressCounterOutputstream;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -128,8 +130,16 @@ public class DataSourceDistCp {
       final DataFile src = new DataFile(srcPathname);
       final DataFile dest = new DataFile(destPath.toString());
 
+      // Add a progress counter to output stream
+      final OutputStream os =
+          new ProgressCounterOutputstream(dest.create(), context.getCounter(
+              COUNTER_GROUP_NAME, "bytes written"));
+
       // Copy the file
-      copy(src, dest, context);
+      new DataFormatConverter(src, dest, os).convert();
+
+      // Copy the file
+      // copy(src, dest, context);
 
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
