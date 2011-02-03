@@ -36,7 +36,7 @@ import org.apache.hadoop.mapreduce.Counter;
  */
 public final class ProgressCounterOutputstream extends OutputStream {
 
-  private static final int MAX = 10 * 1024 * 1024;
+  private static final int MAX = 100 * 1024 * 1024;
 
   private final OutputStream out;
   private final Counter counter;
