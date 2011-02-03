@@ -24,7 +24,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.NumberFormat;
 import java.util.Collections;
@@ -39,6 +38,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -53,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.io.ProgressCounterOutputStream;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -78,6 +77,14 @@ public class DataSourceDistCp {
       Mapper<LongWritable, Text, Text, Text> {
 
     private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
+
+    /**
+     * Internal class to store an exception if occurs while coping.
+     * @author Laurent Jourdren
+     */
+    private static final class MyIOException {
+      public IOException ioexception;
+    }
 
     @Override
     protected void setup(final Context context) throws IOException,
@@ -124,9 +131,6 @@ public class DataSourceDistCp {
       // Copy the file
       copyFile(src, dest, context);
 
-      // Copy the file
-      // copy(src, dest, context);
-
       // Compute copy statistics
       final long duration = System.currentTimeMillis() - startTime;
       final FileStatus fStatusDest = destFs.getFileStatus(destPath);
@@ -146,32 +150,55 @@ public class DataSourceDistCp {
     }
 
     /**
-     * Copy a file.
-     * @param src source file
-     * @param dest destination file
-     * @param context Hadoop context
-     * @throws IOException if an error occurs while copying
+     * Copy the file using a Thread and inform Hadoop of the live of the copy
+     * with a counter.
+     * @param src source
+     * @param dest destination
+     * @param context context object
+     * @throws InterruptedException if another thread has interrupted the
+     *           current thread
+     * @throws IOException if an error occurs while copying data
      */
     private static final void copyFile(final DataFile src, final DataFile dest,
-        final Context context) throws IOException {
+        final Context context) throws InterruptedException, IOException {
 
-      // Add a progress counter to output stream
-      final OutputStream os =
-          new ProgressCounterOutputStream(dest.create(), context.getCounter(
-              COUNTER_GROUP_NAME, "bytes written"));
+      // Define a wrapper object to store exception if needed
+      final MyIOException exp = new MyIOException();
 
-      // Copy the file
-      new DataFormatConverter(src, dest, os).convert();
+      // Create the thread for copy
+      final Thread t = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            new DataFormatConverter(src, dest).convert();
+          } catch (IOException e) {
+            exp.ioexception = e;
+          }
+        }
+      });
+
+      // Start thread
+      t.start();
+
+      // Create counter
+      final Counter counter =
+          context.getCounter(COUNTER_GROUP_NAME, "5_seconds");
+
+      // Sleep and increment counter until the end of copy
+      while (t.isAlive()) {
+        Thread.sleep(5000);
+        counter.increment(1);
+      }
+
+      // Throw Exception if needed
+      if (exp.ioexception != null) {
+        throw exp.ioexception;
+      }
     }
 
   }
 
-  /**
-   * Copy files.
-   * @param entries a map with source DataFile as keys and destination DataFile
-   *          as values
-   * @throws IOException if an error occurs while copying
-   */
   public void copy(final Map<DataFile, DataFile> entries) throws IOException {
 
     if (entries == null || entries.size() == 0)
