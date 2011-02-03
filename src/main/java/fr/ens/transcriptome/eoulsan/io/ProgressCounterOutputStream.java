@@ -34,7 +34,7 @@ import org.apache.hadoop.mapreduce.Counter;
  * task using counters.
  * @author Laurent Jourdren
  */
-public final class ProgressCounterOutputstream extends OutputStream {
+public final class ProgressCounterOutputStream extends OutputStream {
 
   private static final int MAX = 100 * 1024 * 1024;
 
@@ -100,7 +100,7 @@ public final class ProgressCounterOutputstream extends OutputStream {
   // Constructor
   //
 
-  public ProgressCounterOutputstream(final OutputStream os,
+  public ProgressCounterOutputStream(final OutputStream os,
       final Counter counter) {
 
     checkNotNull(os, "OutputStream is null");
