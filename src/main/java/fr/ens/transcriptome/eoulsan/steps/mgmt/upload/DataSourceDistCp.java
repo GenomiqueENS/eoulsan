@@ -68,6 +68,8 @@ public class DataSourceDistCp {
   private final Configuration conf;
   private final Path jobPath;
 
+  private static final long MAX_COPY_DURATION = 60 * 60 * 1000;
+
   /**
    * This inner class define the mapper class for DataSourceDistCp map-reduce
    * job.
@@ -185,10 +187,20 @@ public class DataSourceDistCp {
       final Counter counter =
           context.getCounter(COUNTER_GROUP_NAME, "5_seconds");
 
+      final long startTime = System.currentTimeMillis();
+
       // Sleep and increment counter until the end of copy
       while (t.isAlive()) {
         Thread.sleep(5000);
         counter.increment(1);
+
+        final long duration = System.currentTimeMillis() - startTime;
+
+        if (duration > MAX_COPY_DURATION) {
+          throw new IOException("Copy timeout, copy exceed "
+              + (MAX_COPY_DURATION / 1000) + " seconds.");
+        }
+
       }
 
       // Throw Exception if needed
