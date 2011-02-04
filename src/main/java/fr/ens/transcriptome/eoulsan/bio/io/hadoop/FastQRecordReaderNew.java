@@ -23,6 +23,8 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
@@ -32,61 +34,110 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DataOutputBuffer;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+
 public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
 
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  
   private long end;
   private boolean stillInChunk = true;
 
   private LongWritable key = new LongWritable();
   private Text value = new Text();
 
-  private FSDataInputStream fsin;
+  private InputStream fsin;
   private DataOutputBuffer buffer = new DataOutputBuffer();
 
   private byte[] endTag = "\n@".getBytes();
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 
+  // TODO
+  private boolean startPos = true;
+  
+
+  private long pos;
+  
   public void initialize(InputSplit inputSplit,
       TaskAttemptContext taskAttemptContext) throws IOException,
       InterruptedException {
 
+    
     FileSplit split = (FileSplit) inputSplit;
     Configuration conf = taskAttemptContext.getConfiguration();
     Path path = split.getPath();
     FileSystem fs = path.getFileSystem(conf);
 
-    fsin = fs.open(path);
-    long start = split.getStart();
-    end = split.getStart() + split.getLength();
-    fsin.seek(start);
+    final CompressionCodecFactory compressionCodecs =
+        new CompressionCodecFactory(conf);
+    final CompressionCodec codec = compressionCodecs.getCodec(path);
 
-    if (start != 0) {
-      readUntilMatch(endTag, false);
+    // open the file and seek to the start of the split
+    FSDataInputStream fileIn = fs.open(split.getPath());
+    
+    long start = split.getStart();
+    
+    if (codec != null) {
+      this.fsin = codec.createInputStream(fileIn);
+      end = Long.MAX_VALUE;
+      
+      LOGGER.info("Compressed mode. " + this.fsin.getClass().getName());
+    } 
+    else {
+      
+      LOGGER.info("Non Compressed mode. " + this.fsin.getClass().getName());
+      if (start != 0) {
+//        skipFirstLine = true;
+//        --start;
+//        fileIn.seek(start);
+        end = split.getStart() + split.getLength();
+        fileIn.seek(start);
+        this.pos=start;
+        readUntilMatch(endTag, false);
+        startPos=false;
+      }
+      fsin = fileIn;;
     }
+
+    
+
+//    fsin = fs.open(path);
+//    long start = split.getStart();
+//    end = split.getStart() + split.getLength();
+//    fsin.seek(start);
+
+//    if (start != 0) {
+//      readUntilMatch(endTag, false);
+//    }
   }
 
   public boolean nextKeyValue() throws IOException {
     if (!stillInChunk)
       return false;
 
-    final long startPos = fsin.getPos();
+    //final long startPos = fsin.getPos();
 
-    // if (true)
-    // throw new IOException("startPos=" + startPos);
+
 
     boolean status = readUntilMatch(endTag, true);
 
     final String data;
 
     // If start of the file, ignore first '@'
-    if (startPos == 0)
+    if (startPos) {
       data = new String(buffer.getData(), 1, buffer.getLength());
+      startPos=false;
+    }
     else
       data = new String(buffer.getData(), 0, buffer.getLength());
 
@@ -124,7 +175,7 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
     // value.set(buffer.getData(), 0, buffer.getLength());
     sb.setLength(0);
 
-    key = new LongWritable(fsin.getPos());
+    key = new LongWritable(pos);
     buffer.reset();
 
     if (!status) {
@@ -150,19 +201,21 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
     fsin.close();
   }
 
-  private boolean readUntilMatch(byte[] match, boolean withinBlock)
+  private boolean readUntilMatch( byte[] match, boolean withinBlock)
       throws IOException {
     int i = 0;
+    
     while (true) {
       int b = fsin.read();
       if (b == -1)
         return false;
+      pos++;
       if (withinBlock)
         buffer.write(b);
       if (b == match[i]) {
         i++;
         if (i >= match.length) {
-          return fsin.getPos() < end;
+          return pos < end;
         }
       } else
         i = 0;
