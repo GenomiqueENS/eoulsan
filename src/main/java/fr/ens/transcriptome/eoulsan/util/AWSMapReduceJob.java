@@ -26,6 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.logging.Logger;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.model.InstanceType;
@@ -49,6 +50,8 @@ public class AWSMapReduceJob {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  private static final int MAX_FAIL_COUNT = 5;
 
   /** Version of hadoop to use with AWS MapReduce. */
   private String hadoopVersion = "0.20";
@@ -372,6 +375,7 @@ public class AWSMapReduceJob {
 
     String state = null;
     String lastState = null;
+    int failCount = 0;
 
     try {
 
@@ -379,16 +383,27 @@ public class AWSMapReduceJob {
 
         Thread.sleep(secondBetweenChecking * 1000);
 
-        final DescribeJobFlowsResult jobFlowsResult =
-            this.mapReduceClient.describeJobFlows(describeJobFlowsRequest);
+        try {
+          final DescribeJobFlowsResult jobFlowsResult =
+              this.mapReduceClient.describeJobFlows(describeJobFlowsRequest);
+          final JobFlowDetail detail = jobFlowsResult.getJobFlows().get(0);
+          final JobFlowExecutionStatusDetail executionStatusDetail =
+              detail.getExecutionStatusDetail();
+          failCount = 0;
 
-        final JobFlowDetail detail = jobFlowsResult.getJobFlows().get(0);
-        final JobFlowExecutionStatusDetail executionStatusDetail =
-            detail.getExecutionStatusDetail();
+          state = executionStatusDetail.getState();
+        } catch (AmazonClientException ace) {
 
-        state = executionStatusDetail.getState();
+          failCount++;
+          LOGGER.warning("Amazon client exception: " + ace.getMessage());
 
-        if (lastState==null || !lastState.equals(state)) {
+          if (failCount >= MAX_FAIL_COUNT) {
+            throw ace;
+          }
+
+        }
+
+        if (lastState == null || !lastState.equals(state)) {
 
           LOGGER.info("State of the job "
               + this.runFlowResult.getJobFlowId() + ": " + state);
