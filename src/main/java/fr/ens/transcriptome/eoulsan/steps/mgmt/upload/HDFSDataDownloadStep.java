@@ -33,6 +33,7 @@ import org.apache.hadoop.fs.Path;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -49,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 @HadoopOnly
@@ -155,12 +157,35 @@ public class HDFSDataDownloadStep extends AbstractStep {
         } else {
 
           // Use distributed copy if output is not on local FileSystem
+          final Map<DataFile, DataFile> filesToTranscode = Maps.newHashMap();
+          final Map<DataFile, DataFile> filesToDistCp = Maps.newHashMap();
+
+          // Test if temporary file is needed
+          for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+
+            final DataFile src = e.getKey();
+            final DataFile dest = e.getValue();
+
+            if (src.getName().equals(dest.getName())) {
+              filesToDistCp.put(src, dest);
+            } else {
+              final DataFile tmp =
+                  new DataFile(src.getParent(), dest.getName());
+              filesToTranscode.put(src, tmp);
+              filesToDistCp.put(tmp, dest);
+            }
+          }
+
+          // Create temporary files
           final Path jobPath =
               PathUtils.createTempPath(new Path(context.getBasePathname()),
                   "distcp-", "", this.conf);
 
-          DataSourceDistCp distCp = new DataSourceDistCp(this.conf, jobPath);
-          distCp.copy(files);
+          DataSourceDistCp dsdcp = new DataSourceDistCp(this.conf, jobPath);
+          dsdcp.copy(filesToTranscode);
+
+          // Copy files to destination
+          hadoopDistCp(conf, filesToDistCp);
         }
       }
 
@@ -207,9 +232,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     final DataFile outFile =
-        new DataFile(new Path(new Path(context.getOutputPathname()), inFile
-            .getName()
-            + CompressionType.BZIP2.getExtension()).toString());
+        new DataFile(new Path(new Path(context.getOutputPathname()),
+            inFile.getName() + CompressionType.BZIP2.getExtension()).toString());
 
     files.put(inFile, outFile);
   }
@@ -224,8 +248,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     final List<DataFormat> result = Lists.newArrayList();
 
     final String list =
-        context.getRuntime().getSettings().getSetting(
-            DATAFORMATS_TO_DOWNLOAD_SETTING);
+        context.getRuntime().getSettings()
+            .getSetting(DATAFORMATS_TO_DOWNLOAD_SETTING);
 
     if (list == null) {
       return result;
@@ -248,6 +272,55 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     return result;
+  }
+
+  /**
+   * Copy files using hadoop DistCp.
+   * @param conf Hadoop configuration
+   * @param files files to copy
+   */
+  private void hadoopDistCp(final Configuration conf,
+      final Map<DataFile, DataFile> files) {
+
+    final DistCp distcp = new DistCp(conf);
+    final Map<DataFile, Set<DataFile>> toCopy = Maps.newHashMap();
+
+    // Create a map of file to copy with destination directory as key
+    for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+
+      final DataFile destDir = e.getValue().getParent();
+
+      final Set<DataFile> inputFiles;
+
+      if (toCopy.containsKey(destDir)) {
+        inputFiles = toCopy.get(destDir);
+      } else {
+        inputFiles = Sets.newHashSet();
+        toCopy.put(destDir, inputFiles);
+      }
+
+      inputFiles.add(e.getKey());
+    }
+
+    // For each desitination run distcp
+    for (Map.Entry<DataFile, Set<DataFile>> e : toCopy.entrySet()) {
+
+      final List<String> argsList = Lists.newArrayList();
+
+      // Add input files
+      for (DataFile f : e.getValue())
+        argsList.add(f.toString());
+
+      // Add destination
+      argsList.add(e.getKey().toString());
+
+      // Convert arguments in a n array
+      final String[] args = argsList.toArray(new String[0]);
+
+      // Run distcp
+      distcp.run(args);
+    }
+
   }
 
 }
