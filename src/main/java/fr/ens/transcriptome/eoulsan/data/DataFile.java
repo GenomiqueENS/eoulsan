@@ -72,6 +72,18 @@ public class DataFile {
   }
 
   /**
+   * Get the parent of this DataFile.
+   * @return the parent DataFile
+   */
+  public DataFile getParent() {
+
+    final int parentSrcLen = this.src.length() - this.name.length() - 1;
+
+    return new DataFile(this.src.substring(0, parentSrcLen < 0
+        ? 0 : parentSrcLen));
+  }
+
+  /**
    * Get the protocol of this DataFile.
    * @return a DataProtocol
    */
@@ -114,8 +126,8 @@ public class DataFile {
   public boolean isDefaultProtocol() {
 
     try {
-      return DataProtocolService.getInstance().getDefaultProtocol().equals(
-          getProtocol());
+      return DataProtocolService.getInstance().getDefaultProtocol()
+          .equals(getProtocol());
     } catch (IOException e) {
       return false;
     }

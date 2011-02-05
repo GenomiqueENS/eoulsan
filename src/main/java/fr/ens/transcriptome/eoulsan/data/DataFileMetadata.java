@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.data;
 
-
 /**
  * This class define source metadata
  * @author Laurent Jourdren
@@ -36,6 +35,12 @@ public interface DataFileMetadata {
    * @return the last modified date in seconds since epoch of -1 if unavailable
    */
   long getLastModified();
+
+  /**
+   * Get if the file is a directory.
+   * @return true if the file is a directory
+   */
+  boolean isDir();
 
   /**
    * Get the DataFormat of the file.
