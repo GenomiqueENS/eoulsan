@@ -113,6 +113,9 @@ public class HDFSDataDownloadStep extends AbstractStep {
     if (context.getOutputPathname() == null)
       throw new NullPointerException("The output path is null");
 
+    // Set the output directory
+    final DataFile outputDir = new DataFile(context.getOutputPathname());
+
     try {
 
       final Path inPath = new Path(context.getBasePathname());
@@ -131,12 +134,12 @@ public class HDFSDataDownloadStep extends AbstractStep {
         // If no DataFormat set, add all generated data
         if (formats.size() > 0) {
           for (DataFormat df : formats) {
-            addFile(context, df, sample, files);
+            addFile(context, df, sample, outputDir, files);
           }
         } else {
           for (DataFormat df : context.getWorkflow().getGlobalOutputDataFormat(
               sample)) {
-            addFile(context, df, sample, files);
+            addFile(context, df, sample, outputDir, files);
           }
         }
       }
@@ -144,7 +147,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       // If no file to copy, do nothing
       if (files.size() > 0) {
 
-        if (new DataFile(context.getOutputPathname()).isDefaultProtocol()) {
+        if (outputDir.isDefaultProtocol()) {
 
           // Local FileSystem output
           for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
@@ -216,10 +219,12 @@ public class HDFSDataDownloadStep extends AbstractStep {
    * @param context current context
    * @param df DataFormat of the file to download
    * @param sample current sample
+   * @param outputDir output directory
    * @param files map of the files to download
    */
   private void addFile(final Context context, final DataFormat df,
-      final Sample sample, final Map<DataFile, DataFile> files) {
+      final Sample sample, final DataFile outputDir,
+      final Map<DataFile, DataFile> files) {
 
     if (context == null || df == null || sample == null) {
       return;
@@ -232,8 +237,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     final DataFile outFile =
-        new DataFile(new Path(new Path(context.getOutputPathname()),
-            inFile.getName() + CompressionType.BZIP2.getExtension()).toString());
+        new DataFile(outputDir, inFile.getName()
+            + CompressionType.BZIP2.getExtension());
 
     files.put(inFile, outFile);
   }
@@ -248,8 +253,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     final List<DataFormat> result = Lists.newArrayList();
 
     final String list =
-        context.getRuntime().getSettings()
-            .getSetting(DATAFORMATS_TO_DOWNLOAD_SETTING);
+        context.getRuntime().getSettings().getSetting(
+            DATAFORMATS_TO_DOWNLOAD_SETTING);
 
     if (list == null) {
       return result;
@@ -278,9 +283,10 @@ public class HDFSDataDownloadStep extends AbstractStep {
    * Copy files using hadoop DistCp.
    * @param conf Hadoop configuration
    * @param files files to copy
+   * @throws EoulsanException if an error occurs while copying
    */
   private void hadoopDistCp(final Configuration conf,
-      final Map<DataFile, DataFile> files) {
+      final Map<DataFile, DataFile> files) throws EoulsanException {
 
     final DistCp distcp = new DistCp(conf);
     final Map<DataFile, Set<DataFile>> toCopy = Maps.newHashMap();
@@ -318,7 +324,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       final String[] args = argsList.toArray(new String[0]);
 
       // Run distcp
-      distcp.run(args);
+      distcp.runWithException(args);
     }
 
   }
