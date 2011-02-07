@@ -3,8 +3,7 @@ package fr.ens.transcriptome.eoulsan.data.protocols;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
-
-class SimpleDataFileMetadata implements DataFileMetadata{
+class SimpleDataFileMetadata implements DataFileMetadata {
 
   private long contentLength = -1;
   private String contentType;
@@ -12,12 +11,12 @@ class SimpleDataFileMetadata implements DataFileMetadata{
   private String contentMD5;
   private long lastModified = -1;
   private DataFormat dataFormat;
+  private boolean directory;
 
   //
   // Getters
   //
 
-  
   @Override
   public long getContentLength() {
 
@@ -47,11 +46,17 @@ class SimpleDataFileMetadata implements DataFileMetadata{
 
     return this.lastModified;
   }
-  
+
   @Override
   public DataFormat getDataFormat() {
 
     return this.dataFormat;
+  }
+
+  @Override
+  public boolean isDir() {
+
+    return this.directory;
   }
 
   //
@@ -84,27 +89,32 @@ class SimpleDataFileMetadata implements DataFileMetadata{
   }
 
   public void setDataFormat(final DataFormat dataFormat) {
-    
+
     this.dataFormat = dataFormat;
   }
-  
+
+  public void setDirectory(final boolean directory) {
+
+    this.directory = directory;
+  }
+
   //
   // Constructors
   //
-  
+
   public SimpleDataFileMetadata() {
   }
-  
+
   public SimpleDataFileMetadata(final DataFileMetadata md) {
-    
-    if (md==null)
+
+    if (md == null)
       return;
-    
+
     setContentLength(md.getContentLength());
     setContentType(md.getContentType());
     setContentEncoding(md.getContentEncoding());
     setContentMD5(md.getContentMD5());
     setLastModified(md.getLastModified());
   }
-  
+
 }
