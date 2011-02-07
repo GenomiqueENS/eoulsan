@@ -60,7 +60,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class allow to copy and transform data in a distributed manner.
  * @author Laurent Jourdren
  */
-public class DataSourceDistCp {
+public class DataFileDistCp {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -272,7 +272,7 @@ public class DataSourceDistCp {
     PathUtils.fullyDelete(tmpOutputDir, conf);
 
     if (!job.isSuccessful())
-      throw new IOException("Unable to copy files using DataSourceDistCp.");
+      throw new IOException("Unable to copy files using DataFileDistCp.");
   }
 
   /**
@@ -317,10 +317,10 @@ public class DataSourceDistCp {
     jobConf.set("mapred.task.timeout", "" + MAX_COPY_DURATION);
 
     // Create the job and its name
-    final Job job = new Job(jobConf, "Distcp");
+    final Job job = new Job(jobConf, "DataFileDistcp");
 
     // Set the jar
-    job.setJarByClass(DataSourceDistCp.class);
+    job.setJarByClass(DataFileDistCp.class);
 
     // Add input path
     FileInputFormat.addInputPath(job, cpEntriesPath);
@@ -358,7 +358,7 @@ public class DataSourceDistCp {
    * @param conf Configuration object
    * @param jobPath the path where create job temporary file
    */
-  public DataSourceDistCp(final Configuration conf, final Path jobPath) {
+  public DataFileDistCp(final Configuration conf, final Path jobPath) {
 
     if (conf == null)
       throw new NullPointerException("The configuration is null");
