@@ -90,6 +90,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     if (ct != null)
       result.setContentEncoding(ct.getContentEncoding());
+    
+    if (f.isDirectory())
+      result.setDirectory(true);
 
     return result;
   }
