@@ -67,6 +67,8 @@ import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+
 /**
  * A Map-reduce program to recursively copy directories between different
  * file-systems.
@@ -893,6 +895,37 @@ public class DistCp implements Tool {
           + "consider running with -i");
       System.err.println("Copy failed: " + StringUtils.stringifyException(e));
       return -999;
+    }
+  }
+
+  /**
+   * This is the main driver for recursively copying directories across file
+   * systems. It takes at least two cmdline parameters. A source URL and a
+   * destination URL. It then essentially does an "ls -lR" on the source URL,
+   * and writes the output in a round-robin manner to all the map input files.
+   * The mapper actually copies the files allotted to it. The reduce is empty.
+   * @throws EoulsanException if an error occurs
+   */
+  public void runWithException(String[] args) throws EoulsanException {
+    try {
+      copy(conf, Arguments.valueOf(args, conf));
+
+    } catch (IllegalArgumentException e) {
+      throw new EoulsanException(StringUtils.stringifyException(e)
+          + "\n" + usage);
+    } catch (DuplicationException e) {
+      throw new EoulsanException(StringUtils.stringifyException(e));
+    } catch (RemoteException e) {
+      final IOException unwrapped =
+          e.unwrapRemoteException(FileNotFoundException.class,
+              AccessControlException.class, QuotaExceededException.class);
+      throw new EoulsanException(StringUtils.stringifyException(unwrapped));
+
+    } catch (Exception e) {
+
+      throw new EoulsanException("Copy failed: "
+          + StringUtils.stringifyException(e));
+
     }
   }
 
