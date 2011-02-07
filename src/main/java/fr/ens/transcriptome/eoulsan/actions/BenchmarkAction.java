@@ -55,9 +55,10 @@ public class BenchmarkAction extends AbstractAction {
   private static final String BASE_DIR = "s3n://sgdb-test/benchmarks/";
 
   private enum instancesEnum {
-    MEM_INSTANCE(InstanceType.M1Xlarge.toString()), CPU_INSTANCE(
-        InstanceType.C1Xlarge.toString()), MEDIUM_INSTANCE(InstanceType.M1Large
-        .toString());
+    MEM_INSTANCE(InstanceType.M1Xlarge.toString());
+    // , CPU_INSTANCE(
+    // InstanceType.C1Xlarge.toString()), MEDIUM_INSTANCE(InstanceType.M1Large
+    // .toString());
 
     final String name;
 
@@ -72,7 +73,7 @@ public class BenchmarkAction extends AbstractAction {
   }
 
   private static final int COUNTDOWN_START = 30;
-  private static final int SECONDS_WAIT_BETWEEN_CHECKS = 30;
+  private static final int SECONDS_WAIT_BETWEEN_CHECKS = 60;
 
   @Override
   public String getName() {
@@ -98,31 +99,38 @@ public class BenchmarkAction extends AbstractAction {
 
       // final String instanceType = instancesEnum.MEM_INSTANCE.toString();
       // final int instanceCount = 3;
-
-      // final String genome = "candida";
+      //
+      // // final String genome = "candida";
+      // final String genome = "mouse";
       // final String dir = BASE_DIR + genome + "/";
-      // final String designFile = dir + "design-two.txt";
-      // final String mapper = "soap";
+      // // final String designFile = dir + "design-one.txt";
+      // final String designFile = dir + "design-4.txt";
+      // final String mapper = "bwa";
       // final String paramFile =
       // dir + "param-" + genome + "-aws-" + mapper + ".xml";
-      // final String desc = genome + " data with " + mapper;
-
+      // final String desc =
+      // genome + " data with " + mapper + " (validation test)";
+      //
       // exec(settings, instanceType, instanceCount, paramFile, designFile,
       // desc);
 
       // Test sur la souris en 1er, 3 mappers, 3 instances
 
       final String[] genomes = {"mouse"};
-      final String[] mappers = {"soap", "bwa", "bowtie"};
-      final int instanceCount = 9;
+      //final String[] mappers = {"bwa", "bowtie", "soap"};
+      final String[] mappers = {"bowtie", "soap"};
+      final int instanceCount = 10;
 
+      // loop for genome
       for (String genome : genomes) {
 
         final String dir = BASE_DIR + genome + "/";
         final String designFile = dir + "design.txt";
 
+        // loop for instances
         for (instancesEnum instance : instancesEnum.values()) {
 
+          // loop for mappers
           for (String mapper : mappers) {
 
             final String paramFile =
@@ -130,11 +138,11 @@ public class BenchmarkAction extends AbstractAction {
             final String desc =
                 genome + " data with " + mapper + " on " + instance.toString();
 
-            System.out.println(paramFile);
-            System.out.println(desc);
+            // System.out.println(paramFile);
+            // System.out.println(desc);
 
-            // exec(settings, instance.toString(), instanceCount, paramFile,
-            // designFile, desc);
+            exec(settings, instance.toString(), instanceCount, paramFile,
+                designFile, desc);
           }
 
         }

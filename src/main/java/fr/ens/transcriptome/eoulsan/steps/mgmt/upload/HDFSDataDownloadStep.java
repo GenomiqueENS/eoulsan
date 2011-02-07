@@ -184,7 +184,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
               PathUtils.createTempPath(new Path(context.getBasePathname()),
                   "distcp-", "", this.conf);
 
-          DataSourceDistCp dsdcp = new DataSourceDistCp(this.conf, jobPath);
+          DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);
 
           // Copy files to destination

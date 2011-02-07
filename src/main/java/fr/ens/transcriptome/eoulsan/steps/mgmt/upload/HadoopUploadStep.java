@@ -119,7 +119,7 @@ public class HadoopUploadStep extends UploadStep {
           PathUtils.createTempPath(new Path(getDest().getSource()), "distcp-",
               "", this.conf);
 
-      DataSourceDistCp distCp = new DataSourceDistCp(this.conf, jobPath);
+      DataFileDistCp distCp = new DataFileDistCp(this.conf, jobPath);
       distCp.copy(files);
     }
   }

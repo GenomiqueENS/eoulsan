@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.io.ProgressCounterOutputStream;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.DistDataFileCopy;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DataSourceDistCp;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DataFileDistCp;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DistCpBenchmark extends AbstractAction {
@@ -166,7 +166,7 @@ public class DistCpBenchmark extends AbstractAction {
 
     final Path jobPath = new Path("hdfs://skadi.ens.fr/user/jourdren/toto");
 
-    final DataSourceDistCp dscp = new DataSourceDistCp(conf, jobPath);
+    final DataFileDistCp dscp = new DataFileDistCp(conf, jobPath);
 
     final Map<DataFile, DataFile> entries = Maps.newHashMap();
     entries.put(src, dest);
