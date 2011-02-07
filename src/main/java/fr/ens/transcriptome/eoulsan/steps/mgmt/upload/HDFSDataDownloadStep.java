@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import com.google.common.collect.Lists;
@@ -184,8 +185,14 @@ public class HDFSDataDownloadStep extends AbstractStep {
               PathUtils.createTempPath(new Path(context.getBasePathname()),
                   "distcp-", "", this.conf);
 
-          DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
+          final DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);
+
+          // Remove job path directory
+          final FileSystem fs = jobPath.getFileSystem(conf);
+          if (!fs.delete(jobPath, true)) {
+            LOGGER.warning("Cannot remove DataFileDistCp job path: " + jobPath);
+          }
 
           // Copy files to destination
           hadoopDistCp(conf, filesToDistCp);
