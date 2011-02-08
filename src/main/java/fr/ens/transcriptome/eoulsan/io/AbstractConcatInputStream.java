@@ -32,7 +32,7 @@ public abstract class AbstractConcatInputStream extends InputStream {
   @Override
   public int read() throws IOException {
 
-    if (is == null) {
+    if (this.is == null) {
 
       if (!hasNextInputStream()) {
         return -1;
@@ -60,7 +60,8 @@ public abstract class AbstractConcatInputStream extends InputStream {
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
 
-    if (is == null) {
+    // No input stream
+    if (this.is == null) {
 
       if (!hasNextInputStream()) {
         return -1;
@@ -71,6 +72,19 @@ public abstract class AbstractConcatInputStream extends InputStream {
 
     final int l = this.is.read(b, off, len);
 
+    // Nothing to read
+    if (l == -1) {
+
+      if (!hasNextInputStream()) {
+        return -1;
+      }
+
+      this.is = nextInputStream();
+
+      return read(b, off, len);
+    }
+
+    // read the start of the next stream if needed
     if (l < len) {
 
       for (int i = l; i < len; i++) {
@@ -86,6 +100,7 @@ public abstract class AbstractConcatInputStream extends InputStream {
       return len;
     }
 
+    // return the number of byte read
     return l;
   }
 
