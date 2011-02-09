@@ -88,7 +88,7 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
       final Reporter samFilterReporter;
 
       // Read soapmapreads.log
-      final Path mappingLogPath = new Path(logDirPath, "samfilter.log");
+      final Path mappingLogPath = new Path(logDirPath, "filtersam.log");
 
       if (!PathUtils.exists(mappingLogPath, conf)) {
 
@@ -101,7 +101,7 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
 
       } else {
 
-        final Path samFilterLogPath = new Path(logDirPath, "samfilter.log");
+        final Path samFilterLogPath = new Path(logDirPath, "filtersam.log");
         // if (!PathUtils.exists(mapReadsLogPath, conf))
         // mapReadsLogPath = new Path(logDirPath, "filterandmapreads.log");
 
