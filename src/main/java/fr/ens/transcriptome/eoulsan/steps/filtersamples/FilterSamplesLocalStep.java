@@ -69,7 +69,7 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
       final Reporter filterReadsReporter = logReader.read();
 
       // Read soapmapreads.log
-      logReader = new LogReader(new File(logDir, "samfilter.log"));
+      logReader = new LogReader(new File(logDir, "filtersam.log"));
       final Reporter soapMapReadsReporter = logReader.read();
 
       // Get the input reads for each sample
