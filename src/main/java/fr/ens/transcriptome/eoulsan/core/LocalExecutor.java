@@ -68,7 +68,7 @@ public class LocalExecutor extends Executor {
   @Override
   protected void writeStepLogs(final StepResult result) {
 
-    if (result == null)
+    if (result == null || result.getStep().getLogName() == null)
       return;
 
     try {
@@ -85,8 +85,8 @@ public class LocalExecutor extends Executor {
       final String logFilename = result.getStep().getLogName();
 
       final Writer writer =
-          FileUtils
-              .createFastBufferedWriter(new File(logDir, logFilename + ".log"));
+          FileUtils.createFastBufferedWriter(new File(logDir, logFilename
+              + ".log"));
 
       if (result.getLogMessage() != null)
         writer.write(result.getLogMessage());
