@@ -22,9 +22,16 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -88,21 +95,72 @@ public class StepResult {
     return errorMessage;
   }
 
-  private static String createLogMessage(final Context context, long startTime,
-      final String logMsg) {
+  /**
+   * Create the log message.
+   * @param context Context for the step
+   * @param startTime start time of the step
+   * @param logMsg custom message for the log setp
+   * @return the log message
+   */
+  private static final String createLogMessage(final Context context,
+      long startTime, final String logMsg) {
 
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
     final Step step = context.getCurrentStep();
 
     return "Job Id: "
-        + context.getJobId() + " [" + context.getJobUUID()
-        + "]\nJob description: " + context.getJobDescription()
-        + "\nJob environment: " + context.getJobEnvironment() + "\nStep: "
-        + step.getName() + " [" + step.getClass().getCanonicalName()
-        + "]\nStart time: " + new Date(startTime) + "\nEnd time: "
-        + new Date(endTime) + "\nDuration: "
+        + context.getJobId()
+        + " ["
+        + context.getJobUUID()
+        + "]\nJob description: "
+        + context.getJobDescription()
+        + "\nJob environment: "
+        + context.getJobEnvironment()
+        + "\nStep: "
+        + step.getName()
+        + " ["
+        + step.getClass().getCanonicalName()
+        + "]\nParameters:\n"
+        + parametersToString(context.getWorkflow().getStepParameters(
+            step.getName())) + "Start time: " + new Date(startTime)
+        + "\nEnd time: " + new Date(endTime) + "\nDuration: "
         + StringUtils.toTimeHumanReadable(duration) + "\n" + logMsg;
+  }
+
+  /**
+   * Return a string with a sorted list of parameters.
+   * @param parameters set of parameter
+   * @return a string with a sorted list of parameters
+   */
+  private static final String parametersToString(final Set<Parameter> parameters) {
+
+    if (parameters == null) {
+      return "\tno parameters.\n";
+    }
+
+    final List<Parameter> parametersList = Lists.newArrayList(parameters);
+    Collections.sort(parametersList, new Comparator<Parameter>() {
+
+      @Override
+      public int compare(final Parameter p1, final Parameter p2) {
+
+        return p1.getName().compareTo(p2.getName());
+      }
+    });
+
+    final StringBuilder sb = new StringBuilder();
+
+    for (Parameter p : parametersList) {
+
+      sb.append('\t');
+      sb.append(p.getName());
+      sb.append(": ");
+      sb.append(p.getStringValue());
+      sb.append("\n");
+    }
+
+    return sb.toString();
   }
 
   //
