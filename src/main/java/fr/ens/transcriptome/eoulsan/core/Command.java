@@ -169,9 +169,9 @@ public class Command {
   }
 
   /**
-   * Get the parameter of a step
+   * Get the parameters of a step
    * @param stepName the name of the step
-   * @return a set of the parameter of the step
+   * @return a set of the parameters of the step
    */
   public Set<Parameter> getStepParameters(final String stepName) {
 
