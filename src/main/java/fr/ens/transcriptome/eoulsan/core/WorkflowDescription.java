@@ -7,6 +7,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
+/**
+ * This interface define methods the Worflow object that can be used from a Step
+ * object.
+ * @author Laurent Jourdren
+ */
 public interface WorkflowDescription {
 
   /**
@@ -28,5 +33,12 @@ public interface WorkflowDescription {
    * @return a set with all output DataFormat of the workflow
    */
   Set<DataFormat> getGlobalOutputDataFormat(Sample sample);
+
+  /**
+   * Get the parameters of a step
+   * @param stepName the name of the step
+   * @return a set of the parameters of the step
+   */
+  Set<Parameter> getStepParameters(String stepName);
 
 }

@@ -527,6 +527,13 @@ class Workflow implements WorkflowDescription {
     return result;
   }
 
+  @Override
+  public final Set<Parameter> getStepParameters(final String stepName) {
+
+    return Collections
+        .unmodifiableSet(this.command.getStepParameters(stepName));
+  }
+
   //
   // Constructor
   //
