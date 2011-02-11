@@ -185,18 +185,20 @@ public abstract class Executor {
     // Execute steps
     for (Step step : workflow.getSteps()) {
 
+      final String stepName = step.getName();
+
       context.setStep(step);
-      logStartStep(step.getName());
+      logStartStep(stepName);
 
       // execute step
       final StepResult result = step.execute(design, context);
 
-      logEndStep(step.getName());
+      logEndStep(stepName);
       context.setStep(null);
 
       if (result == null) {
-        LOGGER.severe("No result for step: " + step.getName());
-        throw new EoulsanException("No result for step: " + step.getName());
+        LOGGER.severe("No result for step: " + stepName);
+        throw new EoulsanException("No result for step: " + stepName);
       }
 
       // Write step logs
