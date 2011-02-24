@@ -73,7 +73,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Configuration conf;
 
@@ -98,10 +98,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         new Path(context.getDataFilename(
             DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample));
 
-    logger.fine("sample: " + sample);
-    logger.fine("inputPath.getName(): " + inputPath.getName());
-    logger.fine("sample.getMetadata(): " + sample.getMetadata());
-    logger.fine("sample.getMetadata().getAnnotation(): "
+    LOGGER.fine("sample: " + sample);
+    LOGGER.fine("inputPath.getName(): " + inputPath.getName());
+    LOGGER.fine("sample.getMetadata(): " + sample.getMetadata());
+    LOGGER.fine("sample.getMetadata().getAnnotation(): "
         + sample.getMetadata().getAnnotation());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
@@ -110,12 +110,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
-        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
+        DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
         new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
-    logger.info("exonsIndexPath: " + exonsIndexPath);
+    LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
       createExonsIndex(new Path(context.getBasePathname(), sample.getMetadata()
@@ -157,11 +157,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(context
-            .getDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
-            .getSourceWithoutExtension()
-            + ".tmp"));
+    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
+        DataFormats.EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
+        + ".tmp"));
 
     return job;
   }
@@ -191,7 +189,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
     if (!exonIndexFile.delete())
-      logger.warning("Can not delete exon index file: "
+      LOGGER.warning("Can not delete exon index file: "
           + exonIndexFile.getAbsolutePath());
 
     return exonsIndexPath;
@@ -226,9 +224,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
-      fetc.loadPreResults(
-          new DataFile(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
-              .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
+      fetc.loadPreResults(new DataFile(context.getDataFile(
+          EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
+          + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));
     }
@@ -259,7 +257,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     try {
       final long startTime = System.currentTimeMillis();
 
-      logger.info("Genomic type: " + getGenomicType());
+      LOGGER.info("Genomic type: " + getGenomicType());
 
       for (Sample s : design.getSamples()) {
 
@@ -269,16 +267,21 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         jobsRunning.put(s, jconf);
       }
 
+      // Compute map-reduce part of the expression computation
       final JobsResults jobsResults =
           new NewAPIJobsResults(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      // final JobsResults jobsResults =
-      // new OldAPIJobsResults(jobsRunning.values(),
-      // CommonHadoop.CHECK_COMPLETION_TIME,
-      // ExpressionMapper.COUNTER_GROUP);
+      final long mapReduceEndTime = System.currentTimeMillis();
+      LOGGER.info("Finish the part of the expression computation in "
+          + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
+      // Create the final expression files
       createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
+
+      LOGGER.info("Finish the create of the final expression files in "
+          + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
+          + " seconds.");
 
       return jobsResults.getStepResult(context, startTime);
 
