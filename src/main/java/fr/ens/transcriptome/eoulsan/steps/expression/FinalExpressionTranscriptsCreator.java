@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -91,6 +93,7 @@ public class FinalExpressionTranscriptsCreator {
 
     }
 
+    @Override
     public boolean equals(final Object o) {
 
       if (o == null)
@@ -108,6 +111,13 @@ public class FinalExpressionTranscriptsCreator {
         return true;
 
       return false;
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Objects.hashCode(this.transcript, baseNotCovered, alignementCount,
+          ratio);
     }
 
     @Override
@@ -191,6 +201,7 @@ public class FinalExpressionTranscriptsCreator {
             alignementCount, readsUsed);
     }
 
+    br.close();
   }
 
   /**
