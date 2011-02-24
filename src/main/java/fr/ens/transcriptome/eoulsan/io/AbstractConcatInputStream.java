@@ -49,6 +49,7 @@ public abstract class AbstractConcatInputStream extends InputStream {
         return -1;
       }
 
+      this.is.close();
       this.is = nextInputStream();
 
       return read();
@@ -79,6 +80,7 @@ public abstract class AbstractConcatInputStream extends InputStream {
         return -1;
       }
 
+      this.is.close();
       this.is = nextInputStream();
 
       return read(b, off, len);
@@ -108,6 +110,15 @@ public abstract class AbstractConcatInputStream extends InputStream {
   public int read(byte[] b) throws IOException {
 
     return read(b, 0, b.length);
+  }
+
+  @Override
+  public void close() throws IOException {
+
+    if (this.is != null) {
+      this.is.close();
+    }
+
   }
 
 }
