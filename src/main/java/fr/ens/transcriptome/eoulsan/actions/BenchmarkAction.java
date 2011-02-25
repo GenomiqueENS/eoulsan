@@ -96,35 +96,16 @@ public class BenchmarkAction extends AbstractAction {
       // Load settings
       final Settings settings = new Settings();
 
-      // final String instanceType = instancesEnum.MEM_INSTANCE.toString();
-      // final int instanceCount = 3;
-      //      
-      // final String genome = "candida";
-      // //final String genome = "mouse";
-      // final String dir = BASE_DIR + genome + "/";
-      // // final String designFile = dir + "design-one.txt";
-      // final String designFile = dir + "design-two.txt";
-      // final String mapper = "bwa";
-      // final String paramFile =
-      // dir + "param-" + genome + "-aws-" + mapper + ".xml";
-      // final String desc =
-      // genome + " data with " + mapper + " (validation test)";
-      //      
-      // exec(settings, instanceType, instanceCount, paramFile, designFile,
-      // desc);
-
-      // Test sur la souris en 1er, 3 mappers, 3 instances
+      //
+      // Serie 1
+      //
 
       final String[] genomes = {"mouse"};
       final String[] mappers = {"bowtie"};
-      // final String[] mappers = {"bwa", "bowtie", "soap"};
-      // final String[] mappers = {"bowtie", "soap"};
 
-      // int[] instanceCounts = {20,18,16,14,12,10};
-      // String designFile = "design-x4.txt";
-
-      int[] instanceCounts = new int[] {20};
-      String designFile = "design-x2.txt";
+      int[] instanceCounts = new int[] {12, 10, 8};
+      String designFile = "design-x4.txt";
+      String instance = InstanceType.M1Large.toString();
 
       // loop for genome
       for (String genome : genomes) {
@@ -133,34 +114,36 @@ public class BenchmarkAction extends AbstractAction {
 
         final String designPath = dir + designFile;
 
-        // loop for instances
-        for (instancesEnum instance : instancesEnum.values()) {
+        // loop for mappers
+        for (String mapper : mappers) {
 
-          // loop for mappers
-          for (String mapper : mappers) {
+          for (int instanceCount : instanceCounts) {
 
-            for (int instanceCount : instanceCounts) {
+            final String paramFile =
+                dir + "param-" + genome + "-aws-" + mapper + ".xml";
+            final String desc =
+                genome
+                    + " data, " + designFile + ", " + mapper + " on "
+                    + instanceCount + " " + instance.toString();
 
-              final String paramFile =
-                  dir + "param-" + genome + "-aws-" + mapper + ".xml";
-              final String desc =
-                  genome
-                      + " data, " + designFile + ", " + mapper + " on "
-                      + instanceCount + " " + instance.toString();
+            // System.out.println(paramFile);
+            // System.out.println(desc);
 
-              // System.out.println(paramFile);
-              // System.out.println(desc);
+            exec(settings, instance.toString(), instanceCount, paramFile,
+                designPath, desc);
 
-              exec(settings, instance.toString(), instanceCount, paramFile,
-                  designPath, desc);
+          } // End loop instanceCounts
+        } // End loop mapper
 
-            } // End loop instanceCounts
-          } // End loop mapper
-        } // End loop instance type
       } // End loop genome
 
-      instanceCounts = new int[] {20, 18, 16, 14, 12, 10};
-      designFile = "design-x4.txt";
+      //
+      // Serie 2
+      //
+
+      instanceCounts = new int[] {20, 18, 16, 14, 12};
+      designFile = "design.txt";
+      instance = InstanceType.C1Xlarge.toString();
 
       // loop for genome
       for (String genome : genomes) {
@@ -169,50 +152,104 @@ public class BenchmarkAction extends AbstractAction {
 
         final String designPath = dir + designFile;
 
-        // loop for instances
-        for (instancesEnum instance : instancesEnum.values()) {
+        // loop for mappers
+        for (String mapper : mappers) {
 
-          // loop for mappers
-          for (String mapper : mappers) {
+          for (int instanceCount : instanceCounts) {
 
-            for (int instanceCount : instanceCounts) {
+            final String paramFile =
+                dir + "param-" + genome + "-aws-" + mapper + ".xml";
+            final String desc =
+                genome
+                    + " data, " + designFile + ", " + mapper + " on "
+                    + instanceCount + " " + instance.toString();
 
-              final String paramFile =
-                  dir + "param-" + genome + "-aws-" + mapper + ".xml";
-              final String desc =
-                  genome
-                      + " data, " + designFile + ", " + mapper + " on "
-                      + instanceCount + " " + instance.toString();
+            // System.out.println(paramFile);
+            // System.out.println(desc);
 
-              // System.out.println(paramFile);
-              // System.out.println(desc);
+            exec(settings, instance.toString(), instanceCount, paramFile,
+                designPath, desc);
 
-              exec(settings, instance.toString(), instanceCount, paramFile,
-                  designPath, desc);
+          } // End loop instanceCounts
+        } // End loop mapper
 
-              // Sleep 5 minutes between 2 launchs
-
-            } // End loop instanceCounts
-          } // End loop mapper
-        } // End loop instance type
       } // End loop genome
 
-      // String genome = "mouse";
-      // String mapper = "bowtie";
-      // String instanceName = InstanceType.M1Large.toString();
-      // final String dir = BASE_DIR + genome + "/";
-      // final String designFile = dir + "design.txt";
-      // int instanceCount = 7;
       //
-      // final String paramFile =
-      // dir + "param-" + genome + "-aws-" + mapper + ".xml";
-      // final String desc =
-      // genome
-      // + " data with " + mapper + " on " + instanceCount + " "
-      // + instanceName;
+      // Serie 3
       //
-      // exec(settings, instanceName, instanceCount, paramFile, designFile,
-      // desc);
+
+      instanceCounts = new int[] {20};
+      designFile = "design-x2.txt";
+      instance = InstanceType.M1Large.toString();
+
+      // loop for genome
+      for (String genome : genomes) {
+
+        final String dir = BASE_DIR + genome + "/";
+
+        final String designPath = dir + designFile;
+
+        // loop for mappers
+        for (String mapper : mappers) {
+
+          for (int instanceCount : instanceCounts) {
+
+            final String paramFile =
+                dir + "param-" + genome + "-aws-" + mapper + ".xml";
+            final String desc =
+                genome
+                    + " data, " + designFile + ", " + mapper + " on "
+                    + instanceCount + " " + instance.toString();
+
+            // System.out.println(paramFile);
+            // System.out.println(desc);
+
+            exec(settings, instance.toString(), instanceCount, paramFile,
+                designPath, desc);
+
+          } // End loop instanceCounts
+        } // End loop mapper
+
+      } // End loop genome
+
+      //
+      // Serie 4
+      //
+
+      instanceCounts = new int[] {20, 18, 16, 14, 12, 10, 8, 6};
+      designFile = "design-dx2.txt";
+      instance = InstanceType.M1Large.toString();
+
+      // loop for genome
+      for (String genome : genomes) {
+
+        final String dir = BASE_DIR + genome + "/";
+
+        final String designPath = dir + designFile;
+
+        // loop for mappers
+        for (String mapper : mappers) {
+
+          for (int instanceCount : instanceCounts) {
+
+            final String paramFile =
+                dir + "param-" + genome + "-aws-" + mapper + ".xml";
+            final String desc =
+                genome
+                    + " data, " + designFile + ", " + mapper + " on "
+                    + instanceCount + " " + instance.toString();
+
+            // System.out.println(paramFile);
+            // System.out.println(desc);
+
+            exec(settings, instance.toString(), instanceCount, paramFile,
+                designPath, desc);
+
+          } // End loop instanceCounts
+        } // End loop mapper
+
+      } // End loop genome
 
       LOGGER.info("--- End at " + new Date() + " ---");
     } catch (IOException e) {
