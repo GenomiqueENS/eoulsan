@@ -55,10 +55,9 @@ public class BenchmarkAction extends AbstractAction {
   private static final String BASE_DIR = "s3n://sgdb-test/benchmarks/";
 
   private enum instancesEnum {
-    MEM_INSTANCE(InstanceType.M1Xlarge.toString());
-    // , CPU_INSTANCE(
-    // InstanceType.C1Xlarge.toString()), MEDIUM_INSTANCE(InstanceType.M1Large
-    // .toString());
+    // MEM_INSTANCE(InstanceType.M1Xlarge.toString());
+    // CPU_INSTANCE(InstanceType.C1Xlarge.toString());
+    MEDIUM_INSTANCE(InstanceType.M1Large.toString());
 
     final String name;
 
@@ -99,33 +98,40 @@ public class BenchmarkAction extends AbstractAction {
 
       // final String instanceType = instancesEnum.MEM_INSTANCE.toString();
       // final int instanceCount = 3;
-      //
-      // // final String genome = "candida";
-      // final String genome = "mouse";
+      //      
+      // final String genome = "candida";
+      // //final String genome = "mouse";
       // final String dir = BASE_DIR + genome + "/";
       // // final String designFile = dir + "design-one.txt";
-      // final String designFile = dir + "design-4.txt";
+      // final String designFile = dir + "design-two.txt";
       // final String mapper = "bwa";
       // final String paramFile =
       // dir + "param-" + genome + "-aws-" + mapper + ".xml";
       // final String desc =
       // genome + " data with " + mapper + " (validation test)";
-      //
+      //      
       // exec(settings, instanceType, instanceCount, paramFile, designFile,
       // desc);
 
       // Test sur la souris en 1er, 3 mappers, 3 instances
 
       final String[] genomes = {"mouse"};
-      //final String[] mappers = {"bwa", "bowtie", "soap"};
-      final String[] mappers = {"bowtie", "soap"};
-      final int instanceCount = 10;
+      final String[] mappers = {"bowtie"};
+      // final String[] mappers = {"bwa", "bowtie", "soap"};
+      // final String[] mappers = {"bowtie", "soap"};
+
+      // int[] instanceCounts = {20,18,16,14,12,10};
+      // String designFile = "design-x4.txt";
+
+      int[] instanceCounts = new int[] {20};
+      String designFile = "design-x2.txt";
 
       // loop for genome
       for (String genome : genomes) {
 
         final String dir = BASE_DIR + genome + "/";
-        final String designFile = dir + "design.txt";
+
+        final String designPath = dir + designFile;
 
         // loop for instances
         for (instancesEnum instance : instancesEnum.values()) {
@@ -133,20 +139,80 @@ public class BenchmarkAction extends AbstractAction {
           // loop for mappers
           for (String mapper : mappers) {
 
-            final String paramFile =
-                dir + "param-" + genome + "-aws-" + mapper + ".xml";
-            final String desc =
-                genome + " data with " + mapper + " on " + instance.toString();
+            for (int instanceCount : instanceCounts) {
 
-            // System.out.println(paramFile);
-            // System.out.println(desc);
+              final String paramFile =
+                  dir + "param-" + genome + "-aws-" + mapper + ".xml";
+              final String desc =
+                  genome
+                      + " data, " + designFile + ", " + mapper + " on "
+                      + instanceCount + " " + instance.toString();
 
-            exec(settings, instance.toString(), instanceCount, paramFile,
-                designFile, desc);
-          }
+              // System.out.println(paramFile);
+              // System.out.println(desc);
 
-        }
-      }
+              exec(settings, instance.toString(), instanceCount, paramFile,
+                  designPath, desc);
+
+            } // End loop instanceCounts
+          } // End loop mapper
+        } // End loop instance type
+      } // End loop genome
+
+      instanceCounts = new int[] {20, 18, 16, 14, 12, 10};
+      designFile = "design-x4.txt";
+
+      // loop for genome
+      for (String genome : genomes) {
+
+        final String dir = BASE_DIR + genome + "/";
+
+        final String designPath = dir + designFile;
+
+        // loop for instances
+        for (instancesEnum instance : instancesEnum.values()) {
+
+          // loop for mappers
+          for (String mapper : mappers) {
+
+            for (int instanceCount : instanceCounts) {
+
+              final String paramFile =
+                  dir + "param-" + genome + "-aws-" + mapper + ".xml";
+              final String desc =
+                  genome
+                      + " data, " + designFile + ", " + mapper + " on "
+                      + instanceCount + " " + instance.toString();
+
+              // System.out.println(paramFile);
+              // System.out.println(desc);
+
+              exec(settings, instance.toString(), instanceCount, paramFile,
+                  designPath, desc);
+
+              // Sleep 5 minutes between 2 launchs
+
+            } // End loop instanceCounts
+          } // End loop mapper
+        } // End loop instance type
+      } // End loop genome
+
+      // String genome = "mouse";
+      // String mapper = "bowtie";
+      // String instanceName = InstanceType.M1Large.toString();
+      // final String dir = BASE_DIR + genome + "/";
+      // final String designFile = dir + "design.txt";
+      // int instanceCount = 7;
+      //
+      // final String paramFile =
+      // dir + "param-" + genome + "-aws-" + mapper + ".xml";
+      // final String desc =
+      // genome
+      // + " data with " + mapper + " on " + instanceCount + " "
+      // + instanceName;
+      //
+      // exec(settings, instanceName, instanceCount, paramFile, designFile,
+      // desc);
 
       LOGGER.info("--- End at " + new Date() + " ---");
     } catch (IOException e) {
@@ -272,6 +338,13 @@ public class BenchmarkAction extends AbstractAction {
     LOGGER.info("End of Amazon MapReduce Job "
         + jobFlowId + " with status " + jobStatus + " (duration: "
         + (endTime - startTime) + " ms).");
+
+    // Wait 5 minutes to prevent exceed of ec2 instance quota
+    try {
+      Thread.sleep(5 * 60 * 1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
   }
 
