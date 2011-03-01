@@ -107,9 +107,10 @@ public final class HadoopJarRepackager {
     return Globals.APP_NAME_LOWER_CASE
         + "-"
         + Globals.APP_VERSION_STRING
-        + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER + "-" : "")
-        + System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim()
-            .hashCode() + ".jar";
+        + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER : "")
+        + "-"
+        + Integer.toHexString(System.getProperty(
+            Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim().hashCode()) + ".jar";
   }
 
   //
