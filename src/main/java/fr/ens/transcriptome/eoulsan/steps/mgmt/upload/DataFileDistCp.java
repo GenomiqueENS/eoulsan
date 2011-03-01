@@ -68,7 +68,7 @@ public class DataFileDistCp {
   private final Configuration conf;
   private final Path jobPath;
 
-  private static final long MAX_COPY_DURATION = 60 * 60 * 1000;
+  private static final long MAX_COPY_DURATION = 120 * 60 * 1000;
 
   /**
    * This inner class define the mapper class for DataSourceDistCp map-reduce
