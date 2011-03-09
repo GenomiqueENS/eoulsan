@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
  *                  Eoulsan development code
@@ -25,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Known Bugs for Eoulsan</title>
+    <title>Expression step</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -33,25 +32,27 @@
 
   <body>
   
-    <section name="Known Bugs for Eoulsan @@@VERSION@@@">
+    <section name="Expression step">
 
-      <p>Actual no major bug is known for Eoulsan.</p>  
+      <p>This step allow to icompute expression for the mapped reads.</p>  
 
-      <!--ul> 
-        <li>Bug 1.</li>
-	<li>Bug 2.</li>
-      </ul--> 
+      <ul>
+         <li><b>Name</b>: expression.</li>
+         <li><b>Available</b>: Both local and distributed mode.</li>
+        <li><b>Input</b>: filtered alignments</li>
+        <li><b>Output</b>: expression file</li>
+	 <br/>
+         <li><b>Optional parameters</b>: none</li>
+	<!--table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>tmpdir</td><td>directory path</td><td>Directory for sort temporary file. Only in local mode.</td></tr>
+	</table-->
+       </ul>
       
-    </section>
-
-    <section name="Submit a Eoulsan bug">
-
-      <!-- eoulsan-list?subject=Bug -->
-      <p>You can submit a bug by filling an entry on the 
-      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
-      of the Google code hosting page of our project.</p>
+	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
 
     </section>
+
 
   </body>
   

@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Map reads</title>
+    <title>Create hadoop jar</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,17 +32,16 @@
 
   <body>
   
-    <section name="Map reads">
+    <section name="Create hadoop jar">
 
-      <p>This module allow to map read with SOAP program.</p>  
+      <p>This command allow to create a jar file that contains all the plugins and dependencies needed to run your analysis in distributed mode.</p>  
 
       <ul>
-         <li><b>Available</b>: Both local and distributed mode.</li>
          <li><b>Optional parameters</b>: none</li>
-
+	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh [options] soapmapreads design.txt
+$ eoulsan.sh createdesign [options] fastq_files fasta_file gff_gfile
 </source>
 
 </li>
@@ -51,6 +50,15 @@ $ eoulsan.sh [options] soapmapreads design.txt
       
     </section>
 
+   <section name="Run manualy Eoulsan in Hadoop mode">
+
+     <p>With the jar file generated your can manualy launch Eoulsan with a Hadoop command:</p>
+
+<source>
+$ hadoop -jar eoulsan-1.0-a19e9799.jar hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
+</source>
+
+   </section>
 
   </body>
   

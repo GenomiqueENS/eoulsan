@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Expression</title>
+    <title>Launch analysis on Amazon Web service cloud</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,22 +32,34 @@
 
   <body>
   
-    <section name="Expression">
+    <section name="Launch analysis on Amazon Web service cloud">
 
-      <p>This module allow to icompute expression for the mapped reads.</p>  
+      <p>This command launch Eoulsan on Amazon Web Services Cloud. The data is 
+         first upload on Amazon S3 storage before launching analysis is 
+         launched. To run Eoulsan on AWS, you must the AWS credentials in 
+         global parameters of your parameter file or in a configuration file.</p>  
 
       <ul>
-         <li><b>Available</b>: Both local and distributed mode.</li>
-         <li><b>Optional parameters</b>:
-
+         <li><b>Command name</b>: awsexec</li>
+         <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>-tmpdir</td><td>directory path</td><td>Directory for sort temporary file. Only in local mode.</td></tr>
+		<tr><td>parameter path</td><td>string</td><td>The path to parameter file to use</td></tr>
+		<tr><td>design path</td><td>string</td><td>The path path design file to use</td></tr>
+		<tr><td>data path on S3</td><td>string</td><td>The path where upload data on S3</td></tr>
 	</table>
         </li>
+	<br/>
+         <li><b>Optional parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>-d</td><td>string</td><td>The description of the analysis</td></tr>
+	</table>
+        </li>
+	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh [options] expression design.txt
+$ eoulsan.sh awsexec -d 'my test' param.xml design.txt s3://my-bucket/test
 </source>
 
 </li>

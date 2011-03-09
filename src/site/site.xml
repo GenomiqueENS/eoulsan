@@ -38,7 +38,7 @@
 	</bannerRight>
 	<body>
 		<links>
-			<item name="ENS microarray platform"
+			<item name="IBENS genomic platform"
 				href="http://transcriptome.ens.fr" />
 			<item name="École Normale Supérieure"
 				href="http://www.ens.fr" />
@@ -59,31 +59,35 @@
 		</menu>
 
 		<menu name="Documentation">
-			<item name="Eoulsan in local mode" href="/localmode.html"/>
-			<item name="Eoulsan in haddoop mode" href="/hadoopmode.html"/>
+
+			<item name="Quickstart Guide" href="/quickstart.html"/>
 			<item name="Design file" href="/designfile.html"/>
-			<item name="modules" href="/modules.html">
-				<item name="Create design" href="/createdesign.html" />
-				<item name="Create soap index" href="/createsoapindex.html" />
-				<item name="Filter reads" href="/filterreads.html" />
-				<item name="Map reads" href="/mapreads.html" />
-				<item name="Filter samples" href="/filtersamples.html" />
-				<item name="Expression" href="/expression.html" />
-				<item name="anadiff" href="/anadiff.html" />
+			<item name="Param file" href="/paramfile.html"/>
+			<item name="Configuration file" href="/conffile.html"/>
+			
+			<item name="Built-in steps" href="/steps.html" collapse="true">
+				<item name="Create mapper index" href="/step-createmapperindex.html" />
+				<item name="Filter reads" href="/step-filterreads.html" />
+				<item name="Map reads" href="/step-mapreads.html" />
+				<item name="Filter alignments" href="/step-filteralignents.html" />
+				<item name="Filter and map" href="step-filterandmap.html" />
+				<item name="Filter samples" href="/step-filtersamples.html" />
+				<item name="Expression" href="/step-expression.html" />
+				<item name="anadiff" href="/step-anadiff.html" />
 			</item>
-			<!--item name="Introduction" href="/introduction.html" />
-			<item name="Command line" href="/command_line.html" />
-			<item name="The design file" href="/design.html" collapse="true">
-				<item name="Global parameters" href="/design-global.html" />
-				<item name="Constants" href="/design-constants.html" />
-				<item name="Sequence creation" href="/design-sequencecreation.html" />
-				<item name="Sequence filters" href="/design-sequencefilters.html" />
-				<item name="Measurements" href="/design-measurements.html" />
-				<item name="Measurement filers" href="/design-measurementfilters.html" />
-				<item name="Selector" href="/design-selector.html" />
-				<item name="Outputs" href="/design-outputs.html" / -->
-			<!-- item name ="Optimize" href="/optimize.html"/ -->
-			<!--/item-->
+
+			<item name="Command line" href="/command_line.html" collapse="true">
+				<item name="Create design" href="/cmd-createdesign.html" />
+				<item name="Create Hadoop jar" href="/cmd-createhadoopjar.html" />
+				<item name="Local Exec" href="/cmd-localexec.html" />
+				<item name="Hadoop Exec" href="/cmd-hadoopexec.html" />
+				<item name="AWS Exec" href="/cmd-awsexec.html" />
+				<item name="S3 Upload" href="/cmd-s3upload.html" />
+			</item>
+
+			<item name="Hadoop configuration" href="/hadoopmode.html"/>
+			<item name="AWS configuration" href="/awsmode.html"/>
+
 			<item name="Known bugs" href="/bugs.html" />
 			<item name="Mailing list" href="/mail-lists.html" />
 		</menu>

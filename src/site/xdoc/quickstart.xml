@@ -26,9 +26,7 @@
 
 	<properties>
 		<title>Quickstart</title>
-		<author email="lecrom@biologie.ens.fr">
-			Stephane Le Crom
-        </author>
+		<author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
 	</properties>
 
 	<body>
@@ -40,109 +38,184 @@
 					<a href="#installation">Installation</a>
 				</li>
 				<li>
-					<a href="#firstrun">Probe library creation</a>
+					<a href="#samples">Samples files</a>
 				</li>
 				<li>
-					<a href="#stats">Probe library statistics and filters</a>
+					<a href="#design_file">Create design file</a>
 				</li>
 				<li>
-					<a href="#selection">Final probe selection</a>
+					<a href="#parameter_file">Create parameter file</a>
+				</li>
+				<li>
+					<a href="#local_mode">Execute Eoulsan in local mode</a>
+				</li>
+				<li>
+					<a href="#local_mode">Execute Eoulsan with a local hadoop cluster</a>
 				</li>
 			</ul>
 
 
-			<a name="installation"/>
-			<subsection name="Installation">
+		<a name="installation"/>
+		<subsection name="Installation">
 
 
-				<p> To install Eoulsan, go to the
-					<a href="installing.html">Eoulsan installation page</a>
-					and follow the detail procedure.
-				</p>
-			</subsection>
+			<p> To install Eoulsan, go to the
+				<a href="installing.html">Eoulsan installation page</a>
+				and follow the detail procedure.
+			</p>
+		</subsection>
 
 
-			<a name="firstrun"/>
-			<subsection name="Probe library creation">
+		<a name="samples" />
+                <subsection name="Sample files">
+
+                        <p>We provide in this section some samples files to test Eoulsan.</p>
 
 
-				<p>Create a folder where to put all your files. Next in this folder download
-				the genome reference file (fasta format) and the masked genome (fasta format).
-				</p>
+			<ul>
+                          <li><b>Reads files</b></li>
+			  <ul>
+				<li><a href="./examples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
+                                <li><a href="./examples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
+			  </ul>
 
-				<p>Create your design file (xml format) either from scratch using the 
-				<a href="design.html"> documentation pages </a> or by using the 
-				<a href="./design-thricoderna-reesei.xml">template design file</a> we provide.
-				The better is to create the design file in the same folder than genome files.
-				</p>
-				<p>In the design file first edit the general parameters. Choose the start position
-				between 0 or 1. This is important because this will help you make the link with annotations
-				files. Choose the length of the oligonucleotide you want to design. Then fill
-				the relative location to the design file for your genome files.
-				</p>
-				<p>Next edit the sequencefilters and measurements. Pay attention that both values
-				of the "skip" parameter is set to "false". We advise to use both the redundancy and
-				Sequencexn filters. For the measurement you can add oligosequence, tm, %gc, complexicity and unicity.
-				If you don't know which parameter to provide for maxprefixlength you can let it
-				set to 30.
-				</p>
-				<p>For measurementfilters and selector you can set the "skip" parameter to
-				"true". Then launch the eoulsan program for example as follow.
-				</p>
-		 	  <source>$ sh ../eoulsan/eoulsan.sh -log design.log design.xml</source>
+			  <br/>
+			  <li>Genome file</li>
+			    <ul>
+                              <li><a href="./examples/atp2/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
+                            </ul>
 
-			</subsection>
+			  <br/>
 
-			<a name="stats"/>
-			<subsection name="Probe library statistics and filters">
+			  <li>Annotation file</li>
+			    <ul>
+                              <li><a href="./examples/atp2/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
+                            </ul>
 
 
-				<p>This first run has created the whole probe collection and apply a first 
-				general filter to discard redudant oligonucleotides and non classical bases.
-				You can now access the statistics of all the parameter calculated for the 
-				probe collection in the "filtered.stats" file. This file display each parameter
-				in column with an histogram distribution of the values and max, min, mean,
-				median and standard deviation calculated.
-				</p>
-				<p>These value are helpful to set up threshold on probe collection to discard
-				low quality probes. To do so open the design.xml file. First put the skip
-				parameter of sequencefilters and measurements to "true". Next edit the 
-				measurementfilters section and first put the skip value to "false".
-				For each measurement you can edit threshold based on the statistical 
-				distribution obtained.
-				</p>
-				<p>Now, you can launch eoulsan another time. The probe collection is already 
-				done so that only the probe filtration step will be performed. This step is 
-				now very quick. At the end you can access the number of probe remaining in
-				the filtered.mes file to compared with the number of oligonucleotide in the
-				collection found in the oligo.mes file.
-				</p>
+			 <br/>
+			 <li><b>Parameters files</b><br/>
+                            The following files are sample parameter file to analyse previous reads 
+                            files. There is 2 files, one for local analysis which include differential 
+                            analysis and one for distributed without differential analysis.</li>
 
-			</subsection>
+			  <ul>
+				<li><a href="./examples/param-local.xml">Parameter file for local analysis</a></li>
+                                <li><a href="./examples/param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
+			  </ul>
+			</ul>
 
-			<a name="selection"/>
-			<subsection name="Final probe selection">
+		</subsection>
+
+		<a name="design_file"/>
+		<subsection name="Create a design file">
+
+			<p>In an empty directory, copy the reads, genome and annotation files, then you can create a design file with the next command:</p>
+<source>
+$ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.txt.bz2
+</source>
+
+			<p>You can now modify the design file to add additional information.</p>
+
+		</subsection>
 
 
-				<p>Now that you have filtered your probe library according to your needs, 
-				the final step is to perform the probe selection. To do so edit the 
-				design.xml file and put all skip tag to true except for the last one 
-				(selector). Only the selection step will be done each time you will launch
-				Eoulsan so that you can test several selection parameter configurations.
-				</p>
-				<p>For a tiling design add "tiling" to the "name" tag and set the two
-				parameters specific for this design: windowLength and windowStep. The
-				first give the size of the tiling window. The second give the step of 
-				the tiling path.
-				</p>
-				<p>Next set up the weight of each of the parameter to be taken into 
-				account for the final score calculation. Then launch the program. The final
-				design probe can be retrieved in the select.mes file.
-				</p>
 
-			</subsection>
+		<a name="param_file"/>
+		<subsection name="Create parameter file">
 
-		</section>
+			<p>To create a parameter file, the best solution is to reuse an existing 
+			parameter file (see <a href="#samples">sample section</a>) and adapt it 
+			to your needs.</p>
+
+			<p>The parameter file contains the list of the step that will be executed 
+			by Eoulsan. By careful some step are only available in local mode (like 
+                        differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
+			for more details. For each step you can change, add or remove parameters. 
+			Parameters are specific to a step, consult the <a href="steps.html">documentation</a> 
+			of the built-in steps for the list of available parameters of each step.</p>
+
+
+			<p>At least, there is a global section in the parameter file that override the 
+			values of Eoulsan configuration file. This section is useful to set for example 
+			the path of the temporary directory to use.</p>
+
+		</subsection>
+
+		<a name="local_mode"/>
+		<subsection name="Launch Eoulsan in local mode">
+
+			<p>Once your design file and parameter file are ready, you can launch Eoulsan analysis with the following command:</p>
+<source>
+$ eoulsan.sh exec param.xml design.txt
+</source>
+
+
+			<p>Once started and before starting analysis, Eoulsan will check if:</p>
+			<ul>
+			  <li>The design file and parameter file are valid</li>
+			  <li>All the steps exits</li>
+			  <li>The parameter of all the steps are valid</li>
+			  <li>The order of the step is correct (a step can not use data generated after its end)</li>
+			  <li>The input files are valid (fasta and annotation files)</li>
+			  <li>A genome mapper index is needed. In this case, a step to generated this index is added</li>
+			</ul>
+			
+			<p>If successful, you wil obtain a new directory name like <b>eoulsan-20110310-101235</b> 
+			with log files about the analysis. Results files are stored in the current directory of the user.</p>
+
+		</subsection>
+
+		<a name="hadoop_mode"/>
+		<subsection name="Launch Eoulsan in local hadoop cluster mode">
+
+			<p>First, you must have a configurated Hadoop cluster (see <a href="hadoopmode.html">hadoop configuration</a>). 
+			   You can launch Eoulsan analysis with the following command:</p>
+<source>
+$ eoulsan.sh hadoopexec param.xml design.txt hdfs://master.example.com/test
+</source>
+
+			<p>At the start of the analysis and after the check of the input files (like 
+			in the local mode), input data is uploaded on the hadoop cluster before 
+                        launching the analysis.</p>
+
+			<p>At the end of the analysis, the results files and logs will be in a new directory name like 
+			   <b>eoulsan-20110310-101235</b> (the numbers in the directory name after eoulsan are 
+                           respectively the date and the time of the launch of the analysis).</p>
+
+		</subsection>
+
+		<a name="aws_mode"/>
+		<subsection name="Launch Eoulsan on Amazon Web Service Cloud">
+
+			<p>You must have an AWS account for Amazon S3 and Amazon 
+			   MapReduce to launch Eoulsan on Amazon cloud. Then you 
+                           must set Amazon credentials in Eoulsan configuration or 
+			   in the parameter file (see <a href="awsmode.html">hadoop configuration</a>). 
+			   You can launch Eoulsan analysis with the following command:</p>
+<source>
+$ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
+</source>
+
+			<p>In AWS mode, there is 2 phases in the analysis:</p>
+			<ul>
+				<li>First data to analyse, design and parameter files are upload to your S3 
+                                    bucket on Amazon Cloud.</li>
+				<li>Then, the cluster in the cloud is created and the "real" analysis starts. 
+                                    Eoulsan on your local computer only wait the end of the analysis. 
+                                    You can quit Eoulsan or shutdown your computer, no data will be lost and 
+                                    analysis will continue on the cloud.</li>
+			</ul>
+
+
+			<p>At the end of the analysis, the results files and logs will be in a new directory 
+                           in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
+                           directory name after eoulsan are respectively the date and the time of the launch 
+                           of the analysis). You must manualy download this data from S3 to your computer</p>
+
+		</subsection>
+	</section>
+
 	</body>
 </document>
 

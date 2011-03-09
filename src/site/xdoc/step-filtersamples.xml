@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Create design</title>
+    <title>Filter samples</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,27 +32,22 @@
 
   <body>
   
-    <section name="Create design">
+    <section name="Filter samples">
 
-      <p>This module allow to easly create a design file from a list of file (reads in fastq format, genome in fasta, annotation in gff).</p>  
+      <p>This step allow to filter with lower ratio of reads that maps to the genome.</p>  
 
       <ul>
-         <li><b>Available</b>: Only in local mode.</li>
-         <li><b>Optional parameters</b>:
+	<li><b>Internal name</b>: filtersamples</li>
+        <li><b>Available</b>: Both local and distributed mode.</li>
+	
+	<li/>
+        <li><b>Optional parameters</b>:
 
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>-output</td><td>a filename</td><td>The name of new design file</td></tr>
-		<tr><td>-stdout</td><td>none</td><td>The generated design file will be return on stdout rather than in a file</td></tr>
+		<tr><td>threshold</td><td>a real number between ]0-1]</td><td>The threshold of the filter</td></tr>
 	</table>
         </li>
-        <li><b>Usage</b>:
-<source>
-$ eoulsan.sh [options] createdesign fastq_files fasta_file gff_gfile
-</source>
-
-</li>
-        
        </ul>
       
     </section>

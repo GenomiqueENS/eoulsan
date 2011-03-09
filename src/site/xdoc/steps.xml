@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Steps</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Built-in steps of Eoulsan">
+
+      <p>Eoulsan contains many built-in steps to perform analysis. As Eoulsan can work in two (local an distributed) modes, some modules are available for the two and some for only one.</p>  
+
+	<table>
+		<tr><th>Phase/Module</th><th>Local Mode</th><th>Distributed mode</th><th>Comment</th></tr>
+		<tr><td><a href="step-createmapperindex.html">Create SOAP index</a></td><td>Yes</td><td>Yes</td><td>This step automatically called when need</td></tr>
+		<tr><td><a href="step-filterreads.html">Filter reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-mapreads.html">Map reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-filteralignments.html">Filter alignments</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-filterandmaps.html">Filter and map reads</a></td><td>No</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-filtersamples.html">Filter samples</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-expression.html">Expression</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-anadiff.html">Differential analysis</a></td><td>Yes</td><td>No</td><td></td></tr>
+	</table>
+
+    </section>
+
+
+  </body>
+  
+</document>

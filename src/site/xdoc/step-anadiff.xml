@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Differential analysis</title>
+    <title>Differential analysis step</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,21 +32,13 @@
 
   <body>
   
-    <section name="Differential analysis">
+    <section name="Differential analysis step">
 
-      <p>This module allow to perform differntial analysis on expression module results.</p>  
+      <p>This step allow to perform differntial analysis on expression module results.</p>  
 
       <ul>
          <li><b>Available</b>: Only in local mode.</li>
          <li><b>Optional parameters</b>: none.</li>
-
-        <li><b>Usage</b>:
-<source>
-$ eoulsan.sh [options] anadiff design.txt
-</source>
-
-</li>
-        
        </ul>
       
     </section>

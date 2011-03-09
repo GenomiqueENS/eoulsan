@@ -83,16 +83,14 @@
           </tr>
           <tr>
             <td>Processor architecture</td>
-            <td>Any architecture processor that can run Java and Soap. 
+            <td>Currently Eoulsan can only run under x86-64 architecture. 
             Multi processors or multi cores system (SMP) are strongly recommended.</td>
           </tr>
           <tr>
             <td>Operating System</td>
             <td>
-		Eoulsan can only works on *nix system as some externals tools (genometools 
-		and soap) can't run under Microsoft Windows.<!--  <b>Note for Mac OS X that soap 
-		seem buggy under this operating system, so Eoulsan<u> will fail</u> if you use the Redundancy filter</b>-->
-u
+		Eoulsan can only works on *nix system as some externals tools (mappers like 
+		soap) can't run under Microsoft Windows.
             </td>
           </tr>
         </table>
