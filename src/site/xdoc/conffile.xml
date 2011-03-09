@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Configuration file</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="The Configuration file">
+
+        <p>Some global parameters of Eoulsan such as the path of the temporary directory for the step external tools can be set in a configuration file. There are two ways to use this configuration file:</p>
+        <ul>
+                <li>Create a <b>~/.eoulsan</b> file.</li>
+                <li>use the <b>-conf &lt;file&gt;</b> option of Eoulsan command line. The <code>~/.eoulsan</code> file will not be read.</li>
+        </ul>
+
+        <p>The next table summaries the available parameters for Eoulsan configuration file:</p>
+
+	<table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+		<tr><td>main.tmp.dir</td><td>string</td><td>Path to the temporary directory</td></tr>
+		<tr><td>main.debug</td><td>boolean</td><td>Enable debuging information</td></tr>
+		<tr><td>main.printstacktrace</td><td>boolean</td><td>Enable print stack trace when error occurs</td></tr>
+		<tr><td>design.obfuscate</td><td>boolean</td><td>Obfuscate design file when upload to AWS</td></tr>
+		<tr><td>design.remove.replicate.info</td><td>boolean</td><td>Remove replicate information in design when upload to AWS</td></tr>
+		<!--tr><td>rserve.enable</td><td>boolean</td><td>Enable Rserve server for R computation</td></tr>
+		<tr><td>rserve.servername</td><td>string</td><td>Name of the Rserve server</td></tr-->
+		<tr><td>main.accessKey</td><td>string</td><td>AWS access key</td></tr>
+		<tr><td>main.awssecretkey</td><td>string</td><td>AWS secret key</td></tr>
+	</table>
+
+	<p>This values are overided by the values of the global parameters of a parameter file. It is useful to use a configuration file to set AWS keys to remove this entries from the parameter file. Developpers can use additiobal parameter that are not in the previous table.</p>
+ 
+        <subsection name="Teolenn configuration file sample">
+
+  <source>
+# This is an example of configuration file for Eoulsan.
+# You need to use the -conf parameter or rename this file to
+# $HOME/.eoulsan to enable it.
+
+# Temporary directory.
+# By default Eoulsan use the temporary directory for your platform.
+main.tmp.path=/tmp
+
+# Debug mode.
+# By default in Eoulsan the debug mode is disable.
+main.debug=false</source>
+
+        </subsection>
+
+    </section>
+
+  </body>
+  
+</document>

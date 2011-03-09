@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /*
  *                  Eoulsan development code
@@ -25,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Run Eoulsan in local mode</title>
+    <title>Filter reads step</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -33,27 +32,28 @@
 
   <body>
   
-    <section name="Eoulsan in local mode">
+    <section name="Filter reads step">
 
-      <p>Each phase of Eoulsan is a module/program. To run a batch of Eoulsan, you must write a shell script. The following script show a typical Eoulsan pipeline.</p>
+      <p>This step allow to filter reads.</p>  
+
+      <ul>
+ 	<li><b>Internal name</b>: filterreads</li> 
+        <li><b>Available</b>: Both local and distributed mode.</li>
+ 	<li><b>Input</b>: Fastq or tfq file</li>
+	<li><b>Output</b>: filtered fastq or filtered tfq file</li>
+
+	<br/>
+        <li><b>Optional parameters</b>:</li>
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads</td><td>15</td></tr>
+		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the quality</td><td>15.0</td></tr>
+		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
+	</table>
+      </ul>
       
-<source>
-#!/bin/sh
-
-
-EOULSAN_DIR=~/eoulsan-0.1
-CMD=$EOULSAN_DIR/eoulsan.sh
-
-$CMD createsoapindex design.txt
-$CMD filterreads design.txt
-$CMD soapmapreads design.txt
-$CMD filtersamples --threshold 50 design.txt design_filtered.txt
-$CMD expression --tmpdir . design-filtered.txt
-$CMD  anadiff design_filtered2.txt
-
-</source>
- 
     </section>
+
 
   </body>
   

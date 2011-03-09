@@ -1,0 +1,63 @@
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU General Public License version 2 or later. This
+ * should be distributed with the code. If you do not have a copy,
+ * see:
+ *
+ *      http://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Copyright for this code is held jointly by the microarray platform
+ * of the École Normale Supérieure and the individual authors.
+ * These should be listed in @author doc comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Filter and map reads step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Filter and map reads step">
+
+      <p>This step combine in one step in hadoop mode the filtering of the reads, the mapping and the filtering of the alignments. This step only available in hadoop mode is more efficent than using the 3 steps successively.</p>  
+
+      <ul>
+ 	<li><b>Internal name</b>: filterandmap</li> 
+        <li><b>Available</b>: Distributed mode only.</li>
+ 	<li><b>Input</b>: Fastq or tfq file</li>
+	<li><b>Output</b>: filtered alignment file in SAM format</li>
+
+	<br/>
+        <li><b>Optional parameters</b>:</li>
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads</td><td>15</td></tr>
+		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the quality</td><td>15.0</td></tr>
+		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
+                <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
+                <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td></td></tr>
+                <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality</td></tr>
+	</table>
+      </ul>
+      
+    </section>
+
+
+  </body>
+  
+</document>

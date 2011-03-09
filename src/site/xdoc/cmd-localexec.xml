@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Create design</title>
+    <title>Launch analysis in local mode</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,20 +32,35 @@
 
   <body>
   
-    <section name="Create design">
+    <section name="Launch analysis in local mode">
 
-      <p>This module allow to create the SOAP index for the mapper from the design file and the genome sequence in fasta.</p>  
+      <p>This command launch Eoulsan in local mode.</p>  
 
       <ul>
-         <li><b>Available</b>: Only in local mode.</li>
-         <li><b>Optional parameters</b>: none</li>
-
-        <li><b>Usage</b>:</li>
+         <li><b>Command name</b>: exec</li>
+         <li><b>Mandatory parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>parameter file</td><td>string</td><td>The parameter file to use</td></tr>
+		<tr><td>design file</td><td>string</td><td>The design file to use</td></tr>
+	</table>
+        </li>
+	<br/>
+         <li><b>Optional parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>-d</td><td>string</td><td>The description of the analysis</td></tr>
+	</table>
+        </li>
+	<br/>
+        <li><b>Usage</b>:
 <source>
-$ eoulsan.sh [options] createsoapindex design.xml 
+$ eoulsan.sh exec -d 'my first eoulsan launch' param.xml design.txt
 </source>
+
+</li>
         
-      </ul>
+       </ul>
       
     </section>
 

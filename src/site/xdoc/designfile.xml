@@ -58,10 +58,11 @@ SampleNumber	Name	FileName	Genome	Annotation	GenomicType	Condition	ReplicateType
 		<li><b>Annotation</b>: Annotation of the genome in GFF3 format</li>
 		<li><b>GenomicType</b>: Type of annoation to use in the expression module. <b>WARNING</b>: This field will not be used in the next version of the pipeline.</li>
 		<li><b>Condition</b>: Condition for the sample in the experiement</li>
-		<li><b>ReplicateType</b>: Type of replicate, two values are currently handled: "B" for biological replicate and "T" for technical replicate</li>
+		<li><b>ReplicateType</b>: Type of replicate, two values are currently handled: "B" for biological replicate and "T" for technical replicate.</li>
+		<li><b>UUID</b>: Universal Unique Identifier of the sample. In obfuscated design files, this value does not change.</li>
 	</ul>
 	
-	<p>In next version of Eoulsan, compressed files in gzip (.gz) or bzip2 (.bz2) will be handled.</p>
+	<p>Compressed files in gzip (.gz) or bzip2 (.bz2) are handled by Eoulsan.</p>
 
  
     </section>

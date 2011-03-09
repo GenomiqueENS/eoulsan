@@ -24,7 +24,7 @@
 <document> 
 
   <properties>
-    <title>Filter samples</title>
+    <title>Create mapper index step</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -32,28 +32,18 @@
 
   <body>
   
-    <section name="Filter samples">
+    <section name="Create mapper index step">
 
-      <p>This module allow to filter with lower ratio of reads that maps to the genome.</p>  
+      <p>This step allow to create index for all the mappers available in Eoulsan. This step is automatically called when needed.</p>  
 
       <ul>
-         <li><b>Available</b>: Both local and distributed mode.</li>
-         <li><b>Optional parameters</b>:
-
-	<table>
-		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>-threshold</td><td>a real number between ]0-1]</td><td>The threshold of the filter</td></tr>
-	</table>
-        </li>
-        <li><b>Usage</b>:
-<source>
-$ eoulsan.sh [options] filtersamples design_src.txt design_dest.txt
-</source>
-
-</li>
-        
-       </ul>
-      
+	<li><b>Internal name</b>: _genericindexgenerator</li> 
+        <li><b>Available</b>: Both local and distributed mode.</li>
+        <li><b>Input</b>: genome file</li>
+        <li><b>Output</b>: index for the genome in a zip file</li>	
+	<br/>
+        <li><b>Optional parameters</b>: none</li>
+      </ul>
     </section>
 
 
