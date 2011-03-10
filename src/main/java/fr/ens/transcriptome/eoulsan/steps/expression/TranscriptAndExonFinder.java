@@ -24,14 +24,12 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.Writer;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -260,7 +258,7 @@ public class TranscriptAndExonFinder {
    * This class define an exon.
    * @author Laurent Jourdren
    */
-  public static final class Exon implements Serializable {
+  public static final class Exon implements Serializable, Comparable<Exon> {
 
     private String chromosome;
     private int start;
@@ -348,6 +346,18 @@ public class TranscriptAndExonFinder {
       return (start >= this.start && start <= this.end)
           || (end >= this.start && end <= this.end)
           || (start < this.start && end > this.end);
+    }
+
+    @Override
+    public int compareTo(final Exon e) {
+
+      if (e == null)
+        return -1;
+
+      if (!e.getChromosome().equals(e.getChromosome()))
+        return getChromosome().compareTo(e.getChromosome());
+
+      return ((Integer) this.start).compareTo(e.getStart());
     }
 
     /**
