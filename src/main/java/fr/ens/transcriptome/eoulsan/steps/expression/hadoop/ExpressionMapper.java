@@ -29,7 +29,9 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.U
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -44,6 +46,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -119,7 +123,11 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     this.oneExonByParentId.clear();
 
-    for (Exon e : exons)
+    // Sort the exon
+    final List<Exon> exonSorted = Lists.newArrayList(exons);
+    Collections.sort(exonSorted);
+
+    for (Exon e : exonSorted)
       oneExonByParentId.put(e.getParentId(), e);
 
     for (Map.Entry<String, Exon> entry : oneExonByParentId.entrySet()) {

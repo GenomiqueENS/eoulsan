@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Lists;
+
 import net.sf.samtools.SAMException;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
@@ -123,7 +125,11 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
     this.oneExonByParentId.clear();
 
-    for (Exon e : exons)
+    // Sort the exon
+    final List<Exon> exonSorted = Lists.newArrayList(exons);
+    Collections.sort(exonSorted);
+
+    for (Exon e : exonSorted)
       oneExonByParentId.put(e.getParentId(), e);
 
     List<String> keysSorted = new ArrayList<String>(oneExonByParentId.keySet());
