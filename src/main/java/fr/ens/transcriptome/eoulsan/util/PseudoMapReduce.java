@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public abstract class PseudoMapReduce {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private File tmpDir;
   private File mapOutputFile;
@@ -182,7 +182,7 @@ public abstract class PseudoMapReduce {
 
     final boolean result = ProcessUtils.system(cmd) == 0;
     if (!this.mapOutputFile.delete())
-      logger.warning("Can not delete map output file: "
+      LOGGER.warning("Can not delete map output file: "
           + this.mapOutputFile.getAbsolutePath());
 
     return result;
@@ -264,7 +264,7 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete())
-      logger.warning("Can not delete sort output file: "
+      LOGGER.warning("Can not delete sort output file: "
           + this.sortOutputFile.getAbsolutePath());
   }
 
