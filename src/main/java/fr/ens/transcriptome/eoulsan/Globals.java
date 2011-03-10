@@ -52,8 +52,8 @@ public final class Globals {
   public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase();
 
   /** The prefix of the parameters of the application. */
-  public static final String PARAMETER_PREFIX = "fr.ens.transcriptome."
-      + APP_NAME_LOWER_CASE;
+  public static final String PARAMETER_PREFIX =
+      "fr.ens.transcriptome." + APP_NAME_LOWER_CASE;
 
   /** The version of the application. */
   public static final String APP_VERSION_STRING = getVersion();
@@ -68,25 +68,28 @@ public final class Globals {
   public static final String APP_BUILD_DATE = getBuiltDate();
 
   /** The welcome message. */
-  public static final String WELCOME_MSG = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " ("
-      + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")";
+  public static final String WELCOME_MSG =
+      Globals.APP_NAME
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")";
 
   /** The prefix for temporary files. */
-  public static final String TEMP_PREFIX = APP_NAME_LOWER_CASE
-      + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
+  public static final String TEMP_PREFIX =
+      APP_NAME_LOWER_CASE
+          + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
 
   /** The log level of the application. */
   public static final Level LOG_LEVEL = Level.INFO; // Level.OFF;
 
   /** Set the debug mode. */
-  public static final boolean DEBUG = APP_VERSION_STRING.endsWith("-SNAPSHOT")
-      || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
+  public static final boolean DEBUG =
+      APP_VERSION_STRING.endsWith("-SNAPSHOT")
+          || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
 
   /** Platforms where Eoulsan is available. */
-  public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
-      .unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64"})));
+  public static final Set<String> AVAILABLE_BINARY_ARCH =
+      Collections.unmodifiableSet(new HashSet<String>(Arrays
+          .asList(new String[] {"linux\tamd64", "linux\tx86_64"})));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
@@ -99,8 +102,8 @@ public final class Globals {
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
 
-    private final DateFormat df = new SimpleDateFormat("yyyy.MM.dd kk:mm:ss",
-        DEFAULT_LOCALE);
+    private final DateFormat df =
+        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", DEFAULT_LOCALE);
 
     public String format(final LogRecord record) {
       return record.getLevel()
@@ -115,26 +118,27 @@ public final class Globals {
   /** Teolenn Website url. */
   public static final String WEBSITE_URL = getWebSiteURL();
 
-  private static final String COPYRIGHT_DATE = "2010";
+  private static final String COPYRIGHT_DATE = "2010-2011";
 
   /** Licence text. */
   public static final String LICENSE_TXT =
-      "This program is developed under the GNU General Public License version 2 or later and CeCILL.";
+      "This program is developed under the GNU Lesser General Public License"
+          + " version 2.1 or later and CeCILL-C.";
 
   /** About string, plain text version. */
-  public static final String ABOUT_TXT = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " ("
-      + Globals.APP_BUILD_NUMBER + ")"
-      + " is a pipeline for RNAseq analysis.\n"
-      + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
-      + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
-      + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
-      + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n" + "Contacts:\n"
-      + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
-      + "  Google group: http://groups.google.com/group/" + APP_NAME_LOWER_CASE
-      + "\n" + "Copyright " + COPYRIGHT_DATE
-      + " École Normale Supérieure microarray platform.\n" + LICENSE_TXT
-      + "\n";
+  public static final String ABOUT_TXT =
+      Globals.APP_NAME
+          + " version " + Globals.APP_VERSION_STRING + " ("
+          + Globals.APP_BUILD_NUMBER + ")"
+          + " is a pipeline for RNAseq analysis.\n"
+          + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
+          + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
+          + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
+          + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n" + "Contacts:\n"
+          + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
+          + "  Google group: http://groups.google.com/group/"
+          + APP_NAME_LOWER_CASE + "\n" + "Copyright " + COPYRIGHT_DATE
+          + " IBENS genomic platform\n" + LICENSE_TXT + "\n";
 
   /** Default standard output state. */
   public static final boolean STD_OUTPUT_DEFAULT = false;
