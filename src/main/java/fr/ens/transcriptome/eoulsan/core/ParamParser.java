@@ -54,6 +54,9 @@ public class ParamParser {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  /** Version of the format of the parameter file. */
+  private static final String FORMAT_VERSION = "1.0";
+
   private InputStream is;
 
   /**
@@ -111,6 +114,11 @@ public class ParamParser {
         //
         // Parse description elements
         //
+
+        final String formatVersion = getTagValue("formatversion", eElement);
+        if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion))
+          throw new EoulsanException(
+              "Invalid version of the format of the parameter file.");
 
         final String name = getTagValue("name", eElement);
         command.setName(name);
