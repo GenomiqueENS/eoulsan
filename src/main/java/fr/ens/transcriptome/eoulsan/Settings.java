@@ -30,16 +30,16 @@ public final class Settings {
   private static final String PRINT_STACK_TRACE_KEY =
       MAIN_PREFIX_KEY + "printstacktrace";
 
-  private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
+  public static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
-  private static final String RSERVE_ENABLED_KEY =
+  public static final String RSERVE_ENABLED_KEY =
       MAIN_PREFIX_KEY + "rserve.enable";
-  private static final String RSERVE_SERVER_NAME_KEY =
+  public static final String RSERVE_SERVER_NAME_KEY =
       MAIN_PREFIX_KEY + "rserve.servername";
 
   private static final String OBFUSCATE_DESIGN_KEY =
