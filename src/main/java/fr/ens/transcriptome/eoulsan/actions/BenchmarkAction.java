@@ -87,6 +87,12 @@ public class BenchmarkAction extends AbstractAction {
   }
 
   @Override
+  public boolean isHidden() {
+
+    return true;
+  }
+
+  @Override
   public void action(String[] arguments) {
 
     try {
@@ -103,8 +109,8 @@ public class BenchmarkAction extends AbstractAction {
       final String[] genomes = {"mouse"};
       final String[] mappers = {"bowtie"};
 
-      int[] instanceCounts = new int[] {12, 10, 8};
-      String designFile = "design-x4.txt";
+      int[] instanceCounts = new int[] {4};
+      String designFile = "design-x2.txt";
       String instance = InstanceType.M1Large.toString();
 
       // loop for genome
@@ -134,53 +140,14 @@ public class BenchmarkAction extends AbstractAction {
 
           } // End loop instanceCounts
         } // End loop mapper
-
       } // End loop genome
 
       //
       // Serie 2
       //
 
-      instanceCounts = new int[] {20, 18, 16, 14, 12};
-      designFile = "design.txt";
-      instance = InstanceType.C1Xlarge.toString();
-
-      // loop for genome
-      for (String genome : genomes) {
-
-        final String dir = BASE_DIR + genome + "/";
-
-        final String designPath = dir + designFile;
-
-        // loop for mappers
-        for (String mapper : mappers) {
-
-          for (int instanceCount : instanceCounts) {
-
-            final String paramFile =
-                dir + "param-" + genome + "-aws-" + mapper + ".xml";
-            final String desc =
-                genome
-                    + " data, " + designFile + ", " + mapper + " on "
-                    + instanceCount + " " + instance.toString();
-
-            // System.out.println(paramFile);
-            // System.out.println(desc);
-
-            exec(settings, instance.toString(), instanceCount, paramFile,
-                designPath, desc);
-
-          } // End loop instanceCounts
-        } // End loop mapper
-
-      } // End loop genome
-
-      //
-      // Serie 3
-      //
-
-      instanceCounts = new int[] {20};
-      designFile = "design-x2.txt";
+      instanceCounts = new int[] {6, 4};
+      designFile = "design-x4.txt";
       instance = InstanceType.M1Large.toString();
 
       // loop for genome
@@ -210,45 +177,6 @@ public class BenchmarkAction extends AbstractAction {
 
           } // End loop instanceCounts
         } // End loop mapper
-
-      } // End loop genome
-
-      //
-      // Serie 4
-      //
-
-      instanceCounts = new int[] {20, 18, 16, 14, 12, 10, 8, 6};
-      designFile = "design-dx2.txt";
-      instance = InstanceType.M1Large.toString();
-
-      // loop for genome
-      for (String genome : genomes) {
-
-        final String dir = BASE_DIR + genome + "/";
-
-        final String designPath = dir + designFile;
-
-        // loop for mappers
-        for (String mapper : mappers) {
-
-          for (int instanceCount : instanceCounts) {
-
-            final String paramFile =
-                dir + "param-" + genome + "-aws-" + mapper + ".xml";
-            final String desc =
-                genome
-                    + " data, " + designFile + ", " + mapper + " on "
-                    + instanceCount + " " + instance.toString();
-
-            // System.out.println(paramFile);
-            // System.out.println(desc);
-
-            exec(settings, instance.toString(), instanceCount, paramFile,
-                designPath, desc);
-
-          } // End loop instanceCounts
-        } // End loop mapper
-
       } // End loop genome
 
       LOGGER.info("--- End at " + new Date() + " ---");
