@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -38,14 +39,12 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 public abstract class AbstractExpressionStep extends AbstractStep {
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
-  
+
   protected static final String COUNTER_GROUP = "expression";
 
   private static final String STEP_NAME = "expression";
   private static final String DEFAULT_GENOMIC_TYPE = "exon";
 
- 
-  
   private String genomicType = DEFAULT_GENOMIC_TYPE;
   private String tmpDir;
 
@@ -116,7 +115,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     for (Parameter p : globalParameters) {
 
-      if ("tmpdir".equals(p.getName()))
+      if (Settings.TMP_DIR_KEY.equals(p.getName()))
         this.tmpDir = p.getStringValue();
 
     }
