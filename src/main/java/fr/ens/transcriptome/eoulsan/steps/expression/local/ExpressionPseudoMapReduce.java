@@ -106,7 +106,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
     final String chr = samRecord.getReferenceName();
     final int start = samRecord.getAlignmentStart();
-    final int end = samRecord.getAlignmentEnd() + 1;
+    final int end = samRecord.getAlignmentEnd();
 
     final Set<Exon> exons = tef.findExons(chr, start, end);
 

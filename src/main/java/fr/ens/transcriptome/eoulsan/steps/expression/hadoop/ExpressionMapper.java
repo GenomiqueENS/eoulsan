@@ -104,7 +104,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     final String chr = samRecord.getReferenceName();
     final int start = samRecord.getAlignmentStart();
-    final int stop = samRecord.getAlignmentEnd() + 1;
+    final int stop = samRecord.getAlignmentEnd();
 
     final Set<Exon> exons = tef.findExons(chr, start, stop);
 
