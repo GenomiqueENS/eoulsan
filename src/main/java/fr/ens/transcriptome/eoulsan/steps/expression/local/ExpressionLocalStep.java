@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
 public class ExpressionLocalStep extends AbstractExpressionStep {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public StepResult execute(final Design design, final Context context) {
@@ -114,7 +114,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
         // Remove expression Temp file
         if (!expressionTmpFile.delete())
-          logger.warning("Can not delete expression temporary file: "
+          LOGGER.warning("Can not delete expression temporary file: "
               + expressionTmpFile.getAbsolutePath());
 
         // Add counters for this sample to log file
