@@ -57,6 +57,16 @@ public class AWSMapReduceExecStep extends AbstractStep {
 
   private static final int SECONDS_WAIT_BETWEEN_CHECKS = 30;
 
+  private static final String HADOOP_VERSION_KEY =
+      "aws.mapreduce.hadoop.version";
+  private static final String INSTANCES_NUMBER_KEY =
+      "aws.mapreduce.instances.number";
+  private static final String INSTANCE_TYPE_KEY =
+      "aws.mapreduce.instances.type";
+  private static final String MAPREDUCE_ENDPOINT_KEY = "aws.mapreduce.endpoint";
+  private static final String LOG_PATH_KEY = "aws.mapreduce.log.path";
+  private static final String WAIT_JOB_KEY = "aws.mapreduce.wait.job";
+
   /** Version of hadoop to use with AWS MapReduce. */
   private String hadoopVersion = "0.20";
 
@@ -76,30 +86,27 @@ public class AWSMapReduceExecStep extends AbstractStep {
   private boolean waitJob = false;
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
 
-    for (Parameter param : globalParameters) {
+    final Settings settings = EoulsanRuntime.getSettings();
 
-      if ("aws.mapreduce.hadoop.version".equals(param.getName()))
-        this.hadoopVersion = param.getStringValue().trim();
+    if (settings.isSetting(HADOOP_VERSION_KEY))
+      this.hadoopVersion = settings.getSetting(HADOOP_VERSION_KEY).trim();
 
-      if ("aws.mapreduce.instances.number".equals(param.getName()))
-        this.nInstances = param.getIntValue();
+    if (settings.isSetting(INSTANCES_NUMBER_KEY))
+      this.nInstances = settings.getIntSetting(INSTANCES_NUMBER_KEY);
 
-      if ("aws.mapreduce.instances.type".equals(param.getName()))
-        this.instanceType = param.getStringValue().trim();
+    if (settings.isSetting(INSTANCE_TYPE_KEY))
+      this.instanceType = settings.getSetting(INSTANCE_TYPE_KEY);
 
-      if ("aws.mapreduce.endpoint".equals(param.getName()))
-        this.endpoint = param.getStringValue().trim();
+    if (settings.isSetting(MAPREDUCE_ENDPOINT_KEY))
+      this.endpoint = settings.getSetting(MAPREDUCE_ENDPOINT_KEY);
 
-      if ("aws.mapreduce.log.path".equals(param.getName()))
-        this.logPathname = param.getStringValue().trim();
+    if (settings.isSetting(LOG_PATH_KEY))
+      this.logPathname = settings.getSetting(LOG_PATH_KEY);
 
-      if ("aws.mapreduce.wait.job".equals(param.getName()))
-        this.waitJob = param.getBooleanValue();
-
-    }
+    if (settings.isSetting(WAIT_JOB_KEY))
+      this.waitJob = settings.getBooleanSetting(WAIT_JOB_KEY);
 
     if (this.nInstances == -1)
       throw new EoulsanException("The number of instance is not set.");

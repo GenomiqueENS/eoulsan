@@ -51,8 +51,8 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
   }
 
   @Override
@@ -82,10 +82,10 @@ public class GenomeChecker implements Checker {
 
     try {
       final DataFile file = context.getDataFile(DataFormats.GENOME_FASTA, s);
-      
+
       if (!file.exists())
         return true;
-      
+
       is = file.open();
 
       checkInfo.add(INFO_CHROMOSOME, checkGenomeFile(is));

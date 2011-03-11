@@ -76,14 +76,11 @@ public interface Step {
   String getLogName();
 
   /**
-   * Set the parameters of the step and the global parameters to configure the
-   * step.
+   * Set the parameters of the step to configure the step.
    * @param stepParameters parameters of the step
-   * @param globalParameters global parameters
    * @throws EoulsanException if a parameter is invalid
    */
-  void configure(Set<Parameter> stepParameters, Set<Parameter> globalParameters)
-      throws EoulsanException;
+  void configure(Set<Parameter> stepParameters) throws EoulsanException;
 
   /**
    * Execute the step.

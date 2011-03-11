@@ -37,6 +37,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -91,10 +92,10 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
-    this.conf = CommonHadoop.createConfiguration(globalParameters);
+    this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override

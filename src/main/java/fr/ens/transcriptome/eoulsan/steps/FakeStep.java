@@ -48,14 +48,10 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) {
+  public void configure(Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters)
       logger.info("s: " + p.getName() + "\t" + p.getStringValue());
-
-    for (Parameter p : globalParameters)
-      logger.info("g: " + p.getName() + "\t" + p.getStringValue());
 
   }
 

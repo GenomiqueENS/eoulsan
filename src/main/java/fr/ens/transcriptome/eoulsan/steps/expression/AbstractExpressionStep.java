@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -96,8 +96,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
@@ -113,13 +113,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
       throw new EoulsanException("Parent type in no set for "
           + getName() + " step.");
 
-    for (Parameter p : globalParameters) {
-
-      if (Settings.TMP_DIR_KEY.equals(p.getName()))
-        this.tmpDir = p.getStringValue();
-
-    }
-
+    // Set temporary directory
+    this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();
   }
 
 }

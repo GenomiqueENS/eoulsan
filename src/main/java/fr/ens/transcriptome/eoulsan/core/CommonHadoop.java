@@ -50,9 +50,9 @@ public class CommonHadoop {
 
   public static final int CHECK_COMPLETION_TIME = 5000;
   public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
-  
+
   public static final String COUNTER_GROUP_KEY =
-    Globals.PARAMETER_PREFIX + ".counter.group";
+      Globals.PARAMETER_PREFIX + ".counter.group";
 
   /**
    * Retrieve the genome file name from the files of a directory
@@ -61,21 +61,21 @@ public class CommonHadoop {
    * @return the genome file path
    * @throws IOException if the genome file can't be identified
    */
-//  public static Path getGenomeFilePath(final Path basePath,
-//      final Configuration conf) throws IOException {
-//
-//    if (basePath == null)
-//      throw new NullPointerException("Base path is null");
-//
-//    final List<Path> genomePaths =
-//        PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
-//    if (genomePaths.size() == 0)
-//      throw new IOException("Genome file not found.");
-//    if (genomePaths.size() > 1)
-//      throw new IOException("More than one genome file found.");
-//
-//    return genomePaths.get(0);
-//  }
+  // public static Path getGenomeFilePath(final Path basePath,
+  // final Configuration conf) throws IOException {
+  //
+  // if (basePath == null)
+  // throw new NullPointerException("Base path is null");
+  //
+  // final List<Path> genomePaths =
+  // PathUtils.listPathsBySuffix(basePath, Common.FASTA_EXTENSION, conf);
+  // if (genomePaths.size() == 0)
+  // throw new IOException("Genome file not found.");
+  // if (genomePaths.size() > 1)
+  // throw new IOException("More than one genome file found.");
+  //
+  // return genomePaths.get(0);
+  // }
 
   /**
    * Write log data.
@@ -154,39 +154,10 @@ public class CommonHadoop {
 
   /**
    * Create a new Configuration object from global parameters
-   * @param globalParameters global parameter as a set of Parameter object
-   * @return a new Configuration object
-   */
-  public static final Configuration createConfiguration(
-      final Set<Parameter> globalParameters) throws EoulsanException {
-
-    if (globalParameters == null)
-      return null;
-
-    final Configuration conf = new Configuration();
-
-    for (Parameter p : globalParameters) {
-
-      final String keyName = p.getName();
-
-      if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
-
-        final String hadoopKey =
-            keyName.substring(HADOOP_PARAMETER_PREFIX.length());
-        conf.set(hadoopKey, p.getStringValue());
-      }
-    }
-
-    return conf;
-  }
-
-  /**
-   * Create a new Configuration object from global parameters
    * @param settings Settings of the application
    * @return a new Configuration object
    */
-  public static final Configuration createConfigurationFromSettings(
-      final Settings settings) {
+  public static final Configuration createConfiguration(final Settings settings) {
 
     if (settings == null)
       return null;

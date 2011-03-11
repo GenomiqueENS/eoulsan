@@ -30,16 +30,16 @@ public final class Settings {
   private static final String PRINT_STACK_TRACE_KEY =
       MAIN_PREFIX_KEY + "printstacktrace";
 
-  public static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
+  private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
-  public static final String RSERVE_ENABLED_KEY =
+  private static final String RSERVE_ENABLED_KEY =
       MAIN_PREFIX_KEY + "rserve.enable";
-  public static final String RSERVE_SERVER_NAME_KEY =
+  private static final String RSERVE_SERVER_NAME_KEY =
       MAIN_PREFIX_KEY + "rserve.servername";
 
   private static final String OBFUSCATE_DESIGN_KEY =
@@ -54,6 +54,15 @@ public final class Settings {
   //
   // Getters
   //
+
+  /**
+   * Test if a setting key exists.
+   * @return true if the setting exist
+   */
+  public boolean isSetting(final String key) {
+
+    return this.properties.containsKey(key);
+  }
 
   /**
    * Test is the debug mode is enabled.
@@ -123,7 +132,8 @@ public final class Settings {
    */
   public String getTempDirectory() {
 
-    return this.properties.getProperty(TMP_DIR_KEY);
+    return this.properties.getProperty(TMP_DIR_KEY, System
+        .getProperty("java.io.tmpdir"));
   }
 
   /**
@@ -161,6 +171,67 @@ public final class Settings {
     }
 
     return this.properties.getProperty(settingName);
+  }
+
+  /**
+   * Get the value of the setting as a integer value
+   * @return the value of the setting as an integer
+   * @throws EoulsanException if the value is not an integer
+   */
+  public int getIntSetting(final String settingName) throws EoulsanException {
+
+    final String value = getSetting(settingName);
+    if (value == null)
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + settingName + " parameter: " + value);
+
+    try {
+
+      return Integer.parseInt(value);
+    } catch (NumberFormatException e) {
+
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + settingName + " parameter: " + value);
+    }
+
+  }
+
+  /**
+   * Get the value of the setting as a double value
+   * @return the value of the setting as an double
+   * @throws EoulsanException if the value is not an double
+   */
+  public double getDoubleSetting(final String settingName)
+      throws EoulsanException {
+
+    final String value = getSetting(settingName);
+    if (value == null)
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + settingName + " parameter: " + value);
+
+    try {
+
+      return Double.parseDouble(value);
+    } catch (NumberFormatException e) {
+
+      throw new EoulsanException(
+          "Invalid parameter, an integer parameter is need for "
+              + settingName + " parameter: " + value);
+    }
+
+  }
+
+  /**
+   * Get the value of the setting as a boolean value
+   * @return the value of the setting as an integer
+   * @throws EoulsanException if the value is not an integer
+   */
+  public boolean getBooleanSetting(final String settingName) {
+
+    return Boolean.parseBoolean(getSetting(settingName));
   }
 
   /**

@@ -31,6 +31,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -81,10 +82,10 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
-    this.conf = CommonHadoop.createConfiguration(globalParameters);
+    this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override

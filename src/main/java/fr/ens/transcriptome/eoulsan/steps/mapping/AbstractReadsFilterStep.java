@@ -43,10 +43,10 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   /** filter reads length threshold. */
   public static final int LENGTH_THRESHOLD = 15;
-  
+
   /** filter reads quality threshold. */
   public static final double QUALITY_THRESHOLD = 15;
-  
+
   private int lengthThreshold = -1;
   private double qualityThreshold = -1;
   private boolean pairEnd;
@@ -106,8 +106,8 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
