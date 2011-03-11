@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan;
 
 /**
- * A nestable nividic exception. This class came from from Biojava code.
+ * A nestable Eoulsan exception. This class came from from Biojava code.
  * @author Laurent Jourdren
  * @author Matthew Pocock
  */
@@ -41,7 +41,7 @@ public class EoulsanException extends Exception {
   }
 
   /**
-   * Create a new NividicException.
+   * Create a new EoulsanException.
    */
   public EoulsanException() {
     super();

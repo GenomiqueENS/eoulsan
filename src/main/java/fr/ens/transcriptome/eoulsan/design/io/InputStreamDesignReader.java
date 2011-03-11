@@ -98,7 +98,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
   /**
    * Set the input stream.
    * @param is The input stream to set
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    */
   protected void setInputStream(final InputStream is) throws EoulsanIOException {
 
@@ -114,7 +114,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
   /**
    * Read the design.
    * @return a new Design object
-   * @throws NividicIOException if an error occurs while reading the design
+   * @throws EoulsanIOException if an error occurs while reading the design
    */
   public abstract Design read() throws EoulsanIOException;
 
@@ -125,7 +125,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws NividicIOException if an error occurs while reading the file or if
+   * @throws EoulsanIOException if an error occurs while reading the file or if
    *           the file is null.
    */
   public InputStreamDesignReader(final File file) throws EoulsanIOException {
@@ -146,7 +146,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    */
   public InputStreamDesignReader(final InputStream is)
       throws EoulsanIOException {

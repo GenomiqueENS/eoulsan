@@ -27,14 +27,14 @@ package fr.ens.transcriptome.eoulsan.io;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
- * A nestable nividic exception. This class came from from Biojava code.
+ * A nestable Eoulsan exception. This class came from from Biojava code.
  * @author Laurent Jourdren
  * @author Matthew Pocock
  */
 public class EoulsanIOException extends EoulsanException {
 
   /**
-   * Create a new NividicIOException with a message.
+   * Create a new EoulsanRuntimeException with a message.
    * @param message the message
    */
   public EoulsanIOException(final String message) {
@@ -42,7 +42,7 @@ public class EoulsanIOException extends EoulsanException {
   }
 
   /**
-   * Create a new NividicIOException.
+   * Create a new EoulsanIOException.
    */
   public EoulsanIOException() {
     super();

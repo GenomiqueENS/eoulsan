@@ -138,7 +138,7 @@ public class SimpleDesignWriter extends DesignWriter {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws NividicIOException if an error occurs while reading the file or if
+   * @throws EoulsanIOException if an error occurs while reading the file or if
    *           the file is null.
    */
   public SimpleDesignWriter(final File file) throws EoulsanIOException {
@@ -149,7 +149,7 @@ public class SimpleDesignWriter extends DesignWriter {
   /**
    * Public constructor
    * @param os Input stream to read
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    */
   public SimpleDesignWriter(final OutputStream os) throws EoulsanIOException {
     super(os);
@@ -158,7 +158,7 @@ public class SimpleDesignWriter extends DesignWriter {
   /**
    * Public constructor
    * @param filename File to write
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public SimpleDesignWriter(final String filename) throws EoulsanIOException,

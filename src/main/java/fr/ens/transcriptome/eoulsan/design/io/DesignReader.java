@@ -38,7 +38,7 @@ public interface DesignReader  {
   /**
    * Read the design.
    * @return a new Design object
-   * @throws NividicIOException if an error occurs while reading the design
+   * @throws EoulsanIOException if an error occurs while reading the design
    */
   Design read() throws EoulsanIOException;
 }

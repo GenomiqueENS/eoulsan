@@ -80,7 +80,7 @@ public abstract class DesignWriter {
   /**
    * Write a Design.
    * @param design Design to write
-   * @throws NividicIOException if an exception occurs while writing the design
+   * @throws EoulsanIOException if an exception occurs while writing the design
    */
   public abstract void write(final Design design) throws EoulsanIOException;
 
@@ -91,7 +91,7 @@ public abstract class DesignWriter {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws NividicIOException if an error occurs while reading the file or if
+   * @throws EoulsanIOException if an error occurs while reading the file or if
    *           the file is null.
    */
   public DesignWriter(final File file) throws EoulsanIOException {
@@ -111,7 +111,7 @@ public abstract class DesignWriter {
   /**
    * Public constructor
    * @param os Input stream to read
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    */
   public DesignWriter(final OutputStream os) throws EoulsanIOException {
     setOutputStream(os);
