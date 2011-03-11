@@ -325,7 +325,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create Hadoop configuration object
       final Configuration conf =
-          CommonHadoop.createConfigurationFromSettings(settings);
+          CommonHadoop.createConfiguration(settings);
 
       // Initialize runtime
       HadoopEoulsanRuntime.newEoulsanRuntime(settings, conf);

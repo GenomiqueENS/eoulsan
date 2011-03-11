@@ -207,7 +207,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws NividicIOException if an error occurs while reading the file or if
+   * @throws EoulsanIOException if an error occurs while reading the file or if
    *           the file is null.
    */
   public SimpleDesignReader(final File file) throws EoulsanIOException {
@@ -222,7 +222,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    */
   public SimpleDesignReader(final InputStream is) throws EoulsanIOException {
 
@@ -232,7 +232,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   /**
    * Public constructor
    * @param filename File to read
-   * @throws NividicIOException if the stream is null
+   * @throws EoulsanIOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public SimpleDesignReader(final String filename) throws EoulsanIOException,

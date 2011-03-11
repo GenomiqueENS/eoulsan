@@ -25,8 +25,8 @@
 package fr.ens.transcriptome.eoulsan;
 
 /**
- * A nestable nividic exception. This class came from from Java Code. In
- * Nividic, checked exceptions are generally preferred to RuntimeExceptions, but
+ * A nestable Eoulsan exception. This class came from from Java Code. In
+ * Eoulsan, checked exceptions are generally preferred to RuntimeExceptions, but
  * RuntimeExceptions can be used as a fall-back if you are implementing an
  * interface which doesn't support checked exceptions. If you do this, please
  * document this clearly in the implementing class.
@@ -144,7 +144,7 @@ public class EoulsanRuntimeException extends RuntimeException {
   //
 
   /**
-   * Create a new NividicRuntimeException with a message.
+   * Create a new EoulsanRuntimeException with a message.
    * @param message the message
    */
   public EoulsanRuntimeException(final String message) {
@@ -153,9 +153,9 @@ public class EoulsanRuntimeException extends RuntimeException {
   }
 
   /**
-   * Create a new NividicRuntimeException with a cause and a message.
+   * Create a new EoulsanRuntimeException with a cause and a message.
    * @param type Type of exception message
-   * @param causeMessage the cause that caused this NividicRuntimeException
+   * @param causeMessage the cause that caused this EoulsanRuntimeException
    */
   // public EoulsanRuntimeException(final int type, final String causeMessage) {
   // setType(type);
@@ -165,7 +165,7 @@ public class EoulsanRuntimeException extends RuntimeException {
   // }
 
   /**
-   * Create a new NividicRuntimeException.
+   * Create a new EoulsanRuntimeException.
    */
   public EoulsanRuntimeException() {
     super();
