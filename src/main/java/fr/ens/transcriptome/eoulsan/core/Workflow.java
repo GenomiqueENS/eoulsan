@@ -16,7 +16,9 @@ import java.util.logging.Logger;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -299,8 +301,7 @@ class Workflow implements WorkflowDescription {
 
             Checker c = checkers.get(df);
 
-            c.configure(this.command.getStepParameters(step.getName()),
-                this.command.getGlobalParameters());
+            c.configure(this.command.getStepParameters(step.getName()));
             c.check(this.design, this.context, checkStore);
 
           }
@@ -491,7 +492,12 @@ class Workflow implements WorkflowDescription {
     final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
     final Set<Parameter> globalParameters = c.getGlobalParameters();
 
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Add globals parameters to Settings
     LOGGER.info("Init all step with global parameters: " + globalParameters);
+    for (Parameter p : globalParameters)
+      settings.setSetting(p.getName(), p.getStringValue());
 
     for (Step step : this.steps) {
 
@@ -501,7 +507,7 @@ class Workflow implements WorkflowDescription {
       LOGGER.info("Configure "
           + stepName + " step with step parameters: " + stepParameters);
 
-      step.configure(stepParameters, globalParameters);
+      step.configure(stepParameters);
 
       // Register input and output formats
       dfRegistry.register(step.getInputFormats());

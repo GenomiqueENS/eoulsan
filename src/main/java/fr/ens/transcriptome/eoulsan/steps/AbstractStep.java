@@ -73,8 +73,8 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters,
-      final Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
   }
 
   @Override

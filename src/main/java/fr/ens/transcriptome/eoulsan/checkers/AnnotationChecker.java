@@ -50,11 +50,11 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
     for (Parameter p : stepParameters) {
 
-      if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
+      if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
+          .equals(p.getName()))
         this.genomicType = p.getStringValue();
       else
         throw new EoulsanException("Unknown parameter for "

@@ -34,6 +34,7 @@ import org.apache.hadoop.fs.Path;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -64,11 +65,10 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
   //
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
 
-    super.configure(stepParameters, globalParameters);
-    this.conf = CommonHadoop.createConfiguration(globalParameters);
+    super.configure(stepParameters);
+    this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override

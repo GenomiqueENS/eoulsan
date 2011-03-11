@@ -61,8 +61,7 @@ public class ExecInfoLogStep extends AbstractStep {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters,
-      Set<Parameter> globalParameters) throws EoulsanException {
+  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
   }
 
   @Override
