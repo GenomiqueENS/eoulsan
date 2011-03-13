@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.BufferedReader;
@@ -37,9 +38,11 @@ import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -63,7 +66,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   @Override
   public DataFormat[] getInputFormats() {
     return new DataFormat[] {FILTERED_READS_FASTQ,
-        getMapper().getArchiveFormat()};
+        getMapper().getArchiveFormat(), GENOME_DESC_TXT};
   }
 
   @Override
@@ -74,6 +77,15 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final StringBuilder log = new StringBuilder();
 
       final SequenceReadsMapper mapper = getMapper();
+
+      // Load genome description object
+      final GenomeDescription genomeDescription;
+      if (design.getSampleCount() > 0) {
+        genomeDescription =
+            GenomeDescription.load(context.getDataFile(
+                DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
+      } else
+        genomeDescription = null;
 
       for (Sample s : design.getSamples()) {
 
@@ -117,7 +129,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         // Process to mapping
         mapper.map(inFile, archiveIndexFile, indexDir);
 
-        final File samOutputFile = mapper.getSAMFile();
+        final File samOutputFile = mapper.getSAMFile(genomeDescription);
         parseSAMResults(samOutputFile, reporter);
 
         // Clean mapper temporary files
@@ -126,7 +138,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(COUNTER_GROUP,
+        log.append(reporter.countersValuesToString(
+            COUNTER_GROUP,
             "Mapping reads with "
                 + mapper.getMapperName() + " (" + s.getName() + ", "
                 + inFile.getName() + ")"));

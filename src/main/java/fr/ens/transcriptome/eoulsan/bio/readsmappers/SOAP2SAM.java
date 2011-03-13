@@ -36,6 +36,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -47,17 +48,36 @@ public class SOAP2SAM {
   private final File fin;
   private final File funmap;
   private final File fout;
+  private final GenomeDescription gd;
 
-  private static final Pattern PATTERN =
-      Pattern.compile("^([AaCcGgTt])->(\\d+)");
+  private static final Pattern PATTERN = Pattern
+      .compile("^([AaCcGgTt])->(\\d+)");
 
   private static final Pattern TAB_PATTERN = Pattern.compile("\t");
+
+  private UnSynchronizedBufferedWriter createWriter() throws IOException {
+
+    final UnSynchronizedBufferedWriter bw =
+        FileUtils.createFastBufferedWriter(this.fout);
+
+    if (this.gd != null) {
+
+      bw.write("@HD\tVN:1.0\tSO:unsorted\n");
+
+      for (String sequenceName : this.gd.getSequencesNames()) {
+        bw.write("@SQ\tSN:"
+            + sequenceName + "\tLN:" + this.gd.getSequenceLength(sequenceName)
+            + "\n");
+      }
+    }
+
+    return bw;
+  }
 
   public void convert(boolean isPaired) throws IOException {
 
     final BufferedReader br = FileUtils.createBufferedReader(this.fin);
-    final UnSynchronizedBufferedWriter bw =
-        FileUtils.createFastBufferedWriter(this.fout);
+    final UnSynchronizedBufferedWriter bw = createWriter();
 
     String line = null;
     String[] sLast = null;
@@ -184,8 +204,8 @@ public class SOAP2SAM {
 
         final Matcher m = PATTERN.matcher(tab[i]);
         if (m.find()) {
-          x.add(String.format("%3d,%s", Integer.parseInt(m.group(2)), m
-              .group(1)));
+          x.add(String.format("%3d,%s", Integer.parseInt(m.group(2)),
+              m.group(1)));
         }
 
       }
@@ -286,7 +306,8 @@ public class SOAP2SAM {
   // Constructor
   //
 
-  public SOAP2SAM(final File fin, final File funmap, final File fout) {
+  public SOAP2SAM(final File fin, final File funmap,
+      final GenomeDescription gd, final File fout) {
 
     if (fin == null) {
       throw new NullPointerException("fin is null");
@@ -303,6 +324,7 @@ public class SOAP2SAM {
     this.fin = fin;
     this.funmap = funmap;
     this.fout = fout;
+    this.gd = gd;
 
   }
 

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -178,7 +179,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public File getSAMFile() throws IOException {
+  public File getSAMFile(final GenomeDescription gd) throws IOException {
 
     final String bwaPath;
 

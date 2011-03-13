@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -157,14 +158,14 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public File getSAMFile() throws IOException {
+  public File getSAMFile(final GenomeDescription gd) throws IOException {
 
     final File resultFile =
         FileUtils.createTempFile(this.outputFile.getParentFile(),
             "soap-output-", ".sam");
 
     final SOAP2SAM convert =
-        new SOAP2SAM(this.outputFile, this.unmapFile, resultFile);
+        new SOAP2SAM(this.outputFile, this.unmapFile, gd, resultFile);
     convert.convert(isPairEnd());
 
     return resultFile;
