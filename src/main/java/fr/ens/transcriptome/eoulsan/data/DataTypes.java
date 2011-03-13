@@ -153,6 +153,23 @@ public class DataTypes {
         }
       };
 
+  /** Mapper results index datatype. */
+  public static final DataType FILTERED_MAPPER_RESULTS_INDEX =
+      new AbstractDataType() {
+
+        @Override
+        public String getName() {
+
+          return "filtered_mapper_results_index";
+        }
+
+        @Override
+        public String getPrefix() {
+
+          return "filtered_mapper_results_index_";
+        }
+      };
+
   /** Mapper results datatype. */
   public static final DataType MAPPER_RESULTS = new AbstractDataType() {
 
@@ -166,6 +183,22 @@ public class DataTypes {
     public String getPrefix() {
 
       return "mapper_results_";
+    }
+  };
+
+  /** Mapper results index datatype. */
+  public static final DataType MAPPER_RESULTS_INDEX = new AbstractDataType() {
+
+    @Override
+    public String getName() {
+
+      return "mapper_results_index";
+    }
+
+    @Override
+    public String getPrefix() {
+
+      return "mapper_results_index_";
     }
   };
 
