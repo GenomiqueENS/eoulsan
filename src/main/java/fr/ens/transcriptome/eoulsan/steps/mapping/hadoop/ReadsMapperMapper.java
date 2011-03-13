@@ -247,7 +247,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Parse result file
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
-    final File samOutputFile = this.mapper.getSAMFile();
+    final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
 
     // Remove temporary files

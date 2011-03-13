@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -104,7 +105,7 @@ public interface SequenceReadsMapper {
   void map(File readsFile1, File readsFile2, File archiveIndexFile,
       File archiveIndexDir) throws IOException;
 
-  File getSAMFile() throws IOException;
+  File getSAMFile(GenomeDescription gd) throws IOException;
 
   //
   // Other methods
