@@ -31,11 +31,12 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.GOOD_QU
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Writer;
 
+import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMFileWriter;
+import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
@@ -47,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 @LocalOnly
@@ -116,26 +116,25 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     final Reporter reporter = new Reporter();
 
     // Get reader
-    final BufferedReader br =
-        FileUtils.createBufferedReader(context.getDataFile(
-            DataFormats.MAPPER_RESULTS_SAM, sample).open());
+    final SAMFileReader inputSam =
+        new SAMFileReader(context.getDataFile(DataFormats.MAPPER_RESULTS_SAM,
+            sample).open());
 
     // Get Writer
-    final Writer writer =
-        FileUtils.createFastBufferedWriter(context.getDataFile(
-            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).create());
-
-    String line = null;
+    final SAMFileWriter outputSam =
+        new SAMFileWriterFactory().makeSAMWriter(inputSam.getFileHeader(),
+            false,
+            context
+                .getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample)
+                .create());
 
     String lastId = null;
-    String lastLine = null;
+    SAMRecord lastRecord = null;
     int lastIdCount = 0;
 
-    while ((line = br.readLine()) != null) {
+    for (SAMRecord samRecord : inputSam) {
 
       try {
-        final SAMRecord samRecord = parser.parseLine(line);
-
         reporter.incrCounter(COUNTER_GROUP,
             INPUT_ALIGNMENTS_COUNTER.counterName(), 1);
 
@@ -156,7 +155,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
               if (lastIdCount == 1) {
 
-                writer.write(lastLine + "\n");
+                outputSam.addAlignment(samRecord);
                 reporter.incrCounter(COUNTER_GROUP,
                     OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
 
@@ -178,7 +177,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
                 ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
           }
 
-          lastLine = line;
+          lastRecord = samRecord;
         }
 
       } catch (SAMFormatException e) {
@@ -191,7 +190,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     if (lastIdCount == 1) {
 
-      writer.write(lastLine + "\n");
+      outputSam.addAlignment(lastRecord);
       reporter.incrCounter(COUNTER_GROUP,
           OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
 
@@ -204,8 +203,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     }
 
     // Close files
-    br.close();
-    writer.close();
+    inputSam.close();
+    outputSam.close();
 
     return reporter.countersValuesToString(
         COUNTER_GROUP,
