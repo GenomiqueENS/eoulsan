@@ -338,28 +338,11 @@ public class SAMParser {
 
   public SAMParser() {
 
-    // this.mFileHeader.setSequenceDictionary(new SAMSequenceDictionary(new
-    // ArrayList<SAMSequenceRecord>()));
-
     final List<SAMSequenceRecord> sequences =
         new ArrayList<SAMSequenceRecord>();
 
-    final SAMSequenceRecord sequenceRecord =
-        new SAMSequenceRecord("Ca21chr1", Integer.MAX_VALUE);
-    sequences.add(sequenceRecord);
-
     this.mFileHeader
         .setSequenceDictionary(new SAMSequenceDictionary(sequences));
-
-  }
-
-  public static void main(String[] args) {
-
-    SAMParser parser = new SAMParser();
-
-    SAMRecord samRecord =
-        parser
-            .parseLine("HWI-EAS285:1:1:1000:1001#0\t0\tCa21chr2\t1167321\t37\t36M\t*\t0\t0\tATTCTAACAGAAGCACCGAAAGTCTTTGGTGGCAAG\tabaaaaa`aabaaaaa]^]`]^^\\a^aaa]`]\\\\`a\tXT:A:U\tNM:i:1\tX0:i:1\tX1:i:0\tXM:i:1\tXO:i:0\tXG:i:0\tMD:Z:17A18");
 
   }
 
