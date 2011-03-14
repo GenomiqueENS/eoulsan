@@ -93,9 +93,14 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   public void map(final String value, final List<String> output,
       final Reporter reporter) throws IOException {
 
+    // Don't read SAM headers
+    if (value == null || value.length() == 0 || value.charAt(0) == '@')
+      return;
+
     final SAMRecord samRecord;
 
     try {
+
       samRecord = parser.parseLine(value);
     } catch (SAMException e) {
 
