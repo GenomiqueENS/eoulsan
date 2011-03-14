@@ -33,9 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
@@ -57,6 +57,7 @@ public class GenomeDescription {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Map<String, Integer> sequences = Maps.newHashMap();
+  private List<String> sequencesOrder = Lists.newArrayList();
 
   //
   // Setters
@@ -72,7 +73,11 @@ public class GenomeDescription {
     LOGGER.info("Add sequence: "
         + sequenceName + " with " + sequenceLength + " pb");
 
+    if (!this.sequences.containsKey(sequenceName))
+      this.sequencesOrder.add(sequenceName);
+
     this.sequences.put(sequenceName, sequenceLength);
+
   }
 
   //
@@ -98,9 +103,9 @@ public class GenomeDescription {
    * Get the names of the sequences.
    * @return a set with the name of the sequence
    */
-  public Set<String> getSequencesNames() {
+  public List<String> getSequencesNames() {
 
-    return this.sequences.keySet();
+    return Collections.unmodifiableList(this.sequencesOrder);
   }
 
   //
