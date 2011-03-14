@@ -166,7 +166,7 @@ public class DataTypes {
         @Override
         public String getPrefix() {
 
-          return "filtered_mapper_results_index_";
+          return "filtered_mapper_results_";
         }
       };
 
@@ -198,7 +198,7 @@ public class DataTypes {
     @Override
     public String getPrefix() {
 
-      return "mapper_results_index_";
+      return "mapper_results_";
     }
   };
 
