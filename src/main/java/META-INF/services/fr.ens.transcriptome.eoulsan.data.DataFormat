@@ -16,3 +16,5 @@ fr.ens.transcriptome.eoulsan.data.AnadifResultsTxtDataFormat
 fr.ens.transcriptome.eoulsan.data.GenomeFastaDataFormat
 fr.ens.transcriptome.eoulsan.data.GenomeDescTxtDataFormat
 fr.ens.transcriptome.eoulsan.data.UnMapReadsFastaDataFormat
+fr.ens.transcriptome.eoulsan.data.MapperResultsBamIndexDataFormat
+fr.ens.transcriptome.eoulsan.data.FilteredMapperResultsBamIndexDataFormat
