@@ -1,25 +1,25 @@
 /*
- *                  Eoulsan development code
+ * The MIT License
  *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public License version 2.1 or
- * later and CeCILL-C. This should be distributed with the code.
- * If you do not have a copy, see:
+ * Copyright (c) 2009 The Broad Institute
  *
- *      http://www.gnu.org/licenses/lgpl-2.1.txt
- *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
- * the individual authors. These should be listed in @author doc
- * comments.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * For more information on the Eoulsan project and its aims,
- * or to join the Eoulsan Google group, visit the home page
- * at:
- *
- *      http://www.transcriptome.ens.fr/eoulsan
- *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package net.sf.samtools;
@@ -31,6 +31,11 @@ import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 
+/**
+ * This allow to parse a entry of a SAM file. This code comes from the picard
+ * project.
+ * @see http://picard.sourceforge.net/
+ */
 @SuppressWarnings("all")
 public class SAMParser {
 
@@ -313,6 +318,15 @@ public class SAMParser {
     }
   }
 
+  //
+  // Code added by Laurent Jourdren
+  //
+
+  /**
+   * Set the list of the chromosomes and the size of the chromosomes from a
+   * GenomeDescription object.
+   * @param genomeDescription The genome description
+   */
   public void setGenomeDescription(final GenomeDescription genomeDescription) {
 
     if (genomeDescription == null) {
@@ -333,9 +347,20 @@ public class SAMParser {
 
     this.mFileHeader
         .setSequenceDictionary(new SAMSequenceDictionary(sequences));
-
   }
 
+  /**
+   * Get the SAMFileHeader object.
+   * @return the SAMFileHeader object
+   */
+  public SAMFileHeader getFileHeader() {
+
+    return this.mFileHeader;
+  }
+
+  /**
+   * Public constructor.
+   */
   public SAMParser() {
 
     final List<SAMSequenceRecord> sequences =
