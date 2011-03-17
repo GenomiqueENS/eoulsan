@@ -9,7 +9,7 @@
 	</properties>
 	<body>
 
-		<release version="0.1" description="First release" date="2010-03-01">
+		<!--release version="0.1" description="First release" date="2010-03-01">
 			<action dev="jourdren" type="add">
 				Import data in hdfs.
 			</action>
@@ -70,6 +70,43 @@
             <action dev="jourdren" type="fix">
                 Integer division was used in mean quality computation.
             </action>
+         </release-->
+         
+         <release version="1.0" description="" date="2011-03-11">
+            <action dev="jourdren" type="update">
+                1.0 version.
+            </action>
+         </release>
+         
+          <release version="1.0.1" description="" date="2011-03-17">
+            <action dev="jourdren" type="update">
+                Documentation update and copyrights.
+            </action>
+            <action dev="jourdren" type="fix">
+                In Expression computaion in local mode, remove SAM header from the list of accepted values.
+            </action>
+            <action dev="jourdren" type="add">
+                Reads mapper can now generate SAM header from the list of the chromosomes.
+            </action>
+            <action dev="jourdren" type="fix">
+                Keep the order the chromsomes for SAM header.
+            </action>
+            <action dev="jourdren" type="update">
+                In filtersam step in local mode, now use picard library to read and write SAM files.
+            </action>
+            <action dev="jourdren" type="update">
+                Remove unused packages.
+            </action>
+            <action dev="jourdren" type="update">
+                Major Update of API: In Step, the configure() method don't need now globals 
+                parameters. The globals parameters are now the settings.
+            </action>
+            <action dev="jourdren" type="fix">
+                In local expression computation step, now use the path of temporary directory in Settings.
+            </action>
+            <action dev="jourdren" type="fix">
+                In expression computation, the ends of the alignments was 1 base too long.
+            </action>         
          </release>
          
 		
