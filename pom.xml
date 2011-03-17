@@ -6,12 +6,12 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>0.6-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>Eoulsan</name>
 	<description>
-		A pipeline for RNA-seq analysis.
+		A pipeline for NGS analysis.
 	</description>
-	<url>http://hestia.ens.fr/eoulsan-stable</url>
+	<url>http://transcriptome.ens.fr/eoulsan</url>
 
 	<properties>
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?</didyouknow>
@@ -95,20 +95,20 @@
 
 	<licenses>
 		<license>
-			<name>GNU General Public License version 3</name>
-			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<name>GNU Lesser General Public License v2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
 			<distribution>repo</distribution>
 			<comments />
 		</license>
 		<license>
-			<name>GNU General Public License</name>
-			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<name>GNU Lesser General Public License v3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
 			<distribution>repo</distribution>
 			<comments />
 		</license>
 		<license>
-			<name>CeCILL Licence française de logiciel libre</name>
-			<url>http://www.cecill.info/licences/Licence_CeCILL_V2-en.txt</url>
+			<name>CeCILL-C Licence française de logiciel libre</name>
+			<url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
 			<distribution>repo</distribution>
 			<comments />
 		</license>
@@ -207,7 +207,7 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
 			<!--version>1.0.008</version-->
-			<version>1.1.0</version>
+			<version>1.0.14</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -659,7 +659,7 @@
 					<configuration>
 						<encoding>utf-8</encoding>
 					</configuration>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changes-maven-plugin</artifactId>
@@ -671,7 +671,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
 			</plugin>
@@ -704,29 +704,32 @@
 					<configLocation>checkstyle.xml</configLocation>
 				</configuration-->
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<!--version>2.4</version-->
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<!--version>2.0.1</version-->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens>
+					<targetJdk>1.5</targetJdk>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javancss-maven-plugin</artifactId>
-				<!--version>2.0-beta-2</version-->
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
-			</plugin>
+			</plugin-->
 			
 			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -792,24 +795,5 @@
 				</plugin>-->
 		</plugins>
 	</reporting>
-
-        <!-- Enabling the use of FTP -->
-	<distributionManagement>
-		<repository>
-			<id>leburon-repository</id>
-			<url>ftp://hestia.ens.fr/export/home1/httpd/html/leburon/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<uniqueVersion>true</uniqueVersion>
-			<id>leburon-repository</id>
-			<name>Nividic Snapshots</name>
-			<url>ftp://hestia.ens.fr/export/home1/httpd/html/leburon/maven2</url>
-		</snapshotRepository>
-		<site>
-			<id>leburon-repository</id>
-			<name>Nividic Website</name>
-			<url>ftp://hestia.ens.fr/export/home1/httpd/html/leburon/nividic</url>
-		</site>
-        </distributionManagement>
 
 </project>
