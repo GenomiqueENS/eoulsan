@@ -81,10 +81,6 @@
 
 		</section>
 
-
-		
-			
-
 		<section name="Availabality">
 
 			<p>
@@ -93,10 +89,18 @@
 			</p>
 			
 		</section>
+
+		<section name="Funding">
+
+		<p>The testing of the Eoulsan cloud features was funded by a Amazon Web Services research grant.</p>
+		<a href="http://aws.amazon.com/"><img src="images/logo_aws-40.gif"/></a>
+
+		</section>
 		
+	
 		<p><a href="./eoulsan.rss">Subscribe to Eoulsan RSS feed<img src="images/feed-icon-14x14.png"/></a></p>
-		
-		<p/>       
+
+	
 		
 	</body>
 </document>

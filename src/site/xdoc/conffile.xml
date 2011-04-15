@@ -60,7 +60,7 @@
 
 	<p>This values are overided by the values of the global parameters of a parameter file. It is useful to use a configuration file to set AWS keys to remove this entries from the parameter file. Developpers can use additiobal parameter that are not in the previous table.</p>
  
-        <subsection name="Teolenn configuration file sample">
+        <subsection name="Eoulsan configuration file sample">
 
   <source>
 # This is an example of configuration file for Eoulsan.
