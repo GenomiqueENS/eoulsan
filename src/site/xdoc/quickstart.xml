@@ -102,8 +102,8 @@
                             analysis and one for distributed without differential analysis.</li>
 
 			  <ul>
-				<li><a href="./examples/param-local.xml">Parameter file for local analysis</a></li>
-                                <li><a href="./examples/param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
+				<li><a href="./examples/param-local.html">Parameter file for local analysis</a></li>
+                                <li><a href="./examples/param-hadoop.html">Parameter file for distributed analysis (without differential analysis).</a></li>
 			  </ul>
 			</ul>
 
