@@ -359,7 +359,17 @@ public class TranscriptAndExonFinder {
       if (!e.getChromosome().equals(e.getChromosome()))
         return getChromosome().compareTo(e.getChromosome());
 
-      return ((Integer) this.start).compareTo(e.getStart());
+      final int startComp = ((Integer) this.start).compareTo(e.getStart());
+
+      if (startComp != 0)
+        return startComp;
+
+      final int endComp = ((Integer) this.end).compareTo(e.getEnd());
+
+      if (endComp != 0)
+        return endComp;
+
+      return this.parentId.compareTo(e.getParentId());
     }
 
     /**
@@ -737,7 +747,7 @@ public class TranscriptAndExonFinder {
         else if (reader.isAttribute("PARENT"))
           parentId = reader.getAttributeValue("PARENT");
 
-        if (parentId == null)
+        if (chr == null || parentId == null)
           continue;
 
         // Create Exon
