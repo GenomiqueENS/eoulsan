@@ -109,6 +109,17 @@
             </action>         
          </release>
          
+
+         <release version="1.0.2" description="" date="2011-04-15">
+         
+            <action dev="jourdren" type="update">
+                Documentation update.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix bug in Expression computation when chromosome is not set in annotation.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
