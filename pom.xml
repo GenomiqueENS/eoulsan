@@ -206,8 +206,7 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
-			<!--version>1.0.008</version-->
-			<version>1.0.14</version>
+			<version>1.1.9</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -526,7 +525,7 @@
 								<artifactItem>
 						                  <groupId>com.amazonaws</groupId>
 						                  <artifactId>aws-java-sdk</artifactId>
-						                  <version>1.0.008</version>
+						                  <version>1.1.9</version>
 						                  <!--type></type-->
 				                                  <!--classifier> [classifier - optional] </classifier-->
 						                  <overWrite>true</overWrite>
