@@ -121,10 +121,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
           mapperThreads = Runtime.getRuntime().availableProcessors();
         }
 
+        // Set the number of threads
         mapper.setThreadsNumber(mapperThreads);
         LOGGER.info("Use "
             + mapper.getMapperName() + " with " + mapperThreads
             + " threads option");
+
+        // Set mapper temporary directory
+        mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
         // Process to mapping
         mapper.map(inFile, archiveIndexFile, indexDir);
@@ -138,8 +142,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(
-            COUNTER_GROUP,
+        log.append(reporter.countersValuesToString(COUNTER_GROUP,
             "Mapping reads with "
                 + mapper.getMapperName() + " (" + s.getName() + ", "
                 + inFile.getName() + ")"));
