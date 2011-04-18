@@ -102,6 +102,9 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       final DataFile mapperIndexDataFile =
           context.getDataFile(this.mapper.getArchiveFormat(), s1);
 
+      // Set mapper temporary directory
+      mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+
       final FileDataProtocol defaultProtocol =
           DataProtocolService.getInstance().getDefaultProtocol();
 
