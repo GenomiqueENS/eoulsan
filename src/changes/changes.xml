@@ -120,6 +120,13 @@
             </action>
          </release>
          
+         <release version="1.0.3" description="" date="2011-04-18">
+         
+            <action dev="jourdren" type="fix">
+                Use now temporary directory defined in parameter file for genome indexing and reads mapping in local mode.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
