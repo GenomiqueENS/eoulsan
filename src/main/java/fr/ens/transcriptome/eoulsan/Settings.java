@@ -51,31 +51,31 @@ public final class Settings {
   private static final String AWS_ACCESS_KEY = MAIN_PREFIX_KEY + "accessKey";
   private static final String AWS_SECRET_KEY = MAIN_PREFIX_KEY + "awssecretkey";
 
-  private static final String PRINT_STACK_TRACE_KEY = MAIN_PREFIX_KEY
-      + "printstacktrace";
+  private static final String PRINT_STACK_TRACE_KEY =
+      MAIN_PREFIX_KEY + "printstacktrace";
 
   private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
-  private static final String LOCAL_THREADS_NUMBER = MAIN_PREFIX_KEY
-      + "local.threads";
+  private static final String LOCAL_THREADS_NUMBER =
+      MAIN_PREFIX_KEY + "local.threads";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
-  private static final String RSERVE_ENABLED_KEY = MAIN_PREFIX_KEY
-      + "rserve.enable";
-  private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
-      + "rserve.servername";
+  private static final String RSERVE_ENABLED_KEY =
+      MAIN_PREFIX_KEY + "rserve.enable";
+  private static final String RSERVE_SERVER_NAME_KEY =
+      MAIN_PREFIX_KEY + "rserve.servername";
 
-  private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY
-      + "design.obfuscate";
-  private static final String REMOVE_REPLICATE_INFO_KEY = MAIN_PREFIX_KEY
-      + "design.remove.replicate.info";
+  private static final String OBFUSCATE_DESIGN_KEY =
+      MAIN_PREFIX_KEY + "design.obfuscate";
+  private static final String REMOVE_REPLICATE_INFO_KEY =
+      MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
-  private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
+  private static final Set<String> FORBIDDEN_KEYS =
+      Utils.unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
 
   //
@@ -110,8 +110,8 @@ public final class Settings {
   public boolean isPrintStackTrace() {
 
     final String value =
-        this.properties.getProperty(PRINT_STACK_TRACE_KEY,
-            Boolean.toString(Globals.PRINT_STACK_TRACE_DEFAULT));
+        this.properties.getProperty(PRINT_STACK_TRACE_KEY, Boolean
+            .toString(Globals.PRINT_STACK_TRACE_DEFAULT));
 
     return Boolean.valueOf(value);
   }
@@ -159,8 +159,17 @@ public final class Settings {
    */
   public String getTempDirectory() {
 
-    return this.properties.getProperty(TMP_DIR_KEY,
-        System.getProperty("java.io.tmpdir"));
+    return this.properties.getProperty(TMP_DIR_KEY, System
+        .getProperty("java.io.tmpdir"));
+  }
+
+  /**
+   * Get the temporary directory File.
+   * @return The temporary directory as a File object
+   */
+  public File getTempDirectoryFile() {
+
+    return new File(getTempDirectory());
   }
 
   /**
@@ -307,8 +316,8 @@ public final class Settings {
    */
   public void setPrintStackTrace(final boolean printStackTrace) {
 
-    this.properties.setProperty(PRINT_STACK_TRACE_KEY,
-        Boolean.toString(printStackTrace));
+    this.properties.setProperty(PRINT_STACK_TRACE_KEY, Boolean
+        .toString(printStackTrace));
   }
 
   /**
@@ -374,8 +383,8 @@ public final class Settings {
    */
   public void setObfuscateDesign(final boolean obfuscate) {
 
-    this.properties.setProperty(OBFUSCATE_DESIGN_KEY,
-        Boolean.toString(obfuscate));
+    this.properties.setProperty(OBFUSCATE_DESIGN_KEY, Boolean
+        .toString(obfuscate));
   }
 
   /**
@@ -384,8 +393,8 @@ public final class Settings {
    */
   public void setRemoveDesignInfo(final boolean remove) {
 
-    this.properties.setProperty(REMOVE_REPLICATE_INFO_KEY,
-        Boolean.toString(remove));
+    this.properties.setProperty(REMOVE_REPLICATE_INFO_KEY, Boolean
+        .toString(remove));
   }
 
   /**
@@ -397,8 +406,8 @@ public final class Settings {
     if (threadsNumber < 0)
       return;
 
-    this.properties.setProperty(LOCAL_THREADS_NUMBER,
-        Integer.toString(threadsNumber));
+    this.properties.setProperty(LOCAL_THREADS_NUMBER, Integer
+        .toString(threadsNumber));
   }
 
   /**
