@@ -127,8 +127,8 @@
 
     &lt;globals&gt;
         &lt;parameter&gt;
-	        &lt;name&gt;localTempDir&lt;/name&gt;
-	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
+	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
+	        &lt;value&gt;/home/johndoe/tmp&lt;/value&gt;
         &lt;/parameter&gt;
     &lt;/globals&gt;
 
