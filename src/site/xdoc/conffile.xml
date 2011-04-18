@@ -69,7 +69,7 @@
 
 # Temporary directory.
 # By default Eoulsan use the temporary directory for your platform.
-main.tmp.path=/tmp
+main.tmp.dir=/tmp
 
 # Debug mode.
 # By default in Eoulsan the debug mode is disable.
