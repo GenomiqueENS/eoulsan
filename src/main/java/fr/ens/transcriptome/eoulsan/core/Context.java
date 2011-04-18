@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -129,6 +130,12 @@ public interface Context {
    * @return the EoulsanRuntime
    */
   AbstractEoulsanRuntime getRuntime();
+  
+  /**
+   * Get Eoulsan settings.
+   * @return the Settings
+   */
+  Settings getSettings();
 
   /**
    * Get the logger.

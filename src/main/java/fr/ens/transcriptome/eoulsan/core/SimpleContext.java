@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataTypes;
@@ -46,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
  * This class define an simple ExecutorInfo.
  * @author Laurent Jourdren
  */
-public class SimpleContext implements Context {
+public final class SimpleContext implements Context {
 
   /** Logger. */
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -339,6 +340,12 @@ public class SimpleContext implements Context {
     return EoulsanRuntime.getRuntime();
   }
 
+  @Override
+  public Settings getSettings() {
+    
+    return getRuntime().getSettings();
+  }
+  
   @Override
   public Logger getLogger() {
 
