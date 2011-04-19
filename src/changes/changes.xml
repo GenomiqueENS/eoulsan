@@ -127,6 +127,13 @@
             </action>
          </release>
          
+         <release version="1.0.4" description="" date="2011-04-19">
+         
+            <action dev="jourdren" type="fix">
+                Anadiff step was not found by steps service.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
