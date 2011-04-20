@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.anadiff;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class AnaDiff {
 
   private Design design;
   private File expressionFilesDirectory;
+  private String expressionFilesPrefix;
+  private String expressionFilesSuffix;
 
   /**
    * Execute the analysis.
@@ -136,6 +140,9 @@ public class AnaDiff {
       Writer writer = FileUtils.createFastBufferedWriter(rScript);
       writer.write(sb.toString());
       writer.close();
+
+      // Set script executable
+      rScript.setExecutable(true);
 
     } catch (IOException e) {
 
@@ -238,9 +245,11 @@ public class AnaDiff {
       sb.append(" = read.table(\"");
       sb.append(StringUtils.bashEscaping(this.expressionFilesDirectory
           .getAbsolutePath()));
-      sb.append("/sample_expression_");
+      sb.append('/');
+      sb.append(this.expressionFilesPrefix);
       sb.append(rSampleIds.get(i));
-      sb.append(".txt\",header=T,stringsAsFactors=F)[,c(1,11)]\n");
+      sb.append(this.expressionFilesSuffix);
+      sb.append("\",header=T,stringsAsFactors=F)[,c(1,11)]\n");
 
       if (first)
         first = false;
@@ -407,16 +416,20 @@ public class AnaDiff {
    * Public constructor.
    * @param design Design to set
    */
-  public AnaDiff(final Design design, final File expressionFilesDirectory) {
+  public AnaDiff(final Design design, final File expressionFilesDirectory,
+      final String expressionFilesPrefix, final String expressionFilesSuffix) {
 
-    if (design == null)
-      throw new NullPointerException("design is null.");
+    checkNotNull(design, "design is null.");
+    checkNotNull(expressionFilesDirectory,
+        "The path of the expression files is null.");
+    checkNotNull(expressionFilesPrefix,
+        "The prefix for expression files is null");
+    checkNotNull(expressionFilesSuffix,
+        "The suffix for expression files is null");
 
     this.design = design;
-
-    if (expressionFilesDirectory == null)
-      throw new NullPointerException(
-          "The path of the expression files is null.");
+    this.expressionFilesPrefix = expressionFilesPrefix;
+    this.expressionFilesSuffix = expressionFilesSuffix;
 
     if (!(expressionFilesDirectory.isDirectory() && expressionFilesDirectory
         .exists()))

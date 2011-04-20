@@ -1,3 +1,4 @@
+#!/usr/bin/Rscript
 #
 # Differential analysis R script
 #

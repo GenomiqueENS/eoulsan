@@ -78,7 +78,11 @@ public class AnaDiffLocalStep extends AbstractStep {
       final long startTime = System.currentTimeMillis();
       final StringBuilder log = new StringBuilder();
 
-      final AnaDiff ad = new AnaDiff(design, new File("."));
+      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
+
+      final AnaDiff ad =
+          new AnaDiff(design, new File("."), eDF.getType().getPrefix(), eDF
+              .getDefaultExtention());
 
       ad.run();
 
