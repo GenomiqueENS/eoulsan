@@ -120,7 +120,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
-      else if ("mapperArguments".equals(p.getName()))
+      else if ("mapperarguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
       else
         throw new EoulsanException("Unknown parameter for "
