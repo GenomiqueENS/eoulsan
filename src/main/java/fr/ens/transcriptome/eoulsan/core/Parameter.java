@@ -27,13 +27,13 @@ package fr.ens.transcriptome.eoulsan.core;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
- * This class define a parameter.
+ * This class define a parameter. The parameter name is always in lower case.
  * @author Laurent Jourdren
  */
 public class Parameter {
 
-  private String name;
-  private String value;
+  private final String name;
+  private final String value;
 
   /**
    * Get the name of the parameter
@@ -133,7 +133,7 @@ public class Parameter {
     if ("".equals(nameLower))
       throw new IllegalArgumentException("Parameter name can't be empty");
 
-    this.name = name;
+    this.name = nameLower;
     this.value = value;
   }
 

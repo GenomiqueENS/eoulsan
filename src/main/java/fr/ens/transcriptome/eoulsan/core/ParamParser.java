@@ -234,7 +234,7 @@ public class ParamParser {
                       + (stepName == null ? "global parameters" : stepName
                           + " step") + " in parameter file.");
 
-            result.add(new Parameter(paramName.toLowerCase(), paramValue));
+            result.add(new Parameter(paramName, paramValue));
           }
         }
 
