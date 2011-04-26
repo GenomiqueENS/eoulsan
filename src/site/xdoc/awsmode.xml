@@ -37,7 +37,7 @@
   
     <section name="Configure Amazon Elastic MapReduce">
 
-	<p>Currently Eoulson can only work on cloud with Amazon Web Service. Eoulsan use 
+	<p>Currently Eoulsan can only work on cloud with Amazon Web Service. Eoulsan use 
            Amazon Elastic MapReduce service to execute an analysis on Cloud. This service 
            provide on demand Hadoop cluster to customers. You can get more information 
            about this service on <a href="ttp://aws.amazon.com/elasticmapreduce/">Amazon 
@@ -57,7 +57,7 @@
 	<p>Eoulsan behaviour with Amazon Elastic MapReduce is the same as with 
            a Hadoop cluster. You don't have to change your design file or the 
            steps of the parameter file.</p>
-        <p>The only must have to set the AWS 
+        <p>The only requierement is to set the AWS 
            credentials in configuration file or parameter file. We strongly 
            recommand to store this values in a configuration file. See the 
            <a href="conffile.html">configuration file</a> section for more 
@@ -68,7 +68,7 @@
   
     <section name="Launch Eoulsan in AWS mode">
 
-	<p>The launch of an Eoulsan analysis on Amazon Cloud is described in 
+	<p>The launch of an Eoulsan analysis on AWA is described in 
            <a href="">AWS exec command section</a>.</p>
 
     </section>

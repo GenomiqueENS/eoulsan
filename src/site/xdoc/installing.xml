@@ -33,7 +33,7 @@
 
   <body>
     
-    <section name="Standalone installation">
+    <section name="Installation">
      
       <p>The installation of Eoulsan on all *nix systems is quite similar and very easy. You don't need to be the root user of your system to install Eoulsan.</p> 
      
@@ -58,6 +58,8 @@ $ tar xzf eoulsan-@@@VERSION@@@.tar.gz
 $ cd eoulsan-@@@VERSION@@@
 $ ./eoulsan.sh
 </source>
+
+	<li>If you want to run Eoulsan on a local Hadoop cluster, see the <a href="hadoopmode.html">Hadoop configuration page</a> for more informations about Hadoop installation and configuration.</li>
 
       </ul>
      

@@ -37,7 +37,7 @@
   
     <section name="Expression step">
 
-      <p>This step allow to icompute expression for the mapped reads.</p>  
+      <p>This step allow to compute expression for the alignment of unique mapped reads.</p>  
 
       <ul>
          <li><b>Name</b>: expression.</li>

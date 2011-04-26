@@ -59,7 +59,7 @@
       </ul>
       <p>
         Eoulsan is distributed under the
-        <a href="license.html">General Public License</a>.
+        <a href="license.html">GNU Lesser General Public License</a>.
       </p>
       <p>A full changelog is available in the <a href="changes-report.html">release note page</a>.</p>
       <a name="requirements"/>
@@ -69,13 +69,12 @@
 	    <th>Component</th>
 	    <th>Comment</th>
 	  </tr>
-	      <tr>
-            <td>Java Runtime Environment (J2SE)</td>
-            <td>6.0 or above (5.0 may work, however Java 6.0 is fastest). We strongly recommand 
-            the sun/oracle version of the jre (not JRockit). 
-            You can check your installed jre version with <source>java -version</source>.</td>
-          </tr>
-          <tr>
+	  <tr>
+	    <td>Operating system</td>
+	    <td>Currently Eoulsan runs only under Linux. However Eoulsan core is compatible with all *nix where Java is available. 
+		Next versions may runs under other operatings system but never under Microsoft Windows. </td>
+	  </tr>
+	  <tr>
             <td>Memory</td>
             <td>By default 2048 MiB are allocated to the JVM for running Eoulsan.
             You can edit this value in the <code>eoulsan.sh</code> file with the 
@@ -83,17 +82,20 @@
             like soap that also need memory, 8 GiB seem to be
             a good amount of memory to run Eoulsan.</td>
           </tr>
-          <tr>
+	  <tr>
             <td>Processor architecture</td>
             <td>Currently Eoulsan can only run under x86-64 architecture. 
             Multi processors or multi cores system (SMP) are strongly recommended.</td>
           </tr>
-          <tr>
-            <td>Operating System</td>
-            <td>
-		Eoulsan can only works on *nix system as some externals tools (mappers like 
-		soap) can't run under Microsoft Windows.
-            </td>
+	  <tr>
+            <td>Java Runtime Environment (J2SE)</td>
+            <td>6.0 or above. We strongly recommand 
+            the sun/oracle version of the jre (not JRockit). 
+            You can check your installed jre version with: <source>$ java -version</source></td>
+          </tr>
+	  <tr>
+            <td>Hadoop</td>
+            <td>In distributed mode (local cluster or on Amazon Elastic MapReduce), Hadoop 0.20.x is requiered.</td>
           </tr>
         </table>
       </subsection>

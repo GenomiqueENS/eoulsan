@@ -58,7 +58,7 @@
 		<tr><td>main.awssecretkey</td><td>string</td><td>AWS secret key</td></tr>
 	</table>
 
-	<p>This values are overided by the values of the global parameters of a parameter file. It is useful to use a configuration file to set AWS keys to remove this entries from the parameter file. Developpers can use additiobal parameter that are not in the previous table.</p>
+	<p>This values are overided by the values of the global parameters of a parameter file. It is useful to use a configuration file to set AWS keys to remove this entries from the parameter file. Developpers can use additional parameter that are not in the previous table.</p>
  
         <subsection name="Eoulsan configuration file sample">
 

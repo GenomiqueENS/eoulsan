@@ -42,7 +42,7 @@
 		<links>
 			<item name="IBENS genomic platform"
 				href="http://transcriptome.ens.fr" />
-			<item name="École Normale Supérieure"
+			<item name="École normale supérieure"
 				href="http://www.ens.fr" />
 		</links>
 
@@ -64,18 +64,18 @@
 
 			<item name="Quickstart Guide" href="/quickstart.html"/>
 			<item name="Design file" href="/designfile.html"/>
-			<item name="Param file" href="/paramfile.html"/>
+			<item name="Parameter file" href="/paramfile.html"/>
 			<item name="Configuration file" href="/conffile.html"/>
 			
 			<item name="Built-in steps" href="/steps.html" collapse="true">
 				<item name="Create mapper index" href="/step-createmapperindex.html" />
 				<item name="Filter reads" href="/step-filterreads.html" />
 				<item name="Map reads" href="/step-mapreads.html" />
-				<item name="Filter alignments" href="/step-filteralignents.html" />
+				<item name="Filter alignments" href="/step-filteralignments.html" />
 				<item name="Filter and map" href="step-filterandmap.html" />
 				<item name="Filter samples" href="/step-filtersamples.html" />
 				<item name="Expression" href="/step-expression.html" />
-				<item name="anadiff" href="/step-anadiff.html" />
+				<item name="anadiff" href="/step-diffana.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">

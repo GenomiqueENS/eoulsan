@@ -37,10 +37,14 @@
   
     <section name="Differential analysis step">
 
-      <p>This step allow to perform differntial analysis on expression module results.</p>  
+      <p>This step allow to perform differential analysis on expression module results.</p>  
 
       <ul>
+         <li><b>Name</b>: diffana</li>
          <li><b>Available</b>: Only in local mode.</li>
+         <li><b>Input</b>: expression file</li>
+         <li><b>Output</b>: differential analysis result file.</li>
+
          <li><b>Optional parameters</b>: none.</li>
        </ul>
       

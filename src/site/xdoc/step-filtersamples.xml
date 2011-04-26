@@ -37,13 +37,15 @@
   
     <section name="Filter samples">
 
-      <p>This step allow to filter with lower ratio of reads that maps to the genome.</p>  
+      <p>This step allow to discard samples with low mapped read number. The ratio 
+         for each sample is the number of filtered alignements by the number of reads after 
+         filtering. Note that this step need log files from read filtering and 
+         alignement filtering.</p>  
 
       <ul>
 	<li><b>Internal name</b>: filtersamples</li>
         <li><b>Available</b>: Both local and distributed mode.</li>
 	
-	<li/>
         <li><b>Optional parameters</b>:
 
 	<table>
