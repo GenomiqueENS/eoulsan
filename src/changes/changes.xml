@@ -130,7 +130,20 @@
          <release version="1.0.4" description="" date="2011-04-19">
          
             <action dev="jourdren" type="fix">
-                Anadiff step was not found by steps service.
+                Anadiff step was not found.
+            </action>
+         </release>
+         
+         <release version="1.0.5" description="" date="2011-04-26">
+         
+            <action dev="jourdren" type="fix">
+                Now use Bowtie read mapper with "--phred64-quals" as default argument.
+            </action>
+             <action dev="jourdren" type="update">
+                Rename anadiff step to diffana.
+            </action>
+            <action dev="jourdren" type="update">
+                Update documentation.
             </action>
          </release>
          
