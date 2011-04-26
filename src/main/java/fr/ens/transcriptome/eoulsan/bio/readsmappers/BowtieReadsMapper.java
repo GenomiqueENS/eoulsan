@@ -42,7 +42,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  public static final String DEFAULT_ARGUMENTS = "";
+  public static final String DEFAULT_ARGUMENTS = "--phred64-quals";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie";
@@ -60,7 +60,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
 
     return DataFormats.BOWTIE_INDEX_ZIP;
   }
-  
+
   @Override
   protected String getIndexerCommand(String indexerPathname,
       String genomePathname) {
