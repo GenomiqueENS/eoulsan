@@ -106,8 +106,8 @@
                             only on local computer.</li>
 
 			  <ul>
-				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-local.html">Parameter file for local analysis</a></li>
-                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-hadoop.html">Parameter file for distributed analysis (without differential analysis).</a></li>
+				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-local.xml">Parameter file for local analysis</a></li>
+                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
 			  </ul>
 			</ul>
 
