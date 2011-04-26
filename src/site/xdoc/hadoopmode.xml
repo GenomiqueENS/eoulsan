@@ -35,8 +35,8 @@
   
      <section name="Configure a Hadoop cluster for a debian or ubuntu node">
 
-   <p>This tutorial, we use Cloudera Distribution for Hadoop (CDH) for the 
-       cluster installation. For more information about this distribution see 
+   <p>For this tutorial, we use Cloudera Distribution for Hadoop (CDH) for the 
+       cluster installation on an Debian/Ubuntu system. For more information about this distribution see 
        the <a href="https://docs.cloudera.com/display/DOC/Cloudera+Documentation+Home+Page">
        Cloudera distribution documentation</a>.</p>
 

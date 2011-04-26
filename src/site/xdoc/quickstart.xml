@@ -52,7 +52,10 @@
 					<a href="#local_mode">Execute Eoulsan in local mode</a>
 				</li>
 				<li>
-					<a href="#local_mode">Execute Eoulsan with a local hadoop cluster</a>
+					<a href="#hadoop_mode">Execute Eoulsan with a local hadoop cluster</a>
+				</li>
+				<li>
+					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud</a>
 				</li>
 			</ul>
 
@@ -75,35 +78,36 @@
 
 
 			<ul>
-                          <li><b>Reads files</b></li>
+                          <li>Read files></li>
 			  <ul>
-				<li><a href="./examples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
-                                <li><a href="./examples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
+				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
+                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
 			  </ul>
 
 			  <br/>
 			  <li>Genome file</li>
 			    <ul>
-                              <li><a href="./examples/atp2/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
+                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
                             </ul>
 
 			  <br/>
 
 			  <li>Annotation file</li>
 			    <ul>
-                              <li><a href="./examples/atp2/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
+                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
                             </ul>
 
 
 			 <br/>
-			 <li><b>Parameters files</b><br/>
-                            The following files are sample parameter file to analyse previous reads 
-                            files. There is 2 files, one for local analysis which include differential 
-                            analysis and one for distributed without differential analysis.</li>
+			 <li>Parameters files<br/>
+			    The following files are sample parameter file to analyse previous reads files. There is 2 files, 
+                            one for local analysis which include differential analysis and one for distributed (on cluster 
+                            or cloud computing facilities) without differential analysis as this last steps are performed 
+                            only on local computer.</li>
 
 			  <ul>
-				<li><a href="./examples/param-local.html">Parameter file for local analysis</a></li>
-                                <li><a href="./examples/param-hadoop.html">Parameter file for distributed analysis (without differential analysis).</a></li>
+				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-local.html">Parameter file for local analysis</a></li>
+                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-hadoop.html">Parameter file for distributed analysis (without differential analysis).</a></li>
 			  </ul>
 			</ul>
 
@@ -131,7 +135,7 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.txt.bz2
 			to your needs.</p>
 
 			<p>The parameter file contains the list of the step that will be executed 
-			by Eoulsan. By careful some step are only available in local mode (like 
+			by Eoulsan. Some step are only available in local mode (like 
                         differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
 			for more details. For each step you can change, add or remove parameters. 
 			Parameters are specific to a step, consult the <a href="steps.html">documentation</a> 
@@ -191,13 +195,25 @@ $ eoulsan.sh hadoopexec param.xml design.txt hdfs://master.example.com/test
 		<subsection name="Launch Eoulsan on Amazon Web Service Cloud">
 
 			<p>You must have an AWS account for Amazon S3 and Amazon 
-			   MapReduce to launch Eoulsan on Amazon cloud. Then you 
+			   MapReduce to launch Eoulsan on Amazon cloud. You can register to Amazon Web Services here:</p>
+
+			<ul>
+				<li>Create an <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html">AWS account</a></li>
+				<li>Sign up for <a href="https://aws-portal.amazon.com/gp/aws/developer/subscription/index.html?productCode=AmazonS3">Amazon S3</a></li>
+				<li>Sign up for <a href="https://aws-portal.amazon.com/gp/aws/developer/subscription/index.html?productCode=ElasticMapReduce">Amazon Elastic MapReduce</a></li>
+			</ul>
+
+
+			<p>Then you 
                            must set Amazon credentials in Eoulsan configuration or 
-			   in the parameter file (see <a href="awsmode.html">hadoop configuration</a>). 
+			   in the parameter file (see <a href="./awsmode.html">AWS configuration</a>). 
 			   You can launch Eoulsan analysis with the following command:</p>
 <source>
 $ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
 </source>
+
+			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 
+			is the name of your S3 bucket and <code>/test</code> is the path of the data in S3 your bucket.</p>
 
 			<p>In AWS mode, there is 2 phases in the analysis:</p>
 			<ul>
@@ -213,7 +229,7 @@ $ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
 			<p>At the end of the analysis, the results files and logs will be in a new directory 
                            in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
                            directory name after eoulsan are respectively the date and the time of the launch 
-                           of the analysis). You must manualy download this data from S3 to your computer</p>
+                           of the analysis). You must manualy download this data from S3 to your computer.</p>
 
 		</subsection>
 	</section>

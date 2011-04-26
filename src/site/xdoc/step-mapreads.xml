@@ -37,7 +37,7 @@
   
     <section name="Map reads step">
 
-      <p>This step allow to map read with SOAP program.</p>  
+      <p>This step allow to map read with mapper program.</p>  
 
       <ul>
 	<li><b>Internal name</b>: mapreads</li> 
@@ -48,7 +48,7 @@
         <li><b>Optional parameters</b>:</li>
 	<table>
                 <tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
+                <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap)</td></tr>
                 <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td></td></tr>
                 <!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
         </table>

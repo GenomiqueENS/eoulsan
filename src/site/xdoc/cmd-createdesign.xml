@@ -52,7 +52,7 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh createdesign [options] fastq_files fasta_file gff_gfile
+$ eoulsan.sh createdesign [options] fastq_file1...fastq_filen fasta_file gff_gfile
 </source>
 
 </li>

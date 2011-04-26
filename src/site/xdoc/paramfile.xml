@@ -41,8 +41,8 @@
 
 
       <ul>
-        <li>The description section that contains information about the name of the name and the author of the parameter files.</li>
-        <li>The step section that contain the list of the steps to execute and thiers parameters.</li>
+        <li>The description section that contains information about the name, the description and the author of the parameter files.</li>
+        <li>The steps section that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
         <li>The global section that contains global parameters that can be use in all the steps of the analysis.</li>
      </ul>
 
@@ -128,7 +128,7 @@
     &lt;globals&gt;
         &lt;parameter&gt;
 	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
-	        &lt;value&gt;/home/johndoe/tmp&lt;/value&gt;
+	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
         &lt;/parameter&gt;
     &lt;/globals&gt;
 
@@ -198,7 +198,7 @@
     &lt;globals&gt;
         &lt;parameter&gt;
 	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
-	        &lt;value&gt;/home/johndoe/tmp&lt;/value&gt;
+	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
         &lt;/parameter&gt;
     &lt;/globals&gt;</source>
 

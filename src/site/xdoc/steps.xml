@@ -37,11 +37,11 @@
   
     <section name="Built-in steps of Eoulsan">
 
-      <p>Eoulsan contains many built-in steps to perform analysis. As Eoulsan can work in two (local an distributed) modes, some modules are available for the two and some for only one.</p>  
+      <p>Eoulsan contains several built-in steps to perform analysis. As Eoulsan can work in local and distributed modes, some modules are available for the two and some for only one. Note that local Hadoop cluster mode and AWS mode are both distributed modes.</p>  
 
 	<table>
 		<tr><th>Phase/Module</th><th>Local Mode</th><th>Distributed mode</th><th>Comment</th></tr>
-		<tr><td><a href="step-createmapperindex.html">Create SOAP index</a></td><td>Yes</td><td>Yes</td><td>This step automatically called when need</td></tr>
+		<tr><td><a href="step-createmapperindex.html">Create mapper index</a></td><td>Yes</td><td>Yes</td><td>This step is automatically called when need</td></tr>
 		<tr><td><a href="step-filterreads.html">Filter reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-mapreads.html">Map reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-filteralignments.html">Filter alignments</a></td><td>Yes</td><td>Yes</td><td></td></tr>

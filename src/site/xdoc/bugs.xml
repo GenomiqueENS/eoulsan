@@ -37,7 +37,8 @@
   
     <section name="Known Bugs for Eoulsan @@@VERSION@@@">
 
-      <p>Actual no major bug is known for Eoulsan.</p>  
+      <p>You can consult the list of Eoulsan bugs on the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a>
+      of the Google code hosting page of our project.</p>  
 
       <!--ul> 
         <li>Bug 1.</li>

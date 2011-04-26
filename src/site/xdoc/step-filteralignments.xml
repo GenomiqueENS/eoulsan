@@ -37,7 +37,7 @@
   
     <section name="Filter alignments step">
 
-      <p>This step allow to filter the output alignments in SAM format of the map reads step.</p>  
+      <p>This step allow to filter the output alignments in SAM format. With this filter all the alignments that corresponds to reads with more than one hit are removed.</p>  
 
       <ul>
 	<li><b>Internal name</b>: filtersam</li> 
@@ -48,7 +48,7 @@
         <li><b>Optional parameters</b>:</li>
 	<table>
                 <tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality</td></tr>
+                <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td><td>0</td></tr>
                 <!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
         </table>
       </ul>
