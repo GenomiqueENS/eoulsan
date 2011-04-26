@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
 @LocalOnly
 public class AnaDiffLocalStep extends AbstractStep {
 
-  private static final String STEP_NAME = "anadiff";
+  private static final String STEP_NAME = "diffana";
 
   //
   // Step methods
