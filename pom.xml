@@ -6,7 +6,7 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -19,7 +19,7 @@
 	</properties>
 
 	<organization>
-		<name>École Normale Supérieure Microarray platform</name>
+		<name>École normale supérieure genomic platform</name>
 		<url>http://transcriptome.ens.fr/sgdb</url>
 	</organization>
 
@@ -30,13 +30,13 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École Normale Supérieure Microarray platform
+				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
 				http://transcriptome.ens.fr/sgdb/
 			</organizationUrl>
 			<roles>
-				<role>Developer</role>
+				<role>Lead Developer</role>
 			</roles>
 			<timezone>1</timezone>
 			<properties />
@@ -47,7 +47,7 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École Normale Supérieure Microarray platform
+				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
 				http://transcriptome.ens.fr/sgdb/
@@ -64,13 +64,13 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École Normale Supérieure Microarray platform
+				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
 				http://transcriptome.ens.fr/sgdb/
 			</organizationUrl>
 			<roles>
-				<role>Developer</role>
+				<role>Project manager and documentation review</role>
 			</roles>
 			<timezone>1</timezone>
 			<properties />
@@ -82,10 +82,34 @@
 			<name>Marie-agnès Dilies</name>
 			<email />
 			<url />
-			<organization>Pasteur Institute, Paris, Microarray platform PF2</organization>
+			<organization>Pasteur Institute, Paris, Transcriptome and Epigenome platform</organization>
 			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
 			<roles>
 				<role>Differential analysis normalization help</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</contributor>
+		<contributor>
+			<name>Marlène Gratigny</name>
+			<email />
+			<url />
+			<organization>École normale supérieure, IBENS, Dyogen group</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article82&amp;lang=en</organizationUrl>
+			<roles>
+				<role>Testing and documentation review</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</contributor>
+		<contributor>
+			<name>Valentine Murigneux</name>
+			<email />
+			<url />
+			<organization>École normale supérieure, IBENS, Expression of eukaryotic messenger RNAs group</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article80&amp;lang=en</organizationUrl>
+			<roles>
+				<role>Testing</role>
 			</roles>
 			<timezone>1</timezone>
 			<properties />
@@ -357,7 +381,8 @@
 								<mkdir dir="${basedir}/target/dist/lib"/>
 								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" /-->
 								<copy file="${basedir}/INSTALL.txt" todir="${basedir}/target/dist/" />
-								<copy file="${basedir}/LICENSE.txt" todir="${basedir}/target/dist/" />
+								<copy file="${basedir}/LICENSE-LGPL.txt" todir="${basedir}/target/dist/" />
+								<copy file="${basedir}/LICENSE-CeCILL-C.txt" todir="${basedir}/target/dist/" />
 
 								<copy file="${basedir}/src/main/bin/${pom.artifactId}.sh" todir="${basedir}/target/dist/" />
 								<chmod file="${basedir}/target/dist/${pom.artifactId}.sh" perm="ugo+rx" />
@@ -395,7 +420,8 @@
 										<include name="checkstyle-license.txt"/>
 										<include name="COMPILING.txt"/>
 										<include name="INSTALL.txt"/>
-										<include name="LICENSE.txt"/>
+										<include name="LICENSE-LGPL.txt"/>
+										<include name="LICENSE-CeCILL-C.txt"/>
 									</fileset>
 								</copy>
 								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
