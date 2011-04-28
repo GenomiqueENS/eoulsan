@@ -73,16 +73,24 @@ public class DesignBuilder {
     } else if (filename
         .endsWith(DataFormats.GENOME_FASTA.getDefaultExtention())) {
 
-      // Compressed genome are currently not handled
+      // Compressed genome is currently not handled
       if (ct != CompressionType.NONE)
         throw new EoulsanException(
-            "Compressed genome are not currently handled.");
+            "Compressed genome is not currently handled.");
 
       this.genomeFile = file;
 
     } else if (filename.endsWith(DataFormats.ANNOTATION_GFF
-        .getDefaultExtention()))
+        .getDefaultExtention())) {
+
+      // Compressed annotation is currently not handled
+      if (ct != CompressionType.NONE)
+        throw new EoulsanException(
+            "Compressed annotation is not currently handled.");
+
       this.gffFile = file;
+
+    }
   }
 
   /**
