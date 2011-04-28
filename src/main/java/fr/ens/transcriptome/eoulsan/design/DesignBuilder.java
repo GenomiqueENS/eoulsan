@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -45,29 +47,50 @@ public class DesignBuilder {
   /**
    * Add a file to the design builder
    * @param file file to add
+   * @throws EoulsanException if the file does not exist
    */
-  public void addFile(final File file) {
+  public void addFile(final File file) throws EoulsanException {
 
-    if (file == null || !file.exists() || !file.isFile())
+    if (file == null)
       return;
+
+    if (!file.exists() || !file.isFile())
+      throw new EoulsanException("File "
+          + file + " does not exist or is not a regular file.");
 
     final String filename =
         StringUtils.filenameWithoutCompressionExtension(file.getName());
 
-    if (filename.endsWith(DataFormats.READS_FASTQ.getDefaultExtention()))
-      this.fastqList.add(file);
-    else if (filename.endsWith(DataFormats.GENOME_FASTA.getDefaultExtention()))
+    final CompressionType ct =
+        CompressionType.getCompressionTypeByFilename(file.getName());
+
+    if (filename.endsWith(DataFormats.READS_FASTQ.getDefaultExtention())) {
+
+      // Don't add previously added file
+      if (!this.fastqList.contains(file))
+        this.fastqList.add(file);
+
+    } else if (filename
+        .endsWith(DataFormats.GENOME_FASTA.getDefaultExtention())) {
+
+      // Compressed genome are currently not handled
+      if (ct != CompressionType.NONE)
+        throw new EoulsanException(
+            "Compressed genome are not currently handled.");
+
       this.genomeFile = file;
-    else if (filename
-        .endsWith(DataFormats.ANNOTATION_GFF.getDefaultExtention()))
+
+    } else if (filename.endsWith(DataFormats.ANNOTATION_GFF
+        .getDefaultExtention()))
       this.gffFile = file;
   }
 
   /**
    * Add a filename to the design builder
    * @param filename filename of the file to add
+   * @throws EoulsanException if the file does not exists
    */
-  public void addFile(final String filename) {
+  public void addFile(final String filename) throws EoulsanException {
 
     if (filename == null)
       return;
@@ -119,8 +142,10 @@ public class DesignBuilder {
   /**
    * Public constructor.
    * @param filenames filenames to add
+   * @throws EoulsanException if a file to add to the design does not exist or
+   *           is not handled
    */
-  public DesignBuilder(final String[] filenames) {
+  public DesignBuilder(final String[] filenames) throws EoulsanException {
 
     if (filenames == null)
       return;

@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -34,6 +34,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
@@ -84,13 +85,20 @@ public class CreateDesignAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
-    DesignBuilder db = new DesignBuilder(arguments);
+    Design design = null;
 
-    Design design = db.getDesign();
+    try {
+
+      final DesignBuilder db = new DesignBuilder(arguments);
+      design = db.getDesign();
+
+    } catch (EoulsanException e) {
+      Common.errorExit(e, "Error: " + e.getMessage());
+    }
 
     if (design.getSampleCount() == 0) {
       Common
@@ -101,12 +109,17 @@ public class CreateDesignAction extends AbstractAction {
     }
 
     try {
-      DesignWriter dw = new SimpleDesignWriter("design.txt");
+
+      final File file = new File("design.txt");
+
+      if (file.exists())
+        throw new EoulsanIOException("Output design file "
+            + file + " already exists");
+
+      DesignWriter dw = new SimpleDesignWriter(file);
 
       dw.write(design);
 
-    } catch (FileNotFoundException e) {
-      Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (EoulsanIOException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     }
