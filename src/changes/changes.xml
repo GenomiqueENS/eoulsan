@@ -159,6 +159,16 @@
             </action>
          </release>
          
+         <release version="1.0.7" description="" date="2011-04-28">
+         
+            <action dev="jourdren" type="update">
+                Don't start an analysis with compressed genome or annotation in the design file. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
