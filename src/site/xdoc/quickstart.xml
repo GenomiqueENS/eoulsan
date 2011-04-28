@@ -118,10 +118,10 @@
 
 			<p>In an empty directory, copy the reads, genome and annotation files, then you can create a design file with the next command:</p>
 <source>
-$ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff.bz2
+$ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff
 </source>
 
-			<p>You can now modify the design file to add additional information. Note that Eoulsan currently does not handle compressed genome file.</p>
+			<p>You can now modify the design file to add additional information. Note that Eoulsan currently does not handle compressed genome and annotation files.</p>
 
 		</subsection>
 
