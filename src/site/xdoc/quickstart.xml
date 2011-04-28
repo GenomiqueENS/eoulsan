@@ -74,11 +74,11 @@
 		<a name="samples" />
                 <subsection name="Sample files">
 
-                        <p>We provide in this section some samples files to test Eoulsan.</p>
+                        <p>We provide in this section some samples files to test Eoulsan. these files have been produced during a mouse RNASeq experiment.</p>
 
 
 			<ul>
-                          <li>Read files></li>
+                          <li>Read files</li>
 			  <ul>
 				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
                                 <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
@@ -100,7 +100,7 @@
 
 			 <br/>
 			 <li>Parameters files<br/>
-			    The following files are sample parameter file to analyse previous reads files. There is 2 files, 
+			    The following files are sample parameter files to analyse previous reads files. There is 2 files, 
                             one for local analysis which include differential analysis and one for distributed (on cluster 
                             or cloud computing facilities) without differential analysis as this last steps are performed 
                             only on local computer.</li>
@@ -118,10 +118,10 @@
 
 			<p>In an empty directory, copy the reads, genome and annotation files, then you can create a design file with the next command:</p>
 <source>
-$ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.txt.bz2
+$ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff.bz2
 </source>
 
-			<p>You can now modify the design file to add additional information.</p>
+			<p>You can now modify the design file to add additional information. Note that Eoulsan currently does not handle compressed genome file.</p>
 
 		</subsection>
 
@@ -134,7 +134,7 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.txt.bz2
 			parameter file (see <a href="#samples">sample section</a>) and adapt it 
 			to your needs.</p>
 
-			<p>The parameter file contains the list of the step that will be executed 
+			<p>The parameter file contains the list of the steps that will be executed 
 			by Eoulsan. Some step are only available in local mode (like 
                         differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
 			for more details. For each step you can change, add or remove parameters. 
@@ -162,7 +162,7 @@ $ eoulsan.sh exec param.xml design.txt
 			  <li>The design file and parameter file are valid</li>
 			  <li>All the steps exits</li>
 			  <li>The parameter of all the steps are valid</li>
-			  <li>The order of the step is correct (a step can not use data generated after its end)</li>
+			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>
 			  <li>A genome mapper index is needed. In this case, a step to generated this index is added</li>
 			</ul>
@@ -182,7 +182,7 @@ $ eoulsan.sh hadoopexec param.xml design.txt hdfs://master.example.com/test
 </source>
 
 			<p>At the start of the analysis and after the check of the input files (like 
-			in the local mode), input data is uploaded on the hadoop cluster before 
+			in the local mode), input data are uploaded on the hadoop cluster before 
                         launching the analysis.</p>
 
 			<p>At the end of the analysis, the results files and logs will be in a new directory name like 
@@ -229,7 +229,7 @@ $ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
 			<p>At the end of the analysis, the results files and logs will be in a new directory 
                            in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
                            directory name after eoulsan are respectively the date and the time of the launch 
-                           of the analysis). You must manualy download this data from S3 to your computer.</p>
+                           of the analysis). You must manually download these data from S3 to your computer.</p>
 
 		</subsection>
 	</section>
