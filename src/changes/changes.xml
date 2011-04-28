@@ -147,6 +147,18 @@
             </action>
          </release>
          
+         <release version="1.0.6" description="" date="2011-04-28">
+         
+            <action dev="jourdren" type="update">
+                In the createdesign command : Prevent adding compressed genome 
+                to design file and overwrite existing design file. Creation of 
+                the design fails if a file in the arguments does not exist. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
