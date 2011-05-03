@@ -116,6 +116,11 @@
 		<a name="design_file"/>
 		<subsection name="Create a design file">
 
+			<p>Before creating design file, if you use the previous sample file uncompress genome and annotation:</p>
+<source>
+$ bunzip2 genome.fasta.bz2 annotation.gff.bz2
+</source>
+
 			<p>In an empty directory, copy the reads, genome and annotation files, then you can create a design file with the next command:</p>
 <source>
 $ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff
@@ -153,7 +158,7 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff
 
 			<p>Once your design file and parameter file are ready, you can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh exec param.xml design.txt
+$ eoulsan.sh exec param-local.xml design.txt
 </source>
 
 
@@ -178,8 +183,10 @@ $ eoulsan.sh exec param.xml design.txt
 			<p>First, you must have a configurated Hadoop cluster (see <a href="hadoopmode.html">hadoop configuration</a>). 
 			   You can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh hadoopexec param.xml design.txt hdfs://master.example.com/test
+$ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/test
 </source>
+
+			<p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R and related packages (See <a href="./step-diffana.html">differential analysis step</a> for more information).</p>
 
 			<p>At the start of the analysis and after the check of the input files (like 
 			in the local mode), input data are uploaded on the hadoop cluster before 
@@ -209,7 +216,7 @@ $ eoulsan.sh hadoopexec param.xml design.txt hdfs://master.example.com/test
 			   in the parameter file (see <a href="./awsmode.html">AWS configuration</a>). 
 			   You can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
+$ eoulsan.sh awsexec param-hadoop.xml design.txt s3://mybucket/test
 </source>
 
 			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 
@@ -217,7 +224,7 @@ $ eoulsan.sh awsexec param.xml design.txt s3://mybucket/test
 
 			<p>In AWS mode, there is 2 phases in the analysis:</p>
 			<ul>
-				<li>First data to analyse, design and parameter files are upload to your S3 
+				<li>First data to analyse, design and parameter files are uploaded to your S3 
                                     bucket on Amazon Cloud.</li>
 				<li>Then, the cluster in the cloud is created and the "real" analysis starts. 
                                     Eoulsan on your local computer only wait the end of the analysis. 
