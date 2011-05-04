@@ -168,6 +168,19 @@
                 Update documentation.
             </action>
          </release>
+
+         <release version="1.0.8" description="" date="2011-05-04">
+         
+            <action dev="jourdren" type="update">
+                Change the name of the keys for AWS keys in configuration file or global section of the parameter file. 
+            </action>
+            <action dev="jourdren" type="fix">
+                The path to AWS log can be omited. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
          
 		
 	</body>
