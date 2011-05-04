@@ -192,6 +192,15 @@ $ sudo service hadoop-0.20-namenode start &amp;&amp; \
    </subsection>
 
 	</section>
+
+    <section name="Launch Eoulsan in Hadoop mode">
+
+        <p>The launch of an Eoulsan analysis in Hadoop mode is described in
+           <a href="./cmd-hadoopexec.html">Hadoop exec command section</a>.</p>
+
+    </section>
+
+
   </body>
 
 </document>

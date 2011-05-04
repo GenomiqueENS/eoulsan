@@ -54,12 +54,29 @@
 		<tr><td>design.remove.replicate.info</td><td>boolean</td><td>Remove replicate information in design when upload to AWS</td></tr>
 		<!--tr><td>rserve.enable</td><td>boolean</td><td>Enable Rserve server for R computation</td></tr>
 		<tr><td>rserve.servername</td><td>string</td><td>Name of the Rserve server</td></tr-->
-		<tr><td>main.accessKey</td><td>string</td><td>AWS access key</td></tr>
-		<tr><td>main.awssecretkey</td><td>string</td><td>AWS secret key</td></tr>
+
+		<tr><td>aws.access.key</td><td>string</td><td>AWS access key, a 20-character alphanumeric string</td></tr>
+		<tr><td>aws.secret.key</td><td>string</td><td>AWS secret key, a 40-character string</td></tr>
+
+		<tr><td>aws.mapreduce.hadoop.version</td><td>string</td><td>Hadoop version to use with AWS MapReduce (0.20 as default)</td></tr>
+		<tr><td>aws.mapreduce.instances.number</td><td>string</td><td>Number of instances in the cluster</td></tr>
+		<tr><td>aws.mapreduce.instances.type</td><td>string</td><td>Instance type (m1.xlarge as default)</td></tr>
+		<tr><td>aws.mapreduce.endpoint</td><td>string</td><td>AWS endpoint to use (european as default)</td></tr>
+		<tr><td>aws.mapreduce.log.path</td><td>string</td><td>Log path. If not set, no log will be generated</td></tr>
+		<tr><td>aws.mapreduce.wait.job</td><td>string</td><td>Wait the end of the job on AWS MapReduce (false as default)</td></tr>
+
 	</table>
 
 	<p>This values are overided by the values of the global parameters of a parameter file. It is useful to use a configuration file to set AWS keys to remove this entries from the parameter file. Developpers can use additional parameter that are not in the previous table.</p>
- 
+
+	<p>The following table contains the endpoints for the several AWS regions where EMR is available:</p>
+	<table>
+		<tr><th>Region</th><th>Endpoint</th></tr>
+		<tr><td>US-East (Northern Virginia)</td><td>us-east-1.elasticmapreduce.amazonaws.com</td></tr>
+		<tr><td>US-West (Northern California)</td><td>us-west-1.elasticmapreduce.amazonaws.com</td></tr>
+		<tr><td>EU (Ireland)</td><td>eu-west-1.elasticmapreduce.amazonaws.com</td></tr>
+	</table>
+
         <subsection name="Eoulsan configuration file sample">
 
   <source>
