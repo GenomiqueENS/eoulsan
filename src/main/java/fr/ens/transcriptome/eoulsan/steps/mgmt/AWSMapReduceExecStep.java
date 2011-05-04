@@ -82,7 +82,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
   private String endpoint = "eu-west-1.elasticmapreduce.amazonaws.com";
 
   /** Log path to use with AWS MapReduce. */
-  private String logPathname = "s3n://sgdb-test/awslog";
+  private String logPathname = null;
 
   /** Wait the end of AWS Job. */
   private boolean waitJob = false;
@@ -181,7 +181,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
     builder.withHadoopVersion(this.hadoopVersion);
 
     // Set log path
-    builder.withLogPathname(this.logPathname);
+    if (this.logPathname != null)
+      builder.withLogPathname(this.logPathname);
 
     // Create job
     final AWSMapReduceJob job = builder.create();
