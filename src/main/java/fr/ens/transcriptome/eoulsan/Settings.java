@@ -48,8 +48,8 @@ public final class Settings {
   private final Properties properties = new Properties();
 
   private static final String DEBUG_KEY = MAIN_PREFIX_KEY + "debug";
-  private static final String AWS_ACCESS_KEY = MAIN_PREFIX_KEY + "accessKey";
-  private static final String AWS_SECRET_KEY = MAIN_PREFIX_KEY + "awssecretkey";
+  private static final String AWS_ACCESS_KEY = "aws.access.key";
+  private static final String AWS_SECRET_KEY = "aws.secret.key";
 
   private static final String PRINT_STACK_TRACE_KEY =
       MAIN_PREFIX_KEY + "printstacktrace";
@@ -417,12 +417,27 @@ public final class Settings {
    */
   public void setSetting(final String settingName, final String settingValue) {
 
-    if (settingName == null
-        || settingValue == null || FORBIDDEN_KEYS.contains(settingName)) {
+    if (settingName == null || settingValue == null) {
       return;
     }
 
-    this.properties.setProperty(settingName, settingValue);
+    final String key = settingName.toLowerCase();
+
+    if (FORBIDDEN_KEYS.contains(key)) {
+      return;
+    }
+
+    if ("main.accesskey".equals(key)) {
+      setSetting(AWS_ACCESS_KEY, settingValue);
+      return;
+    }
+
+    if ("main.awssecretkey".equals(key)) {
+      setSetting(AWS_SECRET_KEY, settingValue);
+      return;
+    }
+
+    this.properties.setProperty(key, settingValue);
   }
 
   //
@@ -506,6 +521,15 @@ public final class Settings {
         throw new EoulsanException("Forbiden key found in configuration file: "
             + key);
       }
+
+      if ("main.accesskey".equals(key.toLowerCase()))
+        throw new EoulsanException("main.accesskey key in now invalid. Use "
+            + AWS_ACCESS_KEY + " key instead.");
+
+      if ("main.awssecretkey".equals(key.toLowerCase()))
+        throw new EoulsanException("main.awssecretkey key in now invalid. Use "
+            + AWS_SECRET_KEY + " key instead.");
+
     }
 
   }
