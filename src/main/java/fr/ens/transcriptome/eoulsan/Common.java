@@ -44,8 +44,6 @@ public final class Common {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  public static final String S3_PROTOCOL = "s3n";
-
   /**
    * Write log data.
    * @param os OutputStream of the log file
