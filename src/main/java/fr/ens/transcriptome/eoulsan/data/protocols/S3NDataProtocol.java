@@ -39,4 +39,10 @@ public class S3NDataProtocol extends S3DataProtocol {
     return "s3n";
   }
 
+  @Override
+  protected String getProtocolPrefix() {
+
+    return "s3n://";
+  }
+
 }

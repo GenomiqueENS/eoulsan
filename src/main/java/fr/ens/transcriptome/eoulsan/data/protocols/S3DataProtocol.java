@@ -36,12 +36,12 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
@@ -62,9 +62,12 @@ public class S3DataProtocol implements DataProtocol {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String S3_PROTOCOL_PREFIX = Common.S3_PROTOCOL + "://";
-
   private AmazonS3 s3;
+
+  protected String getProtocolPrefix() {
+
+    return "s3://";
+  }
 
   private class S3URL {
 
@@ -95,12 +98,14 @@ public class S3DataProtocol implements DataProtocol {
      */
     private final String getBucket(final String source) throws IOException {
 
-      if (!source.startsWith(S3_PROTOCOL_PREFIX))
+      final String protocolPrefix = getProtocolPrefix();
+
+      if (!source.startsWith(protocolPrefix))
         throw new IOException("Invalid S3 URL: " + source);
 
-      final int indexPos = source.indexOf('/', S3_PROTOCOL_PREFIX.length());
+      final int indexPos = source.indexOf('/', protocolPrefix.length());
 
-      return source.substring(S3_PROTOCOL_PREFIX.length(), indexPos);
+      return source.substring(protocolPrefix.length(), indexPos);
     }
 
     /**
@@ -111,10 +116,12 @@ public class S3DataProtocol implements DataProtocol {
      */
     private final String getS3FilePath(final String source) throws IOException {
 
-      if (!source.startsWith(S3_PROTOCOL_PREFIX))
+      final String protocolPrefix = getProtocolPrefix();
+
+      if (!source.startsWith(protocolPrefix))
         throw new IOException("Invalid S3 URL: " + source);
 
-      final int indexPos = source.indexOf('/', S3_PROTOCOL_PREFIX.length());
+      final int indexPos = source.indexOf('/', protocolPrefix.length());
 
       return source.substring(indexPos + 1);
     }
@@ -313,8 +320,8 @@ public class S3DataProtocol implements DataProtocol {
     result.setLastModified(md.getLastModified().getTime());
     result.setContentType(md.getContentType());
     result.setContentEncoding(md.getContentEncoding());
-    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormatFromFilename(
-        src.getName()));
+    result.setDataFormat(DataFormatRegistry.getInstance()
+        .getDataFormatFromFilename(src.getName()));
 
     return result;
   }
@@ -340,6 +347,8 @@ public class S3DataProtocol implements DataProtocol {
 
     try {
       return new S3URL(src).getS3Object() != null;
+    } catch (AmazonS3Exception e) {
+      return false;
     } catch (IOException e) {
       return false;
     }
@@ -372,9 +381,16 @@ public class S3DataProtocol implements DataProtocol {
 
       final Settings settings = EoulsanRuntime.getSettings();
 
+      if (settings.isDebug()) {
+        LOGGER.info("AWS access key: " + settings.getAWSAccessKey());
+        LOGGER.info("AWS secret key: " + settings.getAWSSecretKey());
+      }
+
       this.s3 =
           new AmazonS3Client(new BasicAWSCredentials(
               settings.getAWSAccessKey(), settings.getAWSSecretKey()));
+
+      LOGGER.info("AWS S3 account owner: " + this.s3.getS3AccountOwner());
     }
 
     return this.s3;
