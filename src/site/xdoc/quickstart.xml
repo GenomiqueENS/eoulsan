@@ -74,18 +74,18 @@
 		<a name="samples" />
                 <subsection name="Sample files">
 
-                        <p>We provide in this section some samples files to test Eoulsan. these files have been produced during a mouse RNASeq experiment.</p>
+                        <p>We provide in this section some samples files to test Eoulsan. These files have been produced during a mouse RNASeq experiment.</p>
 
 
 			<ul>
-                          <li>Read files</li>
+                          <li>Read files from two different conditions</li>
 			  <ul>
 				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
                                 <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
 			  </ul>
 
 			  <br/>
-			  <li>Genome file</li>
+			  <li>Mouse genome file</li>
 			    <ul>
                               <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
                             </ul>
@@ -100,7 +100,7 @@
 
 			 <br/>
 			 <li>Parameters files<br/>
-			    The following files are sample parameter files to analyse previous reads files. There is 2 files, 
+			    The following files are sample parameter files to analyse previous reads files. There are 2 files, 
                             one for local analysis which include differential analysis and one for distributed (on cluster 
                             or cloud computing facilities) without differential analysis as this last steps are performed 
                             only on local computer.</li>
@@ -116,7 +116,7 @@
 		<a name="design_file"/>
 		<subsection name="Create a design file">
 
-			<p>Before creating design file, if you use the previous sample file uncompress genome and annotation:</p>
+			<p>Before creating design file, if you use the previous sample files uncompress genome and annotation:</p>
 <source>
 $ bunzip2 genome.fasta.bz2 annotation.gff.bz2
 </source>
@@ -212,9 +212,36 @@ $ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/te
 
 
 			<p>Then you 
-                           must set Amazon credentials in Eoulsan configuration or 
-			   in the parameter file (see <a href="./awsmode.html">AWS configuration</a>). 
-			   You can launch Eoulsan analysis with the following command:</p>
+                           must set Amazon credentials in a <a href="./conffile.html">Eoulsan configuration file</a> or 
+			   in the <a href="./paramfile.html#globalsection">parameter file</a> (see <a href="./awsmode.html">AWS configuration</a>).
+			   Here an example of <b>~/.eoulsan</b> configuration file.</p>
+<source>
+# This is an example of configuration file for Eoulsan.
+# You need to use the -conf parameter or rename this file to
+# $HOME/.eoulsan to enable it.
+
+# Temporary directory.
+# By default Eoulsan use the temporary directory for your platform.
+#main.tmp.dir=/tmp
+
+# Debug mode.
+# By default in Eoulsan the debug mode is disable.
+main.debug=false
+
+
+# Warning: The following Amazon Web Services access and secret keys are 
+# fake keys. You MUST replace them by valid keys.
+
+# Access Key ID (a 20-character, alphanumeric sequence)
+aws.access.key=022QF06E7MXBSH9DHM02
+# AWS Secret Access Key (a 40-character sequence)
+aws.secret.key=kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct
+</source>
+
+			<p><b>Warning:</b> If you use the sample parameter file, check the global section of the file to set the AWS region, the type and the number of instances to use. 
+			   See the <a href="./conffile.html">configuration file page</a> for the list of global parameters dedicated to AWS mode. </p>
+
+			<p>Then you can launch Eoulsan analysis with the following command:</p>
 <source>
 $ eoulsan.sh awsexec param-hadoop.xml design.txt s3://mybucket/test
 </source>

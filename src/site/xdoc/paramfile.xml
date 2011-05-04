@@ -41,9 +41,9 @@
 
 
       <ul>
-        <li>The description section that contains information about the name, the description and the author of the parameter files.</li>
-        <li>The steps section that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
-        <li>The global section that contains global parameters that can be use in all the steps of the analysis.</li>
+        <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the parameter files.</li>
+        <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
+        <li>The <a href="#globalsection">global section</a> that contains global parameters that can be use in all the steps of the analysis.</li>
      </ul>
 
 	<p>All the tags must be in lower case. The following source show the structure of a typical design.xml file:</p>
@@ -135,6 +135,7 @@
 &lt;/analysis&gt;</source>
 
      <subsection name="Description section">
+        <a name="descsection" />
 
 	<p>The firsts tags of the parameter file allow to set some information about the file</p>
 
@@ -148,6 +149,7 @@
      </subsection>
 
      <subsection name="Steps section">
+	<a name="stepssection" />
 
 	<p>The steps section contains the list all the steps to execute. Each step has a name and parameters. The skip attribute allow to skip a step if its value is set to true.</p>
 
@@ -191,6 +193,7 @@
      </subsection>
 
      <subsection name="Global parameter section">
+        <a name="globalsection" />
 
 	<p>The global parameter file contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in steps.</p>
 
