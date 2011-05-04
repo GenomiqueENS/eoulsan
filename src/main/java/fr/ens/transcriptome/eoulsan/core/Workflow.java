@@ -200,7 +200,8 @@ class Workflow implements WorkflowDescription {
         if (map != null && map.size() > 0)
           for (Map.Entry<DataType, Set<DataFormat>> e : map.entrySet()) {
 
-            int found = 0;
+            int foundInCart = 0;
+            int foundFile = 0;
             boolean canBeGenerated = false;
 
             for (DataFormat df : e.getValue()) {
@@ -216,19 +217,19 @@ class Workflow implements WorkflowDescription {
                 if (cartGenerated.contains(df))
                   cartReUsed.add(df);
 
-                found++;
+                foundInCart++;
               } else { // To comment to prevent bug
                 if (context.getDataFile(df, s).exists()) {
                   cart.add(df);
                   cartNotGenerated.add(df);
                   cartUsed.add(df);
-                  found++;
+                  foundFile++;
                 }
               }
 
             }
 
-            if (found == 0) {
+            if (foundInCart == 0 && foundFile == 0) {
 
               if (canBeGenerated) {
                 cartUsed.add(e.getValue().iterator().next());
@@ -238,13 +239,11 @@ class Workflow implements WorkflowDescription {
                     + ", no input data found in the workflow.");
             }
 
-            if (found > 1)
-              throw new EoulsanException(
-                  "For sample "
-                      + s.getId()
-                      + " in step "
-                      + step.getName()
-                      + ", more than one format of the same data found in the workflow.");
+            if (foundFile > 1 || foundInCart > 1)
+              throw new EoulsanException("For sample "
+                  + s.getId() + " in step " + step.getName()
+                  + ", more than one format of the same data (" + e.getKey()
+                  + ") found in the workflow.");
           }
 
         // Check Output
@@ -419,8 +418,7 @@ class Workflow implements WorkflowDescription {
 
     // Test if genome file is compressed
     if (CompressionType.getCompressionTypeByFilename(genomeFile.getName()) != CompressionType.NONE)
-      throw new EoulsanException(
-          "Compressed genome is not currently handled.");
+      throw new EoulsanException("Compressed genome is not currently handled.");
 
     DataFormat genomeFormat;
     try {
