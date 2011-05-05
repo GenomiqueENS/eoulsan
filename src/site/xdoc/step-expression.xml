@@ -37,7 +37,7 @@
   
     <section name="Expression step">
 
-      <p>This step allow to compute expression for the alignment of unique mapped reads.</p>  
+      <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.</p>  
 
       <ul>
          <li><b>Name</b>: expression.</li>
@@ -45,11 +45,11 @@
         <li><b>Input</b>: filtered alignments</li>
         <li><b>Output</b>: expression file</li>
 	 <br/>
-         <li><b>Optional parameters</b>: none</li>
-	<!--table>
+         <li><b>Parameters</b>:</li>
+	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>tmpdir</td><td>directory path</td><td>Directory for sort temporary file. Only in local mode.</td></tr>
-	</table-->
+		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td></tr>
+	</table>
        </ul>
       
 	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>

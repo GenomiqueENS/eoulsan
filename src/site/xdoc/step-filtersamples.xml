@@ -38,7 +38,7 @@
     <section name="Filter samples">
 
       <p>This step allow to discard samples with low mapped read number. The ratio 
-         for each sample is the number of filtered alignements by the number of reads after 
+         for each sample is the number of filtered alignments by the number of reads after 
          filtering. Note that this step need log files from read filtering and 
          alignement filtering.</p>  
 
