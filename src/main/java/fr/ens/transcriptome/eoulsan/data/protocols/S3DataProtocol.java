@@ -63,6 +63,7 @@ public class S3DataProtocol implements DataProtocol {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private AmazonS3 s3;
+  private boolean multipartUpload;
 
   protected String getProtocolPrefix() {
 
@@ -215,7 +216,7 @@ public class S3DataProtocol implements DataProtocol {
         } catch (AmazonClientException e) {
           ace = e;
           LOGGER.warning("Error while uploading "
-              + this.s3url + " (Attempt " + tryCount + ")");
+              + this.s3url + " (Attempt " + tryCount + "): " + e.getMessage());
 
           try {
             Thread.sleep(10000);
@@ -391,6 +392,10 @@ public class S3DataProtocol implements DataProtocol {
               settings.getAWSAccessKey(), settings.getAWSSecretKey()));
 
       LOGGER.info("AWS S3 account owner: " + this.s3.getS3AccountOwner());
+
+      this.multipartUpload = settings.isAWSMultipartUpload();
+      LOGGER.info("AWS Multipart upload: " + this.multipartUpload);
+
     }
 
     return this.s3;
