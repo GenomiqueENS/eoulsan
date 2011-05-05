@@ -418,7 +418,8 @@ class Workflow implements WorkflowDescription {
       return null;
 
     // Test if genome file is compressed
-    if (CompressionType.getCompressionTypeByFilename(genomeFile.getName()) != CompressionType.NONE)
+    if (!EoulsanRuntime.getRuntime().isHadoopMode()
+        && CompressionType.getCompressionTypeByFilename(genomeFile.getName()) != CompressionType.NONE)
       throw new EoulsanException("Compressed genome is not currently handled.");
 
     DataFormat genomeFormat;
@@ -457,7 +458,9 @@ class Workflow implements WorkflowDescription {
     }
 
     // Test if annotation file is compressed
-    if (CompressionType.getCompressionTypeByFilename(annotationFile.getName()) != CompressionType.NONE)
+    if (!EoulsanRuntime.getRuntime().isHadoopMode()
+        && CompressionType.getCompressionTypeByFilename(annotationFile
+            .getName()) != CompressionType.NONE)
       throw new EoulsanException(
           "Compressed annotation is not currently handled.");
 
