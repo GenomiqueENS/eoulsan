@@ -44,14 +44,15 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class ExecJarHadoopAction extends AbstractAction {
 
   /** Name of this action. */
   public static final String ACTION_NAME = "execjarhadoop";
-  
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   @Override
   public String getName() {
@@ -112,8 +113,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -121,14 +122,24 @@ public class ExecJarHadoopAction extends AbstractAction {
     }
 
     // Get the command line arguments
-    final String paramPathname = arguments[argsOptions];
-    final String designPathname = arguments[argsOptions + 1];
-    final String destPathname = arguments[argsOptions + 2];
+    final String paramPathname = convertS3URL(arguments[argsOptions]);
+    final String designPathname = convertS3URL(arguments[argsOptions + 1]);
+    final String destPathname = convertS3URL(arguments[argsOptions + 2]);
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,
         jobEnvironment, uploadOnly);
 
+  }
+
+  /**
+   * Convert a s3:// URL to a s3n:// URL
+   * @param url input URL
+   * @return converted URL
+   */
+  private String convertS3URL(final String url) {
+
+    return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
 
   //
@@ -154,8 +165,8 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     // Environment option
     options.addOption(OptionBuilder.withArgName("environment").hasArg()
-        .withDescription("environment description").withLongOpt("desc")
-        .create('e'));
+        .withDescription("environment description").withLongOpt("desc").create(
+            'e'));
 
     // UploadOnly option
     options.addOption("upload", false, "upload only");
@@ -324,8 +335,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Settings settings = new Settings();
 
       // Create Hadoop configuration object
-      final Configuration conf =
-          CommonHadoop.createConfiguration(settings);
+      final Configuration conf = CommonHadoop.createConfiguration(settings);
 
       // Initialize runtime
       HadoopEoulsanRuntime.newEoulsanRuntime(settings, conf);

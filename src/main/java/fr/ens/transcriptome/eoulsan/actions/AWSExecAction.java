@@ -56,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.AWSMapReduceExecStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an action that execute Eoulsan on AWS MapReduce.
@@ -66,8 +67,8 @@ public class AWSExecAction extends AbstractAction {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   @Override
   public String getName() {
@@ -112,8 +113,8 @@ public class AWSExecAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -122,7 +123,9 @@ public class AWSExecAction extends AbstractAction {
 
     final File paramFile = new File(arguments[argsOptions]);
     final File designFile = new File(arguments[argsOptions + 1]);
-    final DataFile s3Path = new DataFile(arguments[argsOptions + 2]);
+    final DataFile s3Path =
+        new DataFile(StringUtils.replacePrefix(arguments[argsOptions + 2],
+            "s3:/", "s3n:/"));
 
     // Execute program in AWS mode
     run(paramFile, designFile, s3Path, jobDescription);
