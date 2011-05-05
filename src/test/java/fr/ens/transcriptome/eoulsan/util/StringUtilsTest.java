@@ -134,4 +134,15 @@ public class StringUtilsTest {
     assertEquals("toto,titi", StringUtils.deprotectGFF("toto\\,titi"));
   }
 
+  
+  @Test
+  public void testReplacePrefix() {
+
+    assertNull(StringUtils.replacePrefix(null, "toto", "titi"));
+    assertEquals("ticoucou", StringUtils.replacePrefix("totocoucou","toto","ti"));
+    assertEquals("titicoucou", StringUtils.replacePrefix("totocoucou","toto","titi"));
+    assertEquals("coucou", StringUtils.replacePrefix("totocoucou","toto",""));
+    assertEquals("tititotocoucou", StringUtils.replacePrefix("totocoucou","","titi"));
+    assertEquals("s3n://sgdb-test/titi.txt", StringUtils.replacePrefix("s3://sgdb-test/titi.txt","s3:/","s3n:/"));
+  }
 }

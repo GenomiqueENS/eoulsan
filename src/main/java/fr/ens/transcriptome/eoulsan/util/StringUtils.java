@@ -622,4 +622,28 @@ public final class StringUtils {
     return "";
   }
 
+  /**
+   * Replace the prefix of a string.
+   * @param s the string to process
+   * @param oldPrefix prefix to replace
+   * @param newPrefix new prefix
+   * @return the string with the new prefix
+   */
+  public static String replacePrefix(final String s, final String oldPrefix,
+      final String newPrefix) {
+
+    if (s == null)
+      return null;
+
+    if (oldPrefix == null || newPrefix == null)
+      return s;
+
+    if (!s.startsWith(oldPrefix))
+      return s;
+
+    final int prefixLen = oldPrefix.length();
+
+    return newPrefix + s.substring(prefixLen);
+  }
+
 }
