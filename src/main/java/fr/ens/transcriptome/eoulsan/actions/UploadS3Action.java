@@ -54,6 +54,7 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define the Local Upload S3 Action.
@@ -64,8 +65,8 @@ public class UploadS3Action extends AbstractAction {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   @Override
   public String getName() {
@@ -102,8 +103,8 @@ public class UploadS3Action extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 2) {
@@ -112,7 +113,9 @@ public class UploadS3Action extends AbstractAction {
 
     final File paramFile = new File(arguments[argsOptions]);
     final File designFile = new File(arguments[argsOptions + 1]);
-    final DataFile s3Path = new DataFile(arguments[argsOptions + 2]);
+    final DataFile s3Path =
+        new DataFile(StringUtils.replacePrefix(arguments[argsOptions + 2],
+            "s3:/", "s3n:/"));
     final String jobDescription = "Upload data to " + s3Path;
 
     // Upload data

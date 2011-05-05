@@ -54,6 +54,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -550,6 +551,38 @@ class Workflow implements WorkflowDescription {
   }
 
   /**
+   * Convert the S3 URLs to S3N URLs in source, genome and annotation fields of
+   * the design.
+   */
+  private void convertDesignS3URLs() {
+
+    for (Sample s : this.design.getSamples()) {
+
+      // Convert read file URL
+      s.setSource(convertS3URL(s.getSource()));
+
+      // Convert genome file URL
+      if (s.getMetadata().isGenomeField())
+        s.getMetadata().setGenome(convertS3URL(s.getMetadata().getGenome()));
+
+      // Convert annotation file URL
+      if (s.getMetadata().isAnnotationField())
+        s.getMetadata().setAnnotation(
+            convertS3URL(s.getMetadata().getAnnotation()));
+    }
+  }
+
+  /**
+   * Convert a s3:// URL to a s3n:// URL
+   * @param url input URL
+   * @return converted URL
+   */
+  private String convertS3URL(final String url) {
+
+    return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
+  }
+
+  /**
    * Get a Step object from its name.
    * @param stepName name of the step
    * @return a Step object
@@ -596,6 +629,9 @@ class Workflow implements WorkflowDescription {
     this.design = design;
     this.context = context;
     this.hadoopMode = hadoopMode;
+
+    // Convert s3:// urls to s3n:// urls
+    convertDesignS3URLs();
 
     // Create the basic steps
     createSteps();
