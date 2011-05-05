@@ -163,6 +163,9 @@ public final class Globals {
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
+  /** AWS Multipart upload mode default. */
+  public static final boolean AWS_UPLOAD_MULTIPART_DEFAULT = false;
+
   //
   // Private constants
   //
