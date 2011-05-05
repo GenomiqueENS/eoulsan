@@ -71,7 +71,7 @@ $ sudo cp -r /etc/hadoop-0.20/conf.empty /etc/hadoop-0.20/conf.my_cluster
 $ sudo chown hadoop:hadoop /etc/hadoop-0.20/conf.my_cluster/*
 </source>
 
-	<p>Change the alternative for hadoop configuration to the cluster configuration:</p>
+	<p>CDH uses alternatives to manage your Hadoop configuration so that you can easily switch between cluster configurations. Change the alternative for hadoop configuration to the my_cluster configuration:</p>
 <source>
 $ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc/hadoop-0.20/conf.my_cluster 50
 </source>

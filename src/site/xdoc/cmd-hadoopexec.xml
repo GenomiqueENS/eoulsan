@@ -52,8 +52,8 @@
          <li><b>Optional parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>-d</td><td>string</td><td>The description of the analysis</td></tr>
-		<tr><td>-upload</td><td>none</td><td>Only upload data to hdfs</td></tr>
+		<tr><td>-d</td><td>string</td><td>The description of the analysis.</td></tr>
+		<tr><td>-upload</td><td>none</td><td>Only upload data to hdfs. No analysis will be performed.</td></tr>
 	</table>
         </li>
 	<br/>

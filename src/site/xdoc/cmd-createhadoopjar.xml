@@ -37,7 +37,7 @@
   
     <section name="Create hadoop jar">
 
-      <p>This command allow to create a jar file that contains all the plugins and dependencies needed to run your analysis in distributed mode. Use this command to run manualy Eoulsan on a Hadoop local cluster or manually on AWS MapReduce.</p>  
+      <p>This command allow to create a jar file that contains all the plugins and dependencies needed to run your analysis in distributed mode. Use this command before running manualy Eoulsan on a Hadoop local cluster or on AWS MapReduce.</p>  
 
       <ul>
          <li><b>Optional parameters</b>: none</li>
