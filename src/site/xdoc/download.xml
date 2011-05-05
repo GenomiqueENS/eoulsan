@@ -71,8 +71,7 @@
 	  </tr>
 	  <tr>
 	    <td>Operating system</td>
-	    <td>Currently Eoulsan runs only under Linux. However Eoulsan core is compatible with all *nix where Java is available. 
-		Next versions may runs under other operatings system but never under Microsoft Windows. </td>
+	    <td>Currently Eoulsan runs only under Linux. However Eoulsan core is compatible with all *nix where Java is available.</td>
 	  </tr>
 	  <tr>
             <td>Memory</td>

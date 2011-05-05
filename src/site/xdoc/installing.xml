@@ -59,9 +59,9 @@ $ cd eoulsan-@@@VERSION@@@
 $ ./eoulsan.sh
 </source>
 
-	<li>If you want to run Eoulsan on a local Hadoop cluster, see the <a href="hadoopmode.html">Hadoop configuration page</a> for more informations about Hadoop installation and configuration.</li>
-
       </ul>
+
+      <p>If you want to run Eoulsan on a local Hadoop cluster, see the <a href="hadoopmode.html">Hadoop configuration page</a> for more informations about Hadoop installation and configuration.</p>
      
 
    </section>

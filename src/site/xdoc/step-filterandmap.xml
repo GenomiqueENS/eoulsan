@@ -42,7 +42,7 @@
       <ul>
  	<li><b>Internal name</b>: filterandmap</li> 
         <li><b>Available</b>: Distributed mode only.</li>
- 	<li><b>Input</b>: Fastq or tfq file. tfq files are tabuleted fastq files.</li>
+ 	<li><b>Input</b>: Fastq or tfq file (tfq files are tabuleted fastq files with one read by line).</li>
 	<li><b>Output</b>: filtered alignment file in SAM format</li>
 
 	<br/>

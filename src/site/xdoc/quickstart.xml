@@ -55,7 +55,7 @@
 					<a href="#hadoop_mode">Execute Eoulsan with a local hadoop cluster</a>
 				</li>
 				<li>
-					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud</a>
+					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud computing</a>
 				</li>
 			</ul>
 
@@ -199,7 +199,7 @@ $ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/te
 		</subsection>
 
 		<a name="aws_mode"/>
-		<subsection name="Launch Eoulsan on Amazon Web Service Cloud">
+		<subsection name="Launch Eoulsan on Amazon Web Service cloud computing">
 
 			<p>You must have an AWS account for Amazon S3 and Amazon 
 			   MapReduce to launch Eoulsan on Amazon cloud. You can register to Amazon Web Services here:</p>
