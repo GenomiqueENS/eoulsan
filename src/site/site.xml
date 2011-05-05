@@ -75,7 +75,7 @@
 				<item name="Filter and map" href="step-filterandmap.html" />
 				<item name="Filter samples" href="/step-filtersamples.html" />
 				<item name="Expression" href="/step-expression.html" />
-				<item name="differential analysis" href="/step-diffana.html" />
+				<item name="Differential analysis" href="/step-diffana.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">
