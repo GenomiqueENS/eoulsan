@@ -98,9 +98,9 @@ public class DataFormats {
   public static final DataFormat ANNOTATION_INDEX_SERIAL = resgistry
       .getDataFormatFromName(AnnotationIndexSerialDataFormat.FORMAT_NAME);
 
-  /** Anadiff results data format. */
-  public static final DataFormat ANADIF_RESULTS_TXT = resgistry
-      .getDataFormatFromName(AnadifResultsTxtDataFormat.FORMAT_NAME);
+  /** Diffana results data format. */
+  public static final DataFormat DIFFANA_RESULTS_TXT = resgistry
+      .getDataFormatFromName(DiffAnaResultsTxtDataFormat.FORMAT_NAME);
 
   /** Genome data format. */
   public static final DataFormat GENOME_FASTA = resgistry

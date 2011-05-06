@@ -34,14 +34,14 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.anadiff.AnaDiff;
+import fr.ens.transcriptome.eoulsan.steps.anadiff.DiffAna;
 
 /**
  * This class define the step of differential analysis in local mode.
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class AnaDiffLocalStep extends AbstractStep {
+public class DiffAnaLocalStep extends AbstractStep {
 
   private static final String STEP_NAME = "diffana";
 
@@ -68,7 +68,7 @@ public class AnaDiffLocalStep extends AbstractStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.ANADIF_RESULTS_TXT};
+    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TXT};
   }
 
   @Override
@@ -80,8 +80,8 @@ public class AnaDiffLocalStep extends AbstractStep {
 
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
-      final AnaDiff ad =
-          new AnaDiff(design, new File("."), eDF.getType().getPrefix(), eDF
+      final DiffAna ad =
+          new DiffAna(design, new File("."), eDF.getType().getPrefix(), eDF
               .getDefaultExtention());
 
       ad.run();

@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * This class create and launch a R script to compute differential analysis.
  * @author Laurent Jourdren
  */
-public class AnaDiff {
+public class DiffAna {
 
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -172,7 +172,7 @@ public class AnaDiff {
 
     final StringBuilder sb = new StringBuilder();
 
-    final InputStream is = AnaDiff.class.getResourceAsStream(ANADIFF_SCRIPT);
+    final InputStream is = DiffAna.class.getResourceAsStream(ANADIFF_SCRIPT);
 
     try {
       final BufferedReader br = FileUtils.createBufferedReader(is);
@@ -416,7 +416,7 @@ public class AnaDiff {
    * Public constructor.
    * @param design Design to set
    */
-  public AnaDiff(final Design design, final File expressionFilesDirectory,
+  public DiffAna(final Design design, final File expressionFilesDirectory,
       final String expressionFilesPrefix, final String expressionFilesSuffix) {
 
     checkNotNull(design, "design is null.");

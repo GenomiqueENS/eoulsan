@@ -276,19 +276,19 @@ public class DataTypes {
 
   };
 
-  /** Anadiff results datatype. */
-  public static final DataType ANADIF_RESULTS = new AbstractDataType() {
+  /** Diffana results datatype. */
+  public static final DataType DIFFANA_RESULTS = new AbstractDataType() {
 
     @Override
     public String getName() {
 
-      return "anadiff_results";
+      return "diffana_results";
     }
 
     @Override
     public String getPrefix() {
 
-      return "anadiff_";
+      return "diffana_";
     }
 
     @Override

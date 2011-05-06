@@ -21,8 +21,8 @@ fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesLocalStep
 fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
 
-# Anadiff steps
-fr.ens.transcriptome.eoulsan.steps.anadiff.local.AnaDiffLocalStep
+# Diffana step
+fr.ens.transcriptome.eoulsan.steps.anadiff.local.DiffAnaLocalStep
 
 # Management steps
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep
