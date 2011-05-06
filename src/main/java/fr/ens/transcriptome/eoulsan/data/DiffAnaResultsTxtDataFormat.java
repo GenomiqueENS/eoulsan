@@ -28,13 +28,13 @@ package fr.ens.transcriptome.eoulsan.data;
  * This class define a Anadif result DataFormat.
  * @author Laurent Jourdren
  */
-public final class AnadifResultsTxtDataFormat extends AbstractDataFormat {
+public final class DiffAnaResultsTxtDataFormat extends AbstractDataFormat {
 
-  public static final String FORMAT_NAME = "anadiff_results";
+  public static final String FORMAT_NAME = "diffana_results";
 
   public DataType getType() {
 
-    return DataTypes.ANADIF_RESULTS;
+    return DataTypes.DIFFANA_RESULTS;
   }
 
   @Override
