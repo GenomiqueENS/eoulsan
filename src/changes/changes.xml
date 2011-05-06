@@ -182,7 +182,7 @@
             </action>
          </release>
          
-         <release version="1.0.9" description="" date="2011-05-06">
+         <release version="1.0.9" description="" date="2011-05-05">
          
             <action dev="jourdren" type="fix">
                 Bug in workflow when checking existing input files. 
@@ -198,13 +198,23 @@
             </action>
          </release>
          
-         <release version="1.0.10" description="" date="2011-05-06">
+         <release version="1.0.10" description="" date="2011-05-05">
          
             <action dev="jourdren" type="fix">
                 Don't prevent usage of compressed annotation and genome files in distributed mode. 
             </action>
              <action dev="jourdren" type="update">
                 Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.11" description="" date="2011-05-06">
+         
+            <action dev="jourdren" type="fix">
+                Only create debug files in debug mode in distributed mode. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update Quickstart documentation.
             </action>
          </release>
          
