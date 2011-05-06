@@ -56,13 +56,13 @@
          <li><b>Optional parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>-d</td><td>string</td><td>The description of the analysis</td></tr>
+		<tr><td>-d</td><td>string</td><td>The description of the analysis. This description will be used as AWS MapReduce job name.</td></tr>
 	</table>
         </li>
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh awsexec -d 'my test' param.xml design.txt s3://my-bucket/test
+$ eoulsan.sh awsexec -d 'My Eoulsan test' param.xml design.txt s3://my-bucket/test
 </source>
 
 </li>

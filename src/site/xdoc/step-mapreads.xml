@@ -42,8 +42,8 @@
       <ul>
 	<li><b>Internal name</b>: mapreads</li> 
         <li><b>Available</b>: Both local and distributed mode.</li>
-        <li><b>Input</b>: filtered reads</li>
-        <li><b>Output</b>: alignments in SAM format</li>	
+        <li><b>Input</b>: filtered reads (e.g. <code>filtered_reads_1.fq</code>).</li>
+        <li><b>Output</b>: alignments in SAM format (e.g. <code>mapper_results_1.sam</code>)</li>	
 	<br/>
         <li><b>Optional parameters</b>:</li>
 	<table>

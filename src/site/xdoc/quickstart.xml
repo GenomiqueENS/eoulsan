@@ -243,7 +243,7 @@ aws.secret.key=kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct
 
 			<p>Then you can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh awsexec param-hadoop.xml design.txt s3://mybucket/test
+$ eoulsan.sh awsexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybucket/test
 </source>
 
 			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 
@@ -260,10 +260,21 @@ $ eoulsan.sh awsexec param-hadoop.xml design.txt s3://mybucket/test
 			</ul>
 
 
-			<p>At the end of the analysis, the results files and logs will be in a new directory 
+			<p>At the end of the analysis, the results files, the logs files (one main and one for each steps)
+			   and a copy of the design and the parameter files will be in a new directory 
                            in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
                            directory name after eoulsan are respectively the date and the time of the launch 
                            of the analysis). You must manually download these data from S3 to your computer.</p>
+
+			<p>To retrieve your data you can use one of the following tools:</p>
+			<ul>
+				<li><b><a href="https://console.aws.amazon.com/s3/home?">AWS S3 Console Web interface</a></b>. Note that with this tool you can not download more than one file at the same time.</li>
+				<li><b><a href="http://s3tools.org/s3cmd">s3cmd</a></b>: a command line tool. s3cmd is also available as Debian/Ubuntu package.</li>
+				<li><b><a href="http://www.s3fox.net/">S3Fox Organizer</a></b>: a Firefox extension that handle S3 upload and download.</li>
+				<li><b><a href="http://cyberduck.ch/">Cyberduck</a></b>: An open source FTP, SFTP, WebDAV, Cloud Files, Google Docs &amp; 
+											Amazon S3 Browser for Mac &amp; Windows.</li>
+			</ul>
+
 
 		</subsection>
 	</section>

@@ -42,8 +42,8 @@
       <ul>
 	<li><b>Internal name</b>: filtersam</li> 
         <li><b>Available</b>: Both local and distributed mode.</li>
-        <li><b>Input</b>: alignments in SAM format</li>
-        <li><b>Output</b>: filtered alignments in SAM format</li>	
+        <li><b>Input</b>: alignments in SAM format (e.g. <code>mapper_results__1.sam</code>).</li>
+        <li><b>Output</b>: filtered alignments in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>).</li>	
 	<br/>
         <li><b>Optional parameters</b>:</li>
 	<table>
