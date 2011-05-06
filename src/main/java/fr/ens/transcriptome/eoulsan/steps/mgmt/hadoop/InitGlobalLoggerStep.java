@@ -130,7 +130,8 @@ public class InitGlobalLoggerStep extends AbstractStep {
     HadoopInfo();
 
     try {
-      copyCpuinfoAndMeminfo(context, conf);
+      if (context.getSettings().isDebug())
+        copyCpuinfoAndMeminfo(context, conf);
       sysInfo(conf);
       dfsInfo(context, conf);
     } catch (IOException e) {
