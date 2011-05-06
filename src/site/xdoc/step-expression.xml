@@ -42,8 +42,8 @@
       <ul>
          <li><b>Name</b>: expression.</li>
          <li><b>Available</b>: Both local and distributed mode.</li>
-        <li><b>Input</b>: filtered alignments</li>
-        <li><b>Output</b>: expression file</li>
+        <li><b>Input</b>: filtered alignments (e.g. <code>filtered_mapper_results_1.sam</code>).</li>
+        <li><b>Output</b>: expression file (e.g. <code>expression_1.txt</code>).</li>
 	 <br/>
          <li><b>Parameters</b>:</li>
 	<table>
