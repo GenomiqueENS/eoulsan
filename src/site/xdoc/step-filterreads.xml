@@ -44,7 +44,7 @@ and discard reads with bad base quality mean.</p>
  	<li><b>Internal name</b>: filterreads</li> 
         <li><b>Available</b>: Both local and distributed mode.</li>
  	<li><b>Input</b>: Fastq or tfq file</li>
-	<li><b>Output</b>: filtered fastq or filtered tfq file</li>
+	<li><b>Output</b>: filtered fastq or filtered tfq file (e.g. <code>filtered_reads_1.fq</code>).</li>
 
 	<br/>
         <li><b>Optional parameters</b>:</li>

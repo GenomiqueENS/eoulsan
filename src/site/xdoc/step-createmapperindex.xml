@@ -43,7 +43,7 @@
 	<li><b>Internal name</b>: _genericindexgenerator</li> 
         <li><b>Available</b>: Both local and distributed mode.</li>
         <li><b>Input</b>: genome file</li>
-        <li><b>Output</b>: index for the genome in a zip file</li>	
+        <li><b>Output</b>: index for the genome in a zip file (e.g. <code>bowtie_index_1.zip</code>)</li>
 	<br/>
         <li><b>Optional parameters</b>: none</li>
       </ul>
