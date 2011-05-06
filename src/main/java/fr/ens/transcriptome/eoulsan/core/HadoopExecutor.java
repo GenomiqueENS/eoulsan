@@ -85,6 +85,8 @@ public class HadoopExecutor extends Executor {
     if (result == null || result.getStep().getLogName() == null)
       return;
 
+    final boolean debug = this.context.getSettings().isDebug();
+
     try {
 
       final Path logPath = new Path(getContext().getLogPathname());
@@ -99,14 +101,17 @@ public class HadoopExecutor extends Executor {
 
       // Write logs in the log directory
       writeResultLog(new Path(logPath, logFilename + ".log"), logFs, result);
-      writeErrorLog(new Path(logPath, logFilename + ".err"), logFs, result);
+      if (debug)
+        writeErrorLog(new Path(logPath, logFilename + ".err"), logFs, result);
 
       // Write logs in the base directory
       writeResultLog(new Path(basePath, logFilename + ".log"), baseFs, result);
-      writeErrorLog(new Path(basePath, logFilename + ".err"), baseFs, result);
+      if (debug)
+        writeErrorLog(new Path(basePath, logFilename + ".err"), baseFs, result);
 
       // Write the catlog of the base path
-      writeDirectoryCatalog(new Path(logPath, logFilename + ".cat"), logFs);
+      if (debug)
+        writeDirectoryCatalog(new Path(logPath, logFilename + ".cat"), logFs);
 
     } catch (IOException e) {
 
