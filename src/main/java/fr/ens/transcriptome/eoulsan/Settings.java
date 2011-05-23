@@ -559,7 +559,29 @@ public final class Settings {
 
   private void init() {
 
+    LOGGER.info(Globals.ABOUT_TXT);
+    LOGGER.info("System temp directory: "
+        + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));
+  }
+
+  /**
+   * Add all the settings to the log.
+   */
+  public void logSettings() {
+
+    for (Object key : properties.keySet()) {
+
+      final String sKey = (String) key;
+      final String sValue = properties.getProperty(sKey);
+
+      if (sKey.equals(HADOOP_AWS_ACCESS_KEY)
+          || sKey.endsWith((HADOOP_AWS_SECRET_KEY)))
+        LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
+      else
+        LOGGER.info("Setting: " + sKey + "=" + sValue);
+    }
+
   }
 
   //
@@ -571,7 +593,7 @@ public final class Settings {
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  public Settings() throws IOException, EoulsanException {
+  Settings() throws IOException, EoulsanException {
 
     this(false);
 
@@ -600,7 +622,7 @@ public final class Settings {
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  public Settings(final File file) throws IOException, EoulsanException {
+  Settings(final File file) throws IOException, EoulsanException {
 
     init();
     loadSettings(file);
