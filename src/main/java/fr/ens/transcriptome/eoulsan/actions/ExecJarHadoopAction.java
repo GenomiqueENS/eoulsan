@@ -25,11 +25,10 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
@@ -228,8 +227,10 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     try {
 
-      // Initialize The application
-      final Configuration conf = init();
+      // Get the Hadoop configuration object
+      final Configuration conf =
+          ((HadoopEoulsanRuntime) EoulsanRuntime.getRuntime())
+              .getConfiguration();
 
       // Define parameter URI
       final URI paramURI;
@@ -321,30 +322,6 @@ public class ExecJarHadoopAction extends AbstractAction {
       Common.errorExit(e, "Error: " + e.getMessage());
     }
 
-  }
-
-  /**
-   * Configure the application.
-   * @return a Hadoop configuration object
-   * @throws EoulsanException if an error occurs while reading settings
-   */
-  private static Configuration init() throws EoulsanException {
-
-    try {
-      // Create and load settings
-      final Settings settings = new Settings();
-
-      // Create Hadoop configuration object
-      final Configuration conf = CommonHadoop.createConfiguration(settings);
-
-      // Initialize runtime
-      HadoopEoulsanRuntime.newEoulsanRuntime(settings, conf);
-
-      return conf;
-    } catch (IOException e) {
-      throw new EoulsanException("Error while reading settings: "
-          + e.getMessage());
-    }
   }
 
 }
