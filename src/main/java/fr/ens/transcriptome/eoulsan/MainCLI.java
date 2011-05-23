@@ -148,6 +148,40 @@ public final class MainCLI {
         Common.showMessageAndExit(Globals.LICENSE_TXT);
       }
 
+      // Set Log file
+      if (line.hasOption("log")) {
+
+        argsOptions += 2;
+        try {
+          final Handler fh = new FileHandler(line.getOptionValue("log"));
+          fh.setFormatter(Globals.LOG_FORMATTER);
+          LOGGER.setLevel(Globals.LOG_LEVEL);
+          LOGGER.setUseParentHandlers(false);
+
+          LOGGER.addHandler(fh);
+        } catch (IOException e) {
+          Common.errorExit(e, "Error while creating log file: "
+              + e.getMessage());
+        }
+      }
+
+      // Set log level
+      if (line.hasOption("loglevel")) {
+
+        argsOptions += 2;
+        try {
+          LOGGER.setLevel(Level.parse(line.getOptionValue("loglevel")
+              .toUpperCase()));
+        } catch (IllegalArgumentException e) {
+
+          LOGGER
+              .warning("Unknown log level ("
+                  + line.getOptionValue("loglevel")
+                  + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
+
+        }
+      }
+
       // Load configuration if exists
       try {
 
@@ -169,43 +203,9 @@ public final class MainCLI {
         Common.errorExit(e, e.getMessage());
       }
 
-      // Set Log file
-      if (line.hasOption("log")) {
-
-        argsOptions += 2;
-        try {
-          final Handler fh = new FileHandler(line.getOptionValue("log"));
-          fh.setFormatter(Globals.LOG_FORMATTER);
-          LOGGER.setLevel(Globals.LOG_LEVEL);
-          LOGGER.setUseParentHandlers(false);
-
-          LOGGER.addHandler(fh);
-        } catch (IOException e) {
-          Common.errorExit(e,
-              "Error while creating log file: " + e.getMessage());
-        }
-      }
-
-      // Set log level
-      if (line.hasOption("loglevel")) {
-
-        argsOptions += 2;
-        try {
-          LOGGER.setLevel(Level.parse(line.getOptionValue("loglevel")
-              .toUpperCase()));
-        } catch (IllegalArgumentException e) {
-
-          LOGGER
-              .warning("Unknown log level ("
-                  + line.getOptionValue("loglevel")
-                  + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
-
-        }
-      }
-
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     return argsOptions;
