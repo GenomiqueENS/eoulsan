@@ -32,6 +32,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan
  * in Hadoop mode.
@@ -127,12 +129,35 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   /**
-   * Public constructor, initialize the runtime.
+   * Package constructor, initialize the runtime. This constructor can only
+   * called by MainHadoop class.
+   */
+  static HadoopEoulsanRuntime newEoulsanRuntime() throws EoulsanException {
+
+    try {
+
+      // Create and load settings
+      final Settings settings = new Settings();
+
+      // Create Hadoop configuration object
+      final Configuration conf = CommonHadoop.createConfiguration(settings);
+
+      // Initialize runtime
+      return newEoulsanRuntime(settings, conf);
+
+    } catch (IOException e) {
+      throw new EoulsanException("Error while reading settings: "
+          + e.getMessage());
+    }
+  }
+
+  /**
+   * Private constructor, initialize the runtime.
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  public static HadoopEoulsanRuntime newEoulsanRuntime(final Settings settings,
-      final Configuration conf) {
+  private static HadoopEoulsanRuntime newEoulsanRuntime(
+      final Settings settings, final Configuration conf) {
 
     // Create instance
     final HadoopEoulsanRuntime instance =

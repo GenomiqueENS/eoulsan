@@ -48,6 +48,13 @@ public final class MainHadoop {
       Common.exit(0);
     }
 
+    // Initialize Eoulsan runtime
+    try {
+      HadoopEoulsanRuntime.newEoulsanRuntime();
+    } catch (EoulsanException e) {
+      Common.showErrorMessageAndExit(e.getMessage());
+    }
+
     // Set action name and arguments
     final String actionName = args[0].trim().toLowerCase();
     final String[] arguments = StringUtils.arrayWithoutFirstsElement(args, 1);
