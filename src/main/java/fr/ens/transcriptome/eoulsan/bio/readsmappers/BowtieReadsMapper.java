@@ -106,7 +106,6 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
             + readsFile2.getAbsolutePath() + " > "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
-    System.out.println("cmd: " + cmd);
     LOGGER.info(cmd);
 
     final int exitValue = ProcessUtils.sh(cmd);
