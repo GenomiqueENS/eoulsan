@@ -166,6 +166,9 @@ public final class Globals {
   /** AWS Multipart upload mode default. */
   public static final boolean AWS_UPLOAD_MULTIPART_DEFAULT = false;
 
+  /** PHRED offset default. */
+  static final int PHRED_OFFSET_DEFAULT = 33;
+
   //
   // Private constants
   //

@@ -183,10 +183,10 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd,
+  public void init(final boolean pairEnd, final int phredOffset,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
-    super.init(pairEnd, incrementer, counterGroup);
+    super.init(pairEnd, phredOffset, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

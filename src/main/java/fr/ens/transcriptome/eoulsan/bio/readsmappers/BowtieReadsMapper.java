@@ -42,7 +42,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  public static final String DEFAULT_ARGUMENTS = "--phred64-quals";
+  public static final String DEFAULT_ARGUMENTS = "";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie";
@@ -101,8 +101,9 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String cmd =
         "cd "
             + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -1 " + readsFile1.getAbsolutePath() + " -2 "
+            + "--phred" + getPhredOffset() + "-quals " + getMapperArguments()
+            + " -p " + getThreadsNumber() + " " + ebwt + " -1 "
+            + readsFile1.getAbsolutePath() + " -2 "
             + readsFile2.getAbsolutePath() + " > "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
@@ -174,10 +175,10 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd,
+  public void init(final boolean pairEnd, final int phredOffset,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
-    super.init(pairEnd, incrementer, counterGroup);
+    super.init(pairEnd, phredOffset, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

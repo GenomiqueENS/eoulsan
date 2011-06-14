@@ -75,6 +75,9 @@ public final class Settings {
   private static final String REMOVE_REPLICATE_INFO_KEY =
       MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
+  private static final String PHRED_OFFSET_DEFAULT_KEY =
+      MAIN_PREFIX_KEY + "phred.offset.default";
+
   private static final Set<String> FORBIDDEN_KEYS =
       Utils.unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -213,6 +216,16 @@ public final class Settings {
 
     return Integer.parseInt(this.properties.getProperty(LOCAL_THREADS_NUMBER,
         "0"));
+  }
+
+  /**
+   * Get the PHRED offset default value.
+   * @return the PHRED offset default value
+   */
+  public int getPhredOffsetDefault() {
+
+    return Integer.parseInt(this.properties.getProperty(
+        PHRED_OFFSET_DEFAULT_KEY, Integer.toString(Globals.PHRED_OFFSET_DEFAULT)));
   }
 
   /**
@@ -434,6 +447,16 @@ public final class Settings {
   }
 
   /**
+   * Set the PHRED offset default value.
+   * @param phredOffset the value to set
+   */
+  public void setPhredOffsetDefault(final int phredOffset) {
+
+    this.properties.setProperty(PHRED_OFFSET_DEFAULT_KEY, Integer
+        .toString(phredOffset));
+  }
+
+  /**
    * Set a setting value.
    * @param settingName name of the setting to set
    * @param settingValue value of the setting to set
@@ -559,7 +582,7 @@ public final class Settings {
 
   private void init() {
 
-    LOGGER.info(Globals.ABOUT_TXT);
+    LOGGER.info(Globals.WELCOME_MSG);
     LOGGER.info("System temp directory: "
         + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));

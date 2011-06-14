@@ -41,11 +41,10 @@ public interface SequenceReadsMapper {
    */
   String getMapperName();
 
-  
   //
   // Index creation methods
   //
-  
+
   /**
    * Create the index in a ZIP archive
    * @param is input stream of the genome file
@@ -62,7 +61,7 @@ public interface SequenceReadsMapper {
   //
   // Input file creating methods
   //
-  
+
   void writeInputEntry(final ReadSequence read) throws IOException;
 
   void writeInputEntry(final ReadSequence read1, final ReadSequence read2)
@@ -80,7 +79,7 @@ public interface SequenceReadsMapper {
   //
   // Configuration methods
   //
-  
+
   int getThreadsNumber();
 
   void setThreadsNumber(int threadsNumber);
@@ -88,15 +87,15 @@ public interface SequenceReadsMapper {
   String getMapperArguments();
 
   void setMapperArguments(String arguments);
-  
+
   File getTempDirectory();
-  
+
   void setTempDirectory(File tempDirectory);
 
   //
   // Mapping methods
   //
-  
+
   void map(File archiveIndexFile, File archiveIndexDir) throws IOException;
 
   void map(File readsFile, File archiveIndexFile, File archiveIndexDir)
@@ -110,13 +109,12 @@ public interface SequenceReadsMapper {
   //
   // Other methods
   //
-  
+
   void clean();
 
-  void init(boolean pairEnd, ReporterIncrementer incrementer,
+  void init(boolean pairEnd, int phredOffset, ReporterIncrementer incrementer,
       String counterGroup);
-  
+
   DataFormat getArchiveFormat();
-  
 
 }
