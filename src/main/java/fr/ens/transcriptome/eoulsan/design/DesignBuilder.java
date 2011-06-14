@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -113,6 +114,8 @@ public class DesignBuilder {
   public Design getDesign() {
 
     final Design result = DesignFactory.createEmptyDesign();
+    final int phredOffset =
+        EoulsanRuntime.getSettings().getPhredOffsetDefault();
 
     for (File fq : this.fastqList) {
 
@@ -134,6 +137,7 @@ public class DesignBuilder {
       if (this.gffFile != null)
         smd.setAnnotation(this.gffFile.toString());
 
+      smd.setPhredOffset(phredOffset);
       smd.setCondition(sampleName);
       smd.setReplicatType("T");
       smd.setUUID(UUID.randomUUID().toString());

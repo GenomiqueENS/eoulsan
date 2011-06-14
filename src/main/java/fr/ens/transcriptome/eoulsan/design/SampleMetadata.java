@@ -43,7 +43,7 @@ public interface SampleMetadata {
   /** Date field. */
   String DATE_FIELD = "Date";
   /** Serial Number field. */
-  String SERIAL_NUMBER_FIELD = "Serial number";
+  String SERIAL_NUMBER_FIELD = "SerialNumber";
   /** Operator field. */
   String OPERATOR_FIELD = "Operator";
   /** Operator field. */
@@ -52,6 +52,8 @@ public interface SampleMetadata {
   String REPLICAT_TYPE_FIELD = "ReplicateType";
   /** UUID field. */
   String UUID_TYPE_FIELD = "UUID";
+  /** PHRED offset. */
+  String PHRED_OFFSET_FIELD = "PhredOffset";
 
   /**
    * Get a description.
@@ -127,6 +129,12 @@ public interface SampleMetadata {
   String getUUID();
 
   /**
+   * Get PHRED offset.
+   * @return the PHRED offset.
+   */
+  int getPhredOffset();
+
+  /**
    * Set a field of the metadata.
    * @param field Field to set
    * @param value value to set
@@ -194,6 +202,12 @@ public interface SampleMetadata {
   void setUUID(final String uuid);
 
   /**
+   * Set the PHRED offset.
+   * @param phredOffset the PHRED offset to set
+   */
+  void setPhredOffset(final int phredOffset);
+
+  /**
    * Test if a field exists.
    * @param field The field to test
    * @return true if the field exists
@@ -259,4 +273,11 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isUUIDField();
+
+  /**
+   * Test if the PHRED offset field exits.
+   * @return true if the field exists
+   */
+  boolean isPhredOffset();
+
 }

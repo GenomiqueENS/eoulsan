@@ -115,8 +115,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // final Path inputPath =
     // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
-        new Path(
-            context.getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
+        new Path(context
+            .getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
 
     // Set genome index reference path
     final Path genomeIndex =
@@ -141,6 +141,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     if (getMapperArguments() != null) {
       jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
     }
+
+    // Set Mapper PHRED offset
+    jobConf.set(ReadsMapperMapper.PHRED_OFFSET_KEY, ""
+        + sample.getMetadata().getPhredOffset());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -186,8 +190,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
+        MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }

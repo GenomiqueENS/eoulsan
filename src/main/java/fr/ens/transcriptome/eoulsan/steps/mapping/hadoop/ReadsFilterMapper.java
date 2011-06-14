@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
@@ -58,6 +59,8 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
+  static final String PHRED_OFFSET_KEY =
+    Globals.PARAMETER_PREFIX + ".filter.reads.phred.offset";
   static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX + ".pairend";
   static final String LENGTH_THRESHOLD_KEY =
       Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold";
@@ -88,6 +91,12 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Get configuration object
     final Configuration conf = context.getConfiguration();
 
+    // Set the PHRED offset
+    final int phredOffset = Integer.parseInt(conf.get(PHRED_OFFSET_KEY, ""
+        + EoulsanRuntime.getSettings().getPhredOffsetDefault()));
+    this.read1.setPhredOffset(phredOffset);
+    this.read2.setPhredOffset(phredOffset);
+    
     // Set pair end mode
     final boolean pairEnd =
         Boolean.parseBoolean(context.getConfiguration().get(PAIR_END_KEY));
@@ -108,9 +117,10 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("pairend=" + pairEnd);
-    LOGGER.info("lengththreshold=" + lengthThreshold);
-    LOGGER.info("qualitythreshold=" + qualityThreshold);
+    LOGGER.info("PHRED offset: " + phredOffset);
+    LOGGER.info("Pair end: " + pairEnd);
+    LOGGER.info("Length threshold: " + lengthThreshold);
+    LOGGER.info("Quality threshold: " + qualityThreshold);
 
     // Set the filters
     filter =

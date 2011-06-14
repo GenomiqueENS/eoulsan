@@ -90,7 +90,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
     return DataFormats.BWA_INDEX_ZIP;
   }
-  
+
   @Override
   protected void internalMap(final File readsFile, final File archiveIndex)
       throws IOException {
@@ -243,10 +243,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd,
+  public void init(final boolean pairEnd, final int phredOffset,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
-    super.init(pairEnd, incrementer, counterGroup);
+    super.init(pairEnd, phredOffset, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

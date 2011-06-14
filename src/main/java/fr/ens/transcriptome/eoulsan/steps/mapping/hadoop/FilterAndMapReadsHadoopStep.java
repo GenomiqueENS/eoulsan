@@ -119,6 +119,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Reads filters parameters
     //
 
+    // Set reads filter PHRED offset
+    jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
+        + sample.getMetadata().getPhredOffset());
+
     // Set length threshold
     if (getLengthThreshold() >= 0)
       jobConf.set(ReadsFilterMapper.LENGTH_THRESHOLD_KEY, ""
@@ -157,6 +161,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
     }
 
+    // Set Mapper PHRED offset
+    jobConf.set(ReadsMapperMapper.PHRED_OFFSET_KEY, ""
+        + sample.getMetadata().getPhredOffset());
     //
     // Alignment filtering
     //

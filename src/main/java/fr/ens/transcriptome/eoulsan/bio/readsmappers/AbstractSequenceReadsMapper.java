@@ -69,6 +69,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private boolean noReadWritten = true;
   private boolean pairEnd = false;
+  private int phredOffset;
 
   private int threadsNumber;
   private String mapperArguments;
@@ -102,6 +103,15 @@ public abstract class AbstractSequenceReadsMapper implements
   public boolean isPairEnd() {
 
     return this.pairEnd;
+  }
+
+  /**
+   * Get PHRED offset.
+   * @return the PHRED offset
+   */
+  public int getPhredOffset() {
+
+    return this.phredOffset;
   }
 
   @Override
@@ -536,17 +546,19 @@ public abstract class AbstractSequenceReadsMapper implements
   /**
    * Initialize mapper.
    * @param pairEnd true if the mapper is in pair end mode.
+   * @param phredOffset PHRED offset
    * @param incrementer Objet to use to increment counters
    * @param counterGroup counter name group
    */
   @Override
-  public void init(final boolean pairEnd,
+  public void init(final boolean pairEnd, final int phredOffset,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
     this.pairEnd = pairEnd;
+    this.phredOffset = phredOffset;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
   }

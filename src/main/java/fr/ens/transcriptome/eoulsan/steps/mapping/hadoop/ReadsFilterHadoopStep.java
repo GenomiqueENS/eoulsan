@@ -135,6 +135,10 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
+    // Set PHRED offset
+    jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
+        + sample.getMetadata().getPhredOffset());
+
     // Set length threshold
     if (getLengthThreshold() >= 0)
       jobConf.set(ReadsFilterMapper.LENGTH_THRESHOLD_KEY, ""
@@ -183,9 +187,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(context.getDataFile(DataFormats.FILTERED_READS_TFQ, sample)
-            .getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
+        DataFormats.FILTERED_READS_TFQ, sample).getSource()));
 
     return job;
   }

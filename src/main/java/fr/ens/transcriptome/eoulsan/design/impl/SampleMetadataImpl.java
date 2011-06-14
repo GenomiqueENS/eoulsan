@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.design.impl;
 
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
@@ -115,6 +116,31 @@ public class SampleMetadataImpl implements SampleMetadata {
     return get(UUID_TYPE_FIELD);
   }
 
+  @Override
+  public int getPhredOffset() {
+
+    final String value;
+
+    // Get the value from metadata, if field does not exist return default PHRED
+    // offset value
+    try {
+      value = get(PHRED_OFFSET_FIELD);
+    } catch (EoulsanRuntimeException e) {
+      return EoulsanRuntime.getSettings().getPhredOffsetDefault();
+    }
+
+    final int intValue;
+    try {
+      intValue = Integer.parseInt(value);
+    } catch (NumberFormatException e) {
+      throw new EoulsanRuntimeException("PHRED offset value is not an integer");
+    }
+
+    checkPhredValue(intValue);
+
+    return intValue;
+  }
+
   //
   // Setters
   //
@@ -161,26 +187,26 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setAnnotation(String annotation) {
+  public void setAnnotation(final String annotation) {
 
     set(ANNOTATION_FIELD, annotation);
   }
 
   @Override
-  public void setGenome(String genome) {
+  public void setGenome(final String genome) {
 
     set(GENOME_FIELD, genome);
 
   }
 
   @Override
-  public void setCondition(String condition) {
+  public void setCondition(final String condition) {
 
     set(CONDITION_FIELD, condition);
   }
 
   @Override
-  public void setReplicatType(String replicatType) {
+  public void setReplicatType(final String replicatType) {
 
     set(REPLICAT_TYPE_FIELD, replicatType);
   }
@@ -189,6 +215,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public void setUUID(final String uuid) {
 
     set(UUID_TYPE_FIELD, uuid);
+  }
+
+  @Override
+  public void setPhredOffset(final int phredOffset) {
+
+    set(PHRED_OFFSET_FIELD, Integer.toString(phredOffset));
   }
 
   //
@@ -264,6 +296,24 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isUUIDField() {
 
     return isField(UUID_TYPE_FIELD);
+  }
+
+  @Override
+  public boolean isPhredOffset() {
+
+    return isField(PHRED_OFFSET_FIELD);
+  }
+
+  //
+  // Other methods
+  //
+
+  private void checkPhredValue(final int phredOffset) {
+
+    if (phredOffset != 33 && phredOffset != 64)
+      throw new EoulsanRuntimeException(
+          "Invalid PHRED offset value (only 33 or 64 are allowed): "
+              + phredOffset);
   }
 
   //

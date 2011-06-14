@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
 /**
  * This class define a read sequence.
@@ -32,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class ReadSequence extends Sequence {
 
+  private int phredOffset;
   private String quality;
 
   //
@@ -47,6 +49,15 @@ public class ReadSequence extends Sequence {
     return this.quality;
   }
 
+  /**
+   * Get the PHRED offset value.
+   * @return the PHRED offset value
+   */
+  public final int getPhredOffset() {
+
+    return this.phredOffset;
+  }
+
   //
   // Setters
   // 
@@ -57,6 +68,15 @@ public class ReadSequence extends Sequence {
    */
   public final void setQuality(final String quality) {
     this.quality = quality;
+  }
+
+  /**
+   * Set the PHRED offset value.
+   * @param phredOffset the PHRED offset value
+   */
+  public final void setPhredOffset(final int phredOffset) {
+
+    this.phredOffset = phredOffset;
   }
 
   /**
@@ -101,7 +121,7 @@ public class ReadSequence extends Sequence {
     int score = 0;
     final int len = quality.length();
     for (int i = 0; i < len; i++) {
-      score += quality.charAt(i) - 64;
+      score += quality.charAt(i) - phredOffset;
     }
 
     return score / (double) len;
@@ -372,8 +392,23 @@ public class ReadSequence extends Sequence {
   public ReadSequence(final int id, final String name, final String sequence,
       final String quality) {
 
+    this(id, name, sequence, quality, EoulsanRuntime.getSettings()
+        .getPhredOffsetDefault());
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   */
+  public ReadSequence(final int id, final String name, final String sequence,
+      final String quality, final int phredOffset) {
+
     super(id, name, sequence);
     this.quality = quality;
+    this.phredOffset = phredOffset;
   }
 
 }
