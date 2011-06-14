@@ -35,17 +35,26 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class IlluminaReadId {
 
-  private static final Pattern PATTERN =
+  private static final Pattern PATTERN_1_4 =
       Pattern
-          .compile("^([a-zA-Z0-9\\-]+):(\\d+):(\\d+):(\\d+):(\\d+)#(\\d+)/(\\d)$");
+          .compile("^([a-zA-Z0-9\\-]+):(\\d+):(\\d+):(\\d+):(\\d+)#([0ATGC]+)/(\\d)$");
+
+  private static final Pattern PATTERN_1_8 =
+      Pattern
+          .compile("^([a-zA-Z0-9\\-]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
+              + "(\\d+):([YN]):(\\d+):([ATGC]+)$");
 
   private String instrumentId;
+  private int runId;
+  private String flowCellId;
   private int flowCellLane;
   private int tileNumberInFlowCellLane;
   private int xClusterCoordinateInTile;
   private int yClusterCoordinateInTile;
-  private int multiplexedSample;
+  private String sequenceIndex;
   private int pairMember;
+  private boolean filtered;
+  private int controlNumber;
 
   /**
    * Get instrument id.
@@ -53,6 +62,22 @@ public class IlluminaReadId {
    */
   public final String getInstrumentId() {
     return instrumentId;
+  }
+
+  /**
+   * Get Run id.
+   * @return the run id or -1 if there is no run id
+   */
+  public final int getRunId() {
+    return runId;
+  }
+
+  /**
+   * Get the flow cell id.
+   * @return the flow cell id as a string or null if there is no flow cell id
+   */
+  public final String getFlowCellId() {
+    return flowCellId;
   }
 
   /**
@@ -88,11 +113,11 @@ public class IlluminaReadId {
   }
 
   /**
-   * Get index number for a multiplexed sample.
-   * @return index number for a multiplexed sample, 0 for no indexing
+   * Get the sequence index for a multiplexed sample.
+   * @return the sequence index for a multiplexed sample, "0" for no indexing
    */
-  public final int getMultiplexedSample() {
-    return multiplexedSample;
+  public final String getSequenceIndex() {
+    return sequenceIndex;
   }
 
   /**
@@ -102,6 +127,22 @@ public class IlluminaReadId {
    */
   public final int getPairMember() {
     return pairMember;
+  }
+
+  /**
+   * Test if the read is filtered.
+   * @return true if the read is filtered
+   */
+  public final boolean isFiltered() {
+    return filtered;
+  }
+
+  /**
+   * Get the value of the control number.
+   * @return the control number or -1 if there is no control number
+   */
+  public final int getControlNumber() {
+    return controlNumber;
   }
 
   //
@@ -119,19 +160,46 @@ public class IlluminaReadId {
       throw new IllegalArgumentException("The string to parse is null");
     }
 
-    final Matcher matcher = PATTERN.matcher(readId.trim());
+    final String s = readId.trim();
+    final Matcher matcher;
 
-    if (!matcher.lookingAt()) {
-      throw new EoulsanException("Invalid illumina id: " + readId);
+    if (s.indexOf(' ') != -1) {
+
+      matcher = PATTERN_1_8.matcher(s);
+      if (!matcher.lookingAt())
+        throw new EoulsanException("Invalid illumina id: " + readId);
+
+      this.instrumentId = matcher.group(1);
+      this.runId = Integer.parseInt(matcher.group(2));
+      this.flowCellId = matcher.group(3);
+      this.flowCellLane = Integer.parseInt(matcher.group(4));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(5));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(6));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(7));
+      this.pairMember = Integer.parseInt(matcher.group(8));
+      this.filtered = matcher.group(9).charAt(0) == 'Y';
+      this.controlNumber = Integer.parseInt(matcher.group(10));
+      this.sequenceIndex = matcher.group(11);
+
+    } else {
+
+      matcher = PATTERN_1_4.matcher(s);
+      if (!matcher.lookingAt())
+        throw new EoulsanException("Invalid illumina id: " + readId);
+
+      this.instrumentId = matcher.group(1);
+      this.runId = -1;
+      this.flowCellId = null;
+      this.flowCellLane = Integer.parseInt(matcher.group(2));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
+      this.sequenceIndex = matcher.group(6);
+      this.pairMember = Integer.parseInt(matcher.group(7));
+      this.filtered = false;
+      this.controlNumber = -1;
     }
 
-    this.instrumentId = matcher.group(1);
-    this.flowCellLane = Integer.parseInt(matcher.group(2));
-    this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
-    this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
-    this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
-    this.multiplexedSample = Integer.parseInt(matcher.group(6));
-    this.pairMember = Integer.parseInt(matcher.group(7));
   }
 
   //
