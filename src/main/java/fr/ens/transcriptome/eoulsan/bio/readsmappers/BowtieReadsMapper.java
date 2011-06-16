@@ -143,8 +143,9 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String cmd =
         "cd "
             + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -q " + readsFile.getAbsolutePath() + " > "
+            + "--phred" + getPhredOffset() + "-quals " + getMapperArguments()
+            + " -p " + getThreadsNumber() + " " + ebwt + " -q "
+            + readsFile.getAbsolutePath() + " > "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
     System.out.println("cmd: " + cmd);
