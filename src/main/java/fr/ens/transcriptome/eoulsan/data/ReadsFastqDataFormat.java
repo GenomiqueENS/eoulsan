@@ -47,6 +47,12 @@ public final class ReadsFastqDataFormat extends AbstractDataFormat {
   }
 
   @Override
+  public String[] getExtensions() {
+
+    return new String[] {".fq", ".fastq"};
+  }
+
+  @Override
   public String getFormatName() {
 
     return FORMAT_NAME;
