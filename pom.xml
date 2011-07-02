@@ -154,7 +154,6 @@
 			</snapshots>
 			<id>java.net</id>
 			<name>java.net repository</name>
-			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
 			<url>http://download.java.net/maven/1</url>
 			<layout>legacy</layout>
 		</repository>
@@ -165,9 +164,17 @@
 			</snapshots>
 			<id>CHiBi</id>
 			<name>CHibi repository</name>
-			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
 			<url>http://www.chibi.ubc.ca/maven2</url>
-			<!--layout>legacy</layout-->
+		</repository>
+
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>ens</id>
+			<name>ENS repository</name>
+			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
+			<url>http://transcriptome.ens.fr/maven2</url>
 		</repository>
 	</repositories>
 
