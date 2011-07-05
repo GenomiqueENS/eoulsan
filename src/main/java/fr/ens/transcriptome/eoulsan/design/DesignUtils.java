@@ -55,6 +55,8 @@ public final class DesignUtils {
     // Write header
     sb.append("SlideNumber");
     sb.append("\t");
+    sb.append("Name");
+    sb.append("\t");
 
     sb.append("FileName");
 
@@ -72,6 +74,9 @@ public final class DesignUtils {
     for (Sample s : slides) {
 
       sb.setLength(0);
+
+      sb.append(s.getId());
+      sb.append("\t");
 
       sb.append(s.getName());
       sb.append("\t");
