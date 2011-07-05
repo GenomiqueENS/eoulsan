@@ -33,16 +33,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.PairEndReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ValidReadFilter;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -114,11 +111,13 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     LOGGER.info("Filter file: " + inFile);
     LOGGER.info("PHRED offset: " + phredOffset);
 
-    final MultiReadFilter filter = new MultiReadFilter(reporter, COUNTER_GROUP);
-    filter.addFilter(new PairEndReadFilter(isPairend()));
-    filter.addFilter(new ValidReadFilter());
-    filter.addFilter(new TrimReadFilter(getLengthThreshold()));
-    filter.addFilter(new QualityReadFilter(getQualityThreshold()));
+    final ReadFilter filter;
+
+    try {
+      filter = this.getReadFilter(reporter, COUNTER_GROUP);
+    } catch (EoulsanException e) {
+      throw new IOException(e.getMessage());
+    }
 
     final FastQReader reader = new FastQReader(inFile.open());
     final FastQWriter writer = new FastQWriter(outFile.create());
@@ -130,17 +129,17 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     try {
       while (reader.readEntry()) {
 
-        reporter.incrCounter(COUNTER_GROUP, INPUT_RAW_READS_COUNTER
-            .counterName(), 1);
+        reporter.incrCounter(COUNTER_GROUP,
+            INPUT_RAW_READS_COUNTER.counterName(), 1);
 
         if (filter.accept(reader)) {
           writer.set(reader);
           writer.write();
-          reporter.incrCounter(COUNTER_GROUP, OUTPUT_FILTERED_READS_COUNTER
-              .counterName(), 1);
+          reporter.incrCounter(COUNTER_GROUP,
+              OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
         } else {
-          reporter.incrCounter(COUNTER_GROUP, READS_REJECTED_BY_FILTERS_COUNTER
-              .counterName(), 1);
+          reporter.incrCounter(COUNTER_GROUP,
+              READS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
         }
 
       }

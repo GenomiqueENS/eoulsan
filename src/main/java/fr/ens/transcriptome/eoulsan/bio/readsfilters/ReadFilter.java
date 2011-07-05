@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -50,5 +51,25 @@ public interface ReadFilter {
    * @return the name of the filter
    */
   String getName();
+
+  /**
+   * Get the description of the filter.
+   * @return the description of the filter
+   */
+  String getDescription();
+
+  /**
+   * Set a parameter of the ReadFilter.
+   * @param key name of the parameter to set
+   * @param value value of the parameter to set
+   * @throws EoulsanException if the parameter is invalid
+   */
+  void setParameter(String key, String value) throws EoulsanException;
+  
+  /**
+   * Initialize the filter.
+   * @throws EoulsanException an error occurs while initialize the filter
+   */
+  void init() throws EoulsanException;;
 
 }

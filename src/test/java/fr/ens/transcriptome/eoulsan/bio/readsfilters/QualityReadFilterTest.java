@@ -38,7 +38,9 @@ public class QualityReadFilterTest {
   @Test
   public void testAcceptReadSequence() throws EoulsanException {
 
-    ReadFilter filter = new QualityReadFilter(50);
+    ReadFilter filter = new QualityReadFilter();
+    filter.setParameter("threshold", "50");
+    filter.init();
 
     try {
       filter.accept(null);
@@ -52,7 +54,9 @@ public class QualityReadFilterTest {
     assertEquals('x' - 64.0, read.meanQuality(), 0.0);
     assertTrue(filter.accept(read));
 
-    filter = new QualityReadFilter(60);
+    filter = new QualityReadFilter();
+    filter.setParameter("threshold", "50");
+    filter.init();
     assertFalse(filter.accept(read));
   }
 

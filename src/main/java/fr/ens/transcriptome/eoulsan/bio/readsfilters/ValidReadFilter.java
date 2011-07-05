@@ -44,6 +44,12 @@ public class ValidReadFilter extends AbstractReadFilter {
   @Override
   public String getName() {
 
+    return "valid";
+  }
+
+  @Override
+  public String getDescription() {
+
     return "Valid ReadFilter";
   }
 

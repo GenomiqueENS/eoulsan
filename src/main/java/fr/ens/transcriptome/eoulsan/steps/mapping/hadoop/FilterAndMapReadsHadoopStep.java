@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
@@ -123,18 +124,16 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
         + sample.getMetadata().getPhredOffset());
 
-    // Set length threshold
-    if (getLengthThreshold() >= 0)
-      jobConf.set(ReadsFilterMapper.LENGTH_THRESHOLD_KEY, ""
-          + getLengthThreshold());
+    // Set read filter parameters
+    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
 
-    // Set quality threshold
-    if (getQualityThreshold() >= 0)
-      jobConf.set(ReadsFilterMapper.QUALITY_THRESHOLD_KEY, ""
-          + getQualityThreshold());
+      jobConf.set(
+          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
+          e.getValue());
+    }
 
     // Set pair end mode
-    jobConf.set(ReadsFilterMapper.PAIR_END_KEY, "" + isPairend());
+    jobConf.set(ReadsMapperMapper.PAIR_END_KEY, "" + isPairend());
 
     //
     // Reads mapping parameters
@@ -169,12 +168,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Set counter group
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY, Integer
-        .toString(getMappingQualityThreshold()));
+    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
+        Integer.toString(getMappingQualityThreshold()));
 
     // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
-        DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
+        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     // Set Job name
     // Create the job and its name
@@ -211,8 +210,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(
+        job,
+        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+            sample).getSource()));
 
     return job;
   }

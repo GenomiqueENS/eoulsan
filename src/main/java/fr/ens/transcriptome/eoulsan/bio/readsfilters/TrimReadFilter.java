@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import java.util.regex.Pattern;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -36,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  */
 public class TrimReadFilter extends AbstractReadFilter {
 
+  public static final String FILTER_NAME = "trim";
   private static final Pattern PATTERN = Pattern.compile("NN+$");
 
   private int lengthThreshold;
@@ -84,24 +86,56 @@ public class TrimReadFilter extends AbstractReadFilter {
   @Override
   public String getName() {
 
+    return FILTER_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
     return "Trim ReadFilter";
   }
-  
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null || value == null)
+      return;
+
+    if ("length.threshold".equals(key.trim())) {
+
+      try {
+        this.lengthThreshold = Integer.parseInt(value.trim());
+      } catch (NumberFormatException e) {
+        return;
+      }
+
+      if (this.lengthThreshold < 1)
+        throw new EoulsanException("Invalid length threshold: "
+            + lengthThreshold);
+    } else
+
+      throw new EoulsanException("Unknown parameter for "
+          + getName() + " read filter: " + key);
+
+  }
+
+  @Override
+  public void init() {
+
+    if (this.lengthThreshold < 1)
+      throw new IllegalArgumentException("Length threshold is not set for "
+          + getName() + " read filter.");
+  }
+
   //
   // Constructor
   //
 
   /**
    * Public constructor.
-   * @param lengthThreshold minimal length of the reads after read trimming
    */
-  public TrimReadFilter(final int lengthThreshold) {
-
-    if (lengthThreshold < 1)
-      throw new IllegalArgumentException("Invalid lengthThreshold: "
-          + lengthThreshold);
-
-    this.lengthThreshold = lengthThreshold;
+  public TrimReadFilter() {
   }
 
 }

@@ -24,20 +24,21 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 public abstract class AbstractReadsFilterStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   protected static final String STEP_NAME = "filterreads";
 
@@ -49,37 +50,11 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   /** filter reads quality threshold. */
   public static final double QUALITY_THRESHOLD = 15;
 
-  private int lengthThreshold = -1;
-  private double qualityThreshold = -1;
-  private boolean pairEnd;
+  private MultiReadFilterBuilder readFilterBuilder;
 
-  //
-  // Getters
-  //
-
-  /**
-   * Get the length threshold
-   * @return Returns the lengthThreshold
-   */
-  protected int getLengthThreshold() {
-    return lengthThreshold;
-  }
-
-  /**
-   * Get the quality threshold
-   * @return Returns the qualityThreshold
-   */
-  protected double getQualityThreshold() {
-    return qualityThreshold;
-  }
-
-  /**
-   * Test if the step works in pair end mode.
-   * @return true if the pair end mode is enable
-   */
-  protected boolean isPairend() {
-    return this.pairEnd;
-  }
+  // private int lengthThreshold = -1;
+  // private double qualityThreshold = -1;
+  // private boolean pairEnd;
 
   //
   // Step methods
@@ -111,26 +86,57 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
+    final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
-      if ("lengththreshold".equals(p.getName()))
-        this.lengthThreshold = p.getIntValue();
-      else if ("qualitythreshold".equals(p.getName()))
-        this.qualityThreshold = p.getDoubleValue();
-      else if ("pairend".equals(p.getName()))
-        this.pairEnd = p.getBooleanValue();
-      else
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+    for (Parameter p : stepParameters)
+      mrfb.addParameter(convertCompatibilityFilterKey(p.getName()),
+          p.getStringValue());
 
-    }
+    // Force parameter checking
+    mrfb.getReadFilter();
 
-    // Log Step parameters
-    LOGGER
-        .info("In " + getName() + ", lengththreshold=" + this.lengthThreshold);
-    LOGGER.info("In "
-        + getName() + ", qualitythreshold=" + this.qualityThreshold);
-    LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
+    this.readFilterBuilder = mrfb;
+  }
+
+  /**
+   * Convert old key names to new names
+   * @param key key to convert
+   * @return the new key name if necessary
+   */
+  static String convertCompatibilityFilterKey(final String key) {
+
+    if (key == null)
+      return null;
+
+    if ("lengththreshold".equals(key))
+      return TrimReadFilter.FILTER_NAME + ".lengththreshold";
+
+    if ("qualitythreshold".equals(key))
+      return QualityReadFilter.FILTER_NAME + ".qualitythreshold";
+    return key;
+  }
+
+  /**
+   * Get the ReadFilter object.
+   * @param incrementer incrementer to use
+   * @param counterGroup counter group for the incrementer
+   * @return a new ReadFilter object
+   * @throws EoulsanException if an error occurs while initialize one of the
+   *           filter
+   */
+  protected ReadFilter getReadFilter(final ReporterIncrementer incrementer,
+      final String counterGroup) throws EoulsanException {
+
+    return this.readFilterBuilder.getReadFilter(incrementer, counterGroup);
+  }
+
+  /**
+   * Get the parameters of the read filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readFilterBuilder.getParameters();
   }
 
 }

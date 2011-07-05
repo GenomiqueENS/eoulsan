@@ -30,14 +30,17 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 public class TrimReadFilterTest {
 
   @Test
-  public void testAcceptReadSequence() {
+  public void testAcceptReadSequence() throws EoulsanException {
 
-    ReadFilter filter = new TrimReadFilter(5);
+    ReadFilter filter = new TrimReadFilter();
+    filter.setParameter("lenght.threshold", "5");
+    filter.init();
 
     try {
       filter.accept(null);

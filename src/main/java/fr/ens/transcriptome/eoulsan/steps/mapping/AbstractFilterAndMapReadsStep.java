@@ -27,11 +27,13 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -52,10 +54,9 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   protected static final int HADOOP_TIMEOUT =
       AbstractReadsMapperStep.HADOOP_TIMEOUT;
 
-  private int lengthThreshold = -1;
-  private double qualityThreshold = -1;
   private boolean pairEnd;
 
+  private MultiReadFilterBuilder readFilterBuilder;
   private SequenceReadsMapper mapper;
   private String mapperArguments;
   private int mapperThreads = -1;
@@ -65,22 +66,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   //
   // Getters
   //
-
-  /**
-   * Get the length threshold
-   * @return Returns the lengthThreshold
-   */
-  protected int getLengthThreshold() {
-    return this.lengthThreshold;
-  }
-
-  /**
-   * Get the quality threshold
-   * @return Returns the qualityThreshold
-   */
-  protected double getQualityThreshold() {
-    return this.qualityThreshold;
-  }
 
   /**
    * Get the counter group to use for this step.
@@ -172,14 +157,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       throws EoulsanException {
 
     String mapperName = null;
+    final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
     for (Parameter p : stepParameters) {
 
-      if ("lengththreshold".equals(p.getName()))
-        this.lengthThreshold = p.getIntValue();
-      else if ("qualitythreshold".equals(p.getName()))
-        this.qualityThreshold = p.getDoubleValue();
-      else if ("pairend".equals(p.getName()))
+      if ("pairend".equals(p.getName()))
         this.pairEnd = p.getBooleanValue();
       else if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
@@ -188,8 +170,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       else if ("mappingqualitythreshold".equals(p.getName()))
         mappingQualityThreshold = p.getIntValue();
       else
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        mrfb.addParameter(
+            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue());
+
+      // Force parameter checking
+      mrfb.getReadFilter();
+
+      this.readFilterBuilder = mrfb;
 
     }
 
@@ -215,10 +203,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     }
 
     // Log Step parameters
-    LOGGER
-        .info("In " + getName() + ", lengththreshold=" + this.lengthThreshold);
-    LOGGER.info("In "
-        + getName() + ", qualitythreshold=" + this.qualityThreshold);
     LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
     LOGGER.info("In " + getName() + ", mapper=" + this.mapper.getMapperName());
     LOGGER
@@ -226,6 +210,15 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     LOGGER.info("In "
         + getName() + ", mappingQualityThreshold="
         + this.mappingQualityThreshold);
+  }
+
+  /**
+   * Get the parameters of the read filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readFilterBuilder.getParameters();
   }
 
 }

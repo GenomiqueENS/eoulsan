@@ -77,7 +77,17 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   @Override
   public String getName() {
 
-    return "Pair check ReadFilter";
+    return "paircheck";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Pair check read filter";
+  }
+
+  @Override
+  public void setParameter(String key, String value) {
+    // this filter has no parameter    
   }
 
 }
