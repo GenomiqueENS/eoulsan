@@ -218,6 +218,18 @@
             </action>
          </release>
          
+         <release version="1.1.0" description="" date="2011-06-13">
+         
+            <action dev="jourdren" type="add">
+                Add PHRED 33 offset support of fastq files. 
+                Add new column in design file (PhredOffset) to define the PHRED offset to use. 
+                Warning default PHRED offset is now 33. This default value can be set with phred.offset.default key. 
+            </action>
+             <action dev="jourdren" type="add">
+                Support for Casava 1.8 fastq id parsing.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>
