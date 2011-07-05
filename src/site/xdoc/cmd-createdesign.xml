@@ -38,6 +38,7 @@
     <section name="Create design">
 
       <p>This command allow to easly create a design file from a list of file (reads in fastq format, genome in fasta, annotation in gff).</p>  
+      <p><b>Warning:</b> By default with Eoulsan 1.1 or later, PHRED offset is set to 33 (Sanger standard fastq).</p>
 
       <ul>
          <li><b>Available</b>: Only in local mode.</li>
