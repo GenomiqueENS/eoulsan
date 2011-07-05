@@ -24,9 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -47,8 +48,9 @@ public class DataFormatRegistry {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private Set<DataFormat> formats = new HashSet<DataFormat>();
-  private Map<String, DataFormat> map = new HashMap<String, DataFormat>();
+  private Set<DataFormat> formats = newHashSet();
+  private Map<String, DataFormat> mapFormats = newHashMap();
+  private Map<String, DataType> mapDesignDataType = newHashMap();
 
   private static DataFormatRegistry instance;
 
@@ -135,7 +137,7 @@ public class DataFormatRegistry {
 
       final String key = prefix + "\t" + suffix;
 
-      if (this.map.containsKey(key)) {
+      if (this.mapFormats.containsKey(key)) {
         throw new EoulsanException(
             "The DataFormat registry already contains entry for prefix \""
                 + prefix + "\" and extension \"" + suffix + "\"");
@@ -146,8 +148,13 @@ public class DataFormatRegistry {
             + df.getFormatName()
             + " is not registered as a spi service. Cannot register it.");
 
+      // Register DataType is necessary
+      final DataType dataType = df.getType();
+      if (dataType.getDesignFieldName() != null)
+        this.mapDesignDataType.put(dataType.getDesignFieldName(), dataType);
+
       formats.add(df);
-      this.map.put(key, df);
+      this.mapFormats.put(key, df);
     }
 
     if (!defaultExtensionFound)
@@ -186,7 +193,7 @@ public class DataFormatRegistry {
 
     final String key = prefix + "\t" + extension;
 
-    return this.map.get(key);
+    return this.mapFormats.get(key);
   }
 
   /**
@@ -249,9 +256,60 @@ public class DataFormatRegistry {
     return null;
   }
 
+  /**
+   * Get a DataFormat from its DataType and an extension.
+   * @param dataType the name type the DataFormat to get
+   * @param extension the extension of the file without compression extension
+   * @return a DataFormat if found or null
+   */
+  public DataFormat getDataFormatFromExtension(final DataType dataType,
+      final String extension) {
+
+    if (dataType == null || extension == null) {
+      return null;
+    }
+
+    // Standard search
+    final DataFormat result =
+        getDataFormatFromFilename(dataType.getPrefix(), extension);
+
+    if (result != null)
+      return result;
+
+    // Search with DataType
+    for (DataFormat df : this.formats) {
+      if (df.getType().equals(dataType)) {
+        for (String ext : df.getExtensions()) {
+          if (extension.equals(ext)) {
+            return df;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get all the registered formats.
+   * @return a set with all the registered formats
+   */
   public Set<DataFormat> getAllFormats() {
 
     return Collections.unmodifiableSet(this.formats);
+  }
+
+  /**
+   * Get the DataType that define a field in the design file.
+   * @param fieldName the name of the field
+   * @return a DataType
+   */
+  public DataType getDataTypeForDesignField(final String fieldName) {
+
+    if (fieldName == null)
+      return null;
+
+    return this.mapDesignDataType.get(fieldName);
   }
 
   //
