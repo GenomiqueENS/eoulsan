@@ -47,6 +47,12 @@ public final class GenomeFastaDataFormat extends AbstractDataFormat {
   }
 
   @Override
+  public String[] getExtensions() {
+
+    return new String[] {".fasta", ".fa"};
+  }
+
+  @Override
   public String getFormatName() {
 
     return FORMAT_NAME;
