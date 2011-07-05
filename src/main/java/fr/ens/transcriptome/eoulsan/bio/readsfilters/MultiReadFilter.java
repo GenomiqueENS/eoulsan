@@ -45,8 +45,8 @@ public class MultiReadFilter implements ReadFilter {
       if (!rf.accept(read)) {
 
         if (incrementer != null) {
-          this.incrementer
-              .incrCounter(counterGroup, "reads rejected by " + rf.getName() + " filter", 1);
+          this.incrementer.incrCounter(counterGroup,
+              "reads rejected by " + rf.getName() + " filter", 1);
         }
         return false;
       }
@@ -64,8 +64,8 @@ public class MultiReadFilter implements ReadFilter {
       if (!rf.accept(read1, read2)) {
 
         if (incrementer != null) {
-          this.incrementer
-              .incrCounter(counterGroup, "reads rejected by " + rf.getName() + " filter", 1);
+          this.incrementer.incrCounter(counterGroup,
+              "reads rejected by " + rf.getName() + " filter", 1);
         }
         return false;
       }
@@ -90,7 +90,22 @@ public class MultiReadFilter implements ReadFilter {
   @Override
   public String getName() {
 
-    return "Multi ReadFilter";
+    return "MultiReadFilter";
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "Multi read filter";
+  }
+
+  @Override
+  public void setParameter(String key, String value) {
+    // This filter has no parameter
+  }
+
+  @Override
+  public void init() {
   }
 
   //
@@ -121,7 +136,7 @@ public class MultiReadFilter implements ReadFilter {
    * Public constructor.
    * @param filters filters to add
    */
-  public MultiReadFilter(final ReadFilter... filters) {
+  public MultiReadFilter(final List<ReadFilter> filters) {
 
     this(null, null, filters);
   }
@@ -133,7 +148,7 @@ public class MultiReadFilter implements ReadFilter {
    * @param filters filters to add
    */
   public MultiReadFilter(final ReporterIncrementer incrementer,
-      final String counterGroup, final ReadFilter... filters) {
+      final String counterGroup, final List<ReadFilter> filters) {
 
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;

@@ -32,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.util.MapReduceUtilsNewAPI.parseKeyVal
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -41,17 +42,13 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.PairEndReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ValidReadFilter;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
-import fr.ens.transcriptome.eoulsan.util.HadoopReporterIncrementer;
 
 public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
@@ -59,17 +56,15 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
-  static final String PHRED_OFFSET_KEY =
-    Globals.PARAMETER_PREFIX + ".filter.reads.phred.offset";
-  static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX + ".pairend";
-  static final String LENGTH_THRESHOLD_KEY =
-      Globals.PARAMETER_PREFIX + ".filter.reads.length.threshold";
-  static final String QUALITY_THRESHOLD_KEY =
-      Globals.PARAMETER_PREFIX + ".filter.reads.quality.threshold";
+  static final String PHRED_OFFSET_KEY = Globals.PARAMETER_PREFIX
+      + ".filter.reads.phred.offset";
+
+  static final String READ_FILTER_PARAMETER_KEY_PREFIX =
+      Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
   private List<String> fields = newArrayList();
-  private MultiReadFilter filter;
+  private ReadFilter filter;
   private String counterGroup;
 
   private final ReadSequence read1 = new ReadSequence();
@@ -92,24 +87,11 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     final Configuration conf = context.getConfiguration();
 
     // Set the PHRED offset
-    final int phredOffset = Integer.parseInt(conf.get(PHRED_OFFSET_KEY, ""
-        + EoulsanRuntime.getSettings().getPhredOffsetDefault()));
+    final int phredOffset =
+        Integer.parseInt(conf.get(PHRED_OFFSET_KEY, ""
+            + EoulsanRuntime.getSettings().getPhredOffsetDefault()));
     this.read1.setPhredOffset(phredOffset);
     this.read2.setPhredOffset(phredOffset);
-    
-    // Set pair end mode
-    final boolean pairEnd =
-        Boolean.parseBoolean(context.getConfiguration().get(PAIR_END_KEY));
-
-    // Get length threshold
-    final int lengthThreshold =
-        Integer.parseInt(conf.get(LENGTH_THRESHOLD_KEY, ""
-            + AbstractReadsFilterStep.LENGTH_THRESHOLD));
-
-    // Get quality threshold
-    final double qualityThreshold =
-        Double.parseDouble(conf.get(QUALITY_THRESHOLD_KEY, ""
-            + AbstractReadsFilterStep.QUALITY_THRESHOLD));
 
     // Counter group
     this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -118,25 +100,31 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     LOGGER.info("PHRED offset: " + phredOffset);
-    LOGGER.info("Pair end: " + pairEnd);
-    LOGGER.info("Length threshold: " + lengthThreshold);
-    LOGGER.info("Quality threshold: " + qualityThreshold);
 
     // Set the filters
-    filter =
-        new MultiReadFilter(new HadoopReporterIncrementer(context),
-            this.counterGroup);
-    filter.addFilter(new PairEndReadFilter(pairEnd));
-    filter.addFilter(new ValidReadFilter());
-    filter.addFilter(new TrimReadFilter(lengthThreshold));
-    filter.addFilter(new QualityReadFilter(qualityThreshold));
+    try {
+      final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
+
+      for (Map.Entry<String, String> e : conf) {
+
+        if (e.getKey().startsWith(READ_FILTER_PARAMETER_KEY_PREFIX)) {
+          mrfb.addParameter(
+              e.getKey().substring(READ_FILTER_PARAMETER_KEY_PREFIX.length()),
+              e.getKey());
+        }
+      }
+
+      filter = mrfb.getReadFilter();
+    } catch (EoulsanException e) {
+      throw new IOException(e.getMessage());
+    }
 
     LOGGER.info("End of setup()");
   }
 
   //
   // Map
-  // 
+  //
 
   @Override
   protected void map(final LongWritable key, final Text value,

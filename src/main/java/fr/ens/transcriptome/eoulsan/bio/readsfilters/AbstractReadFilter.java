@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -37,6 +38,18 @@ public abstract class AbstractReadFilter implements ReadFilter {
   public boolean accept(ReadSequence read1, ReadSequence read2) {
 
     return accept(read1) && accept(read2);
+  }
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    throw new EoulsanException("Unknown parameter for "
+        + getName() + " read filter: " + key);
+  }
+
+  @Override
+  public void init() {
   }
 
 }

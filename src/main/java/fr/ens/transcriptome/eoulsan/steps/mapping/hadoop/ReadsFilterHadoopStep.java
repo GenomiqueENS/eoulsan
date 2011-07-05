@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -139,18 +140,13 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
         + sample.getMetadata().getPhredOffset());
 
-    // Set length threshold
-    if (getLengthThreshold() >= 0)
-      jobConf.set(ReadsFilterMapper.LENGTH_THRESHOLD_KEY, ""
-          + getLengthThreshold());
+    // Set read filter parameters
+    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
 
-    // Set quality threshold
-    if (getQualityThreshold() >= 0)
-      jobConf.set(ReadsFilterMapper.QUALITY_THRESHOLD_KEY, ""
-          + getQualityThreshold());
-
-    // Set pair end mode
-    jobConf.set(ReadsFilterMapper.PAIR_END_KEY, "" + isPairend());
+      jobConf.set(
+          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
+          e.getValue());
+    }
 
     // Set Job name
     // Create the job and its name
@@ -187,8 +183,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.FILTERED_READS_TFQ, sample).getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getDataFile(DataFormats.FILTERED_READS_TFQ, sample)
+            .getSource()));
 
     return job;
   }

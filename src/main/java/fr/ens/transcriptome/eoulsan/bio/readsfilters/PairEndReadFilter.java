@@ -24,28 +24,57 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 public class PairEndReadFilter implements ReadFilter {
 
-  private final boolean pairEnd;
+  private boolean acceptPairEnd = true;
+  private boolean acceptSingleEnd = true;
 
   @Override
   public boolean accept(final ReadSequence read) {
 
-    return !this.pairEnd;
+    return this.acceptSingleEnd;
   }
 
   @Override
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
-    return this.pairEnd;
+    return this.acceptPairEnd;
   }
-  
+
   @Override
   public String getName() {
 
+    return "pairend";
+  }
+
+  @Override
+  public String getDescription() {
+
     return "Pair end ReadFilter";
+  }
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null || value == null)
+      return;
+
+    if ("accept.pairend".equals(key.trim())) {
+      this.acceptPairEnd = Boolean.parseBoolean(value.trim());
+    } else if ("accept.singlend".equals(key.trim())) {
+      this.acceptPairEnd = Boolean.parseBoolean(value.trim());
+    } else
+      throw new EoulsanException("Unknown parameter for "
+          + getName() + " read filter: " + key);
+
+  }
+
+  @Override
+  public void init() {
   }
 
   //
@@ -54,13 +83,8 @@ public class PairEndReadFilter implements ReadFilter {
 
   /**
    * Public constructor.
-   * @param pairEnd true if only pair end entries must be accepted or false if
-   *          only single end entries must be accepted
    */
-  public PairEndReadFilter(final boolean pairEnd) {
-
-    this.pairEnd = pairEnd;
-
+  public PairEndReadFilter() {
   }
 
 }

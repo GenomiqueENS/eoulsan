@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
@@ -33,7 +34,8 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  */
 public class QualityReadFilter extends AbstractReadFilter {
 
-  private double qualityThreshold;
+  public static final String FILTER_NAME = "quality";
+  private double qualityThreshold = -1.0;
 
   @Override
   public boolean accept(final ReadSequence read) {
@@ -47,24 +49,55 @@ public class QualityReadFilter extends AbstractReadFilter {
   @Override
   public String getName() {
 
-    return "Quality ReadFilter";
+    return "quality";
   }
-  
+
+  @Override
+  public String getDescription() {
+    return "Quality threshold ReadFilter";
+  }
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null || value == null)
+      return;
+
+    if ("threshold".equals(key.trim())) {
+
+      try {
+        this.qualityThreshold = Double.parseDouble(value.trim());
+      } catch (NumberFormatException e) {
+        return;
+      }
+
+      if (this.qualityThreshold < 0.0)
+        throw new EoulsanException("Invalid qualityThreshold: "
+            + qualityThreshold);
+    } else
+
+      throw new EoulsanException("Unknown parameter for "
+          + getName() + " read filter: " + key);
+
+  }
+
+  @Override
+  public void init() {
+
+    if (this.qualityThreshold < 0.0)
+      throw new IllegalArgumentException("Quality threshold is not set for "
+          + getName() + " read filter.");
+  }
+
   //
   // Constructor
   //
 
   /**
    * Public constructor.
-   * @param qualityThreshold The minimal threshold for mean quality of reads
    */
-  public QualityReadFilter(final double qualityThreshold) {
-
-    if (qualityThreshold < 0.0)
-      throw new IllegalArgumentException("Invalid qualityThreshold: "
-          + qualityThreshold);
-
-    this.qualityThreshold = qualityThreshold;
+  public QualityReadFilter() {
 
   }
 

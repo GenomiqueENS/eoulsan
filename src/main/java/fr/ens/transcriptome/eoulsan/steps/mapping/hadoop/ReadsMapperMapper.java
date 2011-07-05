@@ -65,15 +65,16 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final String HADOOP_TEMP_DIR = "hadoop.tmp.dir";
 
   // Parameter keys
-  static final String MAPPER_NAME_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.name";
-  static final String PAIR_END_KEY = ReadsFilterMapper.PAIR_END_KEY;
-  static final String MAPPER_ARGS_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.args";
-  static final String MAPPER_THREADS_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.nb.threads";
-  static final String PHRED_OFFSET_KEY =
-      Globals.PARAMETER_PREFIX + ".mapper.phred.offset";
+  static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.name";
+  static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.pairend";
+  static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.args";
+  static final String MAPPER_THREADS_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.nb.threads";
+  static final String PHRED_OFFSET_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.phred.offset";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
 
