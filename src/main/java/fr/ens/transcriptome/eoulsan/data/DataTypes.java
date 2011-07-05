@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+
 /**
  * This class contains all the built-in datatypes for Eoulsan:
  * @author Laurent Jourdren
@@ -43,6 +45,12 @@ public class DataTypes {
     public String getPrefix() {
 
       return "reads_";
+    }
+
+    @Override
+    public String getDesignFieldName() {
+
+      return "FileName";
     }
 
     @Override
@@ -234,6 +242,12 @@ public class DataTypes {
     }
 
     @Override
+    public String getDesignFieldName() {
+
+      return SampleMetadata.ANNOTATION_FIELD;
+    }
+
+    @Override
     public boolean isDataTypeFromDesignFile() {
 
       return true;
@@ -311,6 +325,12 @@ public class DataTypes {
     public String getPrefix() {
 
       return "genome_";
+    }
+
+    @Override
+    public String getDesignFieldName() {
+
+      return SampleMetadata.GENOME_FIELD;
     }
 
     @Override

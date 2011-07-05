@@ -60,4 +60,10 @@ public interface DataType {
    * @return true if the DataType is provided by the design file
    */
   boolean isDataTypeFromDesignFile();
+
+  /**
+   * Get the name of the field of the design file that can provide the DataFile.
+   * @return the design field name
+   */
+  String getDesignFieldName();
 }

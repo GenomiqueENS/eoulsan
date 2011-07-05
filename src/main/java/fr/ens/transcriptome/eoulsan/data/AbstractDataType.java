@@ -49,6 +49,42 @@ public abstract class AbstractDataType implements DataType {
   }
 
   @Override
+  public String getDesignFieldName() {
+
+    return null;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (!(o instanceof DataType))
+      return false;
+
+    final DataType dt = (DataType) o;
+
+    return eq(getName(), dt.getName())
+        && eq(getDescription(), dt.getDescription())
+        && eq(getPrefix(), dt.getPrefix())
+        && isOneFilePerAnalysis() == dt.isOneFilePerAnalysis()
+        && isDataTypeFromDesignFile() == dt.isDataTypeFromDesignFile()
+        && eq(getDesignFieldName(), dt.getDesignFieldName());
+  }
+
+  /**
+   * Check equality between 2 objects even if there are null.
+   * @param a first object to compare
+   * @param b seconde object to compare
+   * @return true if the two object are equals
+   */
+  private static boolean eq(final Object a, final Object b) {
+
+    if (a == b)
+      return true;
+
+    return a.equals(b);
+  }
+
+  @Override
   public String toString() {
     return getName();
   }
