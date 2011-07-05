@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -73,10 +73,10 @@ class Workflow implements WorkflowDescription {
   private final Context context;
   private final boolean hadoopMode;
 
-  private final Map<Integer, Set<DataFormat>> globalInputDataFormats =
-      Maps.newHashMap();
-  private final Map<Integer, Set<DataFormat>> globalOutputDataFormats =
-      Maps.newHashMap();
+  private final Map<Integer, Set<DataFormat>> globalInputDataFormats = Maps
+      .newHashMap();
+  private final Map<Integer, Set<DataFormat>> globalOutputDataFormats = Maps
+      .newHashMap();
 
   //
   // Getters
@@ -299,10 +299,10 @@ class Workflow implements WorkflowDescription {
       cartOnlyGenerated.addAll(cartGenerated);
       cartOnlyGenerated.removeAll(cartReUsed);
 
-      globalInputDataFormats.put(s.getId(), Collections
-          .unmodifiableSet(cartNotGenerated));
-      globalOutputDataFormats.put(s.getId(), Collections
-          .unmodifiableSet(cartGenerated));
+      globalInputDataFormats.put(s.getId(),
+          Collections.unmodifiableSet(cartNotGenerated));
+      globalOutputDataFormats.put(s.getId(),
+          Collections.unmodifiableSet(cartGenerated));
 
       if (firstSample)
         firstSample = false;
@@ -384,21 +384,21 @@ class Workflow implements WorkflowDescription {
       throw new EoulsanException("For sample "
           + s.getId() + ", the reads source is null or empty.");
 
-    DataFormat readsDF;
-    try {
-      readsDF = new DataFile(s.getSource()).getMetaData().getDataFormat();
+    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-      if (readsDF == null)
-        throw new EoulsanException("No DataFormat found for reads file: "
-            + s.getSource());
+    final DataType dataType = dfr.getDataTypeForDesignField("FileName");
+    final DataFile file = new DataFile(s.getSource());
+    final String extension =
+        StringUtils.extensionWithoutCompressionExtension(file.getName());
 
-      return readsDF;
+    final DataFormat readsDF =
+        dfr.getDataFormatFromExtension(dataType, extension);
 
-    } catch (IOException e) {
-      throw new EoulsanException("Unable to get reads metadata for: "
-          + s.getSource());
-    }
+    if (readsDF == null)
+      throw new EoulsanException("No DataFormat found for reads file: "
+          + readsSource);
 
+    return readsDF;
   }
 
   private DataFormat getGenomeDataFormat(final Sample s)
@@ -422,22 +422,22 @@ class Workflow implements WorkflowDescription {
         && CompressionType.getCompressionTypeByFilename(genomeFile.getName()) != CompressionType.NONE)
       throw new EoulsanException("Compressed genome is not currently handled.");
 
-    DataFormat genomeFormat;
-    try {
-      genomeFormat = genomeFile.getMetaData().getDataFormat();
+    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-      if (genomeFormat == null)
-        throw new EoulsanException("No DataFormat found for genome file: "
-            + s.getSource());
+    final DataType dataType =
+        dfr.getDataTypeForDesignField(SampleMetadata.GENOME_FIELD);
+    final DataFile file = new DataFile(genomeSource);
+    final String extension =
+        StringUtils.extensionWithoutCompressionExtension(file.getName());
 
-      return genomeFormat;
+    final DataFormat genomeFormat =
+        dfr.getDataFormatFromExtension(dataType, extension);
 
-    } catch (IOException e) {
+    if (genomeFormat == null)
+      throw new EoulsanException("No DataFormat found for genome file: "
+          + genomeSource);
 
-      throw new EoulsanException("Unable to get genome metadata for: "
-          + s.getSource());
-    }
-
+    return genomeFormat;
   }
 
   private DataFormat getAnnotationDataFormat(final Sample s)
@@ -464,21 +464,22 @@ class Workflow implements WorkflowDescription {
       throw new EoulsanException(
           "Compressed annotation is not currently handled.");
 
-    DataFormat annotDF;
-    try {
-      annotDF = annotationFile.getMetaData().getDataFormat();
+    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-      if (annotDF == null)
-        throw new EoulsanException("No DataFormat found for annotation file: "
-            + s.getSource());
+    final DataType dataType =
+        dfr.getDataTypeForDesignField(SampleMetadata.ANNOTATION_FIELD);
+    final DataFile file = new DataFile(annotationSource);
+    final String extension =
+        StringUtils.extensionWithoutCompressionExtension(file.getName());
 
-      return annotDF;
+    final DataFormat annotDF =
+        dfr.getDataFormatFromExtension(dataType, extension);
 
-    } catch (IOException e) {
-      throw new EoulsanException("Unable to get annotation metadata for: "
-          + s.getSource());
-    }
+    if (annotDF == null)
+      throw new EoulsanException("No DataFormat found for annotation file: "
+          + annotationSource);
 
+    return annotDF;
   }
 
   /**
