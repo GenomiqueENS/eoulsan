@@ -71,28 +71,6 @@ public class SampleImpl implements Sample {
     return this.design.getSampleMetadata(sampleName);
   }
 
-  @Override
-  public String getSource() {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new EoulsanRuntimeException("The sample doesn't exists");
-
-    return this.design.getSource(sampleName);
-  }
-
-  @Override
-  public String getSourceInfo() {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new EoulsanRuntimeException("The sample doesn't exists");
-
-    return this.design.getSourceInfo(sampleName);
-  }
-
   //
   // Setters
   //
@@ -123,17 +101,6 @@ public class SampleImpl implements Sample {
       throw new EoulsanRuntimeException("The sample doesn't exists");
 
     this.design.renameSample(sampleName, newName);
-  }
-
-  @Override
-  public void setSource(final String source) {
-
-    final String sampleName = this.design.getSampleName(this.sampleId);
-
-    if (sampleName == null)
-      throw new EoulsanRuntimeException("The sample doesn't exists");
-
-    this.design.setSource(sampleName, source);
   }
 
   //

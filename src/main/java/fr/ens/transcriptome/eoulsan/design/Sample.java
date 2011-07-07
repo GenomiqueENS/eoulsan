@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
-
 /**
  * This interface define a slide.
  * @author Laurent Jourdren
@@ -40,7 +39,7 @@ public interface Sample {
    * @return the id of the sample
    */
   int getId();
-  
+
   /**
    * Get the name of the slide.
    * @return The name of the slide
@@ -53,18 +52,6 @@ public interface Sample {
    */
   SampleMetadata getMetadata();
 
-  /**
-   * Get the source of a slide.
-   * @return a DataSource object
-   */
-  String getSource();
-
-  /**
-   * Get information about the source of the slide.
-   * @return information about the source of the slide
-   */
-  String getSourceInfo();
-
   //
   // Setters
   //
@@ -74,17 +61,11 @@ public interface Sample {
    * @param id the id of the sample
    */
   void setId(final int id);
-  
+
   /**
    * Rename the slide.
    * @param newName The new name of the slide.
    */
   void setName(final String newName);
-
-  /**
-   * Set a filename as a source of a slide.
-   * @param filename The filename to set
-   */
-  void setSource(final String filename);
 
 }

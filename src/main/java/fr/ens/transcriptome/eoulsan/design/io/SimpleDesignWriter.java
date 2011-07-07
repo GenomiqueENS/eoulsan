@@ -93,10 +93,6 @@ public class SimpleDesignWriter extends DesignWriter {
         bw.append(s.getName());
         bw.append(SEPARATOR);
 
-        String sourceInfo = s.getSourceInfo();
-        if (sourceInfo != null)
-          bw.append(sourceInfo);
-
         for (String f : metadataFields) {
 
           bw.append(SEPARATOR);

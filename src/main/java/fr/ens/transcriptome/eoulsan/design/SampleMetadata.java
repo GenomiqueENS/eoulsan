@@ -34,6 +34,8 @@ public interface SampleMetadata {
 
   /** Description field. */
   String DESCRIPTION_FIELD = "Description";
+  /** Reads field. */
+  String READS_FIELD = "Reads";
   /** Genome field. */
   String GENOME_FIELD = "Genome";
   /** Annotation field. */
@@ -79,6 +81,12 @@ public interface SampleMetadata {
    * @return Returns the comment
    */
   String getComment();
+
+  /**
+   * Get the reads file relative to the sample.
+   * @return Returns the reads file
+   */
+  String getReads();
 
   /**
    * Get the genome file relative to the sample.
@@ -154,6 +162,12 @@ public interface SampleMetadata {
   void setComment(String comment);
 
   /**
+   * Set the reads file relative to the sample.
+   * @param reads file to set
+   */
+  void setReads(String reads);
+
+  /**
    * Set the genome file relative to the sample.
    * @param genome file to set
    */
@@ -220,6 +234,12 @@ public interface SampleMetadata {
    */
   boolean isCommentField();
 
+  /**
+   * Test if the reads field exists.
+   * @return true if the field exists
+   */
+  boolean isReadsField();
+  
   /**
    * Test if the genome field exists.
    * @return true if the field exists

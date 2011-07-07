@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
@@ -44,8 +43,6 @@ public class DesignImpl implements Design {
   private Map<String, Integer> samples = new HashMap<String, Integer>();
   private Map<Integer, String> samplesReverse = new HashMap<Integer, String>();
   private Map<Integer, Integer> ids = new HashMap<Integer, Integer>();
-
-  private Map<Integer, String> sources = new HashMap<Integer, String>();
 
   private Map<String, Integer> metadataFields = new HashMap<String, Integer>();
   private List<String> metadataOrder = new ArrayList<String>();
@@ -224,36 +221,6 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public String getSource(String sampleName) {
-
-    if (sampleName == null)
-      throw new NullPointerException("Slide name is null");
-
-    if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide doesn't exists");
-
-    final int id = this.samples.get(sampleName);
-
-    return this.sources.get(id);
-  }
-
-  @Override
-  public String getSourceInfo(String sampleName) {
-
-    if (sampleName == null)
-      throw new NullPointerException("Slide name is null");
-
-    if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide doesn't exists");
-
-    final int id = this.samples.get(sampleName);
-
-    String ds = this.sources.get(id);
-
-    return ds == null ? "" : new DataFile(ds).getSource();
-  }
-
-  @Override
   public boolean isMetadataField(String fieldName) {
 
     return this.metadataFields.containsKey(fieldName);
@@ -386,23 +353,6 @@ public class DesignImpl implements Design {
         value);
   }
 
-  @Override
-  public void setSource(String sampleName, String source) {
-
-    if (sampleName == null)
-      throw new NullPointerException("Sample name is null");
-
-    if (source == null)
-      throw new NullPointerException("Sample source is null");
-
-    if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The sample doesn't exists");
-
-    final int id = this.samples.get(sampleName);
-
-    this.sources.put(id, source);
-  }
-
   /**
    * Set the identifier of a sample
    * @param sampleName Name of the sample
@@ -431,7 +381,7 @@ public class DesignImpl implements Design {
   public int hashCode() {
 
     return Utils.hashCode(this.samplesOrder, this.samples, this.ids,
-        this.sources, this.metadataFields, this.metadataOrder,
-        this.metadataData, this.countSamples, this.countLabels);
+        this.metadataFields, this.metadataOrder, this.metadataData,
+        this.countSamples, this.countLabels);
   }
 }

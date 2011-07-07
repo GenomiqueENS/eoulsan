@@ -76,10 +76,10 @@ public class ReadsChecker implements Checker {
 
       } catch (IOException e) {
         throw new EoulsanException("Error while reading reads of sample "
-            + s.getSource() + " for checking: " + e.getMessage());
+            + s.getMetadata().getReads() + " for checking: " + e.getMessage());
       } catch (BadBioEntryException e) {
         throw new EoulsanException("Found bad read entry in sample "
-            + s.getSource() + " when checking: " + e.getEntry());
+            + s.getMetadata().getReads() + " when checking: " + e.getEntry());
       }
 
     }

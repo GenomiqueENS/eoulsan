@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
@@ -51,8 +52,6 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   private static final String SLIDENUMBER_FIELD = "SampleNumber";
   private static final String NAME_FIELD = "Name";
   private static final String FILENAME_FIELD = "FileName";
-
-  private String baseDir = "";
 
   @Override
   public Design read() throws EoulsanIOException {
@@ -86,7 +85,12 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
             final String field = fields[i].trim();
             data.put(field, new ArrayList<String>());
-            fieldnames.add(field);
+
+            // Compatibility with old design files
+            if (field.equals(FILENAME_FIELD))
+              fieldnames.add(SampleMetadata.READS_FIELD);
+            else
+              fieldnames.add(field);
           }
 
           firstLine = false;
@@ -101,8 +105,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
             List<String> l = data.get(fieldName);
 
             if ((SLIDENUMBER_FIELD.equals(fieldName) || NAME_FIELD
-                .equals(fieldName))
-                && l.contains(field))
+                .equals(fieldName)) && l.contains(field))
               throw new EoulsanIOException(
                   "Invalid file format: "
                       + "SlideNumber or Name fields can't contains duplicate values");
@@ -129,14 +132,13 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     if (!data.containsKey(SLIDENUMBER_FIELD))
       throw new EoulsanIOException("Invalid file format: No SlideNumber field");
 
-    if (!data.containsKey(FILENAME_FIELD))
+    if (!fieldnames.contains(SampleMetadata.READS_FIELD))
       throw new EoulsanIOException("Invalid file format: No FileName field");
 
     Design design = DesignFactory.createEmptyDesign();
 
     List<String> names = data.get(NAME_FIELD);
     List<String> ids = data.get(SLIDENUMBER_FIELD);
-    final int count = ids.size();
 
     for (int i = 0; i < names.size(); i++) {
 
@@ -145,22 +147,9 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       design.getSample(name).setId(Integer.parseInt(ids.get(i)));
     }
 
-    // Set FileName field
-    List<String> filenames = data.get(FILENAME_FIELD);
-    for (int i = 0; i < count; i++) {
-
-      try {
-        design.setSource(names.get(i), createDataFile(this.baseDir,
-            filenames.get(i)).getSource());
-      } catch (IOException e) {
-        throw new EoulsanIOException("Invalid source :" + filenames.get(i));
-      }
-    }
-
     for (String fd : fieldnames) {
 
-      if (SLIDENUMBER_FIELD.equals(fd)
-          || NAME_FIELD.equals(fd) || FILENAME_FIELD.equals(fd))
+      if (SLIDENUMBER_FIELD.equals(fd) || NAME_FIELD.equals(fd))
         continue;
 
       design.addMetadataField(fd);
@@ -213,9 +202,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   public SimpleDesignReader(final File file) throws EoulsanIOException {
 
     super(file);
-    if (file != null)
-      this.baseDir = file.getParent();
-    else
+    if (file == null)
       throw new NullPointerException("The design file to read is null.");
   }
 
