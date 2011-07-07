@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.CharMatcher;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -103,6 +105,14 @@ public class GenomeChecker implements Checker {
     return true;
   }
 
+  /**
+   * Check a genome file.
+   * @param is Input stream to read for the checking
+   * @return a map the the sizes of the chromosomes
+   * @throws IOException if an error occurs while reading data
+   * @throws BadBioEntryException if the name or the sequence of the chromosome
+   *           is not valid
+   */
   private Map<String, Integer> checkGenomeFile(final InputStream is)
       throws IOException, BadBioEntryException {
 
@@ -122,7 +132,7 @@ public class GenomeChecker implements Checker {
 
       if (line.startsWith(">")) {
         chromosomes.put(currentChr, currentSize);
-        currentChr = parseChromosomeName(line);
+        currentChr = parseFastaEntryHeader(line);
         currentSize = 0;
       } else {
         if (currentChr == null)
@@ -131,18 +141,30 @@ public class GenomeChecker implements Checker {
         currentSize += checkBases(line.trim());
       }
     }
+
+    // Check if two sequences exists with the same name exists
+    if (chromosomes.containsKey(currentChr))
+      throw new BadBioEntryException(
+          "Sequence name found twice: " + currentChr, line);
+
     chromosomes.put(currentChr, currentSize);
 
     is.close();
     return chromosomes;
   }
 
-  private int checkBases(final String s) throws BadBioEntryException {
+  /**
+   * Check the base used in a sequence
+   * @param sequence sequence
+   * @return the length of the sequence
+   * @throws BadBioEntryException if an invalid base is found
+   */
+  private int checkBases(final String sequence) throws BadBioEntryException {
 
-    final int len = s.length();
+    final int len = sequence.length();
 
     for (int i = 0; i < len; i++)
-      switch (s.charAt(i)) {
+      switch (sequence.charAt(i)) {
 
       case 'A':
       case 'a':
@@ -169,24 +191,45 @@ public class GenomeChecker implements Checker {
         break;
 
       default:
-        throw new BadBioEntryException(
-            "Invalid base in genome: " + s.charAt(i), s);
+        throw new BadBioEntryException("Invalid base in genome: "
+            + sequence.charAt(i), sequence);
       }
 
     return len;
   }
 
-  private String parseChromosomeName(final String fastaHeader) {
+  /**
+   * Parse a fasta entry header.
+   * @param fastaHeader fasta header
+   * @return the first word of the header
+   * @throws BadBioEntryException if there is an error in the name of the
+   *           sequence
+   */
+  private String parseFastaEntryHeader(final String fastaHeader)
+      throws BadBioEntryException {
 
     if (fastaHeader == null)
       return null;
 
-    final String s = fastaHeader.substring(1).trim();
+    final String s = fastaHeader.substring(1);
+
+    if (s.startsWith(" "))
+      throw new BadBioEntryException(
+          "A whitespace was found at the begining of the sequence name: ",
+          fastaHeader);
+
     String[] fields = s.split("\\s");
 
     if (fields == null || fields.length == 0)
-      return null;
+      throw new BadBioEntryException("Invalid sequence header", fastaHeader);
 
-    return fields[0];
+    final String result = fields[0].trim();
+
+    if ("".equals(result)
+        || !CharMatcher.JAVA_LETTER_OR_DIGIT.anyOf("_").matchesAllOf(result))
+      throw new BadBioEntryException("Invalid sequence name: " + result,
+          fastaHeader);
+
+    return result;
   }
 }
