@@ -109,10 +109,10 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
       return null;
 
     if ("lengththreshold".equals(key))
-      return TrimReadFilter.FILTER_NAME + ".lengththreshold";
+      return TrimReadFilter.FILTER_NAME + ".length.threshold";
 
     if ("qualitythreshold".equals(key))
-      return QualityReadFilter.FILTER_NAME + ".qualitythreshold";
+      return QualityReadFilter.FILTER_NAME + ".threshold";
     return key;
   }
 
