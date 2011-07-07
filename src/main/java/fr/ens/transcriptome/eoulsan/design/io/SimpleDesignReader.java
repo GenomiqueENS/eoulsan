@@ -83,34 +83,42 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
           for (int i = 0; i < fields.length; i++) {
 
-            final String field = fields[i].trim();
-            data.put(field, new ArrayList<String>());
+            String field = fields[i].trim();
 
             // Compatibility with old design files
-            if (field.equals(FILENAME_FIELD))
-              fieldnames.add(SampleMetadata.READS_FIELD);
-            else
-              fieldnames.add(field);
+            if (field.equals(FILENAME_FIELD)) {
+              field = SampleMetadata.READS_FIELD;
+              fields[i] = field;
+            }
+
+            data.put(field, new ArrayList<String>());
+
+            fieldnames.add(field);
           }
 
           firstLine = false;
         } else {
 
+          if (fields.length != fieldnames.size())
+            throw new EoulsanIOException("Invalid file format: "
+                + "Found " + fields.length + " fields whereas "
+                + fieldnames.size() + " are required in line: " + line);
+
           for (int i = 0; i < fields.length; i++) {
 
-            final String field = fields[i].trim();
+            final String value = fields[i].trim();
 
             final String fieldName = fieldnames.get(i);
 
             List<String> l = data.get(fieldName);
 
             if ((SLIDENUMBER_FIELD.equals(fieldName) || NAME_FIELD
-                .equals(fieldName)) && l.contains(field))
+                .equals(fieldName)) && l.contains(value))
               throw new EoulsanIOException(
                   "Invalid file format: "
                       + "SlideNumber or Name fields can't contains duplicate values");
 
-            l.add(field);
+            l.add(value);
 
           }
 

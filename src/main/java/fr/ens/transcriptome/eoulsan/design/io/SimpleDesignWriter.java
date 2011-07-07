@@ -70,9 +70,6 @@ public class SimpleDesignWriter extends DesignWriter {
       bw.append(SEPARATOR);
 
       bw.append("Name");
-      bw.append(SEPARATOR);
-
-      bw.append("FileName");
 
       for (String f : metadataFields) {
 
@@ -91,7 +88,6 @@ public class SimpleDesignWriter extends DesignWriter {
         bw.append(SEPARATOR);
 
         bw.append(s.getName());
-        bw.append(SEPARATOR);
 
         for (String f : metadataFields) {
 
