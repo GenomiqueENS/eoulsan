@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.CharMatcher;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -225,8 +223,7 @@ public class GenomeChecker implements Checker {
 
     final String result = fields[0].trim();
 
-    if ("".equals(result)
-        || !CharMatcher.JAVA_LETTER_OR_DIGIT.anyOf("_").matchesAllOf(result))
+    if ("".equals(result))
       throw new BadBioEntryException("Invalid sequence name: " + result,
           fastaHeader);
 
