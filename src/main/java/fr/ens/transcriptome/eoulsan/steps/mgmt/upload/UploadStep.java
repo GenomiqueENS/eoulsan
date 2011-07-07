@@ -278,7 +278,7 @@ public abstract class UploadStep extends AbstractStep {
     for (Sample s : design.getSamples()) {
 
       // Copy the sample
-      DataFile sampleOldFile = new DataFile(s.getSource());
+      DataFile sampleOldFile = new DataFile(s.getMetadata().getReads());
       DataFile sampleNewFile = getUploadedDataFile(sampleOldFile, s.getId());
 
       if (filesToCopy.contains(sampleOldFile)) {
@@ -287,7 +287,7 @@ public abstract class UploadStep extends AbstractStep {
         result.put(sampleOldFile, sampleNewFile);
       }
 
-      s.setSource(sampleNewFile.getSource());
+      s.getMetadata().setReads(sampleNewFile.getSource());
 
       // copy the genome file
       final String genome = s.getMetadata().getGenome();
@@ -306,8 +306,8 @@ public abstract class UploadStep extends AbstractStep {
           result.put(genomeOldFile, genomeNewFile);
         }
 
-        genomesMap.put(genome, genomeNewFile == null ? "" : genomeNewFile
-            .getSource());
+        genomesMap.put(genome,
+            genomeNewFile == null ? "" : genomeNewFile.getSource());
       }
       s.getMetadata().setGenome(genomesMap.get(genome));
 

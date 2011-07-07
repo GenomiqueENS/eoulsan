@@ -127,7 +127,7 @@ public class DesignBuilder {
       final SampleMetadata smd = s.getMetadata();
 
       // Set the fastq file of the sample
-      s.setSource(fq.toString());
+      smd.setReads(fq.toString());
 
       // Set the genome file if exists
       if (this.genomeFile != null)

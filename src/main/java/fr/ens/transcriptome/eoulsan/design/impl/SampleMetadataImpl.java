@@ -99,6 +99,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
+  public String getReads() {
+
+    return get(READS_FIELD);
+  }
+
+  @Override
   public String getCondition() {
 
     return get(CONDITION_FIELD);
@@ -200,6 +206,13 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
+  public void setReads(final String reads) {
+
+    set(READS_FIELD, reads);
+
+  }
+
+  @Override
   public void setCondition(final String condition) {
 
     set(CONDITION_FIELD, condition);
@@ -272,6 +285,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isGenomeField() {
 
     return isField(GENOME_FIELD);
+  }
+
+  @Override
+  public boolean isReadsField() {
+
+    return isField(READS_FIELD);
   }
 
   @Override

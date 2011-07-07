@@ -105,7 +105,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set input path
     final Path inputPath =
-        new Path(context.getBasePathname(), sample.getSource());
+        new Path(context.getBasePathname(), sample.getMetadata().getReads());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
@@ -179,7 +179,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Filter and map reads ("
-            + sample.getName() + ", " + sample.getSource() + ")");
+            + sample.getName() + ", " + sample.getMetadata().getReads() + ")");
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
@@ -191,7 +191,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (sample.getSource().endsWith(READS_FASTQ.getDefaultExtention()))
+    if (sample.getMetadata().getReads()
+        .endsWith(READS_FASTQ.getDefaultExtention()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class

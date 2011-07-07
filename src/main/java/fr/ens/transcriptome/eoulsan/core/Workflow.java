@@ -379,7 +379,7 @@ class Workflow implements WorkflowDescription {
 
   private DataFormat getReadsDataFormat(final Sample s) throws EoulsanException {
 
-    final String readsSource = s.getSource();
+    final String readsSource = s.getMetadata().getReads();
     if (readsSource == null || "".equals(readsSource))
       throw new EoulsanException("For sample "
           + s.getId() + ", the reads source is null or empty.");
@@ -387,7 +387,7 @@ class Workflow implements WorkflowDescription {
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
     final DataType dataType = dfr.getDataTypeForDesignField("FileName");
-    final DataFile file = new DataFile(s.getSource());
+    final DataFile file = new DataFile(s.getMetadata().getReads());
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
 
@@ -563,7 +563,7 @@ class Workflow implements WorkflowDescription {
     for (Sample s : this.design.getSamples()) {
 
       // Convert read file URL
-      s.setSource(convertS3URL(s.getSource()));
+      s.getMetadata().setReads(convertS3URL(s.getMetadata().getReads()));
 
       // Convert genome file URL
       if (s.getMetadata().isGenomeField())

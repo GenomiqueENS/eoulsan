@@ -78,27 +78,6 @@ public interface Design {
   SampleMetadata getSampleMetadata(final String sampleName);
 
   /**
-   * Set a filename as a source of a sample.
-   * @param sampleName The name of the slide
-   * @param filename The filename to set
-   */
-  void setSource(final String sampleName, final String filename);
-
-  /**
-   * Get the source of a sample.
-   * @param sampleName Name of the sample
-   * @return a DataSource object
-   */
-  String getSource(final String sampleName);
-
-  /**
-   * Get information about the source of the sample.
-   * @param sampleName Name of the slide
-   * @return information about the source of the slide
-   */
-  String getSourceInfo(final String sampleName);
-
-  /**
    * Extract a sample object from the design.
    * @param index Index of the sample in the design
    * @return a slide object

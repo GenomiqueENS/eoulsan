@@ -342,10 +342,10 @@ public final class SimpleContext implements Context {
 
   @Override
   public Settings getSettings() {
-    
+
     return getRuntime().getSettings();
   }
-  
+
   @Override
   public Logger getLogger() {
 
@@ -367,7 +367,7 @@ public final class SimpleContext implements Context {
       return null;
 
     if (df.getType() == DataTypes.READS)
-      return new DataFile(sample.getSource());
+      return new DataFile(sample.getMetadata().getReads());
 
     if (df.getType() == DataTypes.GENOME)
       return new DataFile(sample.getMetadata().getGenome());

@@ -115,8 +115,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // final Path inputPath =
     // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
-        new Path(context
-            .getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
+        new Path(
+            context.getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
 
     // Set genome index reference path
     final Path genomeIndex =
@@ -171,7 +171,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (sample.getSource().endsWith(READS_FASTQ.getDefaultExtention()))
+    if (sample.getMetadata().getReads()
+        .endsWith(READS_FASTQ.getDefaultExtention()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
@@ -190,8 +191,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        MAPPER_RESULTS_SAM, sample).getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }

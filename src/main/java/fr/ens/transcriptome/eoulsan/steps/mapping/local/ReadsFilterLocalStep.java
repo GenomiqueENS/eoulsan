@@ -72,7 +72,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         final Reporter reporter = new Reporter();
 
         // Get the source
-        final DataFile inFile = new DataFile(s.getSource());
+        final DataFile inFile = new DataFile(s.getMetadata().getReads());
 
         // Get the dest
         final DataFile outFile = context.getDataFile(FILTERED_READS_FASTQ, s);
