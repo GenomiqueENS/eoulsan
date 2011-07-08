@@ -31,7 +31,9 @@ import java.util.UUID;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataType;
+import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -41,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class DesignBuilder {
 
+  private DataFormatRegistry dfr = DataFormatRegistry.getInstance();
   private List<File> fastqList = new ArrayList<File>();
   private File genomeFile;
   private File gffFile;
@@ -59,20 +62,19 @@ public class DesignBuilder {
       throw new EoulsanException("File "
           + file + " does not exist or is not a regular file.");
 
-    final String filename =
-        StringUtils.filenameWithoutCompressionExtension(file.getName());
+    final String extension =
+        StringUtils.extensionWithoutCompressionExtension(file.getName());
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(file.getName());
 
-    if (filename.endsWith(DataFormats.READS_FASTQ.getDefaultExtention())) {
+    if (isDataTypeExtension(DataTypes.READS, extension)) {
 
       // Don't add previously added file
       if (!this.fastqList.contains(file))
         this.fastqList.add(file);
 
-    } else if (filename
-        .endsWith(DataFormats.GENOME_FASTA.getDefaultExtention())) {
+    } else if (isDataTypeExtension(DataTypes.GENOME, extension)) {
 
       // Compressed genome is currently not handled
       if (ct != CompressionType.NONE)
@@ -81,8 +83,7 @@ public class DesignBuilder {
 
       this.genomeFile = file;
 
-    } else if (filename.endsWith(DataFormats.ANNOTATION_GFF
-        .getDefaultExtention())) {
+    } else if (isDataTypeExtension(DataTypes.ANNOTATION, extension)) {
 
       // Compressed annotation is currently not handled
       if (ct != CompressionType.NONE)
@@ -145,6 +146,12 @@ public class DesignBuilder {
     }
 
     return result;
+  }
+
+  private boolean isDataTypeExtension(final DataType dataType,
+      final String extension) {
+
+    return dfr.getDataFormatFromExtension(dataType, extension) != null;
   }
 
   //
