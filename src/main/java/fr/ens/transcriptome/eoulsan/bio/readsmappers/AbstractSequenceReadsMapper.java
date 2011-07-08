@@ -29,12 +29,17 @@ import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -53,8 +58,8 @@ public abstract class AbstractSequenceReadsMapper implements
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String SYNC =
-      AbstractSequenceReadsMapper.class.getName();
+  private static final String SYNC = AbstractSequenceReadsMapper.class
+      .getName();
 
   protected abstract String getIndexerExecutable();
 
@@ -151,14 +156,48 @@ public abstract class AbstractSequenceReadsMapper implements
   // Index creation
   //
 
+  private static File uncompressGenomeIfNecessary(final File genomeFile,
+      final File outputDir) throws FileNotFoundException, IOException {
+
+    final CompressionType ct =
+        CompressionType.getCompressionTypeByFilename(genomeFile.getName());
+
+    if (ct == CompressionType.NONE)
+      return genomeFile;
+
+    // Define the output filename
+    final File uncompressFile =
+        new File(outputDir,
+            StringUtils.filenameWithoutCompressionExtension(genomeFile
+                .getName()));
+
+    LOGGER.info("Uncompress genome " + genomeFile + " to " + uncompressFile);
+
+    // Create input stream
+    final InputStream in =
+        ct.createInputStream(new FileInputStream(genomeFile));
+
+    // Create output stream
+    final OutputStream out = new FileOutputStream(uncompressFile);
+
+    // Uncompress
+    FileUtils.copy(in, out);
+
+    // Return the uncompress file
+    return uncompressFile;
+  }
+
   private void makeIndex(final File genomeFile, final File outputDir)
       throws IOException {
 
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");
 
+    final File unCompressGenomeFile =
+        uncompressGenomeIfNecessary(genomeFile, outputDir);
+
     LOGGER.info("Start computing "
-        + getMapperName() + " index for " + genomeFile);
+        + getMapperName() + " index for " + unCompressGenomeFile);
     final long startTime = System.currentTimeMillis();
 
     final String indexerPath;
@@ -171,10 +210,11 @@ public abstract class AbstractSequenceReadsMapper implements
       throw new IOException("Unable to create directory for genome index");
     }
 
-    final File tmpGenomeFile = new File(outputDir, genomeFile.getName());
+    final File tmpGenomeFile =
+        new File(outputDir, unCompressGenomeFile.getName());
 
     // Create temporary symbolic link for genome
-    FileUtils.createSymbolicLink(genomeFile, tmpGenomeFile);
+    FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile);
 
     // Compute the index
     // ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile

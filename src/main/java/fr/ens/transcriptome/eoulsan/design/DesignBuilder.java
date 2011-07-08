@@ -34,7 +34,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.data.DataTypes;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -65,34 +64,18 @@ public class DesignBuilder {
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByFilename(file.getName());
-
     if (isDataTypeExtension(DataTypes.READS, extension)) {
 
       // Don't add previously added file
       if (!this.fastqList.contains(file))
         this.fastqList.add(file);
 
-    } else if (isDataTypeExtension(DataTypes.GENOME, extension)) {
-
-      // Compressed genome is currently not handled
-      if (ct != CompressionType.NONE)
-        throw new EoulsanException(
-            "Compressed genome is not currently handled.");
-
+    } else if (isDataTypeExtension(DataTypes.GENOME, extension))
       this.genomeFile = file;
 
-    } else if (isDataTypeExtension(DataTypes.ANNOTATION, extension)) {
-
-      // Compressed annotation is currently not handled
-      if (ct != CompressionType.NONE)
-        throw new EoulsanException(
-            "Compressed annotation is not currently handled.");
-
+    else if (isDataTypeExtension(DataTypes.ANNOTATION, extension))
       this.gffFile = file;
 
-    }
   }
 
   /**
