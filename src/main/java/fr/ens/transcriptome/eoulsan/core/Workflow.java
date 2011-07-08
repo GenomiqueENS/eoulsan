@@ -52,7 +52,6 @@ import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -417,11 +416,6 @@ class Workflow implements WorkflowDescription {
     if (!genomeFile.exists())
       return null;
 
-    // Test if genome file is compressed
-    if (!EoulsanRuntime.getRuntime().isHadoopMode()
-        && CompressionType.getCompressionTypeByFilename(genomeFile.getName()) != CompressionType.NONE)
-      throw new EoulsanException("Compressed genome is not currently handled.");
-
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
     final DataType dataType =
@@ -456,13 +450,6 @@ class Workflow implements WorkflowDescription {
     if (!annotationFile.exists()) {
       return null;
     }
-
-    // Test if annotation file is compressed
-    if (!EoulsanRuntime.getRuntime().isHadoopMode()
-        && CompressionType.getCompressionTypeByFilename(annotationFile
-            .getName()) != CompressionType.NONE)
-      throw new EoulsanException(
-          "Compressed annotation is not currently handled.");
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
