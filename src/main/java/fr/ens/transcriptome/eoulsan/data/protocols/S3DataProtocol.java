@@ -65,6 +65,7 @@ public class S3DataProtocol implements DataProtocol {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private AmazonS3 s3;
+  private TransferManager tx;
   private boolean multipartUpload;
 
   protected String getProtocolPrefix() {
@@ -209,15 +210,33 @@ public class S3DataProtocol implements DataProtocol {
 
       if (multipartUpload) {
 
-        final TransferManager tx = new TransferManager(s3);
-        Upload myUpload = tx.upload(or);
-        try {
-          myUpload.waitForCompletion();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+        LOGGER.info("Use multipart upload");
+
+        // final TransferManager tx = new TransferManager(s3);
+        final Upload myUpload = tx.upload(or);
+
+        int count = 0;
+
+        while (!myUpload.isDone()) {
+
+          if (count % 10 == 0)
+            LOGGER.info("Transfer: "
+                + myUpload.getDescription() + " State: " + myUpload.getState()
+                + " Progress: " + myUpload.getProgress().getBytesTransfered());
+
+          count++;
+          
+          // Do work while we wait for our upload to complete...
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+
         }
 
-        tx.shutdownNow();
+        uploadOk = true;
+        // tx.shutdownNow();
 
       } else
 
@@ -415,6 +434,11 @@ public class S3DataProtocol implements DataProtocol {
 
       this.multipartUpload = settings.isAWSMultipartUpload();
       LOGGER.info("AWS Multipart upload: " + this.multipartUpload);
+
+      if (this.multipartUpload) {
+        this.tx = new TransferManager(this.s3);
+      } else
+        this.tx = null;
 
     }
 
