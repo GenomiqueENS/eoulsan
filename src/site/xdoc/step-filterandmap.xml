@@ -57,6 +57,8 @@
                 <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255].</td><td>0</td></tr>
 	</table>
       </ul>
+
+      <p>For the list of the available built-in mappers and default arguments, see the <a href="./step-mapreads.html">Map reads step page</a>.</p>
       
     </section>
 
