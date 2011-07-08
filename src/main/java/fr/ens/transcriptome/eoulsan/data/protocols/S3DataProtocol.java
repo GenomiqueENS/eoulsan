@@ -41,6 +41,8 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -205,28 +207,44 @@ public class S3DataProtocol implements DataProtocol {
       final long start = System.currentTimeMillis();
       AmazonClientException ace = null;
 
-      do {
+      if (multipartUpload) {
 
-        tryCount++;
-
+        final TransferManager tx = new TransferManager(s3);
+        Upload myUpload = tx.upload(or);
         try {
-
-          getS3().putObject(or);
-          uploadOk = true;
-        } catch (AmazonClientException e) {
-          ace = e;
-          LOGGER.warning("Error while uploading "
-              + this.s3url + " (Attempt " + tryCount + "): " + e.getMessage());
-
-          try {
-            Thread.sleep(10000);
-          } catch (InterruptedException e1) {
-
-            e1.printStackTrace();
-          }
+          myUpload.waitForCompletion();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
 
-      } while (!uploadOk && tryCount < 3);
+        tx.shutdownNow();
+
+      } else
+
+        do {
+
+          tryCount++;
+
+          try {
+
+            getS3().putObject(or);
+            uploadOk = true;
+          } catch (AmazonClientException e) {
+            ace = e;
+            LOGGER
+                .warning("Error while uploading "
+                    + this.s3url + " (Attempt " + tryCount + "): "
+                    + e.getMessage());
+
+            try {
+              Thread.sleep(10000);
+            } catch (InterruptedException e1) {
+
+              e1.printStackTrace();
+            }
+          }
+
+        } while (!uploadOk && tryCount < 3);
 
       if (!uploadOk)
         throw ace;
