@@ -35,6 +35,7 @@ public class ReadSequence extends Sequence {
 
   private int phredOffset;
   private String quality;
+  private boolean repeatNameInFastq;
 
   //
   // Getters
@@ -58,9 +59,18 @@ public class ReadSequence extends Sequence {
     return this.phredOffset;
   }
 
+  /**
+   * Test if id of the read must be added on the third line of the fastq entry.
+   * @return true if the id must be repeated
+   */
+  public final boolean isRepeatIdInFastQ() {
+
+    return this.repeatNameInFastq;
+  }
+
   //
   // Setters
-  // 
+  //
 
   /**
    * Set the quality.
@@ -80,6 +90,15 @@ public class ReadSequence extends Sequence {
   }
 
   /**
+   * Set if id of the read must be added on the third line of the fastq entry.
+   * @param repeatNameInFastq true if the id must be repeated
+   */
+  public final void setRepeatIdInFastQ(final boolean repeatNameInFastq) {
+
+    this.repeatNameInFastq = repeatNameInFastq;
+  }
+
+  /**
    * Set the ReadSequence with the values of another ReadSequence.
    * @param rs ReadSequence to use to set the values of this ReadSequence
    */
@@ -93,11 +112,13 @@ public class ReadSequence extends Sequence {
     this.setName(rs.getName());
     this.setSequence(rs.getSequence());
     this.setQuality(rs.getQuality());
+    this.setPhredOffset(rs.getPhredOffset());
+    this.setRepeatIdInFastQ(rs.isRepeatIdInFastQ());
   }
 
   //
   // Other methods
-  // 
+  //
 
   /**
    * Test if a ReadSequence is valid. Only check if all fields are not null.
@@ -129,11 +150,23 @@ public class ReadSequence extends Sequence {
 
   /**
    * Return the sequence in FastQ format.
+   * @param repeatId repeat the id on the 3rd line of the fastq entry
    * @return a String with the sequence in FastQ format
    */
   public final String toFastQ() {
 
-    return toFastQ(this.name, this.sequence, this.quality);
+    return toFastQ(this.name, this.sequence, this.quality,
+        this.repeatNameInFastq);
+  }
+
+  /**
+   * Return the sequence in FastQ format.
+   * @param repeatId repeat the id on the 3rd line of the fastq entry
+   * @return a String with the sequence in FastQ format
+   */
+  public final String toFastQ(final boolean repeatId) {
+
+    return toFastQ(this.name, this.sequence, this.quality, repeatId);
   }
 
   /**
@@ -146,12 +179,27 @@ public class ReadSequence extends Sequence {
   public static final String toFastQ(final String name, final String sequence,
       final String quality) {
 
+    return toFastQ(name, sequence, quality, false);
+  }
+
+  /**
+   * Return the sequence in FastQ format.
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   * @param repeatId repeat the id on the 3rd line of the fastq entry
+   * @return a String with the sequence in FastQ format
+   */
+  public static final String toFastQ(final String name, final String sequence,
+      final String quality, final boolean repeatId) {
+
     if (name == null || sequence == null || quality == null) {
       return null;
     }
 
     return '@'
-        + name + '\n' + sequence + '\n' + '+' + name + '\n' + quality + '\n';
+        + name + '\n' + sequence + '\n' + '+' + (repeatId ? name : "") + '\n'
+        + quality + '\n';
   }
 
   /**
