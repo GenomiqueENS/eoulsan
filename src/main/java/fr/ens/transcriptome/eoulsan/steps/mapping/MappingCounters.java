@@ -31,7 +31,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 public enum MappingCounters {
 
   INPUT_RAW_READS_COUNTER("input raw reads"), OUTPUT_FILTERED_READS_COUNTER(
-      "output filtered reads"), READS_REJECTED_BY_FILTERS_COUNTER(
+      "output accepted reads"), READS_REJECTED_BY_FILTERS_COUNTER(
       "reads rejected by filters"), INPUT_MAPPING_READS_COUNTER(
       "input mapping reads"), OUTPUT_MAPPING_ALIGNMENTS_COUNTER(
       "output mapping alignments"),
