@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+
 /**
  * This class implements a Fasta writer.
  * @author Laurent Jourdren
@@ -46,7 +48,7 @@ public class FastaWriter extends SequenceWriter {
   @Override
   public void write() throws IOException {
 
-    this.writer.write(toFasta());
+    this.writer.write(toFasta(Globals.FASTA_FILE_WIDTH));
   }
 
   /**
