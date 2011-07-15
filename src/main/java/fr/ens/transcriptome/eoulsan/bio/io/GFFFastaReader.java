@@ -26,7 +26,7 @@ public class GFFFastaReader extends FastaReader {
 
     while ((line = this.reader.readLine()) != null) { 
     
-      if (line.startsWith("###FASTA")) {
+      if (line.startsWith("##FASTA")) {
         this.inFastaSection = true;
         return super.readEntry();
       }

@@ -92,6 +92,7 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       while (reader.readEntry()) {
         writer.setName(reader.getName());
         writer.setSequence(reader.getSequence());
+        writer.write();
       }
 
       reader.close();

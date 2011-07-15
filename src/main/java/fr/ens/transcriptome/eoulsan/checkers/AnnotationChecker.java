@@ -32,6 +32,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -98,26 +99,10 @@ public class AnnotationChecker implements Checker {
 
       is = file.open();
 
-      final TranscriptAndExonFinder ef =
-          new TranscriptAndExonFinder(is, this.genomicType);
-
-      if (ef.getTranscriptsIds().size() == 0)
-        throw new EoulsanException("No transcripts found for genomic type ("
-            + genomicType + ") in annotation.");
-
-      // TODO compare chromosomes names
-      final Set<String> genomeChromosomes =
-          getGenomeChromosomes(design, context, checkInfo);
-
-      if (genomeChromosomes != null) {
-
-        final Set<String> annotationChromosomes = ef.getChromosomesIds();
-
-        for (String chr : annotationChromosomes)
-          if (!genomeChromosomes.contains(chr))
-            throw new EoulsanException("Chromosome "
-                + chr + " not found in the list of genome chromosomes.");
-      }
+      if (this.genomicType == null)
+        partialValidationAndFastaSectionCheck(is);
+      else
+        fullValidationCheck(is, genomicType, design, context, checkInfo);
 
     } catch (IOException e) {
       throw new EoulsanException(
@@ -127,6 +112,48 @@ public class AnnotationChecker implements Checker {
           "Bad entry in annotation file while checking: " + e.getEntry());
     }
     return false;
+  }
+
+  private static void partialValidationAndFastaSectionCheck(final InputStream is)
+      throws IOException, BadBioEntryException, EoulsanException {
+
+    final GFFReader reader = new GFFReader(is);
+
+    while (reader.readEntry())
+      ;
+
+    if (!reader.isFastaSectionFound())
+      throw new EoulsanException(
+          "No fasta section found in GFF annotation file.");
+
+  }
+
+  private void fullValidationCheck(final InputStream is,
+      final String genomicType, final Design design, final Context context,
+      final CheckStore checkInfo) throws EoulsanException, IOException,
+      BadBioEntryException {
+
+    final TranscriptAndExonFinder ef =
+        new TranscriptAndExonFinder(is, genomicType);
+
+    if (ef.getTranscriptsIds().size() == 0)
+      throw new EoulsanException("No transcripts found for genomic type ("
+          + genomicType + ") in annotation.");
+
+    // TODO compare chromosomes names
+    final Set<String> genomeChromosomes =
+        getGenomeChromosomes(design, context, checkInfo);
+
+    if (genomeChromosomes != null) {
+
+      final Set<String> annotationChromosomes = ef.getChromosomesIds();
+
+      for (String chr : annotationChromosomes)
+        if (!genomeChromosomes.contains(chr))
+          throw new EoulsanException("Chromosome "
+              + chr + " not found in the list of genome chromosomes.");
+    }
+
   }
 
   @SuppressWarnings("unchecked")
