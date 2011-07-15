@@ -366,13 +366,15 @@ public final class SimpleContext implements Context {
     if (df == null || sample == null)
       return null;
 
-    if (df.getType() == DataTypes.READS)
+    if (df.getType() == DataTypes.READS && sample.getMetadata().isReadsField())
       return new DataFile(sample.getMetadata().getReads());
 
-    if (df.getType() == DataTypes.GENOME)
+    if (df.getType() == DataTypes.GENOME
+        && sample.getMetadata().isGenomeField())
       return new DataFile(sample.getMetadata().getGenome());
 
-    if (df.getType() == DataTypes.ANNOTATION)
+    if (df.getType() == DataTypes.ANNOTATION
+        && sample.getMetadata().isAnnotationField())
       return new DataFile(sample.getMetadata().getAnnotation());
 
     return new DataFile(this.getBasePathname()
