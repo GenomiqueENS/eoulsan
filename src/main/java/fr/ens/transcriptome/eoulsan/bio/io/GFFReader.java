@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class GFFReader extends GFFEntry {
 
   private BufferedReader reader;
+  private boolean endReached;
 
   /**
    * Read the next entry in the stream.
@@ -51,11 +52,22 @@ public class GFFReader extends GFFEntry {
    */
   public boolean readEntry() throws IOException, BadBioEntryException {
 
+    if (endReached)
+      return false;
+    
     String line = null;
     int count = 0;
 
     while ((line = this.reader.readLine()) != null) {
-
+      
+      if (line.startsWith("###"))
+        continue;
+      
+      if (line.startsWith("##FASTA")) {
+          this.endReached = true;
+          return false;
+      }
+      
       if (line.startsWith("##")) {
 
         final int posTab = line.indexOf('\t');

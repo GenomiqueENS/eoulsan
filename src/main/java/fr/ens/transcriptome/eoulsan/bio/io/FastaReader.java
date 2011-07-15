@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastaReader extends SequenceReader {
 
-  private BufferedReader reader;
+  protected BufferedReader reader;
   private final StringBuilder sb = new StringBuilder();
   private String nextSequenceName;
   private boolean end = false;
