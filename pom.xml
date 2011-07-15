@@ -376,13 +376,12 @@
            					</goals>
          				</execution>
 					<execution>
-						<id>copy-output-jar</id>
+						<id>create-dists</id>
            					<phase>package</phase>
            					<configuration>
              						<tasks unless="distrib.package.skip">
 		
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
-
 								<!-- Package binary distribution -->
 
 								<mkdir dir="${basedir}/target/dist/lib"/>
@@ -396,25 +395,6 @@
 
 								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar" tofile="${basedir}/target/dist/lib/${pom.artifactId}.jar" />
 								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}"/>
-
-								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
-									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
-										<include name="*/**"/>
-										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
-									</tarfileset>
-									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
-										<include name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
-									</tarfileset>
-								</tar>
-
-								<gzip zipfile="${basedir}/target/${artifactId}-${version}.tar.gz"
-									src="${basedir}/target/${artifactId}-${version}.tar"/>
-                                                                <bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
-                                                                        src="${basedir}/target/${artifactId}-${version}.tar"/>
-								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar" 
-									dest="${basedir}/target/tar-bin"/>
-                                                                <zip destfile="${basedir}/target/${artifactId}-${version}.zip"
-                                                                        basedir="${basedir}/target/tar-bin"/>
 
 								<!-- Package source distribution -->
 
@@ -432,7 +412,41 @@
 									</fileset>
 								</copy>
 								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
+							</tasks>
+           					</configuration>
+           					<goals>
+             						<goal>run</goal>
+           					</goals>
+         				</execution>
+					<execution>
+						<id>compress-dists</id>
+           					<phase>package</phase>
+						<configuration>
+							<tasks unless="distrib.package.compression.skip">
+O
+								<!-- skip this task with command: mvn -Ddistrib.package.compression.skip=true -->
+								<!-- Compress dist-src -->
 
+
+								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
+									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
+										<include name="*/**"/>
+										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+									</tarfileset>
+									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
+										<include name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+									</tarfileset>
+								</tar>
+								<gzip zipfile="${basedir}/target/${artifactId}-${version}.tar.gz"
+									src="${basedir}/target/${artifactId}-${version}.tar"/>
+                                                                <bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
+                                                                        src="${basedir}/target/${artifactId}-${version}.tar"/>
+								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar" 
+									dest="${basedir}/target/tar-bin"/>
+                                                                <zip destfile="${basedir}/target/${artifactId}-${version}.zip"
+                                                                        basedir="${basedir}/target/tar-bin"/>
+
+								<!-- Compress dist-src -->
 								<tar longfile="gnu" tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
 
 									<tarfileset dir="${basedir}/target/dist-src"  mode="755" username="nobody" group="nobody">
@@ -448,17 +462,17 @@
 									dest="${basedir}/target/tar-src"/>
                                                                 <zip destfile="${basedir}/target/${artifactId}-src-${version}.zip"
                                                                         basedir="${basedir}/target/tar-src"/>
-             						</tasks>
-           					</configuration>
-           					<goals>
-             						<goal>run</goal>
-           					</goals>
-         				</execution>
+             							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>integrate-archives-site</id>
 						<phase>install</phase>
 						<configuration>
-							<tasks unless="distrib.package.skip">
+							<tasks unless="distrib.package.compression.skip">
 
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
 
