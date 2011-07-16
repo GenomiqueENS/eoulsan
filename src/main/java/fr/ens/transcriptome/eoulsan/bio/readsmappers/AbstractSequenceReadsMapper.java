@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -74,7 +75,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private boolean noReadWritten = true;
   private boolean pairEnd = false;
-  private int phredOffset;
+  private FastqFormat fastqFormat;
 
   private int threadsNumber;
   private String mapperArguments;
@@ -111,12 +112,12 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   /**
-   * Get PHRED offset.
-   * @return the PHRED offset
+   * Get Fastq format.
+   * @return the fastq format
    */
-  public int getPhredOffset() {
+  public FastqFormat getFastqFormat() {
 
-    return this.phredOffset;
+    return this.fastqFormat;
   }
 
   @Override
@@ -586,19 +587,19 @@ public abstract class AbstractSequenceReadsMapper implements
   /**
    * Initialize mapper.
    * @param pairEnd true if the mapper is in pair end mode.
-   * @param phredOffset PHRED offset
+   * @param fastqFormat Fastq format
    * @param incrementer Objet to use to increment counters
    * @param counterGroup counter name group
    */
   @Override
-  public void init(final boolean pairEnd, final int phredOffset,
+  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
     this.pairEnd = pairEnd;
-    this.phredOffset = phredOffset;
+    this.fastqFormat = fastqFormat;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
   }

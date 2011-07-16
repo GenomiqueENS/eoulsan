@@ -45,6 +45,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
@@ -56,8 +57,8 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
-  static final String PHRED_OFFSET_KEY = Globals.PARAMETER_PREFIX
-      + ".filter.reads.phred.offset";
+  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
+      + ".filter.reads.fastq.format";
 
   static final String READ_FILTER_PARAMETER_KEY_PREFIX =
       Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
@@ -86,12 +87,12 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Get configuration object
     final Configuration conf = context.getConfiguration();
 
-    // Set the PHRED offset
-    final int phredOffset =
-        Integer.parseInt(conf.get(PHRED_OFFSET_KEY, ""
-            + EoulsanRuntime.getSettings().getPhredOffsetDefault()));
-    this.read1.setPhredOffset(phredOffset);
-    this.read2.setPhredOffset(phredOffset);
+    // Set the FastqFormat
+    final FastqFormat fastqFormat =
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
+            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+    this.read1.setFastqFormat(fastqFormat);
+    this.read2.setFastqFormat(fastqFormat);
 
     // Counter group
     this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -99,7 +100,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("PHRED offset: " + phredOffset);
+    LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set the filters
     try {

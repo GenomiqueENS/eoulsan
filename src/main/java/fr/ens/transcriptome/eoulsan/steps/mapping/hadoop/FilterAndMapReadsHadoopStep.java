@@ -120,9 +120,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Reads filters parameters
     //
 
-    // Set reads filter PHRED offset
-    jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
-        + sample.getMetadata().getPhredOffset());
+    // Set reads filter fastq format
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, ""
+        + sample.getMetadata().getFastqFormat());
 
     // Set read filter parameters
     for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
@@ -160,9 +160,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
     }
 
-    // Set Mapper PHRED offset
-    jobConf.set(ReadsMapperMapper.PHRED_OFFSET_KEY, ""
-        + sample.getMetadata().getPhredOffset());
+    // Set Mapper fastq format
+    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
+        + sample.getMetadata().getFastqFormat());
     //
     // Alignment filtering
     //
