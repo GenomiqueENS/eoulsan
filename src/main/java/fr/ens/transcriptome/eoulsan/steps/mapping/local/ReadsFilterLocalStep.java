@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -120,7 +120,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       throw new IOException(e.getMessage());
     }
 
-    final FastQReader reader = new FastQReader(inFile.open());
+    final FastqReader reader = new FastqReader(inFile.open());
     final FastQWriter writer = new FastQWriter(outFile.create());
 
     // Set Fastq format

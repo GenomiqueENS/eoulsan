@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * This class implements a Fastq reader.
  * @author Laurent Jourdren
  */
-public class FastQReader extends ReadSequenceReader {
+public class FastqReader extends ReadSequenceReader {
 
   private BufferedReader reader;
   private final StringBuilder sb = new StringBuilder();
@@ -105,7 +105,7 @@ public class FastQReader extends ReadSequenceReader {
    * Public constructor
    * @param is InputStream to use
    */
-  public FastQReader(final InputStream is) {
+  public FastqReader(final InputStream is) {
 
     if (is == null)
       throw new NullPointerException("InputStream is null");
@@ -117,7 +117,7 @@ public class FastQReader extends ReadSequenceReader {
    * Public constructor
    * @param file File to use
    */
-  public FastQReader(final File file) throws FileNotFoundException {
+  public FastqReader(final File file) throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
