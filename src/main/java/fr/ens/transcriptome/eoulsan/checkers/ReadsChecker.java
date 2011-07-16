@@ -30,7 +30,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -90,7 +90,7 @@ public class ReadsChecker implements Checker {
   private boolean checkReadsFile(final InputStream is, final int maxReadTocheck)
       throws IOException, BadBioEntryException {
 
-    final FastQReader reader = new FastQReader(is);
+    final FastqReader reader = new FastqReader(is);
 
     int count = 0;
 
