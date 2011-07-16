@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -108,9 +109,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         FileUtils.createTempFile(readsFile.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(), outputFile
-        .getAbsolutePath(), getIndexPath(archiveIndex), readsFile
-        .getAbsolutePath());
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile.getAbsolutePath(), getIndexPath(archiveIndex),
+        readsFile.getAbsolutePath());
 
   }
 
@@ -139,9 +140,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(), outputFile1
-        .getAbsolutePath(), getIndexPath(archiveIndexDir), readsFile1
-        .getAbsolutePath());
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
+        readsFile1.getAbsolutePath());
 
     System.out.println("=== aln 2 ===");
 
@@ -149,9 +150,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(), outputFile2
-        .getAbsolutePath(), getIndexPath(archiveIndexDir), readsFile2
-        .getAbsolutePath());
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile2.getAbsolutePath(), getIndexPath(archiveIndexDir),
+        readsFile2.getAbsolutePath());
 
   }
 
@@ -243,10 +244,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd, final int phredOffset,
+  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
-    super.init(pairEnd, phredOffset, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

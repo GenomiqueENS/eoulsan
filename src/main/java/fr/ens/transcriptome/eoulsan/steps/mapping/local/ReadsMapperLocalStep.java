@@ -109,9 +109,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         LOGGER.info("Map file: " + inFile);
 
         // Init mapper
-        mapper.init(false, s.getMetadata().getPhredOffset(), reporter,
+        mapper.init(false, s.getMetadata().getFastqFormat(), reporter,
             COUNTER_GROUP);
-        LOGGER.info("PHRED offset: " + s.getMetadata().getPhredOffset());
+        LOGGER.info("FastqFormat: " + s.getMetadata().getFastqFormat());
 
         if (getMapperArguments() != null) {
           mapper.setMapperArguments(getMapperArguments());

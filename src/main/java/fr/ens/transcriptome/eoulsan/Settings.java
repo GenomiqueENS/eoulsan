@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -78,8 +79,8 @@ public final class Settings {
   private static final String REMOVE_REPLICATE_INFO_KEY = MAIN_PREFIX_KEY
       + "design.remove.replicate.info";
 
-  private static final String PHRED_OFFSET_DEFAULT_KEY = MAIN_PREFIX_KEY
-      + "phred.offset.default";
+  private static final String DEFAULT_FASTQ_FORMAT_KEY = MAIN_PREFIX_KEY
+      + "default.fastq.format";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
@@ -222,14 +223,13 @@ public final class Settings {
   }
 
   /**
-   * Get the PHRED offset default value.
-   * @return the PHRED offset default value
+   * Get the default fastq format.
+   * @return the default fastq format
    */
-  public int getPhredOffsetDefault() {
+  public FastqFormat getDefaultFastqFormat() {
 
-    return Integer.parseInt(this.properties.getProperty(
-        PHRED_OFFSET_DEFAULT_KEY,
-        Integer.toString(Globals.PHRED_OFFSET_DEFAULT)));
+    return FastqFormat.getFormatFromName(this.properties.getProperty(
+        DEFAULT_FASTQ_FORMAT_KEY, Globals.FASTQ_FORMAT_DEFAULT.getName()));
   }
 
   /**
@@ -461,13 +461,15 @@ public final class Settings {
   }
 
   /**
-   * Set the PHRED offset default value.
-   * @param phredOffset the value to set
+   * Set the Fastq format default value.
+   * @param format the value to set
    */
-  public void setPhredOffsetDefault(final int phredOffset) {
+  public void setDefaultFastqFormat(final FastqFormat format) {
 
-    this.properties.setProperty(PHRED_OFFSET_DEFAULT_KEY,
-        Integer.toString(phredOffset));
+    if (format == null)
+      throw new NullPointerException("The FastqFormat is null");
+
+    this.properties.setProperty(DEFAULT_FASTQ_FORMAT_KEY, format.getName());
   }
 
   /**
