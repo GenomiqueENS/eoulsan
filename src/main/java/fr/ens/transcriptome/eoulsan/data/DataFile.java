@@ -96,15 +96,67 @@ public class DataFile {
   }
 
   /**
+   * Get the base name of this DataFile without all its extensions. The result
+   * is computed with the output of the getName() method.
+   * @return a String with the base name of this DataFile
+   */
+  public String getBasename() {
+
+    return StringUtils.basename(getName());
+  }
+
+  /**
+   * Get the extension of this DataFile without compression extension. The
+   * result is computed with the output of the getName() method.
+   * @return a String with the extension of this DataFile. The result String is
+   *         empty if there is no extension
+   */
+  public String getExtension() {
+
+    return StringUtils.extensionWithoutCompressionExtension(getName());
+  }
+
+  /**
+   * Get the base name of this DataFile with all its extensions (include
+   * compression extension). The result is computed with the output of the
+   * getName() method.
+   * @return a String with the base name of this DataFile. The result String is
+   *         empty if there is no extension
+   */
+  public String getFullExtension() {
+
+    return StringUtils.extension(getName());
+  }
+
+  /**
+   * Get the compression extension of this DataFile. The result is computed with
+   * the output of the getName() method.
+   * @return a String with the compression extension of this DataFile. The
+   *         result String is empty if there is no compression extension
+   */
+  public String getCompressionExtension() {
+
+    return StringUtils.compressionExtension(getName());
+  }
+
+  /**
+   * Get the compression Type of this DataFile. The result is computed with the
+   * output of the getName() method.
+   * @return a CompressionType object
+   */
+  public CompressionType getCompressionType() {
+
+    return CompressionType.getCompressionTypeByFilename(getName());
+  }
+
+  /**
    * Get the parent of this DataFile.
    * @return the parent DataFile
+   * @throws IOException if an error occurs while the parent
    */
-  public DataFile getParent() {
+  public DataFile getParent() throws IOException {
 
-    final int parentSrcLen = this.src.length() - this.name.length() - 1;
-
-    return new DataFile(this.src.substring(0, parentSrcLen < 0
-        ? 0 : parentSrcLen));
+    return getProtocol().getDataFileParent(this);
   }
 
   /**
@@ -147,7 +199,7 @@ public class DataFile {
    * Test if the DataFile use the defaultProtocol.
    * @return true if the DataFile use the default protocol
    */
-  public boolean isDefaultProtocol() {
+  public boolean isLocalFile() {
 
     try {
       return DataProtocolService.getInstance().getDefaultProtocol()
