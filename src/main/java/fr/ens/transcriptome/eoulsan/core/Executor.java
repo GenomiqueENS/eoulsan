@@ -184,8 +184,11 @@ public abstract class Executor {
     final Workflow workflow =
         new Workflow(command, design, context, hadoopMode);
 
-    // Add the workflow to ExecutorInfo
+    // Add the workflow to Context
     context.setWorkflow(workflow);
+
+    // Add the design to the context
+    context.setDesign(design);
 
     // Insert terminal steps (e.g. upload hdfs/S3, start local/Amazon hadoop)
     workflow.addFirstSteps(firstSteps);

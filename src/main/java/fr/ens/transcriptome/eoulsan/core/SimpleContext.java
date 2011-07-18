@@ -29,17 +29,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Maps;
+
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataTypes;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataType;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
@@ -68,6 +75,7 @@ public final class SimpleContext implements Context {
   private WorkflowDescription workflow;
   private Step step;
 
+  private final Map<DataType, String> dataTypesFields = Maps.newHashMap();
   private String objectCreationDate;
 
   //
@@ -296,6 +304,27 @@ public final class SimpleContext implements Context {
     this.step = step;
   }
 
+  /**
+   * Set the design.
+   * @param design design to set
+   */
+  public void setDesign(final Design design) {
+
+    if (design == null)
+      return;
+
+    final List<String> fieldnames = design.getMetadataFieldsNames();
+    DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    for (String fieldname : fieldnames) {
+
+      DataType dt = registry.getDataTypeForDesignField(fieldname);
+      if (dt != null)
+        this.dataTypesFields.put(dt, fieldname);
+    }
+
+  }
+
   //
   // Other methods
   //
@@ -366,16 +395,25 @@ public final class SimpleContext implements Context {
     if (df == null || sample == null)
       return null;
 
-    if (df.getType() == DataTypes.READS && sample.getMetadata().isReadsField())
-      return new DataFile(sample.getMetadata().getReads());
+    if (df.isMultiFiles())
+      throw new EoulsanRuntimeException(
+          "Multifiles DataFormat are not handled by getDataFile()");
 
-    if (df.getType() == DataTypes.GENOME
-        && sample.getMetadata().isGenomeField())
-      return new DataFile(sample.getMetadata().getGenome());
+    // First try search the file in the design file
 
-    if (df.getType() == DataTypes.ANNOTATION
-        && sample.getMetadata().isAnnotationField())
-      return new DataFile(sample.getMetadata().getAnnotation());
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+    if (fieldName != null) {
+      final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+      final DataFile file = new DataFile(sample.getMetadata().get(fieldName));
+      final DataFormat sourceDf =
+          dfr.getDataFormatFromExtension(dt, file.getExtension());
+
+      if (sourceDf != null && sourceDf.equals(df))
+        return file;
+    }
+
+    // Else the file is in base path
 
     return new DataFile(this.getBasePathname()
         + "/" + df.getType().getPrefix()

@@ -130,7 +130,7 @@ public interface Context {
    * @return the EoulsanRuntime
    */
   AbstractEoulsanRuntime getRuntime();
-  
+
   /**
    * Get Eoulsan settings.
    * @return the Settings
