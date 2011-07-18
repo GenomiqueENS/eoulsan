@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -67,19 +68,20 @@ public class ReadsChecker implements Checker {
 
     for (Sample s : design.getSamples()) {
 
+      final DataFile file = context.getDataFile(DataFormats.READS_FASTQ, s);
       final InputStream is;
 
       try {
 
-        is = context.getInputStream(DataFormats.READS_FASTQ, s);
+        is = file.open();
         checkReadsFile(is, MAX_READS_TO_CHECK);
 
       } catch (IOException e) {
         throw new EoulsanException("Error while reading reads of sample "
-            + s.getMetadata().getReads() + " for checking: " + e.getMessage());
+            + file.getSource() + " for checking: " + e.getMessage());
       } catch (BadBioEntryException e) {
         throw new EoulsanException("Found bad read entry in sample "
-            + s.getMetadata().getReads() + " when checking: " + e.getEntry());
+            + file.getSource() + " when checking: " + e.getEntry());
       }
 
     }

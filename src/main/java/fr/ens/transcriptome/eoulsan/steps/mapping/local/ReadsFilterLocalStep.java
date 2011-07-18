@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -72,7 +73,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         final Reporter reporter = new Reporter();
 
         // Get the source
-        final DataFile inFile = new DataFile(s.getMetadata().getReads());
+        final DataFile inFile = context.getDataFile(DataFormats.READS_FASTQ, s);
 
         // Get the dest
         final DataFile outFile = context.getDataFile(FILTERED_READS_FASTQ, s);

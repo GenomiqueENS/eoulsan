@@ -44,8 +44,10 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -129,9 +131,16 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
+    // Get input DataFile
+    final DataFile inputDataFile =
+        context.getExistingDataFile(new DataFormat[] {READS_FASTQ, READS_TFQ},
+            sample);
+
+    if (inputDataFile == null)
+      throw new IOException("No input file found.");
+
     // Set input path
-    final Path inputPath =
-        new Path(context.getBasePathname(), sample.getMetadata().getReads());
+    final Path inputPath = new Path(inputDataFile.getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -152,7 +161,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Filter reads ("
-            + sample.getName() + ", " + sample.getMetadata().getReads() + ")");
+            + sample.getName() + ", " + inputDataFile.getSource() + ")");
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
@@ -164,8 +173,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (sample.getMetadata().getReads()
-        .endsWith(READS_FASTQ.getDefaultExtention()))
+    if (READS_FASTQ.equals(inputDataFile.getDataFormat(DataTypes.READS)))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
