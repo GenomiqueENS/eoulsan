@@ -52,7 +52,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -173,20 +172,8 @@ class Workflow implements WorkflowDescription {
       final Set<DataFormat> cartNotGenerated = newHashSet();
       final Set<DataFormat> cartOnlyGenerated = newHashSet();
 
-      // Add reads to the cart
-      cart.add(getReadsDataFormat(s));
-
-      // Add genome to the cart
-      final DataFormat genomeFormat = getGenomeDataFormat(s);
-      if (genomeFormat != null) {
-        cart.add(genomeFormat);
-      }
-
-      // Add annotation to the cart
-      final DataFormat annotationFormat = getAnnotationDataFormat(s);
-      if (annotationFormat != null) {
-        cart.add(annotationFormat);
-      }
+      // Fill cart with DataFormats provided by the sample in the design file
+      fillCartWithDesignFiles(cart, s);
 
       for (Step step : this.steps) {
 
@@ -406,97 +393,26 @@ class Workflow implements WorkflowDescription {
     return result;
   }
 
-  private DataFormat getReadsDataFormat(final Sample s) throws EoulsanException {
+  private void fillCartWithDesignFiles(final Set<DataFormat> cart,
+      final Sample s) {
 
-    final String readsSource = s.getMetadata().getReads();
-    if (readsSource == null || "".equals(readsSource))
-      throw new EoulsanException("For sample "
-          + s.getId() + ", the reads source is null or empty.");
+    final List<String> fieldnames = s.getMetadata().getFields();
+    DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+    for (String fieldname : fieldnames) {
 
-    final DataType dataType = dfr.getDataTypeForDesignField("FileName");
-    final DataFile file = new DataFile(s.getMetadata().getReads());
-    final String extension =
-        StringUtils.extensionWithoutCompressionExtension(file.getName());
+      DataType dt = registry.getDataTypeForDesignField(fieldname);
 
-    final DataFormat readsDF =
-        dfr.getDataFormatFromExtension(dataType, extension);
+      if (dt != null) {
 
-    if (readsDF == null)
-      throw new EoulsanException("No DataFormat found for reads file: "
-          + readsSource);
+        DataFile file = new DataFile(s.getMetadata().get(fieldname));
+        final DataFormat df = file.getDataFormat(dt);
+        if (df != null)
+          cart.add(df);
 
-    return readsDF;
-  }
-
-  private DataFormat getGenomeDataFormat(final Sample s)
-      throws EoulsanException {
-
-    if (!s.getMetadata().isGenomeField())
-      return null;
-
-    final String genomeSource = s.getMetadata().getGenome();
-
-    if (genomeSource == null || "".equals(genomeSource))
-      throw new EoulsanException("For sample "
-          + s.getId() + ", the genome source is null or empty.");
-
-    final DataFile genomeFile = new DataFile(genomeSource);
-    if (!genomeFile.exists())
-      return null;
-
-    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-
-    final DataType dataType =
-        dfr.getDataTypeForDesignField(SampleMetadata.GENOME_FIELD);
-    final DataFile file = new DataFile(genomeSource);
-    final String extension =
-        StringUtils.extensionWithoutCompressionExtension(file.getName());
-
-    final DataFormat genomeFormat =
-        dfr.getDataFormatFromExtension(dataType, extension);
-
-    if (genomeFormat == null)
-      throw new EoulsanException("No DataFormat found for genome file: "
-          + genomeSource);
-
-    return genomeFormat;
-  }
-
-  private DataFormat getAnnotationDataFormat(final Sample s)
-      throws EoulsanException {
-
-    if (!s.getMetadata().isAnnotationField())
-      return null;
-
-    final String annotationSource = s.getMetadata().getAnnotation();
-
-    if (annotationSource == null || "".equals(annotationSource))
-      throw new EoulsanException("For sample "
-          + s.getId() + ", the annotation source is null or empty.");
-
-    final DataFile annotationFile = new DataFile(annotationSource);
-    if (!annotationFile.exists()) {
-      return null;
+      }
     }
 
-    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-
-    final DataType dataType =
-        dfr.getDataTypeForDesignField(SampleMetadata.ANNOTATION_FIELD);
-    final DataFile file = new DataFile(annotationSource);
-    final String extension =
-        StringUtils.extensionWithoutCompressionExtension(file.getName());
-
-    final DataFormat annotDF =
-        dfr.getDataFormatFromExtension(dataType, extension);
-
-    if (annotDF == null)
-      throw new EoulsanException("No DataFormat found for annotation file: "
-          + annotationSource);
-
-    return annotDF;
   }
 
   /**
@@ -507,15 +423,6 @@ class Workflow implements WorkflowDescription {
 
     // Scan Workflow
     scanWorkflow();
-
-    // Check steps order, and add DataType generator step if need
-    // checkIfInputsExists();
-
-    // Check if outputs exits
-    // checkIfOutputsExists();
-
-    // Check inputs data
-    // checkInputsData();
   }
 
   //
