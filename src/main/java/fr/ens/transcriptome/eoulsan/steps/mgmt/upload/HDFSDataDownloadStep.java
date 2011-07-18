@@ -151,7 +151,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       // If no file to copy, do nothing
       if (files.size() > 0) {
 
-        if (outputDir.isDefaultProtocol()) {
+        if (outputDir.isLocalFile()) {
 
           // Local FileSystem output
           for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
@@ -263,8 +263,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
     final List<DataFormat> result = Lists.newArrayList();
 
     final String list =
-        context.getRuntime().getSettings().getSetting(
-            DATAFORMATS_TO_DOWNLOAD_SETTING);
+        context.getRuntime().getSettings()
+            .getSetting(DATAFORMATS_TO_DOWNLOAD_SETTING);
 
     if (list == null) {
       return result;
@@ -304,7 +304,15 @@ public class HDFSDataDownloadStep extends AbstractStep {
     // Create a map of file to copy with destination directory as key
     for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 
-      final DataFile destDir = e.getValue().getParent();
+      final DataFile destDir;
+      try {
+        destDir = e.getValue().getParent();
+      } catch (IOException exp) {
+        throw new EoulsanException(exp.getMessage());
+      }
+
+      if (destDir == null)
+        throw new EoulsanException("Destination directory is null.");
 
       final Set<DataFile> inputFiles;
 

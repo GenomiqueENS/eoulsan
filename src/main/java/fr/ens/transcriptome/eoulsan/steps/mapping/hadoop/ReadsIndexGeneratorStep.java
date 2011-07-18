@@ -110,7 +110,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
       final File outputFile;
 
-      if (mapperIndexDataFile.isDefaultProtocol()) {
+      if (mapperIndexDataFile.isLocalFile()) {
 
         outputFile = defaultProtocol.getFile(mapperIndexDataFile);
       } else {
@@ -119,7 +119,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
                 mapper.getMapperName() + "-index-archive-", ".zip");
       }
 
-      if (genomeDataFile.isDefaultProtocol()) {
+      if (genomeDataFile.isLocalFile()) {
 
         this.mapper.makeArchiveIndex(defaultProtocol.getFile(genomeDataFile),
             outputFile);
@@ -129,9 +129,9 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
       LOGGER.info("mapperIndexDataFile: " + mapperIndexDataFile);
       LOGGER.info("mapperIndexDataFile.isDefaultProtocol(): "
-          + mapperIndexDataFile.isDefaultProtocol());
+          + mapperIndexDataFile.isLocalFile());
 
-      if (!mapperIndexDataFile.isDefaultProtocol()) {
+      if (!mapperIndexDataFile.isLocalFile()) {
 
         new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndexDataFile);
 
