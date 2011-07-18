@@ -422,6 +422,28 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public DataFile getExistingDataFile(final DataFormat[] formats,
+      final Sample sample) {
+
+    if (formats == null)
+      return null;
+
+    for (DataFormat df : formats) {
+
+      if (df == null)
+        continue;
+
+      final DataFile file = getDataFile(df, sample);
+
+      if (file != null && file.exists())
+        return file;
+
+    }
+
+    return null;
+  }
+
+  @Override
   public InputStream getInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
