@@ -78,4 +78,9 @@ abstract class AbstractDataFormat implements DataFormat {
     return getFormatName();
   }
 
+  @Override
+  public boolean isMultiFiles() {
+    return false;
+  }
+
 }
