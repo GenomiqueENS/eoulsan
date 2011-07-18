@@ -94,4 +94,9 @@ public interface DataFormat {
    */
   Checker getChecker();
 
+  /**
+   * Test if the data for this is contained in several files 
+   * @return true if the DataFormat is multifiles
+   */
+  boolean isMultiFiles();
 }
