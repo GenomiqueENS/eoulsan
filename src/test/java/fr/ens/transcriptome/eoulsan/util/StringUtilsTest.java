@@ -24,11 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
-
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class StringUtilsTest {
 
@@ -51,8 +53,8 @@ public class StringUtilsTest {
     assertEquals(".bz2", StringUtils.compressionExtension("toto.tar.bz2"));
     assertEquals(".zip", StringUtils.compressionExtension("toto.tar.zip"));
     assertEquals(".lzo", StringUtils.compressionExtension("toto.tar.lzo"));
-    assertEquals(".deflate", StringUtils
-        .compressionExtension("toto.tar.deflate"));
+    assertEquals(".deflate",
+        StringUtils.compressionExtension("toto.tar.deflate"));
     assertEquals("", StringUtils.compressionExtension("toto.tar"));
     assertEquals("", StringUtils.compressionExtension("toto"));
   }
@@ -60,12 +62,12 @@ public class StringUtilsTest {
   @Test
   public void testfilenameWithoutCompressionExtension() {
 
-    assertEquals("toto.tar", StringUtils
-        .filenameWithoutCompressionExtension("toto.tar.gz"));
-    assertEquals("toto.tar", StringUtils
-        .filenameWithoutCompressionExtension("toto.tar"));
-    assertEquals("toto", StringUtils
-        .filenameWithoutCompressionExtension("toto"));
+    assertEquals("toto.tar",
+        StringUtils.filenameWithoutCompressionExtension("toto.tar.gz"));
+    assertEquals("toto.tar",
+        StringUtils.filenameWithoutCompressionExtension("toto.tar"));
+    assertEquals("toto",
+        StringUtils.filenameWithoutCompressionExtension("toto"));
   }
 
   // @Test
@@ -90,18 +92,18 @@ public class StringUtilsTest {
 
   @Test
   public void testSubStringAfterFirstTab() {
-    assertEquals("titi\ttata", StringUtils
-        .subStringAfterFirstTab("toto\ttiti\ttata"));
-    assertEquals("toto\ttiti\ttata", StringUtils
-        .subStringAfterFirstTab("\ttoto\ttiti\ttata"));
+    assertEquals("titi\ttata",
+        StringUtils.subStringAfterFirstTab("toto\ttiti\ttata"));
+    assertEquals("toto\ttiti\ttata",
+        StringUtils.subStringAfterFirstTab("\ttoto\ttiti\ttata"));
     assertEquals("toto", StringUtils.subStringAfterFirstTab("toto"));
     assertEquals("toto", StringUtils.subStringAfterFirstTab("toto"));
   }
 
   @Test
   public void testSubStringBeforeFirstTab() {
-    assertEquals("toto", StringUtils
-        .subStringBeforeFirstTab("toto\ttiti\ttata"));
+    assertEquals("toto",
+        StringUtils.subStringBeforeFirstTab("toto\ttiti\ttata"));
     assertEquals("toto", StringUtils.subStringBeforeFirstTab("toto"));
   }
 
@@ -134,15 +136,74 @@ public class StringUtilsTest {
     assertEquals("toto,titi", StringUtils.deprotectGFF("toto\\,titi"));
   }
 
-  
   @Test
   public void testReplacePrefix() {
 
     assertNull(StringUtils.replacePrefix(null, "toto", "titi"));
-    assertEquals("ticoucou", StringUtils.replacePrefix("totocoucou","toto","ti"));
-    assertEquals("titicoucou", StringUtils.replacePrefix("totocoucou","toto","titi"));
-    assertEquals("coucou", StringUtils.replacePrefix("totocoucou","toto",""));
-    assertEquals("tititotocoucou", StringUtils.replacePrefix("totocoucou","","titi"));
-    assertEquals("s3n://sgdb-test/titi.txt", StringUtils.replacePrefix("s3://sgdb-test/titi.txt","s3:/","s3n:/"));
+    assertEquals("ticoucou",
+        StringUtils.replacePrefix("totocoucou", "toto", "ti"));
+    assertEquals("titicoucou",
+        StringUtils.replacePrefix("totocoucou", "toto", "titi"));
+    assertEquals("coucou", StringUtils.replacePrefix("totocoucou", "toto", ""));
+    assertEquals("tititotocoucou",
+        StringUtils.replacePrefix("totocoucou", "", "titi"));
+    assertEquals("s3n://sgdb-test/titi.txt",
+        StringUtils.replacePrefix("s3://sgdb-test/titi.txt", "s3:/", "s3n:/"));
   }
+
+  @Test
+  public void testSerializeStringArray() {
+
+    assertEquals("[]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
+    assertEquals("[]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {""})));
+    assertEquals("[toto]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto"})));
+    assertEquals("[toto,titi]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto","titi"})));
+    assertEquals("[to\\,to]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {"to,to"})));
+    assertEquals("[to\\\\to]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {"to\\to"})));    
+  }
+
+  @Test
+  public void testDeserializeStringArray() {
+
+    List<String> r = StringUtils.deserializeStringArray("[]");
+    assertEquals(1, r.size());
+    assertEquals("", r.get(0));
+
+    r = StringUtils.deserializeStringArray(" []   ");
+    assertEquals(1, r.size());
+    assertEquals("", r.get(0));
+
+    r = StringUtils.deserializeStringArray("[toto]");
+    assertEquals(1, r.size());
+    assertEquals("toto", r.get(0));
+
+    r = StringUtils.deserializeStringArray("[toto,]");
+    assertEquals(2, r.size());
+    assertEquals("toto", r.get(0));
+    assertEquals("", r.get(1));
+
+    r = StringUtils.deserializeStringArray("[,toto]");
+    assertEquals(2, r.size());
+    assertEquals("", r.get(0));
+    assertEquals("toto", r.get(1));
+
+    r = StringUtils.deserializeStringArray("[tata,titi,toto]");
+    assertEquals(3, r.size());
+    assertEquals("tata", r.get(0));
+    assertEquals("titi", r.get(1));
+    assertEquals("toto", r.get(2));
+
+    r = StringUtils.deserializeStringArray("[tata\\,,ti\\,ti,to\\to]");
+    assertEquals(3, r.size());
+    assertEquals("tata,", r.get(0));
+    assertEquals("ti,ti", r.get(1));
+    assertEquals("to\\to", r.get(2));
+  }
+
 }
