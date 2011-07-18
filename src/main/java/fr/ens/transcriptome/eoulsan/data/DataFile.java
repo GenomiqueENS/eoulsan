@@ -150,6 +150,33 @@ public class DataFile {
   }
 
   /**
+   * Get the DataFormat of the DataFile. The result is computed with the output
+   * of the getName() method. This is an alias for getDataFormatFromFilename()
+   * of the DataFormatRegistry.
+   * @return the DataFormat of the DataFile
+   */
+  public DataFormat getDataFormat() {
+
+    return DataFormatRegistry.getInstance()
+        .getDataFormatFromFilename(getName());
+  }
+
+  /**
+   * Get the DataFormat of the DataFile. The result is computed with the output
+   * of the getName() method. This is an alias for getDataFormatFromExtension()
+   * of the DataFormatRegistry.
+   * @return the DataFormat of the DataFile
+   */
+  public DataFormat getDataFormat(final DataType dataType) {
+
+    if (dataType == null)
+      return null;
+
+    return DataFormatRegistry.getInstance().getDataFormatFromExtension(
+        dataType, getExtension());
+  }
+
+  /**
    * Get the parent of this DataFile.
    * @return the parent DataFile
    * @throws IOException if an error occurs while the parent
