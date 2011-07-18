@@ -50,7 +50,7 @@ public class DataTypes {
     @Override
     public String getDesignFieldName() {
 
-      return "FileName";
+      return SampleMetadata.READS_FIELD;
     }
 
     @Override
