@@ -167,9 +167,18 @@ public interface Context {
    * Get the DataFile for a DataType and a Sample.
    * @param df the DataFormat of the source
    * @param sample the sample for the source
-   * @return a String with the pathname
+   * @return a new DataFile object
    */
   DataFile getDataFile(DataFormat df, Sample sample);
+
+  /**
+   * Get the first existing DataFile for a sample and a list of DataFormat.
+   * @param formats the DataFormat test
+   * @param sample the sample
+   * @return a new DataFile object or null if no existing DataFile has been
+   *         found
+   */
+  DataFile getExistingDataFile(DataFormat[] formats, Sample sample);
 
   /**
    * Create an InputStream to load data.
