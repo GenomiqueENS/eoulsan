@@ -87,16 +87,12 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       if (design.getSampleCount() == 0)
         throw new EoulsanException("No sample found in design file.");
 
+      // Get the first sample
       final Sample s1 = design.getSamples().get(0);
-      if (!s1.getMetadata().isGenomeField())
-        throw new EoulsanException("No genome found in design file.");
-
-      final String genomeSource = s1.getMetadata().getGenome();
-      if (genomeSource == null)
-        throw new EoulsanException("Genome source is null.");
 
       // Get the genome DataFile
-      final DataFile genomeDataFile = new DataFile(genomeSource);
+      final DataFile genomeDataFile =
+          context.getDataFile(DataFormats.GENOME_FASTA, s1);
 
       // Get the output DataFile
       final DataFile genomeDescriptionDataFile =
