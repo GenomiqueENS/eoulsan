@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -32,12 +35,14 @@ import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.GenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.SimpleGenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -66,7 +71,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
   @Override
   public DataFormat[] getInputFormats() {
 
-    return new DataFormat[] {DataFormats.GENOME_FASTA};
+    return new DataFormat[] {GENOME_FASTA, GENOME_DESC_TXT};
   }
 
   @Override
@@ -96,6 +101,11 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       // Get the genome DataFile
       final DataFile genomeDataFile = new DataFile(genomeSource);
 
+      // Get the genome description DataFile
+      final DataFile descDataFile = context.getDataFile(GENOME_DESC_TXT, s1);
+      final GenomeDescription desc =
+          GenomeDescription.load(descDataFile.open());
+
       // Get the output DataFile
       final DataFile mapperIndexDataFile =
           context.getDataFile(this.mapper.getArchiveFormat(), s1);
@@ -103,43 +113,24 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
-      final FileDataProtocol defaultProtocol =
-          DataProtocolService.getInstance().getDefaultProtocol();
+      final GenomeIndexStorage storage =
+          SimpleGenomeIndexStorage.getInstance(new DataFile(
+              "/home/jourdren/tmp"));
 
-      final File outputFile;
+      final DataFile precomputedIndexDataFile;
+      
+      if (storage == null)
+        precomputedIndexDataFile = null;
+      else
+        precomputedIndexDataFile = storage.get(this.mapper, desc);
 
-      if (mapperIndexDataFile.isDefaultProtocol()) {
-
-        outputFile = defaultProtocol.getFile(mapperIndexDataFile);
-      } else {
-        outputFile =
-            FileUtils.createTempFile(
-                mapper.getMapperName() + "-index-archive-", ".zip");
-      }
-
-      if (genomeDataFile.isDefaultProtocol()) {
-
-        this.mapper.makeArchiveIndex(defaultProtocol.getFile(genomeDataFile),
-            outputFile);
-      } else {
-        this.mapper.makeArchiveIndex(genomeDataFile.open(), outputFile);
-      }
-
-      LOGGER.info("mapperIndexDataFile: " + mapperIndexDataFile);
-      LOGGER.info("mapperIndexDataFile.isDefaultProtocol(): "
-          + mapperIndexDataFile.isDefaultProtocol());
-
-      if (!mapperIndexDataFile.isDefaultProtocol()) {
-
-        new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndexDataFile);
-
-        if (!outputFile.delete()) {
-          context.getLogger().severe(
-              "Unbable to delete temporary "
-                  + this.mapper.getMapperName() + " archive index.");
-        }
-
-      }
+      if (precomputedIndexDataFile == null) {
+        LOGGER.info("Genome index not found, must compute it.");
+        computeIndex(mapperIndexDataFile, genomeDataFile);
+        if (storage != null)
+          storage.put(this.mapper, desc, mapperIndexDataFile);
+      } else
+        downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
 
     } catch (EoulsanException e) {
 
@@ -151,6 +142,56 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
     return new StepResult(context, startTime, this.mapper.getMapperName()
         + " index creation");
+  }
+
+  private void computeIndex(final DataFile mapperIndex, final DataFile genome)
+      throws IOException {
+
+    final FileDataProtocol defaultProtocol =
+        DataProtocolService.getInstance().getDefaultProtocol();
+
+    final File outputFile;
+
+    if (mapperIndex.isDefaultProtocol()) {
+
+      outputFile = defaultProtocol.getFile(mapperIndex);
+    } else {
+      outputFile =
+          FileUtils.createTempFile(mapper.getMapperName() + "-index-archive-",
+              ".zip");
+    }
+
+    if (genome.isDefaultProtocol()) {
+
+      this.mapper.makeArchiveIndex(defaultProtocol.getFile(genome), outputFile);
+    } else {
+      this.mapper.makeArchiveIndex(genome.open(), outputFile);
+    }
+
+    LOGGER.info("mapperIndexDataFile: " + mapperIndex);
+    LOGGER.info("mapperIndexDataFile.isDefaultProtocol(): "
+        + mapperIndex.isDefaultProtocol());
+
+    if (!mapperIndex.isDefaultProtocol()) {
+
+      new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndex);
+
+      if (!outputFile.delete()) {
+        LOGGER.severe("Unbable to delete temporary "
+            + this.mapper.getMapperName() + " archive index.");
+      }
+
+    }
+  }
+
+  private void downloadPrecomputedIndex(final DataFile precomputedIndex,
+      final DataFile output) throws IOException {
+
+    if (precomputedIndex.isDefaultProtocol() && output.isDefaultProtocol()) {
+      FileUtils.createSymbolicLink(new File(precomputedIndex.getSource()),
+          new File(output.getSource()));
+    } else
+      FileUtils.copy(precomputedIndex.rawOpen(), output.create());
   }
 
   //
