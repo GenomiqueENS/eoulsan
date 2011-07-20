@@ -415,7 +415,7 @@ class Workflow implements WorkflowDescription {
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    final DataType dataType = dfr.getDataTypeForDesignField("FileName");
+    final DataType dataType = dfr.getDataTypeForDesignField(SampleMetadata.READS_FIELD);
     final DataFile file = new DataFile(s.getMetadata().getReads());
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
