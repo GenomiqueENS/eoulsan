@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +50,7 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a genome description.
@@ -56,12 +61,30 @@ public class GenomeDescription {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final String PREFIX = "genome.";
+  private static final String NAME_PREFIX = PREFIX + "name";
+  private static final String LENGTH_PREFIX = PREFIX + "length";
+  private static final String MD5_PREFIX = PREFIX + "md5";
+  private static final String SEQUENCE_PREFIX = PREFIX + "sequence.";
+  private static final String SEQUENCES_COUNT_PREFIX = PREFIX + "sequences";
+
+  private String genomeName;
   private Map<String, Integer> sequences = Maps.newHashMap();
   private List<String> sequencesOrder = Lists.newArrayList();
+  private String md5Digest;
 
   //
   // Setters
   //
+
+  /**
+   * Set the genome name.
+   * @param genomeName name of the genome
+   */
+  private void setGenomeName(final String genomeName) {
+
+    this.genomeName = genomeName;
+  }
 
   /**
    * Add a sequence.
@@ -70,7 +93,7 @@ public class GenomeDescription {
    */
   public void addSequence(final String sequenceName, final int sequenceLength) {
 
-    LOGGER.info("Add sequence: "
+    LOGGER.fine("Add sequence: "
         + sequenceName + " with " + sequenceLength + " pb");
 
     if (!this.sequences.containsKey(sequenceName))
@@ -80,9 +103,27 @@ public class GenomeDescription {
 
   }
 
+  /**
+   * Set the md5 digest of the genome file
+   * @param md5Digest the md5 digest
+   */
+  public void setMD5Digest(final String md5Digest) {
+
+    this.md5Digest = md5Digest;
+  }
+
   //
   // Getters
   //
+
+  /**
+   * Get the genome name.
+   * @return the genome name
+   */
+  public String getGenomeName() {
+
+    return this.genomeName;
+  }
 
   /**
    * Get the length of a sequence
@@ -108,6 +149,38 @@ public class GenomeDescription {
     return Collections.unmodifiableList(this.sequencesOrder);
   }
 
+  /**
+   * Get the md5 digest for the genome.
+   * @return the md5 digest
+   */
+  public String getMD5Digest() {
+
+    return this.md5Digest;
+  }
+
+  /**
+   * Get the number of sequences in the genome.
+   * @return the number of sequences in the genome
+   */
+  public int getSequenceCount() {
+
+    return this.sequences.size();
+  }
+
+  /**
+   * Get the genome length;
+   * @return the genome length
+   */
+  public int getGenomeLength() {
+
+    int count = 0;
+
+    for (Map.Entry<String, Integer> e : this.sequences.entrySet())
+      count += e.getValue();
+
+    return count;
+  }
+
   //
   // Save description
   //
@@ -122,9 +195,20 @@ public class GenomeDescription {
 
     final Writer writer = FileUtils.createFastBufferedWriter(os);
 
+    if (this.genomeName != null)
+      writer.write(NAME_PREFIX + "=" + getGenomeName() + '\n');
+
+    if (this.md5Digest != null)
+      writer.write(MD5_PREFIX + "=" + getMD5Digest() + '\n');
+
+    writer.write(SEQUENCES_COUNT_PREFIX + '=' + getSequenceCount() + '\n');
+
+    writer.write(LENGTH_PREFIX + '=' + getGenomeLength() + '\n');
+
     for (String seqName : getSequencesNames()) {
 
-      writer.write(seqName + "\t" + getSequenceLength(seqName) + "\n");
+      writer.write(SEQUENCE_PREFIX
+          + seqName + "=" + getSequenceLength(seqName) + "\n");
     }
 
     writer.close();
@@ -158,7 +242,7 @@ public class GenomeDescription {
 
     String line = null;
 
-    final Splitter splitter = Splitter.on('\t').trimResults();
+    final Splitter splitter = Splitter.on('=').trimResults();
 
     while ((line = read.readLine()) != null) {
 
@@ -166,11 +250,21 @@ public class GenomeDescription {
           Lists.newArrayList(splitter.split(line.toString()));
 
       if (fields.size() > 1) {
-        try {
-          result.addSequence(fields.get(0), Integer.parseInt(fields.get(1)));
-        } catch (NumberFormatException e) {
 
-        }
+        final String key = fields.get(0);
+
+        if (key.startsWith(NAME_PREFIX))
+          result.setGenomeName(fields.get(1));
+        if (key.startsWith(MD5_PREFIX))
+          result.setMD5Digest(fields.get(1));
+        else
+          try {
+            if (key.startsWith(SEQUENCE_PREFIX))
+              result.addSequence(key.substring(SEQUENCE_PREFIX.length()),
+                  Integer.parseInt(fields.get(1)));
+          } catch (NumberFormatException e) {
+
+          }
       }
     }
 
@@ -185,7 +279,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription load(final File file) throws IOException {
 
-    Preconditions.checkNotNull(file, "File is null");
+    checkNotNull(file, "File is null");
     return load(new FileInputStream(file));
   }
 
@@ -200,8 +294,10 @@ public class GenomeDescription {
   public static GenomeDescription createGenomeDescFromFasta(
       final File genomeFastaFile) throws BadBioEntryException, IOException {
 
-    return createGenomeDescFromFasta(FileUtils
-        .createInputStream(genomeFastaFile));
+    checkNotNull(genomeFastaFile, "The genome file is null");
+
+    return createGenomeDescFromFasta(
+        FileUtils.createInputStream(genomeFastaFile), genomeFastaFile.getName());
   }
 
   /**
@@ -209,11 +305,23 @@ public class GenomeDescription {
    * @param genomeFastaIs InputStream
    */
   public static GenomeDescription createGenomeDescFromFasta(
-      final InputStream genomeFastaIs) throws BadBioEntryException, IOException {
+      final InputStream genomeFastaIs, final String filename)
+      throws BadBioEntryException, IOException {
+
+    Preconditions.checkNotNull(genomeFastaIs,
+        "The input stream of the genome is null");
 
     final GenomeDescription result = new GenomeDescription();
+    result.setGenomeName(StringUtils.basename(filename));
 
     final BufferedReader br = FileUtils.createBufferedReader(genomeFastaIs);
+    MessageDigest md5Digest;
+
+    try {
+      md5Digest = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      md5Digest = null;
+    }
 
     String line = null;
 
@@ -231,16 +339,32 @@ public class GenomeDescription {
           result.addSequence(currentChr, currentSize);
         }
 
+        // Get sequence name
         currentChr = parseChromosomeName(line);
+
+        // Update digest with chromosome name
+        if (md5Digest != null)
+          md5Digest.update(currentChr.getBytes());
+
         currentSize = 0;
       } else {
         if (currentChr == null)
           throw new BadBioEntryException(
               "No fasta header found at the start of the fasta file.", line);
-        currentSize += checkBases(line.trim());
+
+        final String trimmedLine = line.trim();
+
+        // Update digest with current sequence line
+        if (md5Digest != null)
+          md5Digest.update(trimmedLine.getBytes());
+
+        // Add the number of bases of the line to currentSize
+        currentSize += checkBases(trimmedLine);
       }
     }
     result.addSequence(currentChr, currentSize);
+    if (md5Digest != null)
+      result.setMD5Digest(digestToString(md5Digest));
 
     genomeFastaIs.close();
 
@@ -298,6 +422,20 @@ public class GenomeDescription {
       }
 
     return len;
+  }
+
+  private static final String digestToString(final MessageDigest md) {
+
+    if (md == null)
+      return null;
+
+    final byte[] digest = md.digest();
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < digest.length; i++)
+      sb.append(Integer.toHexString(digest[i] + 127));
+
+    return sb.toString();
   }
 
   //
