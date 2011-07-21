@@ -113,12 +113,20 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
-      final GenomeIndexStorage storage =
-          SimpleGenomeIndexStorage.getInstance(new DataFile(
-              "/home/jourdren/tmp"));
+      // Get genome Index storage path
+      final String genomeIndexStoragePath =
+          context.getSettings().getGenomeIndexStoragePath();
+
+      final GenomeIndexStorage storage;
+      if (genomeIndexStoragePath == null)
+        storage = null;
+      else
+        storage =
+            SimpleGenomeIndexStorage.getInstance(new DataFile(
+                genomeIndexStoragePath));
 
       final DataFile precomputedIndexDataFile;
-      
+
       if (storage == null)
         precomputedIndexDataFile = null;
       else
