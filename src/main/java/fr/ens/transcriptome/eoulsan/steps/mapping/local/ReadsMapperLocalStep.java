@@ -106,12 +106,12 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final File outFile =
             new File(context.getDataFilename(MAPPER_RESULTS_SAM, s));
 
-        LOGGER.info("Map file: " + inFile);
+        
 
         // Init mapper
         mapper.init(false, s.getMetadata().getPhredOffset(), reporter,
             COUNTER_GROUP);
-        LOGGER.info("PHRED offset: " + s.getMetadata().getPhredOffset());
+        
 
         if (getMapperArguments() != null) {
           mapper.setMapperArguments(getMapperArguments());
@@ -127,7 +127,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         // Set the number of threads
         mapper.setThreadsNumber(mapperThreads);
-        LOGGER.info("Use "
+        
+        LOGGER.info("Map file: " + inFile + ", PHRED offset: " + s.getMetadata().getPhredOffset() + ", use "
             + mapper.getMapperName() + " with " + mapperThreads
             + " threads option");
 
