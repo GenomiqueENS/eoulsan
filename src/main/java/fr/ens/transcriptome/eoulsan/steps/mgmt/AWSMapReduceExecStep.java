@@ -146,8 +146,6 @@ public class AWSMapReduceExecStep extends AbstractStep {
     // Command arguments
     final List<String> eoulsanArgsList = Lists.newArrayList();
     eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
-    eoulsanArgsList.add("-p");
-    eoulsanArgsList.add(Long.toString(context.getContextCreationTime()));
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
@@ -176,9 +174,8 @@ public class AWSMapReduceExecStep extends AbstractStep {
         eoulsanArgs);
 
     // Set Instances
-    builder.withMasterInstanceType(this.instanceType)
-        .withSlavesInstanceType(this.instanceType)
-        .withInstancesNumber(this.nInstances);
+    builder.withMasterInstanceType(this.instanceType).withSlavesInstanceType(
+        this.instanceType).withInstancesNumber(this.nInstances);
 
     // Set Hadoop version
     builder.withHadoopVersion(this.hadoopVersion);

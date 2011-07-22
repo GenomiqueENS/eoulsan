@@ -103,13 +103,6 @@ public interface Context {
   String getJobId();
 
   /**
-   * Get the creation time of the context.
-   * @return the creation time of the context in milliseconds since epoch
-   *         (1.1.1970)
-   */
-  long getContextCreationTime();
-
-  /**
    * Get the design path.
    * @return the design path
    */
@@ -137,7 +130,7 @@ public interface Context {
    * @return the EoulsanRuntime
    */
   AbstractEoulsanRuntime getRuntime();
-
+  
   /**
    * Get Eoulsan settings.
    * @return the Settings
