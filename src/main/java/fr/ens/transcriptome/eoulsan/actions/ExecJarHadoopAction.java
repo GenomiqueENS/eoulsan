@@ -50,8 +50,8 @@ public class ExecJarHadoopAction extends AbstractAction {
   /** Name of this action. */
   public static final String ACTION_NAME = "execjarhadoop";
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
+      Collections.emptySet();
 
   @Override
   public String getName() {
@@ -80,7 +80,6 @@ public class ExecJarHadoopAction extends AbstractAction {
     String jobDescription = null;
     String jobEnvironment = null;
     boolean uploadOnly = false;
-    long millisSinceEpoch = System.currentTimeMillis();
 
     int argsOptions = 0;
 
@@ -106,15 +105,6 @@ public class ExecJarHadoopAction extends AbstractAction {
         argsOptions += 2;
       }
 
-      if (line.hasOption("p")) {
-
-        try {
-          millisSinceEpoch = Long.parseLong(line.getOptionValue("p").trim());
-        } catch (NumberFormatException e) {
-        }
-        argsOptions += 2;
-      }
-
       if (line.hasOption("upload")) {
 
         uploadOnly = true;
@@ -122,8 +112,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: "
+          + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -137,7 +127,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,
-        jobEnvironment, uploadOnly, millisSinceEpoch);
+        jobEnvironment, uploadOnly);
 
   }
 
@@ -174,16 +164,11 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     // Environment option
     options.addOption(OptionBuilder.withArgName("environment").hasArg()
-        .withDescription("environment description").withLongOpt("desc")
-        .create('e'));
+        .withDescription("environment description").withLongOpt("desc").create(
+            'e'));
 
     // UploadOnly option
     options.addOption("upload", false, "upload only");
-
-    // Parent job creation time
-    options.addOption(OptionBuilder.withArgName("parent-job-time").hasArg()
-        .withDescription("parent job time").withLongOpt("parent-job")
-        .create('p'));
 
     return options;
   }
@@ -214,13 +199,12 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param destPathname data path
    * @param jobDescription job description
    * @param jobEnvironment job environment
-   * @param millisSinceEpoch milliseconds since epoch
    * @param uploadOnly true if execution must end after upload
    */
   private static void run(final String paramPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
-      final boolean uploadOnly, final long millisSinceEpoch) {
+      final boolean uploadOnly) {
 
     checkNotNull(paramPathname, "paramPathname is null");
     checkNotNull(designPathname, "designPathname is null");
@@ -303,8 +287,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create executor
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env,
-              millisSinceEpoch);
+          new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env);
 
       // Create upload step
       final Step uploadStep =

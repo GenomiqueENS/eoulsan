@@ -204,28 +204,25 @@ public class HadoopExecutor extends Executor {
 
   /**
    * Private constructor.
-   * @param conf Hadoop configuration
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
    */
-  private HadoopExecutor(final Configuration conf, final long millisSinceEpoch) {
+  private HadoopExecutor(final Configuration conf) {
 
     if (conf == null)
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.context = new SimpleContext(millisSinceEpoch);
+    this.context = new SimpleContext();
   }
 
   /**
    * Constructor
    * @param command command to execute
    * @param designPathname the path the design file
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
    */
   public HadoopExecutor(final Configuration conf, final Command command,
-      final Path designPath, final long millisSinceEpoch) {
+      final Path designPath) {
 
-    this(conf, millisSinceEpoch);
+    this(conf);
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -237,25 +234,21 @@ public class HadoopExecutor extends Executor {
 
     this.designPath = designPath;
     getContext().setBasePathname(designPath.getParent().toString());
+
   }
 
   /**
    * Constructor
    * @param command command to execute
-   * @param design the design object
-   * @param designPath the design file path
-   * @param paramPath the parameter file path
-   * @param jobDescription job description
-   * @param jobEnvironment job environment description
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
+   * @param designPathname the path the design file
    * @throws IOException if cannot create log or output directory
    */
   public HadoopExecutor(final Configuration conf, final Command command,
       final Design design, final Path designPath, final Path paramPath,
-      final String jobDescription, final String jobEnvironment,
-      final long millisSinceEpoch) throws IOException {
+      final String jobDescription, final String jobEnvironment)
+      throws IOException {
 
-    this(conf, millisSinceEpoch);
+    this(conf);
 
     if (command == null)
       throw new NullPointerException("The command is null");
