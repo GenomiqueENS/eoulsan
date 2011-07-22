@@ -67,8 +67,9 @@ public final class SimpleContext implements Context {
   private String commandAuthor = "";
   private WorkflowDescription workflow;
   private Step step;
+  private long contextCreationTime;
 
-  private String objectCreationDate;
+  // private String objectCreationDate;
 
   //
   // Getters
@@ -92,6 +93,11 @@ public final class SimpleContext implements Context {
   @Override
   public String getJobId() {
     return this.jobId;
+  }
+
+  @Override
+  public long getContextCreationTime() {
+    return this.contextCreationTime;
   }
 
   @Override
@@ -300,18 +306,19 @@ public final class SimpleContext implements Context {
   // Other methods
   //
 
-  private void createExecutionName() {
+  private void createExecutionName(final long millisSinceEpoch) {
 
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-    cal.setTime(new Date(System.currentTimeMillis()));
+    cal.setTime(new Date(millisSinceEpoch));
 
-    this.objectCreationDate =
+    final String creationDate =
         String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
             cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
             cal.get(Calendar.SECOND));
 
-    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + this.objectCreationDate;
+    this.contextCreationTime = millisSinceEpoch;
+    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + creationDate;
   }
 
   @Override
@@ -422,7 +429,15 @@ public final class SimpleContext implements Context {
    */
   public SimpleContext() {
 
-    createExecutionName();
+    this(System.currentTimeMillis());
+  }
+
+  /**
+   * Public constructor.
+   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
+   */
+  public SimpleContext(final long millisSinceEpoch) {
+    createExecutionName(millisSinceEpoch);
   }
 
 }
