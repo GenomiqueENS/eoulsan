@@ -206,4 +206,15 @@ public class StringUtilsTest {
     assertEquals("to\\to", r.get(2));
   }
 
+  @Test
+  public void testToLetter() {
+    
+    assertEquals('-', StringUtils.toLetter(-1));
+    assertEquals('a', StringUtils.toLetter(0));
+    assertEquals('b', StringUtils.toLetter(1));
+    assertEquals('c', StringUtils.toLetter(2));
+    assertEquals('z', StringUtils.toLetter(25));    
+    assertEquals('-', StringUtils.toLetter(26));    
+  }
+  
 }
