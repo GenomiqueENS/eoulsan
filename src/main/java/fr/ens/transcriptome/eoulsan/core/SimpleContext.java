@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -390,6 +392,15 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public String getDataFilename(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
+
+    return file == null ? null : file.getSource();
+  }
+
+  @Override
   public DataFile getDataFile(final DataFormat df, final Sample sample) {
 
     if (df == null || sample == null)
@@ -400,12 +411,12 @@ public final class SimpleContext implements Context {
           "Multifiles DataFormat are not handled by getDataFile()");
 
     // First try search the file in the design file
-
     final DataType dt = df.getType();
     final String fieldName = this.dataTypesFields.get(dt);
     if (fieldName != null) {
       final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-      final DataFile file = new DataFile(sample.getMetadata().getField(fieldName));
+      final DataFile file =
+          new DataFile(sample.getMetadata().getField(fieldName));
       final DataFormat sourceDf =
           dfr.getDataFormatFromExtension(dt, file.getExtension());
 
@@ -414,11 +425,86 @@ public final class SimpleContext implements Context {
     }
 
     // Else the file is in base path
-
     return new DataFile(this.getBasePathname()
         + "/" + df.getType().getPrefix()
         + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
         + df.getDefaultExtention());
+  }
+
+  @Override
+  public DataFile getDataFile(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    if (df == null || sample == null || fileIndex < 0)
+      return null;
+
+    if (!df.isMultiFiles())
+      throw new EoulsanRuntimeException(
+          "Only multifiles DataFormat are handled by this method.");
+
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+    if (fieldName != null) {
+
+      final List<String> fieldValues =
+          sample.getMetadata().getFieldAsList(fieldName);
+
+      if (fieldValues != null && fieldValues.size() < fileIndex) {
+
+        final DataFile file = new DataFile(fieldValues.get(fileIndex));
+
+        final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+        final DataFormat sourceDf =
+            dfr.getDataFormatFromExtension(dt, file.getExtension());
+
+        if (sourceDf != null && sourceDf.equals(df))
+          return file;
+      }
+    }
+
+    // Else the file is in base path
+    return new DataFile(this.getBasePathname()
+        + "/" + df.getType().getPrefix()
+        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+        + toLetter(fileIndex) + df.getDefaultExtention());
+  }
+
+  @Override
+  public int getDataFileCount(final DataFormat df, final Sample sample) {
+
+    if (df == null || sample == null)
+      return -1;
+
+    if (!df.isMultiFiles())
+      throw new EoulsanRuntimeException(
+          "Only multifiles DataFormat are handled by this method.");
+
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+    if (fieldName != null) {
+
+      return sample.getMetadata().getFieldAsList(fieldName).size();
+    }
+
+    // Check existing files to get the file count
+
+    int count = 0;
+    boolean found = false;
+
+    do {
+
+      final DataFile file =
+          new DataFile(this.getBasePathname()
+              + "/" + df.getType().getPrefix()
+              + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+              + toLetter(count) + df.getDefaultExtention());
+
+      found = file.exists();
+      if (found)
+        count++;
+    } while (found);
+
+    return count;
   }
 
   @Override
@@ -444,10 +530,44 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public DataFile getExistingDataFile(final DataFormat[] formats,
+      final Sample sample, final int fileIndex) {
+
+    if (formats == null)
+      return null;
+
+    for (DataFormat df : formats) {
+
+      if (df == null)
+        continue;
+
+      final DataFile file = getDataFile(df, sample, fileIndex);
+
+      if (file != null && file.exists())
+        return file;
+
+    }
+
+    return null;
+  }
+
+  @Override
   public InputStream getInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
     final DataFile file = getDataFile(df, sample);
+
+    if (file == null)
+      return null;
+
+    return file.open();
+  }
+
+  @Override
+  public InputStream getInputStream(final DataFormat df, final Sample sample,
+      final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
 
     if (file == null)
       return null;
@@ -465,10 +585,28 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public InputStream getRawInputStream(final DataFormat df,
+      final Sample sample, final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
+
+    return file == null ? null : file.rawOpen();
+  }
+
+  @Override
   public OutputStream getOutputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
     final DataFile file = getDataFile(df, sample);
+
+    return file == null ? null : file.create();
+  }
+
+  @Override
+  public OutputStream getOutputStream(final DataFormat df, final Sample sample,
+      final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
 
     return file == null ? null : file.create();
   }

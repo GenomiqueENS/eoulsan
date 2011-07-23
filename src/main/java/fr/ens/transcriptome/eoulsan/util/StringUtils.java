@@ -728,4 +728,20 @@ public final class StringUtils {
     return result;
   }
 
+  /**
+   * Convert 0-15 integer number to a letter
+   * @param i the integer to convert
+   * @return a letter as a char
+   */
+  public static char toLetter(final int i) {
+
+    if (i < 0)
+      return '-';
+
+    if (i > 25)
+      return '-';
+
+    return (char) (i + 97);
+  }
+
 }

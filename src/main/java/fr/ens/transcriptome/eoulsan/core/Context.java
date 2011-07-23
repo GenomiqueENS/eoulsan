@@ -164,12 +164,44 @@ public interface Context {
   String getDataFilename(DataFormat df, Sample sample);
 
   /**
+   * Get the pathname for a DataType and a Sample. This method works only for a
+   * multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a String with the pathname
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  String getDataFilename(DataFormat df, Sample sample, int fileIndex);
+
+  /**
    * Get the DataFile for a DataType and a Sample.
    * @param df the DataFormat of the source
    * @param sample the sample for the source
    * @return a new DataFile object
    */
   DataFile getDataFile(DataFormat df, Sample sample);
+
+  /**
+   * Get the DataFile for a DataType and a Sample. This method works only for a
+   * multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  DataFile getDataFile(DataFormat df, Sample sample, int fileIndex);
+
+  /**
+   * Count the number for DataFile available for a multifile DataFormat and a
+   * Sample. This method works only for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return the number of multifile for the DataFormat and the sample
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  int getDataFileCount(final DataFormat df, final Sample sample);
 
   /**
    * Get the first existing DataFile for a sample and a list of DataFormat.
@@ -181,12 +213,35 @@ public interface Context {
   DataFile getExistingDataFile(DataFormat[] formats, Sample sample);
 
   /**
+   * Get the first existing DataFile for a sample and a list of DataFormat.
+   * @param formats the DataFormat test
+   * @param sample the sample
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object or null if no existing DataFile has been
+   *         found
+   */
+  DataFile getExistingDataFile(DataFormat[] formats, Sample sample,
+      int fileIndex);
+
+  /**
    * Create an InputStream to load data.
    * @param ds the DataFormat of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
   InputStream getInputStream(DataFormat df, Sample sample) throws IOException;
+
+  /**
+   * Create an InputStream to load data. This method works only for a multifile
+   * DataFormat.
+   * @param ds the DataFormat of the data to load
+   * @param sample the sample
+   * @param fileIndex file index for multifile data
+   * @return an InputStream corresponding to DataType and Sample
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  InputStream getInputStream(DataFormat df, Sample sample, int fileIndex)
+      throws IOException;
 
   /**
    * Create a raw InputStream (without decompression of input data) to load
@@ -199,10 +254,34 @@ public interface Context {
       throws IOException;
 
   /**
+   * Create a raw InputStream (without decompression of input data) to load
+   * data. This method works only for a multifile DataFormat.
+   * @param dt the DataFormat of the data to load
+   * @param sample the sample
+   * @param fileIndex file index for multifile data
+   * @return an InputStream corresponding to DataType and Sample
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  InputStream getRawInputStream(DataFormat df, Sample sample, int fileIndex)
+      throws IOException;
+
+  /**
    * Create an OutputStream to load data.
    * @param dt the DataFormat of the data to write
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
   OutputStream getOutputStream(DataFormat df, Sample sample) throws IOException;
+
+  /**
+   * Create an OutputStream to load data. This method works only for a multifile
+   * DataFormat.
+   * @param dt the DataFormat of the data to write
+   * @param sample the sample
+   * @param fileIndex file index for multifile data
+   * @return an InputStream corresponding to DataType and Sample
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  OutputStream getOutputStream(DataFormat df, Sample sample, int fileIndex)
+      throws IOException;
 }
