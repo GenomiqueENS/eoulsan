@@ -58,11 +58,18 @@ public interface SampleMetadata {
   String PHRED_OFFSET_FIELD = "PhredOffset";
 
   /**
-   * Get a description.
+   * Get a field value.
    * @param field Field of the description to get
-   * @return a String with the description
+   * @return a String with the value
    */
-  String get(final String field);
+  String getField(final String field);
+
+  /**
+   * Get a field value as a list.
+   * @param field Field of the description to get
+   * @return a list with the values
+   */
+  List<String> getFieldAsList(final String field);
 
   /**
    * Get the fields of the descriptions.
@@ -86,7 +93,7 @@ public interface SampleMetadata {
    * Get the reads file relative to the sample.
    * @return Returns the reads file
    */
-  String getReads();
+  List<String> getReads();
 
   /**
    * Get the genome file relative to the sample.
@@ -147,7 +154,14 @@ public interface SampleMetadata {
    * @param field Field to set
    * @param value value to set
    */
-  void set(String field, String value);
+  void setField(String field, String value);
+
+  /**
+   * Set a field of the metadata.
+   * @param field Field to set
+   * @param value value to set
+   */
+  void setField(String field, List<String> value);
 
   /**
    * Set the description.
@@ -165,7 +179,7 @@ public interface SampleMetadata {
    * Set the reads file relative to the sample.
    * @param reads file to set
    */
-  void setReads(String reads);
+  void setReads(List<String> reads);
 
   /**
    * Set the genome file relative to the sample.
@@ -239,7 +253,7 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isReadsField();
-  
+
   /**
    * Test if the genome field exists.
    * @return true if the field exists

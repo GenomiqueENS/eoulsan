@@ -405,7 +405,7 @@ public final class SimpleContext implements Context {
     final String fieldName = this.dataTypesFields.get(dt);
     if (fieldName != null) {
       final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-      final DataFile file = new DataFile(sample.getMetadata().get(fieldName));
+      final DataFile file = new DataFile(sample.getMetadata().getField(fieldName));
       final DataFormat sourceDf =
           dfr.getDataFormatFromExtension(dt, file.getExtension());
 

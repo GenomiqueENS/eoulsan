@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static java.util.Collections.singletonList;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -278,7 +280,7 @@ public abstract class UploadStep extends AbstractStep {
     for (Sample s : design.getSamples()) {
 
       // Copy the sample
-      DataFile sampleOldFile = new DataFile(s.getMetadata().getReads());
+      DataFile sampleOldFile = new DataFile(s.getMetadata().getReads().get(0));
       DataFile sampleNewFile = getUploadedDataFile(sampleOldFile, s.getId());
 
       if (filesToCopy.contains(sampleOldFile)) {
@@ -287,7 +289,7 @@ public abstract class UploadStep extends AbstractStep {
         result.put(sampleOldFile, sampleNewFile);
       }
 
-      s.getMetadata().setReads(sampleNewFile.getSource());
+      s.getMetadata().setReads(singletonList(sampleNewFile.getSource()));
 
       // copy the genome file
       final String genome = s.getMetadata().getGenome();
