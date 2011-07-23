@@ -405,7 +405,7 @@ class Workflow implements WorkflowDescription {
 
       if (dt != null) {
 
-        DataFile file = new DataFile(s.getMetadata().get(fieldname));
+        DataFile file = new DataFile(s.getMetadata().getField(fieldname));
         final DataFormat df = file.getDataFormat(dt);
         if (df != null)
           cart.add(df);
@@ -487,7 +487,10 @@ class Workflow implements WorkflowDescription {
     for (Sample s : this.design.getSamples()) {
 
       // Convert read file URL
-      s.getMetadata().setReads(convertS3URL(s.getMetadata().getReads()));
+      final List<String> readsSources = s.getMetadata().getReads();
+      for (int i = 0; i < readsSources.size(); i++)
+        readsSources.set(i, convertS3URL(readsSources.get(i)));
+      s.getMetadata().setReads(readsSources);
 
       // Convert genome file URL
       if (s.getMetadata().isGenomeField())

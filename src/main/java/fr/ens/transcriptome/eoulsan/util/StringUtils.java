@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -695,7 +696,7 @@ public final class StringUtils {
     String s = serializedString.trim();
 
     if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ']')
-      return null;
+      return Collections.singletonList(serializedString);
 
     s = s.substring(1, s.length() - 1);
 

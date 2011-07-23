@@ -84,7 +84,7 @@ public final class DesignUtils {
       for (String f : metadataFields) {
 
         sb.append("\t");
-        sb.append(s.getMetadata().get(f));
+        sb.append(s.getMetadata().getField(f));
       }
 
       System.out.println(sb.toString());
@@ -112,10 +112,12 @@ public final class DesignUtils {
     final Set<String> samplesSources = new HashSet<String>();
 
     for (Sample s : design.getSamples()) {
+      for (String fileSource : s.getMetadata().getReads()) {
 
-      if (samplesSources.contains(s.getMetadata().getReads()))
-        return false;
-      samplesSources.add(s.getMetadata().getReads());
+        if (samplesSources.contains(fileSource))
+          return false;
+        samplesSources.add(fileSource);
+      }
     }
 
     return true;
@@ -133,13 +135,15 @@ public final class DesignUtils {
     final Set<String> samplesSources = new HashSet<String>();
 
     for (Sample s : design.getSamples()) {
+      for (String fileSource : s.getMetadata().getReads()) {
 
-      if (samplesSources.contains(s.getMetadata().getReads()))
-        throw new EoulsanException(
-            "Error: The design contains one or more duplicate sample sources: "
-                + s.getMetadata().getReads() + " (sample " + s.getId() + ")");
-      ;
-      samplesSources.add(s.getMetadata().getReads());
+        if (samplesSources.contains(fileSource))
+          throw new EoulsanException(
+              "Error: The design contains one or more duplicate sample sources: "
+                  + fileSource + " (sample " + s.getId() + ")");
+
+        samplesSources.add(fileSource);
+      }
     }
 
     return true;
