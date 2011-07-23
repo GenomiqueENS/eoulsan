@@ -109,8 +109,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   private void filterFile(final DataFile inFile, final DataFile outFile,
       final Reporter reporter, final int phredOffset) throws IOException {
 
-    LOGGER.info("Filter file: " + inFile);
-    LOGGER.info("PHRED offset: " + phredOffset);
+    LOGGER.info("Filter file: " + inFile + ", PHRED offset: " + phredOffset);
 
     final ReadFilter filter;
 

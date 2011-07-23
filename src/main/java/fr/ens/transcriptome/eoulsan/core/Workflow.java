@@ -457,7 +457,7 @@ class Workflow implements WorkflowDescription {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Add globals parameters to Settings
-    LOGGER.info("Init all step with global parameters: " + globalParameters);
+    LOGGER.info("Init all steps with global parameters: " + globalParameters);
     for (Parameter p : globalParameters)
       settings.setSetting(p.getName(), p.getStringValue());
 
