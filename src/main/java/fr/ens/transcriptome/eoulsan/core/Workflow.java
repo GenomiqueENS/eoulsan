@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -162,16 +163,8 @@ class Workflow implements WorkflowDescription {
 
   private void scanWorkflow() throws EoulsanException {
 
-    final Context context = this.context;
-
     final Set<DataFile> checkedDatafile = newHashSet();
     final Map<DataFormat, Checker> checkers = newHashMap();
-
-    // final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
-    // dfRegistry.register(DataFormats.READS_FASTQ);
-    // dfRegistry.register(DataFormats.READS_TFQ);
-    // dfRegistry.register(DataFormats.GENOME_FASTA);
-    // dfRegistry.register(DataFormats.ANNOTATION_GFF);
 
     boolean firstSample = true;
 
@@ -284,7 +277,7 @@ class Workflow implements WorkflowDescription {
 
         for (DataFile file : swGetAllDataFiles(df, s))
           if (!checkedDatafile.contains(file)) {
-            if (context.getDataFile(df, s).exists())
+            if (file.exists())
               throw new EoulsanException("For sample "
                   + s.getId() + ", generated \"" + df.getFormatName()
                   + "\" already exists.");
@@ -532,7 +525,8 @@ class Workflow implements WorkflowDescription {
     for (Sample s : this.design.getSamples()) {
 
       // Convert read file URL
-      final List<String> readsSources = s.getMetadata().getReads();
+      final List<String> readsSources =
+          Lists.newArrayList(s.getMetadata().getReads());
       for (int i = 0; i < readsSources.size(); i++)
         readsSources.set(i, convertS3URL(readsSources.get(i)));
       s.getMetadata().setReads(readsSources);
