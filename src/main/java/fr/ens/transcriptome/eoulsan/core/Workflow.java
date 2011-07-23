@@ -444,10 +444,16 @@ class Workflow implements WorkflowDescription {
 
       if (dt != null) {
 
-        DataFile file = new DataFile(s.getMetadata().getField(fieldname));
-        final DataFormat df = file.getDataFormat(dt);
-        if (df != null)
-          cart.cart.add(df);
+        final List<String> fieldValues =
+            s.getMetadata().getFieldAsList(fieldname);
+
+        if (fieldValues.size() > 0) {
+
+          DataFile file = new DataFile(fieldValues.get(0));
+          final DataFormat df = file.getDataFormat(dt);
+          if (df != null)
+            cart.cart.add(df);
+        }
       }
     }
 
