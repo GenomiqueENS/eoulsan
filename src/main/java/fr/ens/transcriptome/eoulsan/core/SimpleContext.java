@@ -406,7 +406,7 @@ public final class SimpleContext implements Context {
     if (df == null || sample == null)
       return null;
 
-    if (df.isMultiFiles())
+    if (df.getMaxFilesCount() != 1)
       throw new EoulsanRuntimeException(
           "Multifiles DataFormat are not handled by getDataFile()");
 
@@ -438,18 +438,23 @@ public final class SimpleContext implements Context {
     if (df == null || sample == null || fileIndex < 0)
       return null;
 
-    if (!df.isMultiFiles())
+    if (df.getMaxFilesCount() < 2)
       throw new EoulsanRuntimeException(
           "Only multifiles DataFormat are handled by this method.");
 
+    if (fileIndex > df.getMaxFilesCount())
+      throw new EoulsanRuntimeException(
+          "The file index is greater than the maximal number of file for this format.");
+
     final DataType dt = df.getType();
     final String fieldName = this.dataTypesFields.get(dt);
+
     if (fieldName != null) {
 
       final List<String> fieldValues =
           sample.getMetadata().getFieldAsList(fieldName);
 
-      if (fieldValues != null && fieldValues.size() < fileIndex) {
+      if (fieldValues != null && fieldValues.size() > fileIndex) {
 
         final DataFile file = new DataFile(fieldValues.get(fileIndex));
 
@@ -475,7 +480,7 @@ public final class SimpleContext implements Context {
     if (df == null || sample == null)
       return -1;
 
-    if (!df.isMultiFiles())
+    if (df.getMaxFilesCount()<2)
       throw new EoulsanRuntimeException(
           "Only multifiles DataFormat are handled by this method.");
 

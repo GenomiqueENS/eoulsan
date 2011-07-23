@@ -79,8 +79,8 @@ abstract class AbstractDataFormat implements DataFormat {
   }
 
   @Override
-  public boolean isMultiFiles() {
-    return false;
+  public int getMaxFilesCount() {
+    return 1;
   }
 
 }

@@ -24,8 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.singletonList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +50,6 @@ import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -148,6 +149,17 @@ class Workflow implements WorkflowDescription {
   // Checks methods
   //
 
+  private class Cart {
+
+    final Set<DataFormat> cart = newHashSet();
+    final Set<DataFormat> cartUsed = newHashSet();
+    final Set<DataFormat> cartReUsed = newHashSet();
+    final Set<DataFormat> cartGenerated = newHashSet();
+    final Set<DataFormat> cartNotGenerated = newHashSet();
+    final Set<DataFormat> cartOnlyGenerated = newHashSet();
+
+  }
+
   private void scanWorkflow() throws EoulsanException {
 
     final Context context = this.context;
@@ -155,22 +167,17 @@ class Workflow implements WorkflowDescription {
     final Set<DataFile> checkedDatafile = newHashSet();
     final Map<DataFormat, Checker> checkers = newHashMap();
 
-    final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
-    dfRegistry.register(DataFormats.READS_FASTQ);
-    dfRegistry.register(DataFormats.READS_TFQ);
-    dfRegistry.register(DataFormats.GENOME_FASTA);
-    dfRegistry.register(DataFormats.ANNOTATION_GFF);
+    // final DataFormatRegistry dfRegistry = DataFormatRegistry.getInstance();
+    // dfRegistry.register(DataFormats.READS_FASTQ);
+    // dfRegistry.register(DataFormats.READS_TFQ);
+    // dfRegistry.register(DataFormats.GENOME_FASTA);
+    // dfRegistry.register(DataFormats.ANNOTATION_GFF);
 
     boolean firstSample = true;
 
     for (Sample s : this.design.getSamples()) {
 
-      final Set<DataFormat> cart = newHashSet();
-      final Set<DataFormat> cartUsed = newHashSet();
-      final Set<DataFormat> cartReUsed = newHashSet();
-      final Set<DataFormat> cartGenerated = newHashSet();
-      final Set<DataFormat> cartNotGenerated = newHashSet();
-      final Set<DataFormat> cartOnlyGenerated = newHashSet();
+      final Cart cart = new Cart();
 
       // Fill cart with DataFormats provided by the sample in the design file
       fillCartWithDesignFiles(cart, s);
@@ -197,30 +204,24 @@ class Workflow implements WorkflowDescription {
               if (df.isGenerator())
                 canBeGenerated = true;
 
-              if (cart.contains(df)) {
-                cartUsed.add(df);
+              if (cart.cart.contains(df)) {
+                cart.cartUsed.add(df);
                 if (df.isChecker())
                   checkers.put(df, df.getChecker());
 
-                if (cartGenerated.contains(df))
-                  cartReUsed.add(df);
+                if (cart.cartGenerated.contains(df))
+                  cart.cartReUsed.add(df);
 
                 foundInCart++;
-              } else { // To comment to prevent bug
-                if (context.getDataFile(df, s).exists()) {
-                  cart.add(df);
-                  cartNotGenerated.add(df);
-                  cartUsed.add(df);
-                  foundFile++;
-                }
-              }
+              } else
+                foundFile = swCheckExistingFiles(df, s, cart, foundFile);
 
             }
 
             if (foundInCart == 0 && foundFile == 0) {
 
               if (canBeGenerated) {
-                cartUsed.add(e.getValue().iterator().next());
+                cart.cartUsed.add(e.getValue().iterator().next());
               } else
                 throw new EoulsanException("For sample "
                     + s.getId() + " in step " + step.getName()
@@ -237,62 +238,67 @@ class Workflow implements WorkflowDescription {
         // Check Output
         if (step.getOutputFormats() != null)
           for (DataFormat df : step.getOutputFormats()) {
-            cartGenerated.add(df);
-            cart.add(df);
+            cart.cartGenerated.add(df);
+            cart.cart.add(df);
           }
 
       }
 
       // Check Input data
-      cartNotGenerated.addAll(cartUsed);
-      cartNotGenerated.removeAll(cartGenerated);
+      cart.cartNotGenerated.addAll(cart.cartUsed);
+      cart.cartNotGenerated.removeAll(cart.cartGenerated);
 
-      for (DataFormat df : cartNotGenerated) {
+      for (DataFormat df : cart.cartNotGenerated) {
 
-        final DataFile file = context.getDataFile(df, s);
-        if (!checkedDatafile.contains(file)) {
-          if (!context.getDataFile(df, s).exists()) {
+        // Get DataFile
 
-            if (df.isGenerator()) {
+        final List<DataFile> files = swGetAllDataFiles(df, s);
 
-              final Step generator = df.getGenerator();
+        for (DataFile file : files)
+          if (!checkedDatafile.contains(file)) {
+            if (!file.exists()) {
 
-              this.steps.add(findFirstStepThatNeedDataFormat(df), generator);
-              LOGGER.info("Add generator step: " + generator.getName());
-              scanWorkflow();
+              if (df.isGenerator()) {
 
-              return;
+                final Step generator = df.getGenerator();
+
+                this.steps
+                    .add(swfindFirstStepThatNeedDataFormat(df), generator);
+                LOGGER.info("Add generator step: " + generator.getName());
+                scanWorkflow();
+
+                return;
+              }
+
+              throw new EoulsanException("For sample "
+                  + s.getId() + ", input \"" + df.getFormatName()
+                  + "\" not exists.");
             }
 
-            throw new EoulsanException("For sample "
-                + s.getId() + ", input \"" + df.getFormatName()
-                + "\" not exists.");
+            checkedDatafile.add(file);
           }
-
-          checkedDatafile.add(file);
-        }
       }
 
       // Check if outputs already exists
-      for (DataFormat df : cartGenerated) {
+      for (DataFormat df : cart.cartGenerated) {
 
-        final DataFile file = context.getDataFile(df, s);
-        if (!checkedDatafile.contains(file)) {
-          if (context.getDataFile(df, s).exists())
-            throw new EoulsanException("For sample "
-                + s.getId() + ", generated \"" + df.getFormatName()
-                + "\" already exists.");
-          checkedDatafile.add(file);
-        }
+        for (DataFile file : swGetAllDataFiles(df, s))
+          if (!checkedDatafile.contains(file)) {
+            if (context.getDataFile(df, s).exists())
+              throw new EoulsanException("For sample "
+                  + s.getId() + ", generated \"" + df.getFormatName()
+                  + "\" already exists.");
+            checkedDatafile.add(file);
+          }
       }
 
-      cartOnlyGenerated.addAll(cartGenerated);
-      cartOnlyGenerated.removeAll(cartReUsed);
+      cart.cartOnlyGenerated.addAll(cart.cartGenerated);
+      cart.cartOnlyGenerated.removeAll(cart.cartReUsed);
 
       globalInputDataFormats.put(s.getId(),
-          Collections.unmodifiableSet(cartNotGenerated));
+          Collections.unmodifiableSet(cart.cartNotGenerated));
       globalOutputDataFormats.put(s.getId(),
-          Collections.unmodifiableSet(cartGenerated));
+          Collections.unmodifiableSet(cart.cartGenerated));
 
       if (firstSample)
         firstSample = false;
@@ -302,7 +308,48 @@ class Workflow implements WorkflowDescription {
     runChecker(checkers);
   }
 
-  private int findFirstStepThatNeedDataFormat(final DataFormat df) {
+  private DataFile swGetFirstDataFile(final DataFormat format,
+      final Sample sample) {
+
+    if (format.getMaxFilesCount() > 1)
+      return this.context.getDataFile(format, sample, 0);
+
+    return this.context.getDataFile(format, sample);
+  }
+
+  private List<DataFile> swGetAllDataFiles(final DataFormat format,
+      final Sample sample) {
+
+    if (format.getMaxFilesCount() == 1)
+      return singletonList(this.context.getDataFile(format, sample));
+
+    final List<DataFile> result = newArrayList();
+
+    final int count = this.context.getDataFileCount(format, sample);
+    for (int i = 0; i < count; i++)
+      result.add(this.context.getDataFile(format, sample, i));
+
+    return result;
+  }
+
+  private int swCheckExistingFiles(final DataFormat df, final Sample sample,
+      final Cart cart, final int foundFile) {
+
+    int result = foundFile;
+
+    final DataFile file = swGetFirstDataFile(df, sample);
+
+    if (file.exists()) {
+      cart.cart.add(df);
+      cart.cartNotGenerated.add(df);
+      cart.cartUsed.add(df);
+      result++;
+    }
+
+    return result;
+  }
+
+  private int swfindFirstStepThatNeedDataFormat(final DataFormat df) {
 
     if (df == null)
       return -1;
@@ -393,8 +440,7 @@ class Workflow implements WorkflowDescription {
     return result;
   }
 
-  private void fillCartWithDesignFiles(final Set<DataFormat> cart,
-      final Sample s) {
+  private void fillCartWithDesignFiles(final Cart cart, final Sample s) {
 
     final List<String> fieldnames = s.getMetadata().getFields();
     DataFormatRegistry registry = DataFormatRegistry.getInstance();
@@ -408,8 +454,7 @@ class Workflow implements WorkflowDescription {
         DataFile file = new DataFile(s.getMetadata().getField(fieldname));
         final DataFormat df = file.getDataFormat(dt);
         if (df != null)
-          cart.add(df);
-
+          cart.cart.add(df);
       }
     }
 
