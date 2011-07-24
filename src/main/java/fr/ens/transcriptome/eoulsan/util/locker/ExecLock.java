@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * multiples JVM.
  * @author Laurent Jourdren
  */
-public class ExecLock {
+public class ExecLock implements Locker {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -67,9 +67,7 @@ public class ExecLock {
     return Integer.parseInt(beanName.substring(0, index));
   }
 
-  /**
-   * Wait the token and then lock the resource.
-   */
+  @Override
   public void lock() {
 
     while (lock)
@@ -108,9 +106,7 @@ public class ExecLock {
     }
   }
 
-  /**
-   * Unlock the ressource.
-   */
+  @Override
   public void unlock() {
 
     if (!lockFile.delete())
