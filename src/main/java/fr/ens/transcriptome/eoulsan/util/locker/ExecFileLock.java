@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.locker;
 
 import java.io.File;
 import java.io.IOException;
