@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.locker;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a lock to prevent execution of a process simultaneously on
