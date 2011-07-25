@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -103,15 +104,19 @@ public class BinariesInstaller {
 
     String osArchKey = os + "\t" + arch;
 
-    // Check if platform is allowed
-    if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
-      throw new FileNotFoundException(
-          "There is no executable for your plateform ("
-              + os + ") included in " + Globals.APP_NAME);
+    // Bypass platform checking if necessary
+    if (!EoulsanRuntime.getSettings().isBypassPlatformChecking()) {
 
-    // Change the os and arch if alias
-    if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey))
-      osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
+      // Check if platform is allowed
+      if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
+        throw new FileNotFoundException(
+            "There is no executable for your plateform ("
+                + os + ") included in " + Globals.APP_NAME);
+
+      // Change the os and arch if alias
+      if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey))
+        osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
+    }
 
     final String inputPath =
         "/" + osArchKey.replace(" ", "").replace('\t', '/');

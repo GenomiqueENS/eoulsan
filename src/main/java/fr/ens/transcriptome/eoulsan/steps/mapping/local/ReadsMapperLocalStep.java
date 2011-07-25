@@ -106,11 +106,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final File outFile =
             new File(context.getDataFilename(MAPPER_RESULTS_SAM, s));
 
-        LOGGER.info("Map file: " + inFile);
-
         // Init mapper
         mapper.init(false, s.getMetadata().getFastqFormat(), reporter,
             COUNTER_GROUP);
+
         LOGGER.info("FastqFormat: " + s.getMetadata().getFastqFormat());
 
         if (getMapperArguments() != null) {
@@ -127,8 +126,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         // Set the number of threads
         mapper.setThreadsNumber(mapperThreads);
-        LOGGER.info("Use "
-            + mapper.getMapperName() + " with " + mapperThreads
+
+        LOGGER.info("Map file: "
+            + inFile + ", fastq format: " + s.getMetadata().getFastqFormat()
+            + ", use " + mapper.getMapperName() + " with " + mapperThreads
             + " threads option");
 
         // Set mapper temporary directory
@@ -146,7 +147,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(COUNTER_GROUP,
+        log.append(reporter.countersValuesToString(
+            COUNTER_GROUP,
             "Mapping reads with "
                 + mapper.getMapperName() + " (" + s.getName() + ", "
                 + inFile.getName() + ")"));

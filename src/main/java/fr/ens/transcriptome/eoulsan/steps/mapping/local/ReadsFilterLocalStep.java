@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -107,7 +107,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @throws IOException if an error occurs while filtering data
    */
   private void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final FastqFormat fastqFormat) throws IOException {
+      final Reporter reporter, final FastqFormat fastqFormat)
+      throws IOException {
 
     LOGGER.info("Filter file: " + inFile);
     LOGGER.info("FastqFormat: " + fastqFormat);
