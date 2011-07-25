@@ -415,7 +415,7 @@ class Workflow implements WorkflowDescription {
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    final DataType dataType = dfr.getDataTypeForDesignField("FileName");
+    final DataType dataType = dfr.getDataTypeForDesignField(SampleMetadata.READS_FIELD);
     final DataFile file = new DataFile(s.getMetadata().getReads());
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
@@ -550,7 +550,7 @@ class Workflow implements WorkflowDescription {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Add globals parameters to Settings
-    LOGGER.info("Init all step with global parameters: " + globalParameters);
+    LOGGER.info("Init all steps with global parameters: " + globalParameters);
     for (Parameter p : globalParameters)
       settings.setSetting(p.getName(), p.getStringValue());
 

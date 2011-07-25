@@ -70,7 +70,7 @@ public class GenomeDescription {
    */
   public void addSequence(final String sequenceName, final int sequenceLength) {
 
-    LOGGER.info("Add sequence: "
+    LOGGER.fine("Add sequence: "
         + sequenceName + " with " + sequenceLength + " pb");
 
     if (!this.sequences.containsKey(sequenceName))
