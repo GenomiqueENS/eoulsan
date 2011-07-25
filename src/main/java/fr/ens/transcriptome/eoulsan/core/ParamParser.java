@@ -168,7 +168,8 @@ public class ParamParser {
                   final Set<Parameter> parameters =
                       parseParameters(eStepElement, "parameters", stepName);
 
-                  LOGGER.info("Add step: " + stepName + " " + parameters);
+                  LOGGER.info("In parameter file found "
+                      + stepName + " step (parameters: " + parameters + ").");
                   command.addStep(stepName, parameters);
                 }
 
@@ -266,7 +267,7 @@ public class ParamParser {
 
   //
   // Constructor
-  // 
+  //
 
   /**
    * Public constructor.

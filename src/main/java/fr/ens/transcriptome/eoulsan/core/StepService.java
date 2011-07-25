@@ -204,7 +204,7 @@ public class StepService {
               + stepName + " (Uppercase and spaces are forbidden).");
         }
 
-        LOGGER.info("found step: "
+        LOGGER.config("found step: "
             + stepName + " (" + step.getClass().getName() + ")");
 
       } catch (ServiceConfigurationError e) {

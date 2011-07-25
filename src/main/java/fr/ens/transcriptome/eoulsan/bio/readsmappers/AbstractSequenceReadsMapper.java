@@ -171,7 +171,7 @@ public abstract class AbstractSequenceReadsMapper implements
             StringUtils.filenameWithoutCompressionExtension(genomeFile
                 .getName()));
 
-    LOGGER.info("Uncompress genome " + genomeFile + " to " + uncompressFile);
+    LOGGER.fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
 
     // Create input stream
     final InputStream in =
@@ -196,7 +196,7 @@ public abstract class AbstractSequenceReadsMapper implements
     final File unCompressGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, outputDir);
 
-    LOGGER.info("Start computing "
+    LOGGER.fine("Start computing "
         + getMapperName() + " index for " + unCompressGenomeFile);
     final long startTime = System.currentTimeMillis();
 
@@ -225,7 +225,7 @@ public abstract class AbstractSequenceReadsMapper implements
         getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
             + " > /dev/null 2> /dev/null";
 
-    LOGGER.info(cmd);
+    LOGGER.fine(cmd);
 
     final int exitValue = ProcessUtils.sh(cmd);
 
@@ -242,7 +242,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
     final long endTime = System.currentTimeMillis();
 
-    LOGGER.info("Create the "
+    LOGGER.fine("Create the "
         + getMapperName() + " index in "
         + StringUtils.toTimeHumanReadable(endTime - startTime));
 
@@ -252,7 +252,7 @@ public abstract class AbstractSequenceReadsMapper implements
   public void makeArchiveIndex(final File genomeFile,
       final File archiveOutputFile) throws IOException {
 
-    LOGGER.info("Start index computation");
+    LOGGER.fine("Start index computation");
 
     final File indexTmpDir =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE
@@ -276,7 +276,7 @@ public abstract class AbstractSequenceReadsMapper implements
     // Remove temporary directory
     FileUtils.removeDirectory(indexTmpDir);
 
-    LOGGER.info("End index computation");
+    LOGGER.fine("End index computation");
   }
 
   /**
@@ -291,7 +291,7 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(is, "Input steam is null");
     checkNotNull(archiveOutputFile, "Archive output file is null");
 
-    LOGGER.info("Copy genome to local disk before computating index");
+    LOGGER.fine("Copy genome to local disk before computating index");
 
     final File genomeTmpFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", "");
@@ -335,7 +335,7 @@ public abstract class AbstractSequenceReadsMapper implements
         throw new IOException("Can't create directory for "
             + getMapperName() + " index: " + archiveIndexDir);
 
-      LOGGER.info("Unzip archiveIndexFile "
+      LOGGER.fine("Unzip archiveIndexFile "
           + archiveIndexFile + " in " + archiveIndexDir);
       FileUtils.unzip(archiveIndexFile, archiveIndexDir);
     }
@@ -366,7 +366,7 @@ public abstract class AbstractSequenceReadsMapper implements
       this.readsWriter2.close();
     }
 
-    LOGGER.info("Write " + entriesWritten + " reads for mapping");
+    LOGGER.fine("Write " + entriesWritten + " reads for mapping");
   }
 
   private void checkWritePairEnd() throws IOException {
@@ -382,8 +382,8 @@ public abstract class AbstractSequenceReadsMapper implements
           FileUtils.createTempFile(getTempDirectory(),
               Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
 
-      LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
-      LOGGER.info("Temporary reads/2 file: " + this.readsFile1);
+      LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
+      LOGGER.fine("Temporary reads/2 file: " + this.readsFile1);
 
       this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
       this.readsWriter2 = FileUtils.createFastBufferedWriter(this.readsFile2);
@@ -404,7 +404,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
       this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
 
-      LOGGER.info("Temporary reads/1 file: " + this.readsFile1);
+      LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
 
       this.noReadWritten = false;
     }
@@ -507,7 +507,7 @@ public abstract class AbstractSequenceReadsMapper implements
       final File archiveIndexFile, final File archiveIndexDir)
       throws IOException {
 
-    LOGGER.info("Mapping with " + getMapperName() + " in pair-end mode");
+    LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
 
     checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile1, "readsFile1 is null");
@@ -533,7 +533,7 @@ public abstract class AbstractSequenceReadsMapper implements
   public final void map(final File readsFile, final File archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    LOGGER.info("Mapping with " + getMapperName() + " in single-end mode");
+    LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
     checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile, "readsFile1 is null");
