@@ -25,11 +25,13 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -41,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an action to create design file.
@@ -73,6 +76,8 @@ public class CreateDesignAction extends AbstractAction {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
+    String filename = "design.txt";
+    int argsOptions = 0;
 
     try {
 
@@ -84,16 +89,28 @@ public class CreateDesignAction extends AbstractAction {
         help(options);
       }
 
+      if (line.hasOption("o")) {
+
+        filename = line.getOptionValue("o").trim();
+        argsOptions += 2;
+      }
+
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     Design design = null;
 
     try {
 
-      final DesignBuilder db = new DesignBuilder(arguments);
+      String [] newArgs = StringUtils.arrayWithoutFirstsElement(arguments,
+          argsOptions);
+      
+      System.out.println(Arrays.toString(newArgs));
+      
+      final DesignBuilder db =
+          new DesignBuilder(newArgs);
       design = db.getDesign();
 
     } catch (EoulsanException e) {
@@ -110,7 +127,7 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      final File file = new File("design.txt");
+      final File file = new File(filename);
 
       if (file.exists())
         throw new EoulsanIOException("Output design file "
@@ -134,6 +151,7 @@ public class CreateDesignAction extends AbstractAction {
    * Create options for command line
    * @return an Options object
    */
+  @SuppressWarnings("static-access")
   private Options makeOptions() {
 
     // create Options object
@@ -141,6 +159,10 @@ public class CreateDesignAction extends AbstractAction {
 
     // Help option
     options.addOption("h", "help", false, "display this help");
+
+    // Output option
+    options.addOption(OptionBuilder.withArgName("file").hasArg()
+        .withDescription("output file").withLongOpt("output").create('o'));
 
     return options;
   }

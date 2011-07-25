@@ -374,9 +374,9 @@ public final class StringUtils {
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
 
     return String.format("%04d%02d%02d%02d%02d%02d", cal.get(Calendar.YEAR),
-        cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), cal
-            .get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal
-            .get(Calendar.SECOND));
+        cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+        cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
+        cal.get(Calendar.SECOND));
   }
 
   /**
@@ -461,8 +461,9 @@ public final class StringUtils {
       sb.append(c);
     }
 
-    return sb.toString().replace("\\,", ",").replace("\\&", "&").replace("\\%",
-        "%").replace("\\=", "=").replace("\\;", ";").replace("\\\\", "\\");
+    return sb.toString().replace("\\,", ",").replace("\\&", "&")
+        .replace("\\%", "%").replace("\\=", "=").replace("\\;", ";")
+        .replace("\\\\", "\\");
   }
 
   /**
@@ -487,7 +488,10 @@ public final class StringUtils {
     if (array == null)
       return null;
 
-    if (elementsToRemove < 1 || elementsToRemove > array.length)
+    if (elementsToRemove < 1)
+      return array;
+
+    if (elementsToRemove > array.length)
       return new String[0];
 
     final int newLen = array.length - elementsToRemove;
@@ -508,8 +512,8 @@ public final class StringUtils {
       return null;
 
     return s.replace("\\", "\\\\").replace(" ", "\\ ").replace("'", "\\'")
-        .replace("\"", "\\\"").replace("&", "\\&").replace("!", "\\!").replace(
-            "~", "\\~");
+        .replace("\"", "\\\"").replace("&", "\\&").replace("!", "\\!")
+        .replace("~", "\\~");
   }
 
   /**
