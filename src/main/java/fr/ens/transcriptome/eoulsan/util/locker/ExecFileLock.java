@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.locker;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,17 +34,24 @@ import java.nio.channels.FileLock;
  * This class define a lock file.
  * @author Laurent Jourdren
  */
-public class ExecFileLock {
+public class ExecFileLock implements Locker {
 
-  private final FileLock lock;
-  private final FileChannel lockChannel;
+  private File lockFile;
+  private FileLock lock;
+  private FileChannel lockChannel;
   private boolean released;
 
-  /**
-   * Releases the lock.
-   * @throws IOException if an error occurs while release lock
-   */
-  public void release() throws IOException {
+  @Override
+  public void lock() throws IOException {
+
+    lockChannel = new RandomAccessFile(lockFile, "rw").getChannel();
+    lock = lockChannel.lock();
+
+    // lockFile.deleteOnExit();
+  }
+
+  @Override
+  public void unlock() throws IOException {
 
     if (released)
       return;
@@ -65,15 +72,11 @@ public class ExecFileLock {
   //
 
   /**
-   * Create a lock file.
-   * @param lockFile The lock file to create
+   * Public constructor.
+   * @param lockFile lock file to use
    */
-  public ExecFileLock(final File lockFile) throws IOException {
+  public ExecFileLock(final File lockFile) {
 
-    lockChannel = new RandomAccessFile(lockFile, "rw").getChannel();
-    lock = lockChannel.lock();
-
-    // lockFile.deleteOnExit();
+    this.lockFile = lockFile;
   }
-
 }
