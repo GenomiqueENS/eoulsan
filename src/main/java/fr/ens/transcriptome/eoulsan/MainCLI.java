@@ -160,8 +160,8 @@ public final class MainCLI {
 
           LOGGER.addHandler(fh);
         } catch (IOException e) {
-          Common.errorExit(e, "Error while creating log file: "
-              + e.getMessage());
+          Common.errorExit(e,
+              "Error while creating log file: " + e.getMessage());
         }
       }
 
@@ -204,8 +204,8 @@ public final class MainCLI {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     return argsOptions;
@@ -254,8 +254,11 @@ public final class MainCLI {
           + " -help for more help.\n");
     }
 
+    final Settings settings = EoulsanRuntime.getSettings();
+
     // Test if action can be executed with current platform
-    if (!action.isCurrentArchCompatible()) {
+    if (!settings.isBypassPlatformChecking()
+        && !action.isCurrentArchCompatible()) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
           + "\nThe " + action.getName() + " of " + Globals.APP_NAME
           + " is not available for your platform. Required platforms: "
