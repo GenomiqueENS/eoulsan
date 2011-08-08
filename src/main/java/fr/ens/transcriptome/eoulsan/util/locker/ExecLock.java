@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.locker;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,13 +32,15 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a lock to prevent execution of a process simultaneously on
  * multiples JVM.
  * @author Laurent Jourdren
  */
-public class ExecLock {
+public class ExecLock implements Locker {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -65,9 +67,7 @@ public class ExecLock {
     return Integer.parseInt(beanName.substring(0, index));
   }
 
-  /**
-   * Wait the token and then lock the resource.
-   */
+  @Override
   public void lock() {
 
     while (lock)
@@ -106,9 +106,7 @@ public class ExecLock {
     }
   }
 
-  /**
-   * Unlock the ressource.
-   */
+  @Override
   public void unlock() {
 
     if (!lockFile.delete())
