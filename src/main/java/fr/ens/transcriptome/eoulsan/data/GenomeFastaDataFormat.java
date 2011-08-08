@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.checkers.GenomeChecker;
+import fr.ens.transcriptome.eoulsan.steps.GFFFastaGeneratorStep;
+import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class define a genome fasta DataFormat.
@@ -68,6 +70,18 @@ public final class GenomeFastaDataFormat extends AbstractDataFormat {
   public Checker getChecker() {
 
     return new GenomeChecker();
+  }
+
+  @Override
+  public Step getGenerator() {
+
+    return new GFFFastaGeneratorStep();
+  }
+
+  @Override
+  public boolean isGenerator() {
+
+    return true;
   }
 
 }
