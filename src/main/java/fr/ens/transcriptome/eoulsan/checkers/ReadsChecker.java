@@ -30,6 +30,8 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -79,13 +81,15 @@ public class ReadsChecker implements Checker {
         throw new EoulsanException(
             "Cannot handle more than 2 reads files at the same time.");
 
+      final FastqFormat format = s.getMetadata().getFastqFormat();
+
       // Single end mode
       if (inFileCount == 1) {
 
         final DataFile file =
             context.getDataFile(DataFormats.READS_FASTQ, s, 0);
 
-        checkReadFile(file);
+        checkReadFile(file, format);
       }
 
       // Paired end mode
@@ -97,8 +101,8 @@ public class ReadsChecker implements Checker {
         final DataFile file2 =
             context.getDataFile(DataFormats.READS_FASTQ, s, 1);
 
-        checkReadFile(file1);
-        checkReadFile(file2);
+        checkReadFile(file1, format, true, 1);
+        checkReadFile(file2, format, true, 2);
       }
 
     }
@@ -106,27 +110,39 @@ public class ReadsChecker implements Checker {
     return true;
   }
 
-  private void checkReadFile(final DataFile file) throws EoulsanException {
+  private void checkReadFile(final DataFile file, final FastqFormat format)
+      throws EoulsanException {
+
+    checkReadFile(file, format, false, -1);
+  }
+
+  private void checkReadFile(final DataFile file, FastqFormat format,
+      final boolean checkPairMember, final int pairMember)
+      throws EoulsanException {
 
     final InputStream is;
 
     try {
 
       is = file.open();
-      checkReadsFile(is, MAX_READS_TO_CHECK);
+      checkReadsFile(is, MAX_READS_TO_CHECK, format, checkPairMember,
+          pairMember);
 
     } catch (IOException e) {
       throw new EoulsanException("Error while reading reads of sample "
           + file.getSource() + " for checking: " + e.getMessage());
     } catch (BadBioEntryException e) {
       throw new EoulsanException("Found bad read entry in sample "
-          + file.getSource() + " when checking: " + e.getEntry());
+          + file.getSource() + " (cause: " + e.getMessage()
+          + ") when checking: " + e.getEntry());
     }
 
   }
 
-  private boolean checkReadsFile(final InputStream is, final int maxReadTocheck)
-      throws IOException, BadBioEntryException {
+  private boolean checkReadsFile(final InputStream is,
+      final int maxReadTocheck, final FastqFormat format,
+      final boolean checkPairMember, final int pairMember) throws IOException,
+      BadBioEntryException {
 
     final FastqReader reader = new FastqReader(is);
 
@@ -134,10 +150,37 @@ public class ReadsChecker implements Checker {
 
     while (reader.readEntry() && count < maxReadTocheck) {
 
+      // For the first read check the id
+      if (checkPairMember && count == 0) {
+
+        try {
+          final IlluminaReadId irid = new IlluminaReadId(reader.getName());
+
+          final int readPairMember = irid.getPairMember();
+          if (readPairMember != pairMember)
+            throw new BadBioEntryException("Invalid pair member number, "
+                + pairMember + " was excepted", reader.getName());
+
+          // check the quality string
+          if (format != null) {
+
+            final int invalidChar = format.isStringValid(reader.getQuality());
+
+            if (invalidChar != -1)
+              throw new BadBioEntryException(
+                  "Invalid quality character found for "
+                      + format.getName() + " format: " + (char) invalidChar,
+                  reader.getQuality());
+          }
+
+        } catch (EoulsanException e) {
+          // Not an Illumina id
+        }
+      }
+
       count++;
     }
     is.close();
     return true;
   }
-
 }
