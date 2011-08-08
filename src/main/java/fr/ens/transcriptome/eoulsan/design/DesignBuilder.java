@@ -27,12 +27,15 @@ package fr.ens.transcriptome.eoulsan.design;
 import static java.util.Collections.singletonList;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataType;
@@ -44,6 +47,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class DesignBuilder {
+
+  private static final int MAX_FASTQ_ENTRIES_TO_READ = 10000;
 
   private DataFormatRegistry dfr = DataFormatRegistry.getInstance();
   private List<File> fastqList = new ArrayList<File>();
@@ -97,11 +102,12 @@ public class DesignBuilder {
   /**
    * Create design object.
    * @return a new Design object
+   * @throws EoulsanException if an error occurs while analysing input files
    */
-  public Design getDesign() {
+  public Design getDesign() throws EoulsanException {
 
     final Design result = DesignFactory.createEmptyDesign();
-    final FastqFormat fastqFormat =
+    final FastqFormat defaultFastqFormat =
         EoulsanRuntime.getSettings().getDefaultFastqFormat();
 
     for (File fq : this.fastqList) {
@@ -120,11 +126,24 @@ public class DesignBuilder {
       if (this.genomeFile != null)
         smd.setGenome(this.genomeFile.toString());
 
-      // Set the Annaotion file
+      // Set the Annotation file
       if (this.gffFile != null)
         smd.setAnnotation(this.gffFile.toString());
 
-      smd.setFastqFormat(fastqFormat);
+      // Identify Fastq format
+      FastqFormat format = null;
+
+      try {
+        format =
+            FastqFormat.identifyFormat(new FileInputStream(fq),
+                MAX_FASTQ_ENTRIES_TO_READ);
+      } catch (IOException e) {
+        throw new EoulsanException(e.getMessage());
+      } catch (BadBioEntryException e) {
+        throw new EoulsanException(e.getMessage());
+      }
+
+      smd.setFastqFormat(format == null ? defaultFastqFormat : format);
       smd.setCondition(sampleName);
       smd.setReplicatType("T");
       smd.setUUID(UUID.randomUUID().toString());
