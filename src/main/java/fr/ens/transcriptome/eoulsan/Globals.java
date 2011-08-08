@@ -167,6 +167,9 @@ public final class Globals {
 
   /** PHRED offset default. */
   static final int PHRED_OFFSET_DEFAULT = 33;
+  
+  /** FASTA file width. */
+  public static final int FASTA_FILE_WIDTH = 60;
 
   //
   // Private constants

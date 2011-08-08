@@ -42,6 +42,17 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class GFFReader extends GFFEntry {
 
   private BufferedReader reader;
+  private boolean end;
+  private boolean fastaSectionFound;
+
+  /**
+   * Test if a fasta section was found.
+   * @return true if a Fasta section was found
+   */
+  public boolean isFastaSectionFound() {
+
+    return this.fastaSectionFound;
+  }
 
   /**
    * Read the next entry in the stream.
@@ -51,18 +62,30 @@ public class GFFReader extends GFFEntry {
    */
   public boolean readEntry() throws IOException, BadBioEntryException {
 
+    if (this.end)
+      return false;
+
     String line = null;
     int count = 0;
 
     while ((line = this.reader.readLine()) != null) {
+
+      if (line.startsWith("###"))
+        continue;
+
+      if (line.startsWith("##FASTA")) {
+        this.fastaSectionFound = true;
+        this.end = true;
+        return false;
+      }
 
       if (line.startsWith("##")) {
 
         final int posTab = line.indexOf('\t');
         if (posTab == -1)
           continue;
-        this.setMetaDataEntry(line.substring(2, posTab).trim(), line.substring(
-            posTab + 1).trim());
+        this.setMetaDataEntry(line.substring(2, posTab).trim(),
+            line.substring(posTab + 1).trim());
         this.setId(count++);
       } else if (line.startsWith("#"))
         continue;
@@ -72,6 +95,8 @@ public class GFFReader extends GFFEntry {
         return true;
       }
     }
+
+    this.end = true;
 
     return false;
   }
