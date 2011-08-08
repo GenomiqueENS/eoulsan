@@ -223,6 +223,35 @@ public class Sequence {
     return '>' + this.name + '\n' + this.sequence + '\n';
   }
 
+  /**
+   * Return the sequence object in string in Fasta format with a maximal width
+   * for lines.
+   * @return the sequence in Fasta format
+   */
+  public String toFasta(final int width) {
+
+    if (width < 1)
+      return toFasta();
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append('>');
+    sb.append(this.name);
+    sb.append('\n');
+
+    final int len = this.sequence.length();
+    int pos = 0;
+
+    while (pos < len) {
+
+      final int nextPos = pos + width;
+      sb.append(this.sequence.subSequence(pos, nextPos > len ? len : nextPos));
+      sb.append('\n');
+      pos = nextPos;
+    }
+
+    return sb.toString();
+  }
+
   //
   // Constructor
   //
