@@ -29,6 +29,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -648,6 +650,98 @@ public final class StringUtils {
     final int prefixLen = oldPrefix.length();
 
     return newPrefix + s.substring(prefixLen);
+  }
+
+  /**
+   * Serialize a collection of strings in a string.
+   * @param strings strings to serialize
+   * @return a String with all strings serialized
+   */
+  public static String serializeStringArray(final Collection<String> strings) {
+
+    if (strings == null)
+      return null;
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append('[');
+
+    boolean first = true;
+
+    for (String s : strings) {
+      if (first)
+        first = false;
+      else
+        sb.append(',');
+
+      if (s != null)
+        sb.append(s.replace("\\", "\\\\").replace(",", "\\,"));
+    }
+
+    sb.append(']');
+
+    return sb.toString();
+  }
+
+  /**
+   * Deserialize a string to a list of strings.
+   * @param serializedString string to deserialize
+   * @return a list of string
+   */
+  public static List<String> deserializeStringArray(
+      final String serializedString) {
+
+    if (serializedString == null)
+      return null;
+
+    String s = serializedString.trim();
+
+    if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ']')
+      return Collections.singletonList(serializedString);
+
+    s = s.substring(1, s.length() - 1);
+
+    final List<String> result = new ArrayList<String>();
+    int last = 0;
+    boolean escapeNext = false;
+
+    for (int i = 0; i < s.length(); i++) {
+
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+
+      if (s.charAt(i) == '\\') {
+        escapeNext = true;
+        continue;
+      }
+
+      if (s.charAt(i) == ',') {
+        result.add(s.substring(last, i).replace("\\\\", "\\")
+            .replace("\\,", ","));
+        last = i + 1;
+      }
+    }
+
+    result.add(s.substring(last).replace("\\\\", "\\").replace("\\,", ","));
+
+    return result;
+  }
+
+  /**
+   * Convert 0-15 integer number to a letter
+   * @param i the integer to convert
+   * @return a letter as a char
+   */
+  public static char toLetter(final int i) {
+
+    if (i < 0)
+      return '-';
+
+    if (i > 25)
+      return '-';
+
+    return (char) (i + 97);
   }
 
 }

@@ -92,7 +92,7 @@ public class SimpleDesignWriter extends DesignWriter {
         for (String f : metadataFields) {
 
           bw.append(SEPARATOR);
-          bw.append(s.getMetadata().get(f));
+          bw.append(s.getMetadata().getField(f));
         }
 
         bw.append(NEWLINE);

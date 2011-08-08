@@ -168,7 +168,7 @@ public class DataFileTest {
   }
 
   @Test
-  public void testGetParent() {
+  public void testGetParent() throws IOException {
 
     String filename = "toto.txt";
     DataFile df = new DataFile(filename);

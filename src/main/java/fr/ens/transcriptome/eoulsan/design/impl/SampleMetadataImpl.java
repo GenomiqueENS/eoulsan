@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class is the implementation of SampleMetadata.
@@ -41,7 +42,7 @@ public class SampleMetadataImpl implements SampleMetadata {
   private int slideId;
 
   @Override
-  public String get(final String fieldName) {
+  public String getField(final String fieldName) {
 
     final String sampleName = this.design.getSampleName(this.slideId);
 
@@ -49,6 +50,12 @@ public class SampleMetadataImpl implements SampleMetadata {
       throw new EoulsanRuntimeException("The sample doesn't exists");
 
     return this.design.getMetadata(sampleName, fieldName);
+  }
+
+  @Override
+  public List<String> getFieldAsList(final String fieldName) {
+
+    return StringUtils.deserializeStringArray(getField(fieldName));
   }
 
   @Override
@@ -60,67 +67,67 @@ public class SampleMetadataImpl implements SampleMetadata {
   @Override
   public String getComment() {
 
-    return get(COMMENT_FIELD);
+    return getField(COMMENT_FIELD);
   }
 
   @Override
   public String getDescription() {
 
-    return get(DESCRIPTION_FIELD);
+    return getField(DESCRIPTION_FIELD);
   }
 
   @Override
   public String getDate() {
 
-    return get(DATE_FIELD);
+    return getField(DATE_FIELD);
   }
 
   @Override
   public String getOperator() {
 
-    return get(OPERATOR_FIELD);
+    return getField(OPERATOR_FIELD);
   }
 
   @Override
   public String getSerialNumber() {
 
-    return get(SERIAL_NUMBER_FIELD);
+    return getField(SERIAL_NUMBER_FIELD);
   }
 
   @Override
   public String getAnnotation() {
 
-    return get(ANNOTATION_FIELD);
+    return getField(ANNOTATION_FIELD);
   }
 
   @Override
   public String getGenome() {
 
-    return get(GENOME_FIELD);
+    return getField(GENOME_FIELD);
   }
 
   @Override
-  public String getReads() {
+  public List<String> getReads() {
 
-    return get(READS_FIELD);
+    return getFieldAsList(READS_FIELD);
   }
 
   @Override
   public String getCondition() {
 
-    return get(CONDITION_FIELD);
+    return getField(CONDITION_FIELD);
   }
 
   @Override
   public String getReplicatType() {
 
-    return get(REPLICAT_TYPE_FIELD);
+    return getField(REPLICAT_TYPE_FIELD);
   }
 
   @Override
   public String getUUID() {
 
-    return get(UUID_TYPE_FIELD);
+    return getField(UUID_TYPE_FIELD);
   }
 
   @Override
@@ -128,10 +135,13 @@ public class SampleMetadataImpl implements SampleMetadata {
 
     final String value;
 
-    // Get the value from metadata, if field does not exist return default fastq format
+    // Get the value from metadata, if field does not exist return default fastq
+    // format
     // offset value
     try {
-      value = get(FASTQ_FORMAT_FIELD);
+
+      value = getField(FASTQ_FORMAT_FIELD);
+
     } catch (EoulsanRuntimeException e) {
       return EoulsanRuntime.getSettings().getDefaultFastqFormat();
     }
@@ -149,7 +159,7 @@ public class SampleMetadataImpl implements SampleMetadata {
   //
 
   @Override
-  public void set(final String field, final String value) {
+  public void setField(final String field, final String value) {
 
     final String sampleName = this.design.getSampleName(this.slideId);
 
@@ -160,71 +170,92 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
+  public void setField(final String field, final List<String> value) {
+
+    if (value == null)
+      setField(field, (String) null);
+
+    switch (value.size()) {
+
+    case 0:
+      setField(field, "");
+      break;
+
+    case 1:
+      setField(field, value.get(0));
+      break;
+
+    default:
+      setField(field, StringUtils.serializeStringArray(value));
+    }
+  }
+
+  @Override
   public void setComment(final String comment) {
 
-    set(COMMENT_FIELD, comment);
+    setField(COMMENT_FIELD, comment);
   }
 
   @Override
   public void setDescription(final String description) {
 
-    set(DESCRIPTION_FIELD, description);
+    setField(DESCRIPTION_FIELD, description);
   }
 
   @Override
   public void setDate(final String date) {
 
-    set(DATE_FIELD, date);
+    setField(DATE_FIELD, date);
   }
 
   @Override
   public void setOperator(final String operator) {
 
-    set(OPERATOR_FIELD, operator);
+    setField(OPERATOR_FIELD, operator);
   }
 
   @Override
   public void setSerialNumber(final String serialNumber) {
 
-    set(SERIAL_NUMBER_FIELD, serialNumber);
+    setField(SERIAL_NUMBER_FIELD, serialNumber);
   }
 
   @Override
   public void setAnnotation(final String annotation) {
 
-    set(ANNOTATION_FIELD, annotation);
+    setField(ANNOTATION_FIELD, annotation);
   }
 
   @Override
   public void setGenome(final String genome) {
 
-    set(GENOME_FIELD, genome);
+    setField(GENOME_FIELD, genome);
 
   }
 
   @Override
-  public void setReads(final String reads) {
+  public void setReads(final List<String> reads) {
 
-    set(READS_FIELD, reads);
+    setField(READS_FIELD, reads);
 
   }
 
   @Override
   public void setCondition(final String condition) {
 
-    set(CONDITION_FIELD, condition);
+    setField(CONDITION_FIELD, condition);
   }
 
   @Override
   public void setReplicatType(final String replicatType) {
 
-    set(REPLICAT_TYPE_FIELD, replicatType);
+    setField(REPLICAT_TYPE_FIELD, replicatType);
   }
 
   @Override
   public void setUUID(final String uuid) {
 
-    set(UUID_TYPE_FIELD, uuid);
+    setField(UUID_TYPE_FIELD, uuid);
   }
 
   @Override
@@ -233,7 +264,7 @@ public class SampleMetadataImpl implements SampleMetadata {
     if (fastqFormat == null)
       throw new NullPointerException("FastqFormat is null");
 
-    set(FASTQ_FORMAT_FIELD, fastqFormat.getName());
+    setField(FASTQ_FORMAT_FIELD, fastqFormat.getName());
   }
 
   //

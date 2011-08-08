@@ -78,4 +78,9 @@ abstract class AbstractDataFormat implements DataFormat {
     return getFormatName();
   }
 
+  @Override
+  public int getMaxFilesCount() {
+    return 1;
+  }
+
 }

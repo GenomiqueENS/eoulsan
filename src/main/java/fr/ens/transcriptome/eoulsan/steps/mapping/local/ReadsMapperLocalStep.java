@@ -100,60 +100,78 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
             new File(StringUtils.filenameWithoutExtension(archiveIndexFile
                 .getPath()));
 
-        final File inFile =
-            new File(context.getDataFilename(FILTERED_READS_FASTQ, s));
+        // get input file count for the sample
+        final int inFileCount =
+            context.getDataFileCount(DataFormats.READS_FASTQ, s);
 
-        final File outFile =
-            new File(context.getDataFilename(MAPPER_RESULTS_SAM, s));
+        if (inFileCount < 1)
+          throw new IOException("No reads file found.");
 
-        // Init mapper
-        mapper.init(false, s.getMetadata().getFastqFormat(), reporter,
-            COUNTER_GROUP);
+        if (inFileCount > 2)
+          throw new IOException(
+              "Cannot handle more than 2 reads files at the same time.");
 
-        LOGGER.info("FastqFormat: " + s.getMetadata().getFastqFormat());
+        String logMsg = "";
 
-        if (getMapperArguments() != null) {
-          mapper.setMapperArguments(getMapperArguments());
+        // Single end mode
+        if (inFileCount == 1) {
+
+          // Get the source
+          final File inFile =
+              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 0));
+
+          // Single read mapping
+          mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
+              reporter);
+
+          logMsg =
+              "Mapping reads in "
+                  + s.getMetadata().getFastqFormat() + " with "
+                  + mapper.getMapperName() + " (" + s.getName() + ", "
+                  + inFile.getName() + ")";
         }
 
-        // Get the number of threads to use
-        int mapperThreads = getMapperThreads();
+        // Paired end mode
+        if (inFileCount == 2) {
 
-        if (mapperThreads > Runtime.getRuntime().availableProcessors()
-            || mapperThreads < 1) {
-          mapperThreads = Runtime.getRuntime().availableProcessors();
+          // Get the source
+          final File inFile1 =
+              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 0));
+
+          final File inFile2 =
+              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 1));
+
+          // Single read mapping
+          mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,
+              indexDir, reporter);
+
+          logMsg =
+              "Mapping reads in "
+                  + s.getMetadata().getFastqFormat() + " with "
+                  + mapper.getMapperName() + " (" + s.getName() + ", "
+                  + inFile1.getName() + "," + inFile2.getName() + ")";
         }
-
-        // Set the number of threads
-        mapper.setThreadsNumber(mapperThreads);
-
-        LOGGER.info("Map file: "
-            + inFile + ", fastq format: " + s.getMetadata().getFastqFormat()
-            + ", use " + mapper.getMapperName() + " with " + mapperThreads
-            + " threads option");
-
-        // Set mapper temporary directory
-        mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
-
-        // Process to mapping
-        mapper.map(inFile, archiveIndexFile, indexDir);
 
         final File samOutputFile = mapper.getSAMFile(genomeDescription);
+
+        // Parse SAM output file to get information for reporter object
         parseSAMResults(samOutputFile, reporter);
 
         // Clean mapper temporary files
         mapper.clean();
 
+        // define final output SAM file
+        final File outFile =
+            new File(context.getDataFilename(MAPPER_RESULTS_SAM, s));
+
+        // Rename the output SAM file to its final name
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(
-            COUNTER_GROUP,
-            "Mapping reads with "
-                + mapper.getMapperName() + " (" + s.getName() + ", "
-                + inFile.getName() + ")"));
-      }
 
+        log.append(reporter.countersValuesToString(COUNTER_GROUP, logMsg));
+
+      }
       return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
@@ -164,6 +182,77 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       return new StepResult(context, e, "error while filtering: "
           + e.getMessage());
     }
+  }
+
+  private void mapSingleEnd(final Context context, final Sample s,
+      final SequenceReadsMapper mapper, final File inFile,
+      final File archiveIndexFile, final File indexDir, final Reporter reporter)
+      throws IOException {
+
+    // Init mapper
+    mapper.init(false, s.getMetadata().getFastqFormat(), reporter,
+        COUNTER_GROUP);
+
+    // Set mapper arguments
+    final int mapperThreads =
+        initMapperArguments(mapper, context.getSettings()
+            .getTempDirectoryFile());
+
+    LOGGER.info("Map file: "
+        + inFile + ", PHRED offset: " + s.getMetadata().getFastqFormat()
+        + ", use " + mapper.getMapperName() + " with " + mapperThreads
+        + " threads option");
+
+    // Process to mapping
+    mapper.map(inFile, archiveIndexFile, indexDir);
+
+  }
+
+  private void mapPairedEnd(final Context context, final Sample s,
+      final SequenceReadsMapper mapper, final File inFile1, final File inFile2,
+      final File archiveIndexFile, final File indexDir, final Reporter reporter)
+      throws IOException {
+
+    // Init mapper
+    mapper
+        .init(true, s.getMetadata().getFastqFormat(), reporter, COUNTER_GROUP);
+
+    // Set mapper arguments
+    final int mapperThreads =
+        initMapperArguments(mapper, context.getSettings()
+            .getTempDirectoryFile());
+
+    LOGGER.info("Map files: "
+        + inFile1 + "," + inFile2 + ", PHRED offset: "
+        + s.getMetadata().getFastqFormat() + ", use " + mapper.getMapperName()
+        + " with " + mapperThreads + " threads option");
+
+    // Process to mapping
+    mapper.map(inFile1, inFile2, archiveIndexFile, indexDir);
+  }
+
+  private int initMapperArguments(final SequenceReadsMapper mapper,
+      final File tempDirectory) {
+
+    if (getMapperArguments() != null) {
+      mapper.setMapperArguments(getMapperArguments());
+    }
+
+    // Get the number of threads to use
+    int mapperThreads = getMapperThreads();
+
+    if (mapperThreads > Runtime.getRuntime().availableProcessors()
+        || mapperThreads < 1) {
+      mapperThreads = Runtime.getRuntime().availableProcessors();
+    }
+
+    // Set the number of threads
+    mapper.setThreadsNumber(mapperThreads);
+
+    // Set mapper temporary directory
+    mapper.setTempDirectory(tempDirectory);
+
+    return mapperThreads;
   }
 
   private void parseSAMResults(final File samFile, final Reporter reporter)

@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -169,11 +167,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set input path
     FileInputFormat.addInputPath(job, inputPath);
-
-    // Set the input format
-    if (sample.getMetadata().getReads()
-        .endsWith(READS_FASTQ.getDefaultExtention()))
-      job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
     job.setMapperClass(ReadsMapperMapper.class);
