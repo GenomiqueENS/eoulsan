@@ -104,13 +104,10 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      String [] newArgs = StringUtils.arrayWithoutFirstsElement(arguments,
-          argsOptions);
-      
-      System.out.println(Arrays.toString(newArgs));
-      
-      final DesignBuilder db =
-          new DesignBuilder(newArgs);
+      String[] newArgs =
+          StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
+
+      final DesignBuilder db = new DesignBuilder(newArgs);
       design = db.getDesign();
 
     } catch (EoulsanException e) {
