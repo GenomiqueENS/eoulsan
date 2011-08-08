@@ -40,6 +40,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 public final class Globals {
@@ -165,11 +166,11 @@ public final class Globals {
   /** AWS Multipart upload mode default. */
   public static final boolean AWS_UPLOAD_MULTIPART_DEFAULT = false;
 
-  /** PHRED offset default. */
-  static final int PHRED_OFFSET_DEFAULT = 33;
-  
   /** FASTA file width. */
   public static final int FASTA_FILE_WIDTH = 60;
+
+  /** Default fastq format. */
+  static final FastqFormat FASTQ_FORMAT_DEFAULT = FastqFormat.FASTQ_SANGER;
 
   //
   // Private constants

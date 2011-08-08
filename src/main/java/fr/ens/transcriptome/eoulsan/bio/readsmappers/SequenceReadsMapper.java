@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -112,8 +113,8 @@ public interface SequenceReadsMapper {
 
   void clean();
 
-  void init(boolean pairEnd, int phredOffset, ReporterIncrementer incrementer,
-      String counterGroup);
+  void init(boolean pairEnd, FastqFormat fastqFormat,
+      ReporterIncrementer incrementer, String counterGroup);
 
   DataFormat getArchiveFormat();
 
