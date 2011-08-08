@@ -28,8 +28,7 @@ package fr.ens.transcriptome.eoulsan.data;
  * This class define a filtered reads fastq DataFormat.
  * @author Laurent Jourdren
  */
-public final class FilteredReadsFastqDataFormat extends
-    AbstractDataFormat {
+public final class FilteredReadsFastqDataFormat extends AbstractDataFormat {
 
   public static final String FORMAT_NAME = "filtered_read_fastq";
 
@@ -48,6 +47,12 @@ public final class FilteredReadsFastqDataFormat extends
   public String getFormatName() {
 
     return FORMAT_NAME;
+  }
+
+  @Override
+  public int getMaxFilesCount() {
+
+    return 2;
   }
 
 }

@@ -24,22 +24,31 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Maps;
+
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataTypes;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataType;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
@@ -69,7 +78,7 @@ public final class SimpleContext implements Context {
   private Step step;
   private long contextCreationTime;
 
-  // private String objectCreationDate;
+  private final Map<DataType, String> dataTypesFields = Maps.newHashMap();
 
   //
   // Getters
@@ -302,6 +311,27 @@ public final class SimpleContext implements Context {
     this.step = step;
   }
 
+  /**
+   * Set the design.
+   * @param design design to set
+   */
+  public void setDesign(final Design design) {
+
+    if (design == null)
+      return;
+
+    final List<String> fieldnames = design.getMetadataFieldsNames();
+    DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    for (String fieldname : fieldnames) {
+
+      DataType dt = registry.getDataTypeForDesignField(fieldname);
+      if (dt != null)
+        this.dataTypesFields.put(dt, fieldname);
+    }
+
+  }
+
   //
   // Other methods
   //
@@ -368,22 +398,39 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public String getDataFilename(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
+
+    return file == null ? null : file.getSource();
+  }
+
+  @Override
   public DataFile getDataFile(final DataFormat df, final Sample sample) {
 
     if (df == null || sample == null)
       return null;
 
-    if (df.getType() == DataTypes.READS && sample.getMetadata().isReadsField())
-      return new DataFile(sample.getMetadata().getReads());
+    if (df.getMaxFilesCount() != 1)
+      throw new EoulsanRuntimeException(
+          "Multifiles DataFormat are not handled by getDataFile()");
 
-    if (df.getType() == DataTypes.GENOME
-        && sample.getMetadata().isGenomeField())
-      return new DataFile(sample.getMetadata().getGenome());
+    // First try search the file in the design file
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+    if (fieldName != null) {
+      final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+      final DataFile file =
+          new DataFile(sample.getMetadata().getField(fieldName));
+      final DataFormat sourceDf =
+          dfr.getDataFormatFromExtension(dt, file.getExtension());
 
-    if (df.getType() == DataTypes.ANNOTATION
-        && sample.getMetadata().isAnnotationField())
-      return new DataFile(sample.getMetadata().getAnnotation());
+      if (sourceDf != null && sourceDf.equals(df))
+        return file;
+    }
 
+    // Else the file is in base path
     return new DataFile(this.getBasePathname()
         + "/" + df.getType().getPrefix()
         + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
@@ -391,10 +438,147 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public DataFile getDataFile(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    if (df == null || sample == null || fileIndex < 0)
+      return null;
+
+    if (df.getMaxFilesCount() < 2)
+      throw new EoulsanRuntimeException(
+          "Only multifiles DataFormat are handled by this method.");
+
+    if (fileIndex > df.getMaxFilesCount())
+      throw new EoulsanRuntimeException(
+          "The file index is greater than the maximal number of file for this format.");
+
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+
+    if (fieldName != null) {
+
+      final List<String> fieldValues =
+          sample.getMetadata().getFieldAsList(fieldName);
+
+      if (fieldValues != null && fieldValues.size() > fileIndex) {
+
+        final DataFile file = new DataFile(fieldValues.get(fileIndex));
+
+        final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+        final DataFormat sourceDf =
+            dfr.getDataFormatFromExtension(dt, file.getExtension());
+
+        if (sourceDf != null && sourceDf.equals(df))
+          return file;
+      }
+    }
+
+    // Else the file is in base path
+    return new DataFile(this.getBasePathname()
+        + "/" + df.getType().getPrefix()
+        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+        + toLetter(fileIndex) + df.getDefaultExtention());
+  }
+
+  @Override
+  public int getDataFileCount(final DataFormat df, final Sample sample) {
+
+    if (df == null || sample == null)
+      return -1;
+
+    if (df.getMaxFilesCount() < 2)
+      throw new EoulsanRuntimeException(
+          "Only multifiles DataFormat are handled by this method.");
+
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+    if (fieldName != null) {
+
+      return sample.getMetadata().getFieldAsList(fieldName).size();
+    }
+
+    // Check existing files to get the file count
+
+    int count = 0;
+    boolean found = false;
+
+    do {
+
+      final DataFile file =
+          new DataFile(this.getBasePathname()
+              + "/" + df.getType().getPrefix()
+              + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+              + toLetter(count) + df.getDefaultExtention());
+
+      found = file.exists();
+      if (found)
+        count++;
+    } while (found);
+
+    return count;
+  }
+
+  @Override
+  public DataFile getExistingDataFile(final DataFormat[] formats,
+      final Sample sample) {
+
+    if (formats == null)
+      return null;
+
+    for (DataFormat df : formats) {
+
+      if (df == null)
+        continue;
+
+      final DataFile file = getDataFile(df, sample);
+
+      if (file != null && file.exists())
+        return file;
+
+    }
+
+    return null;
+  }
+
+  @Override
+  public DataFile getExistingDataFile(final DataFormat[] formats,
+      final Sample sample, final int fileIndex) {
+
+    if (formats == null)
+      return null;
+
+    for (DataFormat df : formats) {
+
+      if (df == null)
+        continue;
+
+      final DataFile file = getDataFile(df, sample, fileIndex);
+
+      if (file != null && file.exists())
+        return file;
+
+    }
+
+    return null;
+  }
+
+  @Override
   public InputStream getInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
     final DataFile file = getDataFile(df, sample);
+
+    if (file == null)
+      return null;
+
+    return file.open();
+  }
+
+  @Override
+  public InputStream getInputStream(final DataFormat df, final Sample sample,
+      final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
 
     if (file == null)
       return null;
@@ -412,10 +596,28 @@ public final class SimpleContext implements Context {
   }
 
   @Override
+  public InputStream getRawInputStream(final DataFormat df,
+      final Sample sample, final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
+
+    return file == null ? null : file.rawOpen();
+  }
+
+  @Override
   public OutputStream getOutputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
     final DataFile file = getDataFile(df, sample);
+
+    return file == null ? null : file.create();
+  }
+
+  @Override
+  public OutputStream getOutputStream(final DataFormat df, final Sample sample,
+      final int fileIndex) throws IOException {
+
+    final DataFile file = getDataFile(df, sample, fileIndex);
 
     return file == null ? null : file.create();
   }

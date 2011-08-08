@@ -160,7 +160,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
     final File outputFile;
 
-    if (mapperIndex.isDefaultProtocol()) {
+    if (mapperIndex.isLocalFile()) {
 
       outputFile = defaultProtocol.getFile(mapperIndex);
     } else {
@@ -169,7 +169,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
               ".zip");
     }
 
-    if (genome.isDefaultProtocol()) {
+    if (genome.isLocalFile()) {
 
       this.mapper.makeArchiveIndex(defaultProtocol.getFile(genome), outputFile);
     } else {
@@ -177,10 +177,8 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
     }
 
     LOGGER.info("mapperIndexDataFile: " + mapperIndex);
-    LOGGER.info("mapperIndexDataFile.isDefaultProtocol(): "
-        + mapperIndex.isDefaultProtocol());
 
-    if (!mapperIndex.isDefaultProtocol()) {
+    if (!mapperIndex.isLocalFile()) {
 
       new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndex);
 
@@ -195,7 +193,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
   private void downloadPrecomputedIndex(final DataFile precomputedIndex,
       final DataFile output) throws IOException {
 
-    if (precomputedIndex.isDefaultProtocol() && output.isDefaultProtocol()) {
+    if (precomputedIndex.isLocalFile() && output.isLocalFile()) {
       FileUtils.createSymbolicLink(new File(precomputedIndex.getSource()),
           new File(output.getSource()));
     } else

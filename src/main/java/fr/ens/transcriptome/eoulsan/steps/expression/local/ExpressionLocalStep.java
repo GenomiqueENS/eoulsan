@@ -124,7 +124,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
             COUNTER_GROUP,
             "Expression computation ("
                 + s.getName() + ", " + alignmentFile.getName() + ", "
-                + s.getMetadata().getAnnotation() + ", " + genomicType + ")"));
+                + annotationFile.getName() + ", " + genomicType + ")"));
 
       }
 
