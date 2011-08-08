@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import fr.ens.transcriptome.eoulsan.steps.ReadsIndexGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsIndexGeneratorStep;
 
 /**
  * This class define a SOAP zip index DataFormat.
