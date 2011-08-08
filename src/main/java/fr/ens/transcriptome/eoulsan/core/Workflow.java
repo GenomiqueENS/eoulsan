@@ -28,6 +28,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -267,7 +268,10 @@ class Workflow implements WorkflowDescription {
 
             if (df.isGenerator()) {
 
-              this.steps.add(0, df.getGenerator());
+              final Step generator = df.getGenerator();
+
+              this.steps.add(findFirstStepThatNeedDataFormat(df), generator);
+              LOGGER.info("Add generator step: " + generator.getName());
               scanWorkflow();
 
               return;
@@ -311,6 +315,30 @@ class Workflow implements WorkflowDescription {
     runChecker(checkers);
   }
 
+  private int findFirstStepThatNeedDataFormat(final DataFormat df) {
+
+    if (df == null)
+      return -1;
+
+    for (int i = 0; i < this.steps.size(); i++) {
+
+      final Step step = this.steps.get(i);
+
+      // Generator must be added before a terminal step
+      if (step.isTerminalStep())
+        return i;
+
+      final DataFormat[] dfs = step.getInputFormats();
+      if (dfs == null)
+        continue;
+
+      if (Arrays.asList(dfs).contains(df))
+        return i;
+    }
+
+    return -1;
+  }
+
   private void runChecker(final Map<DataFormat, Checker> checkers)
       throws EoulsanException {
 
@@ -326,8 +354,10 @@ class Workflow implements WorkflowDescription {
             Checker c = checkers.get(df);
 
             c.configure(this.command.getStepParameters(step.getName()));
+            LOGGER.info("Start checking "
+                + df.getFormatName() + " for " + step.getName() + " step.");
             c.check(this.design, this.context, checkStore);
-
+            LOGGER.info("End of checking of " + df.getFormatName() + ".");
           }
         }
     }
