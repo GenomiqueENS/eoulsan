@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
+import fr.ens.transcriptome.eoulsan.steps.FirstStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -126,6 +127,9 @@ class Workflow implements WorkflowDescription {
    * @param firstSteps list of steps to add
    */
   public void addFirstSteps(final List<Step> firstSteps) {
+
+    // Add the first step. Generators cannot be added after this step
+    this.steps.add(new FirstStep());
 
     if (firstSteps == null)
       return;
@@ -270,7 +274,7 @@ class Workflow implements WorkflowDescription {
 
               final Step generator = df.getGenerator();
 
-              this.steps.add(findFirstStepThatNeedDataFormat(df), generator);
+              this.steps.add(findGeneratorInsertionPosition(df), generator);
               LOGGER.info("Add generator step: " + generator.getName());
               scanWorkflow();
 
@@ -315,7 +319,7 @@ class Workflow implements WorkflowDescription {
     runChecker(checkers);
   }
 
-  private int findFirstStepThatNeedDataFormat(final DataFormat df) {
+  private int findGeneratorInsertionPosition(final DataFormat df) {
 
     if (df == null)
       return -1;
@@ -325,7 +329,7 @@ class Workflow implements WorkflowDescription {
       final Step step = this.steps.get(i);
 
       // Generator must be added before a terminal step
-      if (step.isTerminalStep())
+      if (step.isFirstStep())
         return i;
 
       final DataFormat[] dfs = step.getInputFormats();
@@ -415,7 +419,8 @@ class Workflow implements WorkflowDescription {
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    final DataType dataType = dfr.getDataTypeForDesignField(SampleMetadata.READS_FIELD);
+    final DataType dataType =
+        dfr.getDataTypeForDesignField(SampleMetadata.READS_FIELD);
     final DataFile file = new DataFile(s.getMetadata().getReads());
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
@@ -507,15 +512,6 @@ class Workflow implements WorkflowDescription {
 
     // Scan Workflow
     scanWorkflow();
-
-    // Check steps order, and add DataType generator step if need
-    // checkIfInputsExists();
-
-    // Check if outputs exits
-    // checkIfOutputsExists();
-
-    // Check inputs data
-    // checkInputsData();
   }
 
   //
