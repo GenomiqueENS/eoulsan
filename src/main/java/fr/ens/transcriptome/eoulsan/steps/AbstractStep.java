@@ -80,11 +80,6 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public boolean isFirstStep() {
-    return false;
-  }
-
-  @Override
   public boolean isTerminalStep() {
     return false;
   }
