@@ -44,6 +44,7 @@ import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -73,8 +74,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".mapper.args";
   static final String MAPPER_THREADS_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.nb.threads";
-  static final String PHRED_OFFSET_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.phred.offset";
+  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.fastq.format";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
 
@@ -141,14 +142,14 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     final boolean pairEnd = Boolean.parseBoolean(conf.get(PAIR_END_KEY));
-    final int phredOffset =
-        Integer.parseInt(conf.get(PHRED_OFFSET_KEY, ""
-            + EoulsanRuntime.getSettings().getPhredOffsetDefault()));
+    final FastqFormat fastqFormat =
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
+            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
     // Init mapper
-    mapper.init(pairEnd, phredOffset, new HadoopReporterIncrementer(context),
+    mapper.init(pairEnd, fastqFormat, new HadoopReporterIncrementer(context),
         this.counterGroup);
-    LOGGER.info("PHRED offset: " + phredOffset);
+    LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set lock
     this.lock = new ExecLock(this.mapper.getMapperName().toLowerCase());

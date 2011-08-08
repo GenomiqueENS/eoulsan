@@ -28,6 +28,7 @@ import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
@@ -123,28 +124,24 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public int getPhredOffset() {
+  public FastqFormat getFastqFormat() {
 
     final String value;
 
-    // Get the value from metadata, if field does not exist return default PHRED
+    // Get the value from metadata, if field does not exist return default fastq format
     // offset value
     try {
-      value = get(PHRED_OFFSET_FIELD);
+      value = get(FASTQ_FORMAT_FIELD);
     } catch (EoulsanRuntimeException e) {
-      return EoulsanRuntime.getSettings().getPhredOffsetDefault();
+      return EoulsanRuntime.getSettings().getDefaultFastqFormat();
     }
 
-    final int intValue;
-    try {
-      intValue = Integer.parseInt(value);
-    } catch (NumberFormatException e) {
-      throw new EoulsanRuntimeException("PHRED offset value is not an integer");
-    }
+    final FastqFormat result = FastqFormat.getFormatFromName(value);
 
-    checkPhredValue(intValue);
+    if (result == null)
+      return EoulsanRuntime.getSettings().getDefaultFastqFormat();
 
-    return intValue;
+    return result;
   }
 
   //
@@ -231,9 +228,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setPhredOffset(final int phredOffset) {
+  public void setFastqFormat(final FastqFormat fastqFormat) {
 
-    set(PHRED_OFFSET_FIELD, Integer.toString(phredOffset));
+    if (fastqFormat == null)
+      throw new NullPointerException("FastqFormat is null");
+
+    set(FASTQ_FORMAT_FIELD, fastqFormat.getName());
   }
 
   //
@@ -318,21 +318,9 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public boolean isPhredOffset() {
+  public boolean isFastqFormat() {
 
-    return isField(PHRED_OFFSET_FIELD);
-  }
-
-  //
-  // Other methods
-  //
-
-  private void checkPhredValue(final int phredOffset) {
-
-    if (phredOffset != 33 && phredOffset != 64)
-      throw new EoulsanRuntimeException(
-          "Invalid PHRED offset value (only 33 or 64 are allowed): "
-              + phredOffset);
+    return isField(FASTQ_FORMAT_FIELD);
   }
 
   //

@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
  */
 public class ReadSequence extends Sequence {
 
-  private int phredOffset;
+  private FastqFormat fastqFormat;
   private String quality;
   private boolean repeatNameInFastq;
 
@@ -51,12 +51,12 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Get the PHRED offset value.
-   * @return the PHRED offset value
+   * Get the fastq format value.
+   * @return the fastq format
    */
-  public final int getPhredOffset() {
+  public final FastqFormat getFastqFormat() {
 
-    return this.phredOffset;
+    return this.fastqFormat;
   }
 
   /**
@@ -81,12 +81,15 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Set the PHRED offset value.
-   * @param phredOffset the PHRED offset value
+   * Set the fastq format value.
+   * @param fastqFormat the fastq format to set
    */
-  public final void setPhredOffset(final int phredOffset) {
+  public final void setFastqFormat(final FastqFormat fastqFormat) {
 
-    this.phredOffset = phredOffset;
+    if (fastqFormat == null)
+      throw new NullPointerException("The FastqFormat is null");
+    
+    this.fastqFormat = fastqFormat;
   }
 
   /**
@@ -112,7 +115,7 @@ public class ReadSequence extends Sequence {
     this.setName(rs.getName());
     this.setSequence(rs.getSequence());
     this.setQuality(rs.getQuality());
-    this.setPhredOffset(rs.getPhredOffset());
+    this.setFastqFormat(rs.getFastqFormat());
     this.setRepeatIdInFastQ(rs.isRepeatIdInFastQ());
   }
 
@@ -142,7 +145,7 @@ public class ReadSequence extends Sequence {
     int score = 0;
     final int len = quality.length();
     for (int i = 0; i < len; i++) {
-      score += quality.charAt(i) - phredOffset;
+      score += quality.charAt(i) - fastqFormat.getAsciiOffset();
     }
 
     return score / (double) len;
@@ -441,7 +444,7 @@ public class ReadSequence extends Sequence {
       final String quality) {
 
     this(id, name, sequence, quality, EoulsanRuntime.getSettings()
-        .getPhredOffsetDefault());
+        .getDefaultFastqFormat());
   }
 
   /**
@@ -452,11 +455,11 @@ public class ReadSequence extends Sequence {
    * @param quality Quality of the read
    */
   public ReadSequence(final int id, final String name, final String sequence,
-      final String quality, final int phredOffset) {
+      final String quality, final FastqFormat fastqFormat) {
 
     super(id, name, sequence);
     this.quality = quality;
-    this.phredOffset = phredOffset;
+    this.fastqFormat = fastqFormat;
   }
 
 }

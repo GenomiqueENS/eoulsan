@@ -31,10 +31,8 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -112,18 +110,6 @@ public abstract class Executor {
     if (design.getSampleCount() == 0)
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
-
-    for (Sample s : design.getSamples()) {
-
-      final int phredOffset = s.getMetadata().getPhredOffset();
-
-      // Check the PHRED offset value
-      if (phredOffset != 33 && phredOffset != 64)
-        throw new EoulsanRuntimeException(
-            "Invalid PHRED offset value (only 33 or 64 are allowed): "
-                + phredOffset);
-    }
-
   }
 
   /**

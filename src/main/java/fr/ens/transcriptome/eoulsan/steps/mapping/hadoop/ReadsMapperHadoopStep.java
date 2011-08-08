@@ -142,9 +142,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
     }
 
-    // Set Mapper PHRED offset
-    jobConf.set(ReadsMapperMapper.PHRED_OFFSET_KEY, ""
-        + sample.getMetadata().getPhredOffset());
+    // Set Mapper fastq format
+    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
+        + sample.getMetadata().getFastqFormat());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
