@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -67,24 +68,61 @@ public class ReadsChecker implements Checker {
 
     for (Sample s : design.getSamples()) {
 
-      final InputStream is;
+      // get input file count for the sample
+      final int inFileCount =
+          context.getDataFileCount(DataFormats.READS_FASTQ, s);
 
-      try {
+      if (inFileCount < 1)
+        throw new EoulsanException("No reads file found.");
 
-        is = context.getInputStream(DataFormats.READS_FASTQ, s);
-        checkReadsFile(is, MAX_READS_TO_CHECK);
+      if (inFileCount > 2)
+        throw new EoulsanException(
+            "Cannot handle more than 2 reads files at the same time.");
 
-      } catch (IOException e) {
-        throw new EoulsanException("Error while reading reads of sample "
-            + s.getMetadata().getReads() + " for checking: " + e.getMessage());
-      } catch (BadBioEntryException e) {
-        throw new EoulsanException("Found bad read entry in sample "
-            + s.getMetadata().getReads() + " when checking: " + e.getEntry());
+      // Single end mode
+      if (inFileCount == 1) {
+
+        final DataFile file =
+            context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+
+        checkReadFile(file);
+      }
+
+      // Paired end mode
+      if (inFileCount == 2) {
+
+        final DataFile file1 =
+            context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+
+        final DataFile file2 =
+            context.getDataFile(DataFormats.READS_FASTQ, s, 1);
+
+        checkReadFile(file1);
+        checkReadFile(file2);
       }
 
     }
 
     return true;
+  }
+
+  private void checkReadFile(final DataFile file) throws EoulsanException {
+
+    final InputStream is;
+
+    try {
+
+      is = file.open();
+      checkReadsFile(is, MAX_READS_TO_CHECK);
+
+    } catch (IOException e) {
+      throw new EoulsanException("Error while reading reads of sample "
+          + file.getSource() + " for checking: " + e.getMessage());
+    } catch (BadBioEntryException e) {
+      throw new EoulsanException("Found bad read entry in sample "
+          + file.getSource() + " when checking: " + e.getEntry());
+    }
+
   }
 
   private boolean checkReadsFile(final InputStream is, final int maxReadTocheck)

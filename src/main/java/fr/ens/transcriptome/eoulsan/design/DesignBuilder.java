@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static java.util.Collections.singletonList;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +114,7 @@ public class DesignBuilder {
       final SampleMetadata smd = s.getMetadata();
 
       // Set the fastq file of the sample
-      smd.setReads(fq.toString());
+      smd.setReads(singletonList(fq.toString()));
 
       // Set the genome file if exists
       if (this.genomeFile != null)

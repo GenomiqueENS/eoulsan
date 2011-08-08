@@ -89,9 +89,15 @@ public interface DataFormat {
   Step getGenerator();
 
   /**
-   * Get the checker needed to check data of this type
+   * Get the checker needed to check data of this type.
    * @return the Checker or null if no Checker is available for this task
    */
   Checker getChecker();
 
+  /**
+   * Get the maximal number of files used to store data of this format. This
+   * value cannot be lower than 1. Common values are 1 or 2.
+   * @return the number of maximal of files used to store data.
+   */
+  int getMaxFilesCount();
 }

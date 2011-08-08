@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -72,18 +73,62 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         // Create the reporter
         final Reporter reporter = new Reporter();
 
-        // Get the source
-        final DataFile inFile = new DataFile(s.getMetadata().getReads());
+        // get input file count for the sample
+        final int inFileCount =
+            context.getDataFileCount(DataFormats.READS_FASTQ, s);
 
-        // Get the dest
-        final DataFile outFile = context.getDataFile(FILTERED_READS_FASTQ, s);
+        if (inFileCount < 1)
+          throw new IOException("No reads file found.");
 
-        // Filter reads
-        filterFile(inFile, outFile, reporter, s.getMetadata().getFastqFormat());
+        if (inFileCount > 2)
+          throw new IOException(
+              "Cannot handle more than 2 reads files at the same time.");
 
-        // Add counters for this sample to log file
-        log.append(reporter.countersValuesToString(COUNTER_GROUP,
-            "Filter reads (" + s.getName() + ", " + inFile + ")"));
+        if (inFileCount == 1) {
+
+          // Single end mode
+
+          // Get the source
+          final DataFile inFile =
+              context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+
+          // Get the dest
+          final DataFile outFile =
+              context.getDataFile(FILTERED_READS_FASTQ, s, 0);
+
+          // Filter reads
+          filterFile(inFile, outFile, reporter, s.getMetadata()
+              .getFastqFormat());
+
+          // Add counters for this sample to log file
+          log.append(reporter.countersValuesToString(COUNTER_GROUP,
+              "Filter reads (" + s.getName() + ", " + inFile + ")"));
+        } else {
+
+          // Pair-end mode
+
+          // Get the source
+          final DataFile inFile1 =
+              context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+          final DataFile inFile2 =
+              context.getDataFile(DataFormats.READS_FASTQ, s, 1);
+
+          // Get the dest
+          final DataFile outFile1 =
+              context.getDataFile(FILTERED_READS_FASTQ, s, 0);
+          final DataFile outFile2 =
+              context.getDataFile(FILTERED_READS_FASTQ, s, 1);
+
+          // Filter reads
+          filterFile(inFile1, inFile2, outFile1, outFile2, reporter, s
+              .getMetadata().getFastqFormat());
+
+          // Add counters for this sample to log file
+          log.append(reporter.countersValuesToString(COUNTER_GROUP,
+              "Filter reads ("
+                  + s.getName() + ", " + inFile1 + ", " + inFile2 + ")"));
+
+        }
       }
 
       return new StepResult(context, startTime, log.toString());
@@ -99,7 +144,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   }
 
   /**
-   * Filter a file
+   * Filter a file in single end mode.
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
@@ -153,6 +198,81 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
       reader.close();
       writer.close();
+    }
+
+  }
+
+  /**
+   * Filter a file in pair-end mode.
+   * @param inFile input file
+   * @param outFile output file
+   * @param reporter reporter to use
+   * @param phredOffset PHRED offset
+   * @throws IOException if an error occurs while filtering data
+   */
+  private void filterFile(final DataFile inFile1, final DataFile inFile2,
+      final DataFile outFile1, final DataFile outFile2,
+      final Reporter reporter, final FastqFormat fastqFormat)
+      throws IOException {
+
+    LOGGER.info("Filter files: "
+        + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
+
+    final ReadFilter filter;
+
+    try {
+      filter = this.getReadFilter(reporter, COUNTER_GROUP);
+    } catch (EoulsanException e) {
+      throw new IOException(e.getMessage());
+    }
+
+    final FastqReader reader1 = new FastqReader(inFile1.open());
+    final FastqReader reader2 = new FastqReader(inFile2.open());
+    final FastQWriter writer1 = new FastQWriter(outFile1.create());
+    final FastQWriter writer2 = new FastQWriter(outFile2.create());
+
+    // Set PHRED offset
+    reader1.setFastqFormat(fastqFormat);
+    reader2.setFastqFormat(fastqFormat);
+    writer1.setFastqFormat(fastqFormat);
+    writer2.setFastqFormat(fastqFormat);
+
+    try {
+      while (reader1.readEntry()) {
+
+        if (!reader2.readEntry())
+          throw new IOException("Excepted end of the second reads file.");
+
+        reporter.incrCounter(COUNTER_GROUP,
+            INPUT_RAW_READS_COUNTER.counterName(), 1);
+
+        if (filter.accept(reader1, reader2)) {
+          writer1.set(reader1);
+          writer1.write();
+          writer2.set(reader2);
+          writer2.write();
+          reporter.incrCounter(COUNTER_GROUP,
+              OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
+        } else {
+          reporter.incrCounter(COUNTER_GROUP,
+              READS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
+        }
+
+      }
+
+      if (reader2.readEntry())
+        throw new IOException("Excepted end of the first reads file.");
+
+    } catch (BadBioEntryException e) {
+
+      throw new IOException("Invalid Fastq format: " + e.getEntry());
+
+    } finally {
+
+      reader1.close();
+      reader2.close();
+      writer1.close();
+      writer2.close();
     }
 
   }

@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.design.impl;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
@@ -128,6 +130,12 @@ public class SampleImpl implements Sample {
 
     return false;
 
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("id", getId()).toString();
   }
 
   //

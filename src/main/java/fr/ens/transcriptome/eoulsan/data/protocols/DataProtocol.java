@@ -44,6 +44,20 @@ public interface DataProtocol {
   String getName();
 
   /**
+   * Get the name of the filename that correspond to the source.
+   * @param source the source
+   * @return a String with the filename
+   */
+  String getSourceFilename(String source);
+
+  /**
+   * Get the parent source of the source.
+   * @param src source to use
+   * @return a String with the source of the parent or null if there is parent
+   */
+  DataFile getDataFileParent(DataFile src);
+
+  /**
    * Create an InputStream from the source.
    * @param src source to use
    * @return an InputStream

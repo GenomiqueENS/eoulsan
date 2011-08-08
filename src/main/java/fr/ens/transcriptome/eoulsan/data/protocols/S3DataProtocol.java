@@ -68,6 +68,28 @@ public class S3DataProtocol implements DataProtocol {
   private TransferManager tx;
   private boolean multipartUpload;
 
+  @Override
+  public String getSourceFilename(final String source) {
+
+    final int lastSlashPos = source.lastIndexOf(DataFile.separatorChar);
+
+    if (lastSlashPos == -1)
+      return source;
+
+    return source.substring(lastSlashPos + 1);
+  }
+
+  @Override
+  public DataFile getDataFileParent(final DataFile src) {
+
+    final String source = src.getSource();
+
+    final int parentSrcLen = source.length() - getName().length() - 1;
+
+    return new DataFile(
+        source.substring(0, parentSrcLen < 0 ? 0 : parentSrcLen));
+  }
+
   protected String getProtocolPrefix() {
 
     return "s3://";
@@ -225,7 +247,7 @@ public class S3DataProtocol implements DataProtocol {
                 + " Progress: " + myUpload.getProgress().getBytesTransfered());
 
           count++;
-          
+
           // Do work while we wait for our upload to complete...
           try {
             Thread.sleep(1000);
