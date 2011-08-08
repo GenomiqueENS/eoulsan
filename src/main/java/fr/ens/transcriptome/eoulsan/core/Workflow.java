@@ -329,7 +329,7 @@ class Workflow implements WorkflowDescription {
       final Step step = this.steps.get(i);
 
       // Generator must be added before a terminal step
-      if (step.isFirstStep())
+      if (step.isTerminalStep() || step instanceof FirstStep)
         return i;
 
       final DataFormat[] dfs = step.getInputFormats();

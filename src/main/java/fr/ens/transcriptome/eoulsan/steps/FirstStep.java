@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
  * @author Laurent Jourdren
  */
 @HadoopCompatible
-public class FirstStep extends AbstractStep {
+public final class FirstStep extends AbstractStep {
 
   @Override
   public String getName() {
@@ -51,12 +51,6 @@ public class FirstStep extends AbstractStep {
   public StepResult execute(Design design, Context context) {
 
     return new StepResult(context, System.currentTimeMillis(), "First step.");
-  }
-
-  @Override
-  public boolean isFirstStep() {
-
-    return true;
   }
 
 }
