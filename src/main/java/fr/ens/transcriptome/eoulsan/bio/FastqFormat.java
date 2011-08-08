@@ -1,6 +1,18 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static com.google.common.collect.Sets.newHashSet;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 
 public enum FastqFormat {
 
@@ -184,6 +196,86 @@ public enum FastqFormat {
     }
 
     return null;
+  }
+
+  /**
+   * Identify the fastq format used in a Fastq file.
+   * @param is input stream
+   * @param maxEntriesToRead maximal entries of the file to read. If this value
+   *          is lower than 1 all the entries of the stream are read
+   * @return The FastqFormat found or null if no format was found
+   * @throws IOException if an error occurs while reading the fastq stream
+   * @throws BadBioEntryException if bad fastq entry is found
+   */
+  public static FastqFormat identifyFormat(final InputStream is,
+      final int maxEntriesToRead) throws IOException, BadBioEntryException {
+
+    if (is == null)
+      return null;
+
+    final FastqReader reader = new FastqReader(is);
+    final Set<FastqFormat> formats =
+        newHashSet(Arrays.asList(FastqFormat.values()));
+
+    int count = 0;
+
+    while (reader.readEntry()
+        || (maxEntriesToRead > 0 && count >= maxEntriesToRead)) {
+      removeBadFormats(formats, reader.getQuality());
+
+      count++;
+    }
+
+    is.close();
+
+    return identifyFormatByHeristic(formats);
+  }
+
+  private static void removeBadFormats(Set<FastqFormat> formats,
+      final String qualityString) {
+
+    if (formats == null || qualityString == null)
+      return;
+
+    for (FastqFormat format : new HashSet<FastqFormat>(formats)) {
+
+      for (int i = 0; i < qualityString.length(); i++) {
+        final char c = qualityString.charAt(i);
+        if (c < format.getCharMin() || c > format.getCharMax()) {
+          formats.remove(format);
+          break;
+        }
+      }
+    }
+  }
+
+  private static FastqFormat identifyFormatByHeristic(
+      final Set<FastqFormat> formats) {
+
+    if (formats == null)
+      return null;
+
+    if (formats.isEmpty())
+      return null;
+
+    final Map<FastqFormat, Integer> map = Maps.newHashMap();
+    for (FastqFormat f : formats)
+      map.put(f, f.getQualityMax() - f.getQualityMin());
+
+    FastqFormat bestFormat = null;
+    int bestRange = Integer.MAX_VALUE;
+
+    for (Map.Entry<FastqFormat, Integer> e : map.entrySet()) {
+
+      if (bestFormat == null || e.getValue() < bestRange) {
+
+        bestFormat = e.getKey();
+        bestRange = e.getValue();
+      }
+
+    }
+
+    return bestFormat;
   }
 
   @Override
