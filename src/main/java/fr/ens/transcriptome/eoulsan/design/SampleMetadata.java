@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.design;
 
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+
 /**
  * This interface define the description of a slide
  * @author Laurent Jourdren
@@ -54,8 +56,8 @@ public interface SampleMetadata {
   String REPLICAT_TYPE_FIELD = "ReplicateType";
   /** UUID field. */
   String UUID_TYPE_FIELD = "UUID";
-  /** PHRED offset. */
-  String PHRED_OFFSET_FIELD = "PhredOffset";
+  /** Fastq format field. */
+  String FASTQ_FORMAT_FIELD = "FastqFormat";
 
   /**
    * Get a description.
@@ -137,10 +139,10 @@ public interface SampleMetadata {
   String getUUID();
 
   /**
-   * Get PHRED offset.
-   * @return the PHRED offset.
+   * Get the fastq format.
+   * @return the fastq format.
    */
-  int getPhredOffset();
+  FastqFormat getFastqFormat();
 
   /**
    * Set a field of the metadata.
@@ -216,10 +218,10 @@ public interface SampleMetadata {
   void setUUID(final String uuid);
 
   /**
-   * Set the PHRED offset.
-   * @param phredOffset the PHRED offset to set
+   * Set the fastq format.
+   * @param fastqFormat the fastq format to set
    */
-  void setPhredOffset(final int phredOffset);
+  void setFastqFormat(final FastqFormat fastqFormat);
 
   /**
    * Test if a field exists.
@@ -295,9 +297,9 @@ public interface SampleMetadata {
   boolean isUUIDField();
 
   /**
-   * Test if the PHRED offset field exits.
+   * Test if the FastqFormat field exits.
    * @return true if the field exists
    */
-  boolean isPhredOffset();
+  boolean isFastqFormat();
 
 }

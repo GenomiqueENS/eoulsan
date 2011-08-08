@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.ReadSequenceReader;
 import fr.ens.transcriptome.eoulsan.bio.io.ReadSequenceWriter;
@@ -99,7 +99,7 @@ public class DataFormatConverter {
       final ReadSequenceReader reader;
 
       if (this.inFormat == DataFormats.READS_FASTQ)
-        reader = new FastQReader(this.inFile.open());
+        reader = new FastqReader(this.inFile.open());
       else
         reader = new TFQReader(this.inFile.open());
 

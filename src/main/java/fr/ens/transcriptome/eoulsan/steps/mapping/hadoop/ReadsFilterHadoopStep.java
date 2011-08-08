@@ -136,9 +136,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
-    // Set PHRED offset
-    jobConf.set(ReadsFilterMapper.PHRED_OFFSET_KEY, ""
-        + sample.getMetadata().getPhredOffset());
+    // Set fastq format
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, sample.getMetadata()
+        .getFastqFormat().getName());
 
     // Set read filter parameters
     for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {

@@ -37,8 +37,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.bio.io.FastQReader;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -78,7 +79,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         final DataFile outFile = context.getDataFile(FILTERED_READS_FASTQ, s);
 
         // Filter reads
-        filterFile(inFile, outFile, reporter, s.getMetadata().getPhredOffset());
+        filterFile(inFile, outFile, reporter, s.getMetadata().getFastqFormat());
 
         // Add counters for this sample to log file
         log.append(reporter.countersValuesToString(COUNTER_GROUP,
@@ -102,13 +103,15 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
-   * @param phredOffset PHRED offset
+   * @param fastqFormat FastqFormat
    * @throws IOException if an error occurs while filtering data
    */
   private void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final int phredOffset) throws IOException {
+      final Reporter reporter, final FastqFormat fastqFormat)
+      throws IOException {
 
-    LOGGER.info("Filter file: " + inFile + ", PHRED offset: " + phredOffset);
+    LOGGER.info("Filter file: " + inFile);
+    LOGGER.info("FastqFormat: " + fastqFormat);
 
     final ReadFilter filter;
 
@@ -118,12 +121,12 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       throw new IOException(e.getMessage());
     }
 
-    final FastQReader reader = new FastQReader(inFile.open());
+    final FastqReader reader = new FastqReader(inFile.open());
     final FastQWriter writer = new FastQWriter(outFile.create());
 
-    // Set PHRED offset
-    reader.setPhredOffset(phredOffset);
-    writer.setPhredOffset(phredOffset);
+    // Set Fastq format
+    reader.setFastqFormat(fastqFormat);
+    writer.setFastqFormat(fastqFormat);
 
     try {
       while (reader.readEntry()) {
