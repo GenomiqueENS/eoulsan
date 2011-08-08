@@ -71,7 +71,8 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Slide name is null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists: "
+          + sampleName);
 
     final int sampleId = this.samples.get(sampleName);
 
@@ -94,13 +95,13 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void addMetadataField(String fieldName) {
+  public void addMetadataField(final String fieldName) {
 
     if (fieldName == null)
       throw new EoulsanRuntimeException("The metadata field can't be null");
     if (isMetadataField(fieldName))
       throw new EoulsanRuntimeException(
-          "The descriptionLabel name already exists");
+          "The descriptionLabel name already exists: " + fieldName);
 
     this.metadataFields.put(fieldName, countLabels++);
     this.metadataOrder.add(fieldName);
@@ -108,12 +109,13 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void addSample(String sampleName) {
+  public void addSample(final String sampleName) {
 
     if (sampleName == null)
       throw new EoulsanRuntimeException("Slide name can't be null");
     if (isSample(sampleName))
-      throw new EoulsanRuntimeException("Slide name already exists");
+      throw new EoulsanRuntimeException("Slide name already exists: "
+          + sampleName);
 
     final int slideId = countSamples++;
     this.samples.put(sampleName, slideId);
@@ -127,7 +129,7 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public String getMetadata(String sampleName, String fieldName) {
+  public String getMetadata(final String sampleName, final String fieldName) {
 
     if (sampleName == null)
       throw new NullPointerException("Sample name can't be null");
@@ -135,10 +137,11 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Metadata field name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The sample name doesn't exists");
+      throw new EoulsanRuntimeException("The sample name doesn't exists: "
+          + sampleName);
     if (!isMetadataField(fieldName))
       throw new EoulsanRuntimeException(
-          "The metadata field name doesn't exists");
+          "The metadata field name doesn't exists: " + fieldName);
 
     return this.metadataData.get(createkeySampleMetadataField(sampleName,
         fieldName));
@@ -157,23 +160,25 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public Sample getSample(int index) {
+  public Sample getSample(final int index) {
 
     final String sampleName = this.samplesOrder.get(index);
     if (sampleName == null)
-      throw new EoulsanRuntimeException("The slide index doesn't exists");
+      throw new EoulsanRuntimeException("The slide index doesn't exists: "
+          + index);
 
     return getSample(sampleName);
   }
 
   @Override
-  public Sample getSample(String sampleName) {
+  public Sample getSample(final String sampleName) {
 
     if (sampleName == null)
       throw new EoulsanRuntimeException("The slide name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide doesn't exists");
+      throw new EoulsanRuntimeException("The slide doesn't exists: "
+          + sampleName);
 
     final int slideId = this.samples.get(sampleName);
 
@@ -187,13 +192,14 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public SampleMetadata getSampleMetadata(String sampleName) {
+  public SampleMetadata getSampleMetadata(final String sampleName) {
 
     if (sampleName == null)
       throw new NullPointerException("Sample name is null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists: "
+          + sampleName);
 
     final int id = this.samples.get(sampleName);
 
@@ -227,13 +233,13 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public boolean isSample(String sampleName) {
+  public boolean isSample(final String sampleName) {
 
     return this.samples.containsKey(sampleName);
   }
 
   @Override
-  public void removeMetadataField(String fieldName) {
+  public void removeMetadataField(final String fieldName) {
 
     if (fieldName == null)
       throw new EoulsanRuntimeException(
@@ -256,13 +262,14 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void removeSample(String sampleName) {
+  public void removeSample(final String sampleName) {
 
     if (sampleName == null)
       throw new EoulsanRuntimeException("Slide name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("the slide name doesn't exists");
+      throw new EoulsanRuntimeException("the slide name doesn't exists: "
+          + sampleName);
 
     // Remove descriptions
     final String prefixDescritpion = this.samples.get(sampleName) + "-";
@@ -281,8 +288,8 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void renameMetadataField(String oldMetadataFieldName,
-      String newMetadataFieldName) {
+  public void renameMetadataField(final String oldMetadataFieldName,
+      final String newMetadataFieldName) {
 
     if (oldMetadataFieldName == null)
       throw new EoulsanRuntimeException("oldName name can't be null");
@@ -290,9 +297,11 @@ public class DesignImpl implements Design {
       throw new EoulsanRuntimeException("newName name can't be null");
 
     if (!isMetadataField(oldMetadataFieldName))
-      throw new EoulsanRuntimeException("the old label name don't exists");
+      throw new EoulsanRuntimeException("the old label name don't exists: "
+          + oldMetadataFieldName);
     if (isMetadataField(newMetadataFieldName))
-      throw new EoulsanRuntimeException("the new label name already exists");
+      throw new EoulsanRuntimeException("the new label name already exists: "
+          + newMetadataFieldName);
 
     int id = this.metadataFields.get(oldMetadataFieldName);
     this.metadataFields.remove(oldMetadataFieldName);
@@ -304,7 +313,8 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void renameSample(String oldSampleName, String newSampleName) {
+  public void renameSample(final String oldSampleName,
+      final String newSampleName) {
 
     if (oldSampleName == null)
       throw new EoulsanRuntimeException("oldName name can't be null");
@@ -335,7 +345,8 @@ public class DesignImpl implements Design {
   }
 
   @Override
-  public void setMetadata(String sampleName, String fieldName, String value) {
+  public void setMetadata(final String sampleName, final String fieldName,
+      final String value) {
 
     if (sampleName == null)
       throw new NullPointerException("Slide name can't be null");
@@ -367,7 +378,8 @@ public class DesignImpl implements Design {
       throw new NullPointerException("Sample source is lower or equals to 0");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The sample doesn't exists");
+      throw new EoulsanRuntimeException("The sample doesn't exists: "
+          + sampleName);
 
     if (this.ids.containsValue(id))
       throw new EoulsanRuntimeException("The identifier already exists: " + id);
