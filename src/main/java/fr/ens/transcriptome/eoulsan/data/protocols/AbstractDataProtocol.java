@@ -39,6 +39,28 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 abstract class AbstractDataProtocol implements DataProtocol {
 
   @Override
+  public String getSourceFilename(final String source) {
+
+    final int lastSlashPos = source.lastIndexOf(DataFile.separatorChar);
+
+    if (lastSlashPos == -1)
+      return source;
+
+    return source.substring(lastSlashPos + 1);
+  }
+
+  @Override
+  public DataFile getDataFileParent(final DataFile src) {
+
+    final String source = src.getSource();
+
+    final int parentSrcLen = source.length() - getName().length() - 1;
+
+    return new DataFile(
+        source.substring(0, parentSrcLen < 0 ? 0 : parentSrcLen));
+  }
+
+  @Override
   public OutputStream putData(final DataFile src, final DataFileMetadata md)
       throws IOException {
 
@@ -60,8 +82,8 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
     final DataFileMetadata mdSrc = src.getMetaData();
 
-    FileUtils.copy(src.getProtocol().getData(src), dest.getProtocol().putData(
-        dest, mdSrc));
+    FileUtils.copy(src.getProtocol().getData(src),
+        dest.getProtocol().putData(dest, mdSrc));
   }
 
 }

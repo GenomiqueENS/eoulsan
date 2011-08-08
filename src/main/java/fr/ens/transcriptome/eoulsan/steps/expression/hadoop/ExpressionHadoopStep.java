@@ -101,11 +101,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         new Path(context.getDataFilename(
             DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample));
 
+    // Get annotation DataFile
+    final DataFile annotationDataFile =
+        context.getDataFile(DataFormats.ANNOTATION_GFF, sample);
+
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
     LOGGER.fine("sample.getMetadata(): " + sample.getMetadata());
-    LOGGER.fine("sample.getMetadata().getAnnotation(): "
-        + sample.getMetadata().getAnnotation());
+    LOGGER.fine("annotationDataFile: " + annotationDataFile.getSource());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
 
@@ -113,16 +116,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context.getDataFile(
-        DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
         new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
     LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
-      createExonsIndex(new Path(context.getBasePathname(), sample.getMetadata()
-          .getAnnotation()), genomicType, exonsIndexPath, jobConf);
+      createExonsIndex(new Path(annotationDataFile.getSource()), genomicType,
+          exonsIndexPath, jobConf);
 
     // Set the path to the exons index
     // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
@@ -136,7 +139,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Job job =
         new Job(jobConf, "Expression computation ("
             + sample.getName() + ", " + inputPath.getName() + ", "
-            + sample.getMetadata().getAnnotation() + ", " + genomicType + ")");
+            + annotationDataFile.getSource() + ", " + genomicType + ")");
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);
@@ -160,9 +163,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(context.getDataFile(
-        DataFormats.EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
-        + ".tmp"));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context
+            .getDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
+            .getSourceWithoutExtension()
+            + ".tmp"));
 
     return job;
   }
@@ -227,9 +232,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
-      fetc.loadPreResults(new DataFile(context.getDataFile(
-          EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
-          + ".tmp").open(), readsUsed);
+      fetc.loadPreResults(
+          new DataFile(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
+              .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));
     }

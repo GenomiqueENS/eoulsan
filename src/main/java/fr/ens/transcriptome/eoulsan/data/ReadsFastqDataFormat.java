@@ -70,4 +70,10 @@ public final class ReadsFastqDataFormat extends AbstractDataFormat {
     return new ReadsChecker();
   }
 
+  @Override
+  public int getMaxFilesCount() {
+
+    return 2;
+  }
+
 }

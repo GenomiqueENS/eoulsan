@@ -82,8 +82,8 @@ public class GenomeChecker implements Checker {
 
     final InputStream is;
 
+    final DataFile file = context.getDataFile(DataFormats.GENOME_FASTA, s);
     try {
-      final DataFile file = context.getDataFile(DataFormats.GENOME_FASTA, s);
 
       if (!file.exists())
         return true;
@@ -94,10 +94,10 @@ public class GenomeChecker implements Checker {
 
     } catch (IOException e) {
       throw new EoulsanException("Error while reading genome "
-          + s.getMetadata().getGenome() + " for checking");
+          + file.getSource() + " for checking");
     } catch (BadBioEntryException e) {
       throw new EoulsanException("Found bad read entry in genome "
-          + s.getMetadata().getGenome() + ": " + e.getMessage());
+          + file.getSource() + ": " + e.getMessage());
     }
 
     return true;
