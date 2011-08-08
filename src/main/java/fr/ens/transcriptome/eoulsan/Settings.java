@@ -238,7 +238,8 @@ public final class Settings {
    */
   public boolean isBypassPlatformChecking() {
 
-    return getBooleanSetting(BYPASS_PLATFORM_CHECKING_KEY);
+    return Boolean.parseBoolean(this.properties
+        .getProperty(BYPASS_PLATFORM_CHECKING_KEY));
   }
 
   /**
@@ -672,6 +673,11 @@ public final class Settings {
 
     init();
     loadSettings(file);
+  }
+
+  @Override
+  public String toString() {
+    return this.properties.toString();
   }
 
 }
