@@ -24,69 +24,39 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
-import java.util.Set;
-
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.util.Version;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
- * This class define an abstract Step.
+ * This class define a first step that do nothing. All generator steps must be
+ * added before this step.
  * @author Laurent Jourdren
  */
-public abstract class AbstractStep implements Step {
+@HadoopCompatible
+public class FirstStep extends AbstractStep {
 
   @Override
-  public String getDescription() {
+  public String getName() {
 
-    return "Description of " + getName();
-  }
-
-  @Override
-  public Version getVersion() {
-
-    return Globals.APP_VERSION;
-  }
-
-  @Override
-  public Version getRequiedEoulsanVersion() {
-
-    return Globals.APP_VERSION;
-  }
-
-  @Override
-  public DataFormat[] getInputFormats() {
-
-    return null;
-  }
-
-  @Override
-  public DataFormat[] getOutputFormats() {
-
-    return null;
+    return "first";
   }
 
   @Override
   public String getLogName() {
-
-    return getName();
+    return null;
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public StepResult execute(Design design, Context context) {
+
+    return new StepResult(context, System.currentTimeMillis(), "First step.");
   }
 
   @Override
   public boolean isFirstStep() {
-    return false;
-  }
 
-  @Override
-  public boolean isTerminalStep() {
-    return false;
+    return true;
   }
 
 }

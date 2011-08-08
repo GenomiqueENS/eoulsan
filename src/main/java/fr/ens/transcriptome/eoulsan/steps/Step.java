@@ -93,6 +93,13 @@ public interface Step {
   StepResult execute(Design design, Context context);
 
   /**
+   * Test if this step is the last step before the first real step of the
+   * workflow.
+   * @return true if the step if the step before first step of the worflow
+   */
+  boolean isFirstStep();
+
+  /**
    * Test if the workflow must end after this step.
    * @return true if this step the last step of the workflow
    */
