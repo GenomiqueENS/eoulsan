@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * this class implements a FastQ writer.
  * @author Laurent Jourdren
  */
-public class FastQWriter extends ReadSequenceWriter {
+public class FastqWriter extends ReadSequenceWriter {
 
   private Writer writer;
 
@@ -68,7 +68,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param writer Writer to use
    */
-  public FastQWriter(final Writer writer) {
+  public FastqWriter(final Writer writer) {
 
     if (writer == null)
       throw new NullPointerException("The writer is null.");
@@ -80,7 +80,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param os OutputStream to use
    */
-  public FastQWriter(final OutputStream os) throws FileNotFoundException {
+  public FastqWriter(final OutputStream os) throws FileNotFoundException {
 
     this.writer = FileUtils.createFastBufferedWriter(os);
   }
@@ -89,7 +89,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public FastQWriter(final File outputFile) throws IOException {
+  public FastqWriter(final File outputFile) throws IOException {
 
     this.writer = FileUtils.createFastBufferedWriter(outputFile);
   }
@@ -98,7 +98,7 @@ public class FastQWriter extends ReadSequenceWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public FastQWriter(final String outputFilename) throws IOException {
+  public FastqWriter(final String outputFilename) throws IOException {
 
     this.writer = FileUtils.createFastBufferedWriter(outputFilename);
   }
