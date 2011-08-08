@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.io.FastQWriter;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -167,7 +167,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     }
 
     final FastqReader reader = new FastqReader(inFile.open());
-    final FastQWriter writer = new FastQWriter(outFile.create());
+    final FastqWriter writer = new FastqWriter(outFile.create());
 
     // Set Fastq format
     reader.setFastqFormat(fastqFormat);
@@ -228,8 +228,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     final FastqReader reader1 = new FastqReader(inFile1.open());
     final FastqReader reader2 = new FastqReader(inFile2.open());
-    final FastQWriter writer1 = new FastQWriter(outFile1.create());
-    final FastQWriter writer2 = new FastQWriter(outFile2.create());
+    final FastqWriter writer1 = new FastqWriter(outFile1.create());
+    final FastqWriter writer2 = new FastqWriter(outFile2.create());
 
     // Set PHRED offset
     reader1.setFastqFormat(fastqFormat);
