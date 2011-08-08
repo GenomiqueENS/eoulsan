@@ -107,7 +107,8 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
           + genomeDescriptionDataFile);
 
       final GenomeDescription desc =
-          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open());
+          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
+              genomeDataFile.getName());
 
       LOGGER.fine("Genome description object: " + desc.toString());
 

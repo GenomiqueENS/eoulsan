@@ -81,6 +81,9 @@ public final class Settings {
   private static final String PHRED_OFFSET_DEFAULT_KEY = MAIN_PREFIX_KEY
       + "phred.offset.default";
 
+  private static final String GENOME_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "genome.index.storage.path";
+
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -240,6 +243,15 @@ public final class Settings {
 
     return Boolean.parseBoolean(this.properties
         .getProperty(BYPASS_PLATFORM_CHECKING_KEY));
+  }
+
+  /**
+   * Get the genome index storage path.
+   * @return the path to genome index storage path
+   */
+  public String getGenomeIndexStoragePath() {
+
+    return this.properties.getProperty(GENOME_INDEX_STORAGE_KEY);
   }
 
   /**
@@ -478,6 +490,16 @@ public final class Settings {
 
     this.properties.setProperty(BYPASS_PLATFORM_CHECKING_KEY,
         Boolean.toString(bypass));
+  }
+
+  /**
+   * Set the genome index storage path.
+   * @param genomeIndexStoragePath the path to genome index storage path
+   */
+  public void setGenomeIndexStoragePath(final String genomeIndexStoragePath) {
+
+    this.properties.setProperty(GENOME_INDEX_STORAGE_KEY,
+        genomeIndexStoragePath);
   }
 
   /**
