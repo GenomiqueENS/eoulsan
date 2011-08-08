@@ -75,6 +75,39 @@ public enum FastqFormat {
   }
 
   /**
+   * Test if a character is valid to represent the quality.
+   * @param c the character to test
+   * @return true if the character if valid
+   */
+  public boolean isCharValid(final char c) {
+
+    return c >= getCharMin() && c <= getCharMax();
+  }
+
+  /**
+   * Test if all the character of a string are valid to represent the quality.
+   * @param s the string to test
+   * @return -1 if all the characters of the string are valid of the value of
+   *         the first invalid character
+   */
+  public int isStringValid(final String s) {
+
+    if (s == null)
+      throw new NullPointerException();
+
+    final int len = s.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = s.charAt(i);
+      if (!isCharValid(c))
+        return c;
+    }
+
+    return -1;
+  }
+
+  /**
    * Convert a character to a quality number.
    * @param character character to convert
    * @return a quality score
@@ -152,53 +185,6 @@ public enum FastqFormat {
 
     return null;
   }
-
-  // public static void identifyFormat(Set<FastqFormat> formats,
-  // final String qualityString) {
-  //
-  // if (formats == null || qualityString == null)
-  // return;
-  //
-  // for (FastqFormat format : new HashSet<FastqFormat>(formats)) {
-  //
-  // for (int i = 0; i < qualityString.length(); i++) {
-  // final char c = qualityString.charAt(i);
-  // if (c < format.getCharMin() || c > format.getCharMax()) {
-  // System.out.println("c=" + c + " (" + ((int) c) + ") " + format);
-  // System.out.println(format.getCharMin()
-  // + " (" + ((int) format.getCharMin()) + ") " + format.getCharMax()
-  // + " (" + ((int) format.getCharMax()) + ") ");
-  // formats.remove(format);
-  // break;
-  // }
-  // }
-  // }
-  // }
-
-  // public static final void main(final String[] args) throws IOException,
-  // BadBioEntryException {
-  //
-  // File f = new File("/home/jourdren/tests/s1.fq");
-  //
-  // FastQReader reader = new FastQReader(f);
-  //
-  // Set<FastqFormat> formats =
-  // new HashSet<FastqFormat>(Arrays.asList(FastqFormat.values()));
-  //
-  // int count = 0;
-  // while (reader.readEntry()) {
-  //
-  // count++;
-  // FastqFormat.identifyFormat(formats, reader.getQuality());
-  //
-  // if (formats.size() == 1) {
-  // //System.out.println("Found: " + formats + " in " + count + " reads");
-  // //break;
-  // }
-  // }
-  // System.out.println("Found: " + formats + " in " + count + " reads");
-  // reader.close();
-  // }
 
   @Override
   public String toString() {
