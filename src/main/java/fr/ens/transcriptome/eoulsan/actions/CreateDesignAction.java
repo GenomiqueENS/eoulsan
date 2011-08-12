@@ -77,11 +77,18 @@ public class CreateDesignAction extends AbstractAction {
     final CommandLineParser parser = new GnuParser();
     String filename = "design.txt";
     int argsOptions = 0;
+    boolean pairEndMode = false;
 
     try {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options, arguments, true);
+
+      // Pair-end option
+      if (line.hasOption("pair-end")) {
+        pairEndMode = true;
+        argsOptions += 1;
+      }
 
       // Help option
       if (line.hasOption("help")) {
@@ -107,7 +114,7 @@ public class CreateDesignAction extends AbstractAction {
           StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
 
       final DesignBuilder db = new DesignBuilder(newArgs);
-      design = db.getDesign();
+      design = db.getDesign(pairEndMode);
 
     } catch (EoulsanException e) {
       Common.errorExit(e, "Error: " + e.getMessage());
@@ -152,6 +159,9 @@ public class CreateDesignAction extends AbstractAction {
 
     // create Options object
     final Options options = new Options();
+
+    // Pair end mode
+    options.addOption("p", "pair-end", false, "Pair-end mode");
 
     // Help option
     options.addOption("h", "help", false, "display this help");
