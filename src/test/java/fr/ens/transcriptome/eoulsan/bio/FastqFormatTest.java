@@ -1,9 +1,15 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_SANGER;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_SOLEXA;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.convertPhredSCoreToSolexaScore;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.convertSolexaScoreToPhredScore;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.getFormatFromName;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.identifyFormat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -14,23 +20,59 @@ public class FastqFormatTest {
 
     assertEquals("fastq-sanger", FASTQ_SANGER.getName());
     assertEquals("fastq-solexa", FASTQ_SOLEXA.getName());
-    assertEquals("fastq-illumina", FASTQ_ILLUMINA.getName());
+    assertEquals("fastq-illumina-1.3", FASTQ_ILLUMINA.getName());
+    assertEquals("fastq-illumina-1.5", FASTQ_ILLUMINA_1_5.getName());
   }
 
   @Test
-  public void testGetQualityMin() {
+  public void testGetFormatFromName() {
 
-    assertEquals(0, FASTQ_SANGER.getQualityMin());
-    assertEquals(-5, FASTQ_SOLEXA.getQualityMin());
-    assertEquals(0, FASTQ_ILLUMINA.getQualityMin());
+    assertEquals(FASTQ_SANGER, getFormatFromName("fastq-sanger"));
+    assertEquals(FASTQ_SANGER, getFormatFromName("sanger"));
+    assertEquals(FASTQ_SANGER, getFormatFromName("Illumina-1.8"));
+    assertEquals(FASTQ_SANGER, getFormatFromName("1.8"));
+
+    assertEquals(FASTQ_SOLEXA, getFormatFromName("fastq-solexa"));
+    assertEquals(FASTQ_SOLEXA, getFormatFromName("solexa"));
+    assertEquals(FASTQ_SOLEXA, getFormatFromName("1.0"));
+
+    assertEquals(FASTQ_ILLUMINA, getFormatFromName("fastq-illumina-1.3"));
+    assertEquals(FASTQ_ILLUMINA, getFormatFromName("illumina-1.3"));
+    assertEquals(FASTQ_ILLUMINA, getFormatFromName("fastq-illumina"));
+    assertEquals(FASTQ_ILLUMINA, getFormatFromName("illumina"));
+    assertEquals(FASTQ_ILLUMINA, getFormatFromName("1.3"));
+
+    assertEquals(FASTQ_ILLUMINA_1_5, getFormatFromName("fastq-illumina-1.5"));
+    assertEquals(FASTQ_ILLUMINA_1_5, getFormatFromName("illumina-1.5"));
+    assertEquals(FASTQ_ILLUMINA_1_5, getFormatFromName("1.5"));
+
   }
 
   @Test
-  public void testGetQualityMax() {
+  public void testGetIlliminaVersion() {
 
-    assertEquals(93, FASTQ_SANGER.getQualityMax());
-    assertEquals(62, FASTQ_SOLEXA.getQualityMax());
-    assertEquals(62, FASTQ_ILLUMINA.getQualityMax());
+    assertEquals("1.0", FASTQ_SOLEXA.getIlluminaVersion());
+    assertEquals("1.3", FASTQ_ILLUMINA.getIlluminaVersion());
+    assertEquals("1.5", FASTQ_ILLUMINA_1_5.getIlluminaVersion());
+    assertEquals("1.8", FASTQ_SANGER.getIlluminaVersion());
+  }
+
+  @Test
+  public void testGetScoreMin() {
+
+    assertEquals(0, FASTQ_SANGER.getScoreMin());
+    assertEquals(-5, FASTQ_SOLEXA.getScoreMin());
+    assertEquals(0, FASTQ_ILLUMINA.getScoreMin());
+    assertEquals(2, FASTQ_ILLUMINA_1_5.getScoreMin());
+  }
+
+  @Test
+  public void testGetScoreMax() {
+
+    assertEquals(93, FASTQ_SANGER.getScoreMax());
+    assertEquals(62, FASTQ_SOLEXA.getScoreMax());
+    assertEquals(62, FASTQ_ILLUMINA.getScoreMax());
+    assertEquals(62, FASTQ_ILLUMINA_1_5.getScoreMax());
   }
 
   @Test
@@ -39,6 +81,7 @@ public class FastqFormatTest {
     assertEquals('!', FASTQ_SANGER.getCharMin());
     assertEquals(';', FASTQ_SOLEXA.getCharMin());
     assertEquals('@', FASTQ_ILLUMINA.getCharMin());
+    assertEquals('B', FASTQ_ILLUMINA_1_5.getCharMin());
   }
 
   @Test
@@ -47,97 +90,231 @@ public class FastqFormatTest {
     assertEquals('~', FASTQ_SANGER.getCharMax());
     assertEquals('~', FASTQ_SOLEXA.getCharMax());
     assertEquals('~', FASTQ_ILLUMINA.getCharMax());
+    assertEquals('~', FASTQ_ILLUMINA_1_5.getCharMax());
+  }
+
+  @Test
+  public void testGetCharMaxExpected() {
+
+    assertEquals('I', FASTQ_SANGER.getCharMaxExpected());
+    assertEquals('h', FASTQ_SOLEXA.getCharMaxExpected());
+    assertEquals('h', FASTQ_ILLUMINA.getCharMaxExpected());
+    assertEquals('h', FASTQ_ILLUMINA_1_5.getCharMaxExpected());
   }
 
   @Test
   public void testGetOffset() {
 
     assertEquals(33, FASTQ_SANGER.getAsciiOffset());
-    assertEquals(64, FASTQ_SOLEXA.getAsciiOffset());
     assertEquals(64, FASTQ_ILLUMINA.getAsciiOffset());
+    assertEquals(64, FASTQ_ILLUMINA_1_5.getAsciiOffset());
   }
 
   @Test
-  public void testGetQuality() {
-    assertEquals(0, FASTQ_SANGER.getQuality('!'));
-    assertEquals(0, FASTQ_SOLEXA.getQuality('@'));
-    assertEquals(0, FASTQ_ILLUMINA.getQuality('@'));
+  public void testGetScore() {
+    assertEquals(0, FASTQ_SANGER.getScore('!'));
+    assertEquals(0, FASTQ_ILLUMINA.getScore('@'));
+    assertEquals(0, FASTQ_ILLUMINA_1_5.getScore('@'));
   }
 
-  //@Test
-  // public void testConvertQualityTo() {
-  //
-  // assertEquals(0, FASTQ_SANGER.convertQualityTo(0, FASTQ_SANGER));
-  // assertEquals(1, FASTQ_SANGER.convertQualityTo(1, FASTQ_SANGER));
-  // assertEquals(2, FASTQ_SANGER.convertQualityTo(2, FASTQ_SANGER));
-  // assertEquals(3, FASTQ_SANGER.convertQualityTo(3, FASTQ_SANGER));
-  // assertEquals(4, FASTQ_SANGER.convertQualityTo(4, FASTQ_SANGER));
-  // assertEquals(5, FASTQ_SANGER.convertQualityTo(5, FASTQ_SANGER));
-  // assertEquals(6, FASTQ_SANGER.convertQualityTo(6, FASTQ_SANGER));
-  // assertEquals(7, FASTQ_SANGER.convertQualityTo(7, FASTQ_SANGER));
-  // assertEquals(8, FASTQ_SANGER.convertQualityTo(8, FASTQ_SANGER));
-  // assertEquals(9, FASTQ_SANGER.convertQualityTo(9, FASTQ_SANGER));
-  // assertEquals(10, FASTQ_SANGER.convertQualityTo(10, FASTQ_SANGER));
-  //
-  // assertEquals(0, FASTQ_SOLEXA.convertQualityTo(0, FASTQ_SOLEXA));
-  // assertEquals(1, FASTQ_SOLEXA.convertQualityTo(1, FASTQ_SOLEXA));
-  // assertEquals(2, FASTQ_SOLEXA.convertQualityTo(2, FASTQ_SOLEXA));
-  // assertEquals(3, FASTQ_SOLEXA.convertQualityTo(3, FASTQ_SOLEXA));
-  // assertEquals(4, FASTQ_SOLEXA.convertQualityTo(4, FASTQ_SOLEXA));
-  // assertEquals(5, FASTQ_SOLEXA.convertQualityTo(5, FASTQ_SOLEXA));
-  // assertEquals(6, FASTQ_SOLEXA.convertQualityTo(6, FASTQ_SOLEXA));
-  // assertEquals(7, FASTQ_SOLEXA.convertQualityTo(7, FASTQ_SOLEXA));
-  // assertEquals(8, FASTQ_SOLEXA.convertQualityTo(8, FASTQ_SOLEXA));
-  // assertEquals(9, FASTQ_SOLEXA.convertQualityTo(9, FASTQ_SOLEXA));
-  // assertEquals(10, FASTQ_SOLEXA.convertQualityTo(10, FASTQ_SOLEXA));
-  //
-  // assertEquals(0, FASTQ_ILLUMINA.convertQualityTo(0, FASTQ_ILLUMINA));
-  // assertEquals(1, FASTQ_ILLUMINA.convertQualityTo(1, FASTQ_ILLUMINA));
-  // assertEquals(2, FASTQ_ILLUMINA.convertQualityTo(2, FASTQ_ILLUMINA));
-  // assertEquals(3, FASTQ_ILLUMINA.convertQualityTo(3, FASTQ_ILLUMINA));
-  // assertEquals(4, FASTQ_ILLUMINA.convertQualityTo(4, FASTQ_ILLUMINA));
-  // assertEquals(5, FASTQ_ILLUMINA.convertQualityTo(5, FASTQ_ILLUMINA));
-  // assertEquals(6, FASTQ_ILLUMINA.convertQualityTo(6, FASTQ_ILLUMINA));
-  // assertEquals(7, FASTQ_ILLUMINA.convertQualityTo(7, FASTQ_ILLUMINA));
-  // assertEquals(8, FASTQ_ILLUMINA.convertQualityTo(8, FASTQ_ILLUMINA));
-  // assertEquals(9, FASTQ_ILLUMINA.convertQualityTo(9, FASTQ_ILLUMINA));
-  // assertEquals(10, FASTQ_ILLUMINA.convertQualityTo(10, FASTQ_ILLUMINA));
-  //
-  // assertEquals(0, FASTQ_ILLUMINA.convertQualityTo(0, FASTQ_SANGER));
-  // assertEquals(1, FASTQ_ILLUMINA.convertQualityTo(1, FASTQ_SANGER));
-  // assertEquals(2, FASTQ_ILLUMINA.convertQualityTo(2, FASTQ_SANGER));
-  // assertEquals(3, FASTQ_ILLUMINA.convertQualityTo(3, FASTQ_SANGER));
-  // assertEquals(4, FASTQ_ILLUMINA.convertQualityTo(4, FASTQ_SANGER));
-  // assertEquals(5, FASTQ_ILLUMINA.convertQualityTo(5, FASTQ_SANGER));
-  // assertEquals(6, FASTQ_ILLUMINA.convertQualityTo(6, FASTQ_SANGER));
-  // assertEquals(7, FASTQ_ILLUMINA.convertQualityTo(7, FASTQ_SANGER));
-  // assertEquals(8, FASTQ_ILLUMINA.convertQualityTo(8, FASTQ_SANGER));
-  // assertEquals(9, FASTQ_ILLUMINA.convertQualityTo(9, FASTQ_SANGER));
-  // assertEquals(10, FASTQ_ILLUMINA.convertQualityTo(10, FASTQ_SANGER));
-  //
-  // assertEquals(0, FASTQ_SANGER.convertQualityTo(0, FASTQ_ILLUMINA));
-  // assertEquals(1, FASTQ_SANGER.convertQualityTo(1, FASTQ_ILLUMINA));
-  // assertEquals(2, FASTQ_SANGER.convertQualityTo(2, FASTQ_ILLUMINA));
-  // assertEquals(3, FASTQ_SANGER.convertQualityTo(3, FASTQ_ILLUMINA));
-  // assertEquals(4, FASTQ_SANGER.convertQualityTo(4, FASTQ_ILLUMINA));
-  // assertEquals(5, FASTQ_SANGER.convertQualityTo(5, FASTQ_ILLUMINA));
-  // assertEquals(6, FASTQ_SANGER.convertQualityTo(6, FASTQ_ILLUMINA));
-  // assertEquals(7, FASTQ_SANGER.convertQualityTo(7, FASTQ_ILLUMINA));
-  // assertEquals(8, FASTQ_SANGER.convertQualityTo(8, FASTQ_ILLUMINA));
-  // assertEquals(9, FASTQ_SANGER.convertQualityTo(9, FASTQ_ILLUMINA));
-  // assertEquals(10, FASTQ_SANGER.convertQualityTo(10, FASTQ_ILLUMINA));
-  //
-  // //assertEquals(-5, FASTQ_SANGER.convertQualityTo(0, FASTQ_SOLEXA));
-  // assertEquals(-5, FASTQ_SANGER.convertQualityTo(1, FASTQ_SOLEXA));
-  // assertEquals(-2, FASTQ_SANGER.convertQualityTo(2, FASTQ_SOLEXA));
-  // assertEquals(0, FASTQ_SANGER.convertQualityTo(3, FASTQ_SOLEXA));
-  // assertEquals(2, FASTQ_SANGER.convertQualityTo(4, FASTQ_SOLEXA));
-  // assertEquals(3, FASTQ_SANGER.convertQualityTo(5, FASTQ_SOLEXA));
-  // assertEquals(5, FASTQ_SANGER.convertQualityTo(6, FASTQ_SOLEXA));
-  // assertEquals(6, FASTQ_SANGER.convertQualityTo(7, FASTQ_SOLEXA));
-  // assertEquals(7, FASTQ_SANGER.convertQualityTo(8, FASTQ_SOLEXA));
-  // assertEquals(8, FASTQ_SANGER.convertQualityTo(9, FASTQ_SOLEXA));
-  // assertEquals(10, FASTQ_SANGER.convertQualityTo(10, FASTQ_SOLEXA));
-  // }
+  @Test
+  public void testConvertScoretoProbability() {
+
+    // assertEquals(1, FASTQ_SANGER.convertQualityToProbability(0), 0.01);
+    assertEquals(0.1, FASTQ_SANGER.convertScoreToProbability(10), 0.01);
+    assertEquals(0.01, FASTQ_SANGER.convertScoreToProbability(20), 0.01);
+    assertEquals(0.001, FASTQ_SANGER.convertScoreToProbability(30), 0.01);
+    assertEquals(0.0001, FASTQ_SANGER.convertScoreToProbability(40), 0.01);
+    assertEquals(0.00001, FASTQ_SANGER.convertScoreToProbability(50), 0.01);
+    assertEquals(0.000001, FASTQ_SANGER.convertScoreToProbability(60), 0.01);
+    assertEquals(0.0000001, FASTQ_SANGER.convertScoreToProbability(70), 0.01);
+    assertEquals(0.00000001, FASTQ_SANGER.convertScoreToProbability(80), 0.01);
+    assertEquals(0.000000001, FASTQ_SANGER.convertScoreToProbability(90), 0.01);
+
+    for (int i = 0; i <= 90; i += 10)
+      assertEquals(i, convertToProbaToScore(FASTQ_SANGER, i), 0.01);
+
+  }
+
+  @Test
+  public void testConvertProbabilitytoScore() {
+
+    assertEquals(Double.POSITIVE_INFINITY,
+        FASTQ_SANGER.convertProbabilitytoScore(0.0), 0.01);
+    assertEquals(10, FASTQ_SANGER.convertProbabilitytoScore(0.1), 0.01);
+    assertEquals(20, FASTQ_SANGER.convertProbabilitytoScore(0.01), 0.01);
+    assertEquals(30, FASTQ_SANGER.convertProbabilitytoScore(0.001), 0.01);
+    assertEquals(40, FASTQ_SANGER.convertProbabilitytoScore(0.0001), 0.01);
+    assertEquals(50, FASTQ_SANGER.convertProbabilitytoScore(0.00001), 0.01);
+    assertEquals(60, FASTQ_SANGER.convertProbabilitytoScore(0.000001), 0.01);
+    assertEquals(70, FASTQ_SANGER.convertProbabilitytoScore(0.0000001), 0.01);
+    assertEquals(80, FASTQ_SANGER.convertProbabilitytoScore(0.00000001), 0.01);
+    assertEquals(90, FASTQ_SANGER.convertProbabilitytoScore(0.000000001), 0.01);
+
+    for (int i = 0; i <= 90; i += 10)
+      assertEquals(i, convertToProbaToScore(FASTQ_SANGER, i), 0.01);
+
+    for (int i = 0; i <= 90; i += 10)
+      assertEquals(i, convertToProbaToScore(FASTQ_ILLUMINA, i), 0.01);
+
+  }
+
+  private double convertToProbaToScore(FastqFormat f, int q) {
+
+    final double proba = f.convertScoreToProbability(q);
+
+    return f.convertProbabilitytoScore(proba);
+  }
+
+  private double phredScoreToSolexaScore(final double s) {
+
+    return FASTQ_SOLEXA.convertProbabilitytoScore(FASTQ_SANGER
+        .convertScoreToProbability((int) Math.round(s)));
+  }
+
+  private double solexaScoreToPhredScore(final double s) {
+
+    return FASTQ_SANGER.convertProbabilitytoScore(FASTQ_SOLEXA
+        .convertScoreToProbability((int) Math.round(s)));
+  }
+
+  @Test
+  public void testConvertPhredScoreToSolexaScore() {
+
+    assertEquals(80.00, FastqFormat.convertPhredSCoreToSolexaScore(80), 0.01);
+    assertEquals(50.00, FastqFormat.convertPhredSCoreToSolexaScore(50), 0.01);
+    assertEquals(19.96, FastqFormat.convertPhredSCoreToSolexaScore(20), 0.01);
+    assertEquals(9.54, FastqFormat.convertPhredSCoreToSolexaScore(10), 0.01);
+    assertEquals(3.35, FastqFormat.convertPhredSCoreToSolexaScore(5), 0.01);
+    assertEquals(1.80, FastqFormat.convertPhredSCoreToSolexaScore(4), 0.01);
+    assertEquals(-0.02, FastqFormat.convertPhredSCoreToSolexaScore(3), 0.01);
+    assertEquals(-2.33, FastqFormat.convertPhredSCoreToSolexaScore(2), 0.01);
+    assertEquals(-5.00, FastqFormat.convertPhredSCoreToSolexaScore(1), 0.0);
+    assertEquals(-5.00, FastqFormat.convertPhredSCoreToSolexaScore(0), 0.0);
+
+    assertEquals(phredScoreToSolexaScore(80), convertPhredSCoreToSolexaScore(80), 0.9);
+    assertEquals(phredScoreToSolexaScore(50), convertPhredSCoreToSolexaScore(50), 0.9);
+    assertEquals(phredScoreToSolexaScore(20), convertPhredSCoreToSolexaScore(20), 0.9);
+    assertEquals(phredScoreToSolexaScore(10), convertPhredSCoreToSolexaScore(10), 0.9);
+    assertEquals(phredScoreToSolexaScore(5), convertPhredSCoreToSolexaScore(5), 0.9);
+    assertEquals(phredScoreToSolexaScore(4), convertPhredSCoreToSolexaScore(4), 0.9);
+    assertEquals(phredScoreToSolexaScore(3), convertPhredSCoreToSolexaScore(3), 0.9);
+    assertEquals(phredScoreToSolexaScore(2), convertPhredSCoreToSolexaScore(2), 0.9);
+    assertEquals(phredScoreToSolexaScore(1), convertPhredSCoreToSolexaScore(1), 0.9);
+    // assertEquals(phredToSolexta(0), convertPhredQualityToSolexa(0), 0.9);
+  }
+
+  @Test
+  public void testConvertSolexaScoreToPhredScore() {
+
+    assertEquals(80.00, FastqFormat.convertSolexaScoreToPhredScore(80), 0.01);
+    assertEquals(20.04, FastqFormat.convertSolexaScoreToPhredScore(20), 0.01);
+    assertEquals(10.41, FastqFormat.convertSolexaScoreToPhredScore(10), 0.01);
+    assertEquals(3.01, FastqFormat.convertSolexaScoreToPhredScore(0), 0.01);
+    assertEquals(1.19, FastqFormat.convertSolexaScoreToPhredScore(-5), 0.01);
+
+    assertEquals(solexaScoreToPhredScore(80), convertSolexaScoreToPhredScore(80), 0.9);
+    assertEquals(solexaScoreToPhredScore(20), convertSolexaScoreToPhredScore(20), 0.9);
+    assertEquals(solexaScoreToPhredScore(10), convertSolexaScoreToPhredScore(10), 0.9);
+    assertEquals(solexaScoreToPhredScore(0), convertSolexaScoreToPhredScore(0), 0.9);
+    assertEquals(solexaScoreToPhredScore(-5), convertSolexaScoreToPhredScore(-5), 0.9);
+  }
+
+  @Test
+  public void testConvertScoreTo() {
+
+    assertEquals(0, FASTQ_SANGER.convertScoreTo(0, FASTQ_SANGER));
+    assertEquals(1, FASTQ_SANGER.convertScoreTo(1, FASTQ_SANGER));
+    assertEquals(2, FASTQ_SANGER.convertScoreTo(2, FASTQ_SANGER));
+    assertEquals(3, FASTQ_SANGER.convertScoreTo(3, FASTQ_SANGER));
+    assertEquals(4, FASTQ_SANGER.convertScoreTo(4, FASTQ_SANGER));
+    assertEquals(5, FASTQ_SANGER.convertScoreTo(5, FASTQ_SANGER));
+    assertEquals(6, FASTQ_SANGER.convertScoreTo(6, FASTQ_SANGER));
+    assertEquals(7, FASTQ_SANGER.convertScoreTo(7, FASTQ_SANGER));
+    assertEquals(8, FASTQ_SANGER.convertScoreTo(8, FASTQ_SANGER));
+    assertEquals(9, FASTQ_SANGER.convertScoreTo(9, FASTQ_SANGER));
+    assertEquals(10, FASTQ_SANGER.convertScoreTo(10, FASTQ_SANGER));
+
+    assertEquals(-5, FASTQ_SOLEXA.convertScoreTo(-5, FASTQ_SOLEXA));
+    assertEquals(-2, FASTQ_SOLEXA.convertScoreTo(-2, FASTQ_SOLEXA));
+    assertEquals(0, FASTQ_SOLEXA.convertScoreTo(0, FASTQ_SOLEXA));
+    assertEquals(2, FASTQ_SOLEXA.convertScoreTo(2, FASTQ_SOLEXA));
+    assertEquals(3, FASTQ_SOLEXA.convertScoreTo(3, FASTQ_SOLEXA));
+    assertEquals(5, FASTQ_SOLEXA.convertScoreTo(5, FASTQ_SOLEXA));
+    assertEquals(6, FASTQ_SOLEXA.convertScoreTo(6, FASTQ_SOLEXA));
+    assertEquals(7, FASTQ_SOLEXA.convertScoreTo(7, FASTQ_SOLEXA));
+    assertEquals(8, FASTQ_SOLEXA.convertScoreTo(8, FASTQ_SOLEXA));
+    assertEquals(10, FASTQ_SOLEXA.convertScoreTo(10, FASTQ_SOLEXA));
+
+    assertEquals(-5, FASTQ_SANGER.convertScoreTo(0, FASTQ_SOLEXA));
+    assertEquals(-5, FASTQ_SANGER.convertScoreTo(1, FASTQ_SOLEXA));
+    assertEquals(-2, FASTQ_SANGER.convertScoreTo(2, FASTQ_SOLEXA));
+    assertEquals(0, FASTQ_SANGER.convertScoreTo(3, FASTQ_SOLEXA));
+    assertEquals(2, FASTQ_SANGER.convertScoreTo(4, FASTQ_SOLEXA));
+    assertEquals(3, FASTQ_SANGER.convertScoreTo(5, FASTQ_SOLEXA));
+    assertEquals(5, FASTQ_SANGER.convertScoreTo(6, FASTQ_SOLEXA));
+    assertEquals(6, FASTQ_SANGER.convertScoreTo(7, FASTQ_SOLEXA));
+    assertEquals(7, FASTQ_SANGER.convertScoreTo(8, FASTQ_SOLEXA));
+    assertEquals(8, FASTQ_SANGER.convertScoreTo(9, FASTQ_SOLEXA));
+    assertEquals(10, FASTQ_SANGER.convertScoreTo(10, FASTQ_SOLEXA));
+
+    for (int i = 11; i <= 40; i++)
+      assertEquals(i, FASTQ_SANGER.convertScoreTo(i, FASTQ_SOLEXA));
+
+    assertEquals(1, FASTQ_SOLEXA.convertScoreTo(-5, FASTQ_SANGER));
+    assertEquals(1, FASTQ_SOLEXA.convertScoreTo(-4, FASTQ_SANGER));
+    assertEquals(2, FASTQ_SOLEXA.convertScoreTo(-3, FASTQ_SANGER));
+    assertEquals(2, FASTQ_SOLEXA.convertScoreTo(-2, FASTQ_SANGER));
+    assertEquals(3, FASTQ_SOLEXA.convertScoreTo(-1, FASTQ_SANGER));
+    assertEquals(3, FASTQ_SOLEXA.convertScoreTo(0, FASTQ_SANGER));
+    assertEquals(4, FASTQ_SOLEXA.convertScoreTo(1, FASTQ_SANGER));
+    assertEquals(4, FASTQ_SOLEXA.convertScoreTo(2, FASTQ_SANGER));
+    assertEquals(5, FASTQ_SOLEXA.convertScoreTo(3, FASTQ_SANGER));
+    assertEquals(5, FASTQ_SOLEXA.convertScoreTo(4, FASTQ_SANGER));
+    assertEquals(6, FASTQ_SOLEXA.convertScoreTo(5, FASTQ_SANGER));
+    assertEquals(7, FASTQ_SOLEXA.convertScoreTo(6, FASTQ_SANGER));
+    assertEquals(8, FASTQ_SOLEXA.convertScoreTo(7, FASTQ_SANGER));
+    assertEquals(9, FASTQ_SOLEXA.convertScoreTo(8, FASTQ_SANGER));
+    assertEquals(10, FASTQ_SOLEXA.convertScoreTo(9, FASTQ_SANGER));
+    assertEquals(10, FASTQ_SOLEXA.convertScoreTo(10, FASTQ_SANGER));
+
+    for (int i = 11; i <= 40; i++)
+      assertEquals(i, FASTQ_SOLEXA.convertScoreTo(i, FASTQ_SANGER));
+  }
+
+  private String rangeCharacters(final int min, final int max) {
+
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = min; i <= max; i++)
+      sb.append((char) i);
+
+    return sb.toString();
+  }
+
+  @Test
+  public void testIdentifyFormat() {
+
+    assertEquals(FASTQ_SANGER, identifyFormat(rangeCharacters(33, 73)));
+    assertEquals(FASTQ_SOLEXA, identifyFormat(rangeCharacters(59, 104)));
+    assertEquals(FASTQ_ILLUMINA, identifyFormat(rangeCharacters(64, 104)));
+    assertEquals(FASTQ_ILLUMINA_1_5, identifyFormat(rangeCharacters(66, 104)));
+
+    assertEquals(FASTQ_SANGER, identifyFormat(rangeCharacters(33, 126)));
+    assertEquals(FASTQ_SOLEXA, identifyFormat(rangeCharacters(59, 126)));
+    assertEquals(FASTQ_ILLUMINA, identifyFormat(rangeCharacters(64, 126)));
+    assertEquals(FASTQ_ILLUMINA_1_5, identifyFormat(rangeCharacters(66, 126)));
+
+    for (FastqFormat f : FastqFormat.values())
+      assertEquals(f,
+          identifyFormat(rangeCharacters(f.getCharMin(), f.getCharMax())));
+
+    for (FastqFormat f : FastqFormat.values())
+      assertEquals(f,
+          identifyFormat(rangeCharacters(f.getCharMin() + 1, f.getCharMax())));
+
+    assertNull(identifyFormat(rangeCharacters(32, 104)));
+    assertNull(identifyFormat(rangeCharacters(33, 127)));
+  }
 
 }

@@ -1,32 +1,54 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Math.log10;
+import static java.lang.Math.max;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
+import static java.util.Collections.EMPTY_SET;
+import static java.util.Collections.unmodifiableSet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 
+/**
+ * This enum define the existing fastq formats. It provide many function to
+ * transform a format to another.
+ * @author Laurent Jourdren
+ */
 public enum FastqFormat {
 
-  FASTQ_SANGER("fastq-sanger", null, 0, 93, 33, false), FASTQ_SOLEXA(
-      "fastq-solexa", null, -5, 62, 64, true), FASTQ_ILLUMINA("fastq-illumina",
-      null, 0, 62, 64, false);
+  FASTQ_SANGER("fastq-sanger", new String[] {"sanger", "fastq-illumina-1.8",
+      "illumina-1.8", "1.8"}, "1.8", 0, 93, 40, 33, true),
+
+  FASTQ_SOLEXA("fastq-solexa", new String[] {"solexa", "fastq-solexa-1.0",
+      "solexa-1.0", "1.0"}, "1.0", -5, 62, 40, 64, false),
+
+  FASTQ_ILLUMINA("fastq-illumina-1.3", new String[] {"fastq-illumina",
+      "illumina", "illumina-1.3", "1.3"}, "1.3", 0, 62, 40, 64, true),
+
+  FASTQ_ILLUMINA_1_5("fastq-illumina-1.5",
+      new String[] {"illumina-1.5", "1.5"}, "1.5", 2, 62, 40, 64, true);
 
   private final String name;
   private final Set<String> alias;
+  private final String illuminaVersion;
 
-  private final int qualityMin;
-  private final int qualityMax;
+  private final int scoreMin;
+  private final int scoreMax;
+  private final int scoreMaxExpected;
   private final int asciiOffset;
-  private final boolean solexaQualityScore;
+  private final boolean phredScore;
 
   //
   // Getters
@@ -41,19 +63,44 @@ public enum FastqFormat {
   }
 
   /**
+   * Get the alias for the name of this format.
+   * @return a set of string with the alias names
+   */
+  @SuppressWarnings("unchecked")
+  public Set<String> getAlias() {
+
+    if (this.alias == null) {
+
+      return EMPTY_SET;
+    }
+
+    return unmodifiableSet(this.alias);
+  }
+
+  /**
+   * Get the first version of the solexa/illimina tools that can have generated
+   * a file with this format.
+   * @return a string with the format version
+   */
+  public String getIlluminaVersion() {
+
+    return this.illuminaVersion;
+  }
+
+  /**
    * Get the minimal value of the quality score.
    * @return the minimal value of the quality score
    */
-  public int getQualityMin() {
-    return this.qualityMin;
+  public int getScoreMin() {
+    return this.scoreMin;
   }
 
   /**
    * Get the maximal value of the quality score.
    * @return the maximal value of the quality score
    */
-  public int getQualityMax() {
-    return this.qualityMax;
+  public int getScoreMax() {
+    return this.scoreMax;
   }
 
   /**
@@ -64,26 +111,51 @@ public enum FastqFormat {
     return this.asciiOffset;
   }
 
+  /**
+   * Get the maximal expected value of the quality score.
+   * @return the maximal expected value of the quality score
+   */
+  public int getScoreMaxExpected() {
+    return this.scoreMaxExpected;
+  }
+
+  /**
+   * Test if the format use Phred quality score.
+   * @return true if the format Phred quality score
+   */
+  public boolean isPhredScore() {
+    return this.phredScore;
+  }
+
   //
   // Other methods
   //
 
   /**
-   * Get the minimal ASCII character used to represent the quality.
+   * Get the minimal ASCII character used to represent the quality score.
    * @return an ASCII character
    */
   public char getCharMin() {
 
-    return (char) (this.asciiOffset + this.qualityMin);
+    return (char) (this.asciiOffset + this.scoreMin);
   }
 
   /**
-   * Get the maximal ASCII character used to represent the quality.
+   * Get the maximal ASCII character used to represent the quality score.
    * @return an ASCII character
    */
   public char getCharMax() {
 
-    return (char) (this.asciiOffset + this.qualityMax);
+    return (char) (this.asciiOffset + this.scoreMax);
+  }
+
+  /**
+   * Get the maximal ASCII character used to represent the quality score.
+   * @return an ASCII character
+   */
+  public char getCharMaxExpected() {
+
+    return (char) (this.asciiOffset + this.scoreMaxExpected);
   }
 
   /**
@@ -124,56 +196,102 @@ public enum FastqFormat {
    * @param character character to convert
    * @return a quality score
    */
-  public int getQuality(final char character) {
+  public int getScore(final char character) {
 
     return character - this.asciiOffset;
   }
 
-  // /**
-  // * Convert a quality character from a format to another.
-  // * @param character character to convert
-  // * @param format output format
-  // * @return the converted character
-  // */
-  // public char convertTo(final char character, final FastqFormat format) {
-  //
-  // return (char) (format.asciiOffset + convertQualityTo(getQuality(character),
-  // format));
-  // }
+  /**
+   * Convert a quality score to a probability.
+   * @param score the quality score
+   * @return the probability that correspond to the quality score
+   */
+  public double convertScoreToProbability(final int score) {
 
-  // /**
-  // * Convert quality from a format to another.
-  // * @param quality quality to transform
-  // * @param format output format
-  // * @return a converted quality
-  // */
-  // public int convertQualityTo(final int quality, final FastqFormat format) {
-  //
-  // if (this.solexaQualityScore != format.solexaQualityScore) {
-  //
-  // double dq = (double) quality;
-  // System.out.println("dq=" + dq);
-  //
-  // double pow = Math.pow(10, dq / 10.0);
-  // System.out.println("pow=" + pow);
-  //
-  // double log = Math.log10(pow + (this.solexaQualityScore ? 1 : -1));
-  // System.out.println("log=" + log);
-  //
-  // double result = 10.0 * log;
-  // System.out.println("result=" + result);
-  //
-  // int r = (int) result;
-  // System.out.println("return=" + r);
-  //
-  // return r;
-  //
-  // // return (int) (10.0 * Math.log10(Math.pow(10, ((double) quality)
-  // // / 10.0) + (this.solexaQualityScore ? 1 : -1)));
-  // }
-  //
-  // return quality;
-  // }
+    final double s = score;
+
+    if (this.phredScore)
+      return pow(10.0, s / -10.0);
+
+    return 1.0 / ((1.0 / pow(10.0, -score / 10.0)) + 1.0);
+  }
+
+  // return Math.pow(10, ((double)phred/(phred+1))/-10d);
+  /**
+   * Convert a probability to a quality score.
+   * @param p probability to convert
+   * @return a quality score
+   */
+  public double convertProbabilitytoScore(final double p) {
+
+    if (this.phredScore)
+      return -10.0 * log10(p);
+
+    return -10.0 * log10(p / (1 - p));
+  }
+
+  /**
+   * Convert Solexa quality score to Phred quality score. The formula is taken
+   * from BioPython.
+   * @param solexaScore the input quality score
+   * @return the quality converted to Phred quality score
+   */
+  public static double convertSolexaScoreToPhredScore(int solexaScore) {
+
+    if (solexaScore < -5)
+      throw new IllegalArgumentException("Invalid Solexa quality: "
+          + solexaScore);
+
+    return 10.0 * log10(pow(10, solexaScore / 10.0) + 1);
+  }
+
+  /**
+   * Convert Phred quality score to Solexa quality score. The formula is taken
+   * from BioPython.
+   * @param phredScore the input quality score
+   * @return the quality converted to Solexa
+   */
+  public static double convertPhredSCoreToSolexaScore(int phredScore) {
+
+    if (phredScore == 0)
+      return -5.0;
+
+    if (phredScore > 0)
+      return max(-5.0, 10.0 * log10(pow(10, phredScore / 10.0) - 1));
+
+    throw new IllegalArgumentException("Invalid PHRED quality: " + phredScore);
+  }
+
+  /**
+   * Convert a quality score character from a format to another.
+   * @param character character to convert
+   * @param format output format
+   * @return the converted character
+   */
+  public char convertTo(final char character, final FastqFormat format) {
+
+    return (char) (format.asciiOffset + convertScoreTo(getScore(character),
+        format));
+  }
+
+  /**
+   * Convert quality from a format to another.
+   * @param score quality score to transform
+   * @param format output format
+   * @return a converted quality score
+   */
+  public int convertScoreTo(final int score, final FastqFormat format) {
+
+    if (this.isPhredScore() != format.isPhredScore()) {
+
+      if (isPhredScore())
+        return (int) round(convertPhredSCoreToSolexaScore(score));
+
+      return (int) round(convertSolexaScoreToPhredScore(score));
+    }
+
+    return score;
+  }
 
   /**
    * Get a format from its name or its alias.
@@ -185,12 +303,14 @@ public enum FastqFormat {
     if (name == null)
       return null;
 
+    final String lowerName = name.toLowerCase().trim();
+
     for (FastqFormat format : FastqFormat.values()) {
 
-      if (format.getName().equals(name))
+      if (format.getName().toLowerCase().equals(lowerName))
         return format;
 
-      if (format.alias != null && format.alias.contains(name))
+      if (format.alias != null && format.alias.contains(lowerName))
         return format;
 
     }
@@ -219,38 +339,72 @@ public enum FastqFormat {
 
     int count = 0;
 
+    final int[] range = new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE};
+
     while (reader.readEntry()
-        || (maxEntriesToRead > 0 && count >= maxEntriesToRead)) {
-      removeBadFormats(formats, reader.getQuality());
+        && (maxEntriesToRead < 1 || count <= maxEntriesToRead)) {
+      removeBadFormats(formats, reader.getQuality(), range);
 
       count++;
     }
 
     is.close();
 
-    return identifyFormatByHeristic(formats);
+    return identifyFormatByHeristic(formats, range[0], range[1]);
+  }
+
+  /**
+   * Identify the fastq format used in a quality string file.
+   * @param qualityString a string with quality data
+   * @return The FastqFormat found or null if no format was found
+   */
+  public static FastqFormat identifyFormat(final String qualityString) {
+
+    if (qualityString == null)
+      return null;
+
+    final Set<FastqFormat> formats =
+        newHashSet(Arrays.asList(FastqFormat.values()));
+
+    final int[] range = new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE};
+
+    removeBadFormats(formats, qualityString, range);
+    return identifyFormatByHeristic(formats, range[0], range[1]);
   }
 
   private static void removeBadFormats(Set<FastqFormat> formats,
-      final String qualityString) {
+      final String qualityString, final int[] range) {
 
-    if (formats == null || qualityString == null)
-      return;
+    Set<FastqFormat> toRemove = null;
 
-    for (FastqFormat format : new HashSet<FastqFormat>(formats)) {
+    for (FastqFormat format : formats) {
 
       for (int i = 0; i < qualityString.length(); i++) {
-        final char c = qualityString.charAt(i);
+        final int c = qualityString.codePointAt(i);
+
+        // Check if the character is the lowest value
+        if (c < range[0])
+          range[0] = c;
+
+        // Check if the character is highest value
+        if (c > range[1])
+          range[1] = c;
+
         if (c < format.getCharMin() || c > format.getCharMax()) {
-          formats.remove(format);
-          break;
+
+          if (toRemove == null)
+            toRemove = Sets.newHashSet();
+          toRemove.add(format);
         }
       }
     }
+
+    if (toRemove != null)
+      formats.removeAll(toRemove);
   }
 
   private static FastqFormat identifyFormatByHeristic(
-      final Set<FastqFormat> formats) {
+      final Set<FastqFormat> formats, final int lowerChar, final int higherChar) {
 
     if (formats == null)
       return null;
@@ -258,24 +412,34 @@ public enum FastqFormat {
     if (formats.isEmpty())
       return null;
 
-    final Map<FastqFormat, Integer> map = Maps.newHashMap();
-    for (FastqFormat f : formats)
-      map.put(f, f.getQualityMax() - f.getQualityMin());
+    // Sort formats with increasing minimal char
+    final List<FastqFormat> sortedFormats = Lists.newArrayList(formats);
+    Collections.sort(sortedFormats, new Comparator<FastqFormat>() {
+      @Override
+      public int compare(FastqFormat o1, FastqFormat o2) {
 
-    FastqFormat bestFormat = null;
-    int bestRange = Integer.MAX_VALUE;
-
-    for (Map.Entry<FastqFormat, Integer> e : map.entrySet()) {
-
-      if (bestFormat == null || e.getValue() < bestRange) {
-
-        bestFormat = e.getKey();
-        bestRange = e.getValue();
+        return Integer.valueOf(o1.getCharMin())
+            .compareTo((int) o2.getCharMin());
       }
+    });
 
+    FastqFormat last = null;
+
+    // The format is the
+    for (FastqFormat f : sortedFormats) {
+
+      if (last != null
+          && last.getCharMin() <= lowerChar && lowerChar < f.getCharMin())
+        return f;
+
+      last = f;
     }
 
-    return bestFormat;
+    // Check if the higher value is valid for the selected format
+    if (higherChar <= last.getCharMax())
+      return last;
+
+    return null;
   }
 
   @Override
@@ -291,22 +455,27 @@ public enum FastqFormat {
   /**
    * Constructor.
    * @param name format name
-   * @param alias alias of the format
-   * @param qualityMin quality minimal value
-   * @param qualityMax quality maximal value
+   * @param alias for the format name
+   * @param illuminaVersion illumina version of the format
+   * @param scoreMin quality score minimal value
+   * @param scoreMax quality score maximal value
+   * @param scoreMaxExpected quality score maximal expected value
    * @param asciiOffset ASCII offset
-   * @param solexaQualityScore Solexa quality score
+   * @param phredQualityScore Phred quality score
    */
-  FastqFormat(final String name, final Set<String> alias, final int qualityMin,
-      final int qualityMax, final int asciiOffset,
-      final boolean solexaQualityScore) {
+  FastqFormat(final String name, final String[] alias,
+      final String illuminaVersion, final int scoreMin, final int scoreMax,
+      final int scoreMaxExpected, final int asciiOffset,
+      final boolean phredQualityScore) {
 
     this.name = name;
-    this.alias = alias;
-    this.qualityMin = qualityMin;
-    this.qualityMax = qualityMax;
+    this.alias = alias == null ? null : Sets.newHashSet(Arrays.asList(alias));
+    this.illuminaVersion = illuminaVersion;
+    this.scoreMin = scoreMin;
+    this.scoreMax = scoreMax;
+    this.scoreMaxExpected = scoreMaxExpected;
     this.asciiOffset = asciiOffset;
-    this.solexaQualityScore = solexaQualityScore;
+    this.phredScore = phredQualityScore;
   }
 
 }

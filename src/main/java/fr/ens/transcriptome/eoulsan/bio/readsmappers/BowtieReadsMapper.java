@@ -101,9 +101,9 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String cmd =
         "cd "
             + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + "--phred" + getFastqFormat() + "-quals " + getMapperArguments()
-            + " -p " + getThreadsNumber() + " " + ebwt + " -1 "
-            + readsFile1.getAbsolutePath() + " -2 "
+            + getBowtieQualityArgument(getFastqFormat()) + " "
+            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
+            + " -1 " + readsFile1.getAbsolutePath() + " -2 "
             + readsFile2.getAbsolutePath() + " > "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
@@ -138,29 +138,13 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
         FileUtils.createTempFile(readsFile.getParentFile(), getMapperName()
             .toLowerCase() + "-outputFile-", ".sam");
 
-    final String qualityFormatArg;
-
-    switch (getFastqFormat()) {
-
-    case FASTQ_SOLEXA:
-      qualityFormatArg = "--solexa-quals";
-      break;
-    case FASTQ_ILLUMINA:
-      qualityFormatArg = "--phred64-quals";
-      break;
-    default:
-      qualityFormatArg = "--phred33-quals";
-      break;
-
-    }
-
     // Build the command line
     final String cmd =
         "cd "
             + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + qualityFormatArg + " " + getMapperArguments() + " -p "
-            + getThreadsNumber() + " " + ebwt + " -q "
-            + readsFile.getAbsolutePath() + " > "
+            + getBowtieQualityArgument(getFastqFormat()) + " "
+            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
+            + " -q " + readsFile.getAbsolutePath() + " > "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
     System.out.println("cmd: " + cmd);
@@ -174,6 +158,23 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     }
 
     this.outputFile = outputFile;
+  }
+
+  private static final String getBowtieQualityArgument(final FastqFormat format) {
+
+    switch (format) {
+
+    case FASTQ_SOLEXA:
+      return "--solexa-quals";
+
+    case FASTQ_ILLUMINA:
+    case FASTQ_ILLUMINA_1_5:
+      return "--phred64-quals";
+
+    case FASTQ_SANGER:
+    default:
+      return "--phred33-quals";
+    }
   }
 
   @Override
