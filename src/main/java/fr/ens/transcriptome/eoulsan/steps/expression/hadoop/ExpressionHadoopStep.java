@@ -61,7 +61,6 @@ import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.NewAPIJobsResults;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
@@ -124,8 +123,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
-      createExonsIndex(new Path(annotationDataFile.getSource()), genomicType,
-          exonsIndexPath, jobConf);
+      createExonsIndex(context, new Path(annotationDataFile.getSource()),
+          genomicType, exonsIndexPath, jobConf);
 
     // Set the path to the exons index
     // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
@@ -181,9 +180,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws IOException if an error occurs while creating the index
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
-  private static final Path createExonsIndex(final Path gffPath,
-      final String expressionType, final Path exonsIndexPath,
-      final Configuration conf) throws IOException, BadBioEntryException {
+  private static final Path createExonsIndex(final Context context,
+      final Path gffPath, final String expressionType,
+      final Path exonsIndexPath, final Configuration conf) throws IOException,
+      BadBioEntryException {
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
@@ -191,8 +191,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final TranscriptAndExonFinder ef =
         new TranscriptAndExonFinder(is, expressionType);
     final File exonIndexFile =
-        FileUtils.createFileInTempDir(StringUtils.basename(gffPath.getName())
-            + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
+        context.getRuntime().createFileInTempDir(
+            StringUtils.basename(gffPath.getName())
+                + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);

@@ -343,9 +343,7 @@ public class S3DataProtocol implements DataProtocol {
   public OutputStream putData(final DataFile dest, final DataFileMetadata md)
       throws IOException {
 
-    final File f =
-        FileUtils.createTempFile(EoulsanRuntime.getSettings()
-            .getTempDirectoryFile(), "", ".s3upload");
+    final File f = EoulsanRuntime.getRuntime().createTempFile("", ".s3upload");
 
     return new FileOutputStream(f) {
 
