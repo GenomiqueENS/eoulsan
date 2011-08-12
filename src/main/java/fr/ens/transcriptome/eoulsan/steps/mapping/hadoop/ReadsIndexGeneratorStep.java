@@ -44,7 +44,6 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class ReadsIndexGeneratorStep extends AbstractStep {
 
@@ -111,7 +110,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
         outputFile = defaultProtocol.getFile(mapperIndexDataFile);
       } else {
         outputFile =
-            FileUtils.createTempFile(
+            context.getRuntime().createTempFile(
                 mapper.getMapperName() + "-index-archive-", ".zip");
       }
 

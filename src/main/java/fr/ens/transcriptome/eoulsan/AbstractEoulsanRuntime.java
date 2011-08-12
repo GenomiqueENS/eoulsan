@@ -24,11 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -47,6 +49,12 @@ public abstract class AbstractEoulsanRuntime {
 
     return this.settings;
   }
+
+  /**
+   * Get the temporary directory.
+   * @return the temporary directory as a File object
+   */
+  public abstract File getTempDirectory();
 
   /**
    * Test if Eoulsan runs in Hadoop mode.
@@ -103,6 +111,52 @@ public abstract class AbstractEoulsanRuntime {
 
     return CompressionType.getCompressionTypeByExtension(extension)
         .createInputStream(is);
+  }
+
+  /**
+   * Create a new temporary directory.
+   * @return the new directory
+   * @throws IOException if there is an error creating the temporary directory
+   */
+  public File createTempDir() throws IOException {
+
+    return FileUtils.createTempDir(getTempDirectory(), null);
+  }
+
+  /**
+   * Create a new temporary directory.
+   * @param prefix prefix of the temporary directory
+   * @return the new directory
+   * @throws IOException if there is an error creating the temporary directory
+   */
+  public File createTempDir(final String prefix) throws IOException {
+
+    return FileUtils
+        .createTempDir(getTempDirectory(), prefix);
+  }
+
+  /**
+   * Create a new temporary file.
+   * @param prefix Prefix of the temporary file
+   * @param suffix suffix of the temporary file
+   * @return the new temporary file
+   * @throws IOException if there is an error creating the temporary directory
+   */
+  public File createTempFile(final String prefix, final String suffix)
+      throws IOException {
+
+    return FileUtils.createTempFile(getTempDirectory(),
+        prefix, suffix);
+  }
+
+  /**
+   * Create a file in the temporary directory.
+   * @param filename The filename to create
+   * @return The new File
+   */
+  public File createFileInTempDir(final String filename) {
+
+    return new File(getTempDirectory(), filename);
   }
 
   //
