@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
-import java.util.Arrays;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
