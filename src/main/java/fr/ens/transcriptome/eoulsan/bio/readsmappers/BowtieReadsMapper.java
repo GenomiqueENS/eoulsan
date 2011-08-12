@@ -43,6 +43,9 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final String MAPPER_EXECUTABLE = "bowtie";
+  private static final String INDEXER_EXECUTABLE = "bowtie-build";
+
   public static final String DEFAULT_ARGUMENTS = "";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
@@ -54,6 +57,39 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   public String getMapperName() {
 
     return MAPPER_NAME;
+  }
+
+  @Override
+  public String getMapperVersion() {
+
+    try {
+      final String bowtiePath;
+
+      synchronized (SYNC) {
+        bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      }
+
+      final String cmd = bowtiePath + " --version";
+
+      final String s = ProcessUtils.execToString(cmd);
+
+      if (s == null)
+        return null;
+
+      final String[] lines = s.split("\n");
+      if (lines.length == 0)
+        return null;
+
+      final String[] tokens = lines[0].split(" version ");
+      if (tokens.length > 1)
+        return tokens[1].trim();
+
+      return null;
+
+    } catch (IOException e) {
+
+      return null;
+    }
   }
 
   @Override
@@ -76,7 +112,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return "bowtie-build";
+    return INDEXER_EXECUTABLE;
   }
 
   @Override
@@ -86,7 +122,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install("bowtie");
+      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
     }
 
     final String ebwt =
@@ -127,7 +163,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install("bowtie");
+      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
     }
 
     final String ebwt =

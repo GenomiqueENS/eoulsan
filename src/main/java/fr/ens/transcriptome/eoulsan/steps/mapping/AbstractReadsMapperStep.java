@@ -140,9 +140,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     }
 
     // Log Step parameters
-    LOGGER.info("In " + getName() + ", mapper=" + this.mapper.getMapperName());
+    LOGGER.info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + mapper.getMapperVersion() + ")");
     LOGGER
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
+
   }
 
 }
