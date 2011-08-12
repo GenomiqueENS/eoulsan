@@ -367,7 +367,7 @@ public final class ProcessUtils {
    * @param startTime Start time in ms
    * @throws IOException if an error occurs at the end of the process
    */
-  private static final void logEndTime(final Process p, final String cmd,
+  public static final void logEndTime(final Process p, final String cmd,
       final long startTime) throws IOException {
 
     try {
