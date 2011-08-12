@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -429,13 +430,9 @@ public class GenomeDescription {
     if (md == null)
       return null;
 
-    final byte[] digest = md.digest();
-    final StringBuilder sb = new StringBuilder();
+    final BigInteger bigInt = new BigInteger(1, md.digest());
 
-    for (int i = 0; i < digest.length; i++)
-      sb.append(Integer.toHexString(digest[i] + 127));
-
-    return sb.toString();
+    return bigInt.toString(16);
   }
 
   //
