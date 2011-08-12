@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class DiffAna {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String ANADIFF_SCRIPT = "/anadiff.R";
 
@@ -136,7 +136,7 @@ public class DiffAna {
     try {
       rScript = FileUtils.createTempFile(this.tempDir, "anadiff", ".R");
 
-      logger.fine("rScript: " + rScript.getAbsolutePath());
+      LOGGER.fine("rScript: " + rScript.getAbsolutePath());
 
       Writer writer = FileUtils.createFastBufferedWriter(rScript);
       writer.write(sb.toString());
@@ -152,11 +152,20 @@ public class DiffAna {
     }
 
     try {
-      ProcessUtils.exec(
-          "/usr/bin/R -f "
-              + StringUtils.bashEscaping(rScript.getAbsolutePath()), false);
 
-      // rScript.delete();
+      final ProcessBuilder pb =
+          new ProcessBuilder("/usr/bin/R", "-f",
+              StringUtils.bashEscaping(rScript.getAbsolutePath()));
+
+      // Set the temporary directory for R
+      pb.environment().put("TMPDIR", this.tempDir.getAbsolutePath());
+
+      ProcessUtils.logEndTime(pb.start(), pb.toString(),
+          System.currentTimeMillis());
+
+      if (!rScript.delete())
+        LOGGER.warning("Unable to remove R script: "
+            + rScript.getAbsolutePath());
 
     } catch (IOException e) {
 
@@ -333,7 +342,7 @@ public class DiffAna {
     for (int i = 0; i < rCondNames.size(); i++)
       for (int j = i + 1; j < rCondNames.size(); j++) {
 
-        sb.append("# path to the output file\n" + "out = \"out-");
+        sb.append("# path to the output file\n" + "out = \"diffana-");
         sb.append(rCondNames.get(i));
         sb.append('-');
         sb.append(rCondNames.get(j));
@@ -344,7 +353,6 @@ public class DiffAna {
         sb.append("],condNames[");
         sb.append(j + 1);
         sb.append("],out) # condition 1 vs condition 2\n\n");
-
       }
 
   }
