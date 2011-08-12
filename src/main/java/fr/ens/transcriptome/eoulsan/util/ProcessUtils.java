@@ -305,7 +305,20 @@ public final class ProcessUtils {
    * @return a string with the output the command
    * @throws IOException if an error occurs while running the process
    */
-  public static String execToString(String cmd) throws IOException {
+  public static String execToString(final String cmd) throws IOException {
+
+    return execToString(cmd, false, true);
+  }
+
+  /**
+   * Execute a command with the OS and return the output in a string.
+   * @param cmd Command to execute
+   * @param addStdErr add the output of stderr in the result
+   * @return a string with the output the command
+   * @throws IOException if an error occurs while running the process
+   */
+  public static String execToString(final String cmd, final boolean addStdErr,
+      final boolean checkExitCode) throws IOException {
 
     logger.fine("execute (Thread "
         + Thread.currentThread().getId() + "): " + cmd);
@@ -332,12 +345,17 @@ public final class ProcessUtils {
     String l2 = null;
 
     while ((l2 = errr.readLine()) != null)
-      System.err.println(l2);
+      if (addStdErr) {
+        sb.append(l2);
+        sb.append('\n');
+      } else
+        System.err.println(l2);
 
     stdr.close();
     errr.close();
 
-    logEndTime(p, cmd, startTime);
+    if (checkExitCode)
+      logEndTime(p, cmd, startTime);
 
     return sb.toString();
   }

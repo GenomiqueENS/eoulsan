@@ -43,8 +43,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final int MIN_BWTSW_ALGO_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
+  private static final String MAPPER_EXECUTABLE = "bwa";
+  private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
+  private static final int MIN_BWTSW_ALGO_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
   public static final String DEFAULT_ARGUMENTS = "-l 28";
 
   private static final String SYNC = BWAReadsMapper.class.getName();
@@ -62,6 +64,47 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private File readsFile2;
 
   @Override
+  public String getMapperName() {
+
+    return MAPPER_NAME;
+  }
+
+  @Override
+  public String getMapperVersion() {
+
+    try {
+      final String execPath;
+
+      synchronized (SYNC) {
+        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      }
+
+      final String cmd = execPath;
+
+      final String s = ProcessUtils.execToString(cmd, true, false);
+
+      if (s == null)
+        return null;
+
+      final String[] lines = s.split("\n");
+
+      for (int i = 0; i < lines.length; i++)
+        if (lines[i].startsWith("Version:")) {
+
+          final String[] tokens = lines[i].split(":");
+          if (tokens.length > 1)
+            return tokens[1].trim();
+        }
+
+      return null;
+
+    } catch (IOException e) {
+
+      return null;
+    }
+  }
+
+  @Override
   protected String getIndexerCommand(String indexerPathname,
       String genomePathname) {
 
@@ -77,13 +120,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return "bwa";
-  }
-
-  @Override
-  public String getMapperName() {
-
-    return MAPPER_NAME;
+    return INDEXER_EXECUTABLE;
   }
 
   @Override
@@ -102,7 +139,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install("bwa");
+      bwaPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
