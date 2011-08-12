@@ -42,6 +42,12 @@ public interface SequenceReadsMapper {
    */
   String getMapperName();
 
+  /**
+   * Get mapper version.
+   * @return a string with the version of the mapper
+   */
+  String getMapperVersion();
+
   //
   // Index creation methods
   //

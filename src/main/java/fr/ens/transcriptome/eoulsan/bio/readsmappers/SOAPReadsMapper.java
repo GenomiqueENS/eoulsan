@@ -43,6 +43,9 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final String MAPPER_EXECUTABLE = "soap";
+  private static final String INDEXER_EXECUTABLE = "2bwt-builder";
+
   public static final String DEFAULT_ARGUMENTS = "-r 2 -l 28";
 
   private static final String SYNC = SOAPReadsMapper.class.getName();
@@ -58,6 +61,40 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public String getMapperVersion() {
+
+    try {
+      final String execPath;
+
+      synchronized (SYNC) {
+        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      }
+
+      final String cmd = execPath;
+
+      final String s = ProcessUtils.execToString(cmd, true, false);
+
+      if (s == null)
+        return null;
+
+      final String[] lines = s.split("\n");
+
+      for (int i = 0; i < lines.length; i++)
+        if (lines[i].startsWith("Version:")) {
+
+          final String[] tokens = lines[i].split(":");
+          if (tokens.length > 1)
+            return tokens[1].trim();
+        }
+
+      return null;
+
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  @Override
   public DataFormat getArchiveFormat() {
 
     return DataFormats.SOAP_INDEX_ZIP;
@@ -66,7 +103,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return "2bwt-builder";
+    return INDEXER_EXECUTABLE;
   }
 
   @Override
@@ -83,7 +120,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install("soap");
+      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
@@ -121,7 +158,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install("soap");
+      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
