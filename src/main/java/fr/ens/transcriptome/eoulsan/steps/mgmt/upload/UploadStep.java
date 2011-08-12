@@ -119,7 +119,7 @@ public abstract class UploadStep extends AbstractStep {
       }
 
       // Create a new design file
-      final File newDesignFile = writeTempDesignFile(design);
+      final File newDesignFile = writeTempDesignFile(context, design);
       final DataFile uploadedDesignDataFile =
           getUploadedDataFile(new DataFile(context.getDesignPathname()));
       filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()),
@@ -345,15 +345,16 @@ public abstract class UploadStep extends AbstractStep {
 
   /**
    * Write temporary design file
+   * @param context context object
    * @param design Design object
    * @return the temporary design file
    * @throws EoulsanIOException if an error occurs while writing the design file
    * @throws IOException if an error occurs while writing the design file
    */
-  private File writeTempDesignFile(final Design design)
+  private File writeTempDesignFile(final Context context, final Design design)
       throws EoulsanIOException, IOException {
 
-    final File result = FileUtils.createTempFile("design-", ".txt");
+    final File result = context.getRuntime().createTempFile("design-", ".txt");
 
     DesignWriter writer =
         new SimpleDesignWriter(FileUtils.createOutputStream(result));

@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -66,6 +67,12 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   public boolean isAmazonMode() {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  @Override
+  public File getTempDirectory() {
+
+    return new File(System.getProperty("java.io.tmpdir"));
   }
 
   @Override

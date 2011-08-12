@@ -134,7 +134,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
       if (precomputedIndexDataFile == null) {
         LOGGER.info("Genome index not found, must compute it.");
-        computeIndex(mapperIndexDataFile, genomeDataFile);
+        computeIndex(context, mapperIndexDataFile, genomeDataFile);
         if (storage != null)
           storage.put(this.mapper, desc, mapperIndexDataFile);
       } else
@@ -152,8 +152,8 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
         + " index creation");
   }
 
-  private void computeIndex(final DataFile mapperIndex, final DataFile genome)
-      throws IOException {
+  private void computeIndex(final Context context, final DataFile mapperIndex,
+      final DataFile genome) throws IOException {
 
     final FileDataProtocol defaultProtocol =
         DataProtocolService.getInstance().getDefaultProtocol();
@@ -165,8 +165,8 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       outputFile = defaultProtocol.getFile(mapperIndex);
     } else {
       outputFile =
-          FileUtils.createTempFile(mapper.getMapperName() + "-index-archive-",
-              ".zip");
+          context.getRuntime().createTempFile(
+              mapper.getMapperName() + "-index-archive-", ".zip");
     }
 
     if (genome.isLocalFile()) {

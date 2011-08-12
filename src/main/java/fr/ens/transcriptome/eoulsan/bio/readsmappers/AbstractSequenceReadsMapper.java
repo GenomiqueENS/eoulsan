@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
@@ -79,7 +80,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private int threadsNumber;
   private String mapperArguments;
-  private File tempDir = new File(System.getProperty("java.io.tmpdir"));
+  private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private int entriesWritten;
 
@@ -400,8 +401,8 @@ public abstract class AbstractSequenceReadsMapper implements
     if (noReadWritten) {
 
       this.readsFile1 =
-          FileUtils.createTempFile(Globals.APP_NAME_LOWER_CASE + "-reads1-",
-              ".fq");
+          EoulsanRuntime.getRuntime().createTempFile(
+              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
 
       this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
 

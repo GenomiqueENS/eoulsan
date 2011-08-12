@@ -58,6 +58,7 @@ public class DiffAna {
   private static final String ANADIFF_SCRIPT = "/anadiff.R";
 
   private Design design;
+  private File tempDir;
   private File expressionFilesDirectory;
   private String expressionFilesPrefix;
   private String expressionFilesSuffix;
@@ -133,7 +134,7 @@ public class DiffAna {
     final File rScript;
 
     try {
-      rScript = File.createTempFile("anadiff", ".R");
+      rScript = FileUtils.createTempFile(this.tempDir, "anadiff", ".R");
 
       logger.fine("rScript: " + rScript.getAbsolutePath());
 
@@ -151,8 +152,9 @@ public class DiffAna {
     }
 
     try {
-      ProcessUtils.exec("/usr/bin/R -f "
-          + StringUtils.bashEscaping(rScript.getAbsolutePath()), false);
+      ProcessUtils.exec(
+          "/usr/bin/R -f "
+              + StringUtils.bashEscaping(rScript.getAbsolutePath()), false);
 
       // rScript.delete();
 
@@ -286,8 +288,7 @@ public class DiffAna {
     sb.append(")\n");
 
     // Add conditions indexes to R script
-    sb
-        .append("#vector of condition code for each colomne of the count tab. condition 1 corresponding to the first name in the condNames vector ...\n");
+    sb.append("#vector of condition code for each colomne of the count tab. condition 1 corresponding to the first name in the condNames vector ...\n");
     sb.append("cond = c(");
     first = true;
     for (int i : rCondIndexes) {
@@ -317,18 +318,17 @@ public class DiffAna {
 
     writeLoadData(sb, rSampleIds, rSampleNames, rCondIndexes, rCondNames);
 
-    sb
-        .append("# Sum of technical replicates (if there is technical replicat) and normalisation\n"
-            + "# for all conditions sums of technical replicates expression\n"
-            + "tab=c()\n"
-            + "for (i in 1:length(unique(cond)))\n"
-            + "{\n"
-            + "  tab = cbind(tab,rowSums(count[which(cond == i)]))\n"
-            + "}\n\n"
-            + "colnames(tab) = condNames\n"
-            + "rownames(tab)=rownames(count)\n\n"
-            + "# deleting genes that are not expressed in any condition\n"
-            + "tab = tab[rowSums(tab)>0,]\n\n");
+    sb.append("# Sum of technical replicates (if there is technical replicat) and normalisation\n"
+        + "# for all conditions sums of technical replicates expression\n"
+        + "tab=c()\n"
+        + "for (i in 1:length(unique(cond)))\n"
+        + "{\n"
+        + "  tab = cbind(tab,rowSums(count[which(cond == i)]))\n"
+        + "}\n\n"
+        + "colnames(tab) = condNames\n"
+        + "rownames(tab)=rownames(count)\n\n"
+        + "# deleting genes that are not expressed in any condition\n"
+        + "tab = tab[rowSums(tab)>0,]\n\n");
 
     for (int i = 0; i < rCondNames.size(); i++)
       for (int j = i + 1; j < rCondNames.size(); j++) {
@@ -337,10 +337,9 @@ public class DiffAna {
         sb.append(rCondNames.get(i));
         sb.append('-');
         sb.append(rCondNames.get(j));
-        sb
-            .append(".txt\"\n"
-                + "# statistical analysis of differentially expressed genes of condition 1 vs condition 2 (give the names)\n"
-                + "ana_diff_without_bio_rep(tab, condNames[");
+        sb.append(".txt\"\n"
+            + "# statistical analysis of differentially expressed genes of condition 1 vs condition 2 (give the names)\n"
+            + "ana_diff_without_bio_rep(tab, condNames[");
         sb.append(i + 1);
         sb.append("],condNames[");
         sb.append(j + 1);
@@ -417,7 +416,8 @@ public class DiffAna {
    * @param design Design to set
    */
   public DiffAna(final Design design, final File expressionFilesDirectory,
-      final String expressionFilesPrefix, final String expressionFilesSuffix) {
+      final String expressionFilesPrefix, final String expressionFilesSuffix,
+      final File tempDir) {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -428,6 +428,7 @@ public class DiffAna {
         "The suffix for expression files is null");
 
     this.design = design;
+    this.tempDir = tempDir;
     this.expressionFilesPrefix = expressionFilesPrefix;
     this.expressionFilesSuffix = expressionFilesSuffix;
 
