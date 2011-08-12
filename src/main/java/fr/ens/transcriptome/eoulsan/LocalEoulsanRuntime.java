@@ -51,6 +51,12 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
+  public File getTempDirectory() {
+
+    return getSettings().getTempDirectoryFile();
+  }
+
+  @Override
   public InputStream getInputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {

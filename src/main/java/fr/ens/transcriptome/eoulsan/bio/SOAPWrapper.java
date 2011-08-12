@@ -108,16 +108,17 @@ public final class SOAPWrapper {
    * @param is InputStream to use for the genome file
    * @throws IOException if an error occurs while creating the index
    */
-  public static File makeIndexInZipFile(final InputStream is)
+  public static File makeIndexInZipFile(final File tempDir, final InputStream is)
       throws IOException {
 
     LOGGER.info("Copy genome to local disk before computating index");
 
     final File genomeTmpFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", "");
+        FileUtils.createTempFile(tempDir, Globals.APP_NAME_LOWER_CASE
+            + "-genome", "");
     FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
-    final File result = makeIndexInZipFile(genomeTmpFile);
+    final File result = makeIndexInZipFile(tempDir, genomeTmpFile);
 
     if (!genomeTmpFile.delete()) {
       LOGGER.warning("Cannot delete temporary index zip file");
@@ -132,8 +133,8 @@ public final class SOAPWrapper {
    * @return a File object with the path of the result zip file
    * @throws IOException if an error occurs while creating the index
    */
-  private static File makeIndexInZipFile(final File genomeFile)
-      throws IOException {
+  private static File makeIndexInZipFile(final File tempDir,
+      final File genomeFile) throws IOException {
 
     LOGGER.info("Start index computation");
 
@@ -144,7 +145,7 @@ public final class SOAPWrapper {
     }
 
     final File tmpDir =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE
+        FileUtils.createTempFile(tempDir, Globals.APP_NAME_LOWER_CASE
             + "-soap-genomeindexdir", "");
 
     if (!(tmpDir.delete())) {
@@ -159,8 +160,8 @@ public final class SOAPWrapper {
     makeIndex(genomeFile, tmpDir);
 
     final File indexZipFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-soapgenomeindex",
-            ".zip");
+        FileUtils.createTempFile(tempDir, Globals.APP_NAME_LOWER_CASE
+            + "-soapgenomeindex", ".zip");
 
     // Zip index files
     FileUtils.createZip(tmpDir, indexZipFile);

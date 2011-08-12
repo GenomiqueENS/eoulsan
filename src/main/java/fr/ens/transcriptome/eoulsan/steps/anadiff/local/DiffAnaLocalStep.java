@@ -81,8 +81,9 @@ public class DiffAnaLocalStep extends AbstractStep {
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
       final DiffAna ad =
-          new DiffAna(design, new File("."), eDF.getType().getPrefix(), eDF
-              .getDefaultExtention());
+          new DiffAna(design, new File("."), eDF.getType().getPrefix(),
+              eDF.getDefaultExtention(), context.getRuntime()
+                  .getTempDirectory());
 
       ad.run();
 
