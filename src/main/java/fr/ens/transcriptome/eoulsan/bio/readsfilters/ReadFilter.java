@@ -29,7 +29,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * This interface define a filter for reads.
- * @author jourdren
+ * @author Laurent Jourdren
  */
 public interface ReadFilter {
 
@@ -65,11 +65,11 @@ public interface ReadFilter {
    * @throws EoulsanException if the parameter is invalid
    */
   void setParameter(String key, String value) throws EoulsanException;
-  
+
   /**
    * Initialize the filter.
    * @throws EoulsanException an error occurs while initialize the filter
    */
-  void init() throws EoulsanException;;
+  void init() throws EoulsanException;
 
 }
