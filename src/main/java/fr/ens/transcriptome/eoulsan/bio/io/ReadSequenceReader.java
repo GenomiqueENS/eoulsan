@@ -30,7 +30,6 @@ import java.util.Iterator;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.Sequence;
 
 /**
  * This interface define method to implements for ReadSequenceReader.
