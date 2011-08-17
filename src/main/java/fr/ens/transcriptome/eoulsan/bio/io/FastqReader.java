@@ -30,73 +30,132 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class implements a Fastq reader.
  * @author Laurent Jourdren
  */
-public class FastqReader extends ReadSequenceReader {
+public class FastqReader implements ReadSequenceReader {
 
   private BufferedReader reader;
+
+  private final boolean reuse;
+  private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
-  private int count = 0;
 
-  /**
-   * Read the next entry in the stream.
-   * @return false if there is no more entry to read
-   * @throws IOException if an error occurs while reading file
-   */
-  @Override
-  public boolean readEntry() throws IOException, BadBioEntryException {
+  private boolean end = false;
+  private boolean nextCallDone = true;
+  private int count;
+  protected IOException ioException;
+  protected BadBioEntryException bbeException;
 
-    String line = null;
-    int entryLine = 0;
-
-    while ((line = this.reader.readLine()) != null) {
-
-      // Trim the line
-      final String trim = line.trim();
-
-      // discard empty lines
-      if ("".equals(trim))
-        continue;
-
-      entryLine++;
-      sb.append(trim);
-
-      if (entryLine == 1 && trim.charAt(0) != '@')
-        throw new BadBioEntryException(
-            "Invalid Fastq file. First line don't start with '@'", line);
-
-      if (entryLine == 3 && trim.charAt(0) != '+')
-        throw new BadBioEntryException(
-            "Invalid Fastq file. Third line don't start with '+'", line);
-
-      if (entryLine == 4) {
-
-        // Fill the ReadSequence object
-        parseFastQ(sb.toString());
-        setId(this.count++);
-        sb.setLength(0);
-        return true;
-      }
-      sb.append('\n');
-    }
-
-    return false;
-  }
-
-  /**
-   * Close the stream.
-   * @throws IOException
-   */
   @Override
   public void close() throws IOException {
 
     this.reader.close();
+  }
+
+  @Override
+  public Iterator<ReadSequence> iterator() {
+
+    return this;
+  }
+
+  @Override
+  public boolean hasNext() {
+
+    if (this.end)
+      return false;
+
+    this.nextCallDone = false;
+
+    // Reuse result object or not
+    if (!this.reuse)
+      result = new ReadSequence();
+
+    String line = null;
+    int entryLine = 0;
+
+    try {
+      while ((line = this.reader.readLine()) != null) {
+
+        // Trim the line
+        final String trim = line.trim();
+
+        // discard empty lines
+        if ("".equals(trim))
+          continue;
+
+        entryLine++;
+        sb.append(trim);
+
+        if (entryLine == 1 && trim.charAt(0) != '@')
+          throw new BadBioEntryException(
+              "Invalid Fastq file. First line don't start with '@'", line);
+
+        if (entryLine == 3 && trim.charAt(0) != '+')
+          throw new BadBioEntryException(
+              "Invalid Fastq file. Third line don't start with '+'", line);
+
+        if (entryLine == 4) {
+
+          // Fill the ReadSequence object
+          result.parseFastQ(sb.toString());
+          result.setId(this.count++);
+          sb.setLength(0);
+          return true;
+        }
+        sb.append('\n');
+      }
+
+      sb.setLength(0);
+      this.end = true;
+
+      return false;
+    } catch (IOException e) {
+
+      this.ioException = e;
+      this.end = true;
+      return false;
+    } catch (BadBioEntryException e) {
+
+      this.bbeException = e;
+      this.end = true;
+      return false;
+    }
+  }
+
+  @Override
+  public ReadSequence next() {
+
+    if (this.nextCallDone)
+      throw new NoSuchElementException();
+
+    this.nextCallDone = true;
+
+    return this.result;
+  }
+
+  @Override
+  public void remove() {
+
+    throw new UnsupportedOperationException("Unsupported operation");
+  }
+
+  @Override
+  public void throwException() throws IOException, BadBioEntryException {
+
+    if (this.ioException != null)
+      throw this.ioException;
+
+    if (this.bbeException != null)
+      throw this.bbeException;
   }
 
   //
@@ -109,10 +168,22 @@ public class FastqReader extends ReadSequenceReader {
    */
   public FastqReader(final InputStream is) {
 
+    this(is, false);
+  }
+
+  /**
+   * Public constructor
+   * @param is InputStream to use
+   * @param reuseResultObject if the object returns by the next() method will be
+   *          always the same
+   */
+  public FastqReader(final InputStream is, final boolean reuseResultObject) {
+
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
     this.reader = new BufferedReader(new InputStreamReader(is));
+    this.reuse = reuseResultObject;
   }
 
   /**
@@ -120,6 +191,18 @@ public class FastqReader extends ReadSequenceReader {
    * @param file File to use
    */
   public FastqReader(final File file) throws FileNotFoundException {
+
+    this(file, false);
+  }
+
+  /**
+   * Public constructor
+   * @param file File to use
+   * @param reuseResultObject if the object returns by the next() method will be
+   *          always the same
+   */
+  public FastqReader(final File file, final boolean reuseResultObject)
+      throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -129,6 +212,7 @@ public class FastqReader extends ReadSequenceReader {
           + file.getAbsolutePath());
 
     this.reader = FileUtils.createBufferedReader(file);
+    this.reuse = reuseResultObject;
   }
 
 }

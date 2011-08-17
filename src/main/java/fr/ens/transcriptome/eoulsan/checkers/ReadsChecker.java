@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -144,33 +145,36 @@ public class ReadsChecker implements Checker {
       final boolean checkPairMember, final int pairMember) throws IOException,
       BadBioEntryException {
 
-    final FastqReader reader = new FastqReader(is);
+    final FastqReader reader = new FastqReader(is, true);
 
     int count = 0;
 
-    while (reader.readEntry() && count < maxReadTocheck) {
+    for (final ReadSequence read : reader) {
+
+      if (count > maxReadTocheck)
+        break;
 
       // For the first read check the id
       if (checkPairMember && count == 0) {
 
         try {
-          final IlluminaReadId irid = new IlluminaReadId(reader.getName());
+          final IlluminaReadId irid = new IlluminaReadId(read.getName());
 
           final int readPairMember = irid.getPairMember();
           if (readPairMember != pairMember)
             throw new BadBioEntryException("Invalid pair member number, "
-                + pairMember + " was excepted", reader.getName());
+                + pairMember + " was excepted", read.getName());
 
           // check the quality string
           if (format != null) {
 
-            final int invalidChar = format.isStringValid(reader.getQuality());
+            final int invalidChar = format.isStringValid(read.getQuality());
 
             if (invalidChar != -1)
               throw new BadBioEntryException(
                   "Invalid quality character found for "
                       + format.getName() + " format: " + (char) invalidChar,
-                  reader.getQuality());
+                  read.getQuality());
           }
 
         } catch (EoulsanException e) {
@@ -180,6 +184,8 @@ public class ReadsChecker implements Checker {
 
       count++;
     }
+    reader.throwException();
+
     is.close();
     return true;
   }

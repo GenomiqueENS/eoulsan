@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.ReadSequenceReader;
@@ -99,9 +100,9 @@ public class DataFormatConverter {
       final ReadSequenceReader reader;
 
       if (this.inFormat == DataFormats.READS_FASTQ)
-        reader = new FastqReader(this.inFile.open());
+        reader = new FastqReader(this.inFile.open(), true);
       else
-        reader = new TFQReader(this.inFile.open());
+        reader = new TFQReader(this.inFile.open(), true);
 
       final OutputStream os = destCT.createOutputStream(destOs);
 
@@ -113,11 +114,11 @@ public class DataFormatConverter {
         writer = new TFQWriter(os);
 
       try {
-        while (reader.readEntry()) {
+        for (final ReadSequence read : reader)
+          writer.write(read);
 
-          writer.set(reader);
-          writer.write();
-        }
+        reader.throwException();
+
       } catch (BadBioEntryException e) {
         throw new IOException("Bad read sequence entry: " + e.getEntry());
       }

@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
@@ -166,22 +167,21 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       throw new IOException(e.getMessage());
     }
 
-    final FastqReader reader = new FastqReader(inFile.open());
+    final FastqReader reader = new FastqReader(inFile.open(), true);
     final FastqWriter writer = new FastqWriter(outFile.create());
 
-    // Set Fastq format
-    reader.setFastqFormat(fastqFormat);
-    writer.setFastqFormat(fastqFormat);
-
     try {
-      while (reader.readEntry()) {
+      for (final ReadSequence read : reader) {
+
+        // Set Fastq format
+        read.setFastqFormat(fastqFormat);
 
         reporter.incrCounter(COUNTER_GROUP,
             INPUT_RAW_READS_COUNTER.counterName(), 1);
 
-        if (filter.accept(reader)) {
-          writer.set(reader);
-          writer.write();
+        if (filter.accept(read)) {
+
+          writer.write(read);
           reporter.incrCounter(COUNTER_GROUP,
               OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
         } else {
@@ -190,6 +190,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         }
 
       }
+      reader.throwException();
+
     } catch (BadBioEntryException e) {
 
       throw new IOException("Invalid Fastq format: " + e.getEntry());
@@ -226,31 +228,33 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       throw new IOException(e.getMessage());
     }
 
-    final FastqReader reader1 = new FastqReader(inFile1.open());
-    final FastqReader reader2 = new FastqReader(inFile2.open());
+    final FastqReader reader1 = new FastqReader(inFile1.open(), true);
+    final FastqReader reader2 = new FastqReader(inFile2.open(), true);
     final FastqWriter writer1 = new FastqWriter(outFile1.create());
     final FastqWriter writer2 = new FastqWriter(outFile2.create());
 
-    // Set PHRED offset
-    reader1.setFastqFormat(fastqFormat);
-    reader2.setFastqFormat(fastqFormat);
-    writer1.setFastqFormat(fastqFormat);
-    writer2.setFastqFormat(fastqFormat);
-
     try {
-      while (reader1.readEntry()) {
+      for (final ReadSequence read1 : reader1) {
 
-        if (!reader2.readEntry())
+        // Test if the second read exists
+        if (!reader2.hasNext()) {
+          reader2.throwException();
           throw new IOException("Excepted end of the second reads file.");
+        }
+
+        // Get the second read
+        final ReadSequence read2 = reader2.next();
+
+        // Set fastq format
+        read1.setFastqFormat(fastqFormat);
+        read2.setFastqFormat(fastqFormat);
 
         reporter.incrCounter(COUNTER_GROUP,
             INPUT_RAW_READS_COUNTER.counterName(), 1);
 
-        if (filter.accept(reader1, reader2)) {
-          writer1.set(reader1);
-          writer1.write();
-          writer2.set(reader2);
-          writer2.write();
+        if (filter.accept(read1, read2)) {
+          writer1.write(read1);
+          writer2.write(read2);
           reporter.incrCounter(COUNTER_GROUP,
               OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
         } else {
@@ -259,8 +263,10 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         }
 
       }
+      reader1.throwException();
+      reader2.throwException();
 
-      if (reader2.readEntry())
+      if (reader2.hasNext())
         throw new IOException("Excepted end of the first reads file.");
 
     } catch (BadBioEntryException e) {

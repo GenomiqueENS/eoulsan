@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -117,21 +117,22 @@ public class SOAP2SAM {
 
     br.close();
 
-    final SequenceReader reader = new FastaReader(this.funmap);
+    final SequenceReader reader = new FastaReader(this.funmap, true);
 
     try {
-      while (reader.readEntry()) {
 
-        bw.write(reader.getName()
-            + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + reader.getSequence() + "\t*\t\n");
+      for (Sequence sequence : reader)
+        bw.write(sequence.getName()
+            + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + sequence.getSequence() + "\t*\t\n");
 
-      }
-    } catch (BadBioEntryException e) {
+      // throw IOException of reader if needed
+      reader.throwException();
 
-      throw new IOException("Invalid unmap entry: " + e.getEntry());
+    } catch (IOException e) {
+
+      reader.close();
+      throw e;
     }
-
-    reader.close();
 
     bw.close();
 

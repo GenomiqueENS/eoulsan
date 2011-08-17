@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
@@ -86,21 +86,19 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       LOGGER.info("Output genome file: " + genomeDataFile);
 
       final SequenceReader reader =
-          new GFFFastaReader(annotationDataFile.open());
+          new GFFFastaReader(annotationDataFile.open(), false);
       final SequenceWriter writer = new FastaWriter(genomeDataFile.create());
 
-      while (reader.readEntry()) {
-        writer.setName(reader.getName());
-        writer.setSequence(reader.getSequence());
-        writer.write();
-      }
+      // Copy the sequences
+      for (Sequence sequence : reader)
+        writer.write(sequence);
+
+      // throw IOException of reader if needed
+      reader.throwException();
 
       reader.close();
       writer.close();
 
-    } catch (BadBioEntryException e) {
-
-      return new StepResult(context, e);
     } catch (EoulsanException e) {
 
       return new StepResult(context, e);

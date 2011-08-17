@@ -31,13 +31,14 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class implements a Fasta writer.
  * @author Laurent Jourdren
  */
-public class FastaWriter extends SequenceWriter {
+public class FastaWriter implements SequenceWriter {
 
   private Writer writer;
 
@@ -46,9 +47,12 @@ public class FastaWriter extends SequenceWriter {
    * @throws IOException if an error occurs while writing data
    */
   @Override
-  public void write() throws IOException {
+  public void write(final Sequence sequence) throws IOException {
 
-    this.writer.write(toFasta(Globals.FASTA_FILE_WIDTH));
+    if (sequence == null)
+      return;
+
+    this.writer.write(sequence.toFasta(Globals.FASTA_FILE_WIDTH));
   }
 
   /**

@@ -30,13 +30,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * this class implements a TFQ writer.
  * @author Laurent Jourdren
  */
-public class TFQWriter extends ReadSequenceWriter {
+public class TFQWriter implements ReadSequenceWriter {
 
   private Writer writer;
 
@@ -47,9 +48,10 @@ public class TFQWriter extends ReadSequenceWriter {
   }
 
   @Override
-  public void write() throws IOException {
+  public void write(final ReadSequence readSequence) throws IOException {
 
-    this.writer.write(toTFQ());
+    if (readSequence != null)
+      this.writer.write(readSequence.toTFQ());
   }
 
   //
