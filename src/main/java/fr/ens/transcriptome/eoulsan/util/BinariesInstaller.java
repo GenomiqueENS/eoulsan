@@ -86,12 +86,27 @@ public class BinariesInstaller {
   }
 
   /**
-   * Install a binary bundled in the jar in /tmp
+   * Install a binary bundled in the jar in a temporary directory. If no
+   * temporary directory is defined, use the "java.io.tmpdir" property.
    * @param binaryFilename program to install
+   * @param temporary directory where to install the binary
    * @return a string with the path of the installed binary
    * @throws IOException if an error occurs while installing binary
    */
-  public static String install(final String binaryFilename) throws IOException {
+  public static String install(final String binaryFilename, final String tempDir)
+      throws IOException {
+
+    final File tempDirFile =
+        new File(tempDir == null
+            ? System.getProperty("java.io.tmpdir") : tempDir.trim());
+
+    if (!tempDirFile.exists())
+      throw new IOException("Temporary directory does not exits: "
+          + tempDirFile);
+
+    if (!tempDirFile.isDirectory())
+      throw new IOException("Temporary directory is not a directory: "
+          + tempDirFile);
 
     if (!SystemUtils.isUnix())
       throw new IOException("Can only install binaries on *nix systems.");
@@ -122,8 +137,9 @@ public class BinariesInstaller {
         "/" + osArchKey.replace(" ", "").replace('\t', '/');
 
     final String outputPath =
-        "/tmp/"
-            + Globals.APP_NAME_LOWER_CASE + "/" + Globals.APP_VERSION_STRING;
+        tempDirFile.getAbsolutePath()
+            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
+            + Globals.APP_VERSION_STRING;
 
     // Test if the file is allready installed
     if (new File(outputPath, binaryFilename).isFile()) {

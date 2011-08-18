@@ -127,6 +127,16 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.tempDir;
   }
 
+  /**
+   * Convenient method to directly get the absolute path for the temporary
+   * directory.
+   * @return the absolute path to the tempory directory as a string
+   */
+  protected String getTempDirectoryPath() {
+
+    return getTempDirectory().getAbsolutePath();
+  }
+
   //
   // Setters
   //
@@ -205,7 +215,9 @@ public abstract class AbstractSequenceReadsMapper implements
     final String indexerPath;
 
     synchronized (SYNC) {
-      indexerPath = BinariesInstaller.install(getIndexerExecutable());
+      indexerPath =
+          BinariesInstaller.install(getIndexerExecutable(),
+              getTempDirectoryPath());
     }
 
     if (!outputDir.exists() && !outputDir.mkdir()) {
