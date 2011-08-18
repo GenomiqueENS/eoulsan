@@ -49,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.HadoopReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
@@ -147,7 +147,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
             + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
     // Init mapper
-    mapper.init(pairEnd, fastqFormat, new HadoopReporterIncrementer(context),
+    mapper.init(pairEnd, fastqFormat, new HadoopReporter(context),
         this.counterGroup);
     LOGGER.info("Fastq format: " + fastqFormat);
 
