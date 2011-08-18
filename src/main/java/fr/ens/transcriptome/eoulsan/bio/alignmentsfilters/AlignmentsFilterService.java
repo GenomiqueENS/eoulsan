@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * This class define a service to retrieve a ReadFilter.
+ * This class define a service to retrieve a AlignentsFilter.
  * @author Laurent Jourdren
  */
 public class AlignmentsFilterService {
@@ -34,17 +34,17 @@ public class AlignmentsFilterService {
   //
 
   /**
-   * Get a ReadFilter object.
-   * @param readFilterName name of the mapper to get
+   * Get a alignmentsFilter object.
+   * @param alignmentsFilterName name of the filter to get
    * @return an Action
    */
-  public AlignmentsFilter getReadFilter(final String readFilterName) {
+  public AlignmentsFilter getAlignmentsFilter(final String alignmentsFilterName) {
 
-    if (readFilterName == null) {
+    if (alignmentsFilterName == null) {
       return null;
     }
 
-    final String actionNameLower = readFilterName.toLowerCase();
+    final String actionNameLower = alignmentsFilterName.toLowerCase();
 
     final Iterator<AlignmentsFilter> it = this.loader.iterator();
 

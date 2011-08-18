@@ -1,7 +1,6 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -11,6 +10,8 @@ import net.sf.samtools.SAMRecord;
  * @author Laurent Jourdren
  */
 public class RemoveUnmappedAlignmentsFilter extends AbstractAlignmentsFilter {
+
+  private final List<SAMRecord> result = new ArrayList<SAMRecord>();
 
   @Override
   public String getName() {
@@ -25,19 +26,17 @@ public class RemoveUnmappedAlignmentsFilter extends AbstractAlignmentsFilter {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public List<SAMRecord> acceptedAlignments(final List<SAMRecord> records) {
+  public void filterAlignments(final List<SAMRecord> records) {
 
     if (records == null)
-      return Collections.EMPTY_LIST;
-
-    final List<SAMRecord> result = new ArrayList<SAMRecord>();
+      return;
 
     for (SAMRecord r : records)
       if (!r.getReadUnmappedFlag())
-        result.add(r);
+        this.result.add(r);
 
-    return result;
+    records.removeAll(result);
+    result.clear();
   }
 
 }
