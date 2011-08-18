@@ -355,7 +355,7 @@ public class GenomeDescription {
     if (fastaHeader == null)
       return null;
 
-    final String s = fastaHeader.substring(1).trim();
+    final String s = fastaHeader.trim();
     String[] fields = s.split("\\s");
 
     if (fields == null || fields.length == 0)
