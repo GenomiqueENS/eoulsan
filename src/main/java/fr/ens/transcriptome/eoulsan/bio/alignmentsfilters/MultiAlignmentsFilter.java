@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -9,6 +8,11 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define an alignments filter that calls successively a list of
+ * alignments filters.
+ * @author Laurent Jourdren
+ */
 public class MultiAlignmentsFilter implements AlignmentsFilter {
 
   private final List<AlignmentsFilter> list = Lists.newArrayList();
@@ -16,20 +20,16 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
   private final String counterGroup;
 
   @Override
-  @SuppressWarnings("unchecked")
-  public List<SAMRecord> acceptedAlignments(final List<SAMRecord> records) {
+  public void filterAlignments(final List<SAMRecord> records) {
 
-    List<SAMRecord> list = records;
+    if (records == null)
+      return;
 
     for (AlignmentsFilter af : this.list) {
 
-      final int sizeBefore = list.size();
-      list = af.acceptedAlignments(list);
-      
-      // if the filter return null replace by an empty list
-      if (list == null)
-        list = Collections.EMPTY_LIST;
-      
+      final int sizeBefore = records.size();
+      af.filterAlignments(records);
+
       final int sizeAfter = list.size();
       final int diff = sizeBefore - sizeAfter;
 
@@ -38,10 +38,10 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
             + af.getName() + " filter", diff);
 
       if (sizeAfter == 0)
-        return list;
+        return;
     }
 
-    return list;
+    return;
   }
 
   /**
