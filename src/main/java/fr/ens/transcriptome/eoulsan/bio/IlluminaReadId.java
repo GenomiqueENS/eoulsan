@@ -48,7 +48,7 @@ public class IlluminaReadId {
   private static final Pattern PATTERN_1_8 =
       Pattern
           .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
-              + "(\\d+):([YN]):(\\d+):([ATGC]+)$");
+              + "(\\d+):([YN]):(\\d+):([ATGC]*)$");
 
   private final Pattern pattern;
 
