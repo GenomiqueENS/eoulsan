@@ -9,7 +9,8 @@ import net.sf.samtools.SAMRecord;
  * This alignment filter remove all the unmapped alignments.
  * @author Laurent Jourdren
  */
-public class RemoveUnmappedReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
+public class RemoveUnmappedReadAlignmentsFilter extends
+    AbstractReadAlignmentsFilter {
 
   private final List<SAMRecord> result = new ArrayList<SAMRecord>();
 
@@ -32,7 +33,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends AbstractReadAlignmentsFi
       return;
 
     for (SAMRecord r : records)
-      if (!r.getReadUnmappedFlag())
+      if (r.getReadUnmappedFlag())
         this.result.add(r);
 
     records.removeAll(result);
