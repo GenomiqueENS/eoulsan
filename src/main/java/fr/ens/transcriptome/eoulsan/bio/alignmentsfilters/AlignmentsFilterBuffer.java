@@ -62,7 +62,7 @@ public class AlignmentsFilterBuffer {
   public List<SAMRecord> getFilteredAlignments() {
 
     // Filter alignment
-    this.filter.filterAlignments(this.list);
+    this.filter.filterReadAlignments(this.list);
 
     // Return the list of filtered alignment
     if (this.reuseResultList)

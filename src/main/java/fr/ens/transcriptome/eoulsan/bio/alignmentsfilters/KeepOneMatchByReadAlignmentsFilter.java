@@ -25,7 +25,7 @@ public class KeepOneMatchByReadAlignmentsFilter extends
   }
 
   @Override
-  public void filterAlignments(final List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
     if (records == null || records.size() < 2)
       return;
