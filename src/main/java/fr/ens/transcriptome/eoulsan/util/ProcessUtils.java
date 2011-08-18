@@ -129,7 +129,20 @@ public final class ProcessUtils {
    */
   public static int sh(final String cmd) throws IOException {
 
-    File f = File.createTempFile("sh-", ".sh");
+    return sh(cmd, null);
+  }
+
+  /**
+   * Execute a command.
+   * @param cmd command to execute
+   * @param temporaryDirectory temporary where create the temporary shell file
+   * @return the exit error of the program
+   * @throws IOException if an error occurs while executing the command
+   */
+  public static int sh(final String cmd, final File temporaryDirectory)
+      throws IOException {
+
+    final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
     UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
     bw.write("#!/bin/sh\n");
     bw.write(cmd);
@@ -162,7 +175,20 @@ public final class ProcessUtils {
   public static ProcessResult shWithOutputs(final String cmd)
       throws IOException {
 
-    File f = File.createTempFile("sh-", ".sh");
+    return shWithOutputs(cmd, null);
+  }
+
+  /**
+   * Execute a command.
+   * @param cmd command to execute
+   * @param temporaryDirectory temporary where create the temporary shell file
+   * @return the exit error of the program
+   * @throws IOException
+   */
+  public static ProcessResult shWithOutputs(final String cmd,
+      final File temporaryDirectory) throws IOException {
+
+    final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
     UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
     bw.write("#!/bin/sh\n");
     bw.write(cmd);
