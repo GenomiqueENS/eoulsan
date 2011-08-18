@@ -149,7 +149,7 @@ public final class GenomeMapperIndexer {
   private GenomeIndexStorage checkForGenomeIndexStore() {
 
     final String genomeIndexStoragePath =
-        EoulsanRuntime.getSettings().getGenomeIndexStoragePath();
+        EoulsanRuntime.getSettings().getGenomeMapperIndexStoragePath();
 
     if (genomeIndexStoragePath == null)
       return null;
