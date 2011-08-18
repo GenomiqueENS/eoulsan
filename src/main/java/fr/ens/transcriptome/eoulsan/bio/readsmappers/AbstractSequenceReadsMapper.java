@@ -228,7 +228,9 @@ public abstract class AbstractSequenceReadsMapper implements
         new File(outputDir, unCompressGenomeFile.getName());
 
     // Create temporary symbolic link for genome
-    FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile);
+    if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile))
+      throw new IOException("Unable to create the symbolic link in "
+          + tmpGenomeFile + " directory for " + unCompressGenomeFile);
 
     // Compute the index
     // ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile
