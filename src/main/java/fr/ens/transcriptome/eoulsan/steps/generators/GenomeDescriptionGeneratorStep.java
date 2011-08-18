@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.steps.generators;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -37,6 +37,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This class implements a genome description generator step.
