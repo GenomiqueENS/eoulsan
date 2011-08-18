@@ -18,7 +18,7 @@ public interface AlignmentsFilter {
    * after the call of the method.
    * @param records
    */
-  void filterAlignments(List<SAMRecord> records);
+  void filterReadAlignments(List<SAMRecord> records);
 
   /**
    * Get the name of the filter.
