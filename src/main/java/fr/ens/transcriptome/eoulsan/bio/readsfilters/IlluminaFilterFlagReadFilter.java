@@ -26,13 +26,16 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
-public class IlluminaIdReadFilter extends AbstractReadFilter {
+public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
 
   private IlluminaReadId irid;
 
   @Override
   public boolean accept(final ReadSequence read) {
 
+    if (read==null)
+      return false;
+    
     try {
 
       if (this.irid == null)
