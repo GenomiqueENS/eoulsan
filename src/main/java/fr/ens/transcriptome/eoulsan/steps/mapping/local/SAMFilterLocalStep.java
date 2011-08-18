@@ -46,6 +46,8 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.steps.ProcessSample;
+import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -56,35 +58,17 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
+    final GenomeDescription genomeDescription;
+
+    // Load genome description object
     try {
-      final long startTime = System.currentTimeMillis();
-      final StringBuilder log = new StringBuilder();
 
-      // Create parser object
-      final SAMParser parser = new SAMParser();
-
-      boolean first = true;
-
-      for (Sample sample : design.getSamples()) {
-
-        if (first) {
-
-          // Load genome description object
-          final GenomeDescription genomeDescription =
-              GenomeDescription.load(context.getDataFile(
-                  DataFormats.GENOME_DESC_TXT, sample).open());
-
-          // Set the chromosomes sizes in the parser
-          parser.setGenomeDescription(genomeDescription);
-
-          first = false;
-        }
-
-        log.append(filterSAMFile(context, sample, parser));
-
-      }
-
-      return new StepResult(context, startTime, log.toString());
+      if (design.getSampleCount() > 0)
+        genomeDescription =
+            GenomeDescription.load(context.getDataFile(
+                DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
+      else
+        genomeDescription = null;
 
     } catch (FileNotFoundException e) {
 
@@ -94,6 +78,38 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       return new StepResult(context, e, "error while filtering: "
           + e.getMessage());
     }
+
+    // Get threshold
+    final int mappingQualityThreshold = getMappingQualityThreshold();
+
+    // Process all samples
+    return ProcessSampleExecutor.processAllSamples(context, design,
+        new ProcessSample() {
+
+          @Override
+          public String processSample(Context context, Sample sample)
+              throws ProcessSampleException {
+
+            try {
+
+              // Create parser object
+              final SAMParser parser = new SAMParser();
+              parser.setGenomeDescription(genomeDescription);
+
+              // Filter alignments
+              return filterSAMFile(context, sample, parser,
+                  mappingQualityThreshold);
+            } catch (FileNotFoundException e) {
+
+              throwException(e, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+
+              throwException(e, "error while filtering: " + e.getMessage());
+            }
+            return null;
+          }
+
+        });
   }
 
   /**
@@ -101,16 +117,15 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @param context context object
    * @param sample sample to use
    * @param parser parse with genome description
+   * @param mappingQualityThreshold mapping quality threshold
    * @return a String with log information about the filtering of alignments of
    *         the sample
    * @throws IOException if an error occurs while reading SAM input file or
    *           writing filtered SAM file
    */
   private String filterSAMFile(final Context context, final Sample sample,
-      final SAMParser parser) throws IOException {
-
-    // Get threshold
-    final int mappingQualityThreshold = getMappingQualityThreshold();
+      final SAMParser parser, final int mappingQualityThreshold)
+      throws IOException {
 
     // Create the reporter
     final Reporter reporter = new Reporter();
