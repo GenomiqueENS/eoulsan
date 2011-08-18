@@ -38,6 +38,18 @@ public class IlluminaReadIdTest {
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals("SOLEXA3_162", ii.getInstrumentId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals("SOLEXA3_162", ii.getInstrumentId());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -48,6 +60,18 @@ public class IlluminaReadIdTest {
   public void testGetRunId() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertEquals(-1, ii.getRunId());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(-1, ii.getRunId());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(-1, ii.getRunId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(-1, ii.getRunId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
     assertEquals(-1, ii.getRunId());
 
     ii =
@@ -62,6 +86,18 @@ public class IlluminaReadIdTest {
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(null, ii.getFlowCellId());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(null, ii.getFlowCellId());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(null, ii.getFlowCellId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(null, ii.getFlowCellId());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(null, ii.getFlowCellId());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -73,6 +109,18 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(6, ii.getFlowCellLane());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(6, ii.getFlowCellLane());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(6, ii.getFlowCellLane());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(7, ii.getFlowCellLane());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(7, ii.getFlowCellLane());
 
     ii =
         new IlluminaReadId(
@@ -86,6 +134,18 @@ public class IlluminaReadIdTest {
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(73, ii.getTileNumberInFlowCellLane());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(73, ii.getTileNumberInFlowCellLane());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(73, ii.getTileNumberInFlowCellLane());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(100, ii.getTileNumberInFlowCellLane());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(100, ii.getTileNumberInFlowCellLane());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -98,6 +158,18 @@ public class IlluminaReadIdTest {
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(941, ii.getXClusterCoordinateInTile());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(941, ii.getXClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(941, ii.getXClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(10000, ii.getXClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(10000, ii.getXClusterCoordinateInTile());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -109,6 +181,18 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(1973, ii.getYClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(1973, ii.getYClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(1973, ii.getYClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(1220, ii.getYClusterCoordinateInTile());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(1220, ii.getYClusterCoordinateInTile());
 
     ii =
         new IlluminaReadId(
@@ -125,6 +209,18 @@ public class IlluminaReadIdTest {
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
     assertEquals("ATCACG", ii.getSequenceIndex());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals("0", ii.getSequenceIndex());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals("0", ii.getSequenceIndex());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals("0", ii.getSequenceIndex());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals("0", ii.getSequenceIndex());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -136,6 +232,18 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals(1, ii.getPairMember());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(1, ii.getPairMember());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(-1, ii.getPairMember());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(1, ii.getPairMember());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertEquals(-1, ii.getPairMember());
 
     ii =
         new IlluminaReadId(
@@ -154,6 +262,18 @@ public class IlluminaReadIdTest {
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertFalse(ii.isFiltered());
 
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isFiltered());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isFiltered());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isFiltered());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isFiltered());
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:Y:0:ATCACG");
@@ -164,6 +284,18 @@ public class IlluminaReadIdTest {
   public void testGetControlNumber() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertEquals(-1, ii.getControlNumber());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertEquals(-1, ii.getControlNumber());
+
+    ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertEquals(-1, ii.getControlNumber());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertEquals(-1, ii.getControlNumber());
+
+    ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
     assertEquals(-1, ii.getControlNumber());
 
     ii =
@@ -177,8 +309,14 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
-    
-    ii = new IlluminaReadId("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    ii.parse("HWUSI-EAS100S:6:73:941:1973#0/1");
+    assertEquals("HWUSI-EAS100S", ii.getInstrumentId());
+
+    ii =
+        new IlluminaReadId(
+            "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertEquals("HWI-1KL110", ii.getInstrumentId());
+    ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
   }
 
@@ -197,14 +335,14 @@ public class IlluminaReadIdTest {
     } catch (EoulsanException e) {
       assertTrue(true);
     }
-    
+
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0#ATCACG");
       assertTrue(false);
     } catch (EoulsanException e) {
       assertTrue(true);
     }
-    
+
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178:1:N:0:ATCACG");
       assertTrue(false);
