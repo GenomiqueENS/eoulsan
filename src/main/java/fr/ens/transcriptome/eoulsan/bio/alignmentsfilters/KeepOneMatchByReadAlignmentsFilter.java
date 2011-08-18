@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -26,16 +25,14 @@ public class KeepOneMatchByReadAlignmentsFilter extends
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public List<SAMRecord> acceptedAlignments(final List<SAMRecord> records) {
+  public void filterAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
-      return Collections.EMPTY_LIST;
+    if (records == null || records.size() < 2)
+      return;
 
-    if (records.size() == 1)
-      return records;
-
-    return Collections.singletonList(records.get(0));
+    final SAMRecord first = records.get(0);
+    records.clear();
+    records.add(first);
   }
 
 }

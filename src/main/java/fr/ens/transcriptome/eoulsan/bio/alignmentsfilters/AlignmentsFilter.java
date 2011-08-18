@@ -13,13 +13,12 @@ import net.sf.samtools.SAMRecord;
 public interface AlignmentsFilter {
 
   /**
-   * Return a list of alignments that pass the filter from a list of alignment
-   * of one unique read. All the read id in the records are the same.
+   * Filter a list of alignments from a list of alignment of one unique read.
+   * All the read id in the records are the same. The input list is modified
+   * after the call of the method.
    * @param records
-   * @return a list of alignments that pass the filter. If no alignment pass the
-   *         filter, return an empty list
    */
-  List<SAMRecord> acceptedAlignments(List<SAMRecord> records);
+  void filterAlignments(List<SAMRecord> records);
 
   /**
    * Get the name of the filter.

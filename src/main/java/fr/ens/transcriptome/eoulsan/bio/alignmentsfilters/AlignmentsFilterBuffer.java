@@ -17,6 +17,7 @@ public class AlignmentsFilterBuffer {
   private final List<SAMRecord> list = new ArrayList<SAMRecord>();
   private SAMRecord firstNewList;
   private String currentName;
+  private boolean reuseResultList;
 
   public boolean addAlignment(final SAMRecord alignment) {
 
@@ -53,12 +54,21 @@ public class AlignmentsFilterBuffer {
 
   /**
    * Get the list of the alignments that pass the tests of the filter with the
-   * same read name.records
+   * same read name.records. Warning if reuseResultList argument in the
+   * constructor is set to true, this method will always returns the same
+   * object.
    * @return a list of SAM record
    */
   public List<SAMRecord> getFilteredAlignments() {
 
-    return this.filter.acceptedAlignments(this.list);
+    // Filter alignment
+    this.filter.filterAlignments(this.list);
+
+    // Return the list of filtered alignment
+    if (this.reuseResultList)
+      return this.list;
+
+    return new ArrayList<SAMRecord>(this.list);
   }
 
   //
@@ -67,14 +77,27 @@ public class AlignmentsFilterBuffer {
 
   /**
    * Public constructor.
-   * @param filter the filter to use with this buffer
+   * @param filter the filter to use with this buffer.
    */
   public AlignmentsFilterBuffer(final AlignmentsFilter filter) {
+
+    this(filter, false);
+  }
+
+  /**
+   * Public constructor.
+   * @param filter the filter to use with this buffer
+   * @param reuseResultList true if the getFilteredAlignments() method must
+   *          return always the same internal list
+   */
+  public AlignmentsFilterBuffer(final AlignmentsFilter filter,
+      final boolean reuseResultList) {
 
     if (filter == null)
       throw new NullPointerException("The alignment filter is null");
 
     this.filter = filter;
+    this.reuseResultList = reuseResultList;
   }
 
 }

@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -26,16 +25,13 @@ public class RemoveMultiMatchesAlignmentsFilter extends
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public List<SAMRecord> acceptedAlignments(final List<SAMRecord> records) {
+  public void filterAlignments(final List<SAMRecord> records) {
 
     if (records == null)
-      return Collections.EMPTY_LIST;
+      return;
 
     if (records.size() > 1)
-      return Collections.EMPTY_LIST;
-
-    return records;
+      records.clear();
   }
 
 }
