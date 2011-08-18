@@ -31,6 +31,11 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define a read filter that calls successively a list of read
+ * filters.
+ * @author Laurent Jourdren
+ */
 public class MultiReadFilter implements ReadFilter {
 
   private final List<ReadFilter> list = Lists.newArrayList();
