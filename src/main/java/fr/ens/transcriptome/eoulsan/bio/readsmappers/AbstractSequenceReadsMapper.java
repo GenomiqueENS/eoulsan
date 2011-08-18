@@ -215,9 +215,7 @@ public abstract class AbstractSequenceReadsMapper implements
     final String indexerPath;
 
     synchronized (SYNC) {
-      indexerPath =
-          BinariesInstaller.install(getIndexerExecutable(),
-              getTempDirectoryPath());
+      indexerPath = install(getIndexerExecutable());
     }
 
     if (!outputDir.exists() && !outputDir.mkdir()) {
@@ -243,7 +241,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for index creation execution: "
@@ -310,7 +308,8 @@ public abstract class AbstractSequenceReadsMapper implements
     LOGGER.fine("Copy genome to local disk before computating index");
 
     final File genomeTmpFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", "");
+        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
+            getTempDirectory());
     FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
     makeArchiveIndex(genomeTmpFile, archiveOutputFile);
@@ -617,6 +616,35 @@ public abstract class AbstractSequenceReadsMapper implements
     this.fastqFormat = fastqFormat;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
+  }
+
+  //
+  // Utilities methods
+  //
+
+  /**
+   * Execute a command. This method automatically use the temporary directory to
+   * create the shell script to execute.
+   * @param cmd command to execute
+   * @return the exit error of the program
+   * @throws IOException if an error occurs while executing the command
+   */
+  protected int sh(final String cmd) throws IOException {
+
+    return ProcessUtils.sh(cmd, getTempDirectory());
+  }
+
+  /**
+   * Install a binary bundled in the jar in a temporary directory. This method
+   * automatically use the temporary directory defined in the object for the
+   * path where to install the binary.
+   * @param binaryFilename program to install
+   * @return a string with the path of the installed binary
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected String install(final String binaryFilename) throws IOException {
+
+    return BinariesInstaller.install(binaryFilename, getTempDirectoryPath());
   }
 
 }
