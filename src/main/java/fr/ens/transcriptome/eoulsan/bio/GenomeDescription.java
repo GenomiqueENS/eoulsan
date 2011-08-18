@@ -388,10 +388,12 @@ public class GenomeDescription {
 
   private static int checkBases(final String s) throws BadBioEntryException {
 
-    final int len = s.length();
+    // TODO use alphabet here
 
-    for (int i = 0; i < len; i++)
-      switch (s.charAt(i)) {
+    final char[] array = s.toCharArray();
+
+    for (int i = 0; i < array.length; i++)
+      switch (array[i]) {
 
       case 'A':
       case 'a':
@@ -414,15 +416,16 @@ public class GenomeDescription {
       case 'V':
       case 'N':
       case 'n':
+      case 'X':
+      case 'x':
 
         break;
 
       default:
-        throw new BadBioEntryException(
-            "Invalid base in genome: " + s.charAt(i), s);
+        throw new BadBioEntryException("Invalid base in genome: " + array[i], s);
       }
 
-    return len;
+    return array.length;
   }
 
   private static final String digestToString(final MessageDigest md) {
