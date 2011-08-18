@@ -10,7 +10,7 @@ import net.sf.samtools.SAMRecord;
  * This interface define a filter for alignments.
  * @author Laurent Jourdren
  */
-public interface AlignmentsFilter {
+public interface ReadAlignmentsFilter {
 
   /**
    * Filter a list of alignments from a list of alignment of one unique read.

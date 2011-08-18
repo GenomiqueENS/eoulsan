@@ -9,8 +9,8 @@ import net.sf.samtools.SAMRecord;
  * useful to count the number of reads that can match on the genome.
  * @author Laurent Jourdren
  */
-public class KeepOneMatchByReadAlignmentsFilter extends
-    AbstractAlignmentsFilter {
+public class KeepOneMatchReadAlignmentsFilter extends
+    AbstractReadAlignmentsFilter {
 
   @Override
   public String getName() {

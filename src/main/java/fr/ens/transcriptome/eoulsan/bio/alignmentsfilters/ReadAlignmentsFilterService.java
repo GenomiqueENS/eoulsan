@@ -7,10 +7,10 @@ import java.util.ServiceLoader;
  * This class define a service to retrieve a AlignentsFilter.
  * @author Laurent Jourdren
  */
-public class AlignmentsFilterService {
+public class ReadAlignmentsFilterService {
 
-  private static AlignmentsFilterService service;
-  private final ServiceLoader<AlignmentsFilter> loader;
+  private static ReadAlignmentsFilterService service;
+  private final ServiceLoader<ReadAlignmentsFilter> loader;
 
   //
   // Static method
@@ -20,10 +20,10 @@ public class AlignmentsFilterService {
    * Retrieve the singleton static instance of an AlignmentsFilter.
    * @return A ActionService instance
    */
-  public static synchronized AlignmentsFilterService getInstance() {
+  public static synchronized ReadAlignmentsFilterService getInstance() {
 
     if (service == null) {
-      service = new AlignmentsFilterService();
+      service = new ReadAlignmentsFilterService();
     }
 
     return service;
@@ -38,7 +38,7 @@ public class AlignmentsFilterService {
    * @param alignmentsFilterName name of the filter to get
    * @return an Action
    */
-  public AlignmentsFilter getAlignmentsFilter(final String alignmentsFilterName) {
+  public ReadAlignmentsFilter getAlignmentsFilter(final String alignmentsFilterName) {
 
     if (alignmentsFilterName == null) {
       return null;
@@ -46,11 +46,11 @@ public class AlignmentsFilterService {
 
     final String actionNameLower = alignmentsFilterName.toLowerCase();
 
-    final Iterator<AlignmentsFilter> it = this.loader.iterator();
+    final Iterator<ReadAlignmentsFilter> it = this.loader.iterator();
 
     while (it.hasNext()) {
 
-      final AlignmentsFilter filter = it.next();
+      final ReadAlignmentsFilter filter = it.next();
 
       if (actionNameLower.equals(filter.getName().toLowerCase())) {
         return filter;
@@ -67,9 +67,9 @@ public class AlignmentsFilterService {
   /**
    * Private constructor.
    */
-  private AlignmentsFilterService() {
+  private ReadAlignmentsFilterService() {
 
-    loader = ServiceLoader.load(AlignmentsFilter.class);
+    loader = ServiceLoader.load(ReadAlignmentsFilter.class);
   }
 
 }
