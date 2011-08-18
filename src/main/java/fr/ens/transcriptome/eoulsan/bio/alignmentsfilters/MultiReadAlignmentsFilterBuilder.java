@@ -38,13 +38,13 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * This builder allow to create a MultiAlignmentsFilter object.
  * @author Laurent Jourdren
  */
-public class MultiAlignmentsFilterBuilder {
+public class MultiReadAlignmentsFilterBuilder {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private final Map<String, AlignmentsFilter> mapFilters = Maps.newHashMap();
-  private final List<AlignmentsFilter> listFilter = Lists.newArrayList();
+  private final Map<String, ReadAlignmentsFilter> mapFilters = Maps.newHashMap();
+  private final List<ReadAlignmentsFilter> listFilter = Lists.newArrayList();
 
   private final Map<String, String> mapParameters = Maps.newLinkedHashMap();
 
@@ -78,13 +78,13 @@ public class MultiAlignmentsFilterBuilder {
       filterKey = keyTrimmed.substring(index + 1);
     }
 
-    final AlignmentsFilter filter;
+    final ReadAlignmentsFilter filter;
 
     // Get the filter object, load it if necessary
     if (mapFilters.containsKey(filterName))
       filter = mapFilters.get(filterName);
     else {
-      filter = AlignmentsFilterService.getInstance().getAlignmentsFilter(filterName);
+      filter = ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(filterName);
 
       if (filter == null)
         throw new EoulsanException("Unable to find "
@@ -114,13 +114,13 @@ public class MultiAlignmentsFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public AlignmentsFilter getAlignmentsFilter() throws EoulsanException {
+  public ReadAlignmentsFilter getAlignmentsFilter() throws EoulsanException {
 
-    for (AlignmentsFilter f : this.listFilter)
+    for (ReadAlignmentsFilter f : this.listFilter)
       f.init();
 
-    final MultiAlignmentsFilter mrf =
-        new MultiAlignmentsFilter(this.listFilter);
+    final MultiReadAlignmentsFilter mrf =
+        new MultiReadAlignmentsFilter(this.listFilter);
 
     return mrf;
   }
@@ -133,14 +133,14 @@ public class MultiAlignmentsFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public AlignmentsFilter getAlignmentsFilter(final ReporterIncrementer incrementer,
+  public ReadAlignmentsFilter getAlignmentsFilter(final ReporterIncrementer incrementer,
       final String counterGroup) throws EoulsanException {
 
-    for (AlignmentsFilter f : this.listFilter)
+    for (ReadAlignmentsFilter f : this.listFilter)
       f.init();
 
-    final MultiAlignmentsFilter maf =
-        new MultiAlignmentsFilter(incrementer, counterGroup, this.listFilter);
+    final MultiReadAlignmentsFilter maf =
+        new MultiReadAlignmentsFilter(incrementer, counterGroup, this.listFilter);
 
     return maf;
   }
