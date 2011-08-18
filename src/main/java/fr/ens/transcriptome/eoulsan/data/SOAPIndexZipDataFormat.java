@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.generators.ReadsIndexGeneratorStep;
+import fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep;
 
 /**
  * This class define a SOAP zip index DataFormat.
@@ -67,7 +67,7 @@ public final class SOAPIndexZipDataFormat extends AbstractDataFormat {
   @Override
   public Step getGenerator() {
 
-    return new ReadsIndexGeneratorStep("soap");
+    return new GenomeMapperIndexGeneratorStep("soap");
   }
 
 }
