@@ -28,8 +28,12 @@ import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * This class define a Hadoop reporter.
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("unchecked")
-public class HadoopReporterIncrementer implements ReporterIncrementer {
+public class HadoopReporter implements ReporterIncrementer {
 
   private final TaskInputOutputContext context;
 
@@ -47,7 +51,7 @@ public class HadoopReporterIncrementer implements ReporterIncrementer {
    * Constructor.
    * @param context context to use for counter incrementation
    */
-  public HadoopReporterIncrementer(final TaskInputOutputContext context) {
+  public HadoopReporter(final TaskInputOutputContext context) {
 
     Preconditions.checkNotNull(context, "Context is null");
 
