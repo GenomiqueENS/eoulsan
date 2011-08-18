@@ -11,9 +11,9 @@ import net.sf.samtools.SAMRecord;
  * alignment data where all the alignments for a read name are in straight.
  * @author Laurent Jourdren
  */
-public class AlignmentsFilterBuffer {
+public class ReadAlignmentsFilterBuffer {
 
-  private final AlignmentsFilter filter;
+  private final ReadAlignmentsFilter filter;
   private final List<SAMRecord> list = new ArrayList<SAMRecord>();
   private SAMRecord firstNewList;
   private String currentName;
@@ -79,7 +79,7 @@ public class AlignmentsFilterBuffer {
    * Public constructor.
    * @param filter the filter to use with this buffer.
    */
-  public AlignmentsFilterBuffer(final AlignmentsFilter filter) {
+  public ReadAlignmentsFilterBuffer(final ReadAlignmentsFilter filter) {
 
     this(filter, false);
   }
@@ -90,7 +90,7 @@ public class AlignmentsFilterBuffer {
    * @param reuseResultList true if the getFilteredAlignments() method must
    *          return always the same internal list
    */
-  public AlignmentsFilterBuffer(final AlignmentsFilter filter,
+  public ReadAlignmentsFilterBuffer(final ReadAlignmentsFilter filter,
       final boolean reuseResultList) {
 
     if (filter == null)

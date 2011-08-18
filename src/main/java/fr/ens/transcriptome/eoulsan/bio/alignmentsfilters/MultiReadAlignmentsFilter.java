@@ -13,9 +13,9 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * alignments filters.
  * @author Laurent Jourdren
  */
-public class MultiAlignmentsFilter implements AlignmentsFilter {
+public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
-  private final List<AlignmentsFilter> list = Lists.newArrayList();
+  private final List<ReadAlignmentsFilter> list = Lists.newArrayList();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
 
@@ -25,7 +25,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
     if (records == null)
       return;
 
-    for (AlignmentsFilter af : this.list) {
+    for (ReadAlignmentsFilter af : this.list) {
 
       final int sizeBefore = records.size();
       af.filterReadAlignments(records);
@@ -48,7 +48,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
    * Add a filter to the multi filter.
    * @param filter filter to add
    */
-  public void addFilter(final AlignmentsFilter filter) {
+  public void addFilter(final ReadAlignmentsFilter filter) {
 
     if (filter != null) {
       this.list.add(filter);
@@ -84,7 +84,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
   /**
    * Public constructor.
    */
-  public MultiAlignmentsFilter() {
+  public MultiReadAlignmentsFilter() {
 
     this((ReporterIncrementer) null, null);
   }
@@ -94,7 +94,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
    * @param incrementer incrementer to use
    * @param counterGroup counter group for the incrementer
    */
-  public MultiAlignmentsFilter(final ReporterIncrementer incrementer,
+  public MultiReadAlignmentsFilter(final ReporterIncrementer incrementer,
       final String counterGroup) {
 
     this.incrementer = incrementer;
@@ -105,7 +105,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
    * Public constructor.
    * @param filters filters to add
    */
-  public MultiAlignmentsFilter(final List<AlignmentsFilter> filters) {
+  public MultiReadAlignmentsFilter(final List<ReadAlignmentsFilter> filters) {
 
     this(null, null, filters);
   }
@@ -116,15 +116,15 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
    * @param counterGroup counter group for the incrementer
    * @param filters filters to add
    */
-  public MultiAlignmentsFilter(final ReporterIncrementer incrementer,
-      final String counterGroup, final List<AlignmentsFilter> filters) {
+  public MultiReadAlignmentsFilter(final ReporterIncrementer incrementer,
+      final String counterGroup, final List<ReadAlignmentsFilter> filters) {
 
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
 
     if (filters != null) {
 
-      for (AlignmentsFilter filter : filters) {
+      for (ReadAlignmentsFilter filter : filters) {
         addFilter(filter);
       }
     }
