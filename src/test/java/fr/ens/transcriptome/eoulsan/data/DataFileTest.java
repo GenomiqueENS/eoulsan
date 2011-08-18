@@ -375,7 +375,7 @@ public class DataFileTest {
   public void testDataFile() {
 
     try {
-      new DataFile(null);
+      new DataFile((String) null);
       assertTrue(false);
     } catch (NullPointerException e) {
       assertTrue(true);
