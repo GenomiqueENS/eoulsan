@@ -315,8 +315,8 @@ public class FileUtils {
     if (os == null)
       return null;
 
-    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os, Charset
-        .forName(CHARSET)));
+    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -332,8 +332,8 @@ public class FileUtils {
     if (os == null)
       throw new NullPointerException("The output stream is null");
 
-    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os, Charset
-        .forName(CHARSET)));
+    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -397,8 +397,8 @@ public class FileUtils {
     if (os == null)
       return null;
 
-    return new BufferedWriter(new OutputStreamWriter(os, Charset
-        .forName(CHARSET)));
+    return new BufferedWriter(new OutputStreamWriter(os,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -414,8 +414,8 @@ public class FileUtils {
     if (os == null)
       throw new NullPointerException("The output stream is null");
 
-    return new BufferedWriter(new OutputStreamWriter(os, Charset
-        .forName(CHARSET)));
+    return new BufferedWriter(new OutputStreamWriter(os,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -425,8 +425,8 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws IOException if an error occurs while creating the Writer
    */
-  public static final BufferedWriter createBufferedGZipWriter(
-      final File file) throws IOException {
+  public static final BufferedWriter createBufferedGZipWriter(final File file)
+      throws IOException {
 
     if (file == null)
       return null;
