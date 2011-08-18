@@ -20,7 +20,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
   private final String counterGroup;
 
   @Override
-  public void filterAlignments(final List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
     if (records == null)
       return;
@@ -28,7 +28,7 @@ public class MultiAlignmentsFilter implements AlignmentsFilter {
     for (AlignmentsFilter af : this.list) {
 
       final int sizeBefore = records.size();
-      af.filterAlignments(records);
+      af.filterReadAlignments(records);
 
       final int sizeAfter = list.size();
       final int diff = sizeBefore - sizeAfter;
