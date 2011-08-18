@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -441,6 +442,20 @@ public class DataFile {
       throw new NullPointerException("The name can not be null.");
 
     parseSource(parentFile.getSource() + separator + filename);
+  }
+
+  /**
+   * Public constructor.
+   * @param file the source file of the DataFile
+   * @throws EoulsanException if an error occurs when searching the protocol of
+   *           the source
+   */
+  public DataFile(final File file) {
+
+    if (file == null)
+      throw new NullPointerException("The source file can not be null.");
+
+    parseSource(file.getAbsolutePath());
   }
 
 }
