@@ -54,6 +54,18 @@ public class IlluminaReadIdTest {
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
+    
+    ii =
+        new IlluminaReadId(
+            "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertEquals("HWI-1KL110", ii.getInstrumentId());
+    
+    ii =
+        new IlluminaReadId(
+            "HWI-1KL110:25:B0866ABXX:1:1101:1167:2098 1:N:0:");
+    assertEquals("HWI-1KL110", ii.getInstrumentId());
+    
+    
   }
 
   @Test
