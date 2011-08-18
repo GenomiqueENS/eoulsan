@@ -66,7 +66,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+        bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
       }
 
       final String cmd = bowtiePath + " --version";
@@ -122,7 +122,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
     }
 
     final String ebwt =
@@ -163,7 +163,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
     }
 
     final String ebwt =
