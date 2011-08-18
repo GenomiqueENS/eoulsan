@@ -59,7 +59,7 @@ public class ReadFilterService {
 
   /**
    * Get a ReadFilter object.
-   * @param readFilterName name of the mapper to get
+   * @param readFilterName name of the filter to get
    * @return an Action
    */
   public ReadFilter getReadFilter(final String readFilterName) {
