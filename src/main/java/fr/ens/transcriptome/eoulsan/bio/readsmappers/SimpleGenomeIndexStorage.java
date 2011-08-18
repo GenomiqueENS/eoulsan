@@ -98,7 +98,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     entry.genomeName = genome.getGenomeName().trim();
     entry.sequences = genome.getSequenceCount();
     entry.length = genome.getGenomeLength();
-    entry.genomeMD5 = genome.getMD5Digest().trim();
+    entry.genomeMD5 = genome.getMD5Sum().trim();
     entry.mapperName = mapper.getMapperName().toLowerCase().trim();
     entry.file =
         new DataFile(dir, entry.mapperName + "-" + entry.genomeMD5 + ".zip");
@@ -211,7 +211,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   private static final String createKey(final SequenceReadsMapper mapper,
       final GenomeDescription genome) {
 
-    return createKey(mapper.getMapperName(), genome.getMD5Digest());
+    return createKey(mapper.getMapperName(), genome.getMD5Sum());
   }
 
   private static final String createKey(final String mapperName,
