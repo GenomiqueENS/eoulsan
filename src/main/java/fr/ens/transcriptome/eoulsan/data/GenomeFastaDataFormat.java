@@ -26,8 +26,8 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.checkers.GenomeChecker;
-import fr.ens.transcriptome.eoulsan.steps.GFFFastaGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep;
 
 /**
  * This class define a genome fasta DataFormat.
