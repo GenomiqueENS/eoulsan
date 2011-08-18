@@ -33,7 +33,6 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -66,7 +65,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
+        bowtiePath = install(MAPPER_EXECUTABLE);
       }
 
       final String cmd = bowtiePath + " --version";
@@ -122,7 +121,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
+      bowtiePath = install(MAPPER_EXECUTABLE);
     }
 
     final String ebwt =
@@ -145,7 +144,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
 
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -163,7 +162,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
+      bowtiePath = install(MAPPER_EXECUTABLE);
     }
 
     final String ebwt =
@@ -186,7 +185,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
     System.out.println("cmd: " + cmd);
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
