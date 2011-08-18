@@ -76,7 +76,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+        execPath =
+            BinariesInstaller
+                .install(MAPPER_EXECUTABLE, getTempDirectoryPath());
       }
 
       final String cmd = execPath;
@@ -139,7 +141,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      bwaPath =
+          BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
     }
 
     this.outputFile =
@@ -168,7 +171,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install("bwa");
+      bwaPath = BinariesInstaller.install("bwa", getTempDirectoryPath());
     }
 
     System.out.println("=== aln 1 ===");
@@ -222,7 +225,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install("bwa");
+      bwaPath = BinariesInstaller.install("bwa", getTempDirectoryPath());
     }
 
     final String cmd;

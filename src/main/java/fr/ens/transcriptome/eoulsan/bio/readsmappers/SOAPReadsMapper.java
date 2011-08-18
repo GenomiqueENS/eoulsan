@@ -67,7 +67,9 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+        execPath =
+            BinariesInstaller
+                .install(MAPPER_EXECUTABLE, getTempDirectoryPath());
       }
 
       final String cmd = execPath;
@@ -120,7 +122,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      soapPath =
+          BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
     }
 
     this.outputFile =
@@ -158,7 +161,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      soapPath =
+          BinariesInstaller.install(MAPPER_EXECUTABLE, getTempDirectoryPath());
     }
 
     this.outputFile =
