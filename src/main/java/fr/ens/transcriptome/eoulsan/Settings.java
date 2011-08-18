@@ -82,8 +82,11 @@ public final class Settings {
   private static final String DEFAULT_FASTQ_FORMAT_KEY = MAIN_PREFIX_KEY
       + "default.fastq.format";
 
-  private static final String GENOME_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
-      + "genome.index.storage.path";
+  private static final String GENOME_MAPPER_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "genome.mapper.index.storage.path";
+
+  private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "genome.storage.path";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
@@ -246,12 +249,21 @@ public final class Settings {
   }
 
   /**
-   * Get the genome index storage path.
-   * @return the path to genome index storage path
+   * Get the genome mapper index storage path.
+   * @return the path to genome mapper index storage path
    */
-  public String getGenomeIndexStoragePath() {
+  public String getGenomeMapperIndexStoragePath() {
 
-    return this.properties.getProperty(GENOME_INDEX_STORAGE_KEY);
+    return this.properties.getProperty(GENOME_MAPPER_INDEX_STORAGE_KEY);
+  }
+
+  /**
+   * Get the genome storage path.
+   * @return the path to genome storage path
+   */
+  public String getGenomeStoragePath() {
+
+    return this.properties.getProperty(GENOME_STORAGE_KEY);
   }
 
   /**
@@ -496,12 +508,22 @@ public final class Settings {
 
   /**
    * Set the genome index storage path.
-   * @param genomeIndexStoragePath the path to genome index storage path
+   * @param genomeMapperIndexStoragePath the path to genome index storage path
    */
-  public void setGenomeIndexStoragePath(final String genomeIndexStoragePath) {
+  public void setGenomeMapperIndexStoragePath(
+      final String genomeMapperIndexStoragePath) {
 
-    this.properties.setProperty(GENOME_INDEX_STORAGE_KEY,
-        genomeIndexStoragePath);
+    this.properties.setProperty(GENOME_MAPPER_INDEX_STORAGE_KEY,
+        genomeMapperIndexStoragePath);
+  }
+
+  /**
+   * Set the genome storage path.
+   * @param genomeStoragePath the path to genome index storage path
+   */
+  public void setGenomeStoragePath(final String genomeStoragePath) {
+
+    this.properties.setProperty(GENOME_STORAGE_KEY, genomeStoragePath);
   }
 
   /**
