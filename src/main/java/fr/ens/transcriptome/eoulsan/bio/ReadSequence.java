@@ -88,7 +88,7 @@ public class ReadSequence extends Sequence {
 
     if (fastqFormat == null)
       throw new NullPointerException("The FastqFormat is null");
-    
+
     this.fastqFormat = fastqFormat;
   }
 
@@ -443,8 +443,7 @@ public class ReadSequence extends Sequence {
   public ReadSequence(final int id, final String name, final String sequence,
       final String quality) {
 
-    this(id, name, sequence, quality, EoulsanRuntime.getSettings()
-        .getDefaultFastqFormat());
+    this(id, name, sequence, quality, FastqFormat.FASTQ_SANGER);
   }
 
   /**
