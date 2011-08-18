@@ -48,7 +48,7 @@ public class GenomeDataProtocol extends AbstractDataProtocol {
   @Override
   public InputStream getData(final DataFile src) throws IOException {
 
-    return internalDataFile(src).open();
+    return internalDataFile(src).rawOpen();
   }
 
   @Override
