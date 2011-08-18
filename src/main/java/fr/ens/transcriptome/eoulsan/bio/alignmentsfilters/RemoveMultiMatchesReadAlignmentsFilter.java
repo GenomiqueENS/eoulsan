@@ -9,8 +9,8 @@ import net.sf.samtools.SAMRecord;
  * alignments for a read.
  * @author Laurent Jourdren
  */
-public class RemoveMultiMatchesAlignmentsFilter extends
-    AbstractAlignmentsFilter {
+public class RemoveMultiMatchesReadAlignmentsFilter extends
+    AbstractReadAlignmentsFilter {
 
   @Override
   public String getName() {

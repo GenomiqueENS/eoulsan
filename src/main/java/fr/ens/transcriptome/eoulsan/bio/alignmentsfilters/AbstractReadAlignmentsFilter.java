@@ -7,7 +7,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * some methods of AlignmentFilter.
  * @author Laurent Jourdren
  */
-public abstract class AbstractAlignmentsFilter implements AlignmentsFilter {
+public abstract class AbstractReadAlignmentsFilter implements ReadAlignmentsFilter {
 
   @Override
   public void setParameter(final String key, final String value)
