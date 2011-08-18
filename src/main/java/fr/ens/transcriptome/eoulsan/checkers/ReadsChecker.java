@@ -153,29 +153,36 @@ public class ReadsChecker implements Checker {
       // For the first read check the id
       if (checkPairMember && count == 0) {
 
+        final String readId = reader.getName();
+        int readPairMember = -1;
         try {
-          final IlluminaReadId irid = new IlluminaReadId(reader.getName());
+          final IlluminaReadId irid = new IlluminaReadId(readId);
 
-          final int readPairMember = irid.getPairMember();
-          if (readPairMember != pairMember)
-            throw new BadBioEntryException("Invalid pair member number, "
-                + pairMember + " was excepted", reader.getName());
-
-          // check the quality string
-          if (format != null) {
-
-            final int invalidChar = format.isStringValid(reader.getQuality());
-
-            if (invalidChar != -1)
-              throw new BadBioEntryException(
-                  "Invalid quality character found for "
-                      + format.getName() + " format: " + (char) invalidChar,
-                  reader.getQuality());
-          }
+          readPairMember = irid.getPairMember();
 
         } catch (EoulsanException e) {
+
           // Not an Illumina id
+          if (readId.endsWith("/1"))
+            readPairMember = 1;
+          else if (readId.endsWith("/2"))
+            readPairMember = 2;
         }
+
+        if (readPairMember > 0 && readPairMember != pairMember)
+          throw new BadBioEntryException("Invalid pair member number, "
+              + pairMember + " was excepted", reader.getName());
+      }
+
+      // check the quality string
+      if (format != null) {
+
+        final int invalidChar = format.isStringValid(reader.getQuality());
+
+        if (invalidChar != -1)
+          throw new BadBioEntryException("Invalid quality character found for "
+              + format.getName() + " format: " + (char) invalidChar,
+              reader.getQuality());
       }
 
       count++;
