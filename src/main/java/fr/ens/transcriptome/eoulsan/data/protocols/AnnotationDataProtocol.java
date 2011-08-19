@@ -26,28 +26,28 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 
 /**
- * This class define a genome protocol.
+ * This class define a annotation protocol.
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class GenomeDataProtocol extends StorageDataProtocol {
+public class AnnotationDataProtocol extends StorageDataProtocol {
 
   @Override
   public String getName() {
 
-    return "genome";
+    return "annotation";
   }
 
   @Override
   protected String getExtension() {
 
-    return ".fasta";
+    return ".gff";
   }
 
   @Override
   protected String getBasePath() {
 
-    return EoulsanRuntime.getSettings().getGenomeStoragePath();
+    return EoulsanRuntime.getSettings().getAnnotationStoragePath();
   }
 
 }
