@@ -88,6 +88,9 @@ public final class Settings {
   private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY
       + "genome.storage.path";
 
+  private static final String ANNOTATION_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "annotation.storage.path";
+
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -264,6 +267,15 @@ public final class Settings {
   public String getGenomeStoragePath() {
 
     return this.properties.getProperty(GENOME_STORAGE_KEY);
+  }
+  
+  /**
+   * Get the annotation storage path.
+   * @return the path to annotation storage path
+   */
+  public String getAnnotationStoragePath() {
+
+    return this.properties.getProperty(ANNOTATION_STORAGE_KEY);
   }
 
   /**
@@ -524,6 +536,15 @@ public final class Settings {
   public void setGenomeStoragePath(final String genomeStoragePath) {
 
     this.properties.setProperty(GENOME_STORAGE_KEY, genomeStoragePath);
+  }
+  
+  /**
+   * Set the annotation storage path.
+   * @param annotationStoragePath the path to annotation index storage path
+   */
+  public void setAnnotationStoragePath(final String annotationStoragePath) {
+
+    this.properties.setProperty(ANNOTATION_STORAGE_KEY, annotationStoragePath);
   }
 
   /**
