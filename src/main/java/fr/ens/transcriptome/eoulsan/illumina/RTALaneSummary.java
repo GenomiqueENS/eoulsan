@@ -23,11 +23,12 @@
 package fr.ens.transcriptome.eoulsan.illumina;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+
+import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 public class RTALaneSummary {
 
+  private final int read;
   private final double densityRatio;
 
   private int lane = 1;
@@ -249,12 +250,8 @@ public class RTALaneSummary {
 
   public void parse(final Element e) {
 
-    final NamedNodeMap map = e.getAttributes();
+    for (String key : XMLUtils.getAttributeNames(e)) {
 
-    for (int i = 0; i < map.getLength(); i++) {
-
-      final Node attribute = map.item(i);
-      final String key = attribute.getNodeName();
       final String value = e.getAttribute(key);
 
       if ("key".equals(key))
@@ -319,20 +316,26 @@ public class RTALaneSummary {
 
   public String toHeaderString() {
 
-    return "Lane\tTiles\tClu.Dens. (#/mm<sup>2</sup>)\t"
-        + "% PF Clusters\tClusters PF (#/mm<sup>2</sup>)\t% Phas./Preph.\t"
-        + "Cycles Err Rated\t% Aligned\t% Error Rate\t"
-        + "% Error Rate 35 cycle\t% Error Rate 75 cycle\t% Error Rate 100 cycle\t1st Cycle Int\t"
-        + "% Intensity Cycle 20";
+    return "Lane\tRead\tTiles\t"
+        + "Mean Clu.Dens. (K/mm2)\tSD Clu.Dens. (K/mm2)\t"
+        + "Mean % PF Clusters\tSD % PF Clusters\t"
+        + "Mean Clusters PF\tSD Clusters PF\t" + "% Phas.\tPreph.\t"
+        + "Cycles Err Rated\t" + "% Aligned\tSD % Aligned\t"
+        + "% Error Rate\tSD % Error Rate\t" + "% Error Rate 35 cycle\t"
+        + "SD % Error Rate 35 cycle\t"
+        + "% Error Rate 75 cycle\tSD % Error Rate 75 cycle\t"
+        + "% Error Rate 100 cycle\tSD % Error Rate 100 cycle\t"
+        + "1st Cycle Int\tSD 1st Cycle Int\t"
+        + "% Intensity Cycle 20\tSD % Intensity Cycle 20";
   }
 
   public String toString() {
 
     return String
         .format(
-            "%d\t%d\t%.0fK +/- %.1fK\t%.1f +/- %.2f\t%.1f +/- %.2f\t%.3f / %.3f\t%d%s\t%.2f +/- %.3f\t"
-                + "%.2f +/- %.3f\t%.2f +/- %.3f\t%.2f +/- %.3f\t%.2f +/- %.3f\t"
-                + "%d +/- %.1f\t%.1f +/- %.2f", this.lane, this.tileCount,
+            "%d\t%d\t%d\t%.0f\t%.1f\t%.1f\t%.2f\t%.1f\t%.2f\t%.3f\t%.3f\t%d%s\t%.2f\t%.3f\t"
+                + "%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t"
+                + "%d\t%.1f\t%.1f\t%.2f", this.lane, this.read, this.tileCount,
             this.clustersRaw * this.densityRatio / 1000.0, this.clustersRawSD
                 * this.densityRatio / 1000, this.prcPFClusters,
             this.prcPFClustersSD, this.clustersPF * this.densityRatio / 1000.0,
@@ -351,7 +354,8 @@ public class RTALaneSummary {
   // Constructor
   //
 
-  public RTALaneSummary(double densityRatio) {
+  public RTALaneSummary(final int read, final double densityRatio) {
+    this.read = read;
     this.densityRatio = densityRatio;
   }
 
