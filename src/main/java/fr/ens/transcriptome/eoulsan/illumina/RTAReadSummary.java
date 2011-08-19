@@ -22,6 +22,9 @@
 
 package fr.ens.transcriptome.eoulsan.illumina;
 
+import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getAttributeNames;
+import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getAttributeValue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,10 +39,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 public class RTAReadSummary implements Iterable<RTALaneSummary> {
 
@@ -80,53 +82,6 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
   // Parser
   //
 
-  private void parse(final Document document) {
-
-    final NodeList nSummaryList = document.getElementsByTagName("Summary");
-
-    for (int i = 0; i < nSummaryList.getLength(); i++) {
-
-      Node nNode = nSummaryList.item(i);
-      if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-        final Element e = (Element) nNode;
-
-        System.out.println(getAttributeNames(e));
-
-        for (String attributeName : getAttributeNames(e)) {
-
-          if ("Read".equals(attributeName))
-            this.id = Integer.parseInt(getAttributeValue(e, attributeName));
-          else if ("ReadType".equals(attributeName))
-            this.type = getAttributeValue(e, attributeName);
-          else if ("densityRatio".equals(attributeName))
-            this.densityRatio =
-                Double.parseDouble(getAttributeValue(e, attributeName));
-
-        }
-
-        final NodeList nStepsList = e.getElementsByTagName("Lane");
-
-        for (int j = 0; j < nStepsList.getLength(); j++) {
-
-          final Node node = nStepsList.item(j);
-
-          if (node.getNodeType() == Node.ELEMENT_NODE) {
-
-            final Element laneElement = (Element) node;
-
-            final RTALaneSummary lane = new RTALaneSummary(this.densityRatio);
-            lane.parse(laneElement);
-            this.lanes.add(lane);
-          }
-        }
-
-      }
-
-    }
-
-  }
-
   public void parse(final File file) throws ParserConfigurationException,
       SAXException, IOException {
 
@@ -145,33 +100,37 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
     doc.getDocumentElement().normalize();
 
     parse(doc);
-    
+
     is.close();
   }
 
-  //
-  // Other methods
-  //
+  private void parse(final Document document) {
 
-  private List<String> getAttributeNames(final Element e) {
+    for (Element e : XMLUtils.getElementsByTagName(document, "Summary")) {
 
-    final List<String> result = new ArrayList<String>();
+      // Parse Summary tag attributes
+      for (String attributeName : getAttributeNames(e)) {
 
-    final NamedNodeMap map = e.getAttributes();
+        if ("Read".equals(attributeName))
+          this.id = Integer.parseInt(getAttributeValue(e, attributeName));
+        else if ("ReadType".equals(attributeName))
+          this.type = getAttributeValue(e, attributeName);
+        else if ("densityRatio".equals(attributeName))
+          this.densityRatio =
+              Double.parseDouble(getAttributeValue(e, attributeName));
+      }
 
-    for (int i = 0; i < map.getLength(); i++) {
+      // Parse Lane tag
+      for (Element laneElement : XMLUtils.getElementsByTagName(e, "Lane")) {
 
-      final Node attribute = map.item(i);
+        final RTALaneSummary lane =
+            new RTALaneSummary(this.id, this.densityRatio);
+        lane.parse(laneElement);
+        this.lanes.add(lane);
+      }
 
-      result.add(attribute.getNodeName());
     }
 
-    return result;
-  }
-
-  private String getAttributeValue(final Element e, final String attributeName) {
-
-    return e.getAttribute(attributeName);
   }
 
   //
