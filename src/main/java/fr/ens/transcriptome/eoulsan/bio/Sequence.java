@@ -38,6 +38,7 @@ public class Sequence {
   protected int id;
   protected String name;
   protected String description;
+  protected Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
   protected String sequence;
 
   //
@@ -65,8 +66,15 @@ public class Sequence {
    * @return a string with the description
    */
   public final String getDescription() {
-
     return this.description;
+  }
+
+  /**
+   * Get the alphabet used for the sequence.
+   * @return the alphabet of the sequence
+   */
+  public final Alphabet getAlphabet() {
+    return this.alphabet;
   }
 
   /**
@@ -74,7 +82,6 @@ public class Sequence {
    * @return a string with the sequence
    */
   public final String getSequence() {
-
     return this.sequence;
   }
 
@@ -86,7 +93,7 @@ public class Sequence {
    * Set the id of the sequence.
    * @param id id to set
    */
-  public void setId(final int id) {
+  public final void setId(final int id) {
     this.id = id;
   }
 
@@ -94,8 +101,20 @@ public class Sequence {
    * Set the name of the sequence.
    * @param name the name to set
    */
-  public void setName(final String name) {
+  public final void setName(final String name) {
     this.name = trim(name);
+  }
+
+  /**
+   * Set the name of the sequence and validate this name. Even if the name is
+   * not validated, the name parameter will be the name of the object after
+   * execution of this method.
+   * @param name the name to set
+   * @return true if the name is valid.
+   */
+  public final boolean setNameWithValidation(final String name) {
+    this.name = trim(name);
+    return validateName();
   }
 
   /**
@@ -103,7 +122,19 @@ public class Sequence {
    * @param description the description to set
    */
   public final void setDescription(final String description) {
-    this.description = trim(name);
+    this.description = trim(description);
+  }
+
+  /**
+   * Set the alphabet of the sequence.
+   * @param alphabet the alphabet to set
+   */
+  public final void setAlphabet(final Alphabet alphabet) {
+
+    if (alphabet == null)
+      throw new NullPointerException("The alphabet is null");
+
+    this.alphabet = alphabet;
   }
 
   /**
@@ -112,6 +143,19 @@ public class Sequence {
    */
   public final void setSequence(final String sequence) {
     this.sequence = trim(sequence);
+  }
+
+  /**
+   * Set the sequence and validate this sequence. Even if the sequence is not
+   * validated, the sequence parameter will be the name of the object after
+   * execution of this method.
+   * @param sequence Sequence to set
+   * @return true if the name is valid.
+   */
+  public final boolean setSequenceWithValidation(final String sequence) {
+
+    this.sequence = trim(sequence);
+    return validateSequence();
   }
 
   /**
@@ -154,6 +198,9 @@ public class Sequence {
    */
   public Sequence subSequence(final int beginIndex, final int endIndex) {
 
+    if (this.sequence == null)
+      return null;
+
     if (beginIndex < 0)
       throw new StringIndexOutOfBoundsException(beginIndex);
 
@@ -186,7 +233,8 @@ public class Sequence {
   }
 
   /**
-   * Count the number of times of a sequence is found in the current sequence.
+   * Count the number of times of a non overlapping sequence is found in the
+   * current sequence.
    * @param sequence query sequence
    * @return the number of time that query sequence was found.
    */
@@ -196,7 +244,8 @@ public class Sequence {
   }
 
   /**
-   * Count the number of times of a string is found in the current sequence.
+   * Count the number of times of a a non overlapping string is found in the
+   * current sequence.
    * @param s query string
    * @return the number of time that query sequence was found.
    */
@@ -323,6 +372,10 @@ public class Sequence {
     return sb.toString();
   }
 
+  //
+  // Output methods
+  //
+
   /**
    * Return the sequence object in string in Fasta format.
    * @return the sequence in Fasta format
@@ -362,6 +415,57 @@ public class Sequence {
   }
 
   //
+  // Parser methods
+  //
+
+  /**
+   * Parse one fastq sequence
+   * @param s string to parse
+   */
+  public void parseFasta(final String s) {
+
+    if (s == null || s.trim().length() == 0) {
+      setName(null);
+      setSequence(null);
+    }
+
+    final String[] lines = s.split("\n");
+
+    String name = null;
+    final StringBuilder seq = new StringBuilder();
+
+    boolean first = true;
+
+    for (String line : lines) {
+
+      final String trimmed = line.trim();
+
+      if (first) {
+        first = false;
+
+        if (!trimmed.startsWith(">"))
+          break;
+
+        name = trimmed.substring(1).trim();
+      }
+
+      if (trimmed.startsWith(">"))
+        break;
+
+      seq.append(trimmed);
+    }
+
+    if (seq.length() > 0) {
+      setName(name);
+      setSequence(seq.toString());
+    } else {
+      setName(null);
+      setSequence(null);
+    }
+
+  }
+
+  //
   // Validation methods
   //
 
@@ -369,19 +473,31 @@ public class Sequence {
    * Validate the name field of the object.
    * @return true if the name field of this object is valid
    */
-  protected boolean validateName() {
+  protected final boolean validateName() {
 
     return this.name != null && this.name.length() > 0;
   }
 
   /**
-   * Validate the sequence field of the object.
+   * Validate the sequence field of the object. The sequence must be not null,
+   * have a length greater than 0 and all the letter of the sequence must be in
+   * the current alphabet.
    * @return true if the sequence field of this object is valid
    */
-  protected boolean validateSequence() {
+  protected final boolean validateSequence() {
 
-    if (this.sequence == null || this.sequence.length() == 0)
+    final String seq = this.sequence;
+    final int len = seq == null ? 0 : seq.length();
+
+    if (len == 0)
       return false;
+
+    final Alphabet alphabet = this.alphabet;
+    final char[] array = sequence.toCharArray();
+
+    for (int i = 0; i < len; i++)
+      if (!alphabet.isLetterValid(array[i]))
+        return false;
 
     return true;
   }
@@ -403,11 +519,15 @@ public class Sequence {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(this.id, this.name, this.description, this.sequence);
+    return Utils.hashCode(this.id, this.name, this.description, this.alphabet,
+        this.sequence);
   }
 
   @Override
   public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
 
     if (o == null)
       return false;
@@ -420,6 +540,7 @@ public class Sequence {
     return this.id == that.id
         && equal(this.name, that.name)
         && equal(this.description, that.description)
+        && this.alphabet == that.alphabet
         && equal(this.sequence, that.sequence);
   }
 
@@ -428,7 +549,8 @@ public class Sequence {
 
     return this.getName()
         + "{id=" + this.id + ", name=" + this.name + ", description="
-        + this.description + ", sequence=" + this.sequence + "}";
+        + this.description + ", alphabet=" + this.alphabet + ", sequence="
+        + this.sequence + "}";
   }
 
   //
