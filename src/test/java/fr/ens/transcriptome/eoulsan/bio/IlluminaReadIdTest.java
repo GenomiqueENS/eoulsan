@@ -177,9 +177,18 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
-    
-    ii = new IlluminaReadId("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+
+    ii =
+        new IlluminaReadId(
+            "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
+
+    try {
+      ii.parse(null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
   }
 
   @Test
@@ -197,14 +206,14 @@ public class IlluminaReadIdTest {
     } catch (EoulsanException e) {
       assertTrue(true);
     }
-    
+
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0#ATCACG");
       assertTrue(false);
     } catch (EoulsanException e) {
       assertTrue(true);
     }
-    
+
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178:1:N:0:ATCACG");
       assertTrue(false);
