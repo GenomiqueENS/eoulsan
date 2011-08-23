@@ -38,7 +38,7 @@ public class ValidReadFilter extends AbstractReadFilter {
     if (read == null)
       throw new NullPointerException("The read is null");
 
-    return read.check();
+    return read.validate();
   }
 
   @Override

@@ -337,7 +337,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+					<!--skip>true</skip-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -709,13 +709,13 @@ O
 				<configuration>
 					<configLocation>checkstyle.xml</configLocation>
 				</configuration>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
 						<encoding>utf-8</encoding>
 					</configuration>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changes-maven-plugin</artifactId>
@@ -742,12 +742,12 @@ O
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-docck-plugin</artifactId>
-			</plugin>
-			<plugin>
+			</plugin-->
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>2.3.1</version>
-			</plugin-->
+			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -756,15 +756,15 @@ O
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<!--configuration>
+				<configuration>
 					<configLocation>checkstyle.xml</configLocation>
-				</configuration-->
-			</plugin>
-			<!--plugin>
+				</configuration>
+			</plugin-->
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 			</plugin>
