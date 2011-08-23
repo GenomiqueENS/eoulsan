@@ -30,30 +30,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * this class implements a FastQ writer.
  * @author Laurent Jourdren
  */
-public class FastqWriter extends ReadSequenceWriter {
+public class FastqWriter implements ReadSequenceWriter {
 
   private Writer writer;
 
-  /**
-   * Write the current entry.
-   * @throws IOException if an error occurs while writing data
-   */
   @Override
-  public void write() throws IOException {
+  public void write(final ReadSequence readSequence) throws IOException {
 
-    this.writer.write(toFastQ());
+    if (readSequence != null)
+      this.writer.write(readSequence.toFastQ());
   }
 
-  /**
-   * Close the writer.
-   * @throws IOException if an error occurs while closing the writer
-   */
   @Override
   public void close() throws IOException {
 

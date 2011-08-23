@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import static fr.ens.transcriptome.eoulsan.util.StatUtils.mean;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
@@ -43,7 +44,7 @@ public class QualityReadFilter extends AbstractReadFilter {
     if (read == null)
       throw new NullPointerException("The read is null");
 
-    return read.meanQuality() > this.qualityThreshold;
+    return mean(read.qualityScores()) > this.qualityThreshold;
   }
 
   @Override

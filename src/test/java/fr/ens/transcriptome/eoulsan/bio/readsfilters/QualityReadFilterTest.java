@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.util.StatUtils;
 
 public class QualityReadFilterTest {
 
@@ -51,7 +52,7 @@ public class QualityReadFilterTest {
 
     ReadSequence read = new ReadSequence(0, "read1", "ATG", "wxy");
 
-    assertEquals('x' - 64.0, read.meanQuality(), 0.0);
+    assertEquals('x' - 64.0, StatUtils.mean(read.qualityScores()), 0.0);
     assertTrue(filter.accept(read));
 
     filter = new QualityReadFilter();

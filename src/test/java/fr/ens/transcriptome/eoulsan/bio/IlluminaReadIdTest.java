@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -54,18 +56,15 @@ public class IlluminaReadIdTest {
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
-    
+
     ii =
         new IlluminaReadId(
             "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
-    
-    ii =
-        new IlluminaReadId(
-            "HWI-1KL110:25:B0866ABXX:1:1101:1167:2098 1:N:0:");
+
+    ii = new IlluminaReadId("HWI-1KL110:25:B0866ABXX:1:1101:1167:2098 1:N:0:");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
-    
-    
+
   }
 
   @Test
@@ -321,6 +320,7 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
+
     ii.parse("HWUSI-EAS100S:6:73:941:1973#0/1");
     assertEquals("HWUSI-EAS100S", ii.getInstrumentId());
 
@@ -330,6 +330,13 @@ public class IlluminaReadIdTest {
     assertEquals("HWI-1KL110", ii.getInstrumentId());
     ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertEquals("HWI-1KL110", ii.getInstrumentId());
+
+    try {
+      ii.parse(null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
   }
 
   @Test

@@ -24,28 +24,25 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.Iterator;
 
-import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 
 /**
- * This abstract class define method to implements for SequenceReader.
+ * This interface define methods to implements for SequenceReader.
  * @author Laurent Jourdren
  */
-public abstract class SequenceReader extends Sequence {
+public interface SequenceReader extends Iterator<Sequence>, Iterable<Sequence>,
+    Closeable {
 
   /**
-   * Read the next entry in the stream.
-   * @return false if there is no more entry to read
-   * @throws IOException if an error occurs while reading file
+   * Throw an exception if an exception has been caught while last hasNext()
+   * method call.
+   * @throws IOException if an exception has been caught while last hasNext()
+   *           method call
    */
-  public abstract boolean readEntry() throws IOException, BadBioEntryException;
-
-  /**
-   * Close the stream.
-   * @throws IOException
-   */
-  public abstract void close() throws IOException;
+  void throwException() throws IOException;
 
 }
