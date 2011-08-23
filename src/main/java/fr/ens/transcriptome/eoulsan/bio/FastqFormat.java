@@ -343,7 +343,7 @@ public enum FastqFormat {
     if (is == null)
       return null;
 
-    final FastqReader reader = new FastqReader(is);
+    final FastqReader reader = new FastqReader(is, true);
     final Set<FastqFormat> formats =
         newHashSet(Arrays.asList(FastqFormat.values()));
 
@@ -351,12 +351,15 @@ public enum FastqFormat {
 
     final int[] range = new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE};
 
-    while (reader.readEntry()
-        && (maxEntriesToRead < 1 || count <= maxEntriesToRead)) {
-      removeBadFormats(formats, reader.getQuality(), range);
+    for (final ReadSequence read : reader) {
 
+      if (maxEntriesToRead > 0 && count > maxEntriesToRead)
+        break;
+
+      removeBadFormats(formats, read.getQuality(), range);
       count++;
     }
+    reader.throwException();
 
     is.close();
 

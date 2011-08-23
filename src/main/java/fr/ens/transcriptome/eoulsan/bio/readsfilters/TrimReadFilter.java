@@ -48,7 +48,10 @@ public class TrimReadFilter extends AbstractReadFilter {
    */
   public static final void trim(final ReadSequence read) {
 
-    if (read == null || !read.isFastQValid())
+    if (read == null
+        || read.getSequence() == null || read.getQuality() == null
+        || read.getSequence().length() != read.getQuality().length()
+        || read.getSequence().length() == 0)
       return;
 
     final String[] splitResult = PATTERN.split(read.getSequence());
