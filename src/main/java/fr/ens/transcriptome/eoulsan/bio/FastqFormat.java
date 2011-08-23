@@ -202,6 +202,16 @@ public enum FastqFormat {
   }
 
   /**
+   * Convert a character to an error probability.
+   * @param character character to convert
+   * @return a quality score
+   */
+  public double getProbability(final char character) {
+
+    return convertScoreToProbability(character - this.asciiOffset);
+  }
+
+  /**
    * Convert a quality score to a probability.
    * @param score the quality score
    * @return the probability that correspond to the quality score
