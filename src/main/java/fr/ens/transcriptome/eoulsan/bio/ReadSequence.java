@@ -26,8 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.util.StatUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -464,9 +462,7 @@ public final class ReadSequence extends Sequence {
   public ReadSequence(final int id, final String name, final String sequence,
       final String quality) {
 
-    this(id, name, sequence, quality, EoulsanRuntime.getSettings()
-        .getDefaultFastqFormat());
-    this.alphabet = Alphabets.READ_DNA_ALPHABET;
+    this(id, name, sequence, quality, FastqFormat.FASTQ_SANGER);
   }
 
   /**

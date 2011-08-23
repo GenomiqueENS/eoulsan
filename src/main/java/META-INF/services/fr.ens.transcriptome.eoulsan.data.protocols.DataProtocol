@@ -3,6 +3,8 @@ fr.ens.transcriptome.eoulsan.data.protocols.FTPURLDataProtocol
 fr.ens.transcriptome.eoulsan.data.protocols.HTTPURLDataProtocol
 fr.ens.transcriptome.eoulsan.data.protocols.S3DataProtocol
 fr.ens.transcriptome.eoulsan.data.protocols.S3NDataProtocol
+fr.ens.transcriptome.eoulsan.data.protocols.GenomeDataProtocol
+fr.ens.transcriptome.eoulsan.data.protocols.AnnotationDataProtocol
 
 # Hadoop protocols
 fr.ens.transcriptome.eoulsan.data.protocols.HDFSPathDataProtocol

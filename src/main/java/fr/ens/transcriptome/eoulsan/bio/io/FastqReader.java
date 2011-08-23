@@ -48,10 +48,10 @@ public class FastqReader implements ReadSequenceReader {
   private final boolean reuse;
   private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
+  private int count = 0;
 
   private boolean end = false;
   private boolean nextCallDone = true;
-  private int count;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
 

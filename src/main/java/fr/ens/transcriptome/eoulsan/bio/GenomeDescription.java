@@ -377,7 +377,7 @@ public class GenomeDescription {
         throw new BadBioEntryException(
             "Invalid base in genome: " + s.charAt(i), s);
 
-    return len;
+    return array.length;
   }
 
   private static final String digestToString(final MessageDigest md) {

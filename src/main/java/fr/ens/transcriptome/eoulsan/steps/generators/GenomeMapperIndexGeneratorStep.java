@@ -22,37 +22,32 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.steps.generators;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.GenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.SimpleGenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
-import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
-public class ReadsIndexGeneratorStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+/**
+ * This class define a step that generate a genome mapper index.
+ * @author Laurent Jourdren
+ */
+public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
   private final SequenceReadsMapper mapper;
 
@@ -113,32 +108,11 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
-      // Get genome Index storage path
-      final String genomeIndexStoragePath =
-          context.getSettings().getGenomeIndexStoragePath();
+      // Create indexer
+      final GenomeMapperIndexer indexer = new GenomeMapperIndexer(this.mapper);
 
-      final GenomeIndexStorage storage;
-      if (genomeIndexStoragePath == null)
-        storage = null;
-      else
-        storage =
-            SimpleGenomeIndexStorage.getInstance(new DataFile(
-                genomeIndexStoragePath));
-
-      final DataFile precomputedIndexDataFile;
-
-      if (storage == null)
-        precomputedIndexDataFile = null;
-      else
-        precomputedIndexDataFile = storage.get(this.mapper, desc);
-
-      if (precomputedIndexDataFile == null) {
-        LOGGER.info("Genome index not found, must compute it.");
-        computeIndex(context, mapperIndexDataFile, genomeDataFile);
-        if (storage != null)
-          storage.put(this.mapper, desc, mapperIndexDataFile);
-      } else
-        downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
+      // Create index
+      indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
 
     } catch (EoulsanException e) {
 
@@ -152,54 +126,6 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
         + " index creation");
   }
 
-  private void computeIndex(final Context context, final DataFile mapperIndex,
-      final DataFile genome) throws IOException {
-
-    final FileDataProtocol defaultProtocol =
-        DataProtocolService.getInstance().getDefaultProtocol();
-
-    final File outputFile;
-
-    if (mapperIndex.isLocalFile()) {
-
-      outputFile = defaultProtocol.getFile(mapperIndex);
-    } else {
-      outputFile =
-          context.getRuntime().createTempFile(
-              mapper.getMapperName() + "-index-archive-", ".zip");
-    }
-
-    if (genome.isLocalFile()) {
-
-      this.mapper.makeArchiveIndex(defaultProtocol.getFile(genome), outputFile);
-    } else {
-      this.mapper.makeArchiveIndex(genome.open(), outputFile);
-    }
-
-    LOGGER.info("mapperIndexDataFile: " + mapperIndex);
-
-    if (!mapperIndex.isLocalFile()) {
-
-      new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndex);
-
-      if (!outputFile.delete()) {
-        LOGGER.severe("Unbable to delete temporary "
-            + this.mapper.getMapperName() + " archive index.");
-      }
-
-    }
-  }
-
-  private void downloadPrecomputedIndex(final DataFile precomputedIndex,
-      final DataFile output) throws IOException {
-
-    if (precomputedIndex.isLocalFile() && output.isLocalFile()) {
-      FileUtils.createSymbolicLink(new File(precomputedIndex.getSource()),
-          new File(output.getSource()));
-    } else
-      FileUtils.copy(precomputedIndex.rawOpen(), output.create());
-  }
-
   //
   // Constructor
   //
@@ -208,7 +134,7 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
    * Constructor.
    * @param mapperName name of the mapper
    */
-  public ReadsIndexGeneratorStep(final String mapperName) {
+  public GenomeMapperIndexGeneratorStep(final String mapperName) {
 
     Preconditions.checkNotNull(mapperName, "Mapper name is null");
 

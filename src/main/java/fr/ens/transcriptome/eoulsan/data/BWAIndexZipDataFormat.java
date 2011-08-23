@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
-import fr.ens.transcriptome.eoulsan.steps.ReadsIndexGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep;
 
 /**
  * This class define a BWA zip index DataFormat.
@@ -67,7 +67,7 @@ public final class BWAIndexZipDataFormat extends AbstractDataFormat {
   @Override
   public Step getGenerator() {
 
-    return new ReadsIndexGeneratorStep("bwa");
+    return new GenomeMapperIndexGeneratorStep("bwa");
   }
 
 }

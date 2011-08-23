@@ -35,14 +35,22 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class IlluminaReadId {
 
+  private static final Pattern PATTERN_1 = Pattern
+      .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)$");
+
+  private static final Pattern PATTERN_2 = Pattern
+      .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)/(\\d)$");
+
   private static final Pattern PATTERN_1_4 =
       Pattern
-          .compile("^([a-zA-Z0-9\\-]+):(\\d+):(\\d+):(\\d+):(\\d+)#([0ATGC]+)/(\\d)$");
+          .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)#([0ATGC]+)/(\\d)$");
 
   private static final Pattern PATTERN_1_8 =
       Pattern
-          .compile("^([a-zA-Z0-9\\-]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
-              + "(\\d+):([YN]):(\\d+):([ATGC]+)$");
+          .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
+              + "(\\d+):([YN]):(\\d+):([ATGC]*)$");
+
+  private final Pattern pattern;
 
   private String instrumentId;
   private int runId;
@@ -149,6 +157,27 @@ public class IlluminaReadId {
   // Other method
   //
 
+  private static Pattern findPattern(final String readId) {
+
+    if (readId == null) {
+      throw new IllegalArgumentException("The string to parse is null");
+    }
+
+    if (PATTERN_1_8.matcher(readId).lookingAt())
+      return PATTERN_1_8;
+
+    if (PATTERN_1_4.matcher(readId).lookingAt())
+      return PATTERN_1_4;
+
+    if (PATTERN_2.matcher(readId).lookingAt())
+      return PATTERN_2;
+
+    if (PATTERN_1.matcher(readId).lookingAt())
+      return PATTERN_1;
+
+    return null;
+  }
+
   /**
    * Parse an Illumina id string.
    * @param readId String with the Illumina id
@@ -160,14 +189,11 @@ public class IlluminaReadId {
       throw new IllegalArgumentException("The string to parse is null");
     }
 
-    final String s = readId.trim();
-    final Matcher matcher;
+    final Matcher matcher = this.pattern.matcher(readId.trim());
+    if (!matcher.lookingAt())
+      throw new EoulsanException("Invalid illumina id: " + readId);
 
-    if (s.indexOf(' ') != -1) {
-
-      matcher = PATTERN_1_8.matcher(s);
-      if (!matcher.lookingAt())
-        throw new EoulsanException("Invalid illumina id: " + readId);
+    if (this.pattern == PATTERN_1_8) {
 
       this.instrumentId = matcher.group(1);
       this.runId = Integer.parseInt(matcher.group(2));
@@ -181,11 +207,8 @@ public class IlluminaReadId {
       this.controlNumber = Integer.parseInt(matcher.group(10));
       this.sequenceIndex = matcher.group(11);
 
-    } else {
-
-      matcher = PATTERN_1_4.matcher(s);
-      if (!matcher.lookingAt())
-        throw new EoulsanException("Invalid illumina id: " + readId);
+      return;
+    } else if (this.pattern == PATTERN_1_4) {
 
       this.instrumentId = matcher.group(1);
       this.runId = -1;
@@ -198,8 +221,41 @@ public class IlluminaReadId {
       this.pairMember = Integer.parseInt(matcher.group(7));
       this.filtered = false;
       this.controlNumber = -1;
+
+      return;
+    } else if (this.pattern == PATTERN_2) {
+
+      this.instrumentId = matcher.group(1);
+      this.runId = -1;
+      this.flowCellId = null;
+      this.flowCellLane = Integer.parseInt(matcher.group(2));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
+      this.sequenceIndex = "0";
+      this.pairMember = Integer.parseInt(matcher.group(6));
+      this.filtered = false;
+      this.controlNumber = -1;
+
+      return;
+    } else if (this.pattern == PATTERN_1) {
+
+      this.instrumentId = matcher.group(1);
+      this.runId = -1;
+      this.flowCellId = null;
+      this.flowCellLane = Integer.parseInt(matcher.group(2));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
+      this.sequenceIndex = "0";
+      this.pairMember = -1;
+      this.filtered = false;
+      this.controlNumber = -1;
+
+      return;
     }
 
+    throw new IllegalStateException("Unknown pattern");
   }
 
   //
@@ -212,6 +268,10 @@ public class IlluminaReadId {
    * @throws EoulsanException if the id is not an Illumina id
    */
   public IlluminaReadId(final String readId) throws EoulsanException {
+
+    this.pattern = findPattern(readId);
+    if (this.pattern == null)
+      throw new EoulsanException("Invalid illumina id: " + readId);
 
     parse(readId);
   }

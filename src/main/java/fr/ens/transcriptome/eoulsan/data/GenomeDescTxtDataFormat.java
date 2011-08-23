@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
-import fr.ens.transcriptome.eoulsan.steps.GenomeDescriptionGeneratorStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionGeneratorStep;
 
 /**
  * This class define a genome description DataFormat.

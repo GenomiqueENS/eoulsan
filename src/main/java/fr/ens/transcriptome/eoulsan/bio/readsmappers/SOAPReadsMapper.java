@@ -33,7 +33,6 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -67,7 +66,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+        execPath = install(MAPPER_EXECUTABLE);
       }
 
       final String cmd = execPath;
@@ -120,7 +119,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      soapPath = install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
@@ -143,7 +142,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for SOAP execution: " + exitValue);
@@ -158,7 +157,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     final String soapPath;
 
     synchronized (SYNC) {
-      soapPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      soapPath = install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
@@ -187,7 +186,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for SOAP execution: " + exitValue);

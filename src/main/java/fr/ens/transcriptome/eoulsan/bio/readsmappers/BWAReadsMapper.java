@@ -76,7 +76,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+        execPath =
+            BinariesInstaller
+                .install(MAPPER_EXECUTABLE, getTempDirectoryPath());
       }
 
       final String cmd = execPath;
@@ -139,7 +141,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install(MAPPER_EXECUTABLE);
+      bwaPath = install(MAPPER_EXECUTABLE);
     }
 
     this.outputFile =
@@ -168,7 +170,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install("bwa");
+      bwaPath = install("bwa");
     }
 
     System.out.println("=== aln 1 ===");
@@ -193,7 +195,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
   }
 
-  private static void execAln(final String bwaPath, final String args,
+  private void execAln(final String bwaPath, final String args,
       final int threads, final String outputFilename,
       final String indexPathname, final String readsFilename)
       throws IOException {
@@ -207,7 +209,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     System.out.println("cmd: " + cmd);
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -222,7 +224,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = BinariesInstaller.install("bwa");
+      bwaPath = install("bwa");
     }
 
     final String cmd;
@@ -260,7 +262,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     System.out.println("cmd: " + cmd);
     LOGGER.info(cmd);
 
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "

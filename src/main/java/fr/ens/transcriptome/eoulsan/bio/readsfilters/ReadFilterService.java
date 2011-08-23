@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * This class define a service to retrieve an Action
+ * This class define a service to retrieve a ReadFilter.
  * @author Laurent Jourdren
  */
 public class ReadFilterService {
@@ -41,7 +41,7 @@ public class ReadFilterService {
   //
 
   /**
-   * Retrieve the singleton static instance of an ActionService.
+   * Retrieve the singleton static instance of an ReadFilterService.
    * @return A ActionService instance
    */
   public static synchronized ReadFilterService getInstance() {
@@ -59,7 +59,7 @@ public class ReadFilterService {
 
   /**
    * Get a ReadFilter object.
-   * @param readFilterName name of the mapper to get
+   * @param readFilterName name of the filter to get
    * @return an Action
    */
   public ReadFilter getReadFilter(final String readFilterName) {

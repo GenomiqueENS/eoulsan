@@ -244,8 +244,7 @@ public class Sequence {
   }
 
   /**
-   * Count the number of times of a a non overlapping string is found in the
-   * current sequence.
+   * Count the number of times of a string is found in the current sequence.
    * @param s query string
    * @return the number of time that query sequence was found.
    */
@@ -551,6 +550,7 @@ public class Sequence {
         + "{id=" + this.id + ", name=" + this.name + ", description="
         + this.description + ", alphabet=" + this.alphabet + ", sequence="
         + this.sequence + "}";
+
   }
 
   //
