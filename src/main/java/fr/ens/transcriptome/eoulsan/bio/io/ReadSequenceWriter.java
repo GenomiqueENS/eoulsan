@@ -24,26 +24,22 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
- * This abstract class define method to implements for ReadSequenceWriter.
+ * This interface define the methods to implements for ReadSequenceWriter.
  * @author Laurent Jourdren
  */
-public abstract class ReadSequenceWriter extends ReadSequence {
+public interface ReadSequenceWriter extends Closeable {
 
   /**
-   * Write the current entry.
+   * Write a read.
+   * @param readSequence the read to write
    * @throws IOException if an error occurs while writing data
    */
-  public abstract void write() throws IOException;
-
-  /**
-   * Close the writer
-   * @throws IOException if an error occurs while closing file
-   */
-  public abstract void close() throws IOException;
+  void write(ReadSequence readSequence) throws IOException;
 
 }

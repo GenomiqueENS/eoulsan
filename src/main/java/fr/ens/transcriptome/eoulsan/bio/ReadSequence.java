@@ -24,31 +24,22 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
+import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define a read sequence.
  * @author Laurent Jourdren
  */
-public class ReadSequence extends Sequence {
+public final class ReadSequence extends Sequence {
 
-  private FastqFormat fastqFormat;
+  private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
   private String quality;
-  private boolean repeatNameInFastq;
 
   //
   // Getters
   //
-
-  /**
-   * Get the quality of the sequence.
-   * @return a string with the quality
-   */
-  public final String getQuality() {
-
-    return this.quality;
-  }
 
   /**
    * Get the fastq format value.
@@ -60,25 +51,17 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Test if id of the read must be added on the third line of the fastq entry.
-   * @return true if the id must be repeated
+   * Get the quality of the sequence.
+   * @return a string with the quality
    */
-  public final boolean isRepeatIdInFastQ() {
+  public final String getQuality() {
 
-    return this.repeatNameInFastq;
+    return this.quality;
   }
 
   //
   // Setters
   //
-
-  /**
-   * Set the quality.
-   * @param quality Sequence to set
-   */
-  public final void setQuality(final String quality) {
-    this.quality = quality;
-  }
 
   /**
    * Set the fastq format value.
@@ -93,12 +76,11 @@ public class ReadSequence extends Sequence {
   }
 
   /**
-   * Set if id of the read must be added on the third line of the fastq entry.
-   * @param repeatNameInFastq true if the id must be repeated
+   * Set the quality.
+   * @param quality Sequence to set
    */
-  public final void setRepeatIdInFastQ(final boolean repeatNameInFastq) {
-
-    this.repeatNameInFastq = repeatNameInFastq;
+  public final void setQuality(final String quality) {
+    this.quality = trim(quality);
   }
 
   /**
@@ -116,40 +98,98 @@ public class ReadSequence extends Sequence {
     this.setSequence(rs.getSequence());
     this.setQuality(rs.getQuality());
     this.setFastqFormat(rs.getFastqFormat());
-    this.setRepeatIdInFastQ(rs.isRepeatIdInFastQ());
   }
 
   //
-  // Other methods
+  // Quality methods
+  //
+
+  public int[] qualityScores() {
+
+    if (this.quality == null)
+      return null;
+
+    final char[] qualities = this.quality.toCharArray();
+    final int len = qualities.length;
+    final FastqFormat format = this.fastqFormat;
+    final int[] result = new int[len];
+
+    for (int i = 0; i < len; i++)
+      result[i] = format.getScore(qualities[i]);
+
+    return result;
+  }
+
+  public double[] errorProbabilities() {
+
+    if (this.quality == null)
+      return null;
+
+    final char[] qualities = this.quality.toCharArray();
+    final int len = qualities.length;
+    final FastqFormat format = this.fastqFormat;
+    final double[] result = new double[len];
+
+    for (int i = 0; i < len; i++)
+      result[i] = format.getProbability(qualities[i]);
+
+    return result;
+  }
+
+  //
+  // Sequence methods
   //
 
   /**
-   * Test if a ReadSequence is valid. Only check if all fields are not null.
-   * @return true if the ReadSequence is valid
+   * Create a subsequence from the current sequence. Note that index start at 0.
+   * @param beginIndex begin index of the subsequence
+   * @param endIndex end index of the subsequence
+   * @return a new sequence object with a subsequence of the current object
    */
-  public final boolean isFastQValid() {
+  public ReadSequence subSequence(final int beginIndex, final int endIndex) {
 
-    return this.name != null && this.sequence != null && this.quality != null;
+    if (this.sequence == null
+        || this.quality == null
+        || this.sequence.length() != this.quality.length())
+      return null;
+
+    if (beginIndex < 0)
+      throw new StringIndexOutOfBoundsException(beginIndex);
+
+    if (endIndex > length())
+      throw new StringIndexOutOfBoundsException(endIndex);
+
+    if (beginIndex > endIndex)
+      throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
+
+    return new ReadSequence(-1,
+        this.name == null ? null : this.name + "[part]",
+        this.sequence.substring(beginIndex, endIndex), this.quality.substring(
+            beginIndex, endIndex));
   }
 
   /**
-   * Compute mean quality score of the read. Illumina version.
-   * @return the mean quality score of the read.
+   * Contact two ReadSequences.
+   * @param sequence sequence to contact
+   * @return a new sequence object with the sequence of the current object and
+   *         the sequence of the input sequence
    */
-  public final double meanQuality() {
+  public ReadSequence concat(final ReadSequence sequence) {
 
-    if (this.quality == null) {
-      return Double.NaN;
-    }
+    final ReadSequence result = new ReadSequence();
+    result.setName(this.name + " [merged]");
 
-    int score = 0;
-    final int len = quality.length();
-    for (int i = 0; i < len; i++) {
-      score += quality.charAt(i) - fastqFormat.getAsciiOffset();
-    }
+    if (sequence == null || this.sequence == null)
+      return result;
 
-    return score / (double) len;
+    result.setSequence(getSequence() + sequence.getSequence());
+    result.setQuality(getQuality() + sequence.getQuality());
+    return result;
   }
+
+  //
+  // Output methods
+  //
 
   /**
    * Return the sequence in FastQ format.
@@ -158,8 +198,7 @@ public class ReadSequence extends Sequence {
    */
   public final String toFastQ() {
 
-    return toFastQ(this.name, this.sequence, this.quality,
-        this.repeatNameInFastq);
+    return toFastQ(this.name, this.sequence, this.quality, false);
   }
 
   /**
@@ -277,6 +316,10 @@ public class ReadSequence extends Sequence {
     return this.sequence + "\t" + this.quality;
   }
 
+  //
+  // Parsing methods
+  //
+
   /**
    * Parse a FastQ sequence.
    * @param fastQ FastQ sequence to parse
@@ -332,94 +375,69 @@ public class ReadSequence extends Sequence {
     this.quality = value.substring(indexTab + 1);
   }
 
-  public final void checkWithException() throws EoulsanException {
+  //
+  // Validation methods
+  //
 
-    if (this.name == null) {
-      throw new IllegalArgumentException("The name of the sequence is null");
-    }
-    if (this.sequence == null) {
-      throw new IllegalArgumentException("The sequence is null");
-    }
-    if (this.quality == null) {
-      throw new IllegalArgumentException(
-          "The quality string of the sequence is null");
-    }
+  protected boolean validateQuality() {
 
-    if (this.sequence.length() == 0) {
-      throw new IllegalArgumentException("The sequence length equals 0");
-    }
+    final String q = this.quality;
+    final int len = q.length();
 
-    if (this.quality.length() == 0) {
-      throw new IllegalArgumentException(
-          "The length of quality string of the sequence equals 0");
-    }
+    if (q == null || len == 0 || len != length())
+      return false;
 
-    if (this.sequence.length() != this.quality.length()) {
-      throw new EoulsanException(
-          "The length of sequence and quality string are not equals");
-    }
+    for (int i = 0; i < len; i++)
 
-    if (!checkCharString(this.quality, (char) 33, (char) 126)) {
-      throw new EoulsanException(
-          "The length of sequence and quality string are not equals");
-    }
+      if (!this.fastqFormat.isCharValid(q.charAt(i)))
+        return false;
 
-    if (!checkBases(this.sequence)) {
-      throw new EoulsanException("Invalid bases in sequence");
-    }
-
+    return true;
   }
 
   /**
-   * Check the Read.
-   * @return true if the values of the read is ok
+   * Check if the read is valid.
+   * @return true if the read is validated
    */
-  public boolean check() {
+  public boolean validate() {
 
-    return this.name != null
-        && this.sequence != null && this.quality != null
-        && this.sequence.length() > 0 && this.quality.length() > 0
-        && this.sequence.length() == this.quality.length()
-        && checkCharString(this.quality, (char) 33, (char) 126)
-        && checkBases(this.sequence);
+    return validateName() && validateSequence() && validateQuality();
   }
 
-  private boolean checkCharString(final String s, final char intervalLow,
-      final char intervalHigh) {
+  //
+  // Object methods
+  //
 
-    final int len = s.length();
+  @Override
+  public int hashCode() {
 
-    for (int i = 0; i < len; i++) {
-
-      final char c = s.charAt(i);
-      if (c < intervalLow || c > intervalHigh) {
-        return false;
-      }
-    }
-
-    return true;
+    return Utils.hashCode(this.id, this.name, this.description, this.alphabet,
+        this.sequence, this.quality, this.fastqFormat);
   }
 
-  private boolean checkBases(final String s) {
+  @Override
+  public boolean equals(final Object o) {
 
-    final int len = s.length();
+    if (!super.equals(o))
+      return false;
 
-    for (int i = 0; i < len; i++) {
+    if (!(o instanceof ReadSequence))
+      return false;
 
-      switch (s.charAt(i)) {
+    final ReadSequence that = (ReadSequence) o;
 
-      case 'A':
-      case 'T':
-      case 'G':
-      case 'C':
-      case 'N':
-        break;
-      default:
-        return false;
-      }
+    return this.fastqFormat.equals(that.fastqFormat)
+        && equal(this.quality, that.quality);
+  }
 
-    }
-    return true;
+  @Override
+  public String toString() {
+
+    return this.getName()
+        + "{id=" + this.id + ", name=" + this.name + ", description="
+        + this.description + ", alphabet=" + this.alphabet + ", sequence="
+        + this.sequence + ", fastqFormat=" + this.fastqFormat + ", quality="
+        + quality + "}";
   }
 
   //
@@ -431,6 +449,7 @@ public class ReadSequence extends Sequence {
    */
   public ReadSequence() {
     super();
+    this.alphabet = Alphabets.READ_DNA_ALPHABET;
   }
 
   /**
@@ -459,6 +478,7 @@ public class ReadSequence extends Sequence {
     super(id, name, sequence);
     this.quality = quality;
     this.fastqFormat = fastqFormat;
+    this.alphabet = Alphabets.READ_DNA_ALPHABET;
   }
 
 }

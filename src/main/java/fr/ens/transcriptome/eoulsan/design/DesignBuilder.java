@@ -290,8 +290,13 @@ public class DesignBuilder {
     try {
       reader = new FastqReader(f.open());
 
-      if (!reader.readEntry())
+      if (!reader.hasNext()) {
+        reader.throwException();
         throw new EoulsanException("Fastq file is empty: " + f.getSource());
+      }
+
+      reader.throwException();
+      return reader.next().getName();
 
     } catch (IOException e) {
       throw new EoulsanException(e.getMessage());
@@ -299,7 +304,6 @@ public class DesignBuilder {
       throw new EoulsanException(e.getMessage());
     }
 
-    return reader.getName();
   }
 
   //
