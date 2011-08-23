@@ -24,7 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
+import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define a Sequence.
@@ -34,6 +37,7 @@ public class Sequence {
 
   protected int id;
   protected String name;
+  protected String description;
   protected String sequence;
 
   //
@@ -54,6 +58,15 @@ public class Sequence {
    */
   public final String getName() {
     return this.name;
+  }
+
+  /**
+   * Get the description of the sequence.
+   * @return a string with the description
+   */
+  public final String getDescription() {
+
+    return this.description;
   }
 
   /**
@@ -82,7 +95,15 @@ public class Sequence {
    * @param name the name to set
    */
   public void setName(final String name) {
-    this.name = name;
+    this.name = trim(name);
+  }
+
+  /**
+   * Set the description of the sequence.
+   * @param description the description to set
+   */
+  public final void setDescription(final String description) {
+    this.description = trim(name);
   }
 
   /**
@@ -90,11 +111,26 @@ public class Sequence {
    * @param sequence Sequence to set
    */
   public final void setSequence(final String sequence) {
-    this.sequence = sequence;
+    this.sequence = trim(sequence);
+  }
+
+  /**
+   * Set sequence values with the values of another sequence
+   * @param sequence sequence object with values to use to fill current object
+   */
+  public void set(final Sequence sequence) {
+
+    if (sequence == null)
+      throw new NullPointerException("Sequence is null");
+
+    this.id = sequence.id;
+    this.name = sequence.name;
+    this.description = sequence.description;
+    this.sequence = sequence.sequence;
   }
 
   //
-  // Other methods
+  // Sequence string management
   //
 
   /**
@@ -109,6 +145,78 @@ public class Sequence {
 
     return this.sequence.length();
   }
+
+  /**
+   * Create a subsequence from the current sequence. Note that index start at 0.
+   * @param beginIndex begin index of the subsequence
+   * @param endIndex end index of the subsequence
+   * @return a new sequence object with a subsequence of the current object
+   */
+  public Sequence subSequence(final int beginIndex, final int endIndex) {
+
+    if (beginIndex < 0)
+      throw new StringIndexOutOfBoundsException(beginIndex);
+
+    if (endIndex > length())
+      throw new StringIndexOutOfBoundsException(endIndex);
+
+    if (beginIndex > endIndex)
+      throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
+
+    return new Sequence(-1, this.name == null ? "" : this.name + "[part]",
+        getSequence().substring(beginIndex, endIndex));
+  }
+
+  /**
+   * Contact two sequences.
+   * @param sequence sequence to contact
+   * @return a new sequence object with the sequence of the current object and
+   *         the sequence of the input sequence
+   */
+  public Sequence concat(final Sequence sequence) {
+
+    final Sequence result = new Sequence();
+    result.setName(this.name + " [merged]");
+
+    if (sequence == null || sequence.getSequence() == null)
+      return result;
+
+    result.setSequence(getSequence() + sequence.getSequence());
+    return result;
+  }
+
+  /**
+   * Count the number of times of a sequence is found in the current sequence.
+   * @param sequence query sequence
+   * @return the number of time that query sequence was found.
+   */
+  public int countSequence(final Sequence sequence) {
+
+    return countSequence(sequence == null ? null : sequence.getSequence());
+  }
+
+  /**
+   * Count the number of times of a string is found in the current sequence.
+   * @param s query string
+   * @return the number of time that query sequence was found.
+   */
+  public int countSequence(final String s) {
+
+    if (s == null || this.sequence == null)
+      return 0;
+
+    int count = 0;
+    int index = 0;
+
+    while ((index = this.sequence.indexOf(s, index)) != -1)
+      count++;
+
+    return count;
+  }
+
+  //
+  // Other methods
+  //
 
   /**
    * Get the tm of the sequence.
@@ -134,10 +242,10 @@ public class Sequence {
    * Get the GC percent for the sequence.
    * @return the GC percent for the sequence
    */
-  public final float getGCPercent() {
+  public final double getGCPercent() {
 
     if (this.sequence == null) {
-      return Float.NaN;
+      return Double.NaN;
     }
 
     final int len = this.sequence.length();
@@ -151,7 +259,7 @@ public class Sequence {
       }
     }
 
-    return (float) count / (float) len;
+    return (double) count / (double) len;
   }
 
   /**
@@ -163,7 +271,8 @@ public class Sequence {
   }
 
   /**
-   * Get the sequence as the reverse complement.
+   * Get the sequence as the reverse complement. This method work only with
+   * A,T,G and C bases.
    * @param sequence sequence to reverse complement
    * @return the reverse complement sequence
    */
@@ -253,6 +362,76 @@ public class Sequence {
   }
 
   //
+  // Validation methods
+  //
+
+  /**
+   * Validate the name field of the object.
+   * @return true if the name field of this object is valid
+   */
+  protected boolean validateName() {
+
+    return this.name != null && this.name.length() > 0;
+  }
+
+  /**
+   * Validate the sequence field of the object.
+   * @return true if the sequence field of this object is valid
+   */
+  protected boolean validateSequence() {
+
+    if (this.sequence == null || this.sequence.length() == 0)
+      return false;
+
+    return true;
+  }
+
+  /**
+   * Check if the sequence is valid. To be valid a sequence must get a name and
+   * a sequence with a length > 0. Only authorized bases are "ATGCNXatgcnx".
+   * @return true if the sequence is validated
+   */
+  public boolean validate() {
+
+    return validateName() && validateSequence();
+  }
+
+  //
+  // Object methods
+  //
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(this.id, this.name, this.description, this.sequence);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == null)
+      return false;
+
+    if (!(o instanceof Sequence))
+      return false;
+
+    final Sequence that = (Sequence) o;
+
+    return this.id == that.id
+        && equal(this.name, that.name)
+        && equal(this.description, that.description)
+        && equal(this.sequence, that.sequence);
+  }
+
+  @Override
+  public String toString() {
+
+    return this.getName()
+        + "{id=" + this.id + ", name=" + this.name + ", description="
+        + this.description + ", sequence=" + this.sequence + "}";
+  }
+
+  //
   // Constructor
   //
 
@@ -260,21 +439,50 @@ public class Sequence {
    * Public constructor.
    */
   public Sequence() {
-
-    super();
   }
 
   /**
    * Public constructor.
-   * @param id identifier
-   * @param name Name of the read
-   * @param sequence Sequence of the read
+   * @param id identifier of the sequence
+   * @param name Name of the sequence
+   * @param sequence Sequence of the sequence
    */
   public Sequence(final int id, final String name, final String sequence) {
 
     this.id = id;
     this.name = name;
     this.sequence = sequence;
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the sequence
+   * @param sequence Sequence of the sequence
+   * @param description Description of the sequence
+   */
+  public Sequence(final int id, final String name, final String sequence,
+      final String description) {
+
+    this.id = id;
+    this.name = name;
+    this.sequence = sequence;
+    this.description = description;
+  }
+
+  /**
+   * Public constructor
+   * @param sequence Sequence object which value will be used in the new object
+   */
+  public Sequence(final Sequence sequence) {
+
+    if (sequence == null)
+      return;
+
+    this.id = sequence.id;
+    this.name = sequence.name;
+    this.sequence = sequence.sequence;
+    this.description = sequence.description;
   }
 
 }
