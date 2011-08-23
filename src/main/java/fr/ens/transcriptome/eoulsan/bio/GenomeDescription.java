@@ -366,44 +366,6 @@ public class GenomeDescription {
 
   private static int checkBases(final String s) throws BadBioEntryException {
 
-<<<<<<< HEAD
-    // TODO use alphabet here
-
-    final char[] array = s.toCharArray();
-
-    for (int i = 0; i < array.length; i++)
-      switch (array[i]) {
-
-      case 'A':
-      case 'a':
-      case 'C':
-      case 'c':
-      case 'G':
-      case 'g':
-      case 'T':
-      case 't':
-      case 'U':
-      case 'R':
-      case 'Y':
-      case 'K':
-      case 'M':
-      case 'S':
-      case 'W':
-      case 'B':
-      case 'D':
-      case 'H':
-      case 'V':
-      case 'N':
-      case 'n':
-      case 'X':
-      case 'x':
-
-        break;
-
-      default:
-        throw new BadBioEntryException("Invalid base in genome: " + array[i], s);
-      }
-=======
     final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
 
     final char[] array = s.toCharArray();
@@ -414,7 +376,6 @@ public class GenomeDescription {
       if (!alphabet.isLetterValid(array[i]))
         throw new BadBioEntryException(
             "Invalid base in genome: " + s.charAt(i), s);
->>>>>>> UPDATE: In GenomeDescription
 
     return array.length;
   }
