@@ -36,6 +36,7 @@ import java.util.Set;
 /**
  * This utility class contains common useful methods.
  * @author Laurent Jourdren
+ *
  */
 public class Utils {
 
