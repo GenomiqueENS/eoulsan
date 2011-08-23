@@ -50,6 +50,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -108,7 +109,7 @@ public class GenomeDescription {
    * Set the md5 digest of the genome file
    * @param md5Digest the md5 digest
    */
-  public void setMD5Digest(final String md5Digest) {
+  public void setMD5Sum(final String md5Digest) {
 
     this.md5Digest = md5Digest;
   }
@@ -151,10 +152,10 @@ public class GenomeDescription {
   }
 
   /**
-   * Get the md5 digest for the genome.
-   * @return the md5 digest
+   * Get the md5 sum for the genome.
+   * @return the md5 sum
    */
-  public String getMD5Digest() {
+  public String getMD5Sum() {
 
     return this.md5Digest;
   }
@@ -200,7 +201,7 @@ public class GenomeDescription {
       writer.write(NAME_PREFIX + "=" + getGenomeName() + '\n');
 
     if (this.md5Digest != null)
-      writer.write(MD5_PREFIX + "=" + getMD5Digest() + '\n');
+      writer.write(MD5_PREFIX + "=" + getMD5Sum() + '\n');
 
     writer.write(SEQUENCES_COUNT_PREFIX + '=' + getSequenceCount() + '\n');
 
@@ -257,7 +258,7 @@ public class GenomeDescription {
         if (key.startsWith(NAME_PREFIX))
           result.setGenomeName(fields.get(1));
         if (key.startsWith(MD5_PREFIX))
-          result.setMD5Digest(fields.get(1));
+          result.setMD5Sum(fields.get(1));
         else
           try {
             if (key.startsWith(SEQUENCE_PREFIX))
@@ -315,57 +316,34 @@ public class GenomeDescription {
     final GenomeDescription result = new GenomeDescription();
     result.setGenomeName(StringUtils.basename(filename));
 
-    final BufferedReader br = FileUtils.createBufferedReader(genomeFastaIs);
     MessageDigest md5Digest;
-
     try {
       md5Digest = MessageDigest.getInstance("MD5");
     } catch (NoSuchAlgorithmException e) {
       md5Digest = null;
     }
 
-    String line = null;
+    final FastaReader reader = new FastaReader(genomeFastaIs);
 
-    String currentChr = null;
-    int currentSize = 0;
+    for (final Sequence sequence : reader) {
 
-    while ((line = br.readLine()) != null) {
+      int len = checkBases(sequence.getSequence());
+      final String name = parseChromosomeName(sequence.getName());
 
-      line = line.trim();
-      if ("".equals(line))
-        continue;
-
-      if (line.startsWith(">")) {
-        if (currentChr != null) {
-          result.addSequence(currentChr, currentSize);
-        }
-
-        // Get sequence name
-        currentChr = parseChromosomeName(line);
-
-        // Update digest with chromosome name
-        if (md5Digest != null)
-          md5Digest.update(currentChr.getBytes());
-
-        currentSize = 0;
-      } else {
-        if (currentChr == null)
-          throw new BadBioEntryException(
-              "No fasta header found at the start of the fasta file.", line);
-
-        final String trimmedLine = line.trim();
-
-        // Update digest with current sequence line
-        if (md5Digest != null)
-          md5Digest.update(trimmedLine.getBytes());
-
-        // Add the number of bases of the line to currentSize
-        currentSize += checkBases(trimmedLine);
+      // Update digest with chromosome name
+      if (md5Digest != null) {
+        md5Digest.update(name.getBytes());
+        md5Digest.update(sequence.getSequence().getBytes());
       }
+
+      // Add sequence
+      result.addSequence(name, len);
     }
-    result.addSequence(currentChr, currentSize);
+    reader.throwException();
+
+    // Compute final MD5 sum
     if (md5Digest != null)
-      result.setMD5Digest(digestToString(md5Digest));
+      result.setMD5Sum(digestToString(md5Digest));
 
     genomeFastaIs.close();
 
@@ -388,6 +366,7 @@ public class GenomeDescription {
 
   private static int checkBases(final String s) throws BadBioEntryException {
 
+<<<<<<< HEAD
     // TODO use alphabet here
 
     final char[] array = s.toCharArray();
@@ -424,6 +403,18 @@ public class GenomeDescription {
       default:
         throw new BadBioEntryException("Invalid base in genome: " + array[i], s);
       }
+=======
+    final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
+
+    final char[] array = s.toCharArray();
+
+    final int len = array.length;
+
+    for (int i = 0; i < len; i++)
+      if (!alphabet.isLetterValid(array[i]))
+        throw new BadBioEntryException(
+            "Invalid base in genome: " + s.charAt(i), s);
+>>>>>>> UPDATE: In GenomeDescription
 
     return array.length;
   }
