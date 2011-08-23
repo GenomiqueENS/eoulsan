@@ -744,4 +744,14 @@ public final class StringUtils {
     return (char) (i + 97);
   }
 
+  /**
+   * Trim a string
+   * @param s the string to trim
+   * @return null if the parameter is null or a trimmed string
+   */
+  public static String trim(final String s) {
+
+    return s == null ? null : s.trim();
+  }
+
 }
