@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.join;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
@@ -95,15 +95,15 @@ public class SOAP2SAM {
         if (isPaired) { // Fix single end mode, added by Laurent Jourdren
           mating(sLast, sCurr);
         }
-        bw.write(Joiner.on('\t').join(sLast) + "\n");
-        bw.write(Joiner.on('\t').join(sCurr) + "\n");
+        bw.write(join(sLast, "\t") + "\n");
+        bw.write(join(sCurr, "\t") + "\n");
 
         sLast = null;
 
       } else {
 
         if (sLast != null) {
-          bw.write(Joiner.on('\t').join(sLast) + "\n");
+          bw.write(join(sLast, "\t") + "\n");
         }
         sLast = sCurr;
       }
@@ -112,7 +112,7 @@ public class SOAP2SAM {
     }
 
     if (sLast != null) {
-      bw.write(Joiner.on('\t').join(sLast) + "\n");
+      bw.write(join(sLast, "\t") + "\n");
     }
 
     br.close();
@@ -199,7 +199,7 @@ public class SOAP2SAM {
 
     if (tab.length > 9) {
 
-      final List<String> x = Lists.newArrayList();
+      final List<String> x = newArrayList();
 
       for (int i = 10; i < tab.length; i++) {
 

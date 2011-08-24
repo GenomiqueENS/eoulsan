@@ -22,13 +22,14 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -43,10 +44,9 @@ public class MultiReadAlignmentsFilterBuilder {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private final Map<String, ReadAlignmentsFilter> mapFilters = Maps.newHashMap();
-  private final List<ReadAlignmentsFilter> listFilter = Lists.newArrayList();
-
-  private final Map<String, String> mapParameters = Maps.newLinkedHashMap();
+  private final Map<String, ReadAlignmentsFilter> mapFilters = newHashMap();
+  private final List<ReadAlignmentsFilter> listFilter = newArrayList();
+  private final Map<String, String> mapParameters = newLinkedHashMap();
 
   /**
    * Add a parameter to the builder
@@ -84,7 +84,9 @@ public class MultiReadAlignmentsFilterBuilder {
     if (mapFilters.containsKey(filterName))
       filter = mapFilters.get(filterName);
     else {
-      filter = ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(filterName);
+      filter =
+          ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(
+              filterName);
 
       if (filter == null)
         throw new EoulsanException("Unable to find "
@@ -104,7 +106,8 @@ public class MultiReadAlignmentsFilterBuilder {
               + filterName + "\" with parameter: " + filterKey + "="
               + valueTrimmed);
     } else
-      LOGGER.info("Set alignments filter \"" + filterName + "\" with no parameter");
+      LOGGER.info("Set alignments filter \""
+          + filterName + "\" with no parameter");
 
   }
 
@@ -133,20 +136,23 @@ public class MultiReadAlignmentsFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public ReadAlignmentsFilter getAlignmentsFilter(final ReporterIncrementer incrementer,
-      final String counterGroup) throws EoulsanException {
+  public ReadAlignmentsFilter getAlignmentsFilter(
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws EoulsanException {
 
     for (ReadAlignmentsFilter f : this.listFilter)
       f.init();
 
     final MultiReadAlignmentsFilter maf =
-        new MultiReadAlignmentsFilter(incrementer, counterGroup, this.listFilter);
+        new MultiReadAlignmentsFilter(incrementer, counterGroup,
+            this.listFilter);
 
     return maf;
   }
 
   /**
-   * Get a map with all the parameters used to create the MultiAlignementsFilter.
+   * Get a map with all the parameters used to create the
+   * MultiAlignementsFilter.
    * @return an ordered map object
    */
   public Map<String, String> getParameters() {
