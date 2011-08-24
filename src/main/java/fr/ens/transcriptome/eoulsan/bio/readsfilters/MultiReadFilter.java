@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
-import java.util.List;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 
-import com.google.common.collect.Lists;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadFilter implements ReadFilter {
 
-  private final List<ReadFilter> list = Lists.newArrayList();
+  private final List<ReadFilter> list = newArrayList();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
 
