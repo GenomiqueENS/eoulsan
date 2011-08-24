@@ -131,6 +131,12 @@ public class GenomeChecker implements Checker {
       if (line.startsWith(">")) {
         chromosomes.put(currentChr, currentSize);
         currentChr = parseFastaEntryHeader(line);
+
+        // Check if two sequences exists with the same name exists
+        if (chromosomes.containsKey(currentChr))
+          throw new BadBioEntryException("Sequence name found twice: "
+              + currentChr, line);
+
         currentSize = 0;
       } else {
         if (currentChr == null)
@@ -139,11 +145,6 @@ public class GenomeChecker implements Checker {
         currentSize += checkBases(line.trim());
       }
     }
-
-    // Check if two sequences exists with the same name exists
-    if (chromosomes.containsKey(currentChr))
-      throw new BadBioEntryException(
-          "Sequence name found twice: " + currentChr, line);
 
     chromosomes.put(currentChr, currentSize);
 

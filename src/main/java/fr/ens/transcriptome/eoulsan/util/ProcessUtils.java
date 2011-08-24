@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -551,8 +552,8 @@ public final class ProcessUtils {
     final BufferedReader errr =
         new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-    new Thread(new ProcessThreadOutput(stdr, System.out)).run();
-    new Thread(new ProcessThreadOutput(errr, System.err)).run();
+    new Thread(new ProcessThreadOutput(stdr, System.out)).start();
+    new Thread(new ProcessThreadOutput(errr, System.err)).start();
 
     logEndTime(p, cmd, startTime);
   }
@@ -566,7 +567,7 @@ public final class ProcessUtils {
   public static void execThreadOutput(final String[] cmd) throws IOException {
 
     logger.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+        + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
 
     final long startTime = System.currentTimeMillis();
 
@@ -577,8 +578,8 @@ public final class ProcessUtils {
     final BufferedReader errr =
         new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-    new Thread(new ProcessThreadOutput(stdr, System.out)).run();
-    new Thread(new ProcessThreadOutput(errr, System.err)).run();
+    new Thread(new ProcessThreadOutput(stdr, System.out)).start();
+    new Thread(new ProcessThreadOutput(errr, System.err)).start();
 
     logEndTime(p, Joiner.on(' ').join(cmd), startTime);
   }

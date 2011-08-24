@@ -32,7 +32,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define a class that is use to do fast search on exons and genes of
@@ -188,22 +188,16 @@ public class TranscriptAndExonFinder {
         this.strand = exon.getStrand();
 
       if (this.strand != exon.getStrand())
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "The strand is not the same that the gene");
 
       if (this.chromosome == null)
         this.chromosome = exon.getChromosome();
 
       if (!this.chromosome.equals(exon.getChromosome()))
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "The chromosome is not the same that the gene");
 
-    }
-
-    @Override
-    public String toString() {
-
-      return "[c=" + count + " s=" + start + " e=" + end + "]";
     }
 
     //
@@ -221,8 +215,15 @@ public class TranscriptAndExonFinder {
       return s1.equals(s2);
     }
 
+    //
+    // Object class overrides
+    //
+
     @Override
     public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
 
       if (o == null)
         return false;
@@ -238,6 +239,19 @@ public class TranscriptAndExonFinder {
           && t.count == this.count && t.start == this.start
           && t.end == this.end && t.strand == this.strand
           && t.length == this.length;
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this.name, this.type, this.chromosome, this.count,
+          this.start, this.end, this.strand, this.length);
+    }
+
+    @Override
+    public String toString() {
+
+      return "[c=" + count + " s=" + start + " e=" + end + "]";
     }
 
     //
@@ -373,10 +387,38 @@ public class TranscriptAndExonFinder {
       return this.parentId.compareTo(e.getParentId());
     }
 
+    //
+    // Object class overrides
+    //
+
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof Exon))
+        return false;
+
+      final Exon that = (Exon) o;
+
+      return Utils.equal(this.chromosome, that.chromosome)
+          && this.start == that.start && this.end == that.end
+          && this.strand == that.strand
+          && Utils.equal(this.parentId, that.parentId);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(chromosome, start, end, strand, parentId);
+    }
+
     /**
      * Overide toString()
      * @return a String with the start and end position of the ORF
      */
+    @Override
     public String toString() {
 
       return chromosome
@@ -397,8 +439,11 @@ public class TranscriptAndExonFinder {
     public Exon(final String chromosone, final int start, final int end,
         final char strand, final String parentId) {
 
-      if (start < 1 || end < start)
-        throw new InvalidParameterException();
+      if (start < 1) 
+        throw new IllegalArgumentException("Start position is lower that 1: " + start);
+      
+      if(end < start)
+        throw new IllegalArgumentException("End position is greater that end: " + end);
 
       this.chromosome = chromosone;
       this.start = start;
