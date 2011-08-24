@@ -382,6 +382,10 @@ public final class ReadSequence extends Sequence {
   protected boolean validateQuality() {
 
     final String q = this.quality;
+
+    if (q == null)
+      return false;
+
     final int len = q.length();
 
     if (q == null || len == 0 || len != length())

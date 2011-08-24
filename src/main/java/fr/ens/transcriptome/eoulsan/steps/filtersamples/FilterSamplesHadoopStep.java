@@ -125,10 +125,11 @@ public class FilterSamplesHadoopStep extends AbstractFilterSamplesStep {
               MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName());
 
       // Compute ration and filter samples
-      for (String sampleName : mappingMap.keySet()) {
+      for (final Map.Entry<String, Long> e : mappingMap.entrySet()) {
 
-        final long inputReads = mappingMap.get(sampleName);
-        final long oneLocus = samFilterMap.get(sampleName);
+        final String sampleName = e.getKey();
+        final long inputReads = e.getValue();
+        final long oneLocus = samFilterMap.get(e.getKey());
 
         final double ratio = (double) oneLocus / (double) inputReads;
 

@@ -32,10 +32,12 @@ import java.io.File;
  */
 public class LinuxCpuInfo extends LinuxInfo {
 
+  private static final String CPUINFO_FILE = "/proc/cpuinfo";
+  
   @Override
-  protected File getInfoFile() {
+  public File getInfoFile() {
 
-    return new File("/proc/cpuinfo");
+    return new File(CPUINFO_FILE);
   }
 
   /**

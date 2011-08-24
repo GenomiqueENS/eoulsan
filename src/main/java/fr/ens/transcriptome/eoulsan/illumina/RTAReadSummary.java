@@ -155,16 +155,4 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
         + this.densityRatio + ", lane=" + this.lanes + "}";
   }
 
-  public static void main(String[] args) throws ParserConfigurationException,
-      SAXException, IOException {
-
-    File f =
-        new File(
-            "/import/disir01/hiseq_data/work/110628_SNL110_0025_AB0866ABXX"
-                + "/Data/reports/Summary/read1.xml");
-
-    new RTAReadSummary().parse(f);
-
-  }
-
 }

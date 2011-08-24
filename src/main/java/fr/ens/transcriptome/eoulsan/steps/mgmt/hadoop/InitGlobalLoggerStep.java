@@ -69,8 +69,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
   /** Step name. */
   public static final String STEP_NAME = "_init_global_logger";
 
-  private static final String CPUINFO_FILE_PATH = "/proc/cpuinfo";
-  private static final String MEMINFO_FILE_PATH = "/proc/meminfo";
   private static final String ROOT_PATH = "/";
   private static final String VAR_PATH = "/var";
   private static final String TMP_PATH = "/tmp";
@@ -168,11 +166,8 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
     final Path logPath = new Path(context.getLogPathname());
 
-    final File cpuinfo = new File(CPUINFO_FILE_PATH);
-    final File meminfo = new File(MEMINFO_FILE_PATH);
-
-    copyFile(cpuinfo, logPath, conf);
-    copyFile(meminfo, logPath, conf);
+    copyFile(new LinuxCpuInfo().getInfoFile(), logPath, conf);
+    copyFile(new LinuxMemInfo().getInfoFile(), logPath, conf);
   }
 
   private void sysInfo(final Configuration conf) throws IOException {

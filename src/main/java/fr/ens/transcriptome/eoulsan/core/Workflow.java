@@ -154,7 +154,7 @@ class Workflow implements WorkflowDescription {
   // Checks methods
   //
 
-  private class Cart {
+  private static final class Cart {
 
     final Set<DataFormat> cart = newHashSet();
     final Set<DataFormat> cartUsed = newHashSet();
@@ -162,7 +162,6 @@ class Workflow implements WorkflowDescription {
     final Set<DataFormat> cartGenerated = newHashSet();
     final Set<DataFormat> cartNotGenerated = newHashSet();
     final Set<DataFormat> cartOnlyGenerated = newHashSet();
-
   }
 
   private void scanWorkflow() throws EoulsanException {

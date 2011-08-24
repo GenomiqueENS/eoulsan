@@ -28,12 +28,15 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * This class allow to repackage a jar file.
+ * @author Laurent Jourdren
+ */
 public class JarRepack {
 
   /** The default size of the buffer. */
@@ -47,7 +50,7 @@ public class JarRepack {
     final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
     ZipEntry entry = zin.getNextEntry();
-    // while (entry != null) {
+
     do {
 
       final String entryName = entry.getName();
@@ -70,6 +73,12 @@ public class JarRepack {
     zin.close();
   }
 
+  /**
+   * Add a file to the jar file.
+   * @param file file to add
+   * @param destDir destination in the jar file
+   * @throws IOException if an error occurs while adding the file
+   */
   public void addFile(final File file, final String destDir) throws IOException {
 
     if (file == null) {
@@ -101,6 +110,10 @@ public class JarRepack {
 
   }
 
+  /**
+   * Close the repackaged file.
+   * @throws IOException if an error occurs while closing the repackaged file
+   */
   public void close() throws IOException {
 
     this.zos.close();
@@ -110,6 +123,12 @@ public class JarRepack {
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   * @param inFile the source jar file to repackage
+   * @param outFile the path to the new repackaged file
+   * @throws IOException if an error occurs while opening the source jar file
+   */
   public JarRepack(final File inFile, final File outFile) throws IOException {
 
     if (inFile == null) {
@@ -124,44 +143,4 @@ public class JarRepack {
     copy(inFile);
   }
 
-  //
-  // Main method
-  //
-
-  public static void main(String[] args) throws IOException {
-
-    final File inputJarFile =
-        new File(
-            "/Users/jourdren/Documents/workspace/eoulsan/target/eoulsan-0.5-SNAPSHOT.jar");
-    final File outputDir = new File("/tmp");
-    final File jarsToAddDir =
-        new File(
-            "/Users/jourdren/Documents/workspace/eoulsan/target/dist/eoulsan-0.5-SNAPSHOT/lib");
-
-    final File outputJarFile = new File(outputDir, inputJarFile.getName());
-
-    if (outputJarFile.exists())
-      outputJarFile.delete();
-
-    FileUtils.copyFile(inputJarFile, outputJarFile);
-
-    File[] files = jarsToAddDir.listFiles(new FilenameFilter() {
-
-      @Override
-      public boolean accept(File dir, String name) {
-
-        return name.toLowerCase().endsWith(".jar");
-      }
-    });
-
-    JarRepack jr = new JarRepack(inputJarFile, outputJarFile);
-
-    for (File f : files) {
-      System.out.println(f);
-      jr.addFile(f, "lib/");
-    }
-
-    jr.close();
-
-  }
 }

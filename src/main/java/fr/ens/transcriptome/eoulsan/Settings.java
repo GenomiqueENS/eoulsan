@@ -268,7 +268,7 @@ public final class Settings {
 
     return this.properties.getProperty(GENOME_STORAGE_KEY);
   }
-  
+
   /**
    * Get the annotation storage path.
    * @return the path to annotation storage path
@@ -537,7 +537,7 @@ public final class Settings {
 
     this.properties.setProperty(GENOME_STORAGE_KEY, genomeStoragePath);
   }
-  
+
   /**
    * Set the annotation storage path.
    * @param annotationStoragePath the path to annotation index storage path
