@@ -1,11 +1,10 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
-
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -15,7 +14,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
-  private final List<ReadAlignmentsFilter> list = Lists.newArrayList();
+  private final List<ReadAlignmentsFilter> list = newArrayList();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
 

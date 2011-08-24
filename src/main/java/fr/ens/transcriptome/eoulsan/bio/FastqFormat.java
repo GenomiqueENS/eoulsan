@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newHashSet;
 import static java.lang.Math.log10;
 import static java.lang.Math.max;
 import static java.lang.Math.pow;
@@ -10,16 +11,16 @@ import static java.util.Collections.unmodifiableSet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This enum define the existing fastq formats. It provide many function to
@@ -406,7 +407,7 @@ public enum FastqFormat {
         if (c < format.getCharMin() || c > format.getCharMax()) {
 
           if (toRemove == null)
-            toRemove = Sets.newHashSet();
+            toRemove = newHashSet();
           toRemove.add(format);
         }
       }
@@ -426,7 +427,7 @@ public enum FastqFormat {
       return null;
 
     // Sort formats with increasing minimal char
-    final List<FastqFormat> sortedFormats = Lists.newArrayList(formats);
+    final List<FastqFormat> sortedFormats = newArrayList(formats);
     Collections.sort(sortedFormats, new Comparator<FastqFormat>() {
       @Override
       public int compare(FastqFormat o1, FastqFormat o2) {
@@ -482,7 +483,8 @@ public enum FastqFormat {
       final boolean phredQualityScore) {
 
     this.name = name;
-    this.alias = alias == null ? null : Sets.newHashSet(Arrays.asList(alias));
+    this.alias =
+        alias == null ? null : newHashSet(Arrays.asList(alias));
     this.illuminaVersion = illuminaVersion;
     this.scoreMin = scoreMin;
     this.scoreMax = scoreMax;

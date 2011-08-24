@@ -1,20 +1,18 @@
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -33,7 +31,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   private static final String INDEX_FILENAME = "genomes_index_storage.txt";
 
   private final DataFile dir;
-  private Map<String, IndexEntry> entries = Maps.newLinkedHashMap();
+  private Map<String, IndexEntry> entries = newLinkedHashMap();
 
   /**
    * This inner class define an entry of the index file.
@@ -54,12 +52,11 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     @Override
     public String toString() {
-      return Objects.toStringHelper(this).add("genomeName", genomeName)
-          .add("sequences", sequences).add("length", length)
-          .add("genomeMD5", genomeMD5).add("mapperName", mapperName)
-          .add("file", file).toString();
+      return this.getClass().getSimpleName()
+          + "{genomeName=" + genomeName + ", sequences=" + sequences
+          + ", length=" + length + ", genomeMD5=" + genomeMD5
+          + ", mapperName= " + mapperName + ", file=" + file + "}";
     }
-
   };
 
   //
@@ -138,7 +135,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open()));
-    final Splitter splitter = Splitter.on('\t').trimResults();
+
+    final Pattern pattern = Pattern.compile("\t");
     String line = null;
 
     while ((line = br.readLine()) != null) {
@@ -147,7 +145,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       if ("".equals(trimmedLine) || trimmedLine.startsWith("#"))
         continue;
 
-      List<String> fields = Lists.newArrayList(splitter.split(trimmedLine));
+      final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
 
       if (fields.size() != 6)
         continue;

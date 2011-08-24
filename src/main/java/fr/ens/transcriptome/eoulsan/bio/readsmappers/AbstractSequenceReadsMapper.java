@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
 import java.io.File;
 import java.io.FileInputStream;
