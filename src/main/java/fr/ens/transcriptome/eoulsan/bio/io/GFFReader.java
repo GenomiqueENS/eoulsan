@@ -51,6 +51,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
   private BufferedReader reader;
   private final boolean reuse;
   private GFFEntry result = null;
+  private int count;
   private boolean end;
   private boolean fastaSectionFound;
 
@@ -81,7 +82,6 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
       return false;
 
     String line = null;
-    int count = 0;
 
     // Reuse result object or not
     if (!this.reuse)

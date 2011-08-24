@@ -185,20 +185,6 @@ public final class Version implements Comparable<Version> {
     return Integer.valueOf(getRevision()).compareTo(version.getRevision());
   }
 
-  public boolean equals(final Object o) {
-
-    if (o == null)
-      return false;
-
-    if (!(o instanceof Version))
-      return false;
-
-    final Version v = (Version) o;
-
-    return v.major == this.major
-        && v.minor == this.minor && v.revision == this.revision;
-  }
-
   /**
    * Get the minimal version from an array of versions.
    * @param versions The array of versions
@@ -238,6 +224,34 @@ public final class Version implements Comparable<Version> {
   }
 
   //
+  // Object methods overrides
+  //
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null)
+      return false;
+
+    if (!(o instanceof Version))
+      return false;
+
+    final Version v = (Version) o;
+
+    return v.major == this.major
+        && v.minor == this.minor && v.revision == this.revision;
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(major, minor, revision);
+  }
+
+  //
   // Constructor
   //
 
@@ -245,7 +259,7 @@ public final class Version implements Comparable<Version> {
    * Public constructor.
    */
   public Version() {
-    
+
     this(null);
   }
 
@@ -256,7 +270,7 @@ public final class Version implements Comparable<Version> {
    * @param revision The number of revision of the version
    */
   public Version(final int major, final int minor, final int revision) {
-    
+
     setVersion(major, minor, revision);
   }
 
@@ -265,7 +279,7 @@ public final class Version implements Comparable<Version> {
    * @param version The version to set
    */
   public Version(final String version) {
-    
+
     setVersion(version);
   }
 

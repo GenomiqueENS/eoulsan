@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
+import fr.ens.transcriptome.eoulsan.util.Utils;
+
 /**
  * Define an abstract DataType.
  * @author Laurent Jourdren
@@ -62,26 +65,20 @@ public abstract class AbstractDataType implements DataType {
 
     final DataType dt = (DataType) o;
 
-    return eq(getName(), dt.getName())
-        && eq(getDescription(), dt.getDescription())
-        && eq(getPrefix(), dt.getPrefix())
+    return equal(getName(), dt.getName())
+        && equal(getDescription(), dt.getDescription())
+        && equal(getPrefix(), dt.getPrefix())
         && isOneFilePerAnalysis() == dt.isOneFilePerAnalysis()
         && isDataTypeFromDesignFile() == dt.isDataTypeFromDesignFile()
-        && eq(getDesignFieldName(), dt.getDesignFieldName());
+        && equal(getDesignFieldName(), dt.getDesignFieldName());
   }
 
-  /**
-   * Check equality between 2 objects even if there are null.
-   * @param a first object to compare
-   * @param b seconde object to compare
-   * @return true if the two object are equals
-   */
-  private static boolean eq(final Object a, final Object b) {
+  @Override
+  public int hashCode() {
 
-    if (a == b)
-      return true;
-
-    return a.equals(b);
+    return Utils.hashCode(getName(), getDescription(), getPrefix(),
+        isOneFilePerAnalysis(), isDataTypeFromDesignFile(),
+        getDesignFieldName());
   }
 
   @Override

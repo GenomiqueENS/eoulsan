@@ -172,8 +172,10 @@ public class SampleMetadataImpl implements SampleMetadata {
   @Override
   public void setField(final String field, final List<String> value) {
 
-    if (value == null)
+    if (value == null) {
       setField(field, (String) null);
+      return;
+    }
 
     switch (value.size()) {
 
