@@ -32,10 +32,12 @@ import java.io.File;
  */
 public class LinuxMemInfo extends LinuxInfo {
 
-  @Override
-  protected File getInfoFile() {
+  private static final String MEMINFO_FILE = "/proc/meminfo";
 
-    return new File("/proc/meminfo");
+  @Override
+  public File getInfoFile() {
+
+    return new File(MEMINFO_FILE);
   }
 
   /**

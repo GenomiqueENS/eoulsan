@@ -45,7 +45,11 @@ public abstract class LinuxInfo {
 
   private Map<String, String> map = Maps.newHashMap();
 
-  protected abstract File getInfoFile();
+  /**
+   * Get the file to parse.
+   * @return the file to parse
+   */
+  public abstract File getInfoFile();
 
   protected void parse() {
 

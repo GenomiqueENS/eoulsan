@@ -294,17 +294,4 @@ public class RunInfo {
 
   }
 
-  public static void main(String[] args) throws ParserConfigurationException,
-      SAXException, IOException {
-
-    File f =
-        new File(
-            "/import/disir01/hiseq_data/work/110628_SNL110_0025_AB0866ABXX/RunInfo.xml");
-    RunInfo ri = new RunInfo();
-    ri.parse(f);
-
-    System.out.println(ri);
-
-  }
-
 }

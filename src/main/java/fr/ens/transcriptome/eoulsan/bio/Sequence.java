@@ -426,6 +426,8 @@ public class Sequence {
     if (s == null || s.trim().length() == 0) {
       setName(null);
       setSequence(null);
+      
+      return;
     }
 
     final String[] lines = s.split("\n");
