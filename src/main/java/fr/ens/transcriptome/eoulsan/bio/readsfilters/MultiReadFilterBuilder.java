@@ -1,16 +1,16 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This builder allow to create a MultiReadFilter object.
@@ -21,10 +21,10 @@ public class MultiReadFilterBuilder {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private final Map<String, ReadFilter> mapFilters = Maps.newHashMap();
-  private final List<ReadFilter> listFilter = Lists.newArrayList();
+  private final Map<String, ReadFilter> mapFilters = newHashMap();
+  private final List<ReadFilter> listFilter = Utils.newArrayList();
 
-  private final Map<String, String> mapParameters = Maps.newLinkedHashMap();
+  private final Map<String, String> mapParameters = Utils.newLinkedHashMap();
 
   /**
    * Add a parameter to the builder
@@ -77,8 +77,10 @@ public class MultiReadFilterBuilder {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
       this.mapParameters.put(filterKey, valueTrimmed);
-      LOGGER.info("Set read filter \""
-          + filterName + "\" with parameter: " + filterKey + "=" + valueTrimmed);
+      LOGGER
+          .info("Set read filter \""
+              + filterName + "\" with parameter: " + filterKey + "="
+              + valueTrimmed);
     } else
       LOGGER.info("Set read filter \"" + filterName + "\" with no parameter");
 

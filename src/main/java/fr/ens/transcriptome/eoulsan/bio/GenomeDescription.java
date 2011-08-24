@@ -24,7 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
+import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,12 +45,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
@@ -71,9 +68,8 @@ public class GenomeDescription {
   private static final String SEQUENCES_COUNT_PREFIX = PREFIX + "sequences";
 
   private String genomeName;
-  private Map<String, Integer> sequences = Maps.newHashMap();
-  private List<String> sequencesOrder = Lists.newArrayList();
-  private String md5Digest;
+  private Map<String, Integer> sequences = newLinkedHashMap();
+  private String md5Sum;
 
   //
   // Setters
@@ -98,11 +94,7 @@ public class GenomeDescription {
     LOGGER.fine("Add sequence: "
         + sequenceName + " with " + sequenceLength + " pb");
 
-    if (!this.sequences.containsKey(sequenceName))
-      this.sequencesOrder.add(sequenceName);
-
     this.sequences.put(sequenceName, sequenceLength);
-
   }
 
   /**
@@ -111,7 +103,7 @@ public class GenomeDescription {
    */
   public void setMD5Sum(final String md5Digest) {
 
-    this.md5Digest = md5Digest;
+    this.md5Sum = md5Digest;
   }
 
   //
@@ -148,7 +140,7 @@ public class GenomeDescription {
    */
   public List<String> getSequencesNames() {
 
-    return Collections.unmodifiableList(this.sequencesOrder);
+    return Collections.unmodifiableList(newArrayList(this.sequences.keySet()));
   }
 
   /**
@@ -157,7 +149,7 @@ public class GenomeDescription {
    */
   public String getMD5Sum() {
 
-    return this.md5Digest;
+    return this.md5Sum;
   }
 
   /**
@@ -193,14 +185,14 @@ public class GenomeDescription {
    */
   public void save(final OutputStream os) throws IOException {
 
-    Preconditions.checkNotNull(os, "OutputStream is null");
+    checkNotNull(os, "OutputStream is null");
 
     final Writer writer = FileUtils.createFastBufferedWriter(os);
 
     if (this.genomeName != null)
       writer.write(NAME_PREFIX + "=" + getGenomeName() + '\n');
 
-    if (this.md5Digest != null)
+    if (this.md5Sum != null)
       writer.write(MD5_PREFIX + "=" + getMD5Sum() + '\n');
 
     writer.write(SEQUENCES_COUNT_PREFIX + '=' + getSequenceCount() + '\n');
@@ -222,7 +214,7 @@ public class GenomeDescription {
    */
   public void save(final File file) throws FileNotFoundException, IOException {
 
-    Preconditions.checkNotNull(file, "File is null");
+    checkNotNull(file, "File is null");
     save(new FileOutputStream(file));
   }
 
@@ -236,7 +228,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription load(final InputStream is) throws IOException {
 
-    Preconditions.checkNotNull(is, "InputStream is null");
+    checkNotNull(is, "InputStream is null");
 
     final GenomeDescription result = new GenomeDescription();
 
@@ -244,16 +236,13 @@ public class GenomeDescription {
 
     String line = null;
 
-    final Splitter splitter = Splitter.on('=').trimResults();
-
     while ((line = read.readLine()) != null) {
 
-      final List<String> fields =
-          Lists.newArrayList(splitter.split(line.toString()));
+      final List<String> fields = asList(line.split("\t"));
 
       if (fields.size() > 1) {
 
-        final String key = fields.get(0);
+        final String key = fields.get(0).trim();
 
         if (key.startsWith(NAME_PREFIX))
           result.setGenomeName(fields.get(1));
@@ -310,8 +299,7 @@ public class GenomeDescription {
       final InputStream genomeFastaIs, final String filename)
       throws BadBioEntryException, IOException {
 
-    Preconditions.checkNotNull(genomeFastaIs,
-        "The input stream of the genome is null");
+    checkNotNull(genomeFastaIs, "The input stream of the genome is null");
 
     final GenomeDescription result = new GenomeDescription();
     result.setGenomeName(StringUtils.basename(filename));
@@ -397,8 +385,8 @@ public class GenomeDescription {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("sequences", this.sequences.size())
-        .toString();
+    return this.getClass().getSimpleName()
+        + "{genomeName=" + genomeName + ", sequences=" + this.sequences.size()
+        + ", md5Sum=" + this.md5Sum + "}";
   }
-
 }
