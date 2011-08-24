@@ -754,4 +754,26 @@ public final class StringUtils {
     return s == null ? null : s.trim();
   }
 
+  /**
+   * Join an element of an array of string into a string.
+   * @param array array of string to join
+   * @param separator separator to use
+   */
+  public static String join(final String[] array, final String separator) {
+
+    if (array == null)
+      return null;
+
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < array.length; i++) {
+
+      if (i > 0 && separator != null)
+        sb.append(separator);
+      sb.append(array[i]);
+    }
+
+    return sb.toString();
+  }
+
 }
