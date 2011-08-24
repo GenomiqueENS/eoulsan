@@ -24,12 +24,18 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
+
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
@@ -39,11 +45,25 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * This class define a GFF reader.
  * @author Laurent Jourdren
  */
-public class GFFReader extends GFFEntry {
+public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
+    Closeable {
 
   private BufferedReader reader;
+  private final boolean reuse;
+  private GFFEntry result = null;
   private boolean end;
   private boolean fastaSectionFound;
+
+  private Map<String, String> metadata = newLinkedHashMap();
+  private boolean nextCallDone = true;
+  protected IOException ioException;
+  protected BadBioEntryException bbeException;
+
+  @Override
+  public Iterator<GFFEntry> iterator() {
+
+    return this;
+  }
 
   /**
    * Test if a fasta section was found.
@@ -54,13 +74,8 @@ public class GFFReader extends GFFEntry {
     return this.fastaSectionFound;
   }
 
-  /**
-   * Read the next entry in the stream.
-   * @return false if there is no more entry to read
-   * @throws IOException if an error occurs while reading file
-   * @throws BadBioEntryException if an entry is invalid
-   */
-  public boolean readEntry() throws IOException, BadBioEntryException {
+  @Override
+  public boolean hasNext() {
 
     if (this.end)
       return false;
@@ -68,37 +83,76 @@ public class GFFReader extends GFFEntry {
     String line = null;
     int count = 0;
 
-    while ((line = this.reader.readLine()) != null) {
+    // Reuse result object or not
+    if (!this.reuse)
+      result = new GFFEntry();
 
-      if (line.startsWith("###"))
-        continue;
+    try {
+      while ((line = this.reader.readLine()) != null) {
 
-      if (line.startsWith("##FASTA")) {
-        this.fastaSectionFound = true;
-        this.end = true;
-        return false;
-      }
-
-      if (line.startsWith("##")) {
-
-        final int posTab = line.indexOf('\t');
-        if (posTab == -1)
+        if (line.startsWith("###"))
           continue;
-        this.setMetaDataEntry(line.substring(2, posTab).trim(),
-            line.substring(posTab + 1).trim());
-        this.setId(count++);
-      } else if (line.startsWith("#"))
-        continue;
-      else {
 
-        parse(line.trim());
-        return true;
+        if (line.startsWith("##FASTA")) {
+          this.fastaSectionFound = true;
+          this.end = true;
+          return false;
+        }
+
+        if (line.startsWith("##")) {
+
+          final int posTab = line.indexOf('\t');
+          if (posTab == -1)
+            continue;
+
+          final String mdKey = line.substring(2, posTab).trim();
+          final String mdValue = line.substring(posTab + 1).trim();
+
+          if (reuse)
+            result.addMetaDataEntry(mdKey, mdValue);
+          else
+            this.metadata.put(mdKey, mdValue);
+
+        } else if (line.startsWith("#"))
+          continue;
+        else {
+
+          result.parse(line.trim());
+          result.setId(count++);
+
+          // Add metadata if not reuse result object
+          if (!reuse)
+            result.addMetaDataEntries(this.metadata);
+
+          return true;
+        }
       }
+    } catch (IOException e) {
+      this.ioException = e;
+    } catch (BadBioEntryException e) {
+      this.bbeException = e;
     }
 
     this.end = true;
 
     return false;
+  }
+
+  @Override
+  public GFFEntry next() {
+
+    if (this.nextCallDone)
+      throw new NoSuchElementException();
+
+    this.nextCallDone = true;
+
+    return this.result;
+  }
+
+  @Override
+  public void remove() {
+
+    throw new UnsupportedOperationException("Unsupported operation");
   }
 
   /**
@@ -108,6 +162,22 @@ public class GFFReader extends GFFEntry {
   public void close() throws IOException {
 
     this.reader.close();
+  }
+
+  /**
+   * Throw an exception if an exception has been caught while last hasNext()
+   * method call.
+   * @throws IOException if an exception has been caught while last hasNext()
+   *           method call
+   * @throws BadBioEntryException if the last entry is not valid
+   */
+  public void throwException() throws IOException, BadBioEntryException {
+
+    if (this.ioException != null)
+      throw this.ioException;
+
+    if (this.bbeException != null)
+      throw this.bbeException;
   }
 
   //
@@ -120,10 +190,22 @@ public class GFFReader extends GFFEntry {
    */
   public GFFReader(final InputStream is) {
 
+    this(is, false);
+  }
+
+  /**
+   * Public constructor
+   * @param is InputStream to use
+   * @param reuseResultObject if the object returns by the next() method will be
+   *          always the same
+   */
+  public GFFReader(final InputStream is, final boolean reuseResultObject) {
+
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
     this.reader = new BufferedReader(new InputStreamReader(is));
+    this.reuse = reuseResultObject;
   }
 
   /**
@@ -131,6 +213,18 @@ public class GFFReader extends GFFEntry {
    * @param file File to use
    */
   public GFFReader(final File file) throws FileNotFoundException {
+
+    this(file, false);
+  }
+
+  /**
+   * Public constructor
+   * @param file File to use
+   * @param reuseResultObject if the object returns by the next() method will be
+   *          always the same
+   */
+  public GFFReader(final File file, final boolean reuseResultObject)
+      throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -140,6 +234,7 @@ public class GFFReader extends GFFEntry {
           + file.getAbsolutePath());
 
     this.reader = FileUtils.createBufferedReader(file);
+    this.reuse = reuseResultObject;
   }
 
 }

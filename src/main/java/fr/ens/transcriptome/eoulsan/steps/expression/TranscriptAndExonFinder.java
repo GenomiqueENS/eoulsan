@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -711,7 +712,7 @@ public class TranscriptAndExonFinder {
 
     LOGGER.info("Expression Type: " + expressionType);
 
-    final GFFReader reader = new GFFReader(is);
+    final GFFReader reader = new GFFReader(is, true);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
     this.transcripts = new HashMap<String, Transcript>();
@@ -720,32 +721,33 @@ public class TranscriptAndExonFinder {
 
     int count = 0;
 
-    while (reader.readEntry()) {
+    // while (reader.readEntry()) {
+    for (final GFFEntry e : reader) {
 
       count++;
 
-      final String type = reader.getType();
+      final String type = e.getType();
 
-      if (reader.isAttribute("ID"))
-        idType.put(reader.getAttributeValue("ID"), type);
+      if (e.isAttribute("ID"))
+        idType.put(e.getAttributeValue("ID"), type);
 
       if (expressionType.equals(type)) {
 
-        final String chr = reader.getSeqId();
-        final int start = reader.getStart();
-        final int stop = reader.getEnd();
-        final char strand = reader.getStrand();
+        final String chr = e.getSeqId();
+        final int start = e.getStart();
+        final int stop = e.getEnd();
+        final char strand = e.getStrand();
 
         String parentId = null;
 
-        if (reader.isAttribute("modeleid"))
-          parentId = reader.getAttributeValue("modeleid");
-        else if (reader.isAttribute("single"))
-          parentId = reader.getAttributeValue("single");
-        else if (reader.isAttribute("Parent"))
-          parentId = reader.getAttributeValue("Parent");
-        else if (reader.isAttribute("PARENT"))
-          parentId = reader.getAttributeValue("PARENT");
+        if (e.isAttribute("modeleid"))
+          parentId = e.getAttributeValue("modeleid");
+        else if (e.isAttribute("single"))
+          parentId = e.getAttributeValue("single");
+        else if (e.isAttribute("Parent"))
+          parentId = e.getAttributeValue("Parent");
+        else if (e.isAttribute("PARENT"))
+          parentId = e.getAttributeValue("PARENT");
 
         if (chr == null || parentId == null)
           continue;
