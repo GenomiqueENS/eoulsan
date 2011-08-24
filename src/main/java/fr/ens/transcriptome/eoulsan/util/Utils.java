@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class contains some useful methods about collection, hashcode
+ * computation or precondition checking.
+ * @author Laurent Jourdren
+ */
 public class Utils {
 
   /**
@@ -118,6 +124,84 @@ public class Utils {
    */
   public static int hashCode(final Object... objects) {
     return Arrays.hashCode(objects);
+  }
+
+  /**
+   * Throw a NullPointerException if the input object is null.
+   * @param object object to test
+   * @param msg error message
+   */
+  public static void checkNotNull(final Object object, final String msg) {
+
+    if (object == null)
+      throw new NullPointerException(msg);
+  }
+
+  /**
+   * Throws a IllegalStateException if the expression if false.
+   * @param expression expression to test
+   * @param msg error message
+   */
+  public static void checkState(final boolean expression, final String msg) {
+
+    if (!expression)
+      throw new IllegalStateException(msg);
+  }
+
+  /**
+   * Create an ArrayList Object.
+   * @return a new ArrayList object
+   */
+  public static <E> List<E> newArrayList() {
+
+    return new ArrayList<E>();
+  }
+
+  /**
+   * Create an ArrayList Object.
+   * @param elements to add at the creation of the list
+   * @return a new ArrayList object
+   */
+  public static <E> List<E> newArrayList(final Collection<? extends E> elements) {
+
+    return new ArrayList<E>(elements);
+  }
+
+  /**
+   * Create a HashSet Object.
+   * @return a new HashSet object
+   */
+  public static <E> HashSet<E> newHashSet() {
+
+    return new HashSet<E>();
+  }
+
+  /**
+   * Create a HashSet Object.
+   * @param elements to add at the creation of the set
+   * @return a new HashSet object
+   */
+  public static <E> HashSet<E> newHashSet(final Collection<? extends E> elements) {
+
+    return new HashSet<E>(elements);
+  }
+
+  /**
+   * Create a HashMap Object.
+   * @return a new HashMap object
+   */
+  public static <K, V> Map<K, V> newHashMap() {
+
+    return new HashMap<K, V>();
+  }
+
+  /**
+   * Create a LinkedHashMap Object.
+   * @return a new HashMap object
+   */
+  public static <K, V> Map<K, V> newLinkedHashMap() {
+
+    return new HashMap<K, V>();
   }
 
 }
