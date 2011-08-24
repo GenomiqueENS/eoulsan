@@ -186,7 +186,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       throw new IOException("The source is null.");
 
     final DataFile df = new DataFile(source);
-    if (!df.getProtocol().equals("file"))
+    if (!df.getProtocol().getName().equals("file"))
       return df;
 
     final String src = df.getSource();
