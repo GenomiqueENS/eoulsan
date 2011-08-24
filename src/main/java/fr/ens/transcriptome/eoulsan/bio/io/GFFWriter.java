@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,23 +35,27 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-public class GFFWriter extends GFFEntry {
+/**
+ * This class define a GFF writer.
+ * @author Laurent Jourdren
+ */
+public class GFFWriter implements Closeable {
 
   private Writer writer;
 
   private boolean first = true;
   private StringBuilder sb;
 
-  private void writeMetadata() throws IOException {
+  private void writeMetadata(final GFFEntry entry) throws IOException {
 
-    if (!this.isMetaDataEntry("gff-version"))
+    if (!entry.isMetaDataEntry("gff-version"))
       sb.append("##gff-version\t3\n");
 
-    for (String k : this.getMetadataKeyNames()) {
+    for (String k : entry.getMetadataKeyNames()) {
       sb.append("##");
       sb.append(StringUtils.protectGFF(k));
       sb.append('\t');
-      sb.append(StringUtils.protectGFF(getMetadataEntryValue(k)));
+      sb.append(StringUtils.protectGFF(entry.getMetadataEntryValue(k)));
       sb.append('\n');
     }
 
@@ -59,14 +64,17 @@ public class GFFWriter extends GFFEntry {
   }
 
   /**
-   * Write the current entry.
+   * /** Write the current entry.
    * @throws IOException if an error occurs while writing data
    */
-  public void write() throws IOException {
+  public void write(final GFFEntry entry) throws IOException {
+
+    if (entry == null)
+      return;
 
     if (first) {
       this.sb = new StringBuilder();
-      writeMetadata();
+      writeMetadata(entry);
       this.first = false;
     }
 
