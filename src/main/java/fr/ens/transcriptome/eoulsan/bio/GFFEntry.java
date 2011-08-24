@@ -323,18 +323,39 @@ public class GFFEntry {
   }
 
   /**
-   * Get metadata entry value.
+   * Add metadata entry value.
    * @param key name of key of the metadata entry
    * @param value The value
    * @return true if the value is correctly added to the metadata
    */
-  public final boolean setMetaDataEntry(final String key, final String value) {
+  public final boolean addMetaDataEntry(final String key, final String value) {
 
     if (key == null || value == null) {
       return false;
     }
 
     this.metaData.put(key, value);
+
+    return true;
+  }
+
+  /**
+   * Add metadata entries values. Stop at first entry that fail to be added.
+   * @param key name of key of the metadata entry
+   * @param value The value
+   * @return true if all the values are correctly added to the metadata
+   */
+  public final boolean addMetaDataEntries(final Map<String, String> entries) {
+
+    if (entries == null)
+      return false;
+
+    for (Map.Entry<String, String> e : entries.entrySet()) {
+
+      if (!addMetaDataEntry(e.getKey(), e.getValue()))
+        return false;
+
+    }
 
     return true;
   }

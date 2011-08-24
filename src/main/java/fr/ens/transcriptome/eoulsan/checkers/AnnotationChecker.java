@@ -32,6 +32,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -114,18 +115,18 @@ public class AnnotationChecker implements Checker {
     return false;
   }
 
+  @SuppressWarnings("unused")
   private static void partialValidationAndFastaSectionCheck(final InputStream is)
       throws IOException, BadBioEntryException, EoulsanException {
 
-    final GFFReader reader = new GFFReader(is);
+    final GFFReader reader = new GFFReader(is, true);
 
-    while (reader.readEntry())
+    for (final GFFEntry e : reader)
       ;
 
     if (!reader.isFastaSectionFound())
       throw new EoulsanException(
           "No fasta section found in GFF annotation file.");
-
   }
 
   private void fullValidationCheck(final InputStream is,
