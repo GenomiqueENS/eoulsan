@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -170,6 +169,7 @@ public class Sequence {
     this.id = sequence.id;
     this.name = sequence.name;
     this.description = sequence.description;
+    this.alphabet = sequence.alphabet;
     this.sequence = sequence.sequence;
   }
 
@@ -210,7 +210,7 @@ public class Sequence {
     if (beginIndex > endIndex)
       throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
 
-    return new Sequence(-1, this.name == null ? "" : this.name + "[part]",
+    return new Sequence(-1, this.name == null ? null : this.name + "[part]",
         getSequence().substring(beginIndex, endIndex));
   }
 
@@ -222,13 +222,17 @@ public class Sequence {
    */
   public Sequence concat(final Sequence sequence) {
 
-    final Sequence result = new Sequence();
-    result.setName(this.name + " [merged]");
-
     if (sequence == null || sequence.getSequence() == null)
-      return result;
+      return new Sequence(this);
 
-    result.setSequence(getSequence() + sequence.getSequence());
+    final Sequence result = new Sequence();
+    result.setName(this.name + "[merged]");
+
+    if (getSequence() == null)
+      result.setSequence(sequence.getSequence());
+    else
+      result.setSequence(getSequence() + sequence.getSequence());
+
     return result;
   }
 
@@ -240,24 +244,30 @@ public class Sequence {
    */
   public int countSequence(final Sequence sequence) {
 
-    return countSequence(sequence == null ? null : sequence.getSequence());
+    if (sequence == null)
+      return 0;
+
+    return countSequence(sequence.getSequence());
   }
 
   /**
-   * Count the number of times of a string is found in the current sequence.
+   * Count the number of times o fa non overlapping string is found in the
+   * current sequence.
    * @param s query string
    * @return the number of time that query sequence was found.
    */
   public int countSequence(final String s) {
 
-    if (s == null || this.sequence == null)
+    if (s == null || this.sequence == null || s.length() == 0)
       return 0;
 
     int count = 0;
     int index = 0;
 
-    while ((index = this.sequence.indexOf(s, index)) != -1)
+    while ((index = this.sequence.indexOf(s, index)) != -1) {
       count++;
+      index += s.length();
+    }
 
     return count;
   }
@@ -315,59 +325,31 @@ public class Sequence {
    */
   public final void reverseComplement() {
 
-    this.sequence = reverseComplement(this.sequence);
+    this.sequence = reverseComplement(this.sequence, this.alphabet);
   }
 
   /**
    * Get the sequence as the reverse complement. This method work only with
    * A,T,G and C bases.
    * @param sequence sequence to reverse complement
+   * @param alphabet alphabet of the sequence to reverse complement
    * @return the reverse complement sequence
    */
-  public static final String reverseComplement(final String sequence) {
+  public static final String reverseComplement(final String sequence,
+      final Alphabet alphabet) {
 
-    if (sequence == null) {
+    if (sequence == null || alphabet == null) {
       return null;
     }
 
-    final int len = sequence.length();
+    final char[] array = sequence.toCharArray();
+    final int len = array.length;
+
     final StringBuilder sb = new StringBuilder(len);
 
-    for (int i = len - 1; i >= 0; i--) {
+    for (int i = len - 1; i >= 0; i--)
+      sb.append(alphabet.getComplement(array[i]));
 
-      switch (sequence.charAt(i)) {
-
-      case 'A':
-        sb.append('T');
-        break;
-      case 'T':
-        sb.append('A');
-        break;
-      case 'G':
-        sb.append('C');
-        break;
-      case 'C':
-        sb.append('G');
-        break;
-      case 'a':
-        sb.append('t');
-        break;
-      case 't':
-        sb.append('t');
-        break;
-      case 'g':
-        sb.append('c');
-        break;
-      case 'c':
-        sb.append('g');
-        break;
-
-      default:
-        throw new EoulsanRuntimeException("Invalid character in sequence: '"
-            + sequence.charAt(i) + "'");
-      }
-
-    }
     return sb.toString();
   }
 
@@ -381,7 +363,9 @@ public class Sequence {
    */
   public String toFasta() {
 
-    return '>' + this.name + '\n' + this.sequence + '\n';
+    return '>'
+        + (this.name == null ? "" : this.name) + '\n'
+        + (this.sequence == null ? "" : this.sequence + '\n');
   }
 
   /**
@@ -426,7 +410,7 @@ public class Sequence {
     if (s == null || s.trim().length() == 0) {
       setName(null);
       setSequence(null);
-      
+
       return;
     }
 
@@ -448,12 +432,13 @@ public class Sequence {
           break;
 
         name = trimmed.substring(1).trim();
+      } else {
+
+        if (trimmed.startsWith(">"))
+          break;
+
+        seq.append(trimmed);
       }
-
-      if (trimmed.startsWith(">"))
-        break;
-
-      seq.append(trimmed);
     }
 
     if (seq.length() > 0) {
@@ -530,10 +515,7 @@ public class Sequence {
     if (o == this)
       return true;
 
-    if (o == null)
-      return false;
-
-    if (!(o instanceof Sequence))
+    if (o == null || !(o instanceof Sequence))
       return false;
 
     final Sequence that = (Sequence) o;
@@ -541,17 +523,17 @@ public class Sequence {
     return this.id == that.id
         && equal(this.name, that.name)
         && equal(this.description, that.description)
-        && this.alphabet == that.alphabet
+        && equal(this.alphabet, that.alphabet)
         && equal(this.sequence, that.sequence);
   }
 
   @Override
   public String toString() {
 
-    return this.getName()
+    return this.getClass().getSimpleName()
         + "{id=" + this.id + ", name=" + this.name + ", description="
-        + this.description + ", alphabet=" + this.alphabet + ", sequence="
-        + this.sequence + "}";
+        + this.description + ", alphabet=" + this.alphabet.toString()
+        + ", sequence=" + this.sequence + "}";
 
   }
 
@@ -601,10 +583,11 @@ public class Sequence {
   public Sequence(final Sequence sequence) {
 
     if (sequence == null)
-      return;
+      throw new NullPointerException("Sequence is null");
 
     this.id = sequence.id;
     this.name = sequence.name;
+    this.alphabet = sequence.alphabet;
     this.sequence = sequence.sequence;
     this.description = sequence.description;
   }
