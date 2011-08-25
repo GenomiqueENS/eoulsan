@@ -72,18 +72,10 @@ public class GFFEntryTest {
       } catch (BadBioEntryException exp) {
         assertTrue(false);
       }
-      System.out.println(s);
-      System.out.println(e.toString());
-      System.out.println();
 
       assertEquals(s, e.toString());
     }
 
   }
-
-  // @Test
-  // public void testToString() {
-  // fail("Not yet implemented");
-  // }
 
 }
