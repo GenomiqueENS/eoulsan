@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * This class allow the easily get fields of Illimina reads ids.
  * @author Laurent Jourdren
  */
-public class IlluminaReadId {
+public final class IlluminaReadId {
 
   private static final Pattern PATTERN_1 = Pattern
       .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)$");
@@ -157,11 +157,8 @@ public class IlluminaReadId {
   // Other method
   //
 
-  private static Pattern findPattern(final String readId) {
-
-    if (readId == null) {
-      throw new IllegalArgumentException("The string to parse is null");
-    }
+  private static Pattern findPattern(final String readId)
+      throws EoulsanException {
 
     if (PATTERN_1_8.matcher(readId).lookingAt())
       return PATTERN_1_8;
@@ -175,7 +172,7 @@ public class IlluminaReadId {
     if (PATTERN_1.matcher(readId).lookingAt())
       return PATTERN_1;
 
-    return null;
+    throw new EoulsanException("Invalid illumina id: " + readId);
   }
 
   /**
@@ -186,7 +183,7 @@ public class IlluminaReadId {
   public final void parse(final String readId) throws EoulsanException {
 
     if (readId == null) {
-      throw new IllegalArgumentException("The string to parse is null");
+      throw new NullPointerException("The string to parse is null");
     }
 
     final Matcher matcher = this.pattern.matcher(readId.trim());
@@ -238,24 +235,20 @@ public class IlluminaReadId {
       this.controlNumber = -1;
 
       return;
-    } else if (this.pattern == PATTERN_1) {
-
-      this.instrumentId = matcher.group(1);
-      this.runId = -1;
-      this.flowCellId = null;
-      this.flowCellLane = Integer.parseInt(matcher.group(2));
-      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
-      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
-      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
-      this.sequenceIndex = "0";
-      this.pairMember = -1;
-      this.filtered = false;
-      this.controlNumber = -1;
-
-      return;
     }
 
-    throw new IllegalStateException("Unknown pattern");
+    // PATTERN_1
+    this.instrumentId = matcher.group(1);
+    this.runId = -1;
+    this.flowCellId = null;
+    this.flowCellLane = Integer.parseInt(matcher.group(2));
+    this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
+    this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
+    this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
+    this.sequenceIndex = "0";
+    this.pairMember = -1;
+    this.filtered = false;
+    this.controlNumber = -1;
   }
 
   //
@@ -269,10 +262,11 @@ public class IlluminaReadId {
    */
   public IlluminaReadId(final String readId) throws EoulsanException {
 
-    this.pattern = findPattern(readId);
-    if (this.pattern == null)
-      throw new EoulsanException("Invalid illumina id: " + readId);
+    if (readId == null) {
+      throw new NullPointerException("The string to parse is null");
+    }
 
+    this.pattern = findPattern(readId);
     parse(readId);
   }
 
