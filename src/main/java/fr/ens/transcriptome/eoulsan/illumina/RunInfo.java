@@ -226,11 +226,13 @@ public class RunInfo {
         this.instrument = getTagValue(e1, "Instrument");
         this.date = getTagValue(e1, "Date");
 
+        int readCount = 0;
         // Parse Reads tag
         for (Element e2 : XMLUtils.getElementsByTagName(e1, "Reads"))
           for (Element e3 : XMLUtils.getElementsByTagName(e2, "Read")) {
 
             final Read read = new Read();
+            readCount++;
 
             for (String name : XMLUtils.getAttributeNames(e3)) {
 
@@ -242,6 +244,8 @@ public class RunInfo {
                 read.numberCycles = Integer.parseInt(value);
               else if ("IsIndexedRead".equals(name))
                 read.indexedRead = "Y".equals(value.toUpperCase().trim());
+              if (read.getNumber() == 0)
+                read.number = readCount;
             }
 
             this.reads.add(read);
