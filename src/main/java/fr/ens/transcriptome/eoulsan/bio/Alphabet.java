@@ -1,6 +1,8 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
-import java.util.Arrays;
+import java.util.Set;
+
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This abstract class define an alphabet.
@@ -18,7 +20,7 @@ public abstract class Alphabet {
    * Get the letters of the alphabet.
    * @return an array of char with the letters of the alphabet
    */
-  public abstract char[] getLetters();
+  public abstract Set<Character> getLetters();
 
   /**
    * Test if lower case of letter is valid for this alphabet
@@ -41,9 +43,36 @@ public abstract class Alphabet {
    */
   public boolean isLetterValid(char letter) {
 
-    final char l = isLowerCaseValid() ? Character.toLowerCase(letter) : letter;
+    final char l = isLowerCaseValid() ? Character.toUpperCase(letter) : letter;
 
-    return Arrays.binarySearch(getLetters(), l) != -1;
+    return getLetters().contains(l);
+  }
+
+  @Override
+  public final String toString() {
+    return getName();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(getName(), getLetters(), isLowerCaseValid());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null)
+      return false;
+
+    final Alphabet that = (Alphabet) o;
+
+    return Utils.equal(this.getName(), that.getName())
+        && this.getLetters().equals(that.getLetters())
+        && this.isLowerCaseValid() == that.isLowerCaseValid();
   }
 
 }
