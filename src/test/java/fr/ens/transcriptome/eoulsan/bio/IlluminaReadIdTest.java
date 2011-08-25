@@ -337,6 +337,14 @@ public class IlluminaReadIdTest {
     } catch (NullPointerException e) {
       assertTrue(true);
     }
+
+    try {
+      new IlluminaReadId(null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
+
   }
 
   @Test
