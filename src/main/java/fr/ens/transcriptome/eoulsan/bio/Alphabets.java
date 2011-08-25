@@ -1,10 +1,57 @@
 package fr.ens.transcriptome.eoulsan.bio;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class define common alphabets.
  * @author Laurent Jourdren
  */
 public final class Alphabets {
+
+  private static final Set<Character> AMBIGUOUS_DNA_ALPHABET_LETTERS =
+      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C', 'R', 'Y', 'W', 'S',
+          'M', 'K', 'H', 'B', 'V', 'D', 'N'});
+
+  private static final Set<Character> UNAMBIGUOUS_DNA_ALPHABET_LETTERS =
+      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C'});
+
+  private static final Set<Character> AMBIGUOUS_RNA_ALPHABET_LETTERS =
+      toUnmodifiableSet(new char[] {'G', 'A', 'U', 'C', 'R', 'Y', 'W', 'S',
+          'M', 'K', 'H', 'B', 'V', 'D', 'N'});
+
+  private static final Set<Character> UNAMBIGUOUS_RNA_ALPHABET_LETTERS =
+      toUnmodifiableSet(new char[] {'G', 'A', 'U', 'C'});
+
+  private static final Set<Character> READ_DNA_ALPHABET_LETTERS =
+      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C', 'N'});
+
+  //
+  // Utility method
+  //
+
+  /**
+   * Transform an array of char to an unmodifable set of Characters.
+   * @param array array to transform
+   * @return a unmodifiable Set with the elements of the input array
+   */
+  private static final Set<Character> toUnmodifiableSet(final char[] array) {
+
+    if (array == null)
+      return null;
+
+    final Set<Character> result = new HashSet<Character>();
+
+    for (char c : array)
+      result.add(c);
+
+    return Collections.unmodifiableSet(result);
+  }
+
+  //
+  // Classes
+  //
 
   /**
    * This class define an ambiguous DNA alphabet.
@@ -19,10 +66,9 @@ public final class Alphabets {
     }
 
     @Override
-    public final char[] getLetters() {
+    public final Set<Character> getLetters() {
 
-      return new char[] {'G', 'A', 'T', 'C', 'R', 'Y', 'W', 'S', 'M', 'K', 'H',
-          'B', 'V', 'D', 'N'};
+      return AMBIGUOUS_DNA_ALPHABET_LETTERS;
     }
 
     @Override
@@ -121,9 +167,9 @@ public final class Alphabets {
     }
 
     @Override
-    public final char[] getLetters() {
+    public final Set<Character> getLetters() {
 
-      return new char[] {'G', 'A', 'T', 'C'};
+      return UNAMBIGUOUS_DNA_ALPHABET_LETTERS;
     }
 
     @Override
@@ -174,10 +220,9 @@ public final class Alphabets {
     }
 
     @Override
-    public final char[] getLetters() {
+    public final Set<Character> getLetters() {
 
-      return new char[] {'G', 'A', 'U', 'C', 'R', 'Y', 'W', 'S', 'M', 'K', 'H',
-          'B', 'V', 'D', 'N'};
+      return AMBIGUOUS_RNA_ALPHABET_LETTERS;
     }
 
     @Override
@@ -276,9 +321,9 @@ public final class Alphabets {
     }
 
     @Override
-    public final char[] getLetters() {
+    public final Set<Character> getLetters() {
 
-      return new char[] {'G', 'A', 'U', 'C'};
+      return UNAMBIGUOUS_RNA_ALPHABET_LETTERS;
     }
 
     @Override
@@ -329,9 +374,9 @@ public final class Alphabets {
     }
 
     @Override
-    public final char[] getLetters() {
+    public final Set<Character> getLetters() {
 
-      return new char[] {'G', 'A', 'T', 'C', 'N'};
+      return READ_DNA_ALPHABET_LETTERS;
     }
 
     @Override
