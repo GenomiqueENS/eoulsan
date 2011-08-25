@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.pipeline;
+package fr.ens.transcriptome.eoulsan.bio;
 
 import static org.junit.Assert.*;
 
