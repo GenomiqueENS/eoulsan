@@ -332,19 +332,55 @@ public class IlluminaReadIdTest {
     assertEquals("HWI-1KL110", ii.getInstrumentId());
 
     try {
-      ii.parse(null);
+      ii.parse((String) null);
       assertTrue(false);
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
-      new IlluminaReadId(null);
+      ii.parse((Sequence) null);
       assertTrue(false);
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
+    Sequence s = new Sequence();
+
+    try {
+      ii.parse(s);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
+
+    try {
+      new IlluminaReadId((String) null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
+
+    try {
+      new IlluminaReadId((Sequence) null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
+
+    try {
+      new IlluminaReadId(s);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+      assertTrue(true);
+    }
+
+    s.setName("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    ii = new IlluminaReadId(s);
+    assertEquals("HWI-1KL110", ii.getInstrumentId());
+    s.setName("HWI-1K1111:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    ii.parse(s);
+    assertEquals("HWI-1K1111", ii.getInstrumentId());
   }
 
   @Test
