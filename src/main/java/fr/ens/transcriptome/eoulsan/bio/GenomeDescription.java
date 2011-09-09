@@ -60,6 +60,8 @@ public class GenomeDescription {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final int STRING_LENGTH_BUFFER = 1024 * 1024;
+
   private static final String PREFIX = "genome.";
   private static final String NAME_PREFIX = PREFIX + "name";
   private static final String LENGTH_PREFIX = PREFIX + "length";
@@ -315,13 +317,16 @@ public class GenomeDescription {
 
     for (final Sequence sequence : reader) {
 
-      int len = checkBases(sequence.getSequence());
+      int len = checkBases(sequence);
       final String name = parseChromosomeName(sequence.getName());
 
       // Update digest with chromosome name
       if (md5Digest != null) {
         md5Digest.update(name.getBytes());
-        md5Digest.update(sequence.getSequence().getBytes());
+
+        for (final String s : StringUtils.splitStringIterator(
+            sequence.getSequence(), STRING_LENGTH_BUFFER))
+          md5Digest.update(s.getBytes());
       }
 
       // Add sequence
@@ -352,20 +357,29 @@ public class GenomeDescription {
     return fields[0];
   }
 
-  private static int checkBases(final String s) throws BadBioEntryException {
+  private static int checkBases(final Sequence sequence)
+      throws BadBioEntryException {
 
     final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
 
-    final char[] array = s.toCharArray();
+    int result = 0;
 
-    final int len = array.length;
+    for (final String s : StringUtils.splitStringIterator(
+        sequence.getSequence(), STRING_LENGTH_BUFFER)) {
 
-    for (int i = 0; i < len; i++)
-      if (!alphabet.isLetterValid(array[i]))
-        throw new BadBioEntryException(
-            "Invalid base in genome: " + s.charAt(i), s);
+      final char[] array = s.toCharArray();
 
-    return array.length;
+      final int len = array.length;
+
+      for (int i = 0; i < len; i++)
+        if (!alphabet.isLetterValid(array[i]))
+          throw new BadBioEntryException("Invalid base in genome: " + array[i],
+              sequence.getName());
+
+      result += len;
+    }
+
+    return result;
   }
 
   private static final String digestToString(final MessageDigest md) {
