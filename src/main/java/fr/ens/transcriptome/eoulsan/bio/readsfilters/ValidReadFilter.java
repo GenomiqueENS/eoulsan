@@ -36,7 +36,7 @@ public class ValidReadFilter extends AbstractReadFilter {
   public boolean accept(final ReadSequence read) {
 
     if (read == null)
-      throw new NullPointerException("The read is null");
+      return false;
 
     return read.validate();
   }
