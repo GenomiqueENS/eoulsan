@@ -184,6 +184,9 @@ public class FastqReader implements ReadSequenceReader {
 
     this.reader = new BufferedReader(new InputStreamReader(is));
     this.reuse = reuseResultObject;
+
+    if (this.reuse)
+      this.result = new ReadSequence();
   }
 
   /**
@@ -213,6 +216,9 @@ public class FastqReader implements ReadSequenceReader {
 
     this.reader = FileUtils.createBufferedReader(file);
     this.reuse = reuseResultObject;
+
+    if (this.reuse)
+      this.result = new ReadSequence();
   }
 
 }
