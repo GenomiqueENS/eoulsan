@@ -194,7 +194,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     LOGGER.info("Filter file: " + inFile);
     LOGGER.info("FastqFormat: " + fastqFormat);
 
-    final FastqReader reader = new FastqReader(inFile.open(), true);
+    final FastqReader reader = new FastqReader(inFile.open());
     final FastqWriter writer = new FastqWriter(outFile.create());
 
     try {
@@ -247,8 +247,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     LOGGER.info("Filter files: "
         + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
 
-    final FastqReader reader1 = new FastqReader(inFile1.open(), true);
-    final FastqReader reader2 = new FastqReader(inFile2.open(), true);
+    final FastqReader reader1 = new FastqReader(inFile1.open());
+    final FastqReader reader2 = new FastqReader(inFile2.open());
     final FastqWriter writer1 = new FastqWriter(outFile1.create());
     final FastqWriter writer2 = new FastqWriter(outFile2.create());
 
