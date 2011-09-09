@@ -240,7 +240,7 @@ public class GenomeDescription {
 
     while ((line = read.readLine()) != null) {
 
-      final List<String> fields = asList(line.split("\t"));
+      final List<String> fields = asList(line.split("="));
 
       if (fields.size() > 1) {
 
@@ -398,7 +398,8 @@ public class GenomeDescription {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{genomeName=" + genomeName + ", sequences=" + this.sequences.size()
-        + ", md5Sum=" + this.md5Sum + "}";
+        + "{genomeName=" + genomeName + ", sequencesCount="
+        + this.sequences.size() + ", md5Sum=" + this.md5Sum + ", sequences="
+        + this.sequences + "}";
   }
 }
