@@ -261,10 +261,26 @@ public class FileUtils {
   public static final BufferedReader createBufferedReader(final File file)
       throws FileNotFoundException {
 
+    return createBufferedReader(file, null);
+  }
+
+  /**
+   * Utility method to create fast BufferedReader.
+   * @param file File to read
+   * @param charset Charset to use
+   * @return a BufferedReader
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedReader createBufferedReader(final File file,
+      final Charset charset) throws FileNotFoundException {
+
     final InputStream is = createInputStream(file);
 
     if (is == null)
       return null;
+
+    if (charset != null)
+      return new BufferedReader(new InputStreamReader(is, charset));
 
     return new BufferedReader(new InputStreamReader(is));
   }
@@ -273,13 +289,26 @@ public class FileUtils {
    * Utility method to create fast BufferedReader.
    * @param is InputStream to read
    * @return a BufferedReader
-   * @throws IOException if the file is not found
    */
-  public static final BufferedReader createBufferedReader(final InputStream is)
-      throws FileNotFoundException {
+  public static final BufferedReader createBufferedReader(final InputStream is) {
+
+    return createBufferedReader(is, null);
+  }
+
+  /**
+   * Utility method to create fast BufferedReader.
+   * @param is InputStream to read
+   * @param charset Charset to use
+   * @return a BufferedReader
+   */
+  public static final BufferedReader createBufferedReader(final InputStream is,
+      final Charset charset) {
 
     if (is == null)
       throw new NullPointerException("The input stream is null");
+
+    if (charset != null)
+      return new BufferedReader(new InputStreamReader(is, charset));
 
     return new BufferedReader(new InputStreamReader(is));
   }
