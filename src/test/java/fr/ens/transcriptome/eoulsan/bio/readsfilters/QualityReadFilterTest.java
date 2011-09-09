@@ -40,23 +40,18 @@ public class QualityReadFilterTest {
   public void testAcceptReadSequence() throws EoulsanException {
 
     ReadFilter filter = new QualityReadFilter();
-    filter.setParameter("threshold", "50");
+    filter.setParameter("threshold", "30");
     filter.init();
 
-    try {
-      filter.accept(null);
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
+    assertFalse(filter.accept(null));
 
-    ReadSequence read = new ReadSequence(0, "read1", "ATG", "wxy");
+    ReadSequence read = new ReadSequence(0, "read1", "ATG", "ABC");
 
-    assertEquals('x' - 64.0, StatUtils.mean(read.qualityScores()), 0.0);
+    assertEquals('B' - 33.0, StatUtils.mean(read.qualityScores()), 0.0);
     assertTrue(filter.accept(read));
 
     filter = new QualityReadFilter();
-    filter.setParameter("threshold", "50");
+    filter.setParameter("threshold", "40");
     filter.init();
     assertFalse(filter.accept(read));
   }

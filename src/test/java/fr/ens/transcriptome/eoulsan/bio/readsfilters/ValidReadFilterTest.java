@@ -39,12 +39,7 @@ public class ValidReadFilterTest {
 
     ReadFilter filter = new ValidReadFilter();
 
-    try {
-      filter.accept(null);
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
+    assertFalse(filter.accept(null));
 
     ReadSequence read = new ReadSequence();
     assertFalse(filter.accept(read));
