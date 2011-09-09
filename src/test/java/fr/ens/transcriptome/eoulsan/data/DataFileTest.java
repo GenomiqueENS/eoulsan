@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 
 public class DataFileTest {
