@@ -221,7 +221,8 @@ class Workflow implements WorkflowDescription {
               } else
                 throw new EoulsanException("For sample "
                     + s.getId() + " in step " + step.getName()
-                    + ", no input data found in the workflow.");
+                    + ", no input data of " + e.getKey()
+                    + " type found in the workflow.");
             }
 
             if (foundFile > 1 || foundInCart > 1)
