@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -68,12 +69,11 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       for (Sample s : design.getSamples()) {
 
         // Get annotation file
-        final File annotationFile =
-            new File(context.getDataFilename(ANNOTATION_GFF, s));
+        final DataFile annotationFile = context.getDataFile(ANNOTATION_GFF, s);
 
         // Get genome desc file
-        final File genomeDescFile =
-            new File(context.getDataFilename(DataFormats.GENOME_DESC_TXT, s));
+        final DataFile genomeDescFile =
+            context.getDataFile(DataFormats.GENOME_DESC_TXT, s);
 
         final String annotationKey =
             annotationFile.getName() + " " + genomicType;
@@ -81,8 +81,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         if (!annotationKey.equals(lastAnnotationKey)) {
 
           epmr =
-              new ExpressionPseudoMapReduce(annotationFile, genomicType,
-                  genomeDescFile, COUNTER_GROUP);
+              new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
+                  genomeDescFile.open(), COUNTER_GROUP);
 
           lastAnnotationKey = annotationKey;
         }

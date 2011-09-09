@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_CHROMOSOME_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
@@ -245,7 +246,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   //
 
   /**
-   * Load annotation information
+   * Load annotation information.
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
    * @throws IOException if an error occurs while reading annotation file
@@ -263,12 +264,28 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     this.tef = new TranscriptAndExonFinder(is, expressionType);
   }
 
+  /**
+   * Load annotation information.
+   * @param annotationFile annotation file to load
+   * @param expressionType expression type to use
+   * @throws IOException if an error occurs while reading annotation file
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
+   */
+  private void loadAnnotationFile(final InputStream annotationIs,
+      final String expressionType) throws IOException, BadBioEntryException {
+
+    checkNotNull(annotationIs, "Annotation stream is null");
+    checkNotNull(expressionType, "Expression type is null");
+
+    this.tef = new TranscriptAndExonFinder(annotationIs, expressionType);
+  }
+
   //
   // Constructor
   //
 
   /**
-   * Load annotation information
+   * Load annotation information.
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
    * @param genomeDescFile genome description file\
@@ -293,6 +310,34 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     this.parser.setGenomeDescription(genomeDescription);
 
     loadAnnotationFile(annotationFile, expressionType);
+  }
+
+  /**
+   * Load annotation information.
+   * @param annotationIs annotation input stream to load
+   * @param expressionType expression type to use
+   * @param genomeDescIs genome description input stream
+   * @param counterGroup counter group
+   * @throws IOException if an error occurs while reading annotation file
+   * @throws BadBioEntryException if an entry of the annotation file is invalid
+   */
+  public ExpressionPseudoMapReduce(final InputStream annotationIs,
+      final String expressionType, final InputStream genomeDescIs,
+      final String counterGroup) throws IOException, BadBioEntryException {
+
+    this.counterGroup = counterGroup;
+
+    // Create parser object
+    this.parser = new SAMParser();
+
+    // Load genome description object
+    final GenomeDescription genomeDescription =
+        GenomeDescription.load(genomeDescIs);
+
+    // Set the chromosomes sizes in the parser
+    this.parser.setGenomeDescription(genomeDescription);
+
+    loadAnnotationFile(annotationIs, expressionType);
   }
 
 }
