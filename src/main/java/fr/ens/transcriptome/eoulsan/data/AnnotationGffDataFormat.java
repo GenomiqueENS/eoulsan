@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.checkers.Checker;
  */
 public final class AnnotationGffDataFormat extends AbstractDataFormat {
 
-  public static final String FORMAT_NAME = "annotation";
+  public static final String FORMAT_NAME = "annotation_gff";
 
   public DataType getType() {
 
