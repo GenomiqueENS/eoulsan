@@ -439,11 +439,13 @@ public class TranscriptAndExonFinder {
     public Exon(final String chromosone, final int start, final int end,
         final char strand, final String parentId) {
 
-      if (start < 1) 
-        throw new IllegalArgumentException("Start position is lower that 1: " + start);
-      
-      if(end < start)
-        throw new IllegalArgumentException("End position is greater that end: " + end);
+      if (start < 1)
+        throw new IllegalArgumentException("Start position is lower that 1: "
+            + start);
+
+      if (end < start)
+        throw new IllegalArgumentException("End position is greater that end: "
+            + end);
 
       this.chromosome = chromosone;
       this.start = start;
@@ -757,7 +759,7 @@ public class TranscriptAndExonFinder {
 
     LOGGER.info("Expression Type: " + expressionType);
 
-    final GFFReader reader = new GFFReader(is, true);
+    final GFFReader reader = new GFFReader(is);
 
     this.chrZoneMap = new HashMap<String, ChromosomeZone>();
     this.transcripts = new HashMap<String, Transcript>();

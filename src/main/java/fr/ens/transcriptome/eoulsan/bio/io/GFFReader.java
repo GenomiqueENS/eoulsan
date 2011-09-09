@@ -49,7 +49,6 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     Closeable {
 
   private BufferedReader reader;
-  private final boolean reuse;
   private GFFEntry result = null;
   private int count;
   private boolean end;
@@ -83,9 +82,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
 
     String line = null;
 
-    // Reuse result object or not
-    if (!this.reuse)
-      result = new GFFEntry();
+    result = new GFFEntry();
 
     try {
       while ((line = this.reader.readLine()) != null) {
@@ -108,10 +105,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
           final String mdKey = line.substring(2, posTab).trim();
           final String mdValue = line.substring(posTab + 1).trim();
 
-          if (reuse)
-            result.addMetaDataEntry(mdKey, mdValue);
-          else
-            this.metadata.put(mdKey, mdValue);
+          this.metadata.put(mdKey, mdValue);
 
         } else if (line.startsWith("#"))
           continue;
@@ -121,8 +115,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
           result.setId(count++);
 
           // Add metadata if not reuse result object
-          if (!reuse)
-            result.addMetaDataEntries(this.metadata);
+          result.addMetaDataEntries(this.metadata);
 
           return true;
         }
@@ -190,22 +183,10 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    */
   public GFFReader(final InputStream is) {
 
-    this(is, false);
-  }
-
-  /**
-   * Public constructor
-   * @param is InputStream to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public GFFReader(final InputStream is, final boolean reuseResultObject) {
-
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
     this.reader = new BufferedReader(new InputStreamReader(is));
-    this.reuse = reuseResultObject;
   }
 
   /**
@@ -213,18 +194,6 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    * @param file File to use
    */
   public GFFReader(final File file) throws FileNotFoundException {
-
-    this(file, false);
-  }
-
-  /**
-   * Public constructor
-   * @param file File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public GFFReader(final File file, final boolean reuseResultObject)
-      throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -234,7 +203,6 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
           + file.getAbsolutePath());
 
     this.reader = FileUtils.createBufferedReader(file);
-    this.reuse = reuseResultObject;
   }
 
 }

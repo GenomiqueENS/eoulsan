@@ -117,7 +117,7 @@ public class SOAP2SAM {
 
     br.close();
 
-    final SequenceReader reader = new FastaReader(this.funmap, true);
+    final SequenceReader reader = new FastaReader(this.funmap);
 
     try {
 

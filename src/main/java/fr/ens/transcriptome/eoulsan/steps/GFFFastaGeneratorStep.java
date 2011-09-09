@@ -86,7 +86,7 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       LOGGER.info("Output genome file: " + genomeDataFile);
 
       final SequenceReader reader =
-          new GFFFastaReader(annotationDataFile.open(), false);
+          new GFFFastaReader(annotationDataFile.open());
       final SequenceWriter writer = new FastaWriter(genomeDataFile.create());
 
       // Copy the sequences

@@ -100,7 +100,7 @@ public class DataFormatConverter {
       final ReadSequenceReader reader;
 
       if (this.inFormat == DataFormats.READS_FASTQ)
-        reader = new FastqReader(this.inFile.open(), true);
+        reader = new FastqReader(this.inFile.open());
       else
         reader = new TFQReader(this.inFile.open(), true);
 
