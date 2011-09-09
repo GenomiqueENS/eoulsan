@@ -354,7 +354,7 @@ public enum FastqFormat {
     if (is == null)
       throw new NullPointerException("The input format is null");
 
-    final FastqReader reader = new FastqReader(is, true);
+    final FastqReader reader = new FastqReader(is);
     final Set<FastqFormat> formats =
         newHashSet(Arrays.asList(FastqFormat.values()));
 

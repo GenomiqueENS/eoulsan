@@ -44,7 +44,6 @@ public class FastaReader implements SequenceReader {
 
   protected BufferedReader reader;
 
-  private final boolean reuse;
   private Sequence result = null;
   private final StringBuilder sb = new StringBuilder();
 
@@ -72,9 +71,7 @@ public class FastaReader implements SequenceReader {
     if (this.end)
       return false;
 
-    // Reuse result object or not
-    if (!this.reuse)
-      result = new Sequence();
+    result = new Sequence();
 
     String line = null;
 
@@ -150,7 +147,6 @@ public class FastaReader implements SequenceReader {
       throw this.exception;
   }
 
-
   //
   // Constructors
   //
@@ -161,45 +157,17 @@ public class FastaReader implements SequenceReader {
    */
   public FastaReader(final InputStream is) {
 
-    this(is, false);
-  }
-
-  /**
-   * Public constructor
-   * @param is InputStream to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public FastaReader(final InputStream is, final boolean reuseResultObject) {
-
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
     this.reader = new BufferedReader(new InputStreamReader(is));
-    this.reuse = reuseResultObject;
-    if (this.reuse)
-      this.result = new Sequence();
   }
 
   /**
    * Public constructor
    * @param file File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
    */
   public FastaReader(final File file) throws FileNotFoundException {
-
-    this(file, false);
-  }
-
-  /**
-   * Public constructor
-   * @param file File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public FastaReader(final File file, final boolean reuseResultObject)
-      throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -209,9 +177,6 @@ public class FastaReader implements SequenceReader {
           + file.getAbsolutePath());
 
     this.reader = FileUtils.createBufferedReader(file);
-    this.reuse = reuseResultObject;
-    if (this.reuse)
-      this.result = new Sequence();
   }
 
 }

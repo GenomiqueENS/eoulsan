@@ -145,7 +145,7 @@ public class ReadsChecker implements Checker {
       final boolean checkPairMember, final int pairMember) throws IOException,
       BadBioEntryException {
 
-    final FastqReader reader = new FastqReader(is, true);
+    final FastqReader reader = new FastqReader(is);
 
     int count = 0;
 
