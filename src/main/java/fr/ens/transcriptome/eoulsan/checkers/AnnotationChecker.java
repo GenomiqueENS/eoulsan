@@ -119,7 +119,7 @@ public class AnnotationChecker implements Checker {
   private static void partialValidationAndFastaSectionCheck(final InputStream is)
       throws IOException, BadBioEntryException, EoulsanException {
 
-    final GFFReader reader = new GFFReader(is, true);
+    final GFFReader reader = new GFFReader(is);
 
     for (final GFFEntry e : reader)
       ;

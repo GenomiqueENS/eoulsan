@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -43,9 +44,10 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastqReader implements ReadSequenceReader {
 
+  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+
   private BufferedReader reader;
 
-  private final boolean reuse;
   private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
   private int count = 0;
@@ -75,9 +77,7 @@ public class FastqReader implements ReadSequenceReader {
 
     this.nextCallDone = false;
 
-    // Reuse result object or not
-    if (!this.reuse)
-      result = new ReadSequence();
+    result = new ReadSequence();
 
     String line = null;
     int entryLine = 0;
@@ -168,34 +168,10 @@ public class FastqReader implements ReadSequenceReader {
    */
   public FastqReader(final InputStream is) {
 
-    this(is, false);
-  }
-
-  /**
-   * Public constructor
-   * @param is InputStream to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public FastqReader(final InputStream is, final boolean reuseResultObject) {
-
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is));
-    this.reuse = reuseResultObject;
-
-    if (this.reuse)
-      this.result = new ReadSequence();
-  }
-
-  /**
-   * Public constructor
-   * @param file File to use
-   */
-  public FastqReader(final File file) throws FileNotFoundException {
-
-    this(file, false);
+    this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
   }
 
   /**
@@ -204,8 +180,7 @@ public class FastqReader implements ReadSequenceReader {
    * @param reuseResultObject if the object returns by the next() method will be
    *          always the same
    */
-  public FastqReader(final File file, final boolean reuseResultObject)
-      throws FileNotFoundException {
+  public FastqReader(final File file) throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -214,11 +189,7 @@ public class FastqReader implements ReadSequenceReader {
       throw new FileNotFoundException("File not found: "
           + file.getAbsolutePath());
 
-    this.reader = FileUtils.createBufferedReader(file);
-    this.reuse = reuseResultObject;
-
-    if (this.reuse)
-      this.result = new ReadSequence();
+    this.reader = FileUtils.createBufferedReader(file, CHARSET);
   }
 
 }
