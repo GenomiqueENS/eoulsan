@@ -93,13 +93,13 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
     final String basePath = getBasePath();
 
     if (basePath == null)
-      throw new IOException("Genome storage is not configurated");
+      throw new IOException(getName() + " storage is not configurated");
 
     final DataFile baseDir = new DataFile(basePath);
 
     if (!baseDir.exists())
-      throw new IOException("Genome storage base path does not exists: "
-          + baseDir);
+      throw new IOException(getName()
+          + " storage base path does not exists: " + baseDir);
 
     final String filename = src.getName().toLowerCase().trim() + getExtension();
 
