@@ -39,42 +39,18 @@ public class PairCheckReadFilterTest {
 
     ReadFilter filter = new PairCheckReadFilter();
 
-    try {
-      filter.accept(null);
-      assertTrue(true);
-    } catch (NullPointerException e) {
-      assertTrue(false);
-    }
+    assertFalse(filter.accept(null));
 
     ReadSequence read1 = new ReadSequence(0, "read/1", "ATG", "wxy");
     ReadSequence read2 = new ReadSequence(0, "read/2", "ATG", "wxy");
 
     assertTrue(filter.accept(read1, read2));
 
-    try {
-      assertFalse(filter.accept(null, read2));
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
+    assertFalse(filter.accept(null, read2));
 
-    try {
-      assertFalse(filter.accept(read1, null));
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
-    
-    try {
-      assertFalse(filter.accept(null, null));
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
-    
-    
-    
+    assertFalse(filter.accept(read1, null));
 
+    assertFalse(filter.accept(null, null));
 
     read1.setName("read1");
     assertFalse(filter.accept(read1, read2));

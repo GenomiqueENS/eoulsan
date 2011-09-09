@@ -42,7 +42,7 @@ public class QualityReadFilter extends AbstractReadFilter {
   public boolean accept(final ReadSequence read) {
 
     if (read == null)
-      throw new NullPointerException("The read is null");
+      return false;
 
     return mean(read.qualityScores()) > this.qualityThreshold;
   }

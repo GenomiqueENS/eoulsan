@@ -39,15 +39,10 @@ public class TrimReadFilterTest {
   public void testAcceptReadSequence() throws EoulsanException {
 
     ReadFilter filter = new TrimReadFilter();
-    filter.setParameter("lenght.threshold", "5");
+    filter.setParameter("length.threshold", "5");
     filter.init();
 
-    try {
-      filter.accept(null);
-      assertTrue(false);
-    } catch (NullPointerException e) {
-      assertTrue(true);
-    }
+    assertFalse(filter.accept(null));
 
     ReadSequence read = new ReadSequence();
     assertFalse(filter.accept(read));
@@ -58,23 +53,22 @@ public class TrimReadFilterTest {
     read.setQuality("xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read.setSequence("ATGCATGC");
+    read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));
 
-    read.setSequence("ATGCATGN");
+    read = new ReadSequence(0, "toto", "ATGCATGN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCATGN", read.getSequence());
 
-    read.setSequence("ATGCATNN");
+    read = new ReadSequence(0, "toto", "ATGCATNN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCAT", read.getSequence());
 
-    read.setSequence("ATGCANNN");
+    read = new ReadSequence(0, "toto", "ATGCANNN", "xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read.setSequence("ATGCNNNN");
+    read = new ReadSequence(0, "toto", "ATGCNNNN", "xxxxxxxx");
     assertFalse(filter.accept(read));
-
   }
 
 }
