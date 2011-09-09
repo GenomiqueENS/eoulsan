@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep;
  */
 public final class GenomeFastaDataFormat extends AbstractDataFormat {
 
-  public static final String FORMAT_NAME = "genome";
+  public static final String FORMAT_NAME = "genome_fasta";
 
   public DataType getType() {
 
