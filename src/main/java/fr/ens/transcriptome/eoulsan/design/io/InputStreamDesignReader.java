@@ -136,7 +136,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
     try {
       setInputStream(new FileInputStream(file));
     } catch (FileNotFoundException e) {
-      throw new EoulsanIOException("Error while reading file : "
+      throw new EoulsanIOException("File not found: "
           + file.getName());
     }
 
