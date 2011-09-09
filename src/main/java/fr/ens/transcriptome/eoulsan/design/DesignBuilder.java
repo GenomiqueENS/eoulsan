@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.data.DataTypes;
@@ -80,16 +81,23 @@ public class DesignBuilder {
     final String extension =
         StringUtils.extensionWithoutCompressionExtension(file.getName());
 
-    if (isDataTypeExtension(DataTypes.READS, extension)) {
+    DataFileMetadata md = null;
+
+    try {
+      md = file.getMetaData();
+    } catch (IOException e) {
+    }
+
+    if (isDataTypeExtension(DataTypes.READS, extension, md)) {
 
       // Don't add previously added file
       if (!this.fastqList.contains(file))
         this.fastqList.add(file);
 
-    } else if (isDataTypeExtension(DataTypes.GENOME, extension))
+    } else if (isDataTypeExtension(DataTypes.GENOME, extension, md))
       this.genomeFile = file;
 
-    else if (isDataTypeExtension(DataTypes.ANNOTATION, extension))
+    else if (isDataTypeExtension(DataTypes.ANNOTATION, extension, md))
       this.gffFile = file;
 
   }
@@ -170,7 +178,12 @@ public class DesignBuilder {
   }
 
   private boolean isDataTypeExtension(final DataType dataType,
-      final String extension) {
+      final String extension, DataFileMetadata md) {
+
+    if (md != null
+        && md.getDataFormat() != null
+        && dataType.equals(md.getDataFormat().getType()))
+      return true;
 
     return dfr.getDataFormatFromExtension(dataType, extension) != null;
   }
