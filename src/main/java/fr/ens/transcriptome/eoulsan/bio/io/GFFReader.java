@@ -117,6 +117,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
           // Add metadata if not reuse result object
           result.addMetaDataEntries(this.metadata);
 
+          this.nextCallDone = false;
           return true;
         }
       }
