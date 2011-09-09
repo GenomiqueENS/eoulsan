@@ -226,12 +226,13 @@ public class Sequence {
       return new Sequence(this);
 
     final Sequence result = new Sequence();
-    result.setName(this.name + "[merged]");
+    result.name = this.name + "[merged]";
+    result.alphabet = this.alphabet;
 
-    if (getSequence() == null)
-      result.setSequence(sequence.getSequence());
+    if (this.sequence == null)
+      result.sequence = sequence.sequence;
     else
-      result.setSequence(getSequence() + sequence.getSequence());
+      result.sequence = this.sequence + sequence.sequence;
 
     return result;
   }

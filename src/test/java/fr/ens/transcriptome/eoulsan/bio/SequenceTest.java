@@ -250,13 +250,14 @@ public class SequenceTest {
 
     s1.setSequence("AATT");
     s2.setSequence(null);
+    s1.setAlphabet(Alphabets.UNAMBIGUOUS_DNA_ALPHABET);
     s3 = s1.concat(s2);
     assertEquals("AATT", s3.getSequence());
+    assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET,s3.getAlphabet());
 
     s3 = s1.concat(null);
     assertEquals(s1.getId(), s3.getId());
     assertEquals(s1.getName(), s3.getName());
-    assertEquals(s1.getDescription(), s3.getDescription());
     assertEquals(s1.getAlphabet(), s3.getAlphabet());
     assertEquals(s1.getSequence(), s3.getSequence());
     assertFalse(s1 == s3);
