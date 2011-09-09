@@ -370,7 +370,7 @@ public final class Alphabets {
     @Override
     public final String getName() {
 
-      return "UnAmbiguousRNA";
+      return "ReadDNA";
     }
 
     @Override
