@@ -41,6 +41,9 @@ public class PairEndReadFilter implements ReadFilter {
   @Override
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
+    if (read1 == null || read2 == null)
+      return false;
+
     return this.acceptPairEnd;
   }
 

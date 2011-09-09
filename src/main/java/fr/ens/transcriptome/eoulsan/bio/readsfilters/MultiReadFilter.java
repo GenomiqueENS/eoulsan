@@ -45,6 +45,9 @@ public class MultiReadFilter implements ReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
+    if (read == null)
+      return false;
+
     for (ReadFilter rf : this.list) {
 
       if (!rf.accept(read)) {

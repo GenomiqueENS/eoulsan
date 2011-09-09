@@ -64,22 +64,17 @@ public class TrimReadFilter extends AbstractReadFilter {
       return;
     }
 
-    final String sequence = splitResult[0];
-    final int len = sequence.length();
+    final ReadSequence tmp = read.subSequence(0, splitResult[0].length());
 
-    // Trim read sequence and quality if needed
-    if (len != read.length()) {
-      read.setSequence(sequence);
-      read.setQuality(read.getQuality().substring(0, len));
-    }
-
+    read.setSequence(tmp.getSequence());
+    read.setQuality(tmp.getQuality());
   }
 
   @Override
   public boolean accept(final ReadSequence read) {
 
     if (read == null)
-      throw new NullPointerException("The read is null");
+      return false;
 
     trim(read);
 

@@ -32,19 +32,19 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
     if (read1 == null)
-      throw new NullPointerException("Read1 is null");
+      return false;
 
     if (read2 == null)
-      throw new NullPointerException("Read2 is null");
+      return false;
 
     final String id1 = read1.getName();
     final String id2 = read2.getName();
 
     if (id1 == null)
-      throw new NullPointerException("Read1 id is null");
+      return false;
 
     if (id2 == null)
-      throw new NullPointerException("Read2 id is null");
+      return false;
 
     if (id1.equals(id2))
       return false;
@@ -71,6 +71,9 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(ReadSequence read) {
 
+    if (read == null)
+      return false;
+
     return true;
   }
 
@@ -87,7 +90,7 @@ public class PairCheckReadFilter extends AbstractReadFilter {
 
   @Override
   public void setParameter(String key, String value) {
-    // this filter has no parameter    
+    // this filter has no parameter
   }
 
 }
