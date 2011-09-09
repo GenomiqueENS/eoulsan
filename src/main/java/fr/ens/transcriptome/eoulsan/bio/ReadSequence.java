@@ -162,10 +162,14 @@ public final class ReadSequence extends Sequence {
     if (beginIndex > endIndex)
       throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
 
-    return new ReadSequence(-1,
-        this.name == null ? null : this.name + "[part]",
-        this.sequence.substring(beginIndex, endIndex), this.quality.substring(
-            beginIndex, endIndex));
+    final ReadSequence result =
+        new ReadSequence(-1, this.name == null ? null : this.name + "[part]",
+            this.sequence.substring(beginIndex, endIndex),
+            this.quality.substring(beginIndex, endIndex));
+
+    result.fastqFormat = this.fastqFormat;
+
+    return result;
   }
 
   /**
@@ -177,13 +181,30 @@ public final class ReadSequence extends Sequence {
   public ReadSequence concat(final ReadSequence sequence) {
 
     final ReadSequence result = new ReadSequence();
-    result.setName(this.name + " [merged]");
+    result.setName(this.name + "[merged]");
+    result.fastqFormat = this.fastqFormat;
+    result.alphabet = this.alphabet;
 
-    if (sequence == null || this.sequence == null)
+    if (sequence == null) {
+      result.sequence = this.sequence;
+      result.quality = this.quality;
       return result;
+    }
 
-    result.setSequence(getSequence() + sequence.getSequence());
-    result.setQuality(getQuality() + sequence.getQuality());
+    if (this.sequence == null)
+      result.sequence = sequence.sequence;
+    else if (sequence.sequence == null)
+      result.sequence = this.sequence;
+    else
+      result.sequence = this.sequence + sequence.sequence;
+
+    if (this.quality == null)
+      result.quality = sequence.quality;
+    else if (sequence.quality == null)
+      result.quality = this.quality;
+    else
+      result.quality = this.quality + sequence.quality;
+
     return result;
   }
 
@@ -333,10 +354,15 @@ public final class ReadSequence extends Sequence {
     final int indexCR1 = fastQ.indexOf('\n');
     final int indexCR2 = fastQ.indexOf('\n', indexCR1 + 1);
     final int indexCR3 = fastQ.indexOf('\n', indexCR2 + 1);
+    final int indexCR4 = fastQ.indexOf('\n', indexCR3 + 1);
 
     this.name = fastQ.substring(1, indexCR1);
     this.sequence = fastQ.substring(indexCR1 + 1, indexCR2);
-    this.quality = fastQ.substring(indexCR3 + 1);
+
+    if (indexCR4 == -1)
+      this.quality = fastQ.substring(indexCR3 + 1);
+    else
+      this.quality = fastQ.substring(indexCR3 + 1, indexCR4);
   }
 
   /**
@@ -388,7 +414,7 @@ public final class ReadSequence extends Sequence {
 
     final int len = q.length();
 
-    if (q == null || len == 0 || len != length())
+    if (len == 0 || len != length())
       return false;
 
     for (int i = 0; i < len; i++)
@@ -422,10 +448,10 @@ public final class ReadSequence extends Sequence {
   @Override
   public boolean equals(final Object o) {
 
-    if (!super.equals(o))
-      return false;
+    if (o == this)
+      return true;
 
-    if (!(o instanceof ReadSequence))
+    if (o == null || !(o instanceof ReadSequence) || !super.equals(o))
       return false;
 
     final ReadSequence that = (ReadSequence) o;
@@ -437,7 +463,7 @@ public final class ReadSequence extends Sequence {
   @Override
   public String toString() {
 
-    return this.getName()
+    return this.getClass().getSimpleName()
         + "{id=" + this.id + ", name=" + this.name + ", description="
         + this.description + ", alphabet=" + this.alphabet + ", sequence="
         + this.sequence + ", fastqFormat=" + this.fastqFormat + ", quality="
