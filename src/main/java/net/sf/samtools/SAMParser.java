@@ -55,8 +55,8 @@ public class SAMParser {
   private static final int NUM_REQUIRED_FIELDS = 11;
 
   // Read string must contain only these characters
-  private static final Pattern VALID_BASES =
-      Pattern.compile("^[acgtnACGTN.=]+$");
+  private static final Pattern VALID_BASES = Pattern
+      .compile("^[acgtnACGTN.=]+$");
 
   private SAMFileReader.ValidationStringency validationStringency =
       SAMFileReader.ValidationStringency.DEFAULT_STRINGENCY;
@@ -340,8 +340,8 @@ public class SAMParser {
     for (String sequenceName : genomeDescription.getSequencesNames()) {
 
       final SAMSequenceRecord sequenceRecord =
-          new SAMSequenceRecord(sequenceName, genomeDescription
-              .getSequenceLength(sequenceName));
+          new SAMSequenceRecord(sequenceName,
+              (int) genomeDescription.getSequenceLength(sequenceName));
       sequences.add(sequenceRecord);
     }
 

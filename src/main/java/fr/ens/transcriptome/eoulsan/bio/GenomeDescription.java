@@ -70,7 +70,7 @@ public class GenomeDescription {
   private static final String SEQUENCES_COUNT_PREFIX = PREFIX + "sequences";
 
   private String genomeName;
-  private Map<String, Integer> sequences = newLinkedHashMap();
+  private Map<String, Long> sequences = newLinkedHashMap();
   private String md5Sum;
 
   //
@@ -91,7 +91,7 @@ public class GenomeDescription {
    * @param sequenceName name of the sequence
    * @param sequenceLength length of the sequence
    */
-  public void addSequence(final String sequenceName, final int sequenceLength) {
+  public void addSequence(final String sequenceName, final long sequenceLength) {
 
     LOGGER.fine("Add sequence: "
         + sequenceName + " with " + sequenceLength + " pb");
@@ -126,7 +126,7 @@ public class GenomeDescription {
    * @param sequenceName name of the sequence
    * @return the length of the sequence or -1 if the sequence does not exists
    */
-  public int getSequenceLength(final String sequenceName) {
+  public long getSequenceLength(final String sequenceName) {
 
     if (this.sequences.containsKey(sequenceName)) {
 
@@ -167,11 +167,11 @@ public class GenomeDescription {
    * Get the genome length;
    * @return the genome length
    */
-  public int getGenomeLength() {
+  public long getGenomeLength() {
 
-    int count = 0;
+    long count = 0;
 
-    for (Map.Entry<String, Integer> e : this.sequences.entrySet())
+    for (Map.Entry<String, Long> e : this.sequences.entrySet())
       count += e.getValue();
 
     return count;
@@ -317,7 +317,7 @@ public class GenomeDescription {
 
     for (final Sequence sequence : reader) {
 
-      int len = checkBases(sequence);
+      long len = checkBases(sequence);
       final String name = parseChromosomeName(sequence.getName());
 
       // Update digest with chromosome name
@@ -357,26 +357,24 @@ public class GenomeDescription {
     return fields[0];
   }
 
-  private static int checkBases(final Sequence sequence)
+  private static long checkBases(final Sequence sequence)
       throws BadBioEntryException {
 
     final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
 
-    int result = 0;
+    long result = 0;
 
     for (final String s : StringUtils.splitStringIterator(
         sequence.getSequence(), STRING_LENGTH_BUFFER)) {
 
       final char[] array = s.toCharArray();
 
-      final int len = array.length;
-
-      for (int i = 0; i < len; i++)
-        if (!alphabet.isLetterValid(array[i]))
-          throw new BadBioEntryException("Invalid base in genome: " + array[i],
+      for (final char c : array)
+        if (!alphabet.isLetterValid(c))
+          throw new BadBioEntryException("Invalid base in genome: " + c,
               sequence.getName());
 
-      result += len;
+      result += array.length;
     }
 
     return result;

@@ -41,7 +41,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     String genomeName;
     int sequences;
-    int length;
+    long length;
     String genomeMD5;
     String mapperName;
     DataFile file;
@@ -191,7 +191,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       writer.append("\t");
       writer.append(Integer.toString(ie.sequences));
       writer.append("\t");
-      writer.append(Integer.toString(ie.length));
+      writer.append(Long.toString(ie.length));
       writer.append("\t");
       writer.append(ie.mapperName);
       writer.append("\t");
