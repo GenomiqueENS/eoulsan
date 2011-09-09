@@ -831,6 +831,7 @@ public class TranscriptAndExonFinder {
 
       }
     }
+    reader.throwException();
 
     // Close reader
     reader.close();
