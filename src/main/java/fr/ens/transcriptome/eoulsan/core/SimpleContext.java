@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataType;
@@ -416,19 +417,10 @@ public final class SimpleContext implements Context {
       throw new EoulsanRuntimeException(
           "Multifiles DataFormat are not handled by getDataFile()");
 
-    // First try search the file in the design file
-    final DataType dt = df.getType();
-    final String fieldName = this.dataTypesFields.get(dt);
-    if (fieldName != null) {
-      final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-      final DataFile file =
-          new DataFile(sample.getMetadata().getField(fieldName));
-      final DataFormat sourceDf =
-          dfr.getDataFormatFromExtension(dt, file.getExtension());
-
-      if (sourceDf != null && sourceDf.equals(df))
-        return file;
-    }
+    // Test if the file is defined in the design file
+    final DataFile fileFromDesign = getFileFromDesign(sample, df);
+    if (fileFromDesign != null)
+      return fileFromDesign;
 
     // Else the file is in base path
     return new DataFile(this.getBasePathname()
@@ -452,6 +444,51 @@ public final class SimpleContext implements Context {
       throw new EoulsanRuntimeException(
           "The file index is greater than the maximal number of file for this format.");
 
+    // Test if the file is defined in the design file
+    final DataFile fileFromDesign = getFileFromDesign(sample, df, fileIndex);
+    if (fileFromDesign != null)
+      return fileFromDesign;
+
+    // Else the file is in base path
+    return new DataFile(this.getBasePathname()
+        + "/" + df.getType().getPrefix()
+        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
+        + toLetter(fileIndex) + df.getDefaultExtention());
+  }
+
+  /**
+   * Get a DataFile that has been defined in the design file
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a DataFile object if the file has been defined in the design file
+   */
+  private DataFile getFileFromDesign(final Sample sample, final DataFormat df) {
+
+    // First try search the file in the design file
+    final DataType dt = df.getType();
+    final String fieldName = this.dataTypesFields.get(dt);
+
+    if (fieldName != null) {
+
+      final DataFile file =
+          new DataFile(sample.getMetadata().getField(fieldName));
+
+      return isDesignDataFileValidFormat(file, dt, df) ? file : null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Get a DataFile that has been defined in the design file
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a DataFile object if the file has been defined in the design file
+   */
+  private DataFile getFileFromDesign(final Sample sample, final DataFormat df,
+      final int fileIndex) {
+
     final DataType dt = df.getType();
     final String fieldName = this.dataTypesFields.get(dt);
 
@@ -464,20 +501,47 @@ public final class SimpleContext implements Context {
 
         final DataFile file = new DataFile(fieldValues.get(fileIndex));
 
-        final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-        final DataFormat sourceDf =
-            dfr.getDataFormatFromExtension(dt, file.getExtension());
-
-        if (sourceDf != null && sourceDf.equals(df))
-          return file;
+        return isDesignDataFileValidFormat(file, dt, df) ? file : null;
       }
     }
 
-    // Else the file is in base path
-    return new DataFile(this.getBasePathname()
-        + "/" + df.getType().getPrefix()
-        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
-        + toLetter(fileIndex) + df.getDefaultExtention());
+    return null;
+  }
+
+  /**
+   * Check if a DataFile from the design has a the good format.
+   * @param file the DataFile to test
+   * @param dt the DataType
+   * @param df the DataFormat
+   * @return true if a DataFile from the design has a the good format
+   */
+  private boolean isDesignDataFileValidFormat(final DataFile file,
+      final DataType dt, final DataFormat df) {
+
+    if (file == null || dt == null || df == null)
+      return false;
+
+    DataFileMetadata md = null;
+
+    try {
+      md = file.getMetaData();
+    } catch (IOException e) {
+      logger.warning("Error while getting metadata for file "
+          + file + ": " + e.getMessage());
+      md = null;
+    }
+
+    if (md != null && df.equals(md.getDataFormat()))
+      return true;
+
+    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
+    final DataFormat sourceDf =
+        dfr.getDataFormatFromExtension(dt, file.getExtension());
+
+    if (sourceDf != null && sourceDf.equals(df))
+      return true;
+
+    return false;
   }
 
   @Override
