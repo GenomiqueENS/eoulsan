@@ -180,6 +180,20 @@ public final class IlluminaReadId {
    * @param readId String with the Illumina id
    * @throws EoulsanException if the id is not an Illumina id
    */
+  public final void parse(final Sequence sequence) throws EoulsanException {
+
+    if (sequence == null) {
+      throw new NullPointerException("The sequence is null");
+    }
+
+    parse(sequence.getName());
+  }
+
+  /**
+   * Parse an Illumina id string.
+   * @param sequence sequence witch name must be parsed
+   * @throws EoulsanException if the id is not an Illumina id
+   */
   public final void parse(final String readId) throws EoulsanException {
 
     if (readId == null) {
@@ -261,6 +275,27 @@ public final class IlluminaReadId {
    * @throws EoulsanException if the id is not an Illumina id
    */
   public IlluminaReadId(final String readId) throws EoulsanException {
+
+    if (readId == null) {
+      throw new NullPointerException("The string to parse is null");
+    }
+
+    this.pattern = findPattern(readId);
+    parse(readId);
+  }
+
+  /**
+   * Public constructor.
+   * @param sequence sequence witch name must be parsed
+   * @throws EoulsanException if the id is not an Illumina id
+   */
+  public IlluminaReadId(final Sequence sequence) throws EoulsanException {
+
+    if (sequence == null) {
+      throw new NullPointerException("The sequence is null");
+    }
+
+    final String readId = sequence.getName();
 
     if (readId == null) {
       throw new NullPointerException("The string to parse is null");
