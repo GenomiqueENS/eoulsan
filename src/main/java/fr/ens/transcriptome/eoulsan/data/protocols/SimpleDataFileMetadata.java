@@ -122,6 +122,17 @@ class SimpleDataFileMetadata implements DataFileMetadata {
     this.directory = directory;
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{contentLength=" + this.contentLength + ", contentType="
+        + contentType + ", contentEncoding=" + contentEncoding
+        + ", contentMD5=" + this.contentMD5 + ", lastModified="
+        + this.lastModified + ", dataFormat=" + dataFormat + ", directory="
+        + directory + "}";
+  }
+
   //
   // Constructors
   //
