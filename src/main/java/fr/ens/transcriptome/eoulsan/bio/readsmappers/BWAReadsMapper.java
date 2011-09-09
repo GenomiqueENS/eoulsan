@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
+import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -173,7 +176,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    System.out.println("=== aln 1 ===");
+    LOGGER.fine("first pair member alignement");
 
     this.outputFile1 =
         FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
@@ -183,7 +186,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
         readsFile1.getAbsolutePath());
 
-    System.out.println("=== aln 2 ===");
+    LOGGER.fine("first second member alignement");
 
     this.outputFile2 =
         FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
@@ -200,13 +203,16 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String indexPathname, final String readsFilename)
       throws IOException {
 
+    final boolean illuminaFastq =
+        getFastqFormat() == FASTQ_ILLUMINA
+            || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+
     final String cmd =
         bwaPath
-            + " aln " + args + " -t " + threads + " -f " + outputFilename + " "
-            + " " + indexPathname + " " + readsFilename
-            + " > /dev/null 2> /dev/null";
+            + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads
+            + " -f " + outputFilename + " " + " " + indexPathname + " "
+            + readsFilename + " > /dev/null 2> /dev/null";
 
-    System.out.println("cmd: " + cmd);
     LOGGER.info(cmd);
 
     final int exitValue = sh(cmd);
