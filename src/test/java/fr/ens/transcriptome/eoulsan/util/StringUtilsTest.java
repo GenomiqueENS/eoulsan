@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -160,12 +161,14 @@ public class StringUtilsTest {
         StringUtils.serializeStringArray(Arrays.asList(new String[] {""})));
     assertEquals("[toto]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto"})));
-    assertEquals("[toto,titi]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto","titi"})));
+    assertEquals(
+        "[toto,titi]",
+        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto",
+            "titi"})));
     assertEquals("[to\\,to]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {"to,to"})));
-    assertEquals("[to\\\\to]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {"to\\to"})));    
+    assertEquals("[to\\\\to]", StringUtils.serializeStringArray(Arrays
+        .asList(new String[] {"to\\to"})));
   }
 
   @Test
@@ -208,13 +211,71 @@ public class StringUtilsTest {
 
   @Test
   public void testToLetter() {
-    
+
     assertEquals('-', StringUtils.toLetter(-1));
     assertEquals('a', StringUtils.toLetter(0));
     assertEquals('b', StringUtils.toLetter(1));
     assertEquals('c', StringUtils.toLetter(2));
-    assertEquals('z', StringUtils.toLetter(25));    
-    assertEquals('-', StringUtils.toLetter(26));    
+    assertEquals('z', StringUtils.toLetter(25));
+    assertEquals('-', StringUtils.toLetter(26));
   }
-  
+
+  @Test
+  public void testSplitStringIterator() {
+
+    String s = "12345678901234567890";
+
+    for (String split : StringUtils.splitStringIterator(s, 30))
+      assertEquals("12345678901234567890", split);
+
+    for (String split : StringUtils.splitStringIterator(s, 10))
+      assertEquals("1234567890", split);
+
+    int i = 0;
+    for (String split : StringUtils.splitStringIterator(s, 11)) {
+
+      if (i == 0)
+        assertEquals("12345678901", split);
+      else if (i == 1)
+        assertEquals("234567890", split);
+
+      i++;
+    }
+
+    i = 0;
+    for (String split : StringUtils.splitStringIterator(s, 5)) {
+
+      if (i == 0 || i == 2)
+        assertEquals("12345", split);
+      else if (i == 1 || i == 3)
+        assertEquals("67890", split);
+
+      i++;
+    }
+
+    i = 0;
+    for (String split : StringUtils.splitStringIterator(s, 3)) {
+
+      if (i == 0)
+        assertEquals("123", split);
+      else if (i == 1)
+        assertEquals("456", split);
+      else if (i == 2)
+        assertEquals("789", split);
+      else if (i == 3)
+        assertEquals("012", split);
+      else if (i == 4)
+        assertEquals("345", split);
+      else if (i == 5)
+        assertEquals("678", split);
+      else if (i == 6)
+        assertEquals("90", split);
+      else
+        assertTrue(false);
+
+      i++;
+    }
+
+  }
+
 }
