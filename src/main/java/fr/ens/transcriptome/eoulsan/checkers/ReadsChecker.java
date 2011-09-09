@@ -171,7 +171,7 @@ public class ReadsChecker implements Checker {
           // check the quality string
           if (format != null) {
 
-            final int invalidChar = format.isStringValid(read.getQuality());
+            final int invalidChar = format.findInvalidChar(read.getQuality());
 
             if (invalidChar != -1)
               throw new BadBioEntryException(
@@ -199,7 +199,7 @@ public class ReadsChecker implements Checker {
       // check the quality string
       if (format != null) {
 
-        final int invalidChar = format.isStringValid(read.getQuality());
+        final int invalidChar = format.findInvalidChar(read.getQuality());
 
         if (invalidChar != -1)
           throw new BadBioEntryException("Invalid quality character found for "
