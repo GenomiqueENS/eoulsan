@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -774,6 +775,57 @@ public final class StringUtils {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Split a string in substring of same length
+   * @param s String to split
+   * @param length length of the output strings
+   * @return a Iterable object
+   */
+  public static Iterable<String> splitStringIterator(final String s,
+      final int length) {
+
+    if (s == null || length < 1)
+      return null;
+
+    return new IterableString() {
+
+      int pos = 0;
+      final int len = s.length();
+
+      @Override
+      public boolean hasNext() {
+
+        return pos < len;
+      }
+
+      @Override
+      public String next() {
+
+        final int endPos = (pos + length) > len ? len : pos + length;
+
+        final String result = s.substring(pos, endPos);
+
+        this.pos += length;
+
+        return result;
+      }
+
+      @Override
+      public void remove() {
+      }
+
+      @Override
+      public Iterator<String> iterator() {
+
+        return this;
+      }
+    };
+
+  }
+
+  private interface IterableString extends Iterable<String>, Iterator<String> {
   }
 
 }
