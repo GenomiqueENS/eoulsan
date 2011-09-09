@@ -172,7 +172,7 @@ public enum FastqFormat {
    * @return -1 if all the characters of the string are valid of the value of
    *         the first invalid character
    */
-  public int isStringValid(final String s) {
+  public int findInvalidChar(final String s) {
 
     if (s == null)
       throw new NullPointerException();
@@ -329,6 +329,19 @@ public enum FastqFormat {
   /**
    * Identify the fastq format used in a Fastq file.
    * @param is input stream
+   * @return The FastqFormat found or null if no format was found
+   * @throws IOException if an error occurs while reading the fastq stream
+   * @throws BadBioEntryException if bad fastq entry is found
+   */
+  public static FastqFormat identifyFormat(final InputStream is)
+      throws IOException, BadBioEntryException {
+
+    return identifyFormat(is, -1);
+  }
+
+  /**
+   * Identify the fastq format used in a Fastq file.
+   * @param is input stream
    * @param maxEntriesToRead maximal entries of the file to read. If this value
    *          is lower than 1 all the entries of the stream are read
    * @return The FastqFormat found or null if no format was found
@@ -339,7 +352,7 @@ public enum FastqFormat {
       final int maxEntriesToRead) throws IOException, BadBioEntryException {
 
     if (is == null)
-      return null;
+      throw new NullPointerException("The input format is null");
 
     final FastqReader reader = new FastqReader(is, true);
     final Set<FastqFormat> formats =
@@ -480,8 +493,7 @@ public enum FastqFormat {
       final boolean phredQualityScore) {
 
     this.name = name;
-    this.alias =
-        alias == null ? null : newHashSet(Arrays.asList(alias));
+    this.alias = alias == null ? null : newHashSet(Arrays.asList(alias));
     this.illuminaVersion = illuminaVersion;
     this.scoreMin = scoreMin;
     this.scoreMax = scoreMax;
