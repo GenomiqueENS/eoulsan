@@ -52,9 +52,14 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public DataFile getDataFileParent(final DataFile src) {
 
-    final String source = src.getSource();
+    if (src == null)
+      return null;
 
-    final int parentSrcLen = source.length() - getName().length() - 1;
+    final String source = src.getSource();
+    final int nameLen = src.getName().length();
+    final int sourceLen = source.length();
+
+    final int parentSrcLen = sourceLen - nameLen - 1;
 
     return new DataFile(
         source.substring(0, parentSrcLen < 0 ? 0 : parentSrcLen));
