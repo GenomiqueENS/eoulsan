@@ -22,6 +22,7 @@
 
 package fr.ens.transcriptome.eoulsan.illumina;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,27 @@ public class CasavaDesign implements Iterable<CasavaSample> {
   public Iterator<CasavaSample> iterator() {
 
     return Collections.unmodifiableList(this.samples).iterator();
+  }
+
+  /**
+   * Get all the samples of a lane.
+   * @param laneId the lane of the samples
+   * @return a list of the samples in the lane in the same order as the Casava
+   *         design. Return null if the laneId < 1.
+   */
+  public List<CasavaSample> getSampleInLane(final int laneId) {
+
+    if (laneId < 1)
+      return null;
+
+    final List<CasavaSample> result = new ArrayList<CasavaSample>();
+
+    for (CasavaSample s : this.samples) {
+      if (s.getLane() == laneId)
+        result.add(s);
+    }
+
+    return result;
   }
 
 }
