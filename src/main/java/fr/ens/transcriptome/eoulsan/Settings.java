@@ -76,8 +76,8 @@ public final class Settings {
 
   private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY
       + "design.obfuscate";
-  private static final String REMOVE_REPLICATE_INFO_KEY = MAIN_PREFIX_KEY
-      + "design.remove.replicate.info";
+  private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
+      MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
   private static final String DEFAULT_FASTQ_FORMAT_KEY = MAIN_PREFIX_KEY
       + "default.fastq.format";
@@ -207,18 +207,20 @@ public final class Settings {
    */
   public boolean isObfuscateDesign() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(OBFUSCATE_DESIGN_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(
+        OBFUSCATE_DESIGN_KEY,
+        Boolean.toString(Globals.OBFUSCATE_DESIGN_DEFAULT)));
   }
 
   /**
    * Test if replicate information must be removed from design.
    * @return true if replicate information must be removed
    */
-  public boolean isRemoveReplicateInfo() {
+  public boolean isObfuscateDesignRemoveReplicateInfo() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(REMOVE_REPLICATE_INFO_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(
+        OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY, Boolean
+            .toString(Globals.OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT)));
   }
 
   /**
@@ -477,9 +479,9 @@ public final class Settings {
    * Set if the replicate information must be removed from the design.
    * @param remove true if the replicate information must be remove
    */
-  public void setRemoveDesignInfo(final boolean remove) {
+  public void setObfuscateRemoveDesignInfo(final boolean remove) {
 
-    this.properties.setProperty(REMOVE_REPLICATE_INFO_KEY,
+    this.properties.setProperty(OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY,
         Boolean.toString(remove));
   }
 
