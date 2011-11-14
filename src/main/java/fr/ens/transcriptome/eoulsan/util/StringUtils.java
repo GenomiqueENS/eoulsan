@@ -828,4 +828,21 @@ public final class StringUtils {
   private interface IterableString extends Iterable<String>, Iterator<String> {
   }
 
+  /**
+   * Test if a string is null or empty
+   * @param s string to test
+   * @return true if the input string is null or empty
+   */
+  public static boolean isNullOrEmpty(final String s) {
+
+    return s == null || s.isEmpty();
+  }
+
+  //
+  // Constructor
+  //
+
+  private StringUtils() {
+  }
+
 }
