@@ -31,8 +31,11 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Step for local mode file uploading.
@@ -45,7 +48,7 @@ public class LocalUploadStep extends UploadStep {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file, final int id)
+  protected DataFile getUploadedDataFile(final DataFile file)
       throws IOException {
 
     final String filename;
@@ -58,6 +61,41 @@ public class LocalUploadStep extends UploadStep {
       filename =
           CompressionType.removeCompressionExtension(file.getName())
               + CompressionType.BZIP2.getExtension();
+
+    return new DataFile(getDest(), filename);
+  }
+
+  @Override
+  protected DataFile getUploadedDataFile(final DataFile file,
+      final Sample sample, final DataFormat df, final int fileIndex)
+      throws IOException {
+
+    final StringBuilder sb = new StringBuilder();
+
+    if (sample == null || df == null) {
+
+      if (file == null)
+        throw new IOException("Input file is null.");
+
+      sb.append(file.getName());
+    } else {
+
+      sb.append(df.getType().getPrefix());
+
+      if (df.getType().isOneFilePerAnalysis())
+        sb.append('1');
+      else
+        sb.append(sample.getId());
+
+      if (fileIndex != -1)
+        sb.append(StringUtils.toLetter(fileIndex));
+
+      sb.append(df.getDefaultExtention());
+    }
+
+    final String filename =
+        CompressionType.removeCompressionExtension(sb.toString())
+            + CompressionType.BZIP2.getExtension();
 
     return new DataFile(getDest(), filename);
   }
