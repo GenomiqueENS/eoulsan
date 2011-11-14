@@ -27,11 +27,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.collect.Lists;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 public class CasavaDesign implements Iterable<CasavaSample> {
 
-  private List<CasavaSample> samples = Lists.newArrayList();
+  private List<CasavaSample> samples = Utils.newArrayList();
 
   public void addSample(final CasavaSample sample) {
 
@@ -63,6 +63,12 @@ public class CasavaDesign implements Iterable<CasavaSample> {
     }
 
     return result;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{samples=" + this.samples + "}";
   }
 
 }
