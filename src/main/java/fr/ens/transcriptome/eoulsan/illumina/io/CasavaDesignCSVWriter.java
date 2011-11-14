@@ -53,24 +53,24 @@ public class CasavaDesignCSVWriter implements CasavaDesignWriter {
 
       for (CasavaSample s : design) {
 
-        sb.append(s.getFlowCellId());
-        sb.append('\t');
+        sb.append(s.getFlowCellId().trim().toUpperCase());
+        sb.append(',');
         sb.append(s.getLane());
-        sb.append('\t');
-        sb.append(quote(s.getSampleId()));
-        sb.append('\t');
-        sb.append(quote(s.getSampleRef()));
-        sb.append('\t');
-        sb.append(quote(s.getIndex()));
-        sb.append('\t');
-        sb.append(quote(s.getDescription()));
-        sb.append('\t');
+        sb.append(',');
+        sb.append(quote(s.getSampleId().trim()));
+        sb.append(',');
+        sb.append(quote(s.getSampleRef().trim()));
+        sb.append(',');
+        sb.append(quote(s.getIndex().toUpperCase()));
+        sb.append(',');
+        sb.append(quote(s.getDescription().trim()));
+        sb.append(',');
         sb.append(s.isControl() ? 'Y' : 'N');
-        sb.append('\t');
-        sb.append(quote(s.getRecipe()));
-        sb.append('\t');
-        sb.append(quote(s.getOperator()));
-        sb.append('\t');
+        sb.append(',');
+        sb.append(quote(s.getRecipe().trim()));
+        sb.append(',');
+        sb.append(quote(s.getOperator().trim()));
+        sb.append(',');
         sb.append(quote(s.getSampleProject()));
 
         sb.append('\n');
