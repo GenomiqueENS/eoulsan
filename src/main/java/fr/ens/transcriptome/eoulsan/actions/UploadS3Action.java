@@ -107,7 +107,7 @@ public class UploadS3Action extends AbstractAction {
           + e.getMessage());
     }
 
-    if (arguments.length != argsOptions + 2) {
+    if (arguments.length != argsOptions + 3) {
       help(options);
     }
 
