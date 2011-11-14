@@ -252,7 +252,7 @@ public class DesignImpl implements Design {
     // Remove targets
     final String suffix = "-" + this.metadataFields.get(fieldName);
 
-    for (String key : this.metadataData.keySet())
+    for (String key : new HashSet<String>(this.metadataData.keySet()))
       if (key.endsWith(suffix))
         this.metadataData.remove(key);
 
