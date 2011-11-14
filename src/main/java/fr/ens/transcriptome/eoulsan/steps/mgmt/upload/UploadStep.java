@@ -24,12 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
-import static java.util.Collections.singletonList;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
+import static fr.ens.transcriptome.eoulsan.util.Utils.newHashSet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -85,16 +88,15 @@ public abstract class UploadStep extends AbstractStep {
     // Save and change base pathname
     final SimpleContext fullContext = (SimpleContext) context;
 
-    final Set<DataFile> files = new HashSet<DataFile>();
-
-    for (Sample sample : design.getSamples())
-      files.addAll(findDataFiles(sample, context));
-
-    removeNotExistingDataFile(files);
-
+    final Map<DataFile, DataFile> filesToCopy = newHashMap();
     File repackagedJarFile = null;
 
     try {
+
+      for (Sample sample : design.getSamples())
+        filesToCopy.putAll(findDataFilesInWorkflow(sample, context));
+
+      removeNotExistingDataFile(filesToCopy);
 
       // Check if destination path already exists
       if (getDest().exists()) {
@@ -105,17 +107,19 @@ public abstract class UploadStep extends AbstractStep {
       // Repackage the jar file if necessary
       if (!context.getRuntime().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
-        files.add(new DataFile(repackagedJarFile.getAbsolutePath()));
+        filesToCopy
+            .put(new DataFile(repackagedJarFile.getAbsolutePath()), null);
       }
-
-      // Add all files to upload in a map
-      final Map<DataFile, DataFile> filesToCopy = reWriteDesign(design, files);
 
       final Settings settings = context.getRuntime().getSettings();
 
+      // Add all files to upload in a map
+      reWriteDesign(design, filesToCopy);
+
       // Obfuscate design is needed
       if (settings.isObfuscateDesign()) {
-        DesignUtils.obfuscate(design, settings.isRemoveReplicateInfo());
+        DesignUtils.obfuscate(design,
+            settings.isObfuscateDesignRemoveReplicateInfo());
       }
 
       // Create a new design file
@@ -195,19 +199,36 @@ public abstract class UploadStep extends AbstractStep {
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
-  private DataFile getUploadedDataFile(final DataFile file) throws IOException {
+  protected abstract DataFile getUploadedDataFile(final DataFile file)
+      throws IOException;
 
-    return getUploadedDataFile(file, -1);
+  /**
+   * Generate the DataFile Object for the uploaded DataFile
+   * @param file DataFile to upload
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object with the path to the upload DataFile
+   * @throws IOException if an error occurs while creating the result DataFile
+   */
+  private DataFile getUploadedDataFile(final DataFile file,
+      final Sample sample, final DataFormat df) throws IOException {
+
+    return getUploadedDataFile(file, sample, df, -1);
   }
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
    * @param file DataFile to upload
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
   protected abstract DataFile getUploadedDataFile(final DataFile file,
-      final int id) throws IOException;
+      final Sample sample, final DataFormat df, final int fileIndex)
+      throws IOException;
 
   /**
    * Copy files to destinations.
@@ -226,12 +247,14 @@ public abstract class UploadStep extends AbstractStep {
    * @param sample sample
    * @param context Execution context
    * @return a set of DataFile used by the workflow for the sample
+   * @throws IOException
    */
-  private Set<DataFile> findDataFiles(Sample sample, final Context context) {
+  private Map<DataFile, DataFile> findDataFilesInWorkflow(Sample sample,
+      final Context context) throws IOException {
 
     boolean afterThis = false;
 
-    final Set<DataFile> result = new HashSet<DataFile>();
+    final Map<DataFile, DataFile> result = newHashMap();
 
     for (Step s : context.getWorkflow().getSteps()) {
 
@@ -241,7 +264,29 @@ public abstract class UploadStep extends AbstractStep {
         if (formats != null)
 
           for (DataFormat df : formats)
-            result.add(context.getDataFile(df, sample));
+            if (df.getMaxFilesCount() == 1) {
+              final DataFile inFile = context.getDataFile(df, sample);
+              final DataFile outFile = getUploadedDataFile(inFile, sample, df);
+              result.put(inFile, outFile);
+            } else {
+
+              int i = 0;
+              boolean exists = true;
+
+              do {
+
+                DataFile file = context.getDataFile(df, sample, i);
+                exists = file.exists();
+                if (exists) {
+                  final DataFile inFile = context.getDataFile(df, sample, i);
+                  final DataFile outFile =
+                      getUploadedDataFile(inFile, sample, df, i);
+                  result.put(inFile, outFile);
+                }
+                i++;
+              } while (exists);
+
+            }
 
       } else if (s == this)
         afterThis = true;
@@ -255,92 +300,65 @@ public abstract class UploadStep extends AbstractStep {
    * Remove the DataFiles that not exists in a set of DataFiles.
    * @param files Set of DataFile to filter
    */
-  private void removeNotExistingDataFile(Set<DataFile> files) {
+  private void removeNotExistingDataFile(Map<DataFile, DataFile> files) {
 
     Set<DataFile> filesToRemove = new HashSet<DataFile>();
 
-    for (DataFile file : files)
+    for (DataFile file : files.keySet())
       if (!file.exists())
         filesToRemove.add(file);
 
-    files.removeAll(filesToRemove);
+    for (DataFile file : filesToRemove)
+      files.remove(file);
   }
 
-  private Map<DataFile, DataFile> reWriteDesign(final Design design,
-      final Set<DataFile> filesToCopy) throws IOException {
+  private void reWriteDesign(final Design design,
+      final Map<DataFile, DataFile> filesToCopy) throws IOException {
 
-    final Map<DataFile, DataFile> result = new HashMap<DataFile, DataFile>();
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final Map<String, String> genomesMap = new HashMap<String, String>();
-    final Map<String, String> annotationsMap = new HashMap<String, String>();
+    final Set<String> fieldWithFiles = newHashSet();
+    boolean first = true;
+    for (final Sample s : design.getSamples()) {
 
-    int genomesCount = 0;
-    int annotationsCount = 0;
-
-    for (Sample s : design.getSamples()) {
-
-      // Copy the sample
-      DataFile sampleOldFile = new DataFile(s.getMetadata().getReads().get(0));
-      DataFile sampleNewFile = getUploadedDataFile(sampleOldFile, s.getId());
-
-      if (filesToCopy.contains(sampleOldFile)) {
-
-        filesToCopy.remove(sampleOldFile);
-        result.put(sampleOldFile, sampleNewFile);
+      if (first) {
+        for (String fieldName : s.getMetadata().getFields())
+          if (registry.getDataTypeForDesignField(fieldName) != null)
+            fieldWithFiles.add(fieldName);
+        first = false;
       }
 
-      s.getMetadata().setReads(singletonList(sampleNewFile.getSource()));
+      for (final String field : fieldWithFiles) {
 
-      // copy the genome file
-      final String genome = s.getMetadata().getGenome();
+        final List<String> oldValues = s.getMetadata().getFieldAsList(field);
+        final List<String> newValues = newArrayList();
 
-      if (!genomesMap.containsKey(genome)) {
-        genomesCount++;
+        final int nValues = oldValues.size();
 
-        // Add genome file
-        final DataFile genomeOldFile = new DataFile(genome);
-        final DataFile genomeNewFile =
-            getUploadedDataFile(genomeOldFile, genomesCount);
+        if (nValues == 1) {
+          final DataFile inFile = new DataFile(oldValues.get(0));
+          final DataFormat format = inFile.getDataFormat();
+          final DataFile outFile = getUploadedDataFile(inFile, s, format);
+          filesToCopy.put(inFile, outFile);
+          newValues.add(outFile.toString());
 
-        if (filesToCopy.contains(genomeOldFile)) {
+        } else if (nValues > 1) {
 
-          filesToCopy.remove(genomeOldFile);
-          result.put(genomeOldFile, genomeNewFile);
+          for (int i = 0; i < nValues; i++) {
+            final DataFile inFile = new DataFile(oldValues.get(0));
+            final DataFormat format = inFile.getDataFormat();
+            final DataFile outFile = getUploadedDataFile(inFile, s, format, i);
+            filesToCopy.put(inFile, outFile);
+            newValues.add(outFile.toString());
+          }
         }
 
-        genomesMap.put(genome,
-            genomeNewFile == null ? "" : genomeNewFile.getSource());
+        // Replace old paths with new path in design
+        s.getMetadata().setField(field, newValues);
       }
-      s.getMetadata().setGenome(genomesMap.get(genome));
 
-      // Copy the annotation
-      final String annotation = s.getMetadata().getAnnotation();
-
-      if (!annotationsMap.containsKey(annotation)) {
-        annotationsCount++;
-
-        // Add annotation file
-        final DataFile annotationOldFile = new DataFile(annotation);
-
-        final DataFile annotationNewFile =
-            getUploadedDataFile(annotationOldFile, annotationsCount);
-
-        if (filesToCopy.contains(annotationOldFile)) {
-
-          filesToCopy.remove(annotationOldFile);
-          result.put(annotationOldFile, annotationNewFile);
-        }
-
-        annotationsMap.put(annotation, annotationNewFile == null
-            ? "" : annotationNewFile.getSource());
-      }
-      s.getMetadata().setAnnotation(annotationsMap.get(annotation));
     }
 
-    for (DataFile file : filesToCopy)
-      result.put(file, getUploadedDataFile(file));
-
-    return result;
   }
 
   /**
