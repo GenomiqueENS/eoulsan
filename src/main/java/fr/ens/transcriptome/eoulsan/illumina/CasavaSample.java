@@ -22,7 +22,6 @@
 
 package fr.ens.transcriptome.eoulsan.illumina;
 
-import com.google.common.base.Objects;
 
 public class CasavaSample {
 
@@ -262,15 +261,12 @@ public class CasavaSample {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("sampleId", this.sampleId)
-        .add("flowCellId", this.flowCellId).add("lane", this.lane)
-        .add("sampleRef", this.sampleRef).add("index", this.index)
-        .add("description", this.description).add("control", this.control)
-        .add("recipe", this.recipe).add("operator", this.operator)
-        .add("sampleProject", sampleProject)
-
-        .toString();
-
+    return this.getClass().getSimpleName()
+        + "{sampleId=" + this.sampleId + ", flowCellId=" + this.flowCellId
+        + ", lane=" + this.lane + ", sampleRef=" + this.sampleRef + ", index="
+        + this.index + ", description=" + this.description + ", control="
+        + this.control + ", recipe=" + this.recipe + ", operator="
+        + this.operator + ", sampleProject=" + this.sampleProject + "}";
   }
 
 }
