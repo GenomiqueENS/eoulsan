@@ -171,6 +171,13 @@ public final class Globals {
 
   /** Default fastq format. */
   static final FastqFormat FASTQ_FORMAT_DEFAULT = FastqFormat.FASTQ_SANGER;
+  
+  /** Obfuscate design default. */
+  public static final boolean OBFUSCATE_DESIGN_DEFAULT = true;
+  
+  /** Remove design replicate info when obfuscate design default.*/
+  public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT = true;
+  
 
   //
   // Private constants
