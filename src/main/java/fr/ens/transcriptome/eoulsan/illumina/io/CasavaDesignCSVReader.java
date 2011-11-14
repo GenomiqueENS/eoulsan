@@ -22,26 +22,25 @@
 
 package fr.ens.transcriptome.eoulsan.illumina.io;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
-import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a reader for Casava design CSV files.
  * @author Laurent Jourdren
  */
-public class CasavaDesignCSVReader implements CasavaDesignReader {
+public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
 
   private BufferedReader reader;
   private final Splitter splitter = Splitter.on(',');
@@ -50,8 +49,6 @@ public class CasavaDesignCSVReader implements CasavaDesignReader {
   public CasavaDesign read() throws IOException {
 
     String line = null;
-    final CasavaDesign design = new CasavaDesign();
-    boolean firstLine = true;
 
     while ((line = this.reader.readLine()) != null) {
 
@@ -59,55 +56,23 @@ public class CasavaDesignCSVReader implements CasavaDesignReader {
       if ("".equals(line))
         continue;
 
-      if (firstLine) {
-        firstLine = false;
-        continue;
-      }
-
       line = line.replaceAll("\"", "");
 
-      final List<String> fields = Lists.newArrayList(splitter.split(line));
+      try {
 
-      if (fields.size() != 10)
-        throw new IOException("Invalid number of field ("
-            + fields.size() + ") in line : " + line);
+        // Parse the line
+        parseLine(newArrayList(splitter.split(line)));
+      } catch (IOException e) {
 
-      final CasavaSample sample = new CasavaSample();
-
-      sample.setFlowCellId(fields.get(0));
-      sample.setLane(parseInt(fields.get(1)));
-      sample.setSampleId(fields.get(2));
-      sample.setSampleRef(fields.get(3));
-      sample.setIndex(fields.get(4));
-      sample.setDescription(fields.get(5));
-      sample.setControl(Boolean.parseBoolean(fields.get(6)));
-      sample.setRecipe(fields.get(7));
-      sample.setOperator(fields.get(8));
-      sample.setSampleProject(fields.get(9));
-
-      design.addSample(sample);
+        // If an error occurs while parsing add the line to the exception
+        // message
+        throw new IOException(e.getMessage() + " in line: " + line);
+      }
     }
 
     reader.close();
 
-    return design;
-  }
-
-  //
-  // Other methods
-  //
-
-  private static final int parseInt(final String s) {
-
-    if (s == null)
-      return 0;
-
-    try {
-      return Integer.parseInt(s);
-    } catch (NumberFormatException e) {
-      return 0;
-    }
-
+    return getDesign();
   }
 
   //
