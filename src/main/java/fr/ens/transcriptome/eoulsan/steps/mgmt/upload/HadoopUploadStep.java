@@ -39,7 +39,10 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
+import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Step for Hadoop file uploading.
@@ -51,37 +54,59 @@ public class HadoopUploadStep extends UploadStep {
   private Configuration conf;
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file, final int id)
+  protected DataFile getUploadedDataFile(final DataFile file)
       throws IOException {
 
-    if (file == null || !file.exists())
-      return null;
+    final String filename;
 
-    final DataFile dest = getDest();
+    if (file.getName().endsWith(".zip")
+        || file.getName().endsWith(".jar") || file.getName().endsWith(".xml")
+        || file.getName().endsWith(".txt"))
+      filename = file.getName();
+    else
+      filename =
+          CompressionType.removeCompressionExtension(file.getName())
+              + CompressionType.BZIP2.getExtension();
 
-    DataFile result = null;
+    return new DataFile(getDest(), filename);
+  }
 
-    DataFormat df = file.getMetaData().getDataFormat();
+  @Override
+  protected DataFile getUploadedDataFile(final DataFile file,
+      final Sample sample, final DataFormat df, final int fileIndex)
+      throws IOException {
 
-    if (df == DataFormats.READS_FASTQ || df == DataFormats.READS_TFQ)
-      result =
-          new DataFile(dest, DataFormats.READS_TFQ.getType().getPrefix()
-              + id + DataFormats.READS_TFQ.getDefaultExtention());
+    final StringBuilder sb = new StringBuilder();
 
-    if (df == DataFormats.GENOME_FASTA)
-      result =
-          new DataFile(dest, DataFormats.GENOME_FASTA.getType().getPrefix()
-              + id + DataFormats.GENOME_FASTA.getDefaultExtention());
+    if (sample == null || df == null) {
 
-    if (df == DataFormats.ANNOTATION_GFF)
-      result =
-          new DataFile(dest, DataFormats.ANNOTATION_GFF.getType().getPrefix()
-              + id + DataFormats.ANNOTATION_GFF.getDefaultExtention());
+      if (file == null)
+        throw new IOException("Input file is null.");
 
-    if (result == null)
-      result = new DataFile(dest, file.getName());
+      sb.append(file.getName());
+    } else {
 
-    return result;
+      sb.append(df.getType().getPrefix());
+
+      if (df.getType().isOneFilePerAnalysis())
+        sb.append('1');
+      else
+        sb.append(sample.getId());
+
+      if (fileIndex != -1)
+        sb.append(StringUtils.toLetter(fileIndex));
+
+      if (df == DataFormats.READS_FASTQ)
+        sb.append(DataFormats.READS_TFQ.getDefaultExtention());
+      else
+        sb.append(df.getDefaultExtention());
+    }
+
+    final String filename =
+        CompressionType.removeCompressionExtension(sb.toString())
+            + CompressionType.BZIP2.getExtension();
+
+    return new DataFile(getDest(), filename);
   }
 
   @Override
