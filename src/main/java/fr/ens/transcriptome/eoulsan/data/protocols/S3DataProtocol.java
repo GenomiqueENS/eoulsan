@@ -25,11 +25,15 @@
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import com.amazonaws.AmazonClientException;
@@ -41,8 +45,9 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.Transfer;
+import com.amazonaws.services.s3.transfer.Transfer.TransferState;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -51,7 +56,6 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -204,7 +208,7 @@ public class S3DataProtocol implements DataProtocol {
     /**
      * Upload the file.
      */
-    public void upload() {
+    public void upload() throws IOException {
 
       LOGGER.info("Upload data to " + s3url.getSource());
       final ObjectMetadata md = new ObjectMetadata();
@@ -217,10 +221,7 @@ public class S3DataProtocol implements DataProtocol {
 
       md.setContentLength(this.metadata.getContentLength());
 
-      final PutObjectRequest or =
-          new PutObjectRequest(s3url.bucket, s3url.getFilePath(), this.is, md);
-
-      LOGGER.fine("Upload: "
+      LOGGER.info("Try to upload: "
           + this.s3url + " (" + md.getContentType() + ", "
           + md.getContentEncoding() + " " + this.metadata.getContentLength()
           + " bytes)");
@@ -234,32 +235,25 @@ public class S3DataProtocol implements DataProtocol {
 
         LOGGER.info("Use multipart upload");
 
-        // final TransferManager tx = new TransferManager(s3);
-        final Upload myUpload = tx.upload(or);
+        final Transfer myUpload =
+            tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
 
-        int count = 0;
+        try {
 
-        while (!myUpload.isDone()) {
+          while (myUpload.isDone() == false) {
 
-          if (count % 10 == 0)
-            LOGGER.info("Transfer: "
-                + myUpload.getDescription() + " State: " + myUpload.getState()
-                + " Progress: " + myUpload.getProgress().getBytesTransfered());
-
-          count++;
-
-          // Do work while we wait for our upload to complete...
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.sleep(500);
           }
+          if (myUpload.getState() != TransferState.Completed)
+            throw new IOException("Transfer not completed corrently. Status: "
+                + myUpload.getState());
 
+        } catch (InterruptedException e) {
+          LOGGER.warning(e.getMessage());
+          throw new IOException(e.getMessage());
         }
 
         uploadOk = true;
-        // tx.shutdownNow();
-
       } else
 
         do {
@@ -268,6 +262,9 @@ public class S3DataProtocol implements DataProtocol {
 
           try {
 
+            final PutObjectRequest or =
+                new PutObjectRequest(s3url.bucket, s3url.getFilePath(),
+                    this.is, md);
             getS3().putObject(or);
             uploadOk = true;
           } catch (AmazonClientException e) {
@@ -288,7 +285,7 @@ public class S3DataProtocol implements DataProtocol {
         } while (!uploadOk && tryCount < 3);
 
       if (!uploadOk)
-        throw ace;
+        throw new IOException(ace.getMessage());
 
       final long end = System.currentTimeMillis();
       final long duration = end - start;
@@ -356,7 +353,7 @@ public class S3DataProtocol implements DataProtocol {
         if (md2.getContentLength() < 0)
           md2.setContentLength(f.length());
 
-        new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
+        new FileToUpload(dest, new FileInputStream(f), md2).upload();
 
         if (!f.delete())
           LOGGER.severe("Can not delete temporarry file: "
