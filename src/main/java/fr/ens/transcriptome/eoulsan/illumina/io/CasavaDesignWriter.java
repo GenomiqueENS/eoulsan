@@ -22,118 +22,21 @@
 
 package fr.ens.transcriptome.eoulsan.illumina.io;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
-import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
-public class CasavaDesignWriter {
-
-  private Writer writer;
-
-  public void writer(final CasavaDesign design) throws IOException {
-
-    this.writer
-        .write("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
-            + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"");
-
-    if (design != null) {
-
-      final StringBuilder sb = new StringBuilder();
-
-      for (CasavaSample s : design) {
-
-        sb.append(s.getFlowCellId());
-        sb.append('\t');
-        sb.append(s.getLane());
-        sb.append('\t');
-        sb.append(quote(s.getSampleId()));
-        sb.append('\t');
-        sb.append(quote(s.getSampleRef()));
-        sb.append('\t');
-        sb.append(quote(s.getIndex()));
-        sb.append('\t');
-        sb.append(quote(s.getDescription()));
-        sb.append('\t');
-        sb.append(s.isControl() ? 'Y' : 'N');
-        sb.append('\t');
-        sb.append(quote(s.getRecipe()));
-        sb.append('\t');
-        sb.append(quote(s.getOperator()));
-        sb.append('\t');
-        sb.append(quote(s.getSampleProject()));
-
-        sb.append('\n');
-
-        // Write the string
-        writer.write(sb.toString());
-        sb.setLength(0);
-
-      }
-
-    }
-
-    this.writer.close();
-  }
-
-  private static String quote(final String s) {
-
-    if (s == null)
-      return "";
-
-    final String trimmed = s.trim();
-
-    if (s.indexOf(' ') != -1)
-      return '\"' + trimmed + '\"';
-    return trimmed;
-  }
-
-  //
-  // Constructors
-  //
+/**
+ * This interface define a writer for Casava designs.
+ * @author Laurent Jourdren
+ */
+public interface CasavaDesignWriter {
 
   /**
-   * Public constructor.
-   * @param writer Writer to use
+   * Write a design.
+   * @param design design to write
+   * @throws IOException if an error occurs while writing the design
    */
-  public CasavaDesignWriter(final Writer writer) {
-
-    if (writer == null)
-      throw new NullPointerException("The writer is null.");
-
-    this.writer = writer;
-  }
-
-  /**
-   * Public constructor.
-   * @param os OutputStream to use
-   */
-  public CasavaDesignWriter(final OutputStream os) throws FileNotFoundException {
-
-    this.writer = FileUtils.createFastBufferedWriter(os);
-  }
-
-  /**
-   * Public constructor.
-   * @param outputFile file to use
-   */
-  public CasavaDesignWriter(final File outputFile) throws IOException {
-
-    this.writer = FileUtils.createFastBufferedWriter(outputFile);
-  }
-
-  /**
-   * Public constructor.
-   * @param outputFilename name of the file to use
-   */
-  public CasavaDesignWriter(final String outputFilename) throws IOException {
-
-    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
-  }
+  void writer(CasavaDesign design) throws IOException;
 
 }
