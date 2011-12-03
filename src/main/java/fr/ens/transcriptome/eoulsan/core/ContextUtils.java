@@ -7,8 +7,11 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class contains utility methods for Context class.
+ * @author Laurent Jourdren
  */
 public final class ContextUtils {
+
+  private static final boolean NEW_STYLE = false;
 
   /**
    * Get the pathname for a new file from its DataFormat and a sample object.
@@ -67,19 +70,47 @@ public final class ContextUtils {
     sb.append(df.getType().getPrefix());
 
     // Set the id of the sample
-    if (df.getType().isOneFilePerAnalysis())
+    if (df.getType().isOneFilePerAnalysis()) {
       sb.append('1');
-    else
+      if (NEW_STYLE)
+        sb.append("-common");
+    } else {
       sb.append(sample.getId());
+      if (NEW_STYLE) {
+        sb.append('-');
+        sb.append(getCompactSampleName(sample));
+      }
+    }
 
     // Set the file index if needed
     if (fileIndex >= 0) {
-      sb.append('-');
+      if (NEW_STYLE)
+        sb.append('-');
       sb.append(toLetter(fileIndex));
     }
 
     // Set the extension
     sb.append(df.getDefaultExtention());
+
+    return sb.toString();
+  }
+
+  private static String getCompactSampleName(final Sample sample) {
+
+    if (sample == null)
+      return null;
+
+    final String sampleName = sample.getName();
+    final StringBuilder sb = new StringBuilder();
+
+    final int len = sampleName.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final int codePoint = sampleName.codePointAt(i);
+      if (Character.isLetterOrDigit(codePoint))
+        sb.append(codePoint);
+    }
 
     return sb.toString();
   }
