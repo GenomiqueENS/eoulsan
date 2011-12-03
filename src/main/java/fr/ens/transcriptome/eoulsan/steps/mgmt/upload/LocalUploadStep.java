@@ -24,18 +24,21 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
+import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.core.ContextUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Step for local mode file uploading.
@@ -70,34 +73,24 @@ public class LocalUploadStep extends UploadStep {
       final Sample sample, final DataFormat df, final int fileIndex)
       throws IOException {
 
-    final StringBuilder sb = new StringBuilder();
+    final String filename;
 
     if (sample == null || df == null) {
 
       if (file == null)
         throw new IOException("Input file is null.");
 
-      sb.append(file.getName());
+      filename = file.getName();
     } else {
 
-      sb.append(df.getType().getPrefix());
-
-      if (df.getType().isOneFilePerAnalysis())
-        sb.append('1');
+      if (fileIndex == -1)
+        filename = ContextUtils.getNewDataFilename(df, sample);
       else
-        sb.append(sample.getId());
-
-      if (fileIndex != -1)
-        sb.append(StringUtils.toLetter(fileIndex));
-
-      sb.append(df.getDefaultExtention());
+        filename = ContextUtils.getNewDataFilename(df, sample, fileIndex);
     }
 
-    final String filename =
-        CompressionType.removeCompressionExtension(sb.toString())
-            + CompressionType.BZIP2.getExtension();
-
-    return new DataFile(getDest(), filename);
+    return new DataFile(getDest(), removeCompressionExtension(filename)
+        + BZIP2.getExtension());
   }
 
   @Override
