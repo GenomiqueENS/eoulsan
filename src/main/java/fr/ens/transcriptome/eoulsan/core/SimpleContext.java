@@ -415,7 +415,7 @@ public final class SimpleContext implements Context {
 
     if (df.getMaxFilesCount() != 1)
       throw new EoulsanRuntimeException(
-          "Multifiles DataFormat are not handled by getDataFile()");
+          "Multifiles DataFormat are not handled by this method.");
 
     // Test if the file is defined in the design file
     final DataFile fileFromDesign = getFileFromDesign(sample, df);
@@ -424,9 +424,7 @@ public final class SimpleContext implements Context {
 
     // Else the file is in base path
     return new DataFile(this.getBasePathname()
-        + "/" + df.getType().getPrefix()
-        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
-        + df.getDefaultExtention());
+        + '/' + ContextUtils.getNewDataFilename(df, sample));
   }
 
   @Override
@@ -451,9 +449,7 @@ public final class SimpleContext implements Context {
 
     // Else the file is in base path
     return new DataFile(this.getBasePathname()
-        + "/" + df.getType().getPrefix()
-        + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
-        + toLetter(fileIndex) + df.getDefaultExtention());
+        + '/' + ContextUtils.getNewDataFilename(df, sample, fileIndex));
   }
 
   /**

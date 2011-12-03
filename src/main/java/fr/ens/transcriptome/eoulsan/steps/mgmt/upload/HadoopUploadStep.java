@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
+import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,16 +38,15 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.core.ContextUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Step for Hadoop file uploading.
@@ -76,37 +80,26 @@ public class HadoopUploadStep extends UploadStep {
       final Sample sample, final DataFormat df, final int fileIndex)
       throws IOException {
 
-    final StringBuilder sb = new StringBuilder();
+    final String filename;
 
     if (sample == null || df == null) {
 
       if (file == null)
         throw new IOException("Input file is null.");
 
-      sb.append(file.getName());
+      filename = file.getName();
     } else {
 
-      sb.append(df.getType().getPrefix());
+      final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
 
-      if (df.getType().isOneFilePerAnalysis())
-        sb.append('1');
+      if (fileIndex == -1)
+        filename = ContextUtils.getNewDataFilename(format, sample);
       else
-        sb.append(sample.getId());
-
-      if (fileIndex != -1)
-        sb.append(StringUtils.toLetter(fileIndex));
-
-      if (df == DataFormats.READS_FASTQ)
-        sb.append(DataFormats.READS_TFQ.getDefaultExtention());
-      else
-        sb.append(df.getDefaultExtention());
+        filename = ContextUtils.getNewDataFilename(format, sample, fileIndex);
     }
 
-    final String filename =
-        CompressionType.removeCompressionExtension(sb.toString())
-            + CompressionType.BZIP2.getExtension();
-
-    return new DataFile(getDest(), filename);
+    return new DataFile(getDest(), removeCompressionExtension(filename)
+        + BZIP2.getExtension());
   }
 
   @Override
