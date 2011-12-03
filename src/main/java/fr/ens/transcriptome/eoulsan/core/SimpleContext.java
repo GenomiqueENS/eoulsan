@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -566,9 +564,7 @@ public final class SimpleContext implements Context {
 
       final DataFile file =
           new DataFile(this.getBasePathname()
-              + "/" + df.getType().getPrefix()
-              + (df.getType().isOneFilePerAnalysis() ? "1" : sample.getId())
-              + toLetter(count) + df.getDefaultExtention());
+              + '/' + ContextUtils.getNewDataFilename(df, sample, count));
 
       found = file.exists();
       if (found)
