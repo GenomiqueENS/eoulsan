@@ -54,10 +54,10 @@ public class DesignImpl implements Design {
   private String createkeySampleMetadataField(final String sample,
       final String metadataField) {
 
-    final int slideId = this.samples.get(sample);
+    final int sampleId = this.samples.get(sample);
     final int fieldId = this.metadataFields.get(metadataField);
 
-    return slideId + "-" + fieldId;
+    return sampleId + "-" + fieldId;
   }
 
   /**
@@ -68,7 +68,7 @@ public class DesignImpl implements Design {
   public int getSampleId(final String sampleName) {
 
     if (sampleName == null)
-      throw new NullPointerException("Slide name is null");
+      throw new NullPointerException("Sample name is null");
 
     if (!isSample(sampleName))
       throw new EoulsanRuntimeException("The sample doesn't exists: "
@@ -85,9 +85,9 @@ public class DesignImpl implements Design {
   }
 
   /**
-   * Get the slide name from the slide id.
-   * @param slideId Slide identifier
-   * @return the name of the slide or null if not exists
+   * Get the sample name from the sample id.
+   * @param sampleId Sample identifier
+   * @return the name of the sample or null if not exists
    */
   String getSampleName(final int sampleId) {
 
@@ -112,20 +112,20 @@ public class DesignImpl implements Design {
   public void addSample(final String sampleName) {
 
     if (sampleName == null)
-      throw new EoulsanRuntimeException("Slide name can't be null");
+      throw new EoulsanRuntimeException("Sample name name can't be null");
     if (isSample(sampleName))
-      throw new EoulsanRuntimeException("Slide name already exists: "
+      throw new EoulsanRuntimeException("Sample name already exists: "
           + sampleName);
 
-    final int slideId = countSamples++;
-    this.samples.put(sampleName, slideId);
-    this.samplesReverse.put(slideId, sampleName);
+    final int sampleId = countSamples++;
+    this.samples.put(sampleName, sampleId);
+    this.samplesReverse.put(sampleId, sampleName);
     this.samplesOrder.add(sampleName);
 
-    int id = slideId + 1;
+    int id = sampleId + 1;
     while (this.ids.containsValue(id))
       id++;
-    this.ids.put(slideId, id);
+    this.ids.put(sampleId, id);
   }
 
   @Override
@@ -164,7 +164,7 @@ public class DesignImpl implements Design {
 
     final String sampleName = this.samplesOrder.get(index);
     if (sampleName == null)
-      throw new EoulsanRuntimeException("The slide index doesn't exists: "
+      throw new EoulsanRuntimeException("The sample index doesn't exists: "
           + index);
 
     return getSample(sampleName);
@@ -174,15 +174,15 @@ public class DesignImpl implements Design {
   public Sample getSample(final String sampleName) {
 
     if (sampleName == null)
-      throw new EoulsanRuntimeException("The slide name can't be null");
+      throw new EoulsanRuntimeException("The sample name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide doesn't exists: "
+      throw new EoulsanRuntimeException("The sample doesn't exists: "
           + sampleName);
 
-    final int slideId = this.samples.get(sampleName);
+    final int sampleId = this.samples.get(sampleName);
 
-    return new SampleImpl(this, slideId);
+    return new SampleImpl(this, sampleId);
   }
 
   @Override
@@ -265,10 +265,10 @@ public class DesignImpl implements Design {
   public void removeSample(final String sampleName) {
 
     if (sampleName == null)
-      throw new EoulsanRuntimeException("Slide name can't be null");
+      throw new EoulsanRuntimeException("Sample name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("the slide name doesn't exists: "
+      throw new EoulsanRuntimeException("the sample name doesn't exists: "
           + sampleName);
 
     // Remove descriptions
@@ -279,11 +279,11 @@ public class DesignImpl implements Design {
         this.metadataData.remove(key);
 
     // Remove formats and bioassays
-    final int slideId = this.samples.get(sampleName);
+    final int sampleId = this.samples.get(sampleName);
 
     // Remove entry
     this.samples.remove(sampleName);
-    this.samplesReverse.remove(slideId);
+    this.samplesReverse.remove(sampleId);
     this.samplesOrder.remove(sampleName);
   }
 
@@ -322,14 +322,14 @@ public class DesignImpl implements Design {
       throw new EoulsanRuntimeException("newName name can't be null");
 
     if (!isSample(oldSampleName))
-      throw new EoulsanRuntimeException("the old slide name don't exists");
+      throw new EoulsanRuntimeException("the old sample name don't exists");
     if (isSample(newSampleName))
-      throw new EoulsanRuntimeException("the new slide name already exists");
+      throw new EoulsanRuntimeException("the new sample name already exists");
 
-    int slideId = this.samples.get(oldSampleName);
+    int sampleId = this.samples.get(oldSampleName);
     this.samples.remove(oldSampleName);
-    this.samples.put(newSampleName, slideId);
-    this.samplesReverse.put(slideId, newSampleName);
+    this.samples.put(newSampleName, sampleId);
+    this.samplesReverse.put(sampleId, newSampleName);
 
     int index = -1;
     int count = 0;
@@ -339,7 +339,7 @@ public class DesignImpl implements Design {
       else
         count++;
 
-    // final int index = Collections.binarySearch(this.slidesOrder,
+    // final int index = Collections.binarySearch(this.samplesOrder,
     // oldName);
     this.samplesOrder.set(index, newSampleName);
   }
@@ -349,14 +349,14 @@ public class DesignImpl implements Design {
       final String value) {
 
     if (sampleName == null)
-      throw new NullPointerException("Slide name can't be null");
+      throw new NullPointerException("Sample name can't be null");
     if (fieldName == null)
       throw new NullPointerException("Description field can't be null");
     if (value == null)
       throw new NullPointerException("value name can't be null");
 
     if (!isSample(sampleName))
-      throw new EoulsanRuntimeException("The slide name doesn't exists");
+      throw new EoulsanRuntimeException("The sample name doesn't exists");
     if (!isMetadataField(fieldName))
       addMetadataField(fieldName);
 
