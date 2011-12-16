@@ -46,7 +46,8 @@ public class JarRepack {
 
   private void copy(final File file) throws IOException {
 
-    final ZipInputStream zin = new ZipInputStream(new FileInputStream(file));
+    final ZipInputStream zin =
+        new ZipInputStream(FileUtils.createInputStream(file));
     final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
     ZipEntry entry = zin.getNextEntry();
@@ -139,7 +140,7 @@ public class JarRepack {
       throw new NullPointerException("the outFile argument is null.");
     }
 
-    this.zos = new ZipOutputStream(new FileOutputStream(outFile));
+    this.zos = new ZipOutputStream(FileUtils.createOutputStream(outFile));
     copy(inFile);
   }
 

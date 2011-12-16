@@ -58,6 +58,8 @@ public class FileUtils {
   /** The charset to use. */
   private static final String CHARSET = "ISO-8859-1";
 
+  private static final boolean USE_CHANNEL = false;
+
   /**
    * Simple FilenameFilter to filter Paths with their prefix.
    * @author Laurent Jourdren
@@ -193,10 +195,15 @@ public class FileUtils {
     if (file == null)
       throw new NullPointerException("The file is null.");
 
-    final FileInputStream inFile = new FileInputStream(file);
-    final FileChannel inChannel = inFile.getChannel();
+    if (USE_CHANNEL) {
 
-    return Channels.newInputStream(inChannel);
+      final FileInputStream inFile = new FileInputStream(file);
+      final FileChannel inChannel = inFile.getChannel();
+
+      return Channels.newInputStream(inChannel);
+    }
+
+    return new FileInputStream(file);
   }
 
   /**
@@ -231,10 +238,14 @@ public class FileUtils {
         throw new IOException("Can not remove existing file: "
             + file.getAbsolutePath());
 
-    final FileOutputStream outFile = new FileOutputStream(file);
-    final FileChannel outChannel = outFile.getChannel();
+    if (USE_CHANNEL) {
+      final FileOutputStream outFile = new FileOutputStream(file);
+      final FileChannel outChannel = outFile.getChannel();
 
-    return Channels.newOutputStream(outChannel);
+      return Channels.newOutputStream(outChannel);
+    }
+
+    return new FileOutputStream(file);
   }
 
   /**

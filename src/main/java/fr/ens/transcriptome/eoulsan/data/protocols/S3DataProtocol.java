@@ -25,15 +25,11 @@
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import com.amazonaws.AmazonClientException;
@@ -56,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -353,7 +350,7 @@ public class S3DataProtocol implements DataProtocol {
         if (md2.getContentLength() < 0)
           md2.setContentLength(f.length());
 
-        new FileToUpload(dest, new FileInputStream(f), md2).upload();
+        new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
 
         if (!f.delete())
           LOGGER.severe("Can not delete temporarry file: "

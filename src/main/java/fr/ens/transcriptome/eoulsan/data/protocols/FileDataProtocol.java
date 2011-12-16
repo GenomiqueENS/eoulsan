@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,9 +73,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public InputStream getData(final DataFile src) throws IOException {
 
-    // TODO Why channel don't works ?
-    // return FileUtils.createInputStream(getFile(src));
-    return new FileInputStream(getFile(src));
+    return FileUtils.createInputStream(getFile(src));
   }
 
   @Override
@@ -98,7 +95,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
     result.setLastModified(f.lastModified());
 
     final DataFormat format =
-        DataFormatRegistry.getInstance().getDataFormatFromFilename(src.getName());
+        DataFormatRegistry.getInstance().getDataFormatFromFilename(
+            src.getName());
 
     result.setDataFormat(format);
 
@@ -114,7 +112,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     if (ct != null)
       result.setContentEncoding(ct.getContentEncoding());
-    
+
     if (f.isDirectory())
       result.setDirectory(true);
 
