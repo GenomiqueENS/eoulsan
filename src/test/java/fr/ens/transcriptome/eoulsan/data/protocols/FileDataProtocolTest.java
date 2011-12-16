@@ -196,7 +196,7 @@ public class FileDataProtocolTest {
     DataFile df = new DataFile(f.getAbsolutePath());
     FileDataProtocol p = (FileDataProtocol) df.getProtocol();
 
-    assertEquals(f, p.getFile(df));
+    assertEquals(f, p.getSourceAsFile(df));
 
   }
 

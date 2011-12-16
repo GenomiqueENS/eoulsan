@@ -35,8 +35,6 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.GenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SimpleGenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
-import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -90,23 +88,15 @@ public final class GenomeMapperIndexer {
   private void computeIndex(final DataFile genome, final DataFile mapperIndex)
       throws IOException {
 
-    final FileDataProtocol defaultProtocol =
-        DataProtocolService.getInstance().getDefaultProtocol();
-
-    final File outputFile;
-
-    if (mapperIndex.isLocalFile()) {
-
-      outputFile = defaultProtocol.getFile(mapperIndex);
-    } else {
+    File outputFile = mapperIndex.toFile();
+    if (outputFile == null) {
       outputFile =
           EoulsanRuntime.getRuntime().createTempFile(
               mapper.getMapperName() + "-index-archive-", ".zip");
     }
 
-    if (genome.isLocalFile()) {
-
-      this.mapper.makeArchiveIndex(defaultProtocol.getFile(genome), outputFile);
+    if (genome.toFile() != null) {
+      this.mapper.makeArchiveIndex(genome.toFile(), outputFile);
     } else {
       this.mapper.makeArchiveIndex(genome.open(), outputFile);
     }
