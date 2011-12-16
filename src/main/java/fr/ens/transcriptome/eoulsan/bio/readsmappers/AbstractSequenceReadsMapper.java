@@ -29,9 +29,7 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -187,10 +185,10 @@ public abstract class AbstractSequenceReadsMapper implements
 
     // Create input stream
     final InputStream in =
-        ct.createInputStream(new FileInputStream(genomeFile));
+        ct.createInputStream(FileUtils.createInputStream(genomeFile));
 
     // Create output stream
-    final OutputStream out = new FileOutputStream(uncompressFile);
+    final OutputStream out = FileUtils.createOutputStream(uncompressFile);
 
     // Uncompress
     FileUtils.copy(in, out);

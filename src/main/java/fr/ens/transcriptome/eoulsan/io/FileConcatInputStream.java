@@ -25,13 +25,14 @@
 package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
+
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define an InputStream that concatenate files in an InputStream.
@@ -50,7 +51,7 @@ public class FileConcatInputStream extends AbstractConcatInputStream {
   @Override
   protected InputStream nextInputStream() throws IOException {
 
-    return new FileInputStream(it.next());
+    return FileUtils.createInputStream(it.next());
   }
 
   //

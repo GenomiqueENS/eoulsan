@@ -372,8 +372,8 @@ public final class PathUtils {
     if (conf == null)
       throw new NullPointerException("The configuration object is null");
 
-    return copyAndCompressInputStreamToPath(new FileInputStream(srcFile),
-        destPath, conf);
+    return copyAndCompressInputStreamToPath(
+        FileUtils.createInputStream(srcFile), destPath, conf);
   }
 
   /**

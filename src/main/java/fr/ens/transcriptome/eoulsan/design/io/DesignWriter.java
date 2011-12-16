@@ -25,12 +25,12 @@
 package fr.ens.transcriptome.eoulsan.design.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a writer for designs.
@@ -99,8 +99,8 @@ public abstract class DesignWriter {
       throw new EoulsanIOException("No file to load");
 
     try {
-      setOutputStream(new FileOutputStream(file));
-    } catch (FileNotFoundException e) {
+      setOutputStream(FileUtils.createOutputStream(file));
+    } catch (IOException e) {
       throw new EoulsanIOException("Error while reading file : "
           + file.getName());
     }
