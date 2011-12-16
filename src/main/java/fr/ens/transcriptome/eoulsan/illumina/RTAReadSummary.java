@@ -26,7 +26,6 @@ import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getAttributeNames;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getAttributeValue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 public class RTAReadSummary implements Iterable<RTALaneSummary> {
@@ -85,7 +85,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
   public void parse(final File file) throws ParserConfigurationException,
       SAXException, IOException {
 
-    parse(new FileInputStream(file));
+    parse(FileUtils.createInputStream(file));
   }
 
   public void parse(final InputStream is) throws ParserConfigurationException,

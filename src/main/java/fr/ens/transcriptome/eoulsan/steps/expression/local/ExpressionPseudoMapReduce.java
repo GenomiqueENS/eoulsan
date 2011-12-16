@@ -34,7 +34,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.U
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -60,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.PseudoMapReduce;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -259,7 +259,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
         CompressionType.getCompressionTypeByFilename(annotationFile.getName());
 
     final InputStream is =
-        ct.createInputStream(new FileInputStream(annotationFile));
+        ct.createInputStream(FileUtils.createInputStream(annotationFile));
 
     this.tef = new TranscriptAndExonFinder(is, expressionType);
   }

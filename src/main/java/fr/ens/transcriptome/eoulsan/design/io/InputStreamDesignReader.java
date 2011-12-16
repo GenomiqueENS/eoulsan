@@ -32,8 +32,7 @@ import java.io.InputStream;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-
-
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This abstract class define a reader for designs.
@@ -134,10 +133,9 @@ public abstract class InputStreamDesignReader implements DesignReader {
       throw new EoulsanIOException("No file to load");
 
     try {
-      setInputStream(new FileInputStream(file));
+      setInputStream(FileUtils.createInputStream(file));
     } catch (FileNotFoundException e) {
-      throw new EoulsanIOException("File not found: "
-          + file.getName());
+      throw new EoulsanIOException("File not found: " + file.getName());
     }
 
     this.dataSource = file.getAbsolutePath();
