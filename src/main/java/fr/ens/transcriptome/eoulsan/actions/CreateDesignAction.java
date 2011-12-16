@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
+import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
@@ -80,6 +81,7 @@ public class CreateDesignAction extends AbstractAction {
     boolean pairEndMode = false;
     String casavaDesignPath = null;
     String casavaProject = null;
+    boolean symnlinks = false;
 
     try {
 
@@ -97,22 +99,32 @@ public class CreateDesignAction extends AbstractAction {
         help(options);
       }
 
+      // Output option
       if (line.hasOption("o")) {
 
         filename = line.getOptionValue("o").trim();
         argsOptions += 2;
       }
 
+      // Casava design option
       if (line.hasOption("c")) {
 
         casavaDesignPath = line.getOptionValue("c").trim();
         argsOptions += 2;
       }
 
+      // Casava project option
       if (line.hasOption("n")) {
 
         casavaProject = line.getOptionValue("n").trim();
         argsOptions += 2;
+      }
+
+      // Symbolic links option
+      if (line.hasOption("symlinks")) {
+
+        symnlinks = true;
+        argsOptions++;
       }
 
     } catch (ParseException e) {
@@ -121,21 +133,23 @@ public class CreateDesignAction extends AbstractAction {
     }
 
     Design design = null;
-
+    final File designFile = new File(filename);
+    
     try {
 
-      String[] newArgs =
+      final String[] newArgs =
           StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
 
       final DesignBuilder db = new DesignBuilder(newArgs);
-
-      System.out.println("design path: " + casavaDesignPath + "\tproject: " + casavaProject);
 
       // Add all the files of a Casava design if Casava design path is defined
       if (casavaDesignPath != null)
         db.addCasavaDesignProject(new File(casavaDesignPath), casavaProject);
 
       design = db.getDesign(pairEndMode);
+      
+      if (symnlinks)
+        DesignUtils.replaceLocalPathBySymlinks(design, designFile.getParentFile());
 
     } catch (EoulsanException e) {
       Common.errorExit(e, "Error: " + e.getMessage());
@@ -151,13 +165,13 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      final File file = new File(filename);
+      
 
-      if (file.exists())
+      if (designFile.exists())
         throw new EoulsanIOException("Output design file "
-            + file + " already exists");
+            + designFile + " already exists");
 
-      DesignWriter dw = new SimpleDesignWriter(file);
+      DesignWriter dw = new SimpleDesignWriter(designFile);
 
       dw.write(design);
 
@@ -187,10 +201,6 @@ public class CreateDesignAction extends AbstractAction {
     // Help option
     options.addOption("h", "help", false, "display this help");
 
-    // Output option
-    options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("output file").withLongOpt("output").create('o'));
-
     // Casava design path option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("casava design file").withLongOpt("casava-design")
@@ -200,6 +210,14 @@ public class CreateDesignAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("name").hasArg()
         .withDescription("casava project name").withLongOpt("casava-project")
         .create('n'));
+
+    // Create symbolic links
+    options.addOption("s", "symlinks", false,
+        "Create symbolic links in design file directory");
+
+    // Output option
+    options.addOption(OptionBuilder.withArgName("file").hasArg()
+        .withDescription("output file").withLongOpt("output").create('o'));
 
     return options;
   }
