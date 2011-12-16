@@ -52,12 +52,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
     return "file";
   }
 
-  /**
-   * Get Convert a DataFile object to a File object
-   * @param dataFile DataFile to convert
-   * @return a File object
-   */
-  public File getFile(final DataFile dataFile) {
+  @Override
+  public File getSourceAsFile(final DataFile dataFile) {
 
     if (dataFile == null || dataFile.getSource() == null)
       throw new NullPointerException("The source is null.");
@@ -73,13 +69,13 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public InputStream getData(final DataFile src) throws IOException {
 
-    return FileUtils.createInputStream(getFile(src));
+    return FileUtils.createInputStream(getSourceAsFile(src));
   }
 
   @Override
   public OutputStream putData(final DataFile src) throws IOException {
 
-    return FileUtils.createOutputStream(getFile(src));
+    return FileUtils.createOutputStream(getSourceAsFile(src));
   }
 
   @Override
@@ -88,7 +84,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     if (!exists(src))
       throw new FileNotFoundException("File not found: " + src);
 
-    File f = getFile(src);
+    final File f = getSourceAsFile(src);
 
     final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
     result.setContentLength(f.length());
@@ -122,7 +118,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public boolean exists(final DataFile src) {
 
-    return getFile(src).exists();
+    return getSourceAsFile(src).exists();
   }
 
   @Override

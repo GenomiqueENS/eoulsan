@@ -237,6 +237,19 @@ public class DataFile {
     }
   }
 
+  /**
+   * Convert the DataFile object to File object if the underlying protocol allow
+   * it. Only local protocol can return a value.
+   * @return a File object or null if the underlying protocol does not allow it
+   */
+  public File toFile() {
+
+    if (this.protocol == null)
+      return null;
+
+    return protocol.getSourceAsFile(this);
+  }
+
   //
   // Other methods
   //
