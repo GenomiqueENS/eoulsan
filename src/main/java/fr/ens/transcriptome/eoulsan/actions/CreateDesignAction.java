@@ -78,6 +78,8 @@ public class CreateDesignAction extends AbstractAction {
     String filename = "design.txt";
     int argsOptions = 0;
     boolean pairEndMode = false;
+    String casavaDesignPath = null;
+    String casavaProject = null;
 
     try {
 
@@ -101,6 +103,18 @@ public class CreateDesignAction extends AbstractAction {
         argsOptions += 2;
       }
 
+      if (line.hasOption("c")) {
+
+        casavaDesignPath = line.getOptionValue("c").trim();
+        argsOptions += 2;
+      }
+
+      if (line.hasOption("n")) {
+
+        casavaProject = line.getOptionValue("n").trim();
+        argsOptions += 2;
+      }
+
     } catch (ParseException e) {
       Common.errorExit(e,
           "Error while parsing parameter file: " + e.getMessage());
@@ -114,6 +128,13 @@ public class CreateDesignAction extends AbstractAction {
           StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
 
       final DesignBuilder db = new DesignBuilder(newArgs);
+
+      System.out.println("design path: " + casavaDesignPath + "\tproject: " + casavaProject);
+
+      // Add all the files of a Casava design if Casava design path is defined
+      if (casavaDesignPath != null)
+        db.addCasavaDesignProject(new File(casavaDesignPath), casavaProject);
+
       design = db.getDesign(pairEndMode);
 
     } catch (EoulsanException e) {
@@ -169,6 +190,16 @@ public class CreateDesignAction extends AbstractAction {
     // Output option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("output file").withLongOpt("output").create('o'));
+
+    // Casava design path option
+    options.addOption(OptionBuilder.withArgName("file").hasArg()
+        .withDescription("casava design file").withLongOpt("casava-design")
+        .create('c'));
+
+    // Casava project option
+    options.addOption(OptionBuilder.withArgName("name").hasArg()
+        .withDescription("casava project name").withLongOpt("casava-project")
+        .create('n'));
 
     return options;
   }
