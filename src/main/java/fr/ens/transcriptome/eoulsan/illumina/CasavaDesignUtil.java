@@ -210,11 +210,13 @@ public final class CasavaDesignUtil {
     if (isNullOrEmpty(sampleProject))
       throw new EoulsanException("Found a null or sample project.");
 
-    for (int i = 0; i < sampleProject.length(); i++)
-      if (!Character.isLetterOrDigit(sampleProject.codePointAt(i)))
+    for (int i = 0; i < sampleProject.length(); i++) {
+      final int codePoint = sampleProject.codePointAt(i);
+      if (!(Character.isLetterOrDigit(codePoint) || codePoint == '-' || codePoint == '_'))
         throw new EoulsanException(
-            "Invalid sample project, only letters or digits are allowed: "
+            "Invalid sample project, only letters, digits, '-' or '_' characters are allowed: "
                 + sampleProject + ".");
+    }
 
   }
 
@@ -224,8 +226,9 @@ public final class CasavaDesignUtil {
    * @param sequences map for the sequences
    * @throws EoulsanException if the shortcut is unknown
    */
-  public static void replaceIndexShortcutsBySequences(final CasavaDesign design,
-      final Map<String, String> sequences) throws EoulsanException {
+  public static void replaceIndexShortcutsBySequences(
+      final CasavaDesign design, final Map<String, String> sequences)
+      throws EoulsanException {
 
     if (design == null || sequences == null)
       return;
@@ -252,12 +255,12 @@ public final class CasavaDesignUtil {
     }
 
   }
-  
+
   //
   // Constructor
   //
 
   private CasavaDesignUtil() {
   }
-  
+
 }
