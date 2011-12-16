@@ -45,7 +45,7 @@ public class CasavaDesignCSVWriter implements CasavaDesignWriter {
 
     this.writer
         .write("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
-            + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"");
+            + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
 
     if (design != null) {
 
