@@ -31,9 +31,7 @@ import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -217,7 +215,7 @@ public class GenomeDescription {
   public void save(final File file) throws FileNotFoundException, IOException {
 
     checkNotNull(file, "File is null");
-    save(new FileOutputStream(file));
+    save(FileUtils.createOutputStream(file));
   }
 
   //
@@ -273,7 +271,7 @@ public class GenomeDescription {
   public static GenomeDescription load(final File file) throws IOException {
 
     checkNotNull(file, "File is null");
-    return load(new FileInputStream(file));
+    return load(FileUtils.createInputStream(file));
   }
 
   //

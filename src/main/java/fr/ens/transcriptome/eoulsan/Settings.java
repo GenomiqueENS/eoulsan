@@ -25,15 +25,16 @@
 package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -617,12 +618,12 @@ public final class Settings {
    */
   public void saveSettings(final File file) throws IOException {
 
-    final FileOutputStream fos = new FileOutputStream(file);
+    final OutputStream os = FileUtils.createOutputStream(file);
 
-    this.properties.store(fos, " "
+    this.properties.store(os, " "
         + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
         + " configuration file");
-    fos.close();
+    os.close();
   }
 
   /**
@@ -650,10 +651,10 @@ public final class Settings {
       EoulsanException {
 
     LOGGER.info("Load configuration file: " + file.getAbsolutePath());
-    final FileInputStream fis = new FileInputStream(file);
+    final InputStream is = FileUtils.createInputStream(file);
 
-    this.properties.load(fis);
-    fis.close();
+    this.properties.load(FileUtils.createInputStream(file));
+    is.close();
 
     for (String key : this.properties.stringPropertyNames()) {
       if (FORBIDDEN_KEYS.contains(key)) {
