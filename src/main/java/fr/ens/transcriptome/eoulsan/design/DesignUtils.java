@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +35,13 @@ import java.util.Set;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * Utils methods for Design.
@@ -276,6 +283,61 @@ public final class DesignUtils {
     if (design.isMetadataField(fieldName)) {
       design.removeMetadataField(fieldName);
     }
+
+  }
+
+  /**
+   * Replace the local paths in the design by paths to symbolic links in a
+   * directory.
+   * @param design Design object to modify
+   * @param symlinksDir path to the directory where create symbolic links
+   * @throws EoulsanIOException if an error occurs while creating symbolic links
+   *           of if a path the design file does not exists
+   */
+  public static void replaceLocalPathBySymlinks(final Design design,
+      final File symlinksDir) throws EoulsanIOException {
+
+    if (design == null)
+      return;
+
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    final List<String> fieldsToModify = Utils.newArrayList();
+
+    for (String field : design.getMetadataFieldsNames())
+      if (registry.getDataTypeForDesignField(field) != null)
+        fieldsToModify.add(field);
+
+    for (final Sample s : design.getSamples())
+      for (final String field : fieldsToModify) {
+
+        final List<String> values =
+            new ArrayList<String>(s.getMetadata().getFieldAsList(field));
+        for (int i = 0; i < values.size(); i++) {
+
+          final DataFile df = new DataFile(values.get(i));
+
+          if (df.isLocalFile()) {
+
+            final File inFile = df.toFile();
+            final File outFile = new File(symlinksDir, df.getName());
+
+            if (!inFile.exists())
+              throw new EoulsanIOException("File not exists: " + df);
+
+            if (outFile.exists()
+                || inFile.getAbsoluteFile().equals(outFile.getAbsoluteFile()))
+              continue;
+
+            FileUtils.createSymbolicLink(df.toFile(),
+                new File(symlinksDir, df.getName()));
+            values.set(i, df.getName());
+          }
+
+        }
+        s.getMetadata().setField(field, values);
+
+      }
 
   }
 
