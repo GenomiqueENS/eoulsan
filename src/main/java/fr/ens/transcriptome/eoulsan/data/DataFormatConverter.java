@@ -58,11 +58,11 @@ public class DataFormatConverter {
 
   public void convert() throws IOException {
 
-    final OutputStream destOs = this.os == null ? outFile.create() : this.os;
-
     if (this.outFormat == null) {
 
+      final OutputStream destOs = this.os == null ? outFile.create() : this.os;
       FileUtils.copy(inFile.rawOpen(), destOs);
+
       return;
     }
 
@@ -81,9 +81,11 @@ public class DataFormatConverter {
 
     if (this.inFormat.equals(this.outFormat) && srcCT.equals(destCT)) {
 
-      FileUtils.copy(inFile.rawOpen(), destOs);
+      inFile.copyTo(outFile);
       return;
     }
+
+    final OutputStream destOs = this.os == null ? outFile.create() : this.os;
 
     if (this.inFormat.equals(this.outFormat)) {
 
