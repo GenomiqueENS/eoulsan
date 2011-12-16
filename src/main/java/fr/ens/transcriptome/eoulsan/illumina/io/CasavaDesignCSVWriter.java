@@ -93,7 +93,7 @@ public class CasavaDesignCSVWriter implements CasavaDesignWriter {
 
     final String trimmed = s.trim();
 
-    if (s.indexOf(' ') != -1)
+    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1)
       return '\"' + trimmed + '\"';
     return trimmed;
   }
