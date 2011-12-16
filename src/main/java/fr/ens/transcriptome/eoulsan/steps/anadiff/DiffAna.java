@@ -396,7 +396,7 @@ public class DiffAna {
       for (int j = i + 1; j < rCondNames.size(); j++) {
 
         sb.append("# path of the output file\n");
-        sb.append("out = \"out-");
+        sb.append("out = \"diffana-");
         sb.append(rCondNames.get(i));
         sb.append('-');
         sb.append(rCondNames.get(j));
