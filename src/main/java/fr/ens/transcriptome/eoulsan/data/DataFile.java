@@ -468,7 +468,7 @@ public class DataFile {
     if (file == null)
       throw new NullPointerException("The source file can not be null.");
 
-    parseSource(file.getAbsolutePath());
+    parseSource(file.getPath());
   }
 
 }
