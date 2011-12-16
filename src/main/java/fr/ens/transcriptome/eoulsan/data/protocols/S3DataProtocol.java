@@ -198,7 +198,8 @@ public class S3DataProtocol implements DataProtocol {
 
   private class FileToUpload {
 
-    private InputStream is;
+    private final InputStream is;
+    private final File file;
     private S3URL s3url;
     private DataFileMetadata metadata;
 
@@ -216,12 +217,16 @@ public class S3DataProtocol implements DataProtocol {
       if (this.metadata.getContentEncoding() != null)
         md.setContentEncoding(this.metadata.getContentEncoding());
 
-      md.setContentLength(this.metadata.getContentLength());
+      if (file == null)
+        md.setContentLength(this.metadata.getContentLength());
+
+      final long fileLength =
+          this.file == null ? this.metadata.getContentLength() : this.file
+              .length();
 
       LOGGER.info("Try to upload: "
           + this.s3url + " (" + md.getContentType() + ", "
-          + md.getContentEncoding() + " " + this.metadata.getContentLength()
-          + " bytes)");
+          + md.getContentEncoding() + " " + fileLength + " bytes)");
 
       int tryCount = 0;
       boolean uploadOk = false;
@@ -232,8 +237,12 @@ public class S3DataProtocol implements DataProtocol {
 
         LOGGER.info("Use multipart upload");
 
-        final Transfer myUpload =
-            tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
+        final Transfer myUpload;
+
+        if (file != null)
+          myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), file);
+        else
+          myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
 
         try {
 
@@ -259,9 +268,16 @@ public class S3DataProtocol implements DataProtocol {
 
           try {
 
-            final PutObjectRequest or =
-                new PutObjectRequest(s3url.bucket, s3url.getFilePath(),
-                    this.is, md);
+            final PutObjectRequest or;
+
+            if (file != null)
+              or =
+                  new PutObjectRequest(s3url.bucket, s3url.getFilePath(), file);
+            else
+              or =
+                  new PutObjectRequest(s3url.bucket, s3url.getFilePath(),
+                      this.is, md);
+
             getS3().putObject(or);
             uploadOk = true;
           } catch (AmazonClientException e) {
@@ -286,13 +302,12 @@ public class S3DataProtocol implements DataProtocol {
 
       final long end = System.currentTimeMillis();
       final long duration = end - start;
-      final int speedKiB =
-          (int) (this.metadata.getContentLength() / (duration / 1000.0) / 1024.0);
+      final int speedKiB = (int) (fileLength / (duration / 1000.0) / 1024.0);
 
       LOGGER.info("Upload of "
-          + this.s3url + " (" + this.metadata.getContentLength()
-          + " bytes) in " + StringUtils.toTimeHumanReadable(duration)
-          + " ms. (" + speedKiB + " KiB/s)");
+          + this.s3url + " (" + fileLength + " bytes) in "
+          + StringUtils.toTimeHumanReadable(duration) + " ms. (" + speedKiB
+          + " KiB/s)");
 
     }
 
@@ -305,8 +320,17 @@ public class S3DataProtocol implements DataProtocol {
 
       this.s3url = new S3URL(dest);
       this.is = is;
+      this.file = null;
       this.metadata = md == null ? new SimpleDataFileMetadata() : md;
+    }
 
+    public FileToUpload(final DataFile dest, final File file)
+        throws IOException {
+
+      this.s3url = new S3URL(dest);
+      this.is = null;
+      this.file = file;
+      this.metadata = new SimpleDataFileMetadata();
     }
 
   }
@@ -350,6 +374,7 @@ public class S3DataProtocol implements DataProtocol {
         if (md2.getContentLength() < 0)
           md2.setContentLength(f.length());
 
+        LOGGER.finest("Upload temporary file: " + f.getAbsolutePath());
         new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
 
         if (!f.delete())
@@ -393,7 +418,18 @@ public class S3DataProtocol implements DataProtocol {
 
     final DataFileMetadata mdSrc = src.getMetaData();
 
-    new FileToUpload(dest, src.open(), mdSrc).upload();
+    LOGGER.finest("Upload existing source: " + dest);
+
+    final File file = src.toFile();
+    final FileToUpload toUpload;
+
+    if (file != null)
+      toUpload = new FileToUpload(dest, file);
+    else
+      toUpload = new FileToUpload(dest, src.open(), mdSrc);
+
+    // Upload
+    toUpload.upload();
   }
 
   @Override
@@ -419,6 +455,15 @@ public class S3DataProtocol implements DataProtocol {
   public boolean isWritable() {
 
     return true;
+  }
+
+  @Override
+  public File getSourceAsFile(final DataFile src) {
+
+    if (src == null || src.getSource() == null)
+      throw new NullPointerException("The source is null.");
+
+    return null;
   }
 
   //
