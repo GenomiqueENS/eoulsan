@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -116,5 +117,11 @@ public interface DataProtocol {
    * @return true if the source is writable
    */
   boolean isWritable();
+  
+  /**
+   * Get the underlying File object for the DataFile if the protocol allow it.
+   * @return a File object or null if the protocol does not allow it
+   */
+  File getSourceAsFile(DataFile src);
 
 }

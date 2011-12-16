@@ -38,8 +38,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
-import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -100,24 +98,16 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
-      final FileDataProtocol defaultProtocol =
-          DataProtocolService.getInstance().getDefaultProtocol();
+      File outputFile = mapperIndexDataFile.toFile();
 
-      final File outputFile;
-
-      if (mapperIndexDataFile.isLocalFile()) {
-
-        outputFile = defaultProtocol.getFile(mapperIndexDataFile);
-      } else {
+      if (outputFile == null) {
         outputFile =
             context.getRuntime().createTempFile(
                 mapper.getMapperName() + "-index-archive-", ".zip");
       }
 
-      if (genomeDataFile.isLocalFile()) {
-
-        this.mapper.makeArchiveIndex(defaultProtocol.getFile(genomeDataFile),
-            outputFile);
+      if (genomeDataFile.toFile() != null) {
+        this.mapper.makeArchiveIndex(genomeDataFile.toFile(), outputFile);
       } else {
         this.mapper.makeArchiveIndex(genomeDataFile.open(), outputFile);
       }
