@@ -161,9 +161,9 @@ public interface SampleMetadata {
   /**
    * Set a field of the metadata.
    * @param field Field to set
-   * @param value value to set
+   * @param values values to set
    */
-  void setField(String field, List<String> value);
+  void setField(String field, List<String> values);
 
   /**
    * Set the description.
