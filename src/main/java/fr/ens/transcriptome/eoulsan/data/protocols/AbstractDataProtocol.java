@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -76,7 +77,8 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public void putData(DataFile src, DataFile dest) throws IOException {
+  public void putData(final DataFile src, final DataFile dest)
+      throws IOException {
 
     if (src == null)
       throw new NullPointerException("The source of the data to put is null");
@@ -89,6 +91,15 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
     FileUtils.copy(src.getProtocol().getData(src),
         dest.getProtocol().putData(dest, mdSrc));
+  }
+
+  @Override
+  public File getSourceAsFile(final DataFile src) {
+
+    if (src == null || src.getSource() == null)
+      throw new NullPointerException("The source is null.");
+
+    return null;
   }
 
 }
