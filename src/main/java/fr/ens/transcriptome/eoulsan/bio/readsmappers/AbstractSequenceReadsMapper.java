@@ -266,10 +266,15 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Start index computation");
 
+    final String indexTmpDirPrefix =
+        Globals.APP_NAME_LOWER_CASE
+            + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
+
+    LOGGER.fine("Want to create a temporary directory with prefix: "
+        + indexTmpDirPrefix + " in " + getTempDirectory());
+
     final File indexTmpDir =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE
-            + "-" + getMapperName().toLowerCase() + "-genomeindexdir-", "",
-            getTempDirectory());
+        File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
 
     if (!(indexTmpDir.delete())) {
       throw new IOException("Could not delete temp file ("
