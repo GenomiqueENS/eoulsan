@@ -28,7 +28,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -76,10 +79,27 @@ public class DesignBuilder {
    */
   private static class FastqEntry {
 
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
+        "yyyy-MM-dd");
+
     private final DataFile path;
     private final String sampleName;
     private final String sampleDesc;
     private final String sampleOperator;
+    private final String sampleDate;
+
+    private static final String getDate(DataFile file) {
+
+      try {
+        long last = file.getMetaData().getLastModified();
+
+        return DATE_FORMAT.format(new Date(last));
+
+      } catch (IOException e) {
+        return null;
+      }
+
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -127,6 +147,7 @@ public class DesignBuilder {
       this.sampleName = StringUtils.basename(path.getName());
       this.sampleDesc = null;
       this.sampleOperator = null;
+      this.sampleDate = getDate(path);
     }
 
     public FastqEntry(final DataFile path, final String sampleName,
@@ -136,6 +157,7 @@ public class DesignBuilder {
       this.sampleName = sampleName;
       this.sampleDesc = sampleDesc;
       this.sampleOperator = sampleOperator;
+      this.sampleDate = getDate(path);
     }
 
   }
@@ -325,6 +347,7 @@ public class DesignBuilder {
 
       final String sampleName = fes.get(0).sampleName;
       final String desc = fes.get(0).sampleDesc;
+      final String date = fes.get(0).sampleDate;
       final String operator = fes.get(0).sampleOperator;
 
       if (pairEndMode) {
@@ -334,7 +357,7 @@ public class DesignBuilder {
         for (FastqEntry fe : fes)
           filenames.add(fe.path.getSource());
 
-        addSample(result, sampleName, desc, operator, defaultFastqFormat,
+        addSample(result, sampleName, desc, date, operator, defaultFastqFormat,
             filenames, fes.get(0).path);
 
       } else {
@@ -344,7 +367,7 @@ public class DesignBuilder {
         for (FastqEntry fe : fes) {
 
           addSample(result, sampleName + StringUtils.toLetter(count), desc,
-              operator, defaultFastqFormat,
+              date, operator, defaultFastqFormat,
               Collections.singletonList(fe.path.getSource()), fe.path);
 
           count++;
@@ -357,10 +380,11 @@ public class DesignBuilder {
   }
 
   /**
-   * Add a Sample to the Design object 
+   * Add a Sample to the Design object
    * @param design Design object
    * @param sampleName name of the sample
    * @param desc description of the sample
+   * @param date date of the sample
    * @param operator operator for the sample
    * @param defaultFastqFormat default fastq format
    * @param filenames list of the fastq files for the sample
@@ -368,7 +392,7 @@ public class DesignBuilder {
    * @throws EoulsanException if an error occurs while adding the sample
    */
   private void addSample(final Design design, final String sampleName,
-      final String desc, final String operator,
+      final String desc, final String date, final String operator,
       final FastqFormat defaultFastqFormat, final List<String> filenames,
       final DataFile fileToCheck) throws EoulsanException {
 
@@ -386,6 +410,10 @@ public class DesignBuilder {
     // Set the description of the sample if exists
     if (desc != null)
       smd.setDescription(desc);
+
+    // Set the date of the sample if exists
+    if (date != null)
+      smd.setDate(date);
 
     // Set the operator of the sample if exists
     if (operator != null)
