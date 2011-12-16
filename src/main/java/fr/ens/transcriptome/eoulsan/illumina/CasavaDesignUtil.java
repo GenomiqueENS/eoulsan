@@ -31,13 +31,39 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
+/**
+ * This class contains utilty methods for Casava design.
+ * @author Laurent Jourdren
+ */
 public final class CasavaDesignUtil {
 
+  /**
+   * Check a Casava design object.
+   * @param design Casava design object to check
+   * @return true if the design is valid
+   * @throws EoulsanException if the design is not valid
+   */
   public static boolean checkCasavaDesign(final CasavaDesign design)
       throws EoulsanException {
 
+    return checkCasavaDesign(design, null);
+  }
+
+  /**
+   * Check a Casava design object.
+   * @param design Casava design object to check
+   * @param flowCellId flow cell id
+   * @return true if the design is valid
+   * @throws EoulsanException if the design is not valid
+   */
+  public static boolean checkCasavaDesign(final CasavaDesign design,
+      final String flowCellId) throws EoulsanException {
+
     if (design == null)
       return false;
+
+    if (design.size() == 0)
+      throw new EoulsanException("No samples found in the design.");
 
     String fcid = null;
     boolean first = true;
@@ -49,6 +75,12 @@ public final class CasavaDesignUtil {
 
       // Check if all the fields are not empty
       checkFCID(sample.getFlowCellId());
+
+      // Check if the flowcell id is the flow cell expected
+      if (flowCellId != null
+          && !flowCellId.trim().equals(sample.getFlowCellId()))
+        throw new EoulsanException("Bad flowcell name found: "
+            + sample.getFlowCellId() + " (" + flowCellId + " expected).");
 
       // Check if all the samples had the same flow cell id
       if (first) {
@@ -185,4 +217,47 @@ public final class CasavaDesignUtil {
                 + sampleProject + ".");
 
   }
+
+  /**
+   * Replace index shortcuts in a design object by index sequences.
+   * @param design Casava design object
+   * @param sequences map for the sequences
+   * @throws EoulsanException if the shortcut is unknown
+   */
+  public static void replaceIndexShortcutsBySequences(final CasavaDesign design,
+      final Map<String, String> sequences) throws EoulsanException {
+
+    if (design == null || sequences == null)
+      return;
+
+    for (final CasavaSample sample : design) {
+
+      if (sample.getIndex() == null)
+        throw new NullPointerException("Sample index is null for sample: "
+            + sample);
+
+      final String index = sample.getIndex().trim();
+
+      try {
+        checkIndex(index);
+      } catch (EoulsanException e) {
+
+        if (!sequences.containsKey(index.toLowerCase()))
+          throw new EoulsanException("Unknown index sequence shortcut ("
+              + index + ") for sample: " + sample);
+
+        sample.setIndex(sequences.get(index.toLowerCase()));
+      }
+
+    }
+
+  }
+  
+  //
+  // Constructor
+  //
+
+  private CasavaDesignUtil() {
+  }
+  
 }
