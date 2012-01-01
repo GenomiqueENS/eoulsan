@@ -89,6 +89,7 @@
 
 			<item name="Hadoop configuration" href="/hadoopmode.html"/>
 			<item name="AWS configuration" href="/awsmode.html"/>
+			<item name="Data repositories configuration" href="/datarepositories.html"/>
 
 			<item name="Known bugs" href="/bugs.html" />
 			<item name="Mailing list" href="/mail-lists.html" />
