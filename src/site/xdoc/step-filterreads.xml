@@ -38,7 +38,9 @@
     <section name="Filter reads step">
 
       <p>This step allow to filter input reads. Currently, this step can trim polyN read tails, remove reads with a short length
-and discard reads with bad base quality mean.</p>  
+and discard reads with bad base quality mean. Eoulsan provides a plugin system for reads filters.
+To enable a filter, a parameter for this filter must be set. If the filter takes no option, add a parameter with the name 
+of the filter as the key and an empty string for the value.</p>  
 
       <ul>
  	<li><b>Internal name</b>: filterreads</li> 
@@ -46,10 +48,22 @@ and discard reads with bad base quality mean.</p>
  	<li><b>Input</b>: Fastq or tfq file</li>
 	<li><b>Output</b>: filtered fastq or filtered tfq file (e.g. <code>filtered_reads_1.fq</code>).</li>
 
-	<br/>
+	<br/> 
         <li><b>Optional parameters</b>:</li>
 	<table>
-		<tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		
+		<tr><td>paircheck</td><td>None</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td></tr>
+		<tr><td>pairend.accept.pairend</td><td>Boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td></tr>
+		<tr><td>pairend.accept.accept.singlend</td><td>Boolean</td><td>Remove all single-end reads if false</td><td>Not set</td></tr>
+		<tr><td>illuminaid</td><td>None</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td></tr>
+		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td></tr>
+		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads</td><td>Not set</td></tr>
+	</table>
+			
+	<br/> 
+        <li><b>Compatibility parameters with Eoulsan 1.0.x</b>:</li>
+	<table>
 		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>15</td></tr>
 		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>15.0</td></tr>
 		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
