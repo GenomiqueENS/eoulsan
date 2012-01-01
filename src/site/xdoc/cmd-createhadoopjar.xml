@@ -44,7 +44,7 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh createdesign [options] fastq_files fasta_file gff_gfile
+$ eoulsan.sh createhadoopjar
 </source>
 
 </li>
@@ -60,6 +60,20 @@ $ eoulsan.sh createdesign [options] fastq_files fasta_file gff_gfile
 <source>
 $ hadoop -jar eoulsan-1.0-a19e9799.jar hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
 </source>
+
+<ul>
+         <li><b>Optional parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>-d, --description</td><td>a description</td><td>The description of the task</td></tr>
+		<tr><td>-e, --environment</td><td>a description</td><td>The description of the environment</td></tr>
+		<tr><td>--upload</td><td>none</td><td>Upload data only, no computation will be done</td></tr>
+		<tr><td>-p,- -parent-job-time</td><td>an integer</td><td>The number of seconds since the epoch (January 1th 1970) at the creation of the parent job</td></tr>
+	</table>
+        </li>
+
+</ul>
+
 
    </section>
 
