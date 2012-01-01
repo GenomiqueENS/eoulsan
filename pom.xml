@@ -12,6 +12,7 @@
 		A pipeline for NGS analysis.
 	</description>
 	<url>http://transcriptome.ens.fr/eoulsan</url>
+	<inceptionYear>2010</inceptionYear>
 
 	<properties>
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?</didyouknow>
@@ -761,14 +762,14 @@ O
 					<configLocation>checkstyle.xml</configLocation>
 				</configuration>
 			</plugin-->
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-			</plugin>
+			</plugin-->
 			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
