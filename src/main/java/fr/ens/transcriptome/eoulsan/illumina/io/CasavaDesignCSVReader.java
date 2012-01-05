@@ -30,8 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import com.google.common.base.Splitter;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -43,7 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
 
   private BufferedReader reader;
-  private final Splitter splitter = Splitter.on(',');
 
   @Override
   public CasavaDesign read() throws IOException {
@@ -56,12 +54,10 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
       if ("".equals(line))
         continue;
 
-      line = line.replaceAll("\"", "");
-
       try {
 
         // Parse the line
-        parseLine(newArrayList(splitter.split(line)));
+        parseLine(split(line));
       } catch (IOException e) {
 
         // If an error occurs while parsing add the line to the exception
@@ -73,6 +69,43 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     reader.close();
 
     return getDesign();
+  }
+
+  /**
+   * Custom splitter for Casava CSV file.
+   * @param line line to parse
+   * @return a list of String with the contents of each cell without unnecessary
+   *         quotes
+   */
+  public static final List<String> split(final String line) {
+
+    final List<String> result = newArrayList();
+
+    if (line == null)
+      return null;
+
+    final int len = line.length();
+    boolean openQuote = false;
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = line.charAt(i);
+
+      if (!openQuote && c == ',') {
+        result.add(sb.toString());
+        sb.setLength(0);
+      } else {
+        if (c == '"')
+          openQuote = !openQuote;
+        else
+          sb.append(c);
+      }
+
+    }
+    result.add(sb.toString());
+
+    return result;
   }
 
   //
