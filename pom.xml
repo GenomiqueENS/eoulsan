@@ -286,7 +286,7 @@
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.36</version>
+			<version>1.59</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -663,7 +663,7 @@ O
 								<artifactItem>
 						                  <groupId>net.sourceforge.picard</groupId>
 						                  <artifactId>sam</artifactId>
-						                  <version>1.36</version>
+						                  <version>1.59</version>
 						                  <!--type></type-->
 				                                  <!--classifier> [classifier - optional] </classifier-->
 						                  <overWrite>true</overWrite>
