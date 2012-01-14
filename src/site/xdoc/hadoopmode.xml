@@ -35,10 +35,10 @@
   
      <section name="Configure a Hadoop cluster for a debian or ubuntu node">
 
-   <p>For this tutorial, we use Cloudera Distribution for Hadoop (CDH) for the 
+   <p>For this tutorial, we use Cloudera Distribution for Hadoop 3 (CDH3) for the 
        cluster installation on an Debian/Ubuntu system. For more information about this distribution see 
-       the <a href="https://docs.cloudera.com/display/DOC/Cloudera+Documentation+Home+Page">
-       Cloudera distribution documentation</a>.</p>
+       the <a href="https://ccp.cloudera.com/display/DOC/Documentation">
+       Cloudera distribution documentation</a>. Eoulsan has been tested on Hadoop 0.20.x/1.0.x clusters.</p>
 
 
        <subsection name="Package installation">
