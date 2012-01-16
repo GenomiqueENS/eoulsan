@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document>
+	<properties>
+		<title>Change log</title>
+		<author email="jourdren@biologie.ens.fr">
+			Laurent Jourdren
+		</author>
+	</properties>
+	<body>
+
+		<!--release version="0.1" description="First release" date="2010-03-01">
+			<action dev="jourdren" type="add">
+				Import data in hdfs.
+			</action>
+			<action dev="jourdren" type="add">
+				Filter reads.
+			</action>
+			<action dev="jourdren" type="add">
+				Map reads.
+			</action>
+			<action dev="jourdren" type="add">
+                First release.
+            </action>
+		</release>
+		
+		<release version="0.2" description="" date="2010-06-16">
+            <action dev="mbernard" type="fix">
+                Fix R anadif script.
+            </action>
+        </release>
+        
+        <release version="0.3" description="" date="2010-07-07">
+            <action dev="mbernard" type="fix">
+                Check read and quality length in ReadSequence.
+            </action>
+            <action dev="mbernard" type="fix">
+                Fix R anadiff script.
+            </action>
+            <action dev="jourdren" type="add">
+                TFQ format support in distributed mode.
+            </action>
+            <action dev="jourdren" type="add">
+                Upload of compressed FASTQ files on HDFS.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix FASTQ parsing in local mode.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix trim sequence when sequence comtains only 'N' nucleotides.
+            </action>
+        </release>
+        
+         <release version="0.4" description="" date="2010-07-28">
+            <action dev="jourdren" type="fix">
+                Bad counter names in filter samples.
+            </action>
+            
+            <action dev="jourdren" type="add">
+                DESeq modules installation documentation.
+            </action>
+            
+            <action dev="mbernard" type="fix">
+                Fix R anadiff code.
+            </action>
+            
+         </release>
+         
+         <release version="0.5" description="" date="2011-01-07">
+            <action dev="jourdren" type="fix">
+                Integer division was used in mean quality computation.
+            </action>
+         </release-->
+         
+         <release version="1.0" description="" date="2011-03-11">
+            <action dev="jourdren" type="update">
+                1.0 version.
+            </action>
+         </release>
+         
+          <release version="1.0.1" description="" date="2011-03-17">
+            <action dev="jourdren" type="update">
+                Documentation update and copyrights.
+            </action>
+            <action dev="jourdren" type="fix">
+                In Expression computaion in local mode, remove SAM header from the list of accepted values.
+            </action>
+            <action dev="jourdren" type="add">
+                Reads mapper can now generate SAM header from the list of the chromosomes.
+            </action>
+            <action dev="jourdren" type="fix">
+                Keep the order the chromsomes for SAM header.
+            </action>
+            <action dev="jourdren" type="update">
+                In filtersam step in local mode, now use picard library to read and write SAM files.
+            </action>
+            <action dev="jourdren" type="update">
+                Remove unused packages.
+            </action>
+            <action dev="jourdren" type="update">
+                Major Update of API: In Step, the configure() method don't need now globals 
+                parameters. The globals parameters are now the settings.
+            </action>
+            <action dev="jourdren" type="fix">
+                In local expression computation step, now use the path of temporary directory in Settings.
+            </action>
+            <action dev="jourdren" type="fix">
+                In expression computation, the ends of the alignments was 1 base too long.
+            </action>         
+         </release>
+         
+
+         <release version="1.0.2" description="" date="2011-04-15">
+         
+            <action dev="jourdren" type="update">
+                Documentation update.
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix bug in Expression computation when chromosome is not set in annotation.
+            </action>
+         </release>
+         
+         <release version="1.0.3" description="" date="2011-04-18">
+         
+            <action dev="jourdren" type="fix">
+                Use now temporary directory defined in parameter file for genome indexing and reads mapping in local mode.
+            </action>
+         </release>
+         
+         <release version="1.0.4" description="" date="2011-04-19">
+         
+            <action dev="jourdren" type="fix">
+                Anadiff step was not found.
+            </action>
+         </release>
+         
+         <release version="1.0.5" description="" date="2011-04-26">
+         
+            <action dev="jourdren" type="fix">
+                Now use Bowtie read mapper with "--phred64-quals" as default argument.
+            </action>
+             <action dev="jourdren" type="update">
+                Rename anadiff step to diffana.
+            </action>
+            <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.6" description="" date="2011-04-28">
+         
+            <action dev="jourdren" type="update">
+                In the createdesign command : Prevent adding compressed genome 
+                to design file and overwrite existing design file. Creation of 
+                the design fails if a file in the arguments does not exist. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.7" description="" date="2011-04-28">
+         
+            <action dev="jourdren" type="update">
+                Don't start an analysis with compressed genome or annotation in the design file. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+
+         <release version="1.0.8" description="" date="2011-05-04">
+         
+            <action dev="jourdren" type="update">
+                Change the name of the keys for AWS keys in configuration file or global section of the parameter file. 
+            </action>
+            <action dev="jourdren" type="fix">
+                The path to AWS log can be omited. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.9" description="" date="2011-05-05">
+         
+            <action dev="jourdren" type="fix">
+                Bug in workflow when checking existing input files. 
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix the number of required arguments for awsexec command. 
+            </action>
+            <action dev="jourdren" type="fix">
+                In awsexec s3:// url works now like s3n:// url. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.10" description="" date="2011-05-05">
+         
+            <action dev="jourdren" type="fix">
+                Don't prevent usage of compressed annotation and genome files in distributed mode. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update documentation.
+            </action>
+         </release>
+         
+         <release version="1.0.11" description="" date="2011-05-06">
+         
+            <action dev="jourdren" type="fix">
+                Only create debug files in debug mode in distributed mode. 
+            </action>
+             <action dev="jourdren" type="update">
+                Update Quickstart documentation.
+            </action>
+         </release>
+         
+         <release version="1.1.0" description="" date="2011-06-13">
+         
+            <action dev="jourdren" type="add">
+                Add PHRED 33 offset support of fastq files. 
+                Add new column in design file (PhredOffset) to define the PHRED offset to use. 
+                Warning default PHRED offset is now 33. This default value can be set with phred.offset.default key. 
+            </action>
+             <action dev="jourdren" type="add">
+                Support for Casava 1.8 fastq id parsing.
+            </action>
+         </release>
+         
+		
+	</body>
+</document>

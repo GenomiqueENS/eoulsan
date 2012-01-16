@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Parameter file</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="The parameter file">
+
+      <p>The parameter file (usually named as <code>param.xml</code>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
+
+
+      <ul>
+        <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the parameter files.</li>
+        <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
+        <li>The <a href="#globalsection">global section</a> that contains global parameters that can be use in all the steps of the analysis.</li>
+     </ul>
+
+	<p>All the tags must be in lower case. The following source show the structure of a typical design.xml file:</p>
+
+<source>
+&lt;analysis&gt;
+    &lt;formatversion&gt;1.0&lt;/formatversion&gt;
+    &lt;name&gt;my analysis&lt;/name&gt;
+    &lt;description&gt;Demo analysis&lt;/description&gt;
+    &lt;author&gt;Laurent Jourdren&lt;/author&gt;
+
+    &lt;steps&gt;
+
+        &lt;!-- Filter reads --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;filterreads&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;lengthThreshold&lt;/name&gt;
+                                &lt;value&gt;11&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;qualityThreshold&lt;/name&gt;
+                                &lt;value&gt;12&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        &lt;!-- Map reads --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;mapreads&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;mapper&lt;/name&gt;
+                                &lt;value&gt;soap&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        &lt;!-- SAM filter --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;filtersam&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;mappingqualitythreshold&lt;/name&gt;
+                                &lt;value&gt;0&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt; 
+
+        &lt;!-- Filter samples --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;filterSamples&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;threshold&lt;/name&gt;
+                                &lt;value&gt;0&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        &lt;!-- Expression --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;expression&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;genomictype&lt;/name&gt;
+                                &lt;value&gt;exon&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        &lt;!-- Anadiff --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;anadiff&lt;/name&gt;
+                &lt;parameters/&gt;
+        &lt;/step&gt;
+
+
+    &lt;/steps&gt;
+
+    &lt;globals&gt;
+        &lt;parameter&gt;
+	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
+	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
+        &lt;/parameter&gt;
+    &lt;/globals&gt;
+
+&lt;/analysis&gt;</source>
+
+     <subsection name="Description section">
+        <a name="descsection" />
+
+	<p>The firsts tags of the parameter file allow to set some information about the file</p>
+
+        <ul>
+                <li><b>formatversion:</b> The version of the format of this parameter file.</li>
+                <li><b>name:</b> The name of this parameter file.</li>
+                <li><b>description:</b> The description of this parameter file.</li>
+                <li><b>author:</b> The author of this parameter file.</li>
+        </ul> 
+
+     </subsection>
+
+     <subsection name="Steps section">
+	<a name="stepssection" />
+
+	<p>The steps section contains the list all the steps to execute. Each step has a name and parameters. The skip attribute allow to skip a step if its value is set to true.</p>
+
+<source>
+
+    &lt;steps&gt;
+
+        &lt;!-- Filter reads --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;filterreads&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;lengthThreshold&lt;/name&gt;
+                                &lt;value&gt;11&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;qualityThreshold&lt;/name&gt;
+                                &lt;value&gt;12&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        &lt;!-- Map reads --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;mapreads&lt;/name&gt;
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;mapper&lt;/name&gt;
+                                &lt;value&gt;soap&lt;/value&gt;
+                        &lt;/parameter&gt;
+                &lt;/parameters&gt;
+        &lt;/step&gt;
+
+        ...
+
+    &lt;/steps&gt;
+
+</source>
+
+
+     </subsection>
+
+     <subsection name="Global parameter section">
+        <a name="globalsection" />
+
+	<p>The global parameter file contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in steps.</p>
+
+<source>
+    &lt;globals&gt;
+        &lt;parameter&gt;
+	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
+	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
+        &lt;/parameter&gt;
+    &lt;/globals&gt;</source>
+
+     </subsection>
+
+	<p>The global parameters override the values of the configuration file. For more information about the configuration file see the <a href="conffile.html">configuration file page</a>.</p>
+
+ 
+    </section>
+
+  </body>
+  
+</document>

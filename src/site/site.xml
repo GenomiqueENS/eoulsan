@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<project name="Eoulsan">
+
+	<publishDate position="left" format="yyyy-MM-dd HH:mm"/>
+
+	<bannerLeft>
+		<name>ENS</name>
+		<src>images/logo-ens.png</src>
+		<href>http://transcriptome.ens.fr/sgdb</href>
+	</bannerLeft>
+	<bannerRight>
+		<name>Eoulsan</name>
+		<src>images/eoulsan.png</src>
+		<href>@@@WEBSITE@@@</href>	
+	</bannerRight>
+	<body>
+		<links>
+			<item name="IBENS genomic platform"
+				href="http://transcriptome.ens.fr" />
+			<item name="École normale supérieure"
+				href="http://www.ens.fr" />
+		</links>
+
+
+		<menu name="About Eoulsan">
+			<item name="What is Eoulsan ?" href="/index.html" />
+			<item name="License" href="/license.html" />
+			<item name="People behind Eoulsan" href="/team-list.html" />
+			<item name="How to cite Eoulsan" href="/howtocite.html" />
+		</menu>
+
+		<menu name="Getting Eoulsan">
+			<item name="Downloading" href="/download.html" />
+			<item name="Installing" href="/installing.html" />
+			<item name="Release Notes" href="/changes-report.html" />
+		</menu>
+
+		<menu name="Documentation">
+
+			<item name="Quickstart Guide" href="/quickstart.html"/>
+			<item name="Design file" href="/designfile.html"/>
+			<item name="Parameter file" href="/paramfile.html"/>
+			<item name="Configuration file" href="/conffile.html"/>
+			
+			<item name="Built-in steps" href="/steps.html" collapse="true">
+				<item name="Create mapper index" href="/step-createmapperindex.html" />
+				<item name="Filter reads" href="/step-filterreads.html" />
+				<item name="Map reads" href="/step-mapreads.html" />
+				<item name="Filter alignments" href="/step-filteralignments.html" />
+				<item name="Filter and map" href="step-filterandmap.html" />
+				<item name="Filter samples" href="/step-filtersamples.html" />
+				<item name="Expression" href="/step-expression.html" />
+				<item name="Differential analysis" href="/step-diffana.html" />
+			</item>
+
+			<item name="Command line" href="/command_line.html" collapse="true">
+				<item name="Create design" href="/cmd-createdesign.html" />
+				<item name="Create Hadoop jar" href="/cmd-createhadoopjar.html" />
+				<item name="Local Exec" href="/cmd-localexec.html" />
+				<item name="Hadoop Exec" href="/cmd-hadoopexec.html" />
+				<item name="AWS Exec" href="/cmd-awsexec.html" />
+				<item name="S3 Upload" href="/cmd-s3upload.html" />
+			</item>
+
+			<item name="Hadoop configuration" href="/hadoopmode.html"/>
+			<item name="AWS configuration" href="/awsmode.html"/>
+			<item name="Data repositories configuration" href="/datarepositories.html"/>
+
+			<item name="Known bugs" href="/bugs.html" />
+			<item name="Mailing list" href="/mail-lists.html" />
+		</menu>
+
+		<menu name="Developement">
+			<item name="Downloading sources" href="/download-src.html" />
+			<item name="Compiling" href="/compiling.html"/>
+			<item name="Eoulsan community" href="/contribute.html"/>
+		</menu>
+
+		<!--menu ref="reports"/-->
+		<menu ref="reports"/>
+
+	</body>
+
+</project>

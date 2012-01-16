@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Filter alignements step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Filter alignments step">
+
+      <p>This step allow to filter the output alignments in SAM format. With this filter all the alignments that corresponds to reads with more than one hit are removed.</p>  
+
+      <ul>
+	<li><b>Internal name</b>: filtersam</li> 
+        <li><b>Available</b>: Both local and distributed mode.</li>
+        <li><b>Input</b>: alignments in SAM format (e.g. <code>mapper_results__1.sam</code>).</li>
+        <li><b>Output</b>: filtered alignments in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>).</li>	
+	<br/>
+        <li><b>Optional parameters</b>:</li>
+	<table>
+                <tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+                <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td><td>0</td></tr>
+                <!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
+        </table>
+      </ul>
+        
+      
+    </section>
+
+
+  </body>
+  
+</document>

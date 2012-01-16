@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.ens.transcriptome</groupId>
+	<artifactId>eoulsan</artifactId>
+	<packaging>jar</packaging>
+	<version>1.1-SNAPSHOT</version>
+	<name>Eoulsan</name>
+	<description>
+		A pipeline for NGS analysis.
+	</description>
+	<url>http://transcriptome.ens.fr/eoulsan</url>
+	<inceptionYear>2010</inceptionYear>
+
+	<properties>
+		<didyouknow>Did you know that eoulsan is the breton word for pipeline?</didyouknow>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<organization>
+		<name>École normale supérieure genomic platform</name>
+		<url>http://transcriptome.ens.fr/sgdb</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>jourdren</id>
+			<name>Laurent Jourdren</name>
+			<email>eoulsan 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				http://transcriptome.ens.fr/sgdb/
+			</organizationUrl>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
+			<id>bernard</id>
+			<name>Maria Bernard</name>
+			<email>eoulsan 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				http://transcriptome.ens.fr/sgdb/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
+			<id>lecrom</id>
+			<name>Stéphane Le Crom</name>
+			<email>eoulsan 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				http://transcriptome.ens.fr/sgdb/
+			</organizationUrl>
+			<roles>
+				<role>Project manager and documentation review</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Marie-agnès Dilies</name>
+			<email />
+			<url />
+			<organization>Pasteur Institute, Paris, Transcriptome and Epigenome platform</organization>
+			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
+			<roles>
+				<role>Differential analysis normalization help</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</contributor>
+		<contributor>
+			<name>Marlène Gratigny</name>
+			<email />
+			<url />
+			<organization>École normale supérieure, IBENS, Dyogen group</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article82&amp;lang=en</organizationUrl>
+			<roles>
+				<role>Testing and documentation review</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</contributor>
+		<contributor>
+			<name>Valentine Murigneux</name>
+			<email />
+			<url />
+			<organization>École normale supérieure, IBENS, Expression of eukaryotic messenger RNAs group</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article80&amp;lang=en</organizationUrl>
+			<roles>
+				<role>Testing</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</contributor>
+
+	</contributors>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License v2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+			<comments />
+		</license>
+		<license>
+			<name>GNU Lesser General Public License v3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<comments />
+		</license>
+		<license>
+			<name>CeCILL-C Licence française de logiciel libre</name>
+			<url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+			<distribution>repo</distribution>
+			<comments />
+		</license>
+	</licenses>
+
+	<mailingLists>
+		<mailingList>
+			<name>eoulsan-group</name>
+			<subscribe>http://groups.google.com/group/eoulsan/subscribe</subscribe>
+			<!--unsubscribe>http://groups.google.com/group/eoulsan/unsubscribe</unsubscribe-->
+			<archive>http://groups.google.com/group/eoulsan</archive>
+		</mailingList>
+	</mailingLists>
+
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>java.net</id>
+			<name>java.net repository</name>
+			<url>http://download.java.net/maven/1</url>
+			<layout>legacy</layout>
+		</repository>
+
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>CHiBi</id>
+			<name>CHibi repository</name>
+			<url>http://www.chibi.ubc.ca/maven2</url>
+		</repository>
+
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>ens</id>
+			<name>ENS repository</name>
+			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
+			<url>http://transcriptome.ens.fr/maven2</url>
+		</repository>
+	</repositories>
+
+	<scm>
+		<connection>scm:svn:https://eoulsan.googlecode.com/svn/trunk/</connection>
+		<tag>eoulsan-read-only</tag>
+                <!--developerConnection></developerConnection-->
+		<url>http://code.google.com/p/eoulsan/source/checkout</url>
+	</scm>
+
+	<issueManagement>
+		<system>GoogleCode</system>
+		<url>http://code.google.com/p/eoulsan/issues/list</url>
+	</issueManagement>
+
+
+	<dependencies>
+		<!--dependency>
+			<groupId>hadoop</groupId>
+			<artifactId>hadoop</artifactId>
+			<version>0.20.2</version>
+			<scope>compile</scope>
+		</dependency-->
+		<dependency>
+			<groupId>org.apache.mahout.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>0.20.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.5</version>
+			<scope>test</scope>
+		</dependency>
+		<!--dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>compile</scope>
+		</dependency-->
+		<!--dependency>
+			<groupId>commons-math</groupId>
+			<artifactId>commons-math</artifactId>
+			<version>1.1</version>
+			<scope>compile</scope>
+		</dependency!-->
+
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<!--dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+			<scope>compile</scope>
+		</dependency-->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.2.12</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<!--version>1.1.1</version-->
+			<version>1.0.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<!--dependency>
+			<groupId>rosuda</groupId>
+			<artifactId>JRclient</artifactId>
+			<version>RE817</version>
+			<scope>compile</scope>
+                </dependency-->
+		<dependency>
+			<groupId>RoSuDA</groupId>
+			<artifactId>JRclient</artifactId>
+			 <version>RF503</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.4</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r07</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.picard</groupId>
+			<artifactId>sam</artifactId>
+			<version>1.59</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<directory>target</directory>
+		<outputDirectory>target/classes</outputDirectory>
+		<finalName>${artifactId}-${version}</finalName>
+		<testOutputDirectory>target/test-classes</testOutputDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/java/files</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java/META-INF</directory>
+				<targetPath>META-INF</targetPath>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/java/files</directory>
+			</testResource>
+		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<!--version>2.4</version-->
+		 	       </plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!--skip>true</skip-->
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-ressources</id>
+           					<phase>generate-resources</phase>
+           					<configuration>
+             						<tasks>
+								<mkdir dir="${basedir}/target/generated-resources"/>
+								<buildnumber file="${basedir}/build.num"/>
+								<tstamp>
+									<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss z" />
+								</tstamp>
+
+								<manifest file="${basedir}/target/generated-resources/MANIFEST.MF">
+									<attribute name="Built-By" value="${user.name}"/>
+									<attribute name="Built-Date" value="${TODAY}"/>  
+
+									<attribute name="Specification-Title" value="${pom.name}"/>   
+									<attribute name="Specification-Version" value="${pom.version}"/>   
+									<attribute name="Specification-Vendor" value="${project.organization.name}"/>
+
+									<attribute name="Implementation-Title" value="${pom.name}"/>   
+									<attribute name="Implementation-Version" value="build${build.number}"/>   
+									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
+
+									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main"/>
+								</manifest>
+								<copy file="${basedir}/target/generated-resources/MANIFEST.MF" tofile="${basedir}/target/classes/manifest.txt"/>
+             						</tasks>
+           					</configuration>
+           					<goals>
+             						<goal>run</goal>
+           					</goals>
+         				</execution>
+					<execution>
+						<id>create-dists</id>
+           					<phase>package</phase>
+           					<configuration>
+             						<tasks unless="distrib.package.skip">
+		
+								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
+								<!-- Package binary distribution -->
+
+								<mkdir dir="${basedir}/target/dist/lib"/>
+								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" /-->
+								<copy file="${basedir}/INSTALL.txt" todir="${basedir}/target/dist/" />
+								<copy file="${basedir}/LICENSE-LGPL.txt" todir="${basedir}/target/dist/" />
+								<copy file="${basedir}/LICENSE-CeCILL-C.txt" todir="${basedir}/target/dist/" />
+
+								<copy file="${basedir}/src/main/bin/${pom.artifactId}.sh" todir="${basedir}/target/dist/" />
+								<chmod file="${basedir}/target/dist/${pom.artifactId}.sh" perm="ugo+rx" />
+
+								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar" tofile="${basedir}/target/dist/lib/${pom.artifactId}.jar" />
+								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}"/>
+
+								<!-- Package source distribution -->
+
+								<mkdir dir="${basedir}/target/dist-src/"/>
+								<copy todir="${basedir}/target/dist-src/">
+									<fileset dir="${basedir}">
+										<include name="src/**"/>
+										<include name="pom.xml"/>
+										<include name="checkstyle.xml"/>
+										<include name="checkstyle-license.txt"/>
+										<include name="COMPILING.txt"/>
+										<include name="INSTALL.txt"/>
+										<include name="LICENSE-LGPL.txt"/>
+										<include name="LICENSE-CeCILL-C.txt"/>
+									</fileset>
+								</copy>
+								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
+							</tasks>
+           					</configuration>
+           					<goals>
+             						<goal>run</goal>
+           					</goals>
+         				</execution>
+					<execution>
+						<id>compress-dists</id>
+           					<phase>package</phase>
+						<configuration>
+							<tasks unless="distrib.package.compression.skip">
+O
+								<!-- skip this task with command: mvn -Ddistrib.package.compression.skip=true -->
+								<!-- Compress dist-src -->
+
+
+								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
+									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
+										<include name="*/**"/>
+										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+									</tarfileset>
+									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
+										<include name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+									</tarfileset>
+								</tar>
+								<gzip zipfile="${basedir}/target/${artifactId}-${version}.tar.gz"
+									src="${basedir}/target/${artifactId}-${version}.tar"/>
+                                                                <bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
+                                                                        src="${basedir}/target/${artifactId}-${version}.tar"/>
+								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar" 
+									dest="${basedir}/target/tar-bin"/>
+                                                                <zip destfile="${basedir}/target/${artifactId}-${version}.zip"
+                                                                        basedir="${basedir}/target/tar-bin"/>
+
+								<!-- Compress dist-src -->
+								<tar longfile="gnu" tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
+
+									<tarfileset dir="${basedir}/target/dist-src"  mode="755" username="nobody" group="nobody">
+										<include name="*/**"/>
+									</tarfileset>
+								</tar>
+								<gzip zipfile="${basedir}/target/${artifactId}-src-${version}.tar.gz"
+									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
+								<bzip2 destfile="${basedir}/target/${artifactId}-src-${version}.tar.bz2"
+									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
+
+								<untar src="${basedir}/target/${pom.artifactId}-src-${pom.version}.tar" 
+									dest="${basedir}/target/tar-src"/>
+                                                                <zip destfile="${basedir}/target/${artifactId}-src-${version}.zip"
+                                                                        basedir="${basedir}/target/tar-src"/>
+             							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>integrate-archives-site</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks unless="distrib.package.compression.skip">
+
+								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
+
+								<mkdir dir="${basedir}/target/site" />
+
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.url}">
+									<include name="**/*.jnlp"/>
+									<include name="**/*.html"/>
+									<include name="**/*.rss"/>
+									<replacetoken>@@@WEBSITE@@@</replacetoken>
+								</replace>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.version}">
+									<include name="**/*.jnlp"/>
+									<include name="**/*.html"/>
+									<include name="**/*.rss"/>
+									<replacetoken>@@@VERSION@@@</replacetoken>
+								</replace>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.name}">
+									<include name="**/*.jnlp"/>
+									<include name="**/*.html"/>
+									<include name="**/*.rss"/>
+									<replacetoken>@@@APPNAME@@@</replacetoken>
+								</replace>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${artifactId}">
+									<include name="**/*.jnlp"/>
+									<include name="**/*.html"/>
+									<include name="**/*.rss"/>
+									<replacetoken>@@@APPNAMEMIN@@@</replacetoken>
+								</replace>
+
+								<tstamp>
+									<format property="TODAY_UK" pattern="EEE, dd MMM yyyy HH:mm:ss z" locale="en,UK"/>
+								</tstamp>
+
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${TODAY_UK}">
+									<include name="**/*.jnlp"/>
+									<include name="**/*.html"/>
+									<include name="**/*.rss"/>
+									<replacetoken>@@@DATE@@@</replacetoken>
+								</replace>
+								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.gz"
+									todir="${basedir}/target/site"/>
+								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.gz"
+									todir="${basedir}/target/site"/>
+								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.bz2"
+									todir="${basedir}/target/site"/>
+								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.bz2"
+									todir="${basedir}/target/site"/>
+								<copy file="${basedir}/target/${artifactId}-${pom.version}.zip"
+									todir="${basedir}/target/site"/>
+								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.zip"
+									todir="${basedir}/target/site"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<mode>development</mode>
+							<url>${pom.url}</url>
+						</manifestEntries>
+						<manifestFile>${basedir}/target/generated-resources/MANIFEST.MF</manifestFile>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+						                  <groupId>commons-cli</groupId>
+						                  <artifactId>commons-cli</artifactId>
+						                  <version>1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>commons-cli.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>com.amazonaws</groupId>
+						                  <artifactId>aws-java-sdk</artifactId>
+						                  <version>1.2.3</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>aws-java-sdk.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.commons</groupId>
+						                  <artifactId>commons-compress</artifactId>
+						                  <version>1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-compress.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>commons-logging</groupId>
+						                  <artifactId>commons-logging</artifactId>
+						                  <version>1.1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-logging.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.httpcomponents</groupId>
+						                  <artifactId>httpclient</artifactId>
+						                  <version>4.1.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>httpclient.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.httpcomponents</groupId>
+						                  <artifactId>httpcore</artifactId>
+						                  <version>4.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>httpcore.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>commons-codec</groupId>
+						                  <artifactId>commons-codec</artifactId>
+						                  <version>1.4</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>common-codec.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>RoSuDA</groupId>
+						                  <artifactId>JRclient</artifactId>
+						                  <version>RF503</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>JRclient.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>com.google.guava</groupId>
+						                  <artifactId>guava</artifactId>
+						                  <version>r07</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>guava.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.apache.mahout.hadoop</groupId>
+						                  <artifactId>hadoop-core</artifactId>
+						                  <version>0.20.1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
+						                  <destFileName>hadoop.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>net.sourceforge.picard</groupId>
+						                  <artifactId>sam</artifactId>
+						                  <version>1.59</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>sam.jar</destFileName>
+						                </artifactItem>
+					              </artifactItems>
+					              <!-- other configurations here -->
+				            </configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<templateFile>${basedir}/src/site/site.vm</templateFile>
+					<outputEncoding>iso-8859-1</outputEncoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<!--version>2.4</version-->
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+
+
+
+	<reporting>
+		<plugins>
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+				</configuration>
+			</plugin-->
+			<!--plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<encoding>utf-8</encoding>
+					</configuration>
+			</plugin-->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>changes-maven-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>changes-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!--version>2.9</version-->
+			</plugin>
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-docck-plugin</artifactId>
+			</plugin-->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.3.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+				</configuration>
+			</plugin-->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin-->
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens>
+					<targetJdk>1.5</targetJdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javancss-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+			</plugin-->
+			
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>ckjm-maven-plugin</artifactId>
+			</plugin-->
+
+
+			<!--plugin>
+				<groupId>net.sf.xradar</groupId>
+				<artifactId>maven-xradar-plugin</artifactId>
+				<version>1.2.2</version>
+		        </plugin-->
+
+			<!--<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+				<targetjdk>1.5</targetjdk>
+				<rulesets>
+				<ruleset>/rulesets/basic.xml</ruleset>
+				<ruleset>/rulesets/controversial.xml</ruleset>
+				</rulesets>
+				<format>xml</format>
+				<linkXref>true</linkXref>
+				<sourceEncoding>utf-8</sourceEncoding>
+				<minimumTokens>100</minimumTokens>
+				</configuration>
+				</plugin>-->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>changelog-maven-plugin</artifactId>
+				<configuration>
+					<type>date</type>
+					<dates>
+						<date implementation="java.lang.String">2008-01-01</date>
+					</dates>
+					<dateFormat>yyyy-MM-dd</dateFormat>
+				</configuration>
+			</plugin-->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+			</plugin-->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-simian-plugin</artifactId>
+				</plugin>-->
+			<!--plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-junit-report-plugin</artifactId>
+				</plugin-->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-tasklist-plugin</artifactId>
+				</plugin>-->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				</plugin>
+				<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-faq-plugin</artifactId>
+				</plugin>-->
+		</plugins>
+	</reporting>
+
+</project>

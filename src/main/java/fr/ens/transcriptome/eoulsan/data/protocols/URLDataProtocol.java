@@ -1,0 +1,106 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
+package fr.ens.transcriptome.eoulsan.data.protocols;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
+
+public abstract class URLDataProtocol extends AbstractDataProtocol {
+
+  private URLConnection createConnection(final DataFile src) throws IOException {
+
+    if (src == null)
+      throw new NullPointerException("The source is null.");
+
+    try {
+      return new URL(src.getSource()).openConnection();
+    } catch (MalformedURLException e) {
+      throw new IOException("Invalid URL: " + src);
+    }
+
+  }
+
+  @Override
+  public InputStream getData(final DataFile src) throws IOException {
+
+    return createConnection(src).getInputStream();
+  }
+
+  @Override
+  public OutputStream putData(final DataFile src) throws IOException {
+
+    return createConnection(src).getOutputStream();
+  }
+
+  @Override
+  public DataFileMetadata getMetadata(final DataFile src) throws IOException {
+
+    if (!exists(src))
+      throw new FileNotFoundException("File not found: " + src);
+
+    final URLConnection con = createConnection(src);
+
+    final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
+    result.setContentLength(con.getContentLength());
+    result.setLastModified(con.getLastModified());
+    result.setContentType(con.getContentType());
+    result.setContentEncoding(con.getContentEncoding());
+
+    return result;
+  }
+
+  @Override
+  public boolean isReadable() {
+
+    return true;
+  }
+
+  @Override
+  public boolean isWritable() {
+
+    return true;
+  }
+
+  @Override
+  public boolean exists(final DataFile src) {
+
+    try {
+      createConnection(src);
+    } catch (IOException e) {
+      return false;
+    }
+
+    return false;
+  }
+
+}
