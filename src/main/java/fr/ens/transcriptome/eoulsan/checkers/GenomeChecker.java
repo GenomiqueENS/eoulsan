@@ -78,6 +78,12 @@ public class GenomeChecker implements Checker {
     if (samples.size() == 0)
       throw new EoulsanException("No samples found in design");
 
+    // If genome has already been checked do not launch check another time
+    if (checkInfo.contains(INFO_CHROMOSOME)) {
+      context.getLogger().info("Genome check has already been done");
+      return true;
+    }
+
     final Sample s = samples.get(0);
 
     final InputStream is;
