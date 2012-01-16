@@ -59,4 +59,14 @@ public class CheckStore {
     return this.info.get(key);
   }
 
+  /**
+   * Test if a data exists.
+   * @param key key of the data to test
+   * @return true if data exists
+   */
+  public boolean contains(final String key) {
+
+    return this.info.containsKey(key);
+  }
+
 }
