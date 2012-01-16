@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNME
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.GOOD_QUALITY_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.UNMAP_READS_COUNTER;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -154,7 +155,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
             INPUT_ALIGNMENTS_COUNTER.counterName(), 1);
 
         if (samRecord.getReadUnmappedFlag()) {
-          reporter.incrCounter(COUNTER_GROUP, "unmapped reads", 1);
+          reporter.incrCounter(COUNTER_GROUP,
+              UNMAP_READS_COUNTER.counterName(), 1);
         } else {
 
           if (samRecord.getMappingQuality() >= mappingQualityThreshold) {
