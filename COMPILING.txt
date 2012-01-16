@@ -1,7 +1,7 @@
 Building Eoulsan from source
 ---------------------------
 
-  Teolenn requires to be built from source. Maven is project management from
+  Eoulsan requires to be built from source. Maven is project management from
 the Apache Software Foundation.
 
   You can download it at the following URL:
