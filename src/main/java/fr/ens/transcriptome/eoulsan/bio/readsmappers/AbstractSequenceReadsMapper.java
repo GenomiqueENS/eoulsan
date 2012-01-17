@@ -61,7 +61,17 @@ public abstract class AbstractSequenceReadsMapper implements
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();
 
+  @Override
+  public boolean isIndexGeneratorOnly() {
+    return false;
+  }
+
   protected abstract String getIndexerExecutable();
+
+  protected String[] getIndexerExecutables() {
+
+    return new String[] {getIndexerExecutable()};
+  }
 
   protected abstract String getIndexerCommand(final String indexerPathname,
       final String genomePathname);
@@ -213,7 +223,7 @@ public abstract class AbstractSequenceReadsMapper implements
     final String indexerPath;
 
     synchronized (SYNC) {
-      indexerPath = install(getIndexerExecutable());
+      indexerPath = install(getIndexerExecutables());
     }
 
     if (!outputDir.exists() && !outputDir.mkdir()) {
@@ -635,6 +645,25 @@ public abstract class AbstractSequenceReadsMapper implements
   protected int sh(final String cmd) throws IOException {
 
     return ProcessUtils.sh(cmd, getTempDirectory());
+  }
+
+  /**
+   * Install a list of binaries bundled in the jar in a temporary directory.
+   * This method automatically use the temporary directory defined in the object
+   * for the path where to install the binary.
+   * @param binaryFilenames programs to install * @return a string with the path
+   *          of the last installed binary
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected String install(final String[] binaryFilenames) throws IOException {
+
+    String result = null;
+
+    if (binaryFilenames != null)
+      for (String binaryFilename : binaryFilenames)
+        result = install(binaryFilename);
+
+    return result;
   }
 
   /**

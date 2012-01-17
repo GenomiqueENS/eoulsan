@@ -192,6 +192,12 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       throw new EoulsanException("Unknown mapper: " + mapperName);
     }
 
+    if (this.mapper.isIndexGeneratorOnly()) {
+      throw new EoulsanException(
+          "The selected mapper can only be used for index generation: "
+              + mapperName);
+    }
+
     if (this.mappingQualityThreshold == -1) {
       throw new EoulsanException("Mapping quality theshold not set.");
     }

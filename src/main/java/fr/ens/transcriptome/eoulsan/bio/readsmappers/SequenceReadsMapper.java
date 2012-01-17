@@ -48,6 +48,12 @@ public interface SequenceReadsMapper {
    */
   String getMapperVersion();
 
+  /**
+   * Test if the mapper can only be use for generate the mapper index.
+   * @return true if the mapper is a fake mapper
+   */
+  boolean isIndexGeneratorOnly();
+
   //
   // Index creation methods
   //
