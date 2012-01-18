@@ -54,6 +54,12 @@ public interface SequenceReadsMapper {
    */
   boolean isIndexGeneratorOnly();
 
+  /**
+   * Test if the mapping can be split for parallelization. 
+   * @return true if the mapping can be split for parallelization
+   */
+  boolean isSplitsAllowed();
+
   //
   // Index creation methods
   //

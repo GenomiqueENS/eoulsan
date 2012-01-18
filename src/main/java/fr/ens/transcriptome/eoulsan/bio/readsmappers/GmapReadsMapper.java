@@ -56,6 +56,12 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public boolean isSplitsAllowed() {
+
+    return false;
+  }
+  
+  @Override
   public boolean isIndexGeneratorOnly() {
     return true;
   }
