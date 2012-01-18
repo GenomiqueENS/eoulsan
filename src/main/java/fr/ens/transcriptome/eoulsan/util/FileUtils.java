@@ -29,6 +29,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -671,25 +672,64 @@ public class FileUtils {
     final ZipOutputStream out =
         new ZipOutputStream(new FileOutputStream(zipFile));
 
-    BufferedInputStream origin = null;
-    final File[] filesToAdd = directory.listFiles();
+    zipFolder(directory, "", out);
 
-    final byte data[] = new byte[DEFAULT_BUFFER_SIZE];
-
-    for (File f : filesToAdd) {
-
-      out.putNextEntry(new ZipEntry(f.getName()));
-      final FileInputStream fi = new FileInputStream(f);
-
-      origin = new BufferedInputStream(fi, DEFAULT_BUFFER_SIZE);
-
-      int count;
-      while ((count = origin.read(data, 0, DEFAULT_BUFFER_SIZE)) != -1)
-        out.write(data, 0, count);
-
-      origin.close();
-    }
     out.close();
+  }
+
+  private static void zipFolder(final File directory, final String path,
+      final ZipOutputStream out) throws IOException {
+
+    // Add directory even empty
+    if (!"".equals(path)) {
+      out.putNextEntry(new ZipEntry(path));
+    }
+
+    // Get the list of files to add
+    final File[] filesToAdd = directory.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(final File file) {
+        return file.isFile();
+      }
+    });
+
+    // Add the files
+    if (filesToAdd != null) {
+
+      final byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+      BufferedInputStream origin = null;
+
+      for (final File f : filesToAdd) {
+        out.putNextEntry(new ZipEntry(path + f.getName()));
+        final FileInputStream fi = new FileInputStream(f);
+
+        origin = new BufferedInputStream(fi, DEFAULT_BUFFER_SIZE);
+
+        int count;
+        while ((count = origin.read(data, 0, DEFAULT_BUFFER_SIZE)) != -1)
+          out.write(data, 0, count);
+
+        origin.close();
+      }
+    }
+
+    // Get the list of directories to add
+    final File[] directoriesToAdd = directory.listFiles(new FileFilter() {
+      @Override
+      public boolean accept(final File file) {
+
+        return file.isDirectory();
+      }
+    });
+
+    // Add directories
+    if (directoriesToAdd != null) {
+      for (final File dir : directoriesToAdd) {
+        zipFolder(dir, path + File.separator + dir.getName() + File.separator,
+            out);
+      }
+    }
+
   }
 
   /**
@@ -718,18 +758,38 @@ public class FileUtils {
 
     while ((entry = zis.getNextEntry()) != null) {
 
-      int count;
-      byte data[] = new byte[DEFAULT_BUFFER_SIZE];
-      // write the files to the disk
-      FileOutputStream fos =
-          new FileOutputStream(new File(outputDirectory, entry.getName()));
-      dest = new BufferedOutputStream(fos, DEFAULT_BUFFER_SIZE);
+      final File newFile =
+          new File(outputDirectory + File.separator + entry.getName());
 
-      while ((count = zis.read(data, 0, DEFAULT_BUFFER_SIZE)) != -1)
-        dest.write(data, 0, count);
+      if (entry.isDirectory()) {
 
-      dest.flush();
-      dest.close();
+        if (!newFile.exists()) {
+          if (!newFile.mkdirs()) {
+            throw new IOException("Cannot create directory: " + newFile);
+          }
+        }
+
+      } else {
+
+        final File parentFile = newFile.getParentFile();
+        if (!parentFile.exists()) {
+          if (!parentFile.mkdirs()) {
+            throw new IOException("Cannot create directory: " + parentFile);
+          }
+        }
+
+        int count;
+        byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+        // write the files to the disk
+        FileOutputStream fos = new FileOutputStream(newFile);
+        dest = new BufferedOutputStream(fos, DEFAULT_BUFFER_SIZE);
+
+        while ((count = zis.read(data, 0, DEFAULT_BUFFER_SIZE)) != -1)
+          dest.write(data, 0, count);
+
+        dest.flush();
+        dest.close();
+      }
     }
     zis.close();
   }
