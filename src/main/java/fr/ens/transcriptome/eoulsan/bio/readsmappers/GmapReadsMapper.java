@@ -105,7 +105,7 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.BOWTIE_INDEX_ZIP;
+    return DataFormats.GMAP_INDEX_ZIP;
   }
 
   @Override
