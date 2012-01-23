@@ -704,6 +704,14 @@ O
 
 	<reporting>
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<outputEncoding>utf-8</outputEncoding>
+				</configuration>
+			</plugin>
 			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -711,12 +719,12 @@ O
 					<configLocation>checkstyle.xml</configLocation>
 				</configuration>
 			</plugin-->
-			<!--plugin>
+			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
 						<encoding>utf-8</encoding>
 					</configuration>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changes-maven-plugin</artifactId>
@@ -728,10 +736,10 @@ O
 					</reportSet>
 				</reportSets>
 			</plugin>
-			<!--plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
