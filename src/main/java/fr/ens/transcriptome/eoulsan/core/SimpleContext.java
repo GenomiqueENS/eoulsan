@@ -27,11 +27,13 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -50,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define an simple ExecutorInfo.
@@ -75,6 +78,9 @@ public final class SimpleContext implements Context {
   private String commandAuthor = "";
   private WorkflowDescription workflow;
   private Step step;
+  private Set<DataFormat> stepInputDataFormats;
+  private Set<DataFormat> stepOutputDataFormats;
+
   private long contextCreationTime;
 
   private final Map<DataType, String> dataTypesFields = Maps.newHashMap();
@@ -308,6 +314,21 @@ public final class SimpleContext implements Context {
   void setStep(final Step step) {
 
     this.step = step;
+
+    if (step == null) {
+
+      this.stepInputDataFormats = null;
+      this.stepOutputDataFormats = null;
+    } else {
+
+      final DataFormat[] in = step.getInputFormats();
+      final DataFormat[] out = step.getOutputFormats();
+
+      this.stepInputDataFormats =
+          in == null ? null : Utils.newHashSet(Arrays.asList(in));
+      this.stepOutputDataFormats =
+          out == null ? null : Utils.newHashSet(Arrays.asList(out));
+    }
   }
 
   /**
@@ -388,25 +409,115 @@ public final class SimpleContext implements Context {
     return logger;
   }
 
-  @Override
-  public String getDataFilename(final DataFormat df, final Sample sample) {
+  private void checkInputDataFormat(final DataFormat df) {
 
-    final DataFile file = getDataFile(df, sample);
+    if (this.step == null)
+      return;
 
-    return file == null ? null : file.getSource();
+    if (df == null)
+      throw new EoulsanRuntimeException("The format is null");
+
+    if (this.stepInputDataFormats == null
+        || !this.stepInputDataFormats.contains(df))
+      throw new EoulsanRuntimeException("The "
+          + df.getFormatName() + " format is not an input format of the step "
+          + this.step.getName());
+  }
+
+  private void checkOutputDataFormat(final DataFormat df) {
+
+    if (this.step == null)
+      return;
+
+    if (df == null)
+      throw new EoulsanRuntimeException("The format is null");
+
+    if (this.stepOutputDataFormats == null
+        || !this.stepOutputDataFormats.contains(df))
+      throw new EoulsanRuntimeException("The "
+          + df.getFormatName() + " format is not an output format of the step "
+          + this.step.getName());
   }
 
   @Override
-  public String getDataFilename(final DataFormat df, final Sample sample,
+  public String getInputDataFilename(final DataFormat df, final Sample sample) {
+
+    checkInputDataFormat(df);
+    return getOtherDataFilename(df, sample);
+  }
+
+  @Override
+  public String getInputDataFilename(final DataFormat df, final Sample sample,
       final int fileIndex) {
 
-    final DataFile file = getDataFile(df, sample, fileIndex);
+    checkInputDataFormat(df);
+    return getOtherDataFilename(df, sample, fileIndex);
+  }
+
+  @Override
+  public DataFile getInputDataFile(final DataFormat df, final Sample sample) {
+
+    checkInputDataFormat(df);
+    return getOtherDataFile(df, sample);
+  }
+
+  @Override
+  public DataFile getInputDataFile(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    checkInputDataFormat(df);
+    return getOtherDataFile(df, sample, fileIndex);
+  }
+
+  @Override
+  public String getOutputDataFilename(final DataFormat df, final Sample sample) {
+
+    checkOutputDataFormat(df);
+    return getOtherDataFilename(df, sample);
+  }
+
+  @Override
+  public String getOutputDataFilename(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    checkOutputDataFormat(df);
+    return getOtherDataFilename(df, sample, fileIndex);
+  }
+
+  @Override
+  public DataFile getOutputDataFile(final DataFormat df, final Sample sample) {
+
+    checkOutputDataFormat(df);
+    return getOtherDataFile(df, sample);
+  }
+
+  @Override
+  public DataFile getOutputDataFile(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    checkOutputDataFormat(df);
+    return getOtherDataFile(df, sample, fileIndex);
+  }
+
+  @Override
+  public String getOtherDataFilename(final DataFormat df, final Sample sample) {
+
+    final DataFile file = getOtherDataFile(df, sample);
 
     return file == null ? null : file.getSource();
   }
 
   @Override
-  public DataFile getDataFile(final DataFormat df, final Sample sample) {
+  public String getOtherDataFilename(final DataFormat df, final Sample sample,
+      final int fileIndex) {
+
+    final DataFile file = getOtherDataFile(df, sample, fileIndex);
+
+    return file == null ? null : file.getSource();
+  }
+
+  @Override
+  public DataFile getOtherDataFile(final DataFormat df, final Sample sample) {
 
     if (df == null || sample == null)
       return null;
@@ -426,7 +537,7 @@ public final class SimpleContext implements Context {
   }
 
   @Override
-  public DataFile getDataFile(final DataFormat df, final Sample sample,
+  public DataFile getOtherDataFile(final DataFormat df, final Sample sample,
       final int fileIndex) {
 
     if (df == null || sample == null || fileIndex < 0)
@@ -575,7 +686,7 @@ public final class SimpleContext implements Context {
   }
 
   @Override
-  public DataFile getExistingDataFile(final DataFormat[] formats,
+  public DataFile getExistingInputDataFile(final DataFormat[] formats,
       final Sample sample) {
 
     if (formats == null)
@@ -586,7 +697,7 @@ public final class SimpleContext implements Context {
       if (df == null)
         continue;
 
-      final DataFile file = getDataFile(df, sample);
+      final DataFile file = getOtherDataFile(df, sample);
 
       if (file != null && file.exists())
         return file;
@@ -597,7 +708,7 @@ public final class SimpleContext implements Context {
   }
 
   @Override
-  public DataFile getExistingDataFile(final DataFormat[] formats,
+  public DataFile getExistingInputDataFile(final DataFormat[] formats,
       final Sample sample, final int fileIndex) {
 
     if (formats == null)
@@ -608,7 +719,7 @@ public final class SimpleContext implements Context {
       if (df == null)
         continue;
 
-      final DataFile file = getDataFile(df, sample, fileIndex);
+      final DataFile file = getOtherDataFile(df, sample, fileIndex);
 
       if (file != null && file.exists())
         return file;
@@ -622,7 +733,7 @@ public final class SimpleContext implements Context {
   public InputStream getInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    final DataFile file = getDataFile(df, sample);
+    final DataFile file = getOtherDataFile(df, sample);
 
     if (file == null)
       return null;
@@ -634,7 +745,7 @@ public final class SimpleContext implements Context {
   public InputStream getInputStream(final DataFormat df, final Sample sample,
       final int fileIndex) throws IOException {
 
-    final DataFile file = getDataFile(df, sample, fileIndex);
+    final DataFile file = getOtherDataFile(df, sample, fileIndex);
 
     if (file == null)
       return null;
@@ -646,7 +757,7 @@ public final class SimpleContext implements Context {
   public InputStream getRawInputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    final DataFile file = getDataFile(df, sample);
+    final DataFile file = getOtherDataFile(df, sample);
 
     return file == null ? null : file.rawOpen();
   }
@@ -655,7 +766,7 @@ public final class SimpleContext implements Context {
   public InputStream getRawInputStream(final DataFormat df,
       final Sample sample, final int fileIndex) throws IOException {
 
-    final DataFile file = getDataFile(df, sample, fileIndex);
+    final DataFile file = getOtherDataFile(df, sample, fileIndex);
 
     return file == null ? null : file.rawOpen();
   }
@@ -664,7 +775,7 @@ public final class SimpleContext implements Context {
   public OutputStream getOutputStream(final DataFormat df, final Sample sample)
       throws IOException {
 
-    final DataFile file = getDataFile(df, sample);
+    final DataFile file = getOtherDataFile(df, sample);
 
     return file == null ? null : file.create();
   }
@@ -673,7 +784,7 @@ public final class SimpleContext implements Context {
   public OutputStream getOutputStream(final DataFormat df, final Sample sample,
       final int fileIndex) throws IOException {
 
-    final DataFile file = getDataFile(df, sample, fileIndex);
+    final DataFile file = getOtherDataFile(df, sample, fileIndex);
 
     return file == null ? null : file.create();
   }

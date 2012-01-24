@@ -101,7 +101,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     final Path inputPath =
-        new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource());
+        new Path(context.getInputDataFile(MAPPER_RESULTS_SAM, sample)
+            .getSource());
 
     // Set threshold quality
     jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
@@ -109,7 +110,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample)
+            .getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -152,8 +154,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
-            sample).getSource()));
+        new Path(context.getOutputDataFile(
+            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }

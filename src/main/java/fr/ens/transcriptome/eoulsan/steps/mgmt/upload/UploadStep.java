@@ -265,7 +265,7 @@ public abstract class UploadStep extends AbstractStep {
 
           for (DataFormat df : formats)
             if (df.getMaxFilesCount() == 1) {
-              final DataFile inFile = context.getDataFile(df, sample);
+              final DataFile inFile = context.getInputDataFile(df, sample);
               final DataFile outFile = getUploadedDataFile(inFile, sample, df);
               result.put(inFile, outFile);
             } else {
@@ -275,10 +275,10 @@ public abstract class UploadStep extends AbstractStep {
 
               do {
 
-                DataFile file = context.getDataFile(df, sample, i);
+                DataFile file = context.getOtherDataFile(df, sample, i);
                 exists = file.exists();
                 if (exists) {
-                  final DataFile inFile = context.getDataFile(df, sample, i);
+                  final DataFile inFile = context.getOtherDataFile(df, sample, i);
                   final DataFile outFile =
                       getUploadedDataFile(inFile, sample, df, i);
                   result.put(inFile, outFile);

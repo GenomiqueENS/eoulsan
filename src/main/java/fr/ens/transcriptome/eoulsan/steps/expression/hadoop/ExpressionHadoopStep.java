@@ -97,12 +97,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // final JobConf conf = new JobConf(ExpressionHadoopStep.class);
 
     final Path inputPath =
-        new Path(context.getDataFilename(
+        new Path(context.getInputDataFilename(
             DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample));
 
     // Get annotation DataFile
     final DataFile annotationDataFile =
-        context.getDataFile(DataFormats.ANNOTATION_GFF, sample);
+        context.getInputDataFile(DataFormats.ANNOTATION_GFF, sample);
 
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
@@ -116,10 +116,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
-        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
-        new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+        new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
     LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
@@ -164,7 +164,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
     FileOutputFormat.setOutputPath(job,
         new Path(context
-            .getDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
+            .getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
             .getSourceWithoutExtension()
             + ".tmp"));
 
@@ -223,18 +223,18 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load the annotation index
       final Path exonsIndexPath =
-          new Path(context.getDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+          new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
       fetc.loadPreResults(
-          new DataFile(context.getDataFile(EXPRESSION_RESULTS_TXT, sample)
+          new DataFile(context.getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
               .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));

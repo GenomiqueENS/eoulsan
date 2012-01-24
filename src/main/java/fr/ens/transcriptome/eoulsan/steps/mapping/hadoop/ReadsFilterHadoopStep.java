@@ -133,7 +133,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Get input DataFile
     final DataFile inputDataFile =
-        context.getExistingDataFile(new DataFormat[] {READS_FASTQ, READS_TFQ},
+        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ, READS_TFQ},
             sample);
 
     if (inputDataFile == null)
@@ -193,7 +193,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getDataFile(DataFormats.FILTERED_READS_TFQ, sample)
+        new Path(context.getOutputDataFile(DataFormats.FILTERED_READS_TFQ, sample)
             .getSource()));
 
     return job;

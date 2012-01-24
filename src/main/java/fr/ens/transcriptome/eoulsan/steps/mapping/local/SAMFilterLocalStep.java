@@ -66,7 +66,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
       if (design.getSampleCount() > 0)
         genomeDescription =
-            GenomeDescription.load(context.getDataFile(
+            GenomeDescription.load(context.getInputDataFile(
                 DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
       else
         genomeDescription = null;
@@ -133,16 +133,16 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Get reader
     final SAMFileReader inputSam =
-        new SAMFileReader(context.getDataFile(DataFormats.MAPPER_RESULTS_SAM,
-            sample).open());
+        new SAMFileReader(context.getInputDataFile(
+            DataFormats.MAPPER_RESULTS_SAM, sample).open());
 
     // Get Writer
     final SAMFileWriter outputSam =
-        new SAMFileWriterFactory().makeSAMWriter(inputSam.getFileHeader(),
+        new SAMFileWriterFactory().makeSAMWriter(
+            inputSam.getFileHeader(),
             false,
-            context
-                .getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample)
-                .create());
+            context.getInputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+                sample).create());
 
     String lastId = null;
     SAMRecord lastRecord = null;
@@ -228,7 +228,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
         "Filter SAM files ("
             + sample.getName()
             + ", "
-            + context.getDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
+            + context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
                 .getName() + ")");
   }
 

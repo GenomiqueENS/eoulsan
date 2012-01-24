@@ -240,7 +240,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return;
     }
 
-    final DataFile inFile = context.getDataFile(df, sample);
+    final DataFile inFile = context.getOtherDataFile(df, sample);
 
     if (!inFile.exists()) {
       return;
