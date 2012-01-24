@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
 public interface DataFormat {
@@ -59,14 +58,6 @@ public interface DataFormat {
    * @return an array of strings with the extension of the DataType
    */
   String[] getExtensions();
-
-  /**
-   * Get the source path for a DataType from a sample object.
-   * @param sample sample to use to create the source
-   * @param ExecInfo information object
-   * @return the source for the DataType as a String
-   */
-  String getSourcePathForSample(final Sample sample, final String ExecInfo);
 
   /**
    * Test if a generator is available for this DataFormat.
