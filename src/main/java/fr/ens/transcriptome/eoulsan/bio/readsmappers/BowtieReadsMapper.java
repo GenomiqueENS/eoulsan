@@ -59,6 +59,12 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public boolean isSplitsAllowed() {
+
+    return true;
+  }
+
+  @Override
   public String getMapperVersion() {
 
     try {

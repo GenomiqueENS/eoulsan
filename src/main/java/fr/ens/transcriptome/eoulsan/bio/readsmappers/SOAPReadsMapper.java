@@ -58,6 +58,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
     return "SOAP";
   }
+  
+  @Override
+  public boolean isSplitsAllowed() {
+
+    return true;
+  }
 
   @Override
   public String getMapperVersion() {

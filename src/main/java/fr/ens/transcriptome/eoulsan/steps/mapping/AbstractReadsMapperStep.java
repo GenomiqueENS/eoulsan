@@ -139,6 +139,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       throw new EoulsanException("Unknown mapper: " + mapperName);
     }
 
+    if (this.mapper.isIndexGeneratorOnly()) {
+      throw new EoulsanException(
+          "The selected mapper can only be used for index generation: "
+              + mapperName);
+    }
+
     // Log Step parameters
     LOGGER.info("In "
         + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "

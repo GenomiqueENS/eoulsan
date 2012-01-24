@@ -5,6 +5,7 @@ fr.ens.transcriptome.eoulsan.data.FilteredReadsTfqDataFormat
 fr.ens.transcriptome.eoulsan.data.SOAPIndexZipDataFormat
 fr.ens.transcriptome.eoulsan.data.BWAIndexZipDataFormat
 fr.ens.transcriptome.eoulsan.data.BowtieIndexZipDataFormat
+fr.ens.transcriptome.eoulsan.data.GmapIndexZipDataFormat
 fr.ens.transcriptome.eoulsan.data.FilteredMapperResultsSamDataFormat
 fr.ens.transcriptome.eoulsan.data.FilteredMapperResultsBamDataFormat
 fr.ens.transcriptome.eoulsan.data.MapperResultsSamDataFormat

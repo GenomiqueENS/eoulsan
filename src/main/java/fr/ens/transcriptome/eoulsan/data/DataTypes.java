@@ -144,6 +144,28 @@ public class DataTypes {
     }
   };
 
+  /** Gmap index data type. */
+  public static final DataType GMAP_INDEX = new AbstractDataType() {
+
+    @Override
+    public String getName() {
+
+      return "gmap_index";
+    }
+
+    @Override
+    public String getPrefix() {
+
+      return "gmap_index_";
+    }
+
+    @Override
+    public boolean isOneFilePerAnalysis() {
+
+      return true;
+    }
+  };
+
   /** Filtered Mapper results. */
   public static final DataType FILTERED_MAPPER_RESULTS =
       new AbstractDataType() {

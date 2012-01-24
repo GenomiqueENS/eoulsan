@@ -48,6 +48,18 @@ public interface SequenceReadsMapper {
    */
   String getMapperVersion();
 
+  /**
+   * Test if the mapper can only be use for generate the mapper index.
+   * @return true if the mapper is a fake mapper
+   */
+  boolean isIndexGeneratorOnly();
+
+  /**
+   * Test if the mapping can be split for parallelization. 
+   * @return true if the mapping can be split for parallelization
+   */
+  boolean isSplitsAllowed();
+
   //
   // Index creation methods
   //

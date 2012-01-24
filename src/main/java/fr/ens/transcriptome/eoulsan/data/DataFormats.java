@@ -61,6 +61,10 @@ public class DataFormats {
   public static final DataFormat BOWTIE_INDEX_ZIP = resgistry
       .getDataFormatFromName(BowtieIndexZipDataFormat.FORMAT_NAME);
 
+  /** Gmap index data format. */
+  public static final DataFormat GMAP_INDEX_ZIP = resgistry
+      .getDataFormatFromName(GmapIndexZipDataFormat.FORMAT_NAME);
+
   /** Filtered SAM data format. */
   public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = resgistry
       .getDataFormatFromName(FilteredMapperResultsSamDataFormat.FORMAT_NAME);
