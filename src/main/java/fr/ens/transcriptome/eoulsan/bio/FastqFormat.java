@@ -271,6 +271,25 @@ public enum FastqFormat {
   }
 
   /**
+   * Convert a quality score string from a format to another.
+   * @param quality quality string to convert
+   * @param format output format
+   * @return the converted quality string
+   */
+  public String convertTo(final String quality, final FastqFormat format) {
+
+    if (quality == null)
+      return null;
+
+    final StringBuilder sb = new StringBuilder(quality.length());
+
+    for (char c : quality.toCharArray())
+      sb.append(convertTo(c, format));
+
+    return sb.toString();
+  }
+
+  /**
    * Convert a quality score character from a format to another.
    * @param character character to convert
    * @param format output format

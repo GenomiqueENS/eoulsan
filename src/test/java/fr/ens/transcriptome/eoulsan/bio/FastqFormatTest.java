@@ -452,6 +452,16 @@ public class FastqFormatTest {
 
     assertEquals(';',
         FastqFormat.FASTQ_SANGER.convertTo('!', FastqFormat.FASTQ_SOLEXA));
+
+    assertNull(FastqFormat.FASTQ_SANGER.convertTo(null,
+        FastqFormat.FASTQ_SOLEXA));
+
+    assertEquals(";",
+        FastqFormat.FASTQ_SANGER.convertTo("!", FastqFormat.FASTQ_SOLEXA));
+
+    assertEquals(";;;;",
+        FastqFormat.FASTQ_SANGER.convertTo("!!!!", FastqFormat.FASTQ_SOLEXA));
+
   }
 
   @Test
