@@ -24,6 +24,8 @@ package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define a annotation protocol.
@@ -48,6 +50,12 @@ public class AnnotationDataProtocol extends StorageDataProtocol {
   protected String getBasePath() {
 
     return EoulsanRuntime.getSettings().getAnnotationStoragePath();
+  }
+
+  @Override
+  protected DataFormat getDataFormat() {
+
+    return DataFormats.ANNOTATION_GFF;
   }
 
 }

@@ -28,6 +28,7 @@ import java.io.OutputStream;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
@@ -40,6 +41,8 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   protected abstract String getExtension();
 
   protected abstract String getBasePath();
+
+  protected abstract DataFormat getDataFormat();
 
   @Override
   public InputStream getData(final DataFile src) throws IOException {
@@ -73,7 +76,56 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    return internalDataFile(src).getMetaData();
+    final DataFileMetadata md = internalDataFile(src).getMetaData();
+    final StorageDataProtocol protocol = this;
+
+    if (md == null)
+      return null;
+
+    return new DataFileMetadata() {
+
+      @Override
+      public boolean isDir() {
+
+        return md.isDir();
+      }
+
+      @Override
+      public long getLastModified() {
+
+        return md.getLastModified();
+      }
+
+      @Override
+      public DataFormat getDataFormat() {
+
+        return protocol.getDataFormat();
+      }
+
+      @Override
+      public String getContentType() {
+
+        return getDataFormat().getContentType();
+      }
+
+      @Override
+      public String getContentMD5() {
+
+        return md.getContentMD5();
+      }
+
+      @Override
+      public long getContentLength() {
+
+        return md.getContentLength();
+      }
+
+      @Override
+      public String getContentEncoding() {
+
+        return md.getContentEncoding();
+      }
+    };
   }
 
   @Override
@@ -106,6 +158,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
     for (CompressionType c : CompressionType.values()) {
 
       final DataFile f = new DataFile(baseDir, filename + c.getExtension());
+
       if (f.exists())
         return f;
     }
