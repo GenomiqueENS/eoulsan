@@ -233,69 +233,33 @@ public class S3DataProtocol implements DataProtocol {
       final long start = System.currentTimeMillis();
       AmazonClientException ace = null;
 
-      if (multipartUpload) {
+      do {
 
-        LOGGER.info("Use multipart upload");
-
-        final Transfer myUpload;
-
-        if (file != null)
-          myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), file);
-        else
-          myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
+        tryCount++;
 
         try {
 
-          while (myUpload.isDone() == false) {
+          if (multipartUpload)
+            multipartUpload(md);
+          else
+            standardUpload(md);
 
-            Thread.sleep(500);
-          }
-          if (myUpload.getState() != TransferState.Completed)
-            throw new IOException("Transfer not completed corrently. Status: "
-                + myUpload.getState());
-
-        } catch (InterruptedException e) {
-          LOGGER.warning(e.getMessage());
-          throw new IOException(e.getMessage());
-        }
-
-        uploadOk = true;
-      } else
-
-        do {
-
-          tryCount++;
+          uploadOk = true;
+          
+        } catch (AmazonClientException e) {
+          ace = e;
+          LOGGER.warning("Error while uploading "
+              + this.s3url + " (Attempt " + tryCount + "): " + e.getMessage());
 
           try {
+            Thread.sleep(10000);
+          } catch (InterruptedException e1) {
 
-            final PutObjectRequest or;
-
-            if (file != null)
-              or =
-                  new PutObjectRequest(s3url.bucket, s3url.getFilePath(), file);
-            else
-              or =
-                  new PutObjectRequest(s3url.bucket, s3url.getFilePath(),
-                      this.is, md);
-
-            getS3().putObject(or);
-            uploadOk = true;
-          } catch (AmazonClientException e) {
-            ace = e;
-            LOGGER
-                .warning("Error while uploading "
-                    + this.s3url + " (Attempt " + tryCount + "): "
-                    + e.getMessage());
-
-            try {
-              Thread.sleep(10000);
-            } catch (InterruptedException e1) {
-
-              e1.printStackTrace();
-            }
+            e1.printStackTrace();
           }
+        }
 
-        } while (!uploadOk && tryCount < 3);
+      } while (!uploadOk && tryCount < 3);
 
       if (!uploadOk)
         throw new IOException(ace.getMessage());
@@ -309,6 +273,47 @@ public class S3DataProtocol implements DataProtocol {
           + StringUtils.toTimeHumanReadable(duration) + " ms. (" + speedKiB
           + " KiB/s)");
 
+    }
+
+    private void multipartUpload(final ObjectMetadata md) {
+
+      LOGGER.info("Use multipart upload");
+
+      final Transfer myUpload;
+
+      if (file != null)
+        myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), file);
+      else
+        myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
+
+      try {
+
+        while (myUpload.isDone() == false) {
+
+          Thread.sleep(500);
+        }
+        if (myUpload.getState() != TransferState.Completed)
+          throw new AmazonClientException(
+              "Transfer not completed corrently. Status: "
+                  + myUpload.getState());
+
+      } catch (InterruptedException e) {
+        LOGGER.warning(e.getMessage());
+        throw new AmazonClientException(e.getMessage());
+      }
+    }
+
+    private void standardUpload(final ObjectMetadata md) {
+
+      final PutObjectRequest or;
+
+      if (file != null)
+        or = new PutObjectRequest(s3url.bucket, s3url.getFilePath(), file);
+      else
+        or =
+            new PutObjectRequest(s3url.bucket, s3url.getFilePath(), this.is, md);
+
+      getS3().putObject(or);
     }
 
     //
