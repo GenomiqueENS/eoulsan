@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.compressionExtension;
 
 import java.io.IOException;
 import java.util.Map;
@@ -88,6 +89,10 @@ public class LocalUploadStep extends UploadStep {
       else
         filename = ContextUtils.getNewDataFilename(df, sample, fileIndex);
     }
+
+    // Don't compress ZIP files
+    if (".zip".equals(compressionExtension(filename)))
+      return new DataFile(getDest(), filename);
 
     return new DataFile(getDest(), removeCompressionExtension(filename)
         + BZIP2.getExtension());

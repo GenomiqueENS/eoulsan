@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.compressionExtension;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -97,6 +98,10 @@ public class HadoopUploadStep extends UploadStep {
       else
         filename = ContextUtils.getNewDataFilename(format, sample, fileIndex);
     }
+
+    // Don't compress ZIP files
+    if (".zip".equals(compressionExtension(filename)))
+      return new DataFile(getDest(), filename);
 
     return new DataFile(getDest(), removeCompressionExtension(filename)
         + BZIP2.getExtension());
