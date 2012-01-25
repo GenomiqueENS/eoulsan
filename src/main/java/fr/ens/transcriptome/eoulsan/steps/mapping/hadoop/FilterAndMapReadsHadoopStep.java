@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
@@ -40,10 +41,12 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -57,6 +60,21 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
 @HadoopOnly
 public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
+
+  @Override
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
+
+    super.configure(stepParameters);
+
+    // Check if the mapper can be used with Hadoop
+    if (!getMapper().isSplitsAllowed()) {
+      throw new EoulsanException(
+          "The selected mapper cannot be used in hadoop mode as "
+              + "computation cannot be parallelized: "
+              + getMapper().getMapperName());
+    }
+  }
 
   @Override
   public StepResult execute(Design design, final Context context) {
