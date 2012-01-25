@@ -259,7 +259,9 @@ public final class DesignUtils {
 
     for (Sample s : design.getSamples()) {
 
-      s.setName("s" + s.getId());
+      final String newSampleName = "s" + s.getId();
+      if (!newSampleName.equals(s.getName()))
+        s.setName(newSampleName);
 
       if (design.isMetadataField(SampleMetadata.CONDITION_FIELD)) {
         final String cond = s.getMetadata().getCondition();
