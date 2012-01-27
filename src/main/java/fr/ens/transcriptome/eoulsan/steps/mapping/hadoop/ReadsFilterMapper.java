@@ -45,6 +45,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
@@ -86,6 +87,11 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
+    
+    // Initialize Eoulsan Settings
+    if (!EoulsanRuntime.isRuntime()) {
+      HadoopEoulsanRuntime.newEoulsanRuntime(conf);
+    }
 
     // Set the FastqFormat
     final FastqFormat fastqFormat =
@@ -111,7 +117,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
         if (e.getKey().startsWith(READ_FILTER_PARAMETER_KEY_PREFIX)) {
           mrfb.addParameter(
               e.getKey().substring(READ_FILTER_PARAMETER_KEY_PREFIX.length()),
-              e.getKey());
+              e.getValue());
         }
       }
 

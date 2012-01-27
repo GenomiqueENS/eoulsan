@@ -44,6 +44,7 @@ import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
@@ -123,6 +124,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     final Configuration conf = context.getConfiguration();
 
+    // Initialize Eoulsan Settings
+    if (!EoulsanRuntime.isRuntime()) {
+      HadoopEoulsanRuntime.newEoulsanRuntime(conf);
+    }
+    
     // Get mapper name
     final String mapperName =
         conf.get(Globals.PARAMETER_PREFIX + ".mapper.name");
