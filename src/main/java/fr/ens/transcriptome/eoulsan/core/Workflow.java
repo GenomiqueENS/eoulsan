@@ -129,13 +129,11 @@ class Workflow implements WorkflowDescription {
    */
   public void addFirstSteps(final List<Step> firstSteps) {
 
+    if (firstSteps != null)
+      this.steps.addAll(0, Utils.listWithoutNull(firstSteps));
+
     // Add the first step. Generators cannot be added after this step
-    this.steps.add(new FirstStep());
-
-    if (firstSteps == null)
-      return;
-
-    this.steps.addAll(0, Utils.listWithoutNull(firstSteps));
+    this.steps.add(0, new FirstStep());
   }
 
   /**
