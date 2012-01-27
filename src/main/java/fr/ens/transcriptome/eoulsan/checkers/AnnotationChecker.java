@@ -93,7 +93,7 @@ public class AnnotationChecker implements Checker {
     final Sample s = samples.get(0);
 
     try {
-      final DataFile file = context.getDataFile(DataFormats.ANNOTATION_GFF, s);
+      final DataFile file = context.getOtherDataFile(DataFormats.ANNOTATION_GFF, s);
 
       if (!file.exists())
         return true;

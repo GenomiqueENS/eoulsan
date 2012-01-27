@@ -69,11 +69,12 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       for (Sample s : design.getSamples()) {
 
         // Get annotation file
-        final DataFile annotationFile = context.getDataFile(ANNOTATION_GFF, s);
+        final DataFile annotationFile =
+            context.getInputDataFile(ANNOTATION_GFF, s);
 
         // Get genome desc file
         final DataFile genomeDescFile =
-            context.getDataFile(DataFormats.GENOME_DESC_TXT, s);
+            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s);
 
         final String annotationKey =
             annotationFile.getName() + " " + genomicType;
@@ -89,16 +90,15 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
         // Get alignment file
         final File alignmentFile =
-            new File(context.getDataFilename(FILTERED_MAPPER_RESULTS_SAM, s));
+            context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s).toFile();
 
         // Get expression temporary file
         final File expressionTmpFile =
-            new File(context.getDataFilename(FILTERED_MAPPER_RESULTS_SAM, s)
-                + ".tmp");
+            new File(alignmentFile.getAbsolutePath() + ".tmp");
 
         // Get final expression file
         final File expressionFile =
-            new File(context.getDataFilename(EXPRESSION_RESULTS_TXT, s));
+            context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s).toFile();
 
         if (getTmpDir() != null)
           epmr.setMapReduceTemporaryDirectory(new File(getTmpDir()));

@@ -127,8 +127,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Get input DataFile
     final DataFile inputDataFile =
-        context.getExistingDataFile(new DataFormat[] {READS_FASTQ, READS_TFQ},
-            sample);
+        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
+            READS_TFQ}, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -170,8 +170,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getDataFile(getMapper().getArchiveFormat(), sample)
-            .getSource());
+        new Path(context.getInputDataFile(getMapper().getArchiveFormat(),
+            sample).getSource());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
 
@@ -202,7 +202,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample)
+            .getSource());
 
     // Set Job name
     // Create the job and its name
@@ -241,8 +242,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
-            sample).getSource()));
+        new Path(context.getOutputDataFile(
+            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }

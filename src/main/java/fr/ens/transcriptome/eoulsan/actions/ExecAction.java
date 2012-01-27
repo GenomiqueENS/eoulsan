@@ -42,6 +42,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
@@ -59,8 +60,8 @@ public class ExecAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   //
   // Action methods
@@ -103,8 +104,8 @@ public class ExecAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 2) {
@@ -210,6 +211,9 @@ public class ExecAction extends AbstractAction {
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (EoulsanException e) {
+      Common.errorExit(e, "Error while executing "
+          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+    } catch (EoulsanRuntimeException e) {
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }

@@ -131,13 +131,13 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // final Path inputPath =
     // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
-        new Path(
-            context.getDataFilename(DataFormats.FILTERED_READS_TFQ, sample));
+        new Path(context.getInputDataFilename(DataFormats.FILTERED_READS_TFQ,
+            sample));
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getDataFile(getMapper().getArchiveFormat(), sample)
-            .getSource());
+        new Path(context.getInputDataFile(getMapper().getArchiveFormat(),
+            sample).getSource());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
 
@@ -203,7 +203,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getDataFile(MAPPER_RESULTS_SAM, sample).getSource()));
+        new Path(context.getOutputDataFile(MAPPER_RESULTS_SAM, sample)
+            .getSource()));
 
     return job;
   }

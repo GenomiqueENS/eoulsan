@@ -82,7 +82,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final GenomeDescription genomeDescription;
       if (design.getSampleCount() > 0) {
         genomeDescription =
-            GenomeDescription.load(context.getDataFile(
+            GenomeDescription.load(context.getInputDataFile(
                 DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
       } else
         genomeDescription = null;
@@ -93,8 +93,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final Reporter reporter = new Reporter();
 
         final File archiveIndexFile =
-            new File(context.getDataFile(getMapper().getArchiveFormat(), s)
-                .getSource());
+            context.getInputDataFile(getMapper().getArchiveFormat(), s)
+                .toFile();
 
         final File indexDir =
             new File(StringUtils.filenameWithoutExtension(archiveIndexFile
@@ -118,7 +118,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Get the source
           final File inFile =
-              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 0));
+              context.getInputDataFile(FILTERED_READS_FASTQ, s, 0).toFile();
 
           // Single read mapping
           mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
@@ -136,10 +136,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Get the source
           final File inFile1 =
-              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 0));
+              context.getInputDataFile(FILTERED_READS_FASTQ, s, 0).toFile();
 
           final File inFile2 =
-              new File(context.getDataFilename(FILTERED_READS_FASTQ, s, 1));
+              context.getInputDataFile(FILTERED_READS_FASTQ, s, 1).toFile();
 
           // Single read mapping
           mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,
@@ -162,7 +162,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         // define final output SAM file
         final File outFile =
-            new File(context.getDataFilename(MAPPER_RESULTS_SAM, s));
+            context.getOutputDataFile(MAPPER_RESULTS_SAM, s).toFile();
 
         // Rename the output SAM file to its final name
         Files.move(samOutputFile, outFile);

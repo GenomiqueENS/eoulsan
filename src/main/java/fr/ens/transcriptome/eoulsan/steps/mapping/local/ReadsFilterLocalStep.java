@@ -131,11 +131,11 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     // Get the source
     final DataFile inFile =
-        context.getDataFile(DataFormats.READS_FASTQ, sample, 0);
+        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 0);
 
     // Get the dest
     final DataFile outFile =
-        context.getDataFile(FILTERED_READS_FASTQ, sample, 0);
+        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 0);
 
     // Filter reads
     filterFile(inFile, outFile, reporter, filter, sample.getMetadata()
@@ -160,15 +160,15 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     // Get the source
     final DataFile inFile1 =
-        context.getDataFile(DataFormats.READS_FASTQ, sample, 0);
+        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 0);
     final DataFile inFile2 =
-        context.getDataFile(DataFormats.READS_FASTQ, sample, 1);
+        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 1);
 
     // Get the dest
     final DataFile outFile1 =
-        context.getDataFile(FILTERED_READS_FASTQ, sample, 0);
+        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 0);
     final DataFile outFile2 =
-        context.getDataFile(FILTERED_READS_FASTQ, sample, 1);
+        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 1);
 
     // Filter reads
     filterFile(inFile1, inFile2, outFile1, outFile2, reporter, filter, sample

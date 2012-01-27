@@ -125,8 +125,7 @@ public final class GenomeMapperIndexer {
       final DataFile output) throws IOException {
 
     if (precomputedIndex.isLocalFile() && output.isLocalFile()) {
-      FileUtils.createSymbolicLink(new File(precomputedIndex.getSource()),
-          new File(output.getSource()));
+      FileUtils.createSymbolicLink(precomputedIndex.toFile(), output.toFile());
     } else
       FileUtils.copy(precomputedIndex.rawOpen(), output.create());
   }

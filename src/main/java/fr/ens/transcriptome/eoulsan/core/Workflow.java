@@ -306,22 +306,22 @@ class Workflow implements WorkflowDescription {
       final Sample sample) {
 
     if (format.getMaxFilesCount() > 1)
-      return this.context.getDataFile(format, sample, 0);
+      return this.context.getOtherDataFile(format, sample, 0);
 
-    return this.context.getDataFile(format, sample);
+    return this.context.getOtherDataFile(format, sample);
   }
 
   private List<DataFile> swGetAllDataFiles(final DataFormat format,
       final Sample sample) {
 
     if (format.getMaxFilesCount() == 1)
-      return singletonList(this.context.getDataFile(format, sample));
+      return singletonList(this.context.getOtherDataFile(format, sample));
 
     final List<DataFile> result = newArrayList();
 
     final int count = this.context.getDataFileCount(format, sample);
     for (int i = 0; i < count; i++)
-      result.add(this.context.getDataFile(format, sample, i));
+      result.add(this.context.getOtherDataFile(format, sample, i));
 
     return result;
   }

@@ -88,7 +88,7 @@ public class GenomeChecker implements Checker {
 
     final InputStream is;
 
-    final DataFile file = context.getDataFile(DataFormats.GENOME_FASTA, s);
+    final DataFile file = context.getOtherDataFile(DataFormats.GENOME_FASTA, s);
     try {
 
       if (!file.exists())

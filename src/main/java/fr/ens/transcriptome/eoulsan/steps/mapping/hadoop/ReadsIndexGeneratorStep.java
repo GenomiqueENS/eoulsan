@@ -89,11 +89,11 @@ public class ReadsIndexGeneratorStep extends AbstractStep {
 
       // Get the genome DataFile
       final DataFile genomeDataFile =
-          context.getDataFile(DataFormats.GENOME_FASTA, s1);
+          context.getInputDataFile(DataFormats.GENOME_FASTA, s1);
 
       // Get the output DataFile
       final DataFile mapperIndexDataFile =
-          context.getDataFile(this.mapper.getArchiveFormat(), s1);
+          context.getOutputDataFile(this.mapper.getArchiveFormat(), s1);
 
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());

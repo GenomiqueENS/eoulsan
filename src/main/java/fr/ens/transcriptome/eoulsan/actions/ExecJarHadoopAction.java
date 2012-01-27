@@ -26,6 +26,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Command;
@@ -326,6 +327,11 @@ public class ExecJarHadoopAction extends AbstractAction {
       Common.errorExit(e, "File not found: " + e.getMessage());
 
     } catch (EoulsanException e) {
+
+      Common.errorExit(e, "Error while executing "
+          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+
+    } catch (EoulsanRuntimeException e) {
 
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());

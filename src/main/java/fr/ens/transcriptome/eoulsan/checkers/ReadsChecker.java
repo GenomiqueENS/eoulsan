@@ -88,7 +88,7 @@ public class ReadsChecker implements Checker {
       if (inFileCount == 1) {
 
         final DataFile file =
-            context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 0);
 
         checkReadFile(file, format);
       }
@@ -97,10 +97,10 @@ public class ReadsChecker implements Checker {
       if (inFileCount == 2) {
 
         final DataFile file1 =
-            context.getDataFile(DataFormats.READS_FASTQ, s, 0);
+            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 0);
 
         final DataFile file2 =
-            context.getDataFile(DataFormats.READS_FASTQ, s, 1);
+            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 1);
 
         checkReadFile(file1, format, true, 1);
         checkReadFile(file2, format, true, 2);

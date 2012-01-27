@@ -163,12 +163,88 @@ public interface Context {
   Step getCurrentStep();
 
   /**
+   * Get the pathname for an input DataType and a Sample.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a String with the pathname
+   */
+  String getInputDataFilename(DataFormat df, Sample sample);
+
+  /**
+   * Get the pathname for an input DataType and a Sample. This method works only
+   * for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a String with the pathname
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  String getInputDataFilename(DataFormat df, Sample sample, int fileIndex);
+
+  /**
+   * Get the DataFile for an input DataType and a Sample.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a new DataFile object
+   */
+  DataFile getInputDataFile(DataFormat df, Sample sample);
+
+  /**
+   * Get the DataFile for an input DataType and a Sample. This method works only
+   * for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  DataFile getInputDataFile(DataFormat df, Sample sample, int fileIndex);
+
+  /**
+   * Get the pathname for an output DataType and a Sample.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a String with the pathname
+   */
+  String getOutputDataFilename(DataFormat df, Sample sample);
+
+  /**
+   * Get the pathname for an output DataType and a Sample. This method works
+   * only for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a String with the pathname
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  String getOutputDataFilename(DataFormat df, Sample sample, int fileIndex);
+
+  /**
+   * Get the DataFile for a DataType and a Sample.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return a new DataFile object
+   */
+  DataFile getOutputDataFile(DataFormat df, Sample sample);
+
+  /**
+   * Get the DataFile for an output DataType and a Sample. This method works
+   * only for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object
+   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  DataFile getOutputDataFile(DataFormat df, Sample sample, int fileIndex);
+
+  /**
    * Get the pathname for a DataType and a Sample.
    * @param df the DataFormat of the source
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getDataFilename(DataFormat df, Sample sample);
+  String getOtherDataFilename(DataFormat df, Sample sample);
 
   /**
    * Get the pathname for a DataType and a Sample. This method works only for a
@@ -179,7 +255,7 @@ public interface Context {
    * @return a String with the pathname
    * @throw EoulsanRuntimeException if the DataFormat is not multifile
    */
-  String getDataFilename(DataFormat df, Sample sample, int fileIndex);
+  String getOtherDataFilename(DataFormat df, Sample sample, int fileIndex);
 
   /**
    * Get the DataFile for a DataType and a Sample.
@@ -187,7 +263,7 @@ public interface Context {
    * @param sample the sample for the source
    * @return a new DataFile object
    */
-  DataFile getDataFile(DataFormat df, Sample sample);
+  DataFile getOtherDataFile(DataFormat df, Sample sample);
 
   /**
    * Get the DataFile for a DataType and a Sample. This method works only for a
@@ -198,7 +274,7 @@ public interface Context {
    * @return a new DataFile object
    * @throw EoulsanRuntimeException if the DataFormat is not multifile
    */
-  DataFile getDataFile(DataFormat df, Sample sample, int fileIndex);
+  DataFile getOtherDataFile(DataFormat df, Sample sample, int fileIndex);
 
   /**
    * Count the number for DataFile available for a multifile DataFormat and a
@@ -217,7 +293,7 @@ public interface Context {
    * @return a new DataFile object or null if no existing DataFile has been
    *         found
    */
-  DataFile getExistingDataFile(DataFormat[] formats, Sample sample);
+  DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample);
 
   /**
    * Get the first existing DataFile for a sample and a list of DataFormat.
@@ -227,7 +303,7 @@ public interface Context {
    * @return a new DataFile object or null if no existing DataFile has been
    *         found
    */
-  DataFile getExistingDataFile(DataFormat[] formats, Sample sample,
+  DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample,
       int fileIndex);
 
   /**

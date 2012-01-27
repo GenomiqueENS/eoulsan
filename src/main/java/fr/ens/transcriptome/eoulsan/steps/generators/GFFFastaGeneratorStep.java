@@ -70,19 +70,14 @@ public class GFFFastaGeneratorStep extends AbstractStep {
         throw new EoulsanException("No sample found in design file.");
 
       final Sample s1 = design.getSamples().get(0);
-      if (!s1.getMetadata().isAnnotationField())
-        throw new EoulsanException("No annotation found in design file.");
-
-      final String annotationSource = s1.getMetadata().getAnnotation();
-      if (annotationSource == null)
-        throw new EoulsanException("Annotation source is null.");
 
       // Get the annotation DataFile
-      final DataFile annotationDataFile = new DataFile(annotationSource);
+      final DataFile annotationDataFile =
+          context.getInputDataFile(getInputFormats()[0], s1);
 
       // Get the output DataFile
       final DataFile genomeDataFile =
-          context.getDataFile(getOutputFormats()[0], s1);
+          context.getOutputDataFile(getOutputFormats()[0], s1);
 
       LOGGER.info("Input annotation file: " + annotationDataFile);
       LOGGER.info("Output genome file: " + genomeDataFile);
