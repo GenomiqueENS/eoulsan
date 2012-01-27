@@ -417,8 +417,8 @@ public final class SimpleContext implements Context {
     if (df == null)
       throw new EoulsanRuntimeException("The format is null");
 
-    if (this.stepInputDataFormats == null
-        || !this.stepInputDataFormats.contains(df))
+    if (this.stepInputDataFormats != null
+        && !this.stepInputDataFormats.contains(df))
       throw new EoulsanRuntimeException("The "
           + df.getFormatName() + " format is not an input format of the step "
           + this.step.getName());
@@ -432,8 +432,8 @@ public final class SimpleContext implements Context {
     if (df == null)
       throw new EoulsanRuntimeException("The format is null");
 
-    if (this.stepOutputDataFormats == null
-        || !this.stepOutputDataFormats.contains(df))
+    if (this.stepOutputDataFormats != null
+        && !this.stepOutputDataFormats.contains(df))
       throw new EoulsanRuntimeException("The "
           + df.getFormatName() + " format is not an output format of the step "
           + this.step.getName());
