@@ -431,7 +431,7 @@ public class S3DataProtocol implements DataProtocol {
     if (file != null)
       toUpload = new FileToUpload(dest, file);
     else
-      toUpload = new FileToUpload(dest, src.open(), mdSrc);
+      toUpload = new FileToUpload(dest, src.rawOpen(), mdSrc);
 
     // Upload
     toUpload.upload();
