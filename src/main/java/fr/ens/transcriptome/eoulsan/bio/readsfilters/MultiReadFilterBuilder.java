@@ -76,7 +76,7 @@ public class MultiReadFilterBuilder {
     if (filterKey != null) {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
-      this.mapParameters.put(filterKey, valueTrimmed);
+      this.mapParameters.put(keyTrimmed, valueTrimmed);
       LOGGER
           .info("Set read filter \""
               + filterName + "\" with parameter: " + filterKey + "="
