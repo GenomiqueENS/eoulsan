@@ -70,6 +70,8 @@ public final class CasavaDesignUtil {
 
     final Map<Integer, Set<String>> indexes = Utils.newHashMap();
     final Set<String> sampleIds = Utils.newHashSet();
+    final Set<Integer> laneWithIndexes = Utils.newHashSet();
+    final Set<Integer> laneWithoutIndexes = Utils.newHashSet();
 
     for (CasavaSample sample : design) {
 
@@ -126,11 +128,36 @@ public final class CasavaDesignUtil {
       final String index = sample.getIndex();
       final int lane = sample.getLane();
 
+      // Check if mixing lane with index and lanes without index
+      if (index == null || "".equals(index.trim())) {
+
+        if (laneWithoutIndexes.contains(lane))
+          throw new EoulsanException(
+              "Found two samples without index for the same lane: "
+                  + lane + ".");
+
+        if (laneWithIndexes.contains(lane))
+          throw new EoulsanException(
+              "Found a lane with indexed and non indexed samples: "
+                  + lane + ".");
+
+        laneWithoutIndexes.add(lane);
+      } else {
+
+        if (laneWithoutIndexes.contains(lane))
+          throw new EoulsanException(
+              "Found a lane with indexed and non indexed samples: "
+                  + lane + ".");
+        laneWithIndexes.add(lane);
+      }
+
       // check if a lane has not two or more same indexes
       if (indexes.containsKey(lane)) {
 
         if (indexes.get(lane).contains(index))
-          return false;
+          throw new EoulsanException(
+              "Found a lane with two time the same index: "
+                  + lane + " (" + index + ").");
 
       } else
         indexes.put(lane, new HashSet<String>());
