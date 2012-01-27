@@ -62,18 +62,7 @@ public class HadoopUploadStep extends UploadStep {
   protected DataFile getUploadedDataFile(final DataFile file)
       throws IOException {
 
-    final String filename;
-
-    if (file.getName().endsWith(".zip")
-        || file.getName().endsWith(".jar") || file.getName().endsWith(".xml")
-        || file.getName().endsWith(".txt"))
-      filename = file.getName();
-    else
-      filename =
-          CompressionType.removeCompressionExtension(file.getName())
-              + CompressionType.BZIP2.getExtension();
-
-    return new DataFile(getDest(), filename);
+    return new DataFile(getDest(), file.getName());
   }
 
   @Override
@@ -93,18 +82,13 @@ public class HadoopUploadStep extends UploadStep {
 
       final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
 
-      if (fileIndex == -1)
+      if (fileIndex == -1 || format.getMaxFilesCount() == 1)
         filename = ContextUtils.getNewDataFilename(format, sample);
       else
         filename = ContextUtils.getNewDataFilename(format, sample, fileIndex);
     }
 
-    // Don't compress ZIP files
-    if (".zip".equals(compressionExtension(filename)))
-      return new DataFile(getDest(), filename);
-
-    return new DataFile(getDest(), removeCompressionExtension(filename)
-        + BZIP2.getExtension());
+    return new DataFile(getDest(), filename);
   }
 
   @Override
