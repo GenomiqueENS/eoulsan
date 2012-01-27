@@ -24,8 +24,6 @@ package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define a genome protocol.
@@ -50,12 +48,6 @@ public class GenomeDataProtocol extends StorageDataProtocol {
   protected String getBasePath() {
 
     return EoulsanRuntime.getSettings().getGenomeStoragePath();
-  }
-
-  @Override
-  protected DataFormat getDataFormat() {
-
-    return DataFormats.GENOME_FASTA;
   }
 
 }
