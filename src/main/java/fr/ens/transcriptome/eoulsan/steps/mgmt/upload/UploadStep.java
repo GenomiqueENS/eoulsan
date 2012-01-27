@@ -107,8 +107,9 @@ public abstract class UploadStep extends AbstractStep {
       // Repackage the jar file if necessary
       if (!context.getRuntime().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
-        filesToCopy
-            .put(new DataFile(repackagedJarFile.getAbsolutePath()), null);
+        final DataFile jarDataFile =
+            new DataFile(repackagedJarFile.getAbsolutePath());
+        filesToCopy.put(jarDataFile, getUploadedDataFile(jarDataFile));
       }
 
       final Settings settings = context.getRuntime().getSettings();
@@ -337,8 +338,23 @@ public abstract class UploadStep extends AbstractStep {
 
         if (nValues == 1) {
           final DataFile inFile = new DataFile(oldValues.get(0));
-          final DataFormat format = inFile.getDataFormat();
-          final DataFile outFile = getUploadedDataFile(inFile, s, format);
+          // final DataFormat format = inFile.getDataFormat();
+          
+          DataFormat format =
+              registry.getDataFormatFromExtension(
+                  registry.getDataTypeForDesignField(field),
+                  inFile.getExtension());
+
+          if (format == null)
+            format = inFile.getMetaData().getDataFormat();
+
+          final DataFile outFile;
+
+          if (format.getMaxFilesCount() == 1)
+            outFile = getUploadedDataFile(inFile, s, format);
+          else
+            outFile = getUploadedDataFile(inFile, s, format, 0);
+
           filesToCopy.put(inFile, outFile);
           newValues.add(outFile.toString());
 
