@@ -586,7 +586,13 @@ public final class SimpleContext implements Context {
       if (df == null)
         continue;
 
-      final DataFile file = getDataFile(df, sample);
+      final DataFile file;
+
+      // TODO Very ugly, to change with paired-end support in MapReduce
+      if (df.getMaxFilesCount() == 1)
+        file = getDataFile(df, sample);
+      else
+        file = getDataFile(df, sample, 0);
 
       if (file != null && file.exists())
         return file;
@@ -608,7 +614,13 @@ public final class SimpleContext implements Context {
       if (df == null)
         continue;
 
-      final DataFile file = getDataFile(df, sample, fileIndex);
+      final DataFile file;
+
+      // TODO Very ugly, to change with paired-end support in MapReduce
+      if (df.getMaxFilesCount() == 1)
+        file = getDataFile(df, sample, 0);
+      else
+        file = getDataFile(df, sample, fileIndex);
 
       if (file != null && file.exists())
         return file;
