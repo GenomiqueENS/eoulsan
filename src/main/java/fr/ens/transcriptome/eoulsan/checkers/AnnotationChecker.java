@@ -33,6 +33,8 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
+import fr.ens.transcriptome.eoulsan.bio.Sequence;
+import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -90,20 +92,16 @@ public class AnnotationChecker implements Checker {
 
     final Sample s = samples.get(0);
 
-    final InputStream is;
-
     try {
       final DataFile file = context.getDataFile(DataFormats.ANNOTATION_GFF, s);
 
       if (!file.exists())
         return true;
 
-      is = file.open();
-
       if (this.genomicType == null)
-        partialValidationAndFastaSectionCheck(is);
+        partialValidationAndFastaSectionCheck(file);
       else
-        fullValidationCheck(is, genomicType, design, context, checkInfo);
+        fullValidationCheck(file, genomicType, design, context, checkInfo);
 
     } catch (IOException e) {
       throw new EoulsanException(
@@ -116,23 +114,36 @@ public class AnnotationChecker implements Checker {
   }
 
   @SuppressWarnings("unused")
-  private static void partialValidationAndFastaSectionCheck(final InputStream is)
+  private static void partialValidationAndFastaSectionCheck(final DataFile file)
       throws IOException, BadBioEntryException, EoulsanException {
 
-    final GFFReader reader = new GFFReader(is);
+    InputStream is = file.open();
+    final GFFReader gffReader = new GFFReader(is);
 
-    for (final GFFEntry e : reader)
+    for (final GFFEntry e : gffReader)
       ;
+    gffReader.throwException();
+    is.close();
 
-    if (!reader.isFastaSectionFound())
-      throw new EoulsanException(
-          "No fasta section found in GFF annotation file.");
+    // Check fasta section if exists
+    if (gffReader.isFastaSectionFound()) {
+
+      is = file.open();
+      GFFFastaReader fastaReader = new GFFFastaReader(is);
+      for (final Sequence sequence : fastaReader)
+        ;
+      is.close();
+      fastaReader.throwException();
+
+    }
   }
 
-  private void fullValidationCheck(final InputStream is,
+  private void fullValidationCheck(final DataFile file,
       final String genomicType, final Design design, final Context context,
       final CheckStore checkInfo) throws EoulsanException, IOException,
       BadBioEntryException {
+
+    final InputStream is = file.open();
 
     final TranscriptAndExonFinder ef =
         new TranscriptAndExonFinder(is, genomicType);
