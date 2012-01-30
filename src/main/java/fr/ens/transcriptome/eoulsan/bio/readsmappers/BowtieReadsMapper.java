@@ -45,7 +45,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_EXECUTABLE = "bowtie";
   private static final String INDEXER_EXECUTABLE = "bowtie-build";
 
-  public static final String DEFAULT_ARGUMENTS = "";
+  public static final String DEFAULT_ARGUMENTS = "-k 10";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie";
