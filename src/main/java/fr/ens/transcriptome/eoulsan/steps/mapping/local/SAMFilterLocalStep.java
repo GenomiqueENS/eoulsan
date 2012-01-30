@@ -41,6 +41,7 @@ import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -105,7 +106,10 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
               throwException(e, "File not found: " + e.getMessage());
             } catch (IOException e) {
 
-              throwException(e, "error while filtering: " + e.getMessage());
+              throwException(e, "Error while filtering: " + e.getMessage());
+            } catch (EoulsanRuntimeException e) {
+
+              throwException(e, "Error while filtering: " + e.getMessage());
             }
             return null;
           }
@@ -141,7 +145,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
         new SAMFileWriterFactory().makeSAMWriter(
             inputSam.getFileHeader(),
             false,
-            context.getInputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+            context.getOutputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
                 sample).create());
 
     String lastId = null;
@@ -228,7 +232,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
         "Filter SAM files ("
             + sample.getName()
             + ", "
-            + context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
+            + context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
                 .getName() + ")");
   }
 
