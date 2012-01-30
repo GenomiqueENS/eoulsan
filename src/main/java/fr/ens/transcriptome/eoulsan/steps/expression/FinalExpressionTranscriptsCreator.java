@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 import com.google.common.base.Objects;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -49,6 +51,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset
+      .forName(Globals.DEFAULT_FILE_ENCODING);
 
   private TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final Map<String, ExpressionTranscript> expressionResults =
@@ -160,8 +166,8 @@ public class FinalExpressionTranscriptsCreator {
 
     this.expressionResults.clear();
     for (String id : tef.getTranscriptsIds())
-      this.expressionResults.put(id, new ExpressionTranscript(tef
-          .getTranscript(id)));
+      this.expressionResults.put(id,
+          new ExpressionTranscript(tef.getTranscript(id)));
   }
 
   /**
@@ -185,7 +191,8 @@ public class FinalExpressionTranscriptsCreator {
   public void loadPreResults(final InputStream is, final long readsUsed)
       throws IOException {
 
-    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader br =
+        new BufferedReader(new InputStreamReader(is, CHARSET));
 
     final String[] tab = new String[3];
     String line = null;
@@ -228,10 +235,9 @@ public class FinalExpressionTranscriptsCreator {
 
     Collections.sort(list);
 
-    final OutputStreamWriter osw = new OutputStreamWriter(os);
+    final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
-    osw
-        .write("ID\tType\tChromosome\tStart\tEnd\tStrand\tlength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
+    osw.write("ID\tType\tChromosome\tStart\tEnd\tStrand\tlength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
     for (ExpressionTranscript et : list)
       osw.write(et.toString() + "\n");
 

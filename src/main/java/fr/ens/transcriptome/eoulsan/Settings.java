@@ -305,6 +305,9 @@ public final class Settings {
    */
   public int getIntSetting(final String settingName) throws EoulsanException {
 
+    if (settingName == null)
+      throw new EoulsanException("The setting name is null");
+
     final String value = getSetting(settingName);
     if (value == null)
       throw new EoulsanException(
@@ -330,6 +333,9 @@ public final class Settings {
    */
   public double getDoubleSetting(final String settingName)
       throws EoulsanException {
+
+    if (settingName == null)
+      throw new EoulsanException("The setting name is null");
 
     final String value = getSetting(settingName);
     if (value == null)

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.util.Utils;
+
 public class TicketSchedulerServer implements TicketScheduler {
 
   private Ticket currentActive;
@@ -154,6 +156,7 @@ public class TicketSchedulerServer implements TicketScheduler {
       registry.bind(TicketLocker.RMI_SERVICE_PREFIX + lockerName, stub);
 
     } catch (Exception e) {
+      Utils.nop();
     }
   }
 

@@ -202,7 +202,7 @@ public final class CasavaDesignUtil {
     }
 
     // Check if the sample has been already defined
-    if (sampleIds.contains(sampleIds))
+    if (sampleIds.contains(sampleId))
       throw new EoulsanException("The sample id \""
           + sampleId + "\" has been define more than one time.");
     sampleIds.add(sampleId);

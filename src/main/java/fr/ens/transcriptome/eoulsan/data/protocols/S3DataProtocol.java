@@ -245,7 +245,7 @@ public class S3DataProtocol implements DataProtocol {
             standardUpload(md);
 
           uploadOk = true;
-          
+
         } catch (AmazonClientException e) {
           ace = e;
           LOGGER.warning("Error while uploading "
@@ -300,6 +300,15 @@ public class S3DataProtocol implements DataProtocol {
       } catch (InterruptedException e) {
         LOGGER.warning(e.getMessage());
         throw new AmazonClientException(e.getMessage());
+      } finally {
+
+        try {
+          if (this.is != null)
+            this.is.close();
+        } catch (IOException e) {
+          throw new AmazonClientException(e.getMessage());
+        }
+
       }
     }
 
@@ -314,6 +323,13 @@ public class S3DataProtocol implements DataProtocol {
             new PutObjectRequest(s3url.bucket, s3url.getFilePath(), this.is, md);
 
       getS3().putObject(or);
+
+      if (this.is != null)
+        try {
+          this.is.close();
+        } catch (IOException e) {
+          throw new AmazonClientException(e.getMessage());
+        }
     }
 
     //

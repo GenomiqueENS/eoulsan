@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -79,8 +78,7 @@ public class DesignBuilder {
    */
   private static class FastqEntry {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-        "yyyy-MM-dd");
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final DataFile path;
     private final String sampleName;
@@ -93,7 +91,7 @@ public class DesignBuilder {
       try {
         long last = file.getMetaData().getLastModified();
 
-        return DATE_FORMAT.format(new Date(last));
+        return new SimpleDateFormat(DATE_FORMAT).format(new Date(last));
 
       } catch (IOException e) {
         return null;
@@ -102,9 +100,14 @@ public class DesignBuilder {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
 
-      return path.equals(obj);
+      if (obj == null || !(obj instanceof FastqEntry))
+        return false;
+
+      final FastqEntry that = (FastqEntry) obj;
+
+      return path.equals(that.path);
     }
 
     @Override
@@ -189,8 +192,9 @@ public class DesignBuilder {
     if (isDataTypeExtension(DataTypes.READS, extension, md)) {
 
       // Don't add previously added file
-      if (!this.fastqList.contains(file))
-        this.fastqList.add(new FastqEntry(file));
+      final FastqEntry entry = new FastqEntry(file);
+      if (!this.fastqList.contains(entry))
+        this.fastqList.add(entry);
 
     } else if (isDataTypeExtension(DataTypes.GENOME, extension, md))
       this.genomeFile = file;

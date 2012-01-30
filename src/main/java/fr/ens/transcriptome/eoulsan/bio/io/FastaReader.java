@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -41,6 +42,9 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class FastaReader implements SequenceReader {
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
   protected BufferedReader reader;
 
@@ -160,7 +164,7 @@ public class FastaReader implements SequenceReader {
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is));
+    this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
   }
 
   /**

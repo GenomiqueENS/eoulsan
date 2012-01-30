@@ -24,6 +24,7 @@ import java.io.DataOutput;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -68,6 +69,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * A Map-reduce program to recursively copy directories between different
@@ -75,6 +77,11 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 @SuppressWarnings("deprecation")
 public class DistCp implements Tool {
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset
+      .forName(Globals.DEFAULT_FILE_ENCODING);
+
   public static final Log LOG = LogFactory.getLog(DistCp.class);
 
   private static final String NAME = "distcp";
@@ -437,8 +444,8 @@ public class DistCp implements Tool {
         for (int cbread; (cbread = in.read(buffer)) >= 0;) {
           out.write(buffer, 0, cbread);
           cbcopied += cbread;
-          reporter.setStatus(String.format("%.2f ", cbcopied
-              * 100.0 / srcstat.getLen())
+          reporter.setStatus(String.format("%.2f ",
+              cbcopied * 100.0 / srcstat.getLen())
               + absdst
               + " [ "
               + StringUtils.humanReadableInt(cbcopied)
@@ -604,7 +611,8 @@ public class DistCp implements Tool {
     FileSystem fs = srcList.getFileSystem(conf);
     BufferedReader input = null;
     try {
-      input = new BufferedReader(new InputStreamReader(fs.open(srcList)));
+      input =
+          new BufferedReader(new InputStreamReader(fs.open(srcList), CHARSET));
       String line = input.readLine();
       while (line != null) {
         result.add(new Path(line));
@@ -972,8 +980,10 @@ public class DistCp implements Tool {
     int numMaps =
         (int) (totalBytes / job.getLong(BYTES_PER_MAP_LABEL, BYTES_PER_MAP));
     numMaps =
-        Math.min(numMaps, job.getInt(MAX_MAPS_LABEL, MAX_MAPS_PER_NODE
-            * new JobClient(job).getClusterStatus().getTaskTrackers()));
+        Math.min(
+            numMaps,
+            job.getInt(MAX_MAPS_LABEL, MAX_MAPS_PER_NODE
+                * new JobClient(job).getClusterStatus().getTaskTrackers()));
     job.setNumMapTasks(Math.max(numMaps, 1));
   }
 
@@ -1027,10 +1037,10 @@ public class DistCp implements Tool {
     final boolean overwrite = !update && args.flags.contains(Options.OVERWRITE);
     jobConf.setBoolean(Options.UPDATE.propertyname, update);
     jobConf.setBoolean(Options.OVERWRITE.propertyname, overwrite);
-    jobConf.setBoolean(Options.IGNORE_READ_FAILURES.propertyname, args.flags
-        .contains(Options.IGNORE_READ_FAILURES));
-    jobConf.setBoolean(Options.PRESERVE_STATUS.propertyname, args.flags
-        .contains(Options.PRESERVE_STATUS));
+    jobConf.setBoolean(Options.IGNORE_READ_FAILURES.propertyname,
+        args.flags.contains(Options.IGNORE_READ_FAILURES));
+    jobConf.setBoolean(Options.PRESERVE_STATUS.propertyname,
+        args.flags.contains(Options.PRESERVE_STATUS));
 
     final String randomId = getRandomId();
     JobClient jClient = new JobClient(jobConf);
@@ -1149,8 +1159,9 @@ public class DistCp implements Tool {
             }
 
             if (!skipfile) {
-              src_writer.append(new LongWritable(child.isDir() ? 0 : child
-                  .getLen()), new FilePair(child, dst));
+              src_writer.append(
+                  new LongWritable(child.isDir() ? 0 : child.getLen()),
+                  new FilePair(child, dst));
             }
 
             dst_writer.append(new Text(dst), new Text(child.getPath()
@@ -1271,8 +1282,8 @@ public class DistCp implements Tool {
     // write dst lsr results
     final Path dstlsr = new Path(jobdir, "_distcp_dst_lsr");
     final SequenceFile.Writer writer =
-        SequenceFile.createWriter(jobfs, jobconf, dstlsr, Text.class, dstroot
-            .getClass(), SequenceFile.CompressionType.NONE);
+        SequenceFile.createWriter(jobfs, jobconf, dstlsr, Text.class,
+            dstroot.getClass(), SequenceFile.CompressionType.NONE);
     try {
       // do lsr to get all file statuses in dstroot
       final Stack<FileStatus> lsrstack = new Stack<FileStatus>();

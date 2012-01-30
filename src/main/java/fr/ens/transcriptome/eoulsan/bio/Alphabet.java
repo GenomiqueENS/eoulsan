@@ -68,6 +68,9 @@ public abstract class Alphabet {
     if (o == null)
       return false;
 
+    if (!(o instanceof Alphabet))
+      return false;
+
     final Alphabet that = (Alphabet) o;
 
     return Utils.equal(this.getName(), that.getName())

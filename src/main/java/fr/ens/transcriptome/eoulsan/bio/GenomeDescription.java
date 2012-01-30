@@ -320,11 +320,11 @@ public class GenomeDescription {
 
       // Update digest with chromosome name
       if (md5Digest != null) {
-        md5Digest.update(name.getBytes());
+        md5Digest.update(name.getBytes(Globals.DEFAULT_FILE_ENCODING));
 
         for (final String s : StringUtils.splitStringIterator(
             sequence.getSequence(), STRING_LENGTH_BUFFER))
-          md5Digest.update(s.getBytes());
+          md5Digest.update(s.getBytes(Globals.DEFAULT_FILE_ENCODING));
       }
 
       // Add sequence

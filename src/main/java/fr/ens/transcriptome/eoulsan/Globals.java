@@ -247,6 +247,7 @@ public final class Globals {
       }
 
       manifestProperties.load(is);
+      is.close();
     } catch (IOException e) {
     }
   }

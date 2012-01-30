@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,10 @@ public abstract class PseudoMapReduce {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset.forName(System
+      .getProperty("file.encoding"));
 
   private File tmpDir;
   private File mapOutputFile;
@@ -120,7 +125,8 @@ public abstract class PseudoMapReduce {
 
     this.mapOutputFile = File.createTempFile("map-", ".txt", this.tmpDir);
 
-    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader br =
+        new BufferedReader(new InputStreamReader(is, CHARSET));
     final UnSynchronizedBufferedWriter bw =
         FileUtils.createFastBufferedWriter(this.mapOutputFile);
 
@@ -223,7 +229,8 @@ public abstract class PseudoMapReduce {
         FileUtils.createBufferedReader(this.sortOutputFile);
 
     // Create writer
-    final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+    final BufferedWriter bw =
+        new BufferedWriter(new OutputStreamWriter(os, CHARSET));
 
     String line = null;
     String currentKey = null;

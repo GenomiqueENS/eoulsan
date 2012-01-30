@@ -204,4 +204,10 @@ public class Utils {
     return new HashMap<K, V>();
   }
 
+  /**
+   * Do nothing.
+   */
+  public static void nop() {
+  }
+  
 }

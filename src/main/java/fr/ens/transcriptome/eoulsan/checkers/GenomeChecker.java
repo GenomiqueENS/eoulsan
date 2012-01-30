@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -120,7 +121,9 @@ public class GenomeChecker implements Checker {
   private Map<String, Integer> checkGenomeFile(final InputStream is)
       throws IOException, BadBioEntryException {
 
-    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader br =
+        new BufferedReader(new InputStreamReader(is,
+            Globals.DEFAULT_FILE_ENCODING));
 
     String line = null;
 

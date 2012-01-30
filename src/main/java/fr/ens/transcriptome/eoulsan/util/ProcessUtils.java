@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -49,6 +50,10 @@ public final class ProcessUtils {
 
   /** Logger. */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset.forName(System
+      .getProperty("file.encoding"));
 
   private static Random random;
 
@@ -208,7 +213,7 @@ public final class ProcessUtils {
 
       final InputStream std = p.getInputStream();
       final BufferedReader stdr =
-          new BufferedReader(new InputStreamReader(std));
+          new BufferedReader(new InputStreamReader(std, CHARSET));
 
       String stdoutLine = null;
 
@@ -218,7 +223,8 @@ public final class ProcessUtils {
       }
 
       InputStream err = p.getInputStream();
-      BufferedReader errr = new BufferedReader(new InputStreamReader(err));
+      BufferedReader errr =
+          new BufferedReader(new InputStreamReader(err, CHARSET));
 
       String stderrLine = null;
 
@@ -267,7 +273,8 @@ public final class ProcessUtils {
     Process p = Runtime.getRuntime().exec(cmd);
 
     InputStream std = p.getInputStream();
-    BufferedReader stdr = new BufferedReader(new InputStreamReader(std));
+    BufferedReader stdr =
+        new BufferedReader(new InputStreamReader(std, CHARSET));
 
     String l = null;
 
@@ -277,7 +284,8 @@ public final class ProcessUtils {
     }
 
     InputStream err = p.getInputStream();
-    BufferedReader errr = new BufferedReader(new InputStreamReader(err));
+    BufferedReader errr =
+        new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -313,7 +321,8 @@ public final class ProcessUtils {
     FileUtils.copy(std, fos);
 
     InputStream err = p.getInputStream();
-    BufferedReader errr = new BufferedReader(new InputStreamReader(err));
+    BufferedReader errr =
+        new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -356,7 +365,8 @@ public final class ProcessUtils {
 
     InputStream std = p.getInputStream();
 
-    BufferedReader stdr = new BufferedReader(new InputStreamReader(std));
+    BufferedReader stdr =
+        new BufferedReader(new InputStreamReader(std, CHARSET));
 
     StringBuffer sb = new StringBuffer();
     String l1 = null;
@@ -367,7 +377,8 @@ public final class ProcessUtils {
     }
 
     InputStream err = p.getErrorStream();
-    BufferedReader errr = new BufferedReader(new InputStreamReader(err));
+    BufferedReader errr =
+        new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -548,9 +559,9 @@ public final class ProcessUtils {
     Process p = Runtime.getRuntime().exec(cmd);
 
     final BufferedReader stdr =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
+        new BufferedReader(new InputStreamReader(p.getInputStream(), CHARSET));
     final BufferedReader errr =
-        new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        new BufferedReader(new InputStreamReader(p.getErrorStream(), CHARSET));
 
     new Thread(new ProcessThreadOutput(stdr, System.out)).start();
     new Thread(new ProcessThreadOutput(errr, System.err)).start();
@@ -574,9 +585,9 @@ public final class ProcessUtils {
     Process p = Runtime.getRuntime().exec(cmd);
 
     final BufferedReader stdr =
-        new BufferedReader(new InputStreamReader(p.getInputStream()));
+        new BufferedReader(new InputStreamReader(p.getInputStream(), CHARSET));
     final BufferedReader errr =
-        new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        new BufferedReader(new InputStreamReader(p.getErrorStream(), CHARSET));
 
     new Thread(new ProcessThreadOutput(stdr, System.out)).start();
     new Thread(new ProcessThreadOutput(errr, System.err)).start();

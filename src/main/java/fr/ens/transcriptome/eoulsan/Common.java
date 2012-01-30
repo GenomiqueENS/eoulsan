@@ -56,7 +56,8 @@ public final class Common {
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
 
-    final Writer writer = new OutputStreamWriter(os);
+    final Writer writer =
+        new OutputStreamWriter(os, Globals.DEFAULT_FILE_ENCODING);
     writer.write("Start time: "
         + new Date(startTime) + "\nEnd time: " + new Date(endTime)
         + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n");

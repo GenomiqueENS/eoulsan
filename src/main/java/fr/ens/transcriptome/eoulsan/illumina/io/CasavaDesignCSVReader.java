@@ -30,8 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -41,6 +43,10 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
 
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset
+      .forName(Globals.DEFAULT_FILE_ENCODING);
+  
   private BufferedReader reader;
 
   @Override
@@ -121,7 +127,7 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is));
+    this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
   }
 
   /**

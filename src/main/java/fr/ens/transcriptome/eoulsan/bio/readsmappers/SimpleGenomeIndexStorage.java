@@ -134,7 +134,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     }
 
     final BufferedReader br =
-        new BufferedReader(new InputStreamReader(indexFile.open()));
+        new BufferedReader(new InputStreamReader(indexFile.open(),
+            Globals.DEFAULT_FILE_ENCODING));
 
     final Pattern pattern = Pattern.compile("\t");
     String line = null;
@@ -177,7 +178,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     // Create an empty index file
     final BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(indexFile.create()));
+        new BufferedWriter(new OutputStreamWriter(indexFile.create(),
+            Globals.DEFAULT_FILE_ENCODING));
     writer
         .write("#Genome\tGenomeMD5\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\n");
 

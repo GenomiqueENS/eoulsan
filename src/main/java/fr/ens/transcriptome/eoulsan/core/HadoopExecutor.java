@@ -37,6 +37,7 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -124,7 +125,9 @@ public class HadoopExecutor extends Executor {
   private void writeResultLog(final Path logPath, final FileSystem fs,
       final StepResult result) throws IOException {
 
-    final Writer writer = new OutputStreamWriter(fs.create(logPath));
+    final Writer writer =
+        new OutputStreamWriter(fs.create(logPath),
+            Globals.DEFAULT_FILE_ENCODING);
 
     final String data = result.getLogMessage();
 
@@ -136,7 +139,9 @@ public class HadoopExecutor extends Executor {
   private void writeErrorLog(final Path logPath, final FileSystem fs,
       final StepResult result) throws IOException {
 
-    final Writer writer = new OutputStreamWriter(fs.create(logPath));
+    final Writer writer =
+        new OutputStreamWriter(fs.create(logPath),
+            Globals.DEFAULT_FILE_ENCODING);
 
     final String data = result.getErrorMessage();
     final Exception e = result.getException();
@@ -159,7 +164,9 @@ public class HadoopExecutor extends Executor {
   private void writeDirectoryCatalog(final Path catPath, final FileSystem fs)
       throws IOException {
 
-    final Writer writer = new OutputStreamWriter(fs.create(catPath));
+    final Writer writer =
+        new OutputStreamWriter(fs.create(catPath),
+            Globals.DEFAULT_FILE_ENCODING);
 
     final Path basePath = new Path(getContext().getBasePathname());
     final FileSystem baseFs = basePath.getFileSystem(this.conf);

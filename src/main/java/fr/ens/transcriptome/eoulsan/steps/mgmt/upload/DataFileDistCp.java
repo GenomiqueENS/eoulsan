@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,6 +67,10 @@ public class DataFileDistCp {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset
+      .forName(Globals.DEFAULT_FILE_ENCODING);
 
   private final Configuration conf;
   private final Path jobPath;
@@ -86,7 +91,7 @@ public class DataFileDistCp {
      * Internal class to store an exception if occurs while coping.
      * @author Laurent Jourdren
      */
-    private static final class MyIOException {
+    private static final class MyIOExceptionWrapper {
       public IOException ioexception;
     }
 
@@ -167,7 +172,7 @@ public class DataFileDistCp {
         final Context context) throws InterruptedException, IOException {
 
       // Define a wrapper object to store exception if needed
-      final MyIOException exp = new MyIOException();
+      final MyIOExceptionWrapper exp = new MyIOExceptionWrapper();
 
       // Create the thread for copy
       final Thread t = new Thread(new Runnable() {
@@ -253,7 +258,7 @@ public class DataFileDistCp {
       LOGGER.info("Task copy " + inFile + " in " + f.toString());
 
       BufferedWriter bw =
-          new BufferedWriter(new OutputStreamWriter(fs.create(f)));
+          new BufferedWriter(new OutputStreamWriter(fs.create(f), CHARSET));
 
       bw.write(inFile.getSource() + "\t" + outFile.getSource() + "\n");
       bw.close();

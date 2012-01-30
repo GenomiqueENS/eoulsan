@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -37,8 +38,14 @@ import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+
 @SuppressWarnings("deprecation")
 public class FastqRecordReader implements RecordReader<LongWritable, Text> {
+
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset
+      .forName(Globals.DEFAULT_FILE_ENCODING);
 
   private long end;
   private boolean stillInChunk = true;
@@ -46,7 +53,7 @@ public class FastqRecordReader implements RecordReader<LongWritable, Text> {
   private FSDataInputStream fsin;
   private DataOutputBuffer buffer = new DataOutputBuffer();
 
-  private byte[] endTag = "\n@".getBytes();
+  private byte[] endTag = "\n@".getBytes(Globals.DEFAULT_FILE_ENCODING);
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 
@@ -80,9 +87,9 @@ public class FastqRecordReader implements RecordReader<LongWritable, Text> {
 
     // If start of the file, ignore first '@'
     if (startPos == 0)
-      data = new String(buffer.getData(), 1, buffer.getLength());
+      data = new String(buffer.getData(), 1, buffer.getLength(), CHARSET);
     else
-      data = new String(buffer.getData(), 0, buffer.getLength());
+      data = new String(buffer.getData(), 0, buffer.getLength(), CHARSET);
 
     final String[] lines = PATTERN.split(data);
 

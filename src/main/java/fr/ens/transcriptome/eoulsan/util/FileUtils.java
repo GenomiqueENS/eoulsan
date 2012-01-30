@@ -294,7 +294,8 @@ public class FileUtils {
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is));
+    return new BufferedReader(new InputStreamReader(is, Charset.forName(System
+        .getProperty("file.encoding"))));
   }
 
   /**
@@ -322,7 +323,8 @@ public class FileUtils {
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is));
+    return new BufferedReader(new InputStreamReader(is, Charset.forName(System
+        .getProperty("file.encoding"))));
   }
 
   /**
@@ -1511,8 +1513,8 @@ public class FileUtils {
    */
   public static boolean compareFile(final String filenameA,
       final String filenameB) throws IOException {
-    return compareFile(new FileInputStream(filenameA), new FileInputStream(
-        filenameB));
+
+    return compareFile(new File(filenameA), new File(filenameB));
   }
 
   /**
@@ -1524,7 +1526,18 @@ public class FileUtils {
    */
   public static boolean compareFile(final File fileA, final File fileB)
       throws IOException {
-    return compareFile(new FileInputStream(fileA), new FileInputStream(fileB));
+
+    final InputStream isa = new FileInputStream(fileA);
+    final InputStream isb = new FileInputStream(fileB);
+
+    try {
+      return compareFile(isa, isb);
+    } catch (IOException e) {
+      throw e;
+    } finally {
+      isa.close();
+      isb.close();
+    }
   }
 
 }

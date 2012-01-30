@@ -51,14 +51,6 @@ public class BinariesInstaller {
       return;
     }
 
-    final String resourcePath = inputPath.toLowerCase() + "/" + file;
-    final InputStream is =
-        BinariesInstaller.class.getResourceAsStream(resourcePath);
-
-    if (is == null)
-      throw new FileNotFoundException("Unable to find the correct resource ("
-          + resourcePath + ")");
-
     final File outputDir = new File(outputPath);
 
     if (!outputDir.isDirectory()) {
@@ -68,6 +60,14 @@ public class BinariesInstaller {
                 + outputDir.getAbsolutePath());
       FileUtils.setDirectoryWritable(outputDir, true, false);
     }
+
+    final String resourcePath = inputPath.toLowerCase() + "/" + file;
+    final InputStream is =
+        BinariesInstaller.class.getResourceAsStream(resourcePath);
+
+    if (is == null)
+      throw new FileNotFoundException("Unable to find the correct resource ("
+          + resourcePath + ")");
 
     final File outputFile = new File(outputDir, file);
     OutputStream fos = FileUtils.createOutputStream(outputFile);
