@@ -268,7 +268,7 @@ public class DiffAna {
 
         sb.append("expr1 = merge(expr1,expr");
         sb.append(i + 1);
-        sb.append(",by.x=\"ID\",by.y=\"ID\")\n");
+        sb.append(",by.x=\"Id\",by.y=\"Id\")\n");
 
       }
 
