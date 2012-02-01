@@ -28,8 +28,7 @@ package fr.ens.transcriptome.eoulsan.data;
  * This class define an annotation GFF DataFormat.
  * @author Laurent Jourdren
  */
-public final class ExpressionResultsTxtDataFormat extends
-    AbstractDataFormat {
+public final class ExpressionResultsTxtDataFormat extends AbstractDataFormat {
 
   public static final String FORMAT_NAME = "expression";
 
@@ -41,7 +40,13 @@ public final class ExpressionResultsTxtDataFormat extends
   @Override
   public String getDefaultExtention() {
 
-    return ".txt";
+    return ".tsv";
+  }
+
+  @Override
+  public String[] getExtensions() {
+
+    return new String[] {".tsv", ".txt"};
   }
 
   @Override
