@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -30,7 +31,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 //only use this step in local mode. The two other annotations are "@HadoopOnly" 
 //and "@HadoopCompatible" when a step can be executed in local or Hadoop mode.
 @LocalOnly
-public class GsnapStep extends AbstractStep {
+public class GsnapExampleStep extends AbstractStep {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -41,7 +42,7 @@ public class GsnapStep extends AbstractStep {
   @Override
   public String getName() {
     // This method return the name of the step
-    return "gsnap";
+    return "gsnapexample";
   }
 
   @Override
@@ -106,12 +107,8 @@ public class GsnapStep extends AbstractStep {
         // context.getDataFile() with the data type and sample object as
         // argument
         final File archiveIndexFile =
-            context.getDataFile(DataFormats.GMAP_INDEX_ZIP, sample).toFile();
-
-        // Get the directory path of the Gmap genome index
-        final File indexDir =
-            new File(StringUtils.filenameWithoutExtension(archiveIndexFile
-                .getPath()));
+            context.getInputDataFile(DataFormats.GMAP_INDEX_ZIP, sample)
+                .toFile();
 
         // Get input file count for the sample
         // It could have one or two fastq files by sample (single end or
@@ -130,7 +127,7 @@ public class GsnapStep extends AbstractStep {
 
         // Get the path to the output SAM file
         final File outSamFile =
-            context.getDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
+            context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
                 .toFile();
 
         // Log message for this sample
@@ -147,11 +144,12 @@ public class GsnapStep extends AbstractStep {
           // of the requested file. With single end fastq the value is always 0.
           // In paired-end mode, the number of the second end is 1.
           final File inFile =
-              context.getDataFile(FILTERED_READS_FASTQ, sample, 0).toFile();
+              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
+                  .toFile();
 
           // Single read mapping
-          mapSingleEnd(context, inFile, archiveIndexFile, indexDir, outSamFile,
-              reporter);
+          mapSingleEnd(context, inFile, sample.getMetadata().getFastqFormat(),
+              archiveIndexFile, outSamFile, reporter);
 
           logMsg =
               "Mapping reads in "
@@ -166,16 +164,18 @@ public class GsnapStep extends AbstractStep {
           // The third argument of context.getDataFile is 0 like in single end
           // mode.
           final File inFile1 =
-              context.getDataFile(FILTERED_READS_FASTQ, sample, 0).toFile();
+              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
+                  .toFile();
 
           // Get the path of the second end
           // The third argument of context.getDataFile is 1.
           final File inFile2 =
-              context.getDataFile(FILTERED_READS_FASTQ, sample, 1).toFile();
+              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 1)
+                  .toFile();
 
           // Single read mapping
-          mapPairedEnd(context, inFile1, inFile2, archiveIndexFile, indexDir,
-              outSamFile, reporter);
+          mapPairedEnd(context, inFile1, inFile2, sample.getMetadata()
+              .getFastqFormat(), archiveIndexFile, outSamFile, reporter);
 
           logMsg =
               "Mapping reads in "
@@ -200,32 +200,33 @@ public class GsnapStep extends AbstractStep {
 
   // This method launch the computation in single end mode.
   private void mapSingleEnd(final Context context, final File inFile,
-      final File archiveIndexFile, final File indexDir, final File outSamFile,
-      final Reporter reporter) throws IOException {
+      final FastqFormat format, final File archiveIndexFile,
+      final File outSamFile, final Reporter reporter) throws IOException {
 
     // Build the command line
     final String cmdArgs =
         this.mapperArguments + " " + inFile.getAbsolutePath();
 
-    map(context, cmdArgs, archiveIndexFile, indexDir, outSamFile, reporter);
+    map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
 
   // This method launch the computation in paired-end mode
   private void mapPairedEnd(final Context context, final File inFile1,
-      final File inFile2, final File archiveIndexFile, final File indexDir,
-      final File outSamFile, final Reporter reporter) throws IOException {
+      final File inFile2, final FastqFormat format,
+      final File archiveIndexFile, final File outSamFile,
+      final Reporter reporter) throws IOException {
 
     // Build the command line
     final String cmdArgs =
         this.mapperArguments
             + " " + inFile1.getAbsolutePath() + " " + inFile2.getAbsolutePath();
 
-    map(context, cmdArgs, archiveIndexFile, indexDir, outSamFile, reporter);
+    map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
 
   private void map(final Context context, final String cmdArg,
-      final File archiveIndexFile, final File indexDir, final File outSamFile,
-      final Reporter reporter) throws IOException {
+      final FastqFormat format, final File archiveIndexFile,
+      final File outSamFile, final Reporter reporter) throws IOException {
 
     // Extract and install the gsnap binary for eoulsan jar archive
     final String gsnapPath =
@@ -240,10 +241,29 @@ public class GsnapStep extends AbstractStep {
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
+    // Select the argument for the FASTQ format
+    final String formatArg;
+    switch (format) {
+
+    case FASTQ_ILLUMINA:
+      formatArg = "--quality-protocol=illumina";
+      break;
+    case FASTQ_ILLUMINA_1_5:
+      formatArg = "--quality-protocol=illumina";
+      break;
+    case FASTQ_SOLEXA:
+      throw new IOException("Gsnap not handle the Solexa FASTQ format.");
+
+    case FASTQ_SANGER:
+    default:
+      formatArg = "--quality-protocol=sanger";
+      break;
+    }
+
     // Build the command line
     final String cmd =
         gsnapPath
-            + " -N 1 -A sam -t "
+            + " -N 1 -A sam " + formatArg + " -t "
             + context.getSettings().getLocalThreadsNumber() + " -D "
             + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
             + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
