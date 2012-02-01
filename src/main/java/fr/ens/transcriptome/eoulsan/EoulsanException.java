@@ -31,6 +31,9 @@ package fr.ens.transcriptome.eoulsan;
  */
 public class EoulsanException extends Exception {
 
+  // Serialization version UID
+  private static final long serialVersionUID = 7021095498629981700L;
+
   /**
    * Create a new EoulsanException with a message.
    * @param message the message
