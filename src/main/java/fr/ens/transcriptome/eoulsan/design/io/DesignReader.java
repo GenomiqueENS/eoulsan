@@ -27,13 +27,12 @@ package fr.ens.transcriptome.eoulsan.design.io;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
-
-
 /**
  * This interface define a DesignReader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
-public interface DesignReader  {
+public interface DesignReader {
 
   /**
    * Read the design.

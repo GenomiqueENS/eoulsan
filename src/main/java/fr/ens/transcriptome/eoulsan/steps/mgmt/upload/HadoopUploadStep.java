@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This class define a Step for Hadoop file uploading.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

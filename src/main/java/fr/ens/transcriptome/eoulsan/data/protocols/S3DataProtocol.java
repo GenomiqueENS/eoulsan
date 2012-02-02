@@ -57,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define the s3 protocol in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

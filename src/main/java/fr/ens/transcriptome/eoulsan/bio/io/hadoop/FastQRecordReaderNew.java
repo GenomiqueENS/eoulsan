@@ -33,6 +33,12 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
+/**
+ * This class define a RecordReader for FASTQ files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
 
   private LongWritable key = new LongWritable();

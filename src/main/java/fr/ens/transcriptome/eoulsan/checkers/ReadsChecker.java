@@ -41,6 +41,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
+/**
+ * This class define a checker on FASTQ files.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class ReadsChecker implements Checker {
 
   public static final int MAX_READS_TO_CHECK = 1000;

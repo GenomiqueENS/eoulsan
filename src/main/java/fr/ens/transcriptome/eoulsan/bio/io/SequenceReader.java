@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.bio.Sequence;
 
 /**
  * This interface define methods to implements for SequenceReader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface SequenceReader extends Iterator<Sequence>, Iterable<Sequence>,

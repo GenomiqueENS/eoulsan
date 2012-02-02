@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class create and launch a R script to compute differential analysis.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DiffAna {

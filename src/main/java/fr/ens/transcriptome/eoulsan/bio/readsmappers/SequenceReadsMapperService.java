@@ -29,6 +29,7 @@ import java.util.ServiceLoader;
 
 /**
  * This class define a service to retrieve a SequenceReadsMapper
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class SequenceReadsMapperService {

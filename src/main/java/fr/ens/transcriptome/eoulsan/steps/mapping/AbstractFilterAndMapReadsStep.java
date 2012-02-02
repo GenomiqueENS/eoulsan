@@ -41,6 +41,12 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
+/**
+ * This class define an abstract step for read filtering, mapping and alignments
+ * filtering.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
   /** Logger */

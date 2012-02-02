@@ -74,6 +74,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
 /**
  * A Map-reduce program to recursively copy directories between different
  * file-systems.
+ * @since 1.0
+ * @author The hadoop project
  */
 @SuppressWarnings("deprecation")
 public class DistCp implements Tool {

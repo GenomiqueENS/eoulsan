@@ -33,6 +33,12 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define a Thread to pipe an executable. TODO This class is unused,
+ * can be removed
+ * @since 1.1
+ * @author Laurent Jourdren
+ */
 public abstract class AbstractExternalCommandMapRedPipeThread implements
     Runnable {
 
@@ -102,7 +108,7 @@ public abstract class AbstractExternalCommandMapRedPipeThread implements
     return this.process.waitFor();
   }
 
-  //    
+  //
   // Constructor
   //
 

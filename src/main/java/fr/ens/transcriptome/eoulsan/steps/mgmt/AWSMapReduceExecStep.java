@@ -47,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.AWSMapReduceJob;
 
 /**
  * This class launch Eoulsan on Amazon MapReduce.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

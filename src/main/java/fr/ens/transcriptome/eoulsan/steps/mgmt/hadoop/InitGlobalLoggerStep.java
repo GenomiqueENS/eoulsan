@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class initialize the global logger
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

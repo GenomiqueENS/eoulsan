@@ -67,6 +67,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 /**
  * This class implements the local version of map reduce alhorithm for
  * expression computation.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

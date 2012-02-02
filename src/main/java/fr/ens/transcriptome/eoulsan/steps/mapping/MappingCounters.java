@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 /**
  * This enum define the names of the counters of the steps of this package.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public enum MappingCounters {

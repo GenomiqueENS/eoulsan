@@ -53,7 +53,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * Main class for mapping reads.
+ * This class define a step for reads mapping.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

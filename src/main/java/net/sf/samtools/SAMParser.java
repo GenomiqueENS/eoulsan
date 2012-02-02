@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 /**
  * This allow to parse a entry of a SAM file. This code comes from the picard
  * project.
- * @see http://picard.sourceforge.net/
+ * @see <a href="http://picard.sourceforge.net/">Picard on sourceforge</a>
  */
 @SuppressWarnings("all")
 public class SAMParser {

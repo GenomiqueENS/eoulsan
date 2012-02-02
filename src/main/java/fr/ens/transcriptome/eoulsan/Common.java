@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define common constants.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class Common {
@@ -67,7 +68,7 @@ public final class Common {
 
   /**
    * Write log data.
-   * @param os OutputStream of the log file
+   * @param file the log file
    * @param data data to write
    * @throws IOException if an error occurs while writing log file
    */

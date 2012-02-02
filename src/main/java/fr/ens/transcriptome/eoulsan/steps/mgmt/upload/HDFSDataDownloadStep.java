@@ -57,6 +57,12 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
+/**
+ * This class define a download step that retrieve data from HDFS at the end of
+ * an analysis.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @HadoopOnly
 public class HDFSDataDownloadStep extends AbstractStep {
 

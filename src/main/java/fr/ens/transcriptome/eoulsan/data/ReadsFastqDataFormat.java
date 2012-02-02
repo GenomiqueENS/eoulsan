@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.checkers.ReadsChecker;
 
 /**
  * This class define a reads fastq DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ReadsFastqDataFormat extends AbstractDataFormat {

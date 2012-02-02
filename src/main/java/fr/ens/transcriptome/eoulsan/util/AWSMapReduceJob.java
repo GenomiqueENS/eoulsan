@@ -48,6 +48,11 @@ import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define an AWS MapReduce job.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class AWSMapReduceJob {
 
   /** Logger */

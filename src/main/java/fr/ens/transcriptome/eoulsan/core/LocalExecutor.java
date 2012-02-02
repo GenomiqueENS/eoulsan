@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 
 /**
  * This class define an executor for local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LocalExecutor extends Executor {

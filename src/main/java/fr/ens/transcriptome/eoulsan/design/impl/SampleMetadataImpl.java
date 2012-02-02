@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class is the implementation of SampleMetadata.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class SampleMetadataImpl implements SampleMetadata {

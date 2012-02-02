@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 
 /**
  * This class define the s3n protocol in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

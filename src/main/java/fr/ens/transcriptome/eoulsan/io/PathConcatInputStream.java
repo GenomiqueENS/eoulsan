@@ -37,6 +37,7 @@ import org.apache.hadoop.fs.Path;
 
 /**
  * This class define an InputStream that concatenate path in an InputStream.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class PathConcatInputStream extends AbstractConcatInputStream {

@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class allow to repackage the application.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class HadoopJarRepackager {

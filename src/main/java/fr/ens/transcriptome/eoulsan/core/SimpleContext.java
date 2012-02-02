@@ -56,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define an simple ExecutorInfo.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class SimpleContext implements Context {
@@ -186,7 +187,7 @@ public final class SimpleContext implements Context {
 
   /**
    * Set the log path
-   * @param logPath The log Path to set
+   * @param logPath The log path to set
    */
   public void setLogPathname(final String logPath) {
 
@@ -196,7 +197,7 @@ public final class SimpleContext implements Context {
 
   /**
    * Set the output path
-   * @param logPathname The output Path to set
+   * @param outputPath The output path to set
    */
   public void setOutputPathname(final String outputPath) {
 
@@ -206,7 +207,7 @@ public final class SimpleContext implements Context {
 
   /**
    * Set the design path
-   * @param designPathname The design Path to set
+   * @param designPathname The design path to set
    */
   public void setDesignPathname(final String designPathname) {
 
@@ -216,7 +217,7 @@ public final class SimpleContext implements Context {
 
   /**
    * Set the parameter path
-   * @param paramPathname The parameter Path to set
+   * @param paramPathname The parameter path to set
    */
   public void setParameterPathname(final String paramPathname) {
 
@@ -226,7 +227,7 @@ public final class SimpleContext implements Context {
 
   /**
    * Set the jar path
-   * @param jarPathname The jar Path to set
+   * @param jarPathname The jar path to set
    */
   public void setJarPathname(final String jarPathname) {
 

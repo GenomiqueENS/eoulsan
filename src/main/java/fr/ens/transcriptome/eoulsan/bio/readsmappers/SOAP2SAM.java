@@ -42,6 +42,11 @@ import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
+/**
+ * This class allow to convert the SOAP2 output to SAM format.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class SOAP2SAM {
 
   private final StringBuilder sb = new StringBuilder();

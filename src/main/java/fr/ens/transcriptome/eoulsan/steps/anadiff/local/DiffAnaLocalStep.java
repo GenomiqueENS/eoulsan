@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.steps.anadiff.DiffAna;
 
 /**
  * This class define the step of differential analysis in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

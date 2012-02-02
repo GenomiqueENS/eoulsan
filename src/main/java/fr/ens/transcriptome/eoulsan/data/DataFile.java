@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a DataFile.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFile {
@@ -441,7 +442,7 @@ public class DataFile {
 
   /**
    * Public constructor.
-   * @param file the parent file of the DataFile
+   * @param parentFile the parent file of the DataFile
    * @param filename the filename of the DataFile
    * @throws EoulsanException if an error occurs when searching the protocol of
    *           the source

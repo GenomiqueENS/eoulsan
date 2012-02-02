@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep;
 
 /**
  * This class define a genome fasta DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class GenomeFastaDataFormat extends AbstractDataFormat {

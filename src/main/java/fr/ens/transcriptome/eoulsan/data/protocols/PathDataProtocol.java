@@ -42,6 +42,12 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
+/**
+ * This class define an abstract class for DataProtocols based on the Hadoop
+ * framework Path object.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public abstract class PathDataProtocol extends AbstractDataProtocol {
 
   protected Configuration conf;

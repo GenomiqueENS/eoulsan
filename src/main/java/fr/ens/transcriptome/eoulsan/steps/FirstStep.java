@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 /**
  * This class define a first step that do nothing. All generator steps must be
  * added before this step.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 @HadoopCompatible

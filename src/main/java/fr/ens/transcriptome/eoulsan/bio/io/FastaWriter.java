@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class implements a Fasta writer.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FastaWriter implements SequenceWriter {

@@ -41,6 +41,7 @@ import com.google.common.collect.Maps;
 
 /**
  * This is the version for the new Hadoop API of JobsResults.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class NewAPIJobsResults extends JobsResults {

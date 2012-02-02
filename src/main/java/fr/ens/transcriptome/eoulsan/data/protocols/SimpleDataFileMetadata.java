@@ -27,6 +27,11 @@ package fr.ens.transcriptome.eoulsan.data.protocols;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
+/**
+ * This class define a simple implementation of the DataFileMetadata interface.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 class SimpleDataFileMetadata implements DataFileMetadata {
 
   private long contentLength = -1;

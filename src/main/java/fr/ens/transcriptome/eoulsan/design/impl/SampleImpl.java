@@ -31,6 +31,11 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
+/**
+ * This class implements the <code>Sample</code> interface.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class SampleImpl implements Sample {
 
   private DesignImpl design;

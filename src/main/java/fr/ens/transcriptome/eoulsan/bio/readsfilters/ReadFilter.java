@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * This interface define a filter for reads.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface ReadFilter {

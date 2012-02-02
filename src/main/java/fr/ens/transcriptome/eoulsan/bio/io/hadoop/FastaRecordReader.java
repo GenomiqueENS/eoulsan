@@ -40,6 +40,12 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define a RecordReader for FASTA files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("deprecation")
 public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 

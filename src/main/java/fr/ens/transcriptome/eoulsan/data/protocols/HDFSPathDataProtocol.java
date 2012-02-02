@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.io.PathConcatInputStream;
 
 /**
  * This class define the HDFS protocol in Hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

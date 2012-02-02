@@ -54,6 +54,11 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
+/**
+ * This class define an mapper step in Hadoop mode.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @HadoopOnly
 public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 

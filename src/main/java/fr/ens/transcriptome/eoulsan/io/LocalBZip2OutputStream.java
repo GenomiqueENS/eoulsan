@@ -31,6 +31,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
 
 /**
  * This class define an output stream for Bzip2 files in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LocalBZip2OutputStream extends OutputStream {

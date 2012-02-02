@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This step add execution information in log file in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopCompatible

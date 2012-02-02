@@ -31,7 +31,8 @@ import java.io.OutputStream;
 /**
  * This class define a filter that count the number of written bytes by an
  * InputSream.
- * @author jourdren
+ * @since 1.0
+ * @author Laurent Jourdren
  */
 public class ByteCountOutputStream extends FilterOutputStream {
 

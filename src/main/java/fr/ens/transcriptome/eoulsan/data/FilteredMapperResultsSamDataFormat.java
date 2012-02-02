@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.data;
 
 /**
  * This class define a filtered SAM mappper result DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class FilteredMapperResultsSamDataFormat extends

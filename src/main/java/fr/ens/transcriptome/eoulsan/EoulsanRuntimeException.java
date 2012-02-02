@@ -30,6 +30,7 @@ package fr.ens.transcriptome.eoulsan;
  * RuntimeExceptions can be used as a fall-back if you are implementing an
  * interface which doesn't support checked exceptions. If you do this, please
  * document this clearly in the implementing class.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Matthew Pocock
  * @author Thomas Down

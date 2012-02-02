@@ -37,7 +37,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Utility class for strings.
+ * Utility class for Strings.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class StringUtils {
@@ -238,7 +239,7 @@ public final class StringUtils {
   /**
    * Split a string. \t is the separator character.
    * @param s the String to split
-   * @param array The result array.
+   * @param list The result list.
    * @return the array with the new values
    */
   public static final List<String> fastSplit(final String s,
@@ -273,7 +274,6 @@ public final class StringUtils {
    * Split a string. \t is the separator character.
    * @param s the String to split
    * @param array The result array.
-   * @param allowEmptyFields to allow empty fields
    * @return the array with the new values
    */
   public static final String[] fastSplit(final String s, final String[] array) {

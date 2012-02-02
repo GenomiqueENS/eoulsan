@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.checkers.Checker;
 
 /**
  * This class define an annotation GFF DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class AnnotationGffDataFormat extends AbstractDataFormat {

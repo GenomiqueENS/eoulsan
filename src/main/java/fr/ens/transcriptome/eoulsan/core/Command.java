@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.Settings;
 
 /**
  * This class define the command object of Eoulsan.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class Command {

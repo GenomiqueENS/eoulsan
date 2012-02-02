@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This interface define a context.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface Context {
@@ -177,7 +178,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   String getInputDataFilename(DataFormat df, Sample sample, int fileIndex);
 
@@ -196,7 +197,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   DataFile getInputDataFile(DataFormat df, Sample sample, int fileIndex);
 
@@ -215,7 +216,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   String getOutputDataFilename(DataFormat df, Sample sample, int fileIndex);
 
@@ -234,7 +235,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   DataFile getOutputDataFile(DataFormat df, Sample sample, int fileIndex);
 
@@ -253,7 +254,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   String getOtherDataFilename(DataFormat df, Sample sample, int fileIndex);
 
@@ -272,7 +273,7 @@ public interface Context {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   DataFile getOtherDataFile(DataFormat df, Sample sample, int fileIndex);
 
@@ -282,7 +283,7 @@ public interface Context {
    * @param df the DataFormat of the source
    * @param sample the sample for the source
    * @return the number of multifile for the DataFormat and the sample
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   int getDataFileCount(final DataFormat df, final Sample sample);
 
@@ -308,7 +309,7 @@ public interface Context {
 
   /**
    * Create an InputStream to load data.
-   * @param ds the DataFormat of the data to load
+   * @param df the DataFormat of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
@@ -317,11 +318,11 @@ public interface Context {
   /**
    * Create an InputStream to load data. This method works only for a multifile
    * DataFormat.
-   * @param ds the DataFormat of the data to load
+   * @param df the DataFormat of the data to load
    * @param sample the sample
    * @param fileIndex file index for multifile data
    * @return an InputStream corresponding to DataType and Sample
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   InputStream getInputStream(DataFormat df, Sample sample, int fileIndex)
       throws IOException;
@@ -329,7 +330,7 @@ public interface Context {
   /**
    * Create a raw InputStream (without decompression of input data) to load
    * data.
-   * @param dt the DataFormat of the data to load
+   * @param df the DataFormat of the data to load
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
@@ -339,18 +340,18 @@ public interface Context {
   /**
    * Create a raw InputStream (without decompression of input data) to load
    * data. This method works only for a multifile DataFormat.
-   * @param dt the DataFormat of the data to load
+   * @param df the DataFormat of the data to load
    * @param sample the sample
    * @param fileIndex file index for multifile data
    * @return an InputStream corresponding to DataType and Sample
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   InputStream getRawInputStream(DataFormat df, Sample sample, int fileIndex)
       throws IOException;
 
   /**
    * Create an OutputStream to load data.
-   * @param dt the DataFormat of the data to write
+   * @param df the DataFormat of the data to write
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
@@ -359,11 +360,11 @@ public interface Context {
   /**
    * Create an OutputStream to load data. This method works only for a multifile
    * DataFormat.
-   * @param dt the DataFormat of the data to write
+   * @param df the DataFormat of the data to write
    * @param sample the sample
    * @param fileIndex file index for multifile data
    * @return an InputStream corresponding to DataType and Sample
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   OutputStream getOutputStream(DataFormat df, Sample sample, int fileIndex)
       throws IOException;

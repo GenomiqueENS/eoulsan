@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an action that execute Eoulsan on AWS MapReduce.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class AWSExecAction extends AbstractAction {

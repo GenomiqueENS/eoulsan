@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define a read sequence.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ReadSequence extends Sequence {
@@ -214,7 +215,6 @@ public final class ReadSequence extends Sequence {
 
   /**
    * Return the sequence in FastQ format.
-   * @param repeatId repeat the id on the 3rd line of the fastq entry
    * @return a String with the sequence in FastQ format
    */
   public final String toFastQ() {

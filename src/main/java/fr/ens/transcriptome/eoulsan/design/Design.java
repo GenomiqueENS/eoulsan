@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * This interface define a Design.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface Design {

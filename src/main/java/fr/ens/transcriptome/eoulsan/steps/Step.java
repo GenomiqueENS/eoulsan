@@ -33,6 +33,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
+/**
+ * This interface define a Step.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public interface Step {
 
   /**

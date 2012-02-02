@@ -26,14 +26,15 @@ package fr.ens.transcriptome.eoulsan.util;
 
 /**
  * This interface allow to increment a counter in hadoop or local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface ReporterIncrementer {
 
   /**
    * Increment a counter.
+   * @param counterName the counter to increment
    * @param counterGroup group of the counter
-   * @param counter the counter to increment
    * @param amount amount to add to the counter
    */
   public void incrCounter(String counterGroup, String counterName, long amount);

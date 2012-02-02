@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * This class define a filter based on mean quality of a read.
+ * @since 1.0
  * @author Maria Bernard
  * @author Laurent Jourdren
  */

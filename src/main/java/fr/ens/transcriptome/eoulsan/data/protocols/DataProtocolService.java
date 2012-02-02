@@ -42,6 +42,11 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 
+/**
+ * This class define a service to retrieve a DataProtocol.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class DataProtocolService {
 
   /** Logger. */

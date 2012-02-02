@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a GFF writer.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GFFWriter implements Closeable {

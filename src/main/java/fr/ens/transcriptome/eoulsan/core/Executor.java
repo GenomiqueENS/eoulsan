@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class is the executor for running all the steps of an analysis.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class Executor {

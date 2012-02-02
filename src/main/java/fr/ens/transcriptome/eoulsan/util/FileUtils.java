@@ -52,6 +52,11 @@ import java.util.zip.ZipOutputStream;
 
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
+/**
+ * This class define useful method to handle files.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class FileUtils {
 
   /** The default size of the buffer. */
@@ -171,7 +176,7 @@ public class FileUtils {
 
   /**
    * Utility method to create a fast InputStream from a file.
-   * @param file File to read
+   * @param filename name of the file to read
    * @return an InputStream
    * @throws FileNotFoundException if the file is not found
    */
@@ -560,7 +565,6 @@ public class FileUtils {
    * Copy a file.
    * @param srcFile File to copy
    * @param destFile Destination file
-   * @param overwrite overwrite existing file
    * @throws IOException if an error occurs while copying file
    */
   public static boolean copyFile(final File srcFile, final File destFile)
@@ -629,9 +633,8 @@ public class FileUtils {
 
   /**
    * Copy a file.
-   * @param in File to copy
-   * @param out Destination file
-   * @param overwrite overwrite existing file
+   * @param srcFile File to copy
+   * @param destFile Destination file
    * @throws IOException if an error occurs while copying file
    */
   public static boolean moveFile(final File srcFile, final File destFile)
@@ -642,8 +645,8 @@ public class FileUtils {
 
   /**
    * Copy a file.
-   * @param in File to copy
-   * @param out Destination file
+   * @param srcFile File to copy
+   * @param destFile Destination file
    * @param overwrite overwrite existing file
    * @throws IOException if an error occurs while copying file
    */
@@ -957,11 +960,8 @@ public class FileUtils {
   /**
    * Set executable bits on file on *nix.
    * @param file File to handle
-   * @param ownerOnly If true, the execute permission applies only to the
-   *          owner's execute permission; otherwise, it applies to everybody. If
-   *          the underlying file system can not distinguish the owner's execute
-   *          permission from that of others, then the permission will apply to
-   *          everybody, regardless of this value.
+   * @param executable If true, sets the execution permission; if false to
+   *          disallow execute operations
    * @return true if and only if the operation succeeded
    * @throws IOException
    */

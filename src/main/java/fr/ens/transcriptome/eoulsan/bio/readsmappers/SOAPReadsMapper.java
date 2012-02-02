@@ -37,6 +37,11 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define a wrapper on the SOAP2 mapper.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
   /** Logger */

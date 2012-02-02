@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a GFF Entry.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GFFEntry {
@@ -341,9 +342,8 @@ public class GFFEntry {
 
   /**
    * Add metadata entries values. Stop at first entry that fail to be added.
-   * @param key name of key of the metadata entry
-   * @param value The value
-   * @return true if all the values are correctly added to the metadata
+   * @param entries the entries to add
+   * @return true if all the entries are correctly added to the metadata
    */
   public final boolean addMetaDataEntries(final Map<String, String> entries) {
 

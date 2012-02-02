@@ -69,6 +69,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 /**
  * This class is the main class for the expression program of the reads in
  * hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

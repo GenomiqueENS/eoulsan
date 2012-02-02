@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 /**
  * This class define a method to compute tm for oligonucletides.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Sebastian Bassi <sbassi@genesdigitales.com>
  */
@@ -37,7 +38,6 @@ public class MeltingTemp {
   /**
    * Returns DNA tm using nearest neighbor thermodynamics. This method is
    * adapted from bioPython MeltingTemp script.
-   * @author Sebastian Bassi <sbassi@genesdigitales.com>
    * @param s Sequence
    * @param dnac DNA concentration [nM]
    * @param saltc salt concentration [mM]
@@ -100,7 +100,6 @@ public class MeltingTemp {
   /**
    * Returns RNA tm using nearest neighbor thermodynamics. This method is
    * adapted from bioPython MeltingTemp script.
-   * @author Sebastian Bassi <sbassi@genesdigitales.com>
    * @param s Sequence
    * @param dnac DNA concentration [nM]
    * @param saltc salt concentration [mM]

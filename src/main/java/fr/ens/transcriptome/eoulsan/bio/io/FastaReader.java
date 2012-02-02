@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a Fasta reader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FastaReader implements SequenceReader {

@@ -46,7 +46,8 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 /**
  * This Step allow to define the list of the formats of the files to download at
  * the end of a Hadoop execution.
- * @author jourdren
+ * @since 1.0
+ * @author Laurent Jourdren
  */
 @HadoopCompatible
 public class DefineDataFormatToDownload extends AbstractStep {

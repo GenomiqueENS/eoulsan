@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * A nestable Eoulsan exception. This class came from from Biojava code.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Matthew Pocock
  */

@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * This class define a storage where some results of the checker can be save for
  * later reuse by other checkers.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class CheckStore {

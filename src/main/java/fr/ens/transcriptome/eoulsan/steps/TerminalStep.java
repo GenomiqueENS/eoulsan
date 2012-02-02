@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 /**
  * This class define a terminal step that do nothing. After this execution the
  * workflow will stop.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopCompatible

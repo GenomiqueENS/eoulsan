@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define an InputStream that concatenate files in an InputStream.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FileConcatInputStream extends AbstractConcatInputStream {

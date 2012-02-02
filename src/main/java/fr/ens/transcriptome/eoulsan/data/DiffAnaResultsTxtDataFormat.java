@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.data;
 
 /**
  * This class define a Anadif result DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class DiffAnaResultsTxtDataFormat extends AbstractDataFormat {

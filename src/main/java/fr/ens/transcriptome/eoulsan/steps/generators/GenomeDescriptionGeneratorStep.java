@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This class implements a genome description generator step.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GenomeDescriptionGeneratorStep extends AbstractStep {

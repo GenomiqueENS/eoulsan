@@ -34,7 +34,8 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * this class implements a TFQ writer.
+ * This class implements a TFQ writer.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class TFQWriter implements ReadSequenceWriter {

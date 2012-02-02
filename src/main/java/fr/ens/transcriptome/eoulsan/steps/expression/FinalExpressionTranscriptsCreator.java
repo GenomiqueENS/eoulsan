@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 /**
  * This class generate the final expression file after counting the alignment
  * for each transcript.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
@@ -172,7 +173,7 @@ public class FinalExpressionTranscriptsCreator {
 
   /**
    * Load pre result file
-   * @param is input stream of pre-results
+   * @param preResultFile pre-result file
    * @param readsUsed the number of read useds
    * @throws IOException if an error occurs while reading data
    */
@@ -215,7 +216,7 @@ public class FinalExpressionTranscriptsCreator {
 
   /**
    * Save the final results.
-   * @param os output stream
+   * @param resultFile output result file
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final File resultFile) throws IOException {

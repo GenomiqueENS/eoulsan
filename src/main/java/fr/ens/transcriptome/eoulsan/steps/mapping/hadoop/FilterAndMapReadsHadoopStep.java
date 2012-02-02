@@ -58,6 +58,11 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
+/**
+ * This class define a Step that filter and map read in Hadoop mode.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @HadoopOnly
 public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 

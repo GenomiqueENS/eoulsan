@@ -27,6 +27,12 @@ package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
+/**
+ * This class define a read filter that allow to filter paired-end reads of
+ * single end reads.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class PairEndReadFilter implements ReadFilter {
 
   private boolean acceptPairEnd = true;

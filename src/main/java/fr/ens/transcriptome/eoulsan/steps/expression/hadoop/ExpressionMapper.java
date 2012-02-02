@@ -59,7 +59,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exo
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
- * Mapper for Expression computation
+ * Mapper for Expression computation.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

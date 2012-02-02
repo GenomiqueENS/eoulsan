@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define a Step for local mode file uploading.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

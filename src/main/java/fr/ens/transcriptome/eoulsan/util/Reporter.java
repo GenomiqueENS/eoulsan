@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 /**
  * This class implements a reporter class like Counter class in Hadoop
  * framework.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class Reporter implements ReporterIncrementer {

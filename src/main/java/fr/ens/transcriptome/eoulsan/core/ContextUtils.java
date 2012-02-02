@@ -1,3 +1,27 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
 package fr.ens.transcriptome.eoulsan.core;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
@@ -6,7 +30,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
- * This class contains utility methods for Context class.
+ * This class contains utility methods for Context class. 
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ContextUtils {
@@ -18,9 +43,8 @@ public final class ContextUtils {
    * This method works only for a non multifile DataFormat.
    * @param df the DataFormat of the source
    * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throw EoulsanRuntimeException if the DataFormat is multifile
+   * @throws EoulsanRuntimeException if the DataFormat is multifile
    */
   public static String getNewDataFilename(final DataFormat df,
       final Sample sample) {
@@ -42,7 +66,7 @@ public final class ContextUtils {
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throw EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
   public static String getNewDataFilename(final DataFormat df,
       final Sample sample, final int fileIndex) {

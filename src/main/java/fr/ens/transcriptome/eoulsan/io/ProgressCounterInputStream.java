@@ -33,6 +33,7 @@ import org.apache.hadoop.mapreduce.Counter;
 /**
  * This class implements a FilterInputStream that inform Hadoop of the progress
  * of task using counters.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ProgressCounterInputStream extends FilterInputStream {

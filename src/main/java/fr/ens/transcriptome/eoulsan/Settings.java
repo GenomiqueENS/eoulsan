@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class define a settings class.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class Settings {
@@ -462,8 +463,8 @@ public final class Settings {
   }
 
   /**
-   * Set the RServe server name.
-   * @param serverName The name of the RServe to use
+   * Set the temporary directory.
+   * @param tempDirectory The path to the temporary directory
    */
   public void setTempDirectory(final String tempDirectory) {
 

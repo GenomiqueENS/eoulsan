@@ -47,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an action to create design file.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class CreateDesignAction extends AbstractAction {
@@ -67,10 +68,6 @@ public class CreateDesignAction extends AbstractAction {
     return true;
   }
 
-  /**
-   * Create soap index action.
-   * @param args command line parameters for exec action
-   */
   @Override
   public void action(final String[] arguments) {
 
@@ -134,7 +131,7 @@ public class CreateDesignAction extends AbstractAction {
 
     Design design = null;
     final File designFile = new File(filename);
-    
+
     try {
 
       final String[] newArgs =
@@ -147,9 +144,10 @@ public class CreateDesignAction extends AbstractAction {
         db.addCasavaDesignProject(new File(casavaDesignPath), casavaProject);
 
       design = db.getDesign(pairEndMode);
-      
+
       if (symnlinks)
-        DesignUtils.replaceLocalPathBySymlinks(design, designFile.getParentFile());
+        DesignUtils.replaceLocalPathBySymlinks(design,
+            designFile.getParentFile());
 
     } catch (EoulsanException e) {
       Common.errorExit(e, "Error: " + e.getMessage());
@@ -164,8 +162,6 @@ public class CreateDesignAction extends AbstractAction {
     }
 
     try {
-
-      
 
       if (designFile.exists())
         throw new EoulsanIOException("Output design file "

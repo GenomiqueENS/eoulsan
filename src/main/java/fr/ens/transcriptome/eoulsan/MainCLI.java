@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * Main class in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class MainCLI {

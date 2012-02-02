@@ -57,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
 
 /**
  * This class define a generic mapper for reads mapping.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {

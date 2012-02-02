@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.bio.Sequence;
 
 /**
  * This interface define methods to implements for a SequenceWriter.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface SequenceWriter extends Closeable {

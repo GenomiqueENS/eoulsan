@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan;
 
 /**
  * A nestable Eoulsan exception. This class came from from Biojava code.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Matthew Pocock
  */

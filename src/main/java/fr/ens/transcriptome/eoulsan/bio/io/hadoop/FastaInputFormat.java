@@ -24,6 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+/**
+ * This class define an InputFormat for FASTA files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class FastaInputFormat {
 
 }

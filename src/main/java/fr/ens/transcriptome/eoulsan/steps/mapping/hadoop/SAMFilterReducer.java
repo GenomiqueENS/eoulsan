@@ -36,6 +36,11 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define a reducer for alignments filtering.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   private String counterGroup;

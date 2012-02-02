@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class manage the workflow.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 class Workflow implements WorkflowDescription {

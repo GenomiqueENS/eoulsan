@@ -41,7 +41,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class implements a File Protocol.
- * @author Laurent jourdren
+ * @since 1.0
+ * @author Laurent Jourdren
  */
 @HadoopCompatible
 public class FileDataProtocol extends AbstractDataProtocol {

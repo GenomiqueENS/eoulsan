@@ -28,6 +28,11 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class handle exon coverage.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class ExonsCoverage {
 
   private Map<String, Exoncoverage> exons = new HashMap<String, Exoncoverage>();

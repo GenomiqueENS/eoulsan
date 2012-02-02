@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class implements a pseudo map-reduce framework.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class PseudoMapReduce {
@@ -159,7 +160,7 @@ public abstract class PseudoMapReduce {
 
   /**
    * Set the temporary directory.
-   * @param dirPath the temporary directory
+   * @param directory the temporary directory
    */
   public void setMapReduceTemporaryDirectory(final File directory) {
 

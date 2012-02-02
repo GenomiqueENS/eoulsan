@@ -57,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
 /**
  * This class is the main class for the filter reads program in hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

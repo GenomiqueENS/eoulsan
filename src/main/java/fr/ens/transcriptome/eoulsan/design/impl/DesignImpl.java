@@ -37,6 +37,11 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
+/**
+ * This class implements the <code>Design</code> interface.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class DesignImpl implements Design {
 
   private List<String> samplesOrder = new ArrayList<String>();

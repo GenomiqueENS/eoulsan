@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.data;
 
 /**
  * This class define a mapper BAM result DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class MapperResultsBamDataFormat extends

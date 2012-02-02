@@ -42,6 +42,7 @@ import com.google.common.collect.Maps;
 
 /**
  * This is the version for the old Hadoop API of JobsResults.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
@@ -132,9 +133,10 @@ public class OldAPIJobsResults extends JobsResults {
 
   /**
    * Wait the completion of a collection of jobs.
-   * @param jobs Collection of jobs to submit
+   * @param runningJobs Collection of running jobs
    * @param waitTimeInMillis waiting time between 2 checks of the completion of
    *          jobs
+   * @param counterGroup the counter group
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
    * @throws ClassNotFoundException if a class needed for map reduce execution

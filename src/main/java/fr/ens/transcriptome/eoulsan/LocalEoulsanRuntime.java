@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 /**
  * This classe define the Runtime to execute low level IO operation for Eoulsan
  * in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {

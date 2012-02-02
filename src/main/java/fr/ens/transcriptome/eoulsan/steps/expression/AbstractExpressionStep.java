@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
 /**
  * This abstract class define and parse arguments for the expression step.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

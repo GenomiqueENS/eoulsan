@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
  * This class define a log reader that store log data in a Reporter object
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LogReader {

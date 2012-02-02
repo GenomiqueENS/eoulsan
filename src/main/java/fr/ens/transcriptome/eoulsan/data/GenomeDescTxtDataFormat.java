@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionGeneratorS
 
 /**
  * This class define a genome description DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class GenomeDescTxtDataFormat extends AbstractDataFormat {

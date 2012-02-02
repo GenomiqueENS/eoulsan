@@ -40,6 +40,12 @@ import org.apache.hadoop.mapred.RecordReader;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define a RecordReader for FASTQ files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("deprecation")
 public class FastqRecordReader implements RecordReader<LongWritable, Text> {
 

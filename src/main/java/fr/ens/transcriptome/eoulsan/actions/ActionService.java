@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
 
 /**
  * This class define a service to retrieve an Action
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ActionService {

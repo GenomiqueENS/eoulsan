@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * Define a filter that check if a read is valid.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ValidReadFilter extends AbstractReadFilter {

@@ -29,6 +29,11 @@ import java.net.UnknownHostException;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
+/**
+ * This class define some utility methods for the underlying operating system. 
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public final class SystemUtils {
 
   private static String HADOOP_CLASS_TO_TEST = "org.apache.hadoop.io.Text";

@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class allow to copy and transform data while copying.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFormatConverter {

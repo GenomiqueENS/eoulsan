@@ -29,6 +29,7 @@ import java.io.InputStream;
 
 /**
  * This class define an InputStream that concatenate InputStream.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractConcatInputStream extends InputStream {

@@ -31,6 +31,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
  * This class define an input stream for Bzip2 files in local mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LocalBZip2InputStream extends InputStream {

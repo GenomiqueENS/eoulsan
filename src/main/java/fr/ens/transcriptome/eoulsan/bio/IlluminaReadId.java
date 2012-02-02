@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This class allow the easily get fields of Illimina reads ids.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class IlluminaReadId {
@@ -176,8 +177,8 @@ public final class IlluminaReadId {
   }
 
   /**
-   * Parse an Illumina id string.
-   * @param readId String with the Illumina id
+   * Parse an Illumina id string in a Sequence object.
+   * @param sequence sequence witch name must be parsed
    * @throws EoulsanException if the id is not an Illumina id
    */
   public final void parse(final Sequence sequence) throws EoulsanException {
@@ -191,7 +192,7 @@ public final class IlluminaReadId {
 
   /**
    * Parse an Illumina id string.
-   * @param sequence sequence witch name must be parsed
+   * @param readId String with the Illumina id
    * @throws EoulsanException if the id is not an Illumina id
    */
   public final void parse(final String readId) throws EoulsanException {

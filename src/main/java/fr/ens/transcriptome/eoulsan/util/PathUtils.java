@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +44,11 @@ import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
+/**
+ * This class define utility method to manipulate the Hadoop Path object.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public final class PathUtils {
 
   /**
@@ -82,8 +86,7 @@ public final class PathUtils {
 
     /**
      * Public constructor.
-     * @parm extension extension to use by ExtensionPathFilter
-     * @param allowCompressedFile allow files with a compressed extension
+     * @param suffix suffix to use by ExtensionPathFilter
      */
     public SuffixPathFilter(final String suffix) {
 
@@ -92,7 +95,7 @@ public final class PathUtils {
 
     /**
      * Public constructor.
-     * @parm extension extension to use by ExtensionPathFilter
+     * @param suffix suffix to use by ExtensionPathFilter
      * @param allowCompressedFile allow files with a compressed extension
      */
     public SuffixPathFilter(final String suffix,
@@ -279,7 +282,6 @@ public final class PathUtils {
    * Copy a local file to a path
    * @param srcFile source file
    * @param destPath destination path
-   * @param removeSrcFile true if the source file must be removed
    * @param conf Configuration object
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
@@ -316,7 +318,7 @@ public final class PathUtils {
 
   /**
    * Copy bytes from an InputStream to a path.
-   * @param input the InputStream to read from
+   * @param is the InputStream to read from
    * @param destPath destination path
    * @param conf Configuration object
    * @return the number of bytes copied
@@ -341,7 +343,6 @@ public final class PathUtils {
    * Copy a local file to a path
    * @param srcFile source file
    * @param destPath destination path
-   * @param removeSrcFile true if the source file must be removed
    * @param conf Configuration object
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
@@ -378,7 +379,7 @@ public final class PathUtils {
 
   /**
    * Copy bytes from an InputStream to a path.
-   * @param input the InputStream to read from
+   * @param is the InputStream to read from
    * @param destPath destination path
    * @param conf Configuration object
    * @return the number of bytes copied
@@ -412,7 +413,6 @@ public final class PathUtils {
    * Unzip a zip file on local file system. Don't remove original zip file.
    * @param path Path of the zip file
    * @param outputDir Output directory of the content of the zip file
-   * @param removeOriginalZipFile true if the original zip file must be removed
    * @param conf Configuration object
    * @throws IOException if an error occurs while unzipping the file
    */
@@ -494,7 +494,6 @@ public final class PathUtils {
    * Merge several file of a directory into one file.
    * @param srcPath source directory path
    * @param destPath destination path
-   * @param deleteSource delete source files
    * @param conf Configuration object
    * @throws IOException if an error occurs while merging files
    */
@@ -848,6 +847,7 @@ public final class PathUtils {
   /**
    * Check if a directory exists
    * @param directory directory to test * @param conf Configuration
+   * @param conf the configuration object
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
@@ -866,7 +866,8 @@ public final class PathUtils {
   /**
    * Check if a directory exists
    * @param directory directory to test * @param conf Configuration
-   * @returm true is the directory exists
+   * @param conf the configuration object
+   * @return true is the directory exists
    */
   public static final boolean isExistingDirectoryFile(final Path directory,
       final Configuration conf) throws IOException {
@@ -890,7 +891,7 @@ public final class PathUtils {
    * Check if a file exists
    * @param file file to test
    * @param conf Configuration
-   * @returm true is the directory exists
+   * @return true is the directory exists
    */
   public static final boolean isFile(final Path file, final Configuration conf)
       throws IOException {
@@ -947,7 +948,6 @@ public final class PathUtils {
    * Copy file from a path to another path.
    * @param srcPath source path
    * @param destPath destination path
-   * @param overwrite true if existing files must be overwited
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
@@ -962,7 +962,7 @@ public final class PathUtils {
    * Copy file from a path to another path.
    * @param srcPath source path
    * @param destPath destination path
-   * @param overwrite true if existing files must be overwited
+   * @param overwrite true if existing files must be overwritten
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
@@ -990,7 +990,6 @@ public final class PathUtils {
    * Move file from a path to another path.
    * @param srcPath source path
    * @param destPath destination path
-   * @param overwrite true if existing files must be overwited
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
@@ -1005,7 +1004,7 @@ public final class PathUtils {
    * Move file from a path to another path.
    * @param srcPath source path
    * @param destPath destination path
-   * @param overwrite true if existing files must be overwited
+   * @param overwrite true if existing files must be overwritten
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying

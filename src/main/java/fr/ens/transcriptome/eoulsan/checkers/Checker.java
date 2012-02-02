@@ -33,7 +33,8 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
  * This interface define a checker.
- * @author jourdren
+ * @since 1.0
+ * @author Laurent Jourdren
  */
 public interface Checker {
 

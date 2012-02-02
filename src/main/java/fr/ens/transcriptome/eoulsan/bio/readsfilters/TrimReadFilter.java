@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 /**
  * Define a filter that remove terminal polyN sequences of a read and check the
  * length of the resulting read.
+ * @since 1.0
  * @author Maria Bernard
  * @author Laurent Jourdren
  */

@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorS
 
 /**
  * This class define a SOAP zip index DataFormat.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class SOAPIndexZipDataFormat extends AbstractDataFormat {

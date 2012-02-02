@@ -27,7 +27,8 @@ package fr.ens.transcriptome.eoulsan.data;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
- * This class contains all the built-in datatypes for Eoulsan:
+ * This class contains all the built-in datatypes for Eoulsan.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataTypes {

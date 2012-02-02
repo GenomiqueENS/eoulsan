@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This class define a step that generate a genome mapper index.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GenomeMapperIndexGeneratorStep extends AbstractStep {

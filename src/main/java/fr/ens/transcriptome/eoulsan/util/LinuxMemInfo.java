@@ -28,6 +28,7 @@ import java.io.File;
 
 /**
  * Get information about memory on Linux systems
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LinuxMemInfo extends LinuxInfo {

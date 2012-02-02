@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class is used to install binaries bundled in the jar.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class BinariesInstaller {
@@ -89,7 +90,7 @@ public class BinariesInstaller {
    * Install a binary bundled in the jar in a temporary directory. If no
    * temporary directory is defined, use the "java.io.tmpdir" property.
    * @param binaryFilename program to install
-   * @param temporary directory where to install the binary
+   * @param tempDir temporary directory where to install the binary
    * @return a string with the path of the installed binary
    * @throws IOException if an error occurs while installing binary
    */

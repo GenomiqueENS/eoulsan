@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.design.io;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -36,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This abstract class define a reader for designs.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class InputStreamDesignReader implements DesignReader {

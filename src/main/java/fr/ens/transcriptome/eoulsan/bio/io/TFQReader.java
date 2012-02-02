@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class implements a TFQ reader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class TFQReader implements ReadSequenceReader {

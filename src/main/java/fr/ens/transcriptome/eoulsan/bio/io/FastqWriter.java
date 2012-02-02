@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * this class implements a FastQ writer.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FastqWriter implements ReadSequenceWriter {

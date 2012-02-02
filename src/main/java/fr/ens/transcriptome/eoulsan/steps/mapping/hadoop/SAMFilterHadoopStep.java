@@ -48,6 +48,11 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
+/**
+ * This class define a filter alignment step in Hadoop mode.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @HadoopOnly
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 

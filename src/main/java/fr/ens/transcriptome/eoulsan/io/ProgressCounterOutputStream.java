@@ -34,6 +34,7 @@ import org.apache.hadoop.mapreduce.Counter;
 /**
  * This class implements an OutputStream that inform Hadoop of the progress of
  * task using counters.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ProgressCounterOutputStream extends OutputStream {

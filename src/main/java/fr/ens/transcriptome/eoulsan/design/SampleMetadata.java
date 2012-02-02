@@ -29,7 +29,8 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 
 /**
- * This interface define the description of a slide
+ * This interface define the description of a slide.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface SampleMetadata {

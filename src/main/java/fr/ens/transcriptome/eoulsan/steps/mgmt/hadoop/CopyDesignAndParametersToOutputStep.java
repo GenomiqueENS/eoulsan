@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This step copy design and parameter file to output directory.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

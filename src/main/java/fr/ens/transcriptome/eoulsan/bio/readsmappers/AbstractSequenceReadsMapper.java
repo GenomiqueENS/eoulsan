@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class abstract implements a generic Mapper.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

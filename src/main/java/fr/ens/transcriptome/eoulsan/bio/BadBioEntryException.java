@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio;
 /**
  * This class define an exception for biological files entries that can allow
  * retrieve the invalid entry.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class BadBioEntryException extends Exception {

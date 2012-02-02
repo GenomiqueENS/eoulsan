@@ -27,6 +27,11 @@ package fr.ens.transcriptome.eoulsan.data;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
+/**
+ * This interface define a DataFormat.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public interface DataFormat {
 
   /**

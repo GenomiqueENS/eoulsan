@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 /**
  * This class define an abstract class useful for process samples in a Step with
  * multithreading.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 public abstract class ProcessSample {

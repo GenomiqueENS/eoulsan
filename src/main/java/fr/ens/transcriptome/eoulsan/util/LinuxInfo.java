@@ -35,7 +35,8 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This class define a linux info file parser
+ * This class define a linux info file parser.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class LinuxInfo {

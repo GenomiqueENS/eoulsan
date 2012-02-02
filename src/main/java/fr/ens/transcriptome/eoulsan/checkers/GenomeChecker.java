@@ -43,6 +43,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
+/**
+ * This class define a Checker on genome FASTA files.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class GenomeChecker implements Checker {
 
   public static final String INFO_CHROMOSOME = "info_chromosomes";

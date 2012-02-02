@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
 /**
  * This abstract class define and parse arguments for the filter samples step.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractFilterSamplesStep extends AbstractStep {

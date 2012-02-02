@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.data;
 
 /**
  * This class define source metadata
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface DataFileMetadata {

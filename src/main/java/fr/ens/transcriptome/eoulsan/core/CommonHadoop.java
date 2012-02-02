@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This class define common constants and other methods specific to Hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class CommonHadoop {
@@ -118,7 +119,6 @@ public class CommonHadoop {
   /**
    * Print the contents of a Configuration object
    * @param conf Configuration object
-   * @param prefix prefix used for keys filtering
    */
   public static void printConfiguration(final Configuration conf) {
 

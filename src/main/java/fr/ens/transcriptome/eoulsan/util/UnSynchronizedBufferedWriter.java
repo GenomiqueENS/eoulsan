@@ -27,6 +27,11 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * This class define an unsynchronized buffered writer.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class UnSynchronizedBufferedWriter extends Writer {
   private final static int CAPACITY = 8192;
 

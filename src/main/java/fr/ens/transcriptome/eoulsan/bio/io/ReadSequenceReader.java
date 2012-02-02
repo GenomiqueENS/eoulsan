@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * This interface define method to implements for ReadSequenceReader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface ReadSequenceReader extends Iterator<ReadSequence>,

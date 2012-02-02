@@ -29,6 +29,7 @@ import java.util.ServiceLoader;
 
 /**
  * This class define a service to retrieve a ReadFilter.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 public class ReadFilterService {

@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
  * This step is a fake step.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopCompatible

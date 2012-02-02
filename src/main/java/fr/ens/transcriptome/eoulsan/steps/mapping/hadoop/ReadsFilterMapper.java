@@ -52,6 +52,11 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
+/**
+ * This class define a read filter mapper.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */

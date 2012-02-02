@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class allow to easily build Design object from files paths.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DesignBuilder {

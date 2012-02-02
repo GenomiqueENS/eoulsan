@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class allow to get a Step object.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class StepService {

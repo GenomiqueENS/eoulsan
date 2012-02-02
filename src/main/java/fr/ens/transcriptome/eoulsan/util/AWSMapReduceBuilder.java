@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+/**
+ * This class allow to easily create a AWS MapReduce job.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class AWSMapReduceBuilder {
 
   private AWSMapReduceJob result = new AWSMapReduceJob();
@@ -142,8 +147,8 @@ public class AWSMapReduceBuilder {
   }
 
   /**
-   * Set the jar location.
-   * @param jarLocation jar location
+   * Set the job flow name.
+   * @param jobFlowName job flow name
    */
   public AWSMapReduceBuilder withJobFlowName(final String jobFlowName) {
 
@@ -157,7 +162,7 @@ public class AWSMapReduceBuilder {
 
   /**
    * Set the AWS access key.
-   * @param jobFlowName set AWS access key
+   * @param AWSAccessKey set AWS access key
    */
   public AWSMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
 

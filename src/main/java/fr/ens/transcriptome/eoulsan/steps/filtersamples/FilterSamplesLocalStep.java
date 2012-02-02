@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 /**
  * This class is the main class for filtering samples after mapping in local
  * mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

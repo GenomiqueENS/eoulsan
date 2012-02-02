@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.PathUtils;
 
 /**
  * This class define an executor for hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class HadoopExecutor extends Executor {
@@ -226,7 +227,7 @@ public class HadoopExecutor extends Executor {
   /**
    * Constructor
    * @param command command to execute
-   * @param designPathname the path the design file
+   * @param designPath the path the design file
    * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
    */
   public HadoopExecutor(final Configuration conf, final Command command,

@@ -35,6 +35,12 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.Reporter;
 
+/**
+ * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @SuppressWarnings("deprecation")
 public class FastqInputFormat extends
     FileInputFormat<LongWritable, Text> {

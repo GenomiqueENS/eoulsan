@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 /**
  * This interface define methods the Worflow object that can be used from a Step
  * object.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface WorkflowDescription {

@@ -28,6 +28,7 @@ import java.security.InvalidParameterException;
 
 /**
  * Discribe a version of a software.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class Version implements Comparable<Version> {

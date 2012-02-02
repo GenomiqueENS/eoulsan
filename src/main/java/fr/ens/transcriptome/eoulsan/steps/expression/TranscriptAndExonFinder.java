@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 /**
  * This class define a class that is use to do fast search on exons and genes of
  * chromosomes.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class TranscriptAndExonFinder {
@@ -433,8 +434,8 @@ public class TranscriptAndExonFinder {
      * Public constructor.
      * @param start Start position of the ORF
      * @param end End position of the ORF
-     * @param name Name of the ORF
-     * @param strand strand
+     * @param strand the strand of the ORF
+     * @param parentId id of the parent
      */
     public Exon(final String chromosone, final int start, final int end,
         final char strand, final String parentId) {

@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 /**
  * This class define a read filter that calls successively a list of read
  * filters.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class MultiReadFilter implements ReadFilter {

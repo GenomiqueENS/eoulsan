@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This class define a parameter. The parameter name is always in lower case.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class Parameter {

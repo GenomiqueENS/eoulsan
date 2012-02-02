@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a genome description.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GenomeDescription {
@@ -280,7 +281,7 @@ public class GenomeDescription {
 
   /**
    * Create a GenomeDescription object from a Fasta file.
-   * @param genomeFastaIs InputStream
+   * @param genomeFastaFile genome fasta file
    */
   public static GenomeDescription createGenomeDescFromFasta(
       final File genomeFastaFile) throws BadBioEntryException, IOException {
@@ -293,7 +294,8 @@ public class GenomeDescription {
 
   /**
    * Create a GenomeDescription object from a Fasta file.
-   * @param genomeFastaIs InputStream
+   * @param genomeFastaIs genome fasta input stream
+   * @param filename name of the file of the input stream
    */
   public static GenomeDescription createGenomeDescFromFasta(
       final InputStream genomeFastaIs, final String filename)

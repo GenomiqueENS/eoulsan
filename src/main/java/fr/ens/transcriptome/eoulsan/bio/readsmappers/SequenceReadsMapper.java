@@ -34,6 +34,11 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define an interface for a wrapper on reads mapper.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public interface SequenceReadsMapper {
 
   /**
@@ -55,7 +60,7 @@ public interface SequenceReadsMapper {
   boolean isIndexGeneratorOnly();
 
   /**
-   * Test if the mapping can be split for parallelization. 
+   * Test if the mapping can be split for parallelization.
    * @return true if the mapping can be split for parallelization
    */
   boolean isSplitsAllowed();

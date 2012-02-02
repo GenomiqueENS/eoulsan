@@ -30,6 +30,7 @@ import java.io.InputStream;
 
 /**
  * This filter class allow to count the number of bytes read by an inputStream.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ByteCountInputStream extends FilterInputStream {

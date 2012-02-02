@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 /**
  * This ennum allow to create InputStreams and OutputStream for Gzip and Bzip2
  * according environment (local or hadoop mode).
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public enum CompressionType {
@@ -154,7 +155,7 @@ public enum CompressionType {
 
   /**
    * Get a compression type from an extension.
-   * @param extension the contentType to search
+   * @param extension the extension of the file
    * @return the requested CompressionType
    */
   public static CompressionType getCompressionTypeByExtension(
@@ -172,7 +173,7 @@ public enum CompressionType {
 
   /**
    * Get a compression type from a filename
-   * @param extension the contentType to search
+   * @param filename the name of the file
    * @return the requested CompressionType
    */
   public static CompressionType getCompressionTypeByFilename(
@@ -186,8 +187,8 @@ public enum CompressionType {
 
   /**
    * Create a GZip input stream.
-   * @param is the input stream to decompress
-   * @return a decompressed input stream
+   * @param is the input stream to uncompress
+   * @return a uncompressed input stream
    * @throws IOException if an error occurs while creating the input stream
    */
   public static InputStream createGZipInputStream(final InputStream is)
@@ -198,8 +199,8 @@ public enum CompressionType {
 
   /**
    * Create a BZip2 input stream.
-   * @param is the input stream to decompress
-   * @return a decompressed input stream
+   * @param is the input stream to uncompress
+   * @return a uncompressed input stream
    * @throws IOException if an error occurs while creating the input stream
    */
   public static InputStream createBZip2InputStream(final InputStream is)

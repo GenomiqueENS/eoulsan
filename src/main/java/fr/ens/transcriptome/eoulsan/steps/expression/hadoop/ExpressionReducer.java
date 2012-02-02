@@ -46,7 +46,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Tra
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * Reducer for Expression computation
+ * Reducer for Expression computation.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

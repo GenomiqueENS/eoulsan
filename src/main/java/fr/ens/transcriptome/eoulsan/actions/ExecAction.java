@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 
 /**
  * This class define the Local exec Action.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ExecAction extends AbstractAction {

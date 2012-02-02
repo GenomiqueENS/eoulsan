@@ -28,6 +28,7 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 
 /**
  * This class define the FTP protocol in Hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly

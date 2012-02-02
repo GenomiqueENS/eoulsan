@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a GFF reader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,

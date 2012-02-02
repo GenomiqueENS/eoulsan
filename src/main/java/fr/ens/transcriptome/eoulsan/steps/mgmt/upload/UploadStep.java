@@ -57,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 
 /**
  * This class define a abstract step class for files uploading.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class UploadStep extends AbstractStep {

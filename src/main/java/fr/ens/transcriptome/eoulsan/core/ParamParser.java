@@ -48,7 +48,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * This class allow parse the parameter file *
+ * This class allow parse the parameter file.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class ParamParser {

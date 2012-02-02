@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define an abstract Step.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractStep implements Step {

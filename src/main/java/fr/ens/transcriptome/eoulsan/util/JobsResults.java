@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 /**
  * This class define the result of a Hadoop MapReduce Job. It contains the log
  * and the list of the failed jobs.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class JobsResults {

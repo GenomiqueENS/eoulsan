@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a writer for designs.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class DesignWriter {

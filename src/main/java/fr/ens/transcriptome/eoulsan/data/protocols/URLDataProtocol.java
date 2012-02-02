@@ -35,6 +35,11 @@ import java.net.URLConnection;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 
+/**
+ * This class define an abstract class for DataProtocols based on the URL class.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public abstract class URLDataProtocol extends AbstractDataProtocol {
 
   private URLConnection createConnection(final DataFile src) throws IOException {

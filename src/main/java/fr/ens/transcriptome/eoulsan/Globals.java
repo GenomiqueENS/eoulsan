@@ -43,6 +43,11 @@ import java.util.logging.LogRecord;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
+/**
+ * This class contains globals constants for the application.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public final class Globals {
 
   private static Properties manifestProperties;
@@ -171,13 +176,13 @@ public final class Globals {
 
   /** Default fastq format. */
   static final FastqFormat FASTQ_FORMAT_DEFAULT = FastqFormat.FASTQ_SANGER;
-  
+
   /** Obfuscate design default. */
   public static final boolean OBFUSCATE_DESIGN_DEFAULT = true;
-  
-  /** Remove design replicate info when obfuscate design default.*/
-  public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT = true;
-  
+
+  /** Remove design replicate info when obfuscate design default. */
+  public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT =
+      true;
 
   //
   // Private constants

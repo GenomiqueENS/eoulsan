@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan;
 
 /**
  * This class store the only Eoulsan runtime instance.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class EoulsanRuntime {

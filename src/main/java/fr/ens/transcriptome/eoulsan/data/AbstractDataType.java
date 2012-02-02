@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * Define an abstract DataType.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractDataType implements DataType {

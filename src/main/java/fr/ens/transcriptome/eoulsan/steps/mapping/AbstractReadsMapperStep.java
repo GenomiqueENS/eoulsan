@@ -37,6 +37,11 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
+/**
+ * This class define an abstract step for read mapping.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public abstract class AbstractReadsMapperStep extends AbstractStep {
 
   /** Logger */

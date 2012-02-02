@@ -38,6 +38,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define an abstract step for read filtering.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   protected static final String STEP_NAME = "filterreads";

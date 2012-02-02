@@ -46,7 +46,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 
 /**
- * This class is the step to compute expression in local mode.
+ * This class is the step to compute expression in local mode
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly

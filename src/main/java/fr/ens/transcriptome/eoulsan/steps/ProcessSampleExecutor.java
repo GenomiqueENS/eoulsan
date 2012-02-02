@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.steps.ProcessSample.ProcessSampleException;
 
 /**
  * This class allow to process samples of a step with multithreading.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 public class ProcessSampleExecutor {

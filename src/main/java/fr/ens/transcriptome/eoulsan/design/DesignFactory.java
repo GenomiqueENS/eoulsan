@@ -29,6 +29,7 @@ import fr.ens.transcriptome.eoulsan.design.impl.DesignImpl;
 
 /**
  * This class is a factory for experimental design.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class DesignFactory {

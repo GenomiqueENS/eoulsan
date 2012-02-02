@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.actions;
 
 /**
  * This interface define an action.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface Action {

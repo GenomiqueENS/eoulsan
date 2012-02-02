@@ -45,6 +45,11 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 
+/**
+ * This class define a Checker on GFF annotation.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class AnnotationChecker implements Checker {
 
   private String genomicType;

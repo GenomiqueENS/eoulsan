@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
  * This class launch Eoulsan in hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class HadoopExecAction extends AbstractAction {

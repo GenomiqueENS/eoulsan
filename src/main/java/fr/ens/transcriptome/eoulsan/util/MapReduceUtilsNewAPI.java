@@ -34,6 +34,12 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
+/**
+ * This class contains utility method to easily manipulate the new Hadoop
+ * MapReduce API.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public final class MapReduceUtilsNewAPI {
 
   /**
@@ -73,9 +79,9 @@ public final class MapReduceUtilsNewAPI {
           && PathUtils.fullyDelete(srcDirPath, conf);
     }
 
-    return PathUtils.concat(PathUtils.listPathsByPrefix(srcDirPath, "part-r-",
-        conf), destPath, true, overwrite, conf)
-        && PathUtils.fullyDelete(srcDirPath, conf);
+    return PathUtils.concat(
+        PathUtils.listPathsByPrefix(srcDirPath, "part-r-", conf), destPath,
+        true, overwrite, conf) && PathUtils.fullyDelete(srcDirPath, conf);
   }
 
   /**

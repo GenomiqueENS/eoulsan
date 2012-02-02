@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define the result of a step.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class StepResult {
@@ -225,7 +226,7 @@ public class StepResult {
   /**
    * Public constructor.
    * @param context context of the step result
-   * @param Exception exception of the error
+   * @param exception exception of the error
    * @param errorMsg Error message
    * @param logMsg log message
    */
@@ -240,7 +241,7 @@ public class StepResult {
   /**
    * Public constructor.
    * @param context context of the step result
-   * @param Exception exception of the error
+   * @param exception exception of the error
    * @param errorMsg Error message
    */
   public StepResult(final Context context, final Exception exception,
@@ -252,8 +253,7 @@ public class StepResult {
   /**
    * Public constructor.
    * @param context context of the step result
-   * @param Exception exception of the error
-   * @param errorMsg Error message
+   * @param exception exception of the error
    */
   public StepResult(final Context context, final Exception exception) {
 

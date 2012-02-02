@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.data;
 /**
  * This interface define a Datatype. It is used to check inputs and outputs of
  * steps.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface DataType {

@@ -31,6 +31,7 @@ import org.apache.hadoop.io.compress.BZip2Codec;
 
 /**
  * This class define an output stream for Bzip2 files in hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class HadoopBZip2OutputStream extends OutputStream {

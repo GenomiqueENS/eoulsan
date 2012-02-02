@@ -31,6 +31,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
 /**
  * This interface define the methods to implements for ReadSequenceWriter.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface ReadSequenceWriter extends Closeable {

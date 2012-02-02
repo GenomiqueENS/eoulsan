@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 
 /**
  * This class define an action to create hadoop jar file.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class CreateHadoopJarAction extends AbstractAction {

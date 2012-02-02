@@ -40,6 +40,7 @@ import org.apache.hadoop.mapreduce.Job;
 
 /**
  * This class provide utility methods to run map reduce jobs.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
@@ -82,9 +83,9 @@ public class MapReduceUtils {
           && PathUtils.fullyDelete(srcDirPath, conf);
     }
 
-    return PathUtils.concat(PathUtils.listPathsByPrefix(srcDirPath, "part-r-",
-        conf), destPath, true, overwrite, conf)
-        && PathUtils.fullyDelete(srcDirPath, conf);
+    return PathUtils.concat(
+        PathUtils.listPathsByPrefix(srcDirPath, "part-r-", conf), destPath,
+        true, overwrite, conf) && PathUtils.fullyDelete(srcDirPath, conf);
   }
 
   /**
@@ -115,9 +116,10 @@ public class MapReduceUtils {
 
   /**
    * Submit a collection of jobs and wait the completion of all jobs.
-   * @param jobs Collection of jobs to submit
+   * @param jobconfs Collection of jobs to submit
    * @param waitTimeInMillis waiting time between 2 checks of the completion of
    *          jobs
+   * @param counterGroup the counter group
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
    * @throws ClassNotFoundException if a class needed for map reduce execution
@@ -137,6 +139,7 @@ public class MapReduceUtils {
    * @param jobs Collection of jobs to submit
    * @param waitTimeInMillis waiting time between 2 checks of the completion of
    *          jobs
+   * @param counterGroup the counter group
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
    * @throws ClassNotFoundException if a class needed for map reduce execution

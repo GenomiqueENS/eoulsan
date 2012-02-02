@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 /**
  * This class is an abstract Protocol class that implements generic
  * getIn/OutputStream with length.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 abstract class AbstractDataProtocol implements DataProtocol {

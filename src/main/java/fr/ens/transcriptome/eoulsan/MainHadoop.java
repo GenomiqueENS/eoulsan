@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * Main class in Hadoop mode.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class MainHadoop {

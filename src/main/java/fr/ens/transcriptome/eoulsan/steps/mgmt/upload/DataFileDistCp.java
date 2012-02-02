@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class allow to copy and transform data in a distributed manner.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFileDistCp {

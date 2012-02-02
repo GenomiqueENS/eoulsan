@@ -28,6 +28,7 @@ package fr.ens.transcriptome.eoulsan;
 /**
  * This class is the main class. Check the environment, if Hadoop library is in
  * the classpath launch Hadoop main class else run local main class.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class Main {

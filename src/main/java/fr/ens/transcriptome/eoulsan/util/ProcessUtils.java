@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * Utility class for launching external process.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ProcessUtils {

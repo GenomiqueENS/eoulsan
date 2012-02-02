@@ -38,6 +38,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
  * This mapper simulate the ChainMapper for the new map reduce API.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FilterAndMapMapper extends Mapper<LongWritable, Text, Text, Text> {

@@ -30,6 +30,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * This class define a Hadoop reporter.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 @SuppressWarnings("unchecked")

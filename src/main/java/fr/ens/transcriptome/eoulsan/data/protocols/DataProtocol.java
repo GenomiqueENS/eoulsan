@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 
 /**
  * This interface define a protocol.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public interface DataProtocol {
@@ -68,7 +69,7 @@ public interface DataProtocol {
 
   /**
    * Create an OutputStream from the source.
-   * @param src source to use
+   * @param dest destination to use
    * @return an OutputStream
    * @throws IOException if an error occurs while creating the OutputStream
    */

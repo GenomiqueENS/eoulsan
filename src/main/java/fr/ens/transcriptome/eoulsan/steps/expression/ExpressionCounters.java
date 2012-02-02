@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
+/**
+ * This enum define counters for the expression step.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public enum ExpressionCounters {
 
   INVALID_SAM_ENTRIES_COUNTER("invalid SAM input entries"),

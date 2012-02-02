@@ -59,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define the Local Upload S3 Action.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class UploadS3Action extends AbstractAction {

@@ -51,6 +51,11 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtilsNewAPI;
 
+/**
+ * This class define a mapper for alignment filtering.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */

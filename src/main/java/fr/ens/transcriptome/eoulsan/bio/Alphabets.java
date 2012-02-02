@@ -1,3 +1,27 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
 package fr.ens.transcriptome.eoulsan.bio;
 
 import java.util.Collections;
@@ -6,6 +30,7 @@ import java.util.Set;
 
 /**
  * This class define common alphabets.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 public final class Alphabets {
@@ -53,10 +78,7 @@ public final class Alphabets {
   // Classes
   //
 
-  /**
-   * This class define an ambiguous DNA alphabet.
-   * @author Laurent Jourdren
-   */
+  /** An ambiguous DNA alphabet. */
   public static final Alphabet AMBIGUOUS_DNA_ALPHABET = new Alphabet() {
 
     @Override
@@ -154,10 +176,8 @@ public final class Alphabets {
     }
   };
 
-  /**
-   * This class define an unambiguous DNA alphabet.
-   * @author Laurent Jourdren
-   */
+  /** An unambiguous DNA alphabet. */
+
   public static final Alphabet UNAMBIGUOUS_DNA_ALPHABET = new Alphabet() {
 
     @Override
@@ -207,10 +227,7 @@ public final class Alphabets {
     }
   };
 
-  /**
-   * This class define an ambiguous RNA alphabet.
-   * @author Laurent Jourdren
-   */
+  /** An ambiguous RNA alphabet. */
   public static final Alphabet AMBIGUOUS_RNA_ALPHABET = new Alphabet() {
 
     @Override
@@ -308,10 +325,7 @@ public final class Alphabets {
     }
   };
 
-  /**
-   * This class define an unambiguous RNA alphabet
-   * @author Laurent Jourdren
-   */
+  /** An unambiguous RNA alphabet. */
   public static final Alphabet UNAMBIGUOUS_RNA_ALPHABET = new Alphabet() {
 
     @Override
@@ -361,10 +375,7 @@ public final class Alphabets {
     }
   };
 
-  /**
-   * This class define an alphabet for reads.
-   * @author Laurent Jourdren
-   */
+  /** An alphabet for reads. */
   public static final Alphabet READ_DNA_ALPHABET = new Alphabet() {
 
     @Override

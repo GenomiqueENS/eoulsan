@@ -26,6 +26,13 @@ package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
+/**
+ * This class define a read filter that check if the two reads of a pair came
+ * from the same cluster. <b>Warning:</b> this class has not been update for Illumina id
+ * generated with Casava 1.8.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class PairCheckReadFilter extends AbstractReadFilter {
 
   @Override

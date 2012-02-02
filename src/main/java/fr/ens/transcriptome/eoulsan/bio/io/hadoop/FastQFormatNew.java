@@ -31,6 +31,12 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
+/**
+ * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
+ * framework.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class FastQFormatNew extends TextInputFormat {
 
   @Override

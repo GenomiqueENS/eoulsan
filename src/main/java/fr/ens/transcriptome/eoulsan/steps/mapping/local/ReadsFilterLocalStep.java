@@ -54,7 +54,8 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * Main class for filter reads program.
+ * This class define a step for reads filtering.
+ * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */

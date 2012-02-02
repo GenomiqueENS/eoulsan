@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class implements a Fastq reader.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class FastqReader implements ReadSequenceReader {
@@ -177,8 +178,6 @@ public class FastqReader implements ReadSequenceReader {
   /**
    * Public constructor
    * @param file File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
    */
   public FastqReader(final File file) throws FileNotFoundException {
 

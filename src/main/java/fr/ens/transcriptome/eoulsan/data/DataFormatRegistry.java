@@ -41,6 +41,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 /**
  * this class register DataFormat to allow get the DataFormat of a file from its
  * filename.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFormatRegistry {

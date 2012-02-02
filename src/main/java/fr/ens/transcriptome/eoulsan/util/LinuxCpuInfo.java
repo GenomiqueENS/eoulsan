@@ -27,7 +27,8 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.File;
 
 /**
- * Get information about processor on Linux systems
+ * Get information about processor on Linux systems.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public class LinuxCpuInfo extends LinuxInfo {

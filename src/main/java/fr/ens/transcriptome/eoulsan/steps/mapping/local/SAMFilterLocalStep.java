@@ -54,6 +54,11 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
+/**
+ * This class define a Step for alignements filtering.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 @LocalOnly
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 

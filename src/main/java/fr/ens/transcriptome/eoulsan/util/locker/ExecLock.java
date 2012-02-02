@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 /**
  * This class define a lock to prevent execution of a process simultaneously on
  * multiples JVM.
+ * @since 1.1
  * @author Laurent Jourdren
  */
 public class ExecLock implements Locker {

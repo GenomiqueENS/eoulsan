@@ -32,6 +32,12 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
+/**
+ * This class allow to quickly access to any part of a FASTA file using map()
+ * function. TODO to remove, not used
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
 public class FlatFasta {
 
   private static final String FLAT_FASTA_EXT = ".flatfasta";
@@ -134,8 +140,8 @@ public class FlatFasta {
         if (writer != null)
           writer.close();
         writer =
-            FileUtils.createFastBufferedWriter(new File(this.flatFilesDir, chrName
-                + FLAT_FASTA_EXT));
+            FileUtils.createFastBufferedWriter(new File(this.flatFilesDir,
+                chrName + FLAT_FASTA_EXT));
       } else {
 
         if (writer == null)

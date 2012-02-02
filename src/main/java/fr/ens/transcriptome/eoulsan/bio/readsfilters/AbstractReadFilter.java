@@ -30,6 +30,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 /**
  * This class define an abstract ReadFilter that allow simple Pair-end and
  * Mate-pair filter handling.
+ * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractReadFilter implements ReadFilter {
