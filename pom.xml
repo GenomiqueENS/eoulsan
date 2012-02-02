@@ -723,6 +723,8 @@ O
 				<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
 						<encoding>utf-8</encoding>
+						<doctitle>${project.name} ${project.version} API</doctitle>
+						<overview>${basedir}/src/main/java/overview.html</overview>
 					</configuration>
 			</plugin>
 			<plugin>
