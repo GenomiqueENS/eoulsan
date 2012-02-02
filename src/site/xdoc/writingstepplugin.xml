@@ -193,7 +193,7 @@ $ mvn eclipse:eclipse  -DdownloadSources=true -DdownloadJavadocs=true
     <subsection name="Coding the plug-in">
     
       <ul>
-      	<li>In the package <code>com.example</code> create a class name <code>GnapStep</code> that extends 
+      	<li>In the package <code>com.example</code> create a class name <code>GsnapExampleStep</code> that extends 
       	<code>AbstractStep</code>. All the code of the step is in this source file. 
       	You can download it <a href="./GsnapExampleStep.java">here</a>.</li>
 <source>
@@ -242,7 +242,7 @@ public class GsnapExampleStep extends AbstractStep {
 	    <li>Now we add the input and output formats of this step with the following methods. 
 	    The input and output formats of the step allow to the Eoulsan workflow engine 
 	    to test if all the necessary files for the analysis exists before 
-	    the launch of an analysis  </li>
+	    the launch of an analysis.</li>
 <source>
   @Override
   public DataFormat[] getInputFormats() {
@@ -570,7 +570,7 @@ public class GsnapExampleStep extends AbstractStep {
         <li>Create a <b>fr.ens.transcriptome.eoulsan.steps.Step</b> file in this directory and add the next line
         to this new file:</li>
 <source>
-com.example.GsnapStep
+com.example.GsnapExampleStep
 </source>
 		<li>If you have more than one step to register, add the other full class names of your steps in the next 
 		lines of the file.</li>
@@ -587,7 +587,7 @@ $ mvn clean install
 </source>
     </subsection>
     <p>This command line will clean the <b>target</b> directory before lauching the compilation. You will obtain a 
-    <b>myeoulsanplugin-0.1-alpha-1.jar</b> jar archive that contains your plug-in in the <b>target</b> directory</p>
+    <b>myeoulsanplugin-0.1-alpha-1.jar</b> jar archive that contains your plug-in in the <b>target</b> directory.</p>
     
     <a name="install"/>
     <subsection name="Install the plugin-in">

@@ -60,7 +60,7 @@
       </p>
 
       <subsection name="Code repository">
-        <p>You can also download the Eoulsan source from our <a href="http://code.google.com/p/eoulsan/source/checkout">code repository</a> hosted by <a href="http://code.google.com/hosting">Google code hosting</a>. On the <a href="http://code.google.com/p/eoulsan">main page of Eoulsan on this forge</a> (<a href="http://code.google.com/p/eoulsan">http://code.google.com/p/eoulsan</a>) you have access to the <a href="http://code.google.com/p/eoulsan/issues">issue tracker</a> and to the <a href="http://code.google.com/p/eoulsan/source/browse/">source browser</a> of the project.</p>
+        <p>You can also download the Eoulsan source from our <a href="http://code.google.com/p/eoulsan/source/checkout">code repository</a> hosted by <a href="http://code.google.com/hosting">Google code hosting</a>. On the <a href="http://code.google.com/p/eoulsan">main page of Eoulsan on this forge</a> (<a href="http://code.google.com/p/eoulsan">http://code.google.com/p/eoulsan</a>) you have access to the <a href="http://code.google.com/p/eoulsan/issues">issue tracker</a>, to the <a href="http://code.google.com/p/eoulsan/source/browse/">source browser</a> of the project and a <a href="http://code.google.com/p/eoulsan/wiki/MainPage">wiki dedicated to developers</a>.</p>
       </subsection>
 
       <subsection name="Compilation">

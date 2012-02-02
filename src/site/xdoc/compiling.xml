@@ -40,6 +40,7 @@
 	  <p>The next commands works whatever your operating system and the "<code>$</code>" character represent the command line prompt.</p> 
           <p>To compile Eoulsan, the default memory allocated by Maven is not enough. Your must set the environment variable <b>MAVEN_OPTS</b> to do this. To change this variable using bash use the built-in command <b>export</b> (512MiB or 1GiB is a good amount of memory of Maven):</p>
           <source>$ export MAVEN_OPTS=-Xmx1024m</source>	  
+          <p><b>Update:</b> It seems that with last version of Maven the default memory size allocated is enough to build Eoulsan.</p>
  
 	  <p>First set your current directory to the base directory of <b>Eoulsan</b>.</p>
 	  
