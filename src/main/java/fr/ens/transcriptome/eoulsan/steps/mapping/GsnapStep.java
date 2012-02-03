@@ -62,7 +62,7 @@ public class GsnapStep extends AbstractStep {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String COUNTER_GROUP = "reads_mapping";
-  private String mapperArguments = "";
+  private String mapperArguments = "-N 1";
 
   @Override
   public String getName() {
@@ -288,7 +288,7 @@ public class GsnapStep extends AbstractStep {
     // Build the command line
     final String cmd =
         gsnapPath
-            + " -N 1 -A sam " + formatArg + " -t "
+            + " -A sam " + formatArg + " -t "
             + context.getSettings().getLocalThreadsNumber() + " -D "
             + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
             + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
