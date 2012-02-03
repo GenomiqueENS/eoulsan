@@ -59,7 +59,7 @@
       </ul>
       <p>
         Eoulsan is distributed under the
-        <a href="license.html">GNU Lesser General Public License</a>.
+        <a href="license.html">GNU Lesser General Public License</a> and <a href="license.html">CeCill-C</a>.
       </p>
       <p>A full changelog is available in the <a href="changes-report.html">release note page</a>.</p>
       <a name="requirements"/>
@@ -71,7 +71,8 @@
 	  </tr>
 	  <tr>
 	    <td>Operating system</td>
-	    <td>Currently Eoulsan runs only under Linux. However Eoulsan core is compatible with all *nix where Java is available.</td>
+	    <td>Currently Eoulsan runs only under Linux (due to mappers binaries dependencies). However Eoulsan core is 
+	    compatible with all *nix where Java is available.</td>
 	  </tr>
 	  <tr>
             <td>Memory</td>

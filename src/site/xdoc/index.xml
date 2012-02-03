@@ -74,8 +74,16 @@
 
 
 			<p>
-				We developed Eoulsan, a versatile framework based on the Hadoop implementation of the MapReduce algorithm, dedicated to high throughput sequencing data analysis on distributed computers. With Eoulsan, users can easily set up a cloud computing cluster and automate the analysis of several samples at once using various software solutions available. Working either on standalone workstations or cloud computing clusters, Eoulsan provides an integrated and flexible solution for RNA-Seq data analysis of differential expression.
+				We developed Eoulsan, a versatile framework based on the Hadoop implementation of the MapReduce algorithm, 
+				dedicated to high throughput sequencing data analysis on distributed computers. With Eoulsan, users can easily 
+				set up a cloud computing cluster and automate the analysis of several samples at once using various software 
+				solutions available. Working either on standalone workstations or cloud computing clusters, Eoulsan provides 
+				an integrated and flexible solution for RNA-Seq data analysis of differential expression.
 			</p>
+			
+			<p>Eoulsan contains also an object model that can be used outside the Eoulsan workflow engine to handle and manipulate NGS data. 
+			See the <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan developer wiki</a> for more information about this part 
+			of the project.</p>
 
 
 		</section>

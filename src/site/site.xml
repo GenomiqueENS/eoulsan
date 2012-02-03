@@ -71,6 +71,8 @@
 				<item name="Create mapper index" href="/step-createmapperindex.html" />
 				<item name="Filter reads" href="/step-filterreads.html" />
 				<item name="Map reads" href="/step-mapreads.html" />
+				<item name="Map reads with gsnap" href="/step-gsnap.html" />
+				<item name="Map reads with gmap" href="/step-gmap.html" />
 				<item name="Filter alignments" href="/step-filteralignments.html" />
 				<item name="Filter and map" href="step-filterandmap.html" />
 				<item name="Filter samples" href="/step-filtersamples.html" />
@@ -95,14 +97,14 @@
 			<item name="Mailing list" href="/mail-lists.html" />
 		</menu>
 
-		<menu name="Developement">
+		<menu name="Development">
+		    <item name="How to contribute" href="/contribute.html"/>
+		    <item name="Writing a Step plugin" href="/writingstepplugin.html" />
 			<item name="Downloading sources" href="/download-src.html" />
 			<item name="Compiling" href="/compiling.html"/>
-			<item name="Writing a Step plugin" href="/writingstepplugin.html" />
-			<item name="Javadoc" href="/apidocs/index.html" />
-			<item name="How to contribute" href="/contribute.html"/>
 			<item name="Developer Wiki" href="http://code.google.com/p/eoulsan/wiki/MainPage" />
-			<item name="Eoulsan on Google code" href="http://code.google.com/p/eoulsan" />
+            <item name="Eoulsan on Google code" href="http://code.google.com/p/eoulsan" />
+			<item name="Javadoc" href="/apidocs/index.html" />			
 		</menu>
 
 		<!--menu ref="reports"/-->

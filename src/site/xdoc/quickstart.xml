@@ -100,14 +100,14 @@
 
 			 <br/>
 			 <li>Parameters files<br/>
-			    The following files are sample parameter files to analyse previous reads files. There are 2 files, 
+			    The following files are sample parameter files to analyze previous reads files. There are 2 files, 
                             one for local analysis which include differential analysis and one for distributed (on cluster 
                             or cloud computing facilities) without differential analysis as this last steps are performed 
                             only on local computer.</li>
 
 			  <ul>
-				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-local.xml">Parameter file for local analysis</a></li>
-                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
+				<li><a href="./param-local.xml">Parameter file for local analysis</a></li>
+                                <li><a href="./param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
 			  </ul>
 			</ul>
 
@@ -116,17 +116,12 @@
 		<a name="design_file"/>
 		<subsection name="Create a design file">
 
-			<p>Before creating design file, if you use the previous sample files uncompress genome and annotation:</p>
-<source>
-$ bunzip2 genome.fasta.bz2 annotation.gff.bz2
-</source>
-
 			<p>In an empty directory, copy the reads, genome and annotation files, then you can create a design file with the next command:</p>
 <source>
-$ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff
+$ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 </source>
 
-			<p>You can now modify the design file to add additional information. Note that Eoulsan currently does not handle compressed genome and annotation files.</p>
+			<p>You can now modify the design file to add additional information. Note that Eoulsan handle automatically compressed files.</p>
 
 		</subsection>
 
@@ -161,6 +156,7 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta annotation.gff
 $ eoulsan.sh exec param-local.xml design.txt
 </source>
 
+            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R and related packages (See <a href="./step-diffana.html">differential analysis step</a> for more information).</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
@@ -169,7 +165,7 @@ $ eoulsan.sh exec param-local.xml design.txt
 			  <li>The parameter of all the steps are valid</li>
 			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>
-			  <li>A genome mapper index is needed. In this case, a step to generated this index is added</li>
+			  <li>A genome mapper index is needed. In this case, a step to generated this index is automatically added</li>
 			</ul>
 			
 			<p>If successful, you wil obtain a new directory name like <b>eoulsan-20110310-101235</b> 
@@ -185,9 +181,7 @@ $ eoulsan.sh exec param-local.xml design.txt
 <source>
 $ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/test
 </source>
-
-			<p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R and related packages (See <a href="./step-diffana.html">differential analysis step</a> for more information).</p>
-
+		
 			<p>At the start of the analysis and after the check of the input files (like 
 			in the local mode), input data are uploaded on the hadoop cluster before 
                         launching the analysis.</p>

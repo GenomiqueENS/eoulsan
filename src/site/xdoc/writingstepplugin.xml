@@ -259,7 +259,7 @@ public class GsnapExampleStep extends AbstractStep {
         we define a <b>mapperarguments</b> parameter for setting additional parameters 
         for gsnap.</li>
 <source>
-  private String mapperArguments;
+  private String mapperArguments = "-N 1";
 
   @Override
   public void configure(final Set&lt;Parameter&gt; stepParameters)
@@ -469,7 +469,7 @@ public class GsnapExampleStep extends AbstractStep {
     // Build the command line
     final String cmd =
         gsnapPath
-            + " -N 1 -A sam " + formatArg + " -t "
+            + " -A sam " + formatArg + " -t "
             + context.getSettings().getLocalThreadsNumber() + " -D "
             + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
             + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";

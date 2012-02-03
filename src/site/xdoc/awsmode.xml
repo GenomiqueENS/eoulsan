@@ -48,7 +48,9 @@
            Account. In this page create or get your access key. You need a couple 
            of valid access key/secret key to launch Eoulsan on Amazon Cloud.
            See the <a href="http://s3.amazonaws.com/awsdocs/ElasticMapReduce/latest/emr-gsg.pdf">Amazon
-           Elastic MapReduce Getting Started Guide</a> for more information.</p>
+           Elastic MapReduce Getting Started Guide</a> for more information. 
+           Eoulsan use the AWS Java SDK library to transfer data to Amazon S3 and 
+           launch Amazon Elastic MapReduce jobs.</p>
 
     </section>
 

@@ -46,7 +46,7 @@
 
 	<p>You need to install the packages on all the nodes of your cluster. 
            In /etc/apt/sources.list add the following line (replace maverick 
-           by the name of the version of your system, e.g. karmic, lucid, lenny...):</p>
+           by the name of the version of your system, e.g. oneiric, lucid, lenny...):</p>
 <source>
 deb http://archive.cloudera.com/debian maverick-cdh3 contrib
 </source>

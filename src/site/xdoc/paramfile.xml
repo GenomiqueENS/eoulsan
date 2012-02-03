@@ -37,7 +37,7 @@
   
     <section name="The parameter file">
 
-      <p>The parameter file (usually named as <code>param.xml</code>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
+      <p>The parameter file (usually named as <b>param.xml</b>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
 
 
       <ul>
@@ -46,7 +46,7 @@
         <li>The <a href="#globalsection">global section</a> that contains global parameters that can be use in all the steps of the analysis.</li>
      </ul>
 
-	<p>All the tags must be in lower case. The following source show the structure of a typical design.xml file:</p>
+	<p>All the tags must be in lower case. The following source show the structure of a typical <b>design.xml</b> file:</p>
 
 <source>
 &lt;analysis&gt;
@@ -62,11 +62,11 @@
                 &lt;name&gt;filterreads&lt;/name&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;lengthThreshold&lt;/name&gt;
+                                &lt;name&gt;trim.length.threshold&lt;/name&gt;
                                 &lt;value&gt;11&lt;/value&gt;
                         &lt;/parameter&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;qualityThreshold&lt;/name&gt;
+                                &lt;name&gt;quality.threshold&lt;/name&gt;
                                 &lt;value&gt;12&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
@@ -137,7 +137,7 @@
      <subsection name="Description section">
         <a name="descsection" />
 
-	<p>The firsts tags of the parameter file allow to set some information about the file</p>
+	<p>The firsts tags of the parameter file allow to set some information about the file:</p>
 
         <ul>
                 <li><b>formatversion:</b> The version of the format of this parameter file.</li>
@@ -162,11 +162,11 @@
                 &lt;name&gt;filterreads&lt;/name&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;lengthThreshold&lt;/name&gt;
+                                &lt;name&gt;trim.length.threshold&lt;/name&gt;
                                 &lt;value&gt;11&lt;/value&gt;
                         &lt;/parameter&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;qualityThreshold&lt;/name&gt;
+                                &lt;name&gt;quality.threshold&lt;/name&gt;
                                 &lt;value&gt;12&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
@@ -195,7 +195,7 @@
      <subsection name="Global parameter section">
         <a name="globalsection" />
 
-	<p>The global parameter file contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in steps.</p>
+	<p>The global parameter file contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in the steps.</p>
 
 <source>
     &lt;globals&gt;

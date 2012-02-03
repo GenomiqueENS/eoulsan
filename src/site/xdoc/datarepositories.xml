@@ -38,8 +38,8 @@
     <section name="Data repositories">
 
 	<p>To avoid duplication of genome, annotation and genome index files, Eoulsan handles data repositories.
-	It is very useful for genome indexes used in mapping step witch computation is quite long for large genomes. 
-	Using a genome index repository store the result the index computations for a genome for the next analysis.</p>
+	It is very useful for genome indexes used in the mapping step witch computation is quite long for large genomes. 
+	The genome index repository store the result an index computation of a genome for next analysis using this genome.</p>
 
 	<subsection name="Genome and annotation repositories">
 	
@@ -58,10 +58,10 @@
 		define several alias to the same genome.</p>
 		 
 <source>
--rw-r--r-- 1 nobody nobody  4123941 2010-02-15 15:45 mouse-37.fasta.bz2
-lrwxrwxrwx 1 nobody nobody       16 2011-12-25 17:42 mouse -> mouse-37.fasta.bz2
--rw-r--r-- 1 nobody nobody  4123941 2010-02-15 15:45 mouse-36.fasta.bz2
-lrwxrwxrwx 1 nobody nobody       16 2011-12-25 17:42 cerevisae.fasta.bz2 
+-rw-r--r-- 1 nobody nobody   4123941 2010-02-15 15:45 mouse-37.fasta.bz2
+lrwxrwxrwx 1 nobody nobody        16 2011-12-25 17:42 mouse -> mouse-37.fasta.bz2
+-rw-r--r-- 1 nobody nobody   4123327 2010-02-15 15:45 mouse-36.fasta.bz2
+lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 </source>
 
 		<p>To access repositories from design file, user must use dedicated protocols:</p>

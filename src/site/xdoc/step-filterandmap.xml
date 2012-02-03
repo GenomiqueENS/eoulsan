@@ -49,12 +49,11 @@
         <li><b>Optional parameters</b>:</li>
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>15</td></tr>
-		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>15.0</td></tr>
-		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
-                <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
-                <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap).</td></tr>
-                <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255].</td><td>0</td></tr>
+		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not set</td></tr>
+		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not set</td></tr>
+	    <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
+        <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap).</td></tr>
+        <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255].</td><td>0</td></tr>
 	</table>
       </ul>
 
