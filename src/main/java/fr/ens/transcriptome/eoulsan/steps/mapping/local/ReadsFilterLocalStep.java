@@ -237,7 +237,6 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
-   * @param phredOffset PHRED offset
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile1,
