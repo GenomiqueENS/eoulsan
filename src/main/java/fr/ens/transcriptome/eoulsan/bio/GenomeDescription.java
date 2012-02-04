@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
+import fr.ens.transcriptome.eoulsan.bio.io.FastaLineParser;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -58,8 +58,6 @@ public class GenomeDescription {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
-  private static final int STRING_LENGTH_BUFFER = 1024 * 1024;
 
   private static final String PREFIX = "genome.";
   private static final String NAME_PREFIX = PREFIX + "name";
@@ -313,26 +311,46 @@ public class GenomeDescription {
       md5Digest = null;
     }
 
-    final FastaReader reader = new FastaReader(genomeFastaIs);
+    final FastaLineParser parser = new FastaLineParser(genomeFastaIs);
 
-    for (final Sequence sequence : reader) {
+    final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
+    String seqName = null;
+    String lastSeqName = null;
+    String parsedSeqName = null;
+    long chrSize = 0;
 
-      long len = checkBases(sequence);
-      final String name = parseChromosomeName(sequence.getName());
+    while ((seqName = parser.parseNextLineAndGetSequenceName()) != null) {
 
-      // Update digest with chromosome name
-      if (md5Digest != null) {
-        md5Digest.update(name.getBytes(Globals.DEFAULT_FILE_ENCODING));
+      if (!seqName.equals(lastSeqName)) {
 
-        for (final String s : StringUtils.splitStringIterator(
-            sequence.getSequence(), STRING_LENGTH_BUFFER))
-          md5Digest.update(s.getBytes(Globals.DEFAULT_FILE_ENCODING));
+        // Add sequence
+        if (lastSeqName != null)
+          result.addSequence(parsedSeqName, chrSize);
+
+        // Parse chromosome name
+        parsedSeqName = parseChromosomeName(seqName);
+
+        // Update digest with chromosome name
+        if (md5Digest != null)
+          md5Digest.update(parsedSeqName
+              .getBytes(Globals.DEFAULT_FILE_ENCODING));
+
+        lastSeqName = seqName;
+        chrSize = 0;
       }
 
-      // Add sequence
-      result.addSequence(name, len);
+      final String sequence = parser.getSequence();
+
+      // Check the sequence and increment the length of the sequence
+      chrSize += checkBases(sequence, lastSeqName, alphabet);
+
+      // Update digest with chromosome sequence
+      md5Digest.update(sequence.getBytes(Globals.DEFAULT_FILE_ENCODING));
     }
-    reader.throwException();
+
+    // Add the last sequence
+    if (lastSeqName != null)
+      result.addSequence(parsedSeqName, chrSize);
 
     // Compute final MD5 sum
     if (md5Digest != null)
@@ -357,27 +375,18 @@ public class GenomeDescription {
     return fields[0];
   }
 
-  private static long checkBases(final Sequence sequence)
+  private static long checkBases(final String sequence,
+      final String sequenceName, final Alphabet alphabet)
       throws BadBioEntryException {
 
-    final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
+    final char[] array = sequence.toCharArray();
 
-    long result = 0;
+    for (final char c : array)
+      if (!alphabet.isLetterValid(c))
+        throw new BadBioEntryException("Invalid base in genome: " + c,
+            sequenceName);
 
-    for (final String s : StringUtils.splitStringIterator(
-        sequence.getSequence(), STRING_LENGTH_BUFFER)) {
-
-      final char[] array = s.toCharArray();
-
-      for (final char c : array)
-        if (!alphabet.isLetterValid(c))
-          throw new BadBioEntryException("Invalid base in genome: " + c,
-              sequence.getName());
-
-      result += array.length;
-    }
-
-    return result;
+    return sequence.length();
   }
 
   private static final String digestToString(final MessageDigest md) {
