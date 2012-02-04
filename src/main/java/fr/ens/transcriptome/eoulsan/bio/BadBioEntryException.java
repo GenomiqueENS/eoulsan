@@ -32,6 +32,9 @@ package fr.ens.transcriptome.eoulsan.bio;
  */
 public class BadBioEntryException extends Exception {
 
+  // Serialization version UID
+  private static final long serialVersionUID = 3332356090180839324L;
+
   /** Entry at the origin of the exception. */
   private final String entry;
 
