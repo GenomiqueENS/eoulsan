@@ -200,7 +200,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
             .getTempDirectoryFile());
 
     LOGGER.info("Map file: "
-        + inFile + ", PHRED offset: " + s.getMetadata().getFastqFormat()
+        + inFile + ", Fastq format: " + s.getMetadata().getFastqFormat()
         + ", use " + mapper.getMapperName() + " with " + mapperThreads
         + " threads option");
 
@@ -224,7 +224,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
             .getTempDirectoryFile());
 
     LOGGER.info("Map files: "
-        + inFile1 + "," + inFile2 + ", PHRED offset: "
+        + inFile1 + "," + inFile2 + ", Fastq format: "
         + s.getMetadata().getFastqFormat() + ", use " + mapper.getMapperName()
         + " with " + mapperThreads + " threads option");
 
