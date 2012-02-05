@@ -78,7 +78,8 @@ SampleNumber    Name    Reads   Genome  Annotation      FastqFormat     Conditio
 2	s2	[s2a.fq.bz2,s2b.fq.bz2]	genome.fasta	annotation_only.gff	fastq-sanger	s2	B	54c8833f-77e1-4e4f-90c2-742e459df7a7
 </source>
 
-		    <p><b><u>Warning :</u></b> This feature in experimental. Only the <b>filterreads</b> and some mappers in <b>mapreads</b> steps can handle paired-end file in Eoulsan 1.1.</p>
+		    <p><b><u>Warning :</u></b> This feature in experimental in Eoulsan 1.1. Only the <b>filterreads</b> and some mappers in <b>mapreads</b> steps 
+		    in local mode can handle paired-end files.</p>
 		</subsection>
  
 		<subsection name="Repository for genomes and annotation">

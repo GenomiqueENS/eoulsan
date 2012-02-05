@@ -49,9 +49,9 @@
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>parameter path</td><td>a string</td><td>The path to parameter file to use</td></tr>
-		<tr><td>design path</td><td>a string</td><td>The path design file to use</td></tr>
-		<tr><td>data path on S3</td><td>a string</td><td>The path where upload data on S3</td></tr>
+		<tr><td>parameter path</td><td>a path</td><td>The path to parameter file to use</td></tr>
+		<tr><td>design path</td><td>a path</td><td>The path design file to use</td></tr>
+		<tr><td>data path on S3</td><td>a path</td><td>The path where upload data on S3</td></tr>
 	</table>
         </li>
 	<br/>

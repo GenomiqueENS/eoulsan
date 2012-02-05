@@ -41,14 +41,15 @@
 
       <ul>
          <li><b>Name</b>: expression.</li>
-         <li><b>Available</b>: Both local and distributed mode.</li>
-        <li><b>Input</b>: filtered alignments (e.g. <code>filtered_mapper_results_1.sam</code>).</li>
-        <li><b>Output</b>: expression file (e.g. <code>expression_1.txt</code>).</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
+         <li><b>Multithreaded in local mode</b>: No</li>
+        <li><b>Input</b>: filtered alignments (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
+        <li><b>Output</b>: expression file (e.g. <code>expression_1.tsv</code>).</li>
 	 <br/>
-         <li><b>Parameters</b>:</li>
+         <li><b>Optional parameters</b>:</li>
 	<table>
-		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td></tr>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
 	</table>
        </ul>
       

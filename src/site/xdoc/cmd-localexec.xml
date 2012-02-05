@@ -44,8 +44,8 @@
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>parameter file</td><td>a string</td><td>The parameter file to use</td></tr>
-		<tr><td>design file</td><td>a string</td><td>The design file to use</td></tr>
+		<tr><td>parameter file</td><td>a path</td><td>The parameter file to use</td></tr>
+		<tr><td>design file</td><td>a path</td><td>The design file to use</td></tr>
 	</table>
         </li>
 	<br/>

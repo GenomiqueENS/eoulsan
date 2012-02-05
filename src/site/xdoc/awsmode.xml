@@ -39,7 +39,7 @@
 
 	<p>Currently Eoulsan can only work on cloud with Amazon Web Service. Eoulsan use 
            Amazon Elastic MapReduce service to execute an analysis on Cloud. This service 
-           provide on demand Hadoop cluster to customers. You can get more information 
+           provide on demand Hadoop clusters to customers. You can get more information 
            about this service on <a href="ttp://aws.amazon.com/elasticmapreduce/">Amazon 
            MapReduce website</a>.</p>
 

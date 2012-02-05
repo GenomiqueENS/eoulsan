@@ -37,7 +37,9 @@
   
     <section name="Create hadoop jar">
 
-      <p>This command allow to create a jar file that contains all the plugins and dependencies needed to run your analysis in distributed mode. Use this command before running manualy Eoulsan on a Hadoop local cluster or on AWS MapReduce.</p>  
+      <p>This command allow to create a jar file that contains all the plugins and dependencies needed
+       to run your analysis in distributed mode. The generated jar name is like <b>eoulsan-@@@VERSION@@@-a19e9799.jar</b>.
+       Use this command before running manualy Eoulsan on a Hadoop local cluster or on AWS MapReduce.</p>  
 
       <ul>
          <li><b>Optional parameters</b>: none</li>
@@ -58,7 +60,7 @@ $ eoulsan.sh createhadoopjar
      <p>With the jar file generated your can manualy launch Eoulsan with a Hadoop command:</p>
 
 <source>
-$ hadoop -jar eoulsan-1.0-a19e9799.jar hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
+$ hadoop -jar eoulsan-@@@VERSION@@@-a19e9799.jar hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
 </source>
 
 <ul>

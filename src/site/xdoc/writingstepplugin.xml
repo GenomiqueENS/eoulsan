@@ -36,8 +36,8 @@
 
    <section name="Writing an Eoulsan step plug-in">
 
-	<p>More information about writing 
-	plug-ins (e.g. steps, reads filters, mapper wrapper, NGS data handling...) is available 
+	<p>More informations about writing 
+	plug-ins (e.g. steps, reads filters, mapper wrapper, NGS data handling...) are available 
 	on the <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan developer Wiki</a>.</p>
 	<p>This page show how writing a step plug-in for Eoulsan. The sample code here is a step for mapping 
 	reads with the <a href="http://research-pub.gene.com/gmap/">Gsnap</a> mapper in local mode. 
@@ -62,8 +62,8 @@
 	  	<li>A Linux 64 bit (x86-64) distribution (e.g. <a href="http://www.ubuntu.com/">Ubuntu</a>, 
 	  	<a href="http://www.debian.org/">Debian</a>, 
 	  	<a href="http://fedoraproject.org/">Fedora</a>...). 
-	  	You can develop on other system but your plug-in will not run with Eoulsan.</li>
-	    <li>A <a href="http://www.oracle.com/technetwork/java/index.html">Java 6</a> SDK</li>
+	  	You can develop on other system but your system will not run Eoulsan</li>
+	    <li>A <a href="http://www.oracle.com/technetwork/java/index.html">Java 6</a> SDK (Oracle JDK or openJDK are recommended)</li>
 	    <li><a href="http://maven.apache.org/">Maven 2.2.x</a></li>
 	    <li>An IDE like <a href="http://www.eclipse.org/">Eclipse</a> (Optional)</li>
 	    <li>An Internet connection</li>
@@ -184,7 +184,7 @@ $ mvn eclipse:eclipse  -DdownloadSources=true -DdownloadJavadocs=true
 		<li>To import the project in Eclipse, go to <b>File</b> &gt; <b>Import...</b> &gt; 
 		<b>General</b> &gt; <b>Existing projects into Workspace</b> 
 		and select the root directory of the myeoulsanplugin project. By clicking on the finish button, 
-		eoulsanlugin will be imported into Eclipse workspace. </li>
+		myeoulsanlugin will be imported into Eclipse workspace. </li>
       </ul>
     
     </subsection>

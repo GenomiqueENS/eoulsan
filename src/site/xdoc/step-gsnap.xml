@@ -37,17 +37,18 @@
   
     <section name="Map reads with gsnap step">
 
-      <p>This step allow to map read with the Gsnap mapper program.</p>  
+      <p>This step allow to map reads with the Gsnap mapper program.</p>  
 
       <ul>
     <li><b>Internal name</b>: gsnap</li> 
-        <li><b>Available</b>: Only in local mode.</li>
-        <li><b>Input</b>: filtered reads (e.g. <code>filtered_reads_1.fq</code>).</li>
+        <li><b>Available</b>: Only in local mode</li>
+        <li><b>Multithreaded in local mode</b>: Yes (mapper multithreading)</li>
+        <li><b>Input</b>: filtered reads (e.g. <code>filtered_reads_1.fq</code>)</li>
         <li><b>Output</b>: alignments in SAM format (e.g. <code>mapper_results_1.sam</code>)</li>   
     <br/>
         <li><b>Optional parameters</b>:</li>
     <table>
-                <tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
                 <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>-N 1</td></tr>
         </table>
         

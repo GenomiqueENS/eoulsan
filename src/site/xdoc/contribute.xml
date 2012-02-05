@@ -49,8 +49,9 @@
       <ul>
         <li>Testing new versions</li>
         <li>Submitting bug reports to the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a></li>
-        <li>Programming new <a href="./writingplugin.html">Eoulsan plugins</a></li>
-        <li>Writing developer documentation on <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan Wiki</a></li>
+        <li>Programming new <a href="./writingstepplugin.html">Eoulsan plugins</a> and redistributing them (by yourself or in Eoulsan source repository)</li>
+        <li>Submitting patches</li>
+        <li>Writing developer documentation on <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan Wiki</a> if you become Eoulsan committer</li>
       </ul>
 
       <p>There are several places to look for more information if you want to get involved in the development. The first step is to subscribe to the eoulsan group. You will soon see something that can be improved or added.</p>
@@ -63,7 +64,7 @@
     </section>
 
    <section name="How do I get access to the code repository ?">
-      <p>The Eoulsan project uses the Subversion system to develop the core parts of the software. To facilitate contributions to our project, 
+      <p>The Eoulsan project uses the Git system to develop the core parts of the software. To facilitate contributions to our project, 
       Eoulsan code is hosted by Google code hosting. You can freely access to the 
       <a href="http://code.google.com/p/eoulsan">main page of the project</a> and to the
       <a href="http://code.google.com/p/eoulsan/source/checkout">git repository.</a></p>

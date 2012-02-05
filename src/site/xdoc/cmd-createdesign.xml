@@ -37,11 +37,12 @@
   
     <section name="Create design">
 
-      <p>This command allow to easly create a design file from a list of files (reads in fastq format, genome in fasta, annotation in gff).
+      <p>This command allow to easly create a design file from a list of (compressed or not) files (reads in fastq format, genome in fasta, annotation in gff).
       An Eoulsan design file can also be easily created from Casvasa demultiplexed data (Casava 1.8 only).</p>  
-      <p>In paired-end mode, this command parse reads id in fastq files to get the couples of paired-end fastq files. 
+      <p>In paired-end mode, this command parse reads ids in fastq files to get the couples of paired-end fastq files. 
       The create design command try to identify the fastq format,
-       if format cannot be identified it is set to fastq-sanger.</p>
+       if format cannot be identified it is set to fastq-sanger (or default format set in the 
+       <a href="./conffile.html">configuration file</a>).</p>
 
       <ul>
          <li><b>Available</b>: Only in local mode.</li>

@@ -44,13 +44,14 @@
 
       <ul>
 	<li><b>Internal name</b>: filtersamples</li>
-        <li><b>Available</b>: Both local and distributed mode.</li>
-	
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: No</li>
+	<br/>
         <li><b>Optional parameters</b>:
 
 	<table>
-		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>threshold</td><td>a real number between ]0-1]</td><td>The threshold of the filter</td></tr>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>threshold</td><td>integer</td><td>The threshold of the filter in percent.</td><td>50</td></tr>
 	</table>
         </li>
        </ul>

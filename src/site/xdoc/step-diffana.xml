@@ -37,14 +37,15 @@
   
     <section name="Differential analysis step">
 
-      <p>This step allow to perform differential analysis on expression module results.</p>  
+      <p>This step allow to perform differential analysis on expression step results.</p>  
 
       <ul>
          <li><b>Name</b>: diffana</li>
-         <li><b>Available</b>: Only in local mode.</li>
-         <li><b>Input</b>: expression file (e.g. <code>expression_1.txt</code>).</li>
-         <li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>).</li>
-
+         <li><b>Available</b>: Only in local mode</li>
+         <li><b>Multithreaded in local mode</b>: No</li>
+         <li><b>Input</b>: expression file (e.g. <code>expression_1.tsv</code>)</li>
+         <li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>)</li>
+	  <br/>
          <li><b>Optional parameters</b>: none.</li>
        </ul>
       

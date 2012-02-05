@@ -39,7 +39,7 @@
 
 	<p>To avoid duplication of genome, annotation and genome index files, Eoulsan handles data repositories.
 	It is very useful for genome indexes used in the mapping step witch computation is quite long for large genomes. 
-	The genome index repository store the result an index computation of a genome for next analysis using this genome.</p>
+	The genome index repository store the result an index computation for the next analysis using this genome.</p>
 
 	<subsection name="Genome and annotation repositories">
 	

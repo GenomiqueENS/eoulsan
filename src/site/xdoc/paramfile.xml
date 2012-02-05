@@ -43,7 +43,7 @@
       <ul>
         <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the parameter files.</li>
         <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
-        <li>The <a href="#globalsection">global section</a> that contains global parameters that can be use in all the steps of the analysis.</li>
+        <li>The <a href="#globalsection">global section</a> that contains global parameters (override configuration settings) that can be use in all the steps of the analysis.</li>
      </ul>
 
 	<p>All the tags must be in lower case. The following source show the structure of a typical <b>design.xml</b> file:</p>
@@ -78,7 +78,7 @@
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapper&lt;/name&gt;
-                                &lt;value&gt;soap&lt;/value&gt;
+                                &lt;value&gt;bowtie&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
         &lt;/step&gt;

@@ -155,7 +155,7 @@ $ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc
 </source>
 
         <br/>
-	<li>In <b>hadoop-end.sh</b> set the path to java. We strongly recommand to use Sun JRE. You can also disable IPv6 support of hadoop.</li>
+	<li>In <b>hadoop-end.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
 <source>
 export JAVA_HOME=/usr/lib/jvm/java-6-sun
 # Disable IPv6 for hadoop
@@ -171,7 +171,7 @@ export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true
 
    <subsection name="Starting Hadoop">
 
-        <p>Before starting Hadoop for the fisrt time, you need to format the distributed file system of each node:</p>
+        <p>Before starting Hadoop for the first time, you need to format the distributed file system of each node:</p>
 <source>
 $ sudo su
 # su -s /bin/bash - hdfs -c 'hadoop namenode -format'

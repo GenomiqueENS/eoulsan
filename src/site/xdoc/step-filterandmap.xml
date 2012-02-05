@@ -37,20 +37,23 @@
   
     <section name="Filter and map reads step">
 
-      <p>This step combine in one step in hadoop mode the filtering of the reads, the mapping and the filtering of the alignments. This step only available in hadoop mode is more efficent than using the 3 steps successively.</p>  
+      <p>This step combine in one step in Hadoop mode the filtering of the reads, the mapping and the filtering of the alignments.
+      This step only is available in hadoop mode is more efficient than using the 3 steps successively.</p>  
 
       <ul>
  	<li><b>Internal name</b>: filterandmap</li> 
-        <li><b>Available</b>: Distributed mode only.</li>
- 	<li><b>Input</b>: Fastq or tfq file (tfq files are tabuleted fastq files with one read by line used in hadoop mode).</li>
-	<li><b>Output</b>: filtered alignment file in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>).</li>
+    <li><b>Available</b>: Distributed mode only</li>
+    <li><b>Multithreaded in local mode</b>: N/A</li>
+ 	<li><b>Input</b>: Fastq or tfq file (tfq files are tabuleted fastq files with one read by line used in hadoop mode)</li>
+	<li><b>Output</b>: filtered alignment file in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
 
 	<br/>
         <li><b>Optional parameters</b>:</li>
 	<table>
-		<tr><th>Parameter</th><th>Value</th><th>Description</th><th>Default value</th></tr>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not set</td></tr>
 		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not set</td></tr>
+		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters.</td><td>Not set</td></tr>
 	    <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
         <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap).</td></tr>
         <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255].</td><td>0</td></tr>
