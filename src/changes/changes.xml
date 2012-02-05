@@ -218,7 +218,7 @@
             </action>
          </release>
 
-         <release version="1.1" description="Eoulsan 1.1 release" date="TBD">
+         <release version="1.1" description="Eoulsan 1.1 release" date="2012-02-05">
          
             <action dev="jourdren" type="fix" issue="7">
                Fix: OutOfMemoryError exception in awsmode on hadoop master node with mouse genome in _genomedescgenerator step.
