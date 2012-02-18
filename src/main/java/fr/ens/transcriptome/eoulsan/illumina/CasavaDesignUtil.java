@@ -108,22 +108,29 @@ public final class CasavaDesignUtil {
 
       // Check sample reference
       if (isNullOrEmpty(sample.getSampleRef()))
-        throw new EoulsanException("Found a null or empty sample reference.");
+        throw new EoulsanException(
+            "Found a null or empty sample reference for sample: "
+                + sample.getSampleId() + ".");
 
       // Check index
       checkIndex(sample.getIndex());
 
       // Check the description
       if (isNullOrEmpty(sample.getDescription()))
-        throw new EoulsanException("Found a null or empty description.");
+        throw new EoulsanException(
+            "Found a null or empty description for sample: "
+                + sample.getSampleId() + ".");
 
       // Check recipe
       if (isNullOrEmpty(sample.getRecipe()))
-        throw new EoulsanException("Found a null or empty recipe.");
+        throw new EoulsanException("Found a null or empty recipe for sample: "
+            + sample.getSampleId() + ".");
 
       // Check operator
       if (isNullOrEmpty(sample.getOperator()))
-        throw new EoulsanException("Found a null or empty operator.");
+        throw new EoulsanException(
+            "Found a null or empty operator for sample: "
+                + sample.getSampleId() + ".");
 
       // Check sample project
       checkSampleProject(sample.getSampleProject());
