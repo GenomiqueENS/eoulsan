@@ -188,9 +188,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
               } else if (lastIdCount > 1) {
 
                 reporter.incrCounter(COUNTER_GROUP,
-                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
+                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), lastIdCount);
                 reporter.incrCounter(COUNTER_GROUP,
-                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
+                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), lastIdCount);
               }
 
               lastIdCount = 1;

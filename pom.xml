@@ -425,7 +425,7 @@
            					<phase>package</phase>
 						<configuration>
 							<tasks unless="distrib.package.compression.skip">
-O
+
 								<!-- skip this task with command: mvn -Ddistrib.package.compression.skip=true -->
 								<!-- Compress dist-src -->
 
