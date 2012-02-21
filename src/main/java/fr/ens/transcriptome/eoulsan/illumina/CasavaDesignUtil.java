@@ -24,14 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.illumina;
 
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.isNullOrEmpty;
-
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class contains utilty methods for Casava design.
@@ -71,10 +69,11 @@ public final class CasavaDesignUtil {
     String fcid = null;
     boolean first = true;
 
-    final Map<Integer, Set<String>> indexes = Utils.newHashMap();
-    final Set<String> sampleIds = Utils.newHashSet();
-    final Set<Integer> laneWithIndexes = Utils.newHashSet();
-    final Set<Integer> laneWithoutIndexes = Utils.newHashSet();
+    final Map<Integer, Set<String>> indexes =
+        new HashMap<Integer, Set<String>>();
+    final Set<String> sampleIds = new HashSet<String>();
+    final Set<Integer> laneWithIndexes = new HashSet<Integer>();
+    final Set<Integer> laneWithoutIndexes = new HashSet<Integer>();
 
     for (CasavaSample sample : design) {
 
@@ -178,7 +177,7 @@ public final class CasavaDesignUtil {
 
     for (int i = 0; i < fcid.length(); i++) {
 
-      final int c = fcid.codePointAt(i);
+      final char c = fcid.charAt(i);
       if (!(Character.isLetterOrDigit(c)))
         throw new EoulsanException(
             "Invalid flow cell id, only letters or digits are allowed : "
@@ -197,7 +196,7 @@ public final class CasavaDesignUtil {
     // Check for forbidden characters
     for (int i = 0; i < sampleId.length(); i++) {
 
-      final int c = sampleId.codePointAt(i);
+      final char c = sampleId.charAt(i);
       if (!(Character.isLetterOrDigit(c) || c == '_' || c == '-'))
         throw new EoulsanException(
             "Invalid sample id, only letters, digits, '-' or '_' characters are allowed : "
@@ -241,8 +240,8 @@ public final class CasavaDesignUtil {
       throw new EoulsanException("Found a null or sample project.");
 
     for (int i = 0; i < sampleProject.length(); i++) {
-      final int codePoint = sampleProject.codePointAt(i);
-      if (!(Character.isLetterOrDigit(codePoint) || codePoint == '-' || codePoint == '_'))
+      final char c = sampleProject.charAt(i);
+      if (!(Character.isLetterOrDigit(c) || c == '-' || c == '_'))
         throw new EoulsanException(
             "Invalid sample project, only letters, digits, '-' or '_' characters are allowed: "
                 + sampleProject + ".");
@@ -284,6 +283,16 @@ public final class CasavaDesignUtil {
 
     }
 
+  }
+
+  /**
+   * Test if a string is null or empty
+   * @param s string to test
+   * @return true if the input string is null or empty
+   */
+  private static boolean isNullOrEmpty(final String s) {
+
+    return s == null || s.isEmpty();
   }
 
   //

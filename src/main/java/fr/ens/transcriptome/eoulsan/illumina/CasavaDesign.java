@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.util.Utils;
-
 /**
  * This class handle a Casava design object.
  * @since 1.1
@@ -38,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class CasavaDesign implements Iterable<CasavaSample> {
 
-  private List<CasavaSample> samples = Utils.newArrayList();
+  private List<CasavaSample> samples = new ArrayList<CasavaSample>();
 
   public void addSample(final CasavaSample sample) {
 
@@ -85,7 +83,7 @@ public class CasavaDesign implements Iterable<CasavaSample> {
   @Override
   public String toString() {
 
-    return this.getClass().getSimpleName() + "{samples=" + this.samples + "}";
+    return CasavaDesign.class.getName() + "{samples=" + this.samples + "}";
   }
 
 }

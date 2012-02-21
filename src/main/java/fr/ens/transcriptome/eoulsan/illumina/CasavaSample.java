@@ -267,7 +267,7 @@ public class CasavaSample {
   @Override
   public String toString() {
 
-    return this.getClass().getSimpleName()
+    return CasavaSample.class.getName()
         + "{sampleId=" + this.sampleId + ", flowCellId=" + this.flowCellId
         + ", lane=" + this.lane + ", sampleRef=" + this.sampleRef + ", index="
         + this.index + ", description=" + this.description + ", control="
