@@ -24,12 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.illumina;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.illumina.io.AbstractCasavaDesignTextReader;
 
 /**
  * This class contains utilty methods for Casava design.
@@ -286,6 +289,79 @@ public final class CasavaDesignUtil {
   }
 
   /**
+   * Convert a Casava design to CSV.
+   * @param design Casava design object to convert
+   * @return a String with the converted design
+   */
+  public static final String toCSV(final CasavaDesign design) {
+
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
+        + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
+
+    if (design == null)
+      return sb.toString();
+
+    for (CasavaSample s : design) {
+
+      sb.append(s.getFlowCellId().trim().toUpperCase());
+      sb.append(',');
+      sb.append(s.getLane());
+      sb.append(',');
+      sb.append(quote(s.getSampleId().trim()));
+      sb.append(',');
+      sb.append(quote(s.getSampleRef().trim()));
+      sb.append(',');
+      sb.append(quote(s.getIndex().toUpperCase()));
+      sb.append(',');
+      sb.append(quote(s.getDescription().trim()));
+      sb.append(',');
+      sb.append(s.isControl() ? 'Y' : 'N');
+      sb.append(',');
+      sb.append(quote(s.getRecipe().trim()));
+      sb.append(',');
+      sb.append(quote(s.getOperator().trim()));
+      sb.append(',');
+      sb.append(quote(s.getSampleProject()));
+
+      sb.append('\n');
+
+    }
+
+    return sb.toString();
+  }
+
+  public static CasavaDesign parseTabulatedDesign(final String s)
+      throws IOException {
+
+    if (s == null)
+      return null;
+
+    return new AbstractCasavaDesignTextReader() {
+
+      @Override
+      public CasavaDesign read() throws IOException {
+
+        final String[] lines = s.split("\n");
+
+        for (final String line : lines) {
+
+          final String[] fields = line.split("\t");
+          parseLine(Arrays.asList(fields));
+
+        }
+
+        return getDesign();
+      }
+    }.read();
+  }
+
+  //
+  // Private utility methods
+  //
+
+  /**
    * Test if a string is null or empty
    * @param s string to test
    * @return true if the input string is null or empty
@@ -293,6 +369,18 @@ public final class CasavaDesignUtil {
   private static boolean isNullOrEmpty(final String s) {
 
     return s == null || s.isEmpty();
+  }
+
+  private static String quote(final String s) {
+
+    if (s == null)
+      return "";
+
+    final String trimmed = s.trim();
+
+    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1)
+      return '\"' + trimmed + '\"';
+    return trimmed;
   }
 
   //

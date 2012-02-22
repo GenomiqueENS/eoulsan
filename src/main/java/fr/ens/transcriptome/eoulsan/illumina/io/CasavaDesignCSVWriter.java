@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
-import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
+import fr.ens.transcriptome.eoulsan.illumina.CasavaDesignUtil;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -46,59 +46,9 @@ public class CasavaDesignCSVWriter implements CasavaDesignWriter {
   @Override
   public void writer(final CasavaDesign design) throws IOException {
 
-    this.writer
-        .write("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
-            + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
-
-    if (design != null) {
-
-      final StringBuilder sb = new StringBuilder();
-
-      for (CasavaSample s : design) {
-
-        sb.append(s.getFlowCellId().trim().toUpperCase());
-        sb.append(',');
-        sb.append(s.getLane());
-        sb.append(',');
-        sb.append(quote(s.getSampleId().trim()));
-        sb.append(',');
-        sb.append(quote(s.getSampleRef().trim()));
-        sb.append(',');
-        sb.append(quote(s.getIndex().toUpperCase()));
-        sb.append(',');
-        sb.append(quote(s.getDescription().trim()));
-        sb.append(',');
-        sb.append(s.isControl() ? 'Y' : 'N');
-        sb.append(',');
-        sb.append(quote(s.getRecipe().trim()));
-        sb.append(',');
-        sb.append(quote(s.getOperator().trim()));
-        sb.append(',');
-        sb.append(quote(s.getSampleProject()));
-
-        sb.append('\n');
-
-        // Write the string
-        writer.write(sb.toString());
-        sb.setLength(0);
-
-      }
-
-    }
+    this.writer.write(CasavaDesignUtil.toCSV(design));
 
     this.writer.close();
-  }
-
-  private static String quote(final String s) {
-
-    if (s == null)
-      return "";
-
-    final String trimmed = s.trim();
-
-    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1)
-      return '\"' + trimmed + '\"';
-    return trimmed;
   }
 
   //
