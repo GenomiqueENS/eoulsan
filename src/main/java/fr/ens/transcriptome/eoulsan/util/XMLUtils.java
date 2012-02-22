@@ -181,4 +181,23 @@ public final class XMLUtils {
     return result;
   }
 
+  /**
+   * Add an element to a parent element with its value.
+   * @param doc DOM document object
+   * @param parentElement parent element
+   * @param elementName name of the element
+   * @param value text of the element
+   */
+  public static void addTagValue(final Document doc,
+      final Element parentElement, final String elementName, final String value) {
+
+    if (doc == null
+        || parentElement == null || elementName == null || value == null)
+      return;
+
+    Element child = doc.createElement(elementName);
+    parentElement.appendChild(child);
+    child.appendChild(doc.createTextNode(value));
+  }
+
 }

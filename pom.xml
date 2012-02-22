@@ -6,7 +6,7 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -254,17 +254,6 @@
 			<version>1.0.4</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--dependency>
-			<groupId>rosuda</groupId>
-			<artifactId>JRclient</artifactId>
-			<version>RE817</version>
-			<scope>compile</scope>
-                </dependency-->
-		<dependency>
-			<groupId>RoSuDA</groupId>
-			<artifactId>JRclient</artifactId>
-			 <version>RF503</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -287,6 +276,18 @@
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
 			<version>1.59</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>REngine</artifactId>
+			<version>0.6-1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.nuiton.thirdparty</groupId>
+			<artifactId>Rserve</artifactId>
+			<version>0.6-1</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -424,7 +425,7 @@
            					<phase>package</phase>
 						<configuration>
 							<tasks unless="distrib.package.compression.skip">
-O
+
 								<!-- skip this task with command: mvn -Ddistrib.package.compression.skip=true -->
 								<!-- Compress dist-src -->
 
@@ -631,14 +632,24 @@ O
 						                  <destFileName>common-codec.jar</destFileName>
 						                </artifactItem>
 								<artifactItem>
-						                  <groupId>RoSuDA</groupId>
-						                  <artifactId>JRclient</artifactId>
-						                  <version>RF503</version>
+						                  <groupId>org.nuiton.thirdparty</groupId>
+						                  <artifactId>REngine</artifactId>
+						                  <version>0.6-1</version>
 						                  <!--type></type-->
 				                                  <!--classifier> [classifier - optional] </classifier-->
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>JRclient.jar</destFileName>
+						                  <destFileName>REngine.jar</destFileName>
+						                </artifactItem>
+								<artifactItem>
+						                  <groupId>org.nuiton.thirdparty</groupId>
+						                  <artifactId>Rserve</artifactId>
+						                  <version>0.6-1</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>Rserve.jar</destFileName>
 						                </artifactItem>
 								<artifactItem>
 						                  <groupId>com.google.guava</groupId>

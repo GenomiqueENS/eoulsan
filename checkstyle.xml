@@ -10,7 +10,7 @@ Description:
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
     <property name="severity" value="warning"/>
-    <module name="TreeWalker">
+    <!--module name="TreeWalker"-->
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="allowUndeclaredRTE" value="true"/>
@@ -102,7 +102,7 @@ Description:
         <module name="TodoComment"/>
         <module name="UpperEll"/>
         <module name="FinalParameters"/>
-    </module>
+    <!--/module-->
     <module name="PackageHtml"/>
     <module name="Translation"/>
     <module name="SeverityMatchFilter">

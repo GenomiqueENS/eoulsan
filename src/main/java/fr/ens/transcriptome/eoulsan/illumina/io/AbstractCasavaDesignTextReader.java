@@ -50,7 +50,7 @@ public abstract class AbstractCasavaDesignTextReader implements
     if (design == null)
       this.design = new CasavaDesign();
 
-    checkFieldNumber(fields);
+    trimAndCheckFields(fields);
 
     if (firstLine) {
       this.firstLine = false;
@@ -78,8 +78,6 @@ public abstract class AbstractCasavaDesignTextReader implements
     design.addSample(sample);
   }
 
- 
-
   private static final boolean parseControlField(final String value)
       throws IOException {
 
@@ -95,18 +93,31 @@ public abstract class AbstractCasavaDesignTextReader implements
     throw new IOException("Invalid value for the control field: " + value);
   }
 
-  private static final void checkFieldNumber(final List<String> fields)
+  private static final void trimAndCheckFields(final List<String> fields)
       throws IOException {
+
+    if (fields == null)
+      throw new IOException("The fields are null");
+
+    // Trim fields
+    for (int i = 0; i < fields.size(); i++) {
+      final String val = fields.get(i);
+      if (val == null)
+        throw new IOException("Found null field.");
+      fields.set(i, val.trim());
+    }
 
     if (fields.size() == 10)
       return;
 
     if (fields.size() < 10)
-      throw new IOException("Invalid number of field (" + fields.size() + "), 10 excepted.");
+      throw new IOException("Invalid number of field ("
+          + fields.size() + "), 10 excepted.");
 
     for (int i = 10; i < fields.size(); i++)
       if (!"".equals(fields.get(i).trim()))
-        throw new IOException("Invalid number of field (" + fields.size() + "), 10 excepted.");
+        throw new IOException("Invalid number of field ("
+            + fields.size() + "), 10 excepted.");
 
   }
 
