@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.illumina.io;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,10 +31,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
+import fr.ens.transcriptome.eoulsan.illumina.CasavaDesignUtil;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -49,7 +47,7 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
   /* Default Charset. */
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
-  
+
   private BufferedReader reader;
 
   @Override
@@ -66,7 +64,7 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
       try {
 
         // Parse the line
-        parseLine(split(line));
+        parseLine(CasavaDesignUtil.parseCSVDesignLine(line));
       } catch (IOException e) {
 
         // If an error occurs while parsing add the line to the exception
@@ -78,43 +76,6 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     reader.close();
 
     return getDesign();
-  }
-
-  /**
-   * Custom splitter for Casava CSV file.
-   * @param line line to parse
-   * @return a list of String with the contents of each cell without unnecessary
-   *         quotes
-   */
-  public static final List<String> split(final String line) {
-
-    final List<String> result = newArrayList();
-
-    if (line == null)
-      return null;
-
-    final int len = line.length();
-    boolean openQuote = false;
-    final StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < len; i++) {
-
-      final char c = line.charAt(i);
-
-      if (!openQuote && c == ',') {
-        result.add(sb.toString());
-        sb.setLength(0);
-      } else {
-        if (c == '"')
-          openQuote = !openQuote;
-        else
-          sb.append(c);
-      }
-
-    }
-    result.add(sb.toString());
-
-    return result;
   }
 
   //

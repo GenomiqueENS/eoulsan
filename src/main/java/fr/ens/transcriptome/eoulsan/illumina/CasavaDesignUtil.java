@@ -25,9 +25,12 @@
 package fr.ens.transcriptome.eoulsan.illumina;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,10 +47,10 @@ public final class CasavaDesignUtil {
   /**
    * Check a Casava design object.
    * @param design Casava design object to check
-   * @return true if the design is valid
+   * @return a list of warnings
    * @throws EoulsanException if the design is not valid
    */
-  public static boolean checkCasavaDesign(final CasavaDesign design)
+  public static List<String> checkCasavaDesign(final CasavaDesign design)
       throws EoulsanException {
 
     return checkCasavaDesign(design, null);
@@ -57,17 +60,19 @@ public final class CasavaDesignUtil {
    * Check a Casava design object.
    * @param design Casava design object to check
    * @param flowCellId flow cell id
-   * @return true if the design is valid
+   * @return a list of warnings
    * @throws EoulsanException if the design is not valid
    */
-  public static boolean checkCasavaDesign(final CasavaDesign design,
+  public static List<String> checkCasavaDesign(final CasavaDesign design,
       final String flowCellId) throws EoulsanException {
 
     if (design == null)
-      return false;
+      throw new NullPointerException("The design object is null");
 
     if (design.size() == 0)
       throw new EoulsanException("No samples found in the design.");
+
+    final List<String> warnings = new ArrayList<String>();
 
     String fcid = null;
     boolean first = true;
@@ -77,6 +82,10 @@ public final class CasavaDesignUtil {
     final Set<String> sampleIds = new HashSet<String>();
     final Set<Integer> laneWithIndexes = new HashSet<Integer>();
     final Set<Integer> laneWithoutIndexes = new HashSet<Integer>();
+    final Map<String, Set<Integer>> sampleInLanes =
+        new HashMap<String, Set<Integer>>();
+    final Map<String, String> samplesProjects = new HashMap<String, String>();
+    final Map<String, String> samplesIndex = new HashMap<String, String>();
 
     for (CasavaSample sample : design) {
 
@@ -116,6 +125,9 @@ public final class CasavaDesignUtil {
 
       // Check index
       checkIndex(sample.getIndex());
+
+      // Check sample Index
+      checkSampleIndex(sample.getSampleId(), sample.getIndex(), samplesIndex);
 
       // Check the description
       if (isNullOrEmpty(sample.getDescription()))
@@ -174,10 +186,21 @@ public final class CasavaDesignUtil {
       } else
         indexes.put(lane, new HashSet<String>());
 
+      // Check sample and project
+      checkSampleAndProject(sample.getSampleId(), sample.getSampleProject(),
+          sample.getLane(), sampleInLanes, samplesProjects, warnings);
+
       indexes.get(lane).add(index);
     }
 
-    return true;
+    // Add warnings for samples in several lanes
+    checkSampleInLanes(sampleInLanes, warnings);
+
+    // Return unique warnings
+    final List<String> result =
+        new ArrayList<String>(new HashSet<String>(warnings));
+    Collections.sort(result);
+    return result;
   }
 
   private static void checkFCID(final String fcid) throws EoulsanException {
@@ -213,10 +236,6 @@ public final class CasavaDesignUtil {
                 + sampleId + ".");
     }
 
-    // Check if the sample has been already defined
-    if (sampleIds.contains(sampleId))
-      throw new EoulsanException("The sample id \""
-          + sampleId + "\" has been define more than one time.");
     sampleIds.add(sampleId);
   }
 
@@ -256,8 +275,83 @@ public final class CasavaDesignUtil {
             "Invalid sample project, only letters, digits, '-' or '_' characters are allowed: "
                 + sampleProject + ".");
     }
-
   }
+
+  private static void checkSampleAndProject(final String sampleId,
+      final String projectName, final int lane,
+      final Map<String, Set<Integer>> sampleInLanes,
+      final Map<String, String> samplesProjects, final List<String> warnings)
+      throws EoulsanException {
+
+    // Check if two or more project use the same sample
+    if (samplesProjects.containsKey(sampleId)
+        && !samplesProjects.get(sampleId).equals(projectName))
+      throw new EoulsanException("The sample \""
+          + sampleId + "\" is used by two or more projects.");
+
+    samplesProjects.put(sampleId, projectName);
+
+    final Set<Integer> lanes;
+    if (!sampleInLanes.containsKey(sampleId)) {
+      lanes = new HashSet<Integer>();
+      sampleInLanes.put(sampleId, lanes);
+    } else
+      lanes = sampleInLanes.get(sampleId);
+
+    if (lanes.contains(lane))
+      warnings.add("The sample \""
+          + sampleId + "\" exists two or more times in the lane " + lane + ".");
+
+    lanes.add(lane);
+  }
+
+  private static void checkSampleInLanes(
+      final Map<String, Set<Integer>> sampleInLanes, final List<String> warnings) {
+
+    for (Map.Entry<String, Set<Integer>> e : sampleInLanes.entrySet()) {
+
+      final Set<Integer> lanes = e.getValue();
+      if (lanes.size() > 1) {
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("The sample \"");
+        sb.append(e.getKey());
+        sb.append("\" exists in lanes: ");
+
+        final List<Integer> laneSorted = new ArrayList<Integer>(lanes);
+        Collections.sort(laneSorted);
+
+        boolean first = true;
+        for (int lane : laneSorted) {
+
+          if (first)
+            first = false;
+          else
+            sb.append(", ");
+          sb.append(lane);
+        }
+        sb.append('.');
+
+        warnings.add(sb.toString());
+      }
+    }
+  }
+
+  private static final void checkSampleIndex(final String sampleName,
+      final String index, final Map<String, String> samplesIndex)
+      throws EoulsanException {
+
+    if (samplesIndex.containsKey(sampleName)
+        && !samplesIndex.get(sampleName).equals(index))
+      throw new EoulsanException("The sample \""
+          + sampleName + "\" is defined in several lanes but without the same index.");
+
+    samplesIndex.put(sampleName, index);
+  }
+
+  //
+  // Other methods
+  //
 
   /**
    * Replace index shortcuts in a design object by index sequences.
@@ -294,6 +388,10 @@ public final class CasavaDesignUtil {
     }
 
   }
+
+  //
+  // Parsing methods
+  //
 
   /**
    * Convert a Casava design to CSV.
@@ -339,6 +437,12 @@ public final class CasavaDesignUtil {
     return sb.toString();
   }
 
+  /**
+   * Parse a design in a tabulated format from a String
+   * @param s string to parse
+   * @return a Casava Design object
+   * @throws IOException if an error occurs
+   */
   public static CasavaDesign parseTabulatedDesign(final String s)
       throws IOException {
 
@@ -354,14 +458,102 @@ public final class CasavaDesignUtil {
 
         for (final String line : lines) {
 
-          final String[] fields = line.split("\t");
-          parseLine(Arrays.asList(fields));
+          if ("".equals(line.trim()))
+            continue;
 
+          parseLine(parseTabulatedDesignLine(line));
         }
 
         return getDesign();
       }
     }.read();
+  }
+
+  /**
+   * Parse a design in a tabulated format from a String
+   * @param s string to parse
+   * @return a Casava Design object
+   * @throws IOException if an error occurs
+   */
+  public static CasavaDesign parseCSVDesign(final String s) throws IOException {
+
+    if (s == null)
+      return null;
+
+    return new AbstractCasavaDesignTextReader() {
+
+      @Override
+      public CasavaDesign read() throws IOException {
+
+        final String[] lines = s.split("\n");
+
+        for (final String line : lines) {
+
+          if ("".equals(line.trim()))
+            continue;
+
+          parseLine(parseCSVDesignLine(line));
+        }
+
+        return getDesign();
+      }
+    }.read();
+  }
+
+  /**
+   * Custom splitter for Casava tabulated file.
+   * @param line line to parse
+   * @return a list of String with the contents of each cell without unnecessary
+   *         quotes
+   */
+  public static List<String> parseTabulatedDesignLine(final String s) {
+
+    if (s == null)
+      return null;
+
+    final String[] fields = s.split("\t");
+
+    if (fields == null)
+      return null;
+
+    return Arrays.asList(fields);
+  }
+
+  /**
+   * Custom splitter for Casava CSV file.
+   * @param line line to parse
+   * @return a list of String with the contents of each cell without unnecessary
+   *         quotes
+   */
+  public static final List<String> parseCSVDesignLine(final String line) {
+
+    final List<String> result = new ArrayList<String>();
+
+    if (line == null)
+      return null;
+
+    final int len = line.length();
+    boolean openQuote = false;
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = line.charAt(i);
+
+      if (!openQuote && c == ',') {
+        result.add(sb.toString());
+        sb.setLength(0);
+      } else {
+        if (c == '"')
+          openQuote = !openQuote;
+        else
+          sb.append(c);
+      }
+
+    }
+    result.add(sb.toString());
+
+    return result;
   }
 
   //
