@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -210,5 +212,41 @@ public class Utils {
    */
   public static void nop() {
   }
-  
+
+  /**
+   * This method wrap an Enumeration object into an Iterable object.
+   * @param e Enumeration to wrap
+   * @return an Iterable object
+   */
+  public static <T> Iterable<T> newIterable(final Enumeration<T> e) {
+
+    if (e == null)
+      return null;
+
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+
+        return new Iterator<T>() {
+
+          @Override
+          public boolean hasNext() {
+            return e.hasMoreElements();
+          }
+
+          @Override
+          public T next() {
+            return e.nextElement();
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
+  }
+
 }
