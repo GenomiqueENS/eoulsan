@@ -1,0 +1,14 @@
+<dataformat>
+  <name>totoformat</name>
+  <description>totoformat</description>
+  <type>tototype</type>
+  <contenttype>text/html</contenttype>
+  <extensions>
+    <extension>.txt</extension>
+    <extension default="true">.txt1</extension>
+    <extension>.txt2</extension>
+  </extensions>
+  <generator>le genrator</generator>
+  <checker>le checker</checker>
+  <maxfilescount>2</maxfilescount>
+</dataformat>
