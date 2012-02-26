@@ -249,4 +249,24 @@ public class Utils {
     };
   }
 
+  /**
+   * This method wrap an Iterator object into an Iterable object.
+   * @param it Iterator to wrap
+   * @return an Iterable object
+   */
+  public static <T> Iterable<T> newIterable(final Iterator<T> it) {
+
+    if (it == null)
+      return null;
+
+    return new Iterable<T>() {
+
+      @Override
+      public Iterator<T> iterator() {
+
+        return it;
+      }
+    };
+  }
+
 }
