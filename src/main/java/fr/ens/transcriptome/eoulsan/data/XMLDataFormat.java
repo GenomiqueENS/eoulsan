@@ -195,7 +195,7 @@ public class XMLDataFormat extends AbstractDataFormat {
       List<String> extensions = Utils.newArrayList();
       for (Element e2 : XMLUtils.getElementsByTagName(document, "extensions"))
         for (Element e3 : XMLUtils.getElementsByTagName(e2, "extension")) {
-          System.out.println(e3);
+
           final String defaultAttribute = e3.getAttribute("default");
 
           if (defaultAttribute != null
