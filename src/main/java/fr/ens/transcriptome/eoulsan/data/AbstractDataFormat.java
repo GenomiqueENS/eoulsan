@@ -35,6 +35,12 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 abstract class AbstractDataFormat implements DataFormat {
 
   @Override
+  public String getDescription() {
+
+    return getFormatName() + " description.";
+  }
+
+  @Override
   public String[] getExtensions() {
 
     return new String[] {getDefaultExtention()};
