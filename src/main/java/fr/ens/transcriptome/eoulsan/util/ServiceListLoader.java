@@ -48,7 +48,7 @@ public class ServiceListLoader {
    * @return a list with the names of the available services
    * @throws IOException if an error occurs while reading the list of services
    */
-  public List<String> getServiceList() throws IOException {
+  private List<String> getServiceList() throws IOException {
 
     final String fullName = PREFIX + this.serviceName;
     final Enumeration<URL> urls;
@@ -93,24 +93,41 @@ public class ServiceListLoader {
   }
 
   //
+  // Static methods
+  //
+
+  /**
+   * Get the list of available services.
+   * @param serviceName name of the service
+   * @throws IOException if an error occurs while reading the resources
+   */
+  public static final List<String> load(final String serviceName)
+      throws IOException {
+    return load(serviceName, null);
+  }
+
+  /**
+   * Get the list of available services.
+   * @param serviceName name of the service
+   * @param loader ClassLoader to use to read resources
+   * @throws IOException if an error occurs while reading the resources
+   */
+  public static final List<String> load(final String serviceName,
+      final ClassLoader loader) throws IOException {
+
+    return new ServiceListLoader(serviceName, loader).getServiceList();
+  }
+
+  //
   // Constructor
   //
 
   /**
    * Public constructor.
    * @param serviceName name of the service
-   */
-  public ServiceListLoader(final String serviceName) {
-
-    this(serviceName, null);
-  }
-
-  /**
-   * Public constructor.
-   * @param serviceName name of the service
    * @param loader class loader to use to load resource files
    */
-  public ServiceListLoader(final String serviceName, final ClassLoader loader) {
+  private ServiceListLoader(final String serviceName, final ClassLoader loader) {
 
     if (serviceName == null)
       throw new NullPointerException("The service name is null");
