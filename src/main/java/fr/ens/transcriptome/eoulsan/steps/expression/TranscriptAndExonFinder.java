@@ -486,7 +486,7 @@ public class TranscriptAndExonFinder {
 
         if (exonCount == 1) {
 
-          if (exon == this._exon)
+          if (exon == this._exon || this._exon.hashCode() == exon.hashCode())
             return;
 
           this._exons = new HashSet<Exon>();
@@ -503,7 +503,7 @@ public class TranscriptAndExonFinder {
      * Add exons to the zone.
      * @param exons Exons to add
      */
-    public void addExons(final Set<Exon> exons) {
+    private void addExons(final Set<Exon> exons) {
 
       if (exons == null)
         return;
@@ -515,7 +515,7 @@ public class TranscriptAndExonFinder {
 
       if (len == 1) {
         this._exon = exons.iterator().next();
-        this.exonCount = 1;
+        this.exonCount = this._exon == null ? 0 : 1;
       } else {
         this._exons = new HashSet<Exon>(exons);
         this.exonCount = len;
