@@ -387,4 +387,56 @@ public class GenomicArray<T> {
     return chr.findExons(start, stop);
   }
 
+  public boolean containsChromosome(final String chromosomeName) {
+
+    if (chromosomeName == null)
+      return false;
+
+    return this.chromosomes.containsKey(chromosomeName);
+  }
+
+  public String print() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    final List<String> chrList =
+        new ArrayList<String>(this.chromosomes.keySet());
+    Collections.sort(chrList);
+
+    for (final String chrName : chrList) {
+      final ChromosomeZones<T> chr = this.chromosomes.get(chrName);
+
+      for (Zone<T> z : chr.zones) {
+        final String set;
+        if (z.exonCount == 0)
+          set = "[]";
+        else if (z.exonCount == 1)
+          set = "['" + z._exon + "']";
+        else {
+          StringBuilder sb2 = new StringBuilder();
+          boolean first = true;
+          List<String> list = new ArrayList<String>();
+          for (T v : z._exons)
+            list.add(v.toString());
+          Collections.sort(list);
+          for (String v : list) {
+            if (first)
+              first = false;
+            else
+              sb2.append(", ");
+            sb2.append('\'');
+            sb2.append(v);
+            sb2.append('\'');
+          }
+          set = "[" + sb2.toString() + "]";
+        }
+        sb.append(chrName
+            + ":[" + (z.start - 1) + "," + (z.end) + ")/" + z.strand + " "
+            + set + "\n");
+      }
+    }
+    // chr1:[3092096,3092206)/+ set(['ENSMUSG00000064842'])
+    return sb.toString();
+  }
+
 }
