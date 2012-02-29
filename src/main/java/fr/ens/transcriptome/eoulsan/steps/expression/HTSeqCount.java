@@ -25,13 +25,18 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.CigarOperator;
 import net.sf.samtools.SAMFileReader;
@@ -76,16 +81,20 @@ public class HTSeqCount {
 
         // features[ f.iv ] += feature_id
         features.addExon(new GenomicInterval(gff, stranded), featureId);
-        counts.put(attributeId, 0);
+        counts.put(featureId, 0);
       }
     }
     gffReader.throwException();
+    gffReader.close();
 
     // Writer writer = new
     // FileWriter("/home/jourdren/home-net/htseq-count/java.out");
     // writer.write(features.print());
     // System.out.println(features.print());
     // writer.close();
+
+    // for (Map.Entry<String, Integer> e : counts.entrySet())
+    // System.out.println(e.getKey() + "\t" + e.getValue());
 
     if (counts.size() == 0)
       throw new EoulsanException("Warning: No features of type '"
@@ -99,13 +108,16 @@ public class HTSeqCount {
     int i = 0;
 
     boolean pairedEnd = false;
+    final List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
     final SAMFileReader inputSam = new SAMFileReader(samFile);
 
     for (final SAMRecord samRecord : inputSam) {
       i++;
+      if (i % 1000000 == 0)
+        System.out.println(i + " sam entries read.");
 
-      final List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+      ivSeq.clear();
 
       if (!pairedEnd) {
 
@@ -115,7 +127,8 @@ public class HTSeqCount {
           continue;
         }
 
-        if (samRecord.getIntegerAttribute("NH") > 1) {
+        if (samRecord.getAttribute("NH") != null
+            && samRecord.getIntegerAttribute("NH") > 1) {
           nonunique++;
           // write_to_samout( r, "alignment_not_unique" )
           continue;
@@ -130,15 +143,15 @@ public class HTSeqCount {
         if ("reverse".equals(stranded)) {
 
           // iv_seq = ( co.ref_iv for co in r.cigar if co.type == "M" )
-          for (CigarElement ce : samRecord.getCigar().getCigarElements()) {
-
-            if (ce.getOperator() == CigarOperator.M) {
-            }
-          }
-
+          ivSeq.addAll(parseCigar(samRecord.getCigar(),
+              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
+              samRecord.getReadNegativeStrandFlag() ? '+' : '-'));
         } else {
           // iv_seq = ( invert_strand( co.ref_iv ) for co in r.cigar if co.type
           // == "M" )
+          ivSeq.addAll(parseCigar(samRecord.getCigar(),
+              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
+              samRecord.getReadNegativeStrandFlag() ? '-' : '+'));
         }
 
       } else {
@@ -155,8 +168,13 @@ public class HTSeqCount {
           if (!features.containsChromosome(chr))
             throw new EoulsanException("Unknown chromosome: " + chr);
           // TODO this is an union: fs = fs.union( fs2 )
-          fs.addAll(features.findExons(chr, iv.getStart(), iv.getEnd())
-              .values());
+          final Map<GenomicInterval, String> intervals =
+              features.findExons(chr, iv.getStart(), iv.getEnd());
+          if (intervals != null) {
+            Collection<String> values = intervals.values();
+            if (values != null)
+              fs.addAll(values);
+          }
         }
 
       } else {
@@ -186,27 +204,80 @@ public class HTSeqCount {
 
     inputSam.close();
 
-    for (Map.Entry<String, Integer> e : counts.entrySet())
-      System.out.println(e.getKey() + "\t" + e.getValue());
+    final List<String> keysSorted = new ArrayList<String>(counts.keySet());
+    Collections.sort(keysSorted);
 
-    System.out.printf("no_feature\t%d", empty);
-    System.out.printf("ambiguous\t%d", ambiguous);
-    System.out.printf("too_low_aQual\t%d", lowqual);
-    System.out.printf("not_aligned\t%d", notaligned);
-    System.out.printf("alignment_not_unique\t%d", nonunique);
+    Writer writer =
+        new FileWriter("/home/jourdren/home-net/htseq-count/java.out");
+
+    for (String key : keysSorted) {
+      writer.write(key + "\t" + counts.get(key) + "\n");
+    }
+
+    writer.write(String.format("no_feature\t%d\n", empty));
+    writer.write(String.format("ambiguous\t%d\n", ambiguous));
+    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
+    writer.write(String.format("not_aligned\t%d\n", notaligned));
+    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+
+    writer.close();
+
+    // for (String key : keysSorted) {
+    // System.out.println(key + "\t" + counts.get(key));
+    // }
+    // System.out.printf("no_feature\t%d\n", empty);
+    // System.out.printf("ambiguous\t%d\n", ambiguous);
+    // System.out.printf("too_low_aQual\t%d\n", lowqual);
+    // System.out.printf("not_aligned\t%d\n", notaligned);
+    // System.out.printf("alignment_not_unique\t%d\n", nonunique);
+  }
+
+  private static final List<GenomicInterval> parseCigar(Cigar cigar,
+      final String chromosome, final int start, final char strand) {
+
+    if (cigar == null)
+      return null;
+
+    final List<GenomicInterval> result =
+        new ArrayList<GenomicInterval>(cigar.numCigarElements());
+
+    int pos = start;
+    for (CigarElement ce : cigar.getCigarElements()) {
+
+      final int len = ce.getLength();
+      if (ce.getOperator() == CigarOperator.M)
+        result.add(new GenomicInterval(chromosome, pos, pos + len - 1, strand));
+      pos += len;
+    }
+
+    return result;
   }
 
   public static void main(String[] args) throws EoulsanException, IOException,
       BadBioEntryException {
 
     final File dir = new File("/home/jourdren/home-net/htseq-count");
-    final File samFile = new File(dir, "filtered_mapper_results_1.sam");
+    final File samFile = new File(dir, "mouse.sam");
     final File gffFile = new File(dir, "mouse.gff");
 
+    final long startTime = System.currentTimeMillis();
     System.out.println("start.");
     countReadsInFeatures(samFile, gffFile, false, "union", "gene", "ID", false,
         0, null);
     System.out.println("end.");
+    System.out.println("Duration: "
+        + (System.currentTimeMillis() - startTime) + " ms.");
+
+    // Cigar cigar = new TextCigarCodec().decode("20M6I10M");
+    // // for (CigarElement ce : cigar.getCigarElements())
+    // // System.out.println(ce.getLength() +"\t"+ce.getOperator());
+    // for (GenomicInterval gi : parseCigar(cigar, "chr1", 1000, '+'))
+    // System.out.println(gi);
+
+    // Python
+    // real 19m51.548s
+    // user 19m9.692s
+    // sys 0m13.385s
 
   }
 
