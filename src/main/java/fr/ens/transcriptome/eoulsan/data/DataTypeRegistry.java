@@ -100,6 +100,7 @@ public class DataTypeRegistry {
       throw new EoulsanException("The prefix of DataType \""
           + dt.getName() + "\" is already registered.");
 
+    this.types.add(dt);
     this.mapTypes.put(dt.getName(), dt);
     this.prefixes.add(prefix);
 
@@ -130,13 +131,7 @@ public class DataTypeRegistry {
       return null;
     }
 
-    for (DataType dt : this.types) {
-      if (dt.getName().equals(dataTypeName)) {
-        return dt;
-      }
-    }
-
-    return null;
+    return this.mapTypes.get(dataTypeName);
   }
 
   /**
@@ -175,6 +170,8 @@ public class DataTypeRegistry {
 
     final Iterator<DataType> it = ServiceLoader.load(DataType.class).iterator();
 
+    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
     for (final DataType dt : Utils.newIterable(it)) {
 
       try {
@@ -193,7 +190,7 @@ public class DataTypeRegistry {
           .load(XMLDataType.class.getName())) {
 
         final String resource = RESOURCE_PREFIX + filename;
-        register(new XMLDataType(this.getClass().getResourceAsStream(resource)));
+        register(new XMLDataType(loader.getResourceAsStream(resource)));
 
       }
     } catch (EoulsanException e) {
