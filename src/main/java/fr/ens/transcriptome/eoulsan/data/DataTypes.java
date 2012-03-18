@@ -68,7 +68,7 @@ public class DataTypes {
     @Override
     public String getName() {
 
-      return "filtered read";
+      return "filtered_reads";
     }
 
     @Override
@@ -197,7 +197,7 @@ public class DataTypes {
         @Override
         public String getPrefix() {
 
-          return "filtered_mapper_results_";
+          return "filtered_mapper_results_index_";
         }
       };
 
@@ -229,7 +229,7 @@ public class DataTypes {
     @Override
     public String getPrefix() {
 
-      return "mapper_results_";
+      return "mapper_results_index_";
     }
   };
 
