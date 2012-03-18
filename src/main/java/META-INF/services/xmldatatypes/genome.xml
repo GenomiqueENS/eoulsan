@@ -1,0 +1,7 @@
+<datatype>
+  <name>genome</name>
+  <description>genome</description>
+  <prefix>genome_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <designfieldname>Genome</designfieldname>
+</datatype>

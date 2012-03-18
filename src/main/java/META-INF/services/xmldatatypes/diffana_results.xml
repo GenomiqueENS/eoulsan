@@ -1,0 +1,5 @@
+<datatype>
+  <name>diffana_results</name>
+  <description>differential_analysis</description>
+  <prefix>diffana_</prefix>
+</datatype>
