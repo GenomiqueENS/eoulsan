@@ -135,6 +135,8 @@ public class XMLDataType extends AbstractDataType {
     if (this.prefix == null)
       throw new EoulsanException("The prefix of the datatype is null");
 
+    // TODO prefix must ends with a '_'
+    // TODO prefix may only contains letters and digit and '_'
     this.prefix = this.prefix.trim().toLowerCase();
 
     if (this.designFieldName != null)
