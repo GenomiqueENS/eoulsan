@@ -343,10 +343,11 @@ public class TranscriptAndExonFinder {
     }
 
     /**
-     * Test if a sequence is in the ORF
+     * Test if a sequence is include in the ORF (the sequence is shorter than
+     * the ORF)
      * @param start start position of the ORF
      * @param end end position of the ORF
-     * @return true if the sequence is in the ORF
+     * @return true if the sequence is include in the ORF
      */
     public final boolean include(final int start, final int end) {
 
@@ -354,10 +355,11 @@ public class TranscriptAndExonFinder {
     }
 
     /**
-     * Test if a sequence is in the ORF
+     * Test if a sequence and the ORF have an intersection (the sequence may 
+     * cover the ORF)
      * @param start start position of the ORF
      * @param end end position of the ORF
-     * @return true if the sequence is in the ORF
+     * @return true if the sequence and the ORF have an intersection
      */
     public final boolean intersect(final int start, final int end) {
 
@@ -366,6 +368,17 @@ public class TranscriptAndExonFinder {
           || (start < this.start && end > this.end);
     }
 
+    //
+    // Object class overrides
+    //
+    
+    /**
+     * Compare two Exon objects
+     * @param e Exon to be compared
+     * @return a positive integer if the current Exon is considered superior,
+     * a negative integer if the current Exon is considered inferior, 0 if they
+     * are considered equals 
+     */
     @Override
     public int compareTo(final Exon e) {
 
@@ -388,10 +401,12 @@ public class TranscriptAndExonFinder {
       return this.parentId.compareTo(e.getParentId());
     }
 
-    //
-    // Object class overrides
-    //
-
+    /**
+     * Test if two Objects are equals
+     * @param o the object to be compared with the Exon
+     * @return true if the object is an Exon with the same parameters as the
+     * current Exon
+     */
     @Override
     public boolean equals(final Object o) {
 

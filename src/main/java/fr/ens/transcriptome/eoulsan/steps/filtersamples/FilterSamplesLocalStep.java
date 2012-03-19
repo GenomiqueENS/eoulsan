@@ -80,7 +80,7 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
           parseReporter(filterReadsReporter,
               OUTPUT_FILTERED_READS_COUNTER.counterName());
 
-      // Get the number of match with onlt one locus for each sample
+      // Get the number of match with only one locus for each sample
       final Map<String, Long> soapAlignementWithOneLocus =
           parseReporter(soapMapReadsReporter,
               MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName());
@@ -88,7 +88,7 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
       int removedSampleCount = 0;
       final StringBuilder sb = new StringBuilder();
 
-      // Compute ration and filter samples
+      // Compute ratio and filter samples
       for (Map.Entry<String, Long> e : sampleInputMapReads.entrySet()) {
 
         final String sample = e.getKey();

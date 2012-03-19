@@ -155,7 +155,7 @@ $ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc
 </source>
 
         <br/>
-	<li>In <b>hadoop-end.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
+	<li>In <b>hadoop-env.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
 <source>
 export JAVA_HOME=/usr/lib/jvm/java-6-sun
 # Disable IPv6 for hadoop
