@@ -34,6 +34,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.UNMAP_R
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
@@ -42,6 +43,7 @@ import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -61,6 +63,11 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 @LocalOnly
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
+
+  // ///////////////////
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  // ///////////////////
 
   @Override
   public StepResult execute(final Design design, final Context context) {
@@ -103,9 +110,23 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
               final SAMParser parser = new SAMParser();
               parser.setGenomeDescription(genomeDescription);
 
-              // Filter alignments
-              return filterSAMFile(context, sample, parser,
-                  mappingQualityThreshold);
+              // get input file count for the sample
+              final int inFileCount =
+                  context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+
+              if (inFileCount == 1) {
+                
+                // Filter alignments in single end mode
+                return filterSAMFileSingleEnd(context, sample, parser,
+                    mappingQualityThreshold);
+                
+              } else if (inFileCount == 2) {
+                
+                // Filter alignments in paired-end mode
+                return filterSAMFilePairedEnd(context, sample, parser,
+                    mappingQualityThreshold);
+                
+              }
             } catch (FileNotFoundException e) {
 
               throwException(e, "File not found: " + e.getMessage());
@@ -123,7 +144,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   }
 
   /**
-   * Parse a sam file.
+   * Parse a sam file in single-end mode.
    * @param context context object
    * @param sample sample to use
    * @param parser parse with genome description
@@ -133,10 +154,137 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @throws IOException if an error occurs while reading SAM input file or
    *           writing filtered SAM file
    */
-  private String filterSAMFile(final Context context, final Sample sample,
+  private String filterSAMFileSingleEnd(final Context context, final Sample sample,
       final SAMParser parser, final int mappingQualityThreshold)
       throws IOException {
 
+    // Create the reporter
+    final Reporter reporter = new Reporter();
+
+    // Get reader
+    final SAMFileReader inputSam =
+        new SAMFileReader(context.getInputDataFile(
+            DataFormats.MAPPER_RESULTS_SAM, sample).open());
+
+    // Get Writer
+    final SAMFileWriter outputSam =
+        new SAMFileWriterFactory().makeSAMWriter(
+            inputSam.getFileHeader(),
+            false,
+            context.getOutputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+                sample).create());
+
+    String lastId = null;
+    SAMRecord lastRecord = null;
+    int lastIdCount = 1;
+    int cpt = 0;
+
+    for (SAMRecord samRecord : inputSam) {
+      
+      if (cpt < 100) {
+        LOGGER.info(samRecord.getReadName());
+        cpt ++;
+      }
+
+      try {
+        reporter.incrCounter(COUNTER_GROUP,
+            INPUT_ALIGNMENTS_COUNTER.counterName(), 1);
+
+        if (samRecord.getReadUnmappedFlag()) {
+          reporter.incrCounter(COUNTER_GROUP,
+              UNMAP_READS_COUNTER.counterName(), 1);
+        } else {
+
+          if (samRecord.getMappingQuality() >= mappingQualityThreshold) {
+
+            reporter.incrCounter(COUNTER_GROUP,
+                GOOD_QUALITY_ALIGNMENTS_COUNTER.counterName(), 1);
+
+            final String id = samRecord.getReadName();
+
+            if (id.equals(lastId)) {
+              lastIdCount++;
+            } else {
+
+              if (lastIdCount == 1) {
+
+                outputSam.addAlignment(samRecord);
+                reporter.incrCounter(COUNTER_GROUP,
+                    OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
+
+              } else if (lastIdCount > 1) {
+
+                reporter.incrCounter(COUNTER_GROUP,
+                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
+                    lastIdCount);
+                reporter.incrCounter(COUNTER_GROUP,
+                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(),
+                    lastIdCount);
+              }
+
+              lastIdCount = 1;
+              lastId = id;
+            }
+
+          } else {
+
+            reporter.incrCounter(COUNTER_GROUP,
+                ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
+          }
+
+          lastRecord = samRecord;
+        }
+
+      } catch (SAMFormatException e) {
+
+        reporter.incrCounter(COUNTER_GROUP,
+            ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), 1);
+      }
+
+    }
+
+    if (lastIdCount == 1) {
+
+      outputSam.addAlignment(lastRecord);
+      reporter.incrCounter(COUNTER_GROUP,
+          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
+
+    } else if (lastIdCount > 1) {
+
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), 1);
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
+    }
+
+    // Close files
+    inputSam.close();
+    outputSam.close();
+
+    return reporter.countersValuesToString(
+        COUNTER_GROUP,
+        "Filter SAM files ("
+            + sample.getName()
+            + ", "
+            + context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
+                .getName() + ")");
+  }
+
+  /**
+   * Parse a sam file in paired-end mode.
+   * @param context context object
+   * @param sample sample to use
+   * @param parser parse with genome description
+   * @param mappingQualityThreshold mapping quality threshold
+   * @return a String with log information about the filtering of alignments of
+   *         the sample
+   * @throws IOException if an error occurs while reading SAM input file or
+   *           writing filtered SAM file
+   */
+  private String filterSAMFilePairedEnd(final Context context, final Sample sample,
+      final SAMParser parser, final int mappingQualityThreshold)
+      throws IOException {
+    
     // Create the reporter
     final Reporter reporter = new Reporter();
 
@@ -188,9 +336,11 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
               } else if (lastIdCount > 1) {
 
                 reporter.incrCounter(COUNTER_GROUP,
-                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), lastIdCount);
+                    ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
+                    lastIdCount);
                 reporter.incrCounter(COUNTER_GROUP,
-                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), lastIdCount);
+                    ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(),
+                    lastIdCount);
               }
 
               lastIdCount = 1;
