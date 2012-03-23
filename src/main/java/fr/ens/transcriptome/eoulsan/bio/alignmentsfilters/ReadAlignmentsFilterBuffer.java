@@ -57,7 +57,7 @@ public class ReadAlignmentsFilterBuffer {
       return false;
 
     final String name = alignment.getReadName();
-
+    
     // Special case for the first alignment
     if (currentName == null) {
       currentName = name;
@@ -100,10 +100,7 @@ public class ReadAlignmentsFilterBuffer {
     if (this.reuseResultList)
       return this.list;
     
-    final List<SAMRecord> result = new ArrayList<SAMRecord>(this.list);
-    this.list.clear();
-    
-    return result;
+    return new ArrayList<SAMRecord>(this.list);
   }
 
   //
