@@ -44,6 +44,13 @@ public class ReadAlignmentsFilterBuffer {
   private String currentName;
   private boolean reuseResultList;
 
+  /**
+   * Add the provided alignment to a list of SAMRecord objects if this
+   * alignment has the same read name as the other alignments of the list.
+   * @param alignment
+   * @return true if the alignment provides is stored, i.e. if it has the same
+   * read name as the other alignments already stored.
+   */
   public boolean addAlignment(final SAMRecord alignment) {
 
     if (alignment == null)
@@ -71,7 +78,7 @@ public class ReadAlignmentsFilterBuffer {
       return true;
     }
 
-    // The read name is equals to the previous
+    // The read name is equal to the previous
     this.list.add(alignment);
     return false;
 
@@ -92,8 +99,11 @@ public class ReadAlignmentsFilterBuffer {
     // Return the list of filtered alignment
     if (this.reuseResultList)
       return this.list;
-
-    return new ArrayList<SAMRecord>(this.list);
+    
+    final List<SAMRecord> result = new ArrayList<SAMRecord>(this.list);
+    this.list.clear();
+    
+    return result;
   }
 
   //
