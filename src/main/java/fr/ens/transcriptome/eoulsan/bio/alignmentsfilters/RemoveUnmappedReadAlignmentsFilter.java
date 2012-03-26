@@ -42,7 +42,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends
   @Override
   public String getName() {
 
-    return "removeumap";
+    return "removeunmapped";
   }
 
   @Override
