@@ -40,7 +40,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
   @Override
   public String getName() {
 
-    return "keeponematches";
+    return "keeponematch";
   }
 
   @Override
