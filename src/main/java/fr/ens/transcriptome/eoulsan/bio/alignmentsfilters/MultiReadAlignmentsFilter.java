@@ -44,7 +44,8 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   private final String counterGroup;
 
   @Override
-  public void filterReadAlignments(final List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records, 
+      final boolean pairedEnd) {
 
     if (records == null)
       return;
@@ -52,7 +53,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
     for (ReadAlignmentsFilter af : this.list) {
 
       final int sizeBefore = records.size();
-      af.filterReadAlignments(records);
+      af.filterReadAlignments(records, pairedEnd);
 
       final int sizeAfter = list.size();
       final int diff = sizeBefore - sizeAfter;
