@@ -101,7 +101,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
               if (inFileCount == 1)
                 resultString = singleEnd(context, sample, reporter, filter);
               else
-                resultString = pairEnd(context, sample, reporter, filter);
+                resultString = pairedEnd(context, sample, reporter, filter);
 
             } catch (FileNotFoundException e) {
               throwException(e, "File not found: " + e.getMessage());
@@ -148,7 +148,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   }
 
   /**
-   * Filter a sample data in pair-end mode.
+   * Filter a sample data in paired-end mode.
    * @param context Eoulsan context
    * @param sample sample to process
    * @param reporter reporter to use
@@ -156,7 +156,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static String pairEnd(final Context context, final Sample sample,
+  private static String pairedEnd(final Context context, final Sample sample,
       final Reporter reporter, final ReadFilter filter) throws IOException {
 
     // Get the source
@@ -185,6 +185,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
+   * @param filter reads filter to use
    * @param fastqFormat FastqFormat
    * @throws IOException if an error occurs while filtering data
    */
@@ -234,9 +235,13 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
   /**
    * Filter a file in pair-end mode.
-   * @param inFile input file
-   * @param outFile output file
+   * @param inFile1 first input file
+   * @param inFile2 second input file
+   * @param outFile1 first output file
+   * @param outFile2 second output file
    * @param reporter reporter to use
+   * @param filter reads filter to use
+   * @param fastqFormat FastqFormat
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile1,
