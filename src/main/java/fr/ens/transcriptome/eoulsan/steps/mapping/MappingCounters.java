@@ -31,14 +31,15 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
  */
 public enum MappingCounters {
 
-  INPUT_RAW_READS_COUNTER("input raw reads"), OUTPUT_FILTERED_READS_COUNTER(
-      "output accepted reads"), READS_REJECTED_BY_FILTERS_COUNTER(
-      "reads rejected by filters"), INPUT_MAPPING_READS_COUNTER(
-      "input mapping reads"), OUTPUT_MAPPING_ALIGNMENTS_COUNTER(
-      "output mapping alignments"),
-  INPUT_ALIGNMENTS_COUNTER("input alignments"), UNMAP_READS_COUNTER(
-      "unmapped reads"), GOOD_QUALITY_ALIGNMENTS_COUNTER(
-      "alignments mapped and with good mapping quality"),
+  INPUT_RAW_READS_COUNTER("input raw reads"), 
+  OUTPUT_FILTERED_READS_COUNTER("output accepted reads"), 
+  READS_REJECTED_BY_FILTERS_COUNTER("reads rejected by filters"), 
+  INPUT_MAPPING_READS_COUNTER("input mapping reads"), 
+  OUTPUT_MAPPING_ALIGNMENTS_COUNTER("output mapping alignments"),
+  INPUT_ALIGNMENTS_COUNTER("input alignments"), 
+  UNMAP_READS_COUNTER("unmapped reads"), 
+  GOOD_QUALITY_ALIGNMENTS_COUNTER("alignments mapped and with " +
+  		"good mapping quality"),
   MAPPER_WRITING_ERRORS("errors in mapper writing"),
   ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER("alignments rejected by filters"),
   ALIGNMENTS_WITH_INVALID_SAM_FORMAT("alignments in invalid sam format"),
