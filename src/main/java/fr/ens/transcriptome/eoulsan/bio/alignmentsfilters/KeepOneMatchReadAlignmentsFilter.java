@@ -50,14 +50,46 @@ public class KeepOneMatchReadAlignmentsFilter extends
   }
 
   @Override
-  public void filterReadAlignments(final List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records, 
+      final boolean pairedEnd) {
 
+    /* ORIGINAL VERSION
     if (records == null || records.size() < 2)
       return;
 
     final SAMRecord first = records.get(0);
     records.clear();
     records.add(first);
+    */
+    
+    /* NEW VERSION, WITH PAIRED-END MODE */
+    final SAMRecord first, second;
+    
+    if (records == null)
+      return;
+    
+    // single-end mode
+    if (!pairedEnd) {
+      if (records.size() < 2)
+        return;
+      
+      first = records.get(0);
+      records.clear();
+      records.add(first);
+    }
+    
+    // paired-end mode
+    else {
+      if (records.size() < 4)
+        return;
+      
+      first = records.get(0);
+      second = records.get(1);
+      records.clear();
+      records.add(first);
+      records.add(second);
+    }
+    
   }
 
 }

@@ -57,19 +57,40 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   }
   
   @Override
-  public void filterReadAlignments(List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records, 
+      final boolean pairedEnd) {
     
     if (records == null)
       return;
     
-    for (SAMRecord r : records) {
-      // storage in 'result' of records that do not pass the quality filter
-      if (r.getMappingQuality() < this.qualityThreshold) {
-        this.result.add(r);
+    // single-end mode
+    if (!pairedEnd) {
+      for (SAMRecord r : records) {
+        
+        // storage in 'result' of records that do not pass the quality filter
+        if (r.getMappingQuality() < this.qualityThreshold) {
+          this.result.add(r);
+        }
       }
     }
     
-    // all records stored in 'result' are removed from 'records' 
+    // paired-end mode
+    else {
+      for (int counterRecord = 0; counterRecord < records.size()-1; 
+          counterRecord+=2) {
+
+        // storage in 'result' of records that do not pass the quality filter
+        if (records.get(counterRecord).getMappingQuality() < this.qualityThreshold
+            || records.get(counterRecord+1).getMappingQuality() < this.qualityThreshold) {
+          
+          // records are stored 2 by 2 because of the paired-end mode
+          this.result.add(records.get(counterRecord));
+          this.result.add(records.get(counterRecord+1));
+        }
+      }
+    }
+    
+    // all records that do not pass the quality filter are removed
     records.removeAll(result);
     result.clear();
   }
