@@ -24,12 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 import net.sf.samtools.SAMRecord;
 
@@ -55,49 +51,50 @@ public class ReadAlignmentsFilterBuffer {
    * @return true if the alignment provides is stored, i.e. if it has the same
    * read name as the other alignments already stored.
    */
-  public boolean addAlignment(final SAMRecord alignment, 
-      final Reporter reporter, final String counterGroup) {
+  public boolean addAlignment(final SAMRecord alignment) {
 
-    // No alignment provided: the last record stored in "firstNewList" is
-    // to be added in "list" or it is an error
     if (alignment == null) {
-      if (this.firstNewList != null) {
-        this.list.add(this.firstNewList);
-        reporter.incrCounter(counterGroup, 
-            ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
-        this.firstNewList = null;
-      }
       return false;
     }
 
-    final String name = alignment.getReadName();
+    final String name = alignment.getReadName().split(" ")[0];
     
     // Special case for the first alignment
-    if (currentName == null) {
-      currentName = name;
+    if (this.currentName == null) {
+      this.currentName = name;
     }
     
     // Last alignment has a new read name
-    if (firstNewList != null) {
+    if (this.firstNewList != null) {
       this.list.clear();
       this.list.add(this.firstNewList);
-      reporter.incrCounter(counterGroup, 
-          ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
       this.firstNewList = null;
     }
 
     // New alignment with a new read name
-    if (!currentName.equals(name)) {
-      firstNewList = alignment;
-      currentName = name;
+    if (!this.currentName.equals(name)) {
+      this.firstNewList = alignment;
+      this.currentName = name;
       return false;
     }
 
     // The read name is equal to the previous
     this.list.add(alignment);
-    reporter.incrCounter(counterGroup, 
-        ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName(), 1);
     return true;
+  }
+  
+  /**
+   * Check the alignments list : if the last alignment is still in 
+   * "firstNewList", this alignment is added to "list".
+   */
+  public void checkBuffer() {
+    
+	// special case for the last alignment
+    if (this.firstNewList != null) {
+      this.list.add(this.firstNewList);
+      this.firstNewList = null;
+    }
+    this.currentName = null;
   }
 
   /**
@@ -105,18 +102,22 @@ public class ReadAlignmentsFilterBuffer {
    * same read name. Warning if reuseResultList argument in the
    * constructor is set to true, this method will always returns the same
    * object.
+   * @param pairedEnd true if data are in paired-end mode
    * @return a list of SAM record
    */
-  public List<SAMRecord> getFilteredAlignments() {
+  public List<SAMRecord> getFilteredAlignments(final boolean pairedEnd) {
 
     // Filter alignment
-    this.filter.filterReadAlignments(this.list);
+    this.filter.filterReadAlignments(this.list, pairedEnd);
 
     // Return the list of filtered alignment
     if (this.reuseResultList)
       return this.list;
     
-    return new ArrayList<SAMRecord>(this.list);
+    List<SAMRecord> results = new ArrayList<SAMRecord>(this.list);
+    this.list.clear();
+    
+    return results;
   }
 
   //
