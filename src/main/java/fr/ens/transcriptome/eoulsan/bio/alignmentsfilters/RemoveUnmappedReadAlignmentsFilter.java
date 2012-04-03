@@ -52,14 +52,13 @@ public class RemoveUnmappedReadAlignmentsFilter extends
   }
 
   @Override
-  public void filterReadAlignments(final List<SAMRecord> records, 
-      final boolean pairedEnd) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
     if (records == null)
       return;
 
     // single-end mode
-    if (!pairedEnd) {
+    if (!records.get(0).getReadPairedFlag()) {
       for (SAMRecord r : records)
         
         // storage in 'result' of records that do not pass the filter
