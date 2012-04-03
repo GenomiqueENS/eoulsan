@@ -44,7 +44,7 @@ public interface ReadAlignmentsFilter {
    * @param records the list of alignments with the same read name
    * @param pairedEnd true if data are in paired-end mode
    */
-  void filterReadAlignments(List<SAMRecord> records, boolean pairedEnd);
+  void filterReadAlignments(List<SAMRecord> records);
 
   /**
    * Get the name of the filter.
