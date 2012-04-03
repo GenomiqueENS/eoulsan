@@ -25,6 +25,9 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 import net.sf.samtools.SAMRecord;
 
@@ -50,14 +53,13 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
   }
 
   @Override
-  public void filterReadAlignments(final List<SAMRecord> records, 
-      final boolean pairedEnd) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
     if (records == null)
       return;
-
+    
     // single-end mode
-    if (!pairedEnd) {
+    if (!records.get(0).getReadPairedFlag()) {
       if (records.size() > 1)
         records.clear();
     }
