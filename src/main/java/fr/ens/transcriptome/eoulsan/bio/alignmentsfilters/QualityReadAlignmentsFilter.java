@@ -26,11 +26,9 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class define a filter based on the quality of an alignment (SAM format).
@@ -43,9 +41,6 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   
   private final List<SAMRecord> result = new ArrayList<SAMRecord>();
   
-  /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   @Override
   public String getName() {
     return "mappingQuality";
@@ -57,14 +52,13 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   }
   
   @Override
-  public void filterReadAlignments(final List<SAMRecord> records, 
-      final boolean pairedEnd) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
     
     if (records == null)
       return;
     
     // single-end mode
-    if (!pairedEnd) {
+    if (!records.get(0).getReadPairedFlag()) {
       for (SAMRecord r : records) {
         
         // storage in 'result' of records that do not pass the quality filter
