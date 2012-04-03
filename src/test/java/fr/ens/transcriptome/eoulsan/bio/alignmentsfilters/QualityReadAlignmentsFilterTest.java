@@ -54,7 +54,6 @@ public class QualityReadAlignmentsFilterTest {
   private SAMRecord samRecordPE5, samRecordPE6, samRecordPE7, samRecordPE8;
   private List<SAMRecord> records;
   private QualityReadAlignmentsFilter filter;
-  private boolean pairedEnd;
 
   /**
    * @throws java.lang.Exception
@@ -211,51 +210,47 @@ public class QualityReadAlignmentsFilterTest {
   public void testFilterReadAlignments() {
     
     // single-end mode
-    pairedEnd = false;
-    
     records.add(samRecordSE1);
     assertEquals(1, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(0, records.size());
     
     records.add(samRecordSE2);
     assertEquals(1, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(1, records.size());
     
     records.add(samRecordSE1);
     records.add(samRecordSE2);
     assertEquals(3, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(2, records.size());
     
     records.clear();
     
     //paired-end mode
-    pairedEnd = true;
-    
     records.add(samRecordPE1);
     records.add(samRecordPE2);
     assertEquals(2, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(0, records.size());
     
     records.add(samRecordPE3);
     records.add(samRecordPE4);
     assertEquals(2, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(0, records.size());
     
     records.add(samRecordPE5);
     records.add(samRecordPE6);
     assertEquals(2, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(0, records.size());
     
     records.add(samRecordPE7);
     records.add(samRecordPE8);
     assertEquals(2, records.size());
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(2, records.size());
   }
 

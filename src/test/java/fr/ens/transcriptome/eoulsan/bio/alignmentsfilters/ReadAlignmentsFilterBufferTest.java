@@ -57,10 +57,8 @@ public class ReadAlignmentsFilterBufferTest {
   private SAMRecord samRecordPE5, samRecordPE6, samRecordPE7, samRecordPE8;
   private SAMRecord samRecordPE9, samRecordPE10;
   private List<SAMRecord> recordsVerif;
-  private List<Boolean> results;
   private QualityReadAlignmentsFilter filter;
   private ReadAlignmentsFilterBuffer rafb; 
-  private boolean pairedEnd;
   
   /**
    * @throws java.lang.Exception
@@ -181,7 +179,6 @@ public class ReadAlignmentsFilterBufferTest {
     samRecordPE10 = parser.parseLine(recordPE10);
     
     recordsVerif = new ArrayList<SAMRecord>();
-    results = new ArrayList<Boolean>();
     
     filter = new QualityReadAlignmentsFilter();
     filter.setParameter("threshold", "50");
@@ -203,13 +200,13 @@ public class ReadAlignmentsFilterBufferTest {
   public void testAddAlignmentAndGetFilteredAlignments() {
     
     // single-end mode
-    pairedEnd = false;
     
     // first case
     assertTrue(rafb.addAlignment(samRecordSE1));
     assertFalse(rafb.addAlignment(samRecordSE3));
     recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE3));
     assertTrue(rafb.addAlignment(samRecordSE4));
     assertTrue(rafb.addAlignment(samRecordSE5));
     assertFalse(rafb.addAlignment(samRecordSE2));
@@ -217,11 +214,12 @@ public class ReadAlignmentsFilterBufferTest {
     recordsVerif.add(samRecordSE3);
     recordsVerif.add(samRecordSE4);
     recordsVerif.add(samRecordSE5);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
-    rafb.checkBuffer();
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE2));
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordSE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -231,17 +229,19 @@ public class ReadAlignmentsFilterBufferTest {
     assertFalse(rafb.addAlignment(samRecordSE1));
     recordsVerif.add(samRecordSE3);
     recordsVerif.add(samRecordSE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE1));
     assertFalse(rafb.addAlignment(samRecordSE5));
     recordsVerif.clear();
     recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE5));
     assertTrue(rafb.addAlignment(samRecordSE3));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordSE5);
     recordsVerif.add(samRecordSE3);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -249,11 +249,12 @@ public class ReadAlignmentsFilterBufferTest {
     assertTrue(rafb.addAlignment(samRecordSE1));
     assertFalse(rafb.addAlignment(samRecordSE2));
     recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
-    rafb.checkBuffer();
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE2));
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordSE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -263,18 +264,18 @@ public class ReadAlignmentsFilterBufferTest {
     assertFalse(rafb.addAlignment(samRecordSE6));
     recordsVerif.add(samRecordSE3);
     recordsVerif.add(samRecordSE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordSE6));
     assertTrue(rafb.addAlignment(samRecordSE7));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordSE6);
     recordsVerif.add(samRecordSE7);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
     // paired-end mode
-    pairedEnd = true;
     
     // first case
     assertTrue(rafb.addAlignment(samRecordPE1));
@@ -282,7 +283,8 @@ public class ReadAlignmentsFilterBufferTest {
     assertFalse(rafb.addAlignment(samRecordPE3));
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE3));
     assertTrue(rafb.addAlignment(samRecordPE4));
     assertTrue(rafb.addAlignment(samRecordPE5));
     assertTrue(rafb.addAlignment(samRecordPE6));
@@ -292,13 +294,14 @@ public class ReadAlignmentsFilterBufferTest {
     recordsVerif.add(samRecordPE4);
     recordsVerif.add(samRecordPE5);
     recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE1));
     assertTrue(rafb.addAlignment(samRecordPE2));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -312,23 +315,25 @@ public class ReadAlignmentsFilterBufferTest {
     recordsVerif.add(samRecordPE4);
     recordsVerif.add(samRecordPE5);
     recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE1));
     assertTrue(rafb.addAlignment(samRecordPE2));
     assertFalse(rafb.addAlignment(samRecordPE3));
     recordsVerif.clear();
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE3));
     assertTrue(rafb.addAlignment(samRecordPE4));
     assertTrue(rafb.addAlignment(samRecordPE5));
     assertTrue(rafb.addAlignment(samRecordPE6));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordPE3);
     recordsVerif.add(samRecordPE4);
     recordsVerif.add(samRecordPE5);
     recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -338,13 +343,14 @@ public class ReadAlignmentsFilterBufferTest {
     assertFalse(rafb.addAlignment(samRecordPE3));
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE3));
     assertTrue(rafb.addAlignment(samRecordPE4));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordPE3);
     recordsVerif.add(samRecordPE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
     
     recordsVerif.clear();
     
@@ -358,17 +364,18 @@ public class ReadAlignmentsFilterBufferTest {
     recordsVerif.add(samRecordPE4);
     recordsVerif.add(samRecordPE5);
     recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    assertTrue(rafb.addAlignment(samRecordPE7));
     assertTrue(rafb.addAlignment(samRecordPE8));
     assertTrue(rafb.addAlignment(samRecordPE9));
     assertTrue(rafb.addAlignment(samRecordPE10));
-    rafb.checkBuffer();
+//    rafb.checkBuffer();
     recordsVerif.clear();
     recordsVerif.add(samRecordPE7);
     recordsVerif.add(samRecordPE8);
     recordsVerif.add(samRecordPE9);
     recordsVerif.add(samRecordPE10);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments(pairedEnd));
+    assertEquals(recordsVerif, rafb.getFilteredAlignments());
   }
 
   /**

@@ -49,7 +49,6 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   private SAMRecord samRecordPE1, samRecordPE2, samRecordPE3, samRecordPE4;
   private List<SAMRecord> records;
   private RemoveMultiMatchesReadAlignmentsFilter filter;
-  private boolean pairedEnd;
   
   /**
    * @throws java.lang.Exception
@@ -144,35 +143,31 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
     List<SAMRecord> recordsVerif = new ArrayList<SAMRecord>();
     
     // single-end mode
-    pairedEnd = false;
-    
     records.add(samRecordSE1);
     recordsVerif.add(samRecordSE1);
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
     
     records.add(samRecordSE2);
     recordsVerif.clear();
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
     
     records.clear();
     recordsVerif.clear();
     
     // paired-end mode
-    pairedEnd = true;
-    
     records.add(samRecordPE1);
     records.add(samRecordPE2);
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
     
     records.add(samRecordPE3);
     records.add(samRecordPE4);
     recordsVerif.clear();
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
   }
   

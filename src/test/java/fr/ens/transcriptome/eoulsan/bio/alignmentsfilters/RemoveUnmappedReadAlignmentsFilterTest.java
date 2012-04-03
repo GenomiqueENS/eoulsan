@@ -54,7 +54,6 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
   private SAMRecord samRecordPE5, samRecordPE6, samRecordPE7, samRecordPE8;
   private List<SAMRecord> records;
   private RemoveUnmappedReadAlignmentsFilter filter;
-  private boolean pairedEnd;
   
   /**
    * @throws java.lang.Exception
@@ -169,20 +168,16 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
     List<SAMRecord> recordsVerif = new ArrayList<SAMRecord>();
     
     // single-end mode
-    pairedEnd = false;
-    
     records.add(samRecordSE1);
     records.add(samRecordSE2);
     recordsVerif.add(samRecordSE1);
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
     
     records.clear();
     recordsVerif.clear();
     
     // paired-end mode
-    pairedEnd = true;
-    
     records.add(samRecordPE1);
     records.add(samRecordPE2);
     records.add(samRecordPE3);
@@ -193,7 +188,7 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
     records.add(samRecordPE8);
     recordsVerif.add(samRecordPE1);
     recordsVerif.add(samRecordPE2);
-    filter.filterReadAlignments(records, pairedEnd);
+    filter.filterReadAlignments(records);
     assertEquals(records, recordsVerif);
     
   }
