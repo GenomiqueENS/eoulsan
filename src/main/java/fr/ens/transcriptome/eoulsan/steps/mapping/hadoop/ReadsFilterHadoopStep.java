@@ -122,7 +122,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
   /**
    * Create a filter reads job
-   * @param basePath bas epath
+   * @param basePath base path
    * @param sample Sample to filter
    * @return a JobConf object
    * @throws IOException
