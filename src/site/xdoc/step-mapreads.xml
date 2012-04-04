@@ -57,9 +57,9 @@
         <li><b>Available built-in mappers</b>:</li>
 	<table>
                 <tr><th>Mapper name</th><th>Bundled version</th><th>Default mapper arguments</th></tr>
-                <tr><td>Bowtie</td><td>0.12.7</td><td>-k 10</td></tr>
-                <tr><td>BWA</td><td>0.5.8c</td><td>-l 28</td></tr>
-                <tr><td>SOAP2</td><td>2.20</td><td>-r 2 -l 28</td></tr>
+                <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie</a></td><td>0.12.7</td><td>-k 10</td></tr>
+                <tr><td><a href="http://bio-bwa.sourceforge.net/">BWA</a></td><td>0.5.8c</td><td>-l 28</td></tr>
+                <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP2</a></td><td>2.20</td><td>-r 2 -l 28</td></tr>
         </table>
       </ul>
     </section>
