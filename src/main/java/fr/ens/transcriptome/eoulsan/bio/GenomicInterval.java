@@ -30,7 +30,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exo
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
- * This class define an exon.
+ * This class define a genomic interval.
+ * @since 1.2
  * @author Laurent Jourdren
  */
 public class GenomicInterval implements Serializable,
@@ -46,8 +47,8 @@ public class GenomicInterval implements Serializable,
   //
 
   /**
-   * Get the chromosome of the exon.
-   * @return the chromosome of the exon
+   * Get the chromosome of the genomic interval.
+   * @return the chromosome of the genomic interval
    */
   public String getChromosome() {
 
@@ -55,8 +56,8 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Get the start position of the exon.
-   * @return the start position of the exon
+   * Get the start position of the genomic interval.
+   * @return the start position of the genomic interval
    */
   public int getStart() {
 
@@ -64,8 +65,8 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Get the end position of the exon.
-   * @return the end position of the exon
+   * Get the end position of the genomic interval.
+   * @return the end position of the genomic interval
    */
   public int getEnd() {
 
@@ -73,8 +74,8 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Get the strand of the exon.
-   * @return a char with the strand of the exon
+   * Get the strand of the genomic interval.
+   * @return a char with the strand of the genomic interval
    */
   public char getStrand() {
 
@@ -82,8 +83,8 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Get the length of the Exon.
-   * @return the length of the exon
+   * Get the length of the genomic interval.
+   * @return the length of the genomic interval
    */
   public int getLength() {
 
@@ -91,10 +92,10 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Test if a sequence is in the ORF
-   * @param start start position of the ORF
-   * @param end end position of the ORF
-   * @return true if the sequence is in the ORF
+   * Test if a sequence is in the genomic interval.
+   * @param start start position of the sequence
+   * @param end end position of the sequence
+   * @return true if the sequence is in the genomic interval
    */
   public final boolean include(final int start, final int end) {
 
@@ -102,10 +103,10 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Test if a sequence is in the ORF
-   * @param start start position of the ORF
-   * @param end end position of the ORF
-   * @return true if the sequence is in the ORF
+   * Test if a sequence is in the genomic interval.
+   * @param start start position of the sequence
+   * @param end end position of the sequence
+   * @return true if the sequence is in the genomic interval
    */
   public final boolean intersect(final int start, final int end) {
 
@@ -177,10 +178,9 @@ public class GenomicInterval implements Serializable,
 
   /**
    * Public constructor.
-   * @param start Start position of the ORF
-   * @param end End position of the ORF
-   * @param strand the strand of the ORF
-   * @param parentId id of the parent
+   * @param start Start position of the genomic interval
+   * @param end End position of the genomic interval
+   * @param strand the strand of the genomic interval
    */
   public GenomicInterval(final String chromosone, final int start,
       final int end, final char strand) {

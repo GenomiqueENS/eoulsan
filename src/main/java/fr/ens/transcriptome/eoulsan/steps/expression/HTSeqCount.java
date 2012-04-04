@@ -80,7 +80,7 @@ public class HTSeqCount {
                   + " does not have strand information butyou are running htseq-count in stranded mode.");
 
         // features[ f.iv ] += feature_id
-        features.addExon(new GenomicInterval(gff, stranded), featureId);
+        features.addEntry(new GenomicInterval(gff, stranded), featureId);
         counts.put(featureId, 0);
       }
     }
@@ -169,7 +169,7 @@ public class HTSeqCount {
             throw new EoulsanException("Unknown chromosome: " + chr);
           // TODO this is an union: fs = fs.union( fs2 )
           final Map<GenomicInterval, String> intervals =
-              features.findExons(chr, iv.getStart(), iv.getEnd());
+              features.getEntries(chr, iv.getStart(), iv.getEnd());
           if (intervals != null) {
             Collection<String> values = intervals.values();
             if (values != null)
