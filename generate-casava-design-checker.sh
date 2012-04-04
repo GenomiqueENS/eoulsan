@@ -145,7 +145,18 @@ public class $PROJECT_NAME implements EntryPoint {
 
     String[] fields = s.split("_");
 
-    return fields[fields.length - 1].trim();
+    if (fields==null || fields.length!=4)
+      return null;
+
+    String flowcellId = fields[3];
+    if (flowcellId==null)
+      return null;
+
+    flowcellId = flowcellId.trim();
+    if (flowcellId.length()<2)
+      return null;
+
+    return flowcellId.substring(1);
   }
 
   private String createWarningMessage(List<String> warnings) {
@@ -217,9 +228,14 @@ public class $PROJECT_NAME implements EntryPoint {
           updateDesignWithIndexes(design,
               indexesTextarea.getText());
 
+          // Get the flowcell id
+          final String flowcellId = getFlowcellId(flowcellTextBox.getText());
+          if (flowcellId == null)
+            throw new EoulsanException("Invalid run id: " + flowcellTextBox.getText());
+
+          // Check Casava design
           final List<String> warnings = 
-            CasavaDesignUtil.checkCasavaDesign(design,
-              getFlowcellId(flowcellTextBox.getText()));
+            CasavaDesignUtil.checkCasavaDesign(design, flowcellId);
 
           if (warnings.size()==0 || Window.confirm(createWarningMessage(warnings))) {
        
