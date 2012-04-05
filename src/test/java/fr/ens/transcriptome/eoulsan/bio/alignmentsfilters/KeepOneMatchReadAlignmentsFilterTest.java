@@ -32,7 +32,6 @@ import java.util.List;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
