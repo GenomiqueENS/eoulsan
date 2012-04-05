@@ -28,10 +28,10 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNME
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
-import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileReader;
