@@ -119,13 +119,6 @@ public class KeepOneMatchReadAlignmentsFilterTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.
    * KeepOneMatchReadAlignmentsFilter#getName()}.
    */

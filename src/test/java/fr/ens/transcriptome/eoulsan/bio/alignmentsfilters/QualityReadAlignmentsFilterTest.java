@@ -152,13 +152,6 @@ public class QualityReadAlignmentsFilterTest {
   }
 
   /**
-   * @throws java.lang.Exception
-   */
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /**
    * Test method for {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.
    * QualityReadAlignmentsFilter#setParameter(java.lang.String,
    * java.lang.String)}.
