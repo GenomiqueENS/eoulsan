@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,8 +195,8 @@ public class ReadAlignmentsFilterBufferTest {
   }
 
   /**
-   * Test method for {@link fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#addAlignment(net.sf.samtools.SAMRecord)}
-   * and {@link fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#getFilteredAlignments(boolean)}.
+   * Test method for {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#addAlignment(net.sf.samtools.SAMRecord)}
+   * and {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#getFilteredAlignments(boolean)}.
    */
   @Test
   public void testAddAlignmentAndGetFilteredAlignments() {
@@ -379,7 +381,7 @@ public class ReadAlignmentsFilterBufferTest {
   }
 
   /**
-   * Test method for {@link fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#ReadAlignmentsFilterBuffer(fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter)}.
+   * Test method for {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#ReadAlignmentsFilterBuffer(fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter)}.
    */
   @Test
   public void testReadAlignmentsFilterBufferReadAlignmentsFilter() {
@@ -387,7 +389,7 @@ public class ReadAlignmentsFilterBufferTest {
   }
 
   /**
-   * Test method for {@link fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#ReadAlignmentsFilterBuffer(fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter, boolean)}.
+   * Test method for {fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer#ReadAlignmentsFilterBuffer(fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter, boolean)}.
    */
   @Test
   public void testReadAlignmentsFilterBufferReadAlignmentsFilterBoolean() {
