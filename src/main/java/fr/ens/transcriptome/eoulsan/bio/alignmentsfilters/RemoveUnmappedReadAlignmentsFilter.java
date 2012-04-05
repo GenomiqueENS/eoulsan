@@ -33,6 +33,7 @@ import net.sf.samtools.SAMRecord;
  * This alignment filter remove all the unmapped alignments.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class RemoveUnmappedReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {

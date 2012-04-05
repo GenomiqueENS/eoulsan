@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * This class define an abstract step for alignments filtering.
  * @since 1.0
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public abstract class AbstractSAMFilterStep extends AbstractStep {
 
