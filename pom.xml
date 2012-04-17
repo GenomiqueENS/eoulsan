@@ -60,6 +60,23 @@
 			<properties />
 		</developer>
 		<developer>
+			<id>wallon</id>
+			<name>Claire Wallon</name>
+			<email>eoulsan 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				http://transcriptome.ens.fr/sgdb/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
 			<id>lecrom</id>
 			<name>Stéphane Le Crom</name>
 			<email>eoulsan 0 biologie ens fr</email>
