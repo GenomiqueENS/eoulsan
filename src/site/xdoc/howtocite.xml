@@ -37,30 +37,31 @@
 
 		<section name="How to cite Eoulsan">
 		
-			<p>Eoulsan is currently under submission process.</p>
+			<!--p>Eoulsan is currently under submission process.</p-->
 
-			<!--	
                         <p>
                                 <b>
-                                        Eoulsan: my fovorite RNAseq pipeline
+                                        Eoulsan: A Cloud Computing-Based Framework Facilitating High Throughput Sequencing Analyses.
                                 </b>
                         </p>
                         <p>
                                 <small>
-                                        Laurent Jourdren, Aurélie Duclos, Christian Brion, Thomas Portnoy, Hugues Mathis, Antoine Margeot and Stéphane Le Crom
+                                        Laurent Jourdren, Maria Bernard, Marie-Agnès Dillies and Stéphane Le Crom
                                 </small>
                                 <br />
                                 <small><i>
-                                        Nucleic Acids Research,
-                                        2010, <b>1-9</b> doi:10.1093/nar/gkq110
+                                        Bioinformatics,
+                                        <!--2012, <b>1-9</b> doi:10.1093/nar/gkq110-->
+                                        2012, 2012 Apr 5. [Epub ahead of print]
                                 </i></small>
                                 <br/>
                                 <small>
-                                  <a href="http://nar.oxfordjournals.org/cgi/content/abstract/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Abstract] </a>
-                                  <a href="http://nar.oxfordjournals.org/cgi/content/full/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Full Text] </a>
-                                  <a href="http://nar.oxfordjournals.org/cgi/reprint/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[PDF]</a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/early/2012/04/02/bioinformatics.bts165.abstract?sid=6d219f50-d297-40fb-a031-bb8368e5012d">[Abstract] </a>
+                                  <!--a href="">[Full Text] </a-->
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/early/2012/04/02/bioinformatics.bts165.full.pdf+html?sid=6d219f50-d297-40fb-a031-bb8368e5012d">[Full Text PDF]</a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/early/2012/04/02/bioinformatics.bts165/suppl/DC1">[Supplementary Data]</a>
                                 </small>
-                        </p> -->
+                        </p>
 
 		</section>
 	</body>
