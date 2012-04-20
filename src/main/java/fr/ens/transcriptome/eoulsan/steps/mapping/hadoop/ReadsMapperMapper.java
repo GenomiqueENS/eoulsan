@@ -129,7 +129,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     if (!EoulsanRuntime.isRuntime()) {
       HadoopEoulsanRuntime.newEoulsanRuntime(conf);
     }
-    
+
     // Get mapper name
     final String mapperName =
         conf.get(Globals.PARAMETER_PREFIX + ".mapper.name");
@@ -182,8 +182,17 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         + this.mapper.getMapperName() + " with " + mapperThreads
         + " threads option");
 
+    // Create temporary directory if not exists
+    final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
+    if (!tempDir.exists()) {
+      LOGGER.fine("Create temporary directory: " + tempDir.getAbsolutePath());
+      if (!tempDir.mkdirs())
+        throw new IOException(
+            "Unable to create local Hadoop temporary directory: " + tempDir);
+    }
+
     // Set mapper temporary directory
-    mapper.setTempDirectory(new File(conf.get(HADOOP_TEMP_DIR)));
+    mapper.setTempDirectory(tempDir);
 
     // Download genome reference
     final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);

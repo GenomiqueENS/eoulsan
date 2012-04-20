@@ -291,6 +291,19 @@
 
          </release>
          
+         <release version="1.1.1" description="Eoulsan 1.1.1 release" date="2012-04-17">
+            <action dev="jourdren" type="fix" issue="13">
+                In distributed mode in mapping step, if temporary directory does not exist, create it. 
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix bug in expression computation. 
+            </action>            
+             <action dev="jourdren" type="fix" issue="12">
+                Fix: The number of alignment with more than one match filtered in
+filtersam step log is lower than the number of alignements filtered. 
+            </action>        
+         </release>
+         
 		
 	</body>
 </document>

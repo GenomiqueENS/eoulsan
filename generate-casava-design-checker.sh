@@ -95,7 +95,12 @@ public class $PROJECT_NAME implements EntryPoint {
       + "B34=CATGGC\n" + "B35=CATTTT\n" + "B36=CCAACA\n" + "B37=CGGAAT\n"
       + "B38=CTAGCT\n" + "B39=CTATAC\n" + "B40=CTCAGA\n" + "B41=GCGCTA\n"
       + "B42=TAATCG\n" + "B43=TACAGC\n" + "B44=TATAAT\n" + "B45=TCATTC\n"
-      + "B46=TCCCGA\n" + "B47=TCGAAG\n" + "B48=TCGGCA\n";
+      + "B46=TCCCGA\n" + "B47=TCGAAG\n" + "B48=TCGGCA\n" + "E1=ATCACG\n"
+      + "E2=CGATGT\n" + "E3=TTAGGC\n" + "E4=TGACCA\n" + "E5=ACAGTG\n"
+      + "E6=GCCAAT\n" + "E7=CAGATC\n" + "E8=ACTTGA\n" + "E9=GATCAG\n"
+      + "E10=TAGCTT\n" + "E11=GGCTAC\n" + "E12=CTTGTA\n";
+
+
 
   private static String DEFAULT_RESULT_MSG = "<pre>No valid design entered.</pre>";
 
