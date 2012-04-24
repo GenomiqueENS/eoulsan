@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -288,7 +289,8 @@ public class GenomicArray<T> {
       final int intervalStart = interval.getStart();
       final int intervalEnd = interval.getEnd();
 
-      // Create an empty zone if the interval is after the end of the chromosome
+      // Create an empty zone if the interval is after the end of the
+      // last chromosome zone
       if (interval.getEnd() > this.length) {
         add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
@@ -299,7 +301,13 @@ public class GenomicArray<T> {
 
       final Zone<T> z1 = get(indexStart);
       final Zone<T> z1b;
-      final int count1b;
+      final int count1b, count2;
+
+//      if (value.toString().equals("exon:ENSMUST00000121430:1")) {
+//        System.out.println("... addEntry ...\t"
+//            + intervalStart + "\t" + intervalEnd);
+//        System.out.println("z1 : " + z1.start + "\t" + z1.end);
+//      }
 
       if (z1.start == intervalStart) {
         z1b = z1;
@@ -331,22 +339,61 @@ public class GenomicArray<T> {
 
         final Zone<T> z2 = get(indexEnd);
         final Zone<T> z2b;
+        
+//        if (value.toString().equals("exon:ENSMUST00000121430:1"))
+//          System.out.println("z2 : "+z2.start+"\t"+z2.end);
 
-        if (z2.end != intervalEnd)
+        if (z2.end != intervalEnd) {
           z2b = splitZone(z2, intervalEnd + 1);
-        else
+//          if (value.toString().equals("exon:ENSMUST00000121430:1")) {
+//            System.out.println("z2b : "+z2b.start+"\t"+z2b.end);
+//            System.out.println("z2 : "+z2.start+"\t"+z2.end);
+//          }
+        } else
           z2b = z2;
 
-        if (z1 != z1b)
+        if (z1 != z1b) {
+          
           add(indexStart + 1, z1b);
+          
+//          if (z1b.end + 1 != z2.start) {
+////            final Zone<T> z3 = new Zone<T>(z1b.end + 1, z2.start -1, interval.getStrand());
+//            add(indexStart + 1 + count1b, new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand()));
+//            count2 = count1b + 1;
+////            if (value.toString().equals("exon:ENSMUST00000121430:1"))
+////              System.out.println("z3 : "+(z3.start)+"\t"+(z3.end));
+//          }
+//          else
+//            count2 = count1b;
+        }
+//        else {
+//          if (z1.end + 1 != z2.start) {
+////            final Zone<T> z3 = new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand());
+//            add(indexStart + 1 + count1b, new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand()));
+//            count2 = count1b + 1;
+////            if (value.toString().equals("exon:ENSMUST00000121430:1"))
+////              System.out.println("z3 : "+(z3.start)+"\t"+(z3.end));
+//          }
+//          else
+//            count2 = count1b;
+//        }
+        
         if (z2 != z2b)
           add(indexEnd + 1 + count1b, z2b);
+        
+//        if (value.toString().equals("exon:ENSMUST00000121430:1")) {
+//          System.out.println("indexStart : "+indexStart);
+//          System.out.println("indexEnd : "+indexEnd);
+//          System.out.println("count1b : "+count1b);
+//          System.out.println("count2 : "+count2);
+//        }
 
-        for (int i = indexStart + count1b; i <= indexEnd + count1b; i++)
+        for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
           get(i).addExon(value);
-
+//          if (value.toString().equals("exon:ENSMUST00000121430:1"))
+//            System.out.println(i+"\t"+get(i).start+"\t"+get(i).end);
+        }
       }
-
     }
 
     /**
@@ -375,9 +422,10 @@ public class GenomicArray<T> {
         if (r != null) {
 
           for (T e : r)
+            
             // Really needed ?
             if (intersect(start, stop, zone.start, zone.end)) {
-
+              
               if (result == null)
                 result = Utils.newHashMap();
 
@@ -434,12 +482,14 @@ public class GenomicArray<T> {
     final String chromosomeName = interval.getChromosome();
     final ChromosomeZones<T> chr;
 
+    // Create a ChromosomeZones if it does not exist yet
     if (!this.chromosomes.containsKey(chromosomeName)) {
       chr = new ChromosomeZones<T>(chromosomeName);
       this.chromosomes.put(chromosomeName, chr);
     } else
       chr = this.chromosomes.get(chromosomeName);
 
+    // Add the GenomicInterval to the ChromosomeZones
     chr.addEntry(interval, value);
   }
 

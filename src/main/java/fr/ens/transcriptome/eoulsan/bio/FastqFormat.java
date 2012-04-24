@@ -249,7 +249,6 @@ public enum FastqFormat {
     return 1.0 / ((1.0 / pow(10.0, -score / 10.0)) + 1.0);
   }
 
-  // return Math.pow(10, ((double)phred/(phred+1))/-10d);
   /**
    * Convert a probability to a quality score.
    * @param p probability to convert
