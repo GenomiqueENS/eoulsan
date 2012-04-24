@@ -33,6 +33,11 @@ import java.util.List;
  */
 public interface Design {
 
+  /** Sample number field. */
+  String SAMPLE_NUMBER_FIELD = "SampleNumber";
+  /** Name field. */
+  String NAME_FIELD = "Name";
+
   /**
    * Test if a sample exists.
    * @param sampleName Name of the sample to test

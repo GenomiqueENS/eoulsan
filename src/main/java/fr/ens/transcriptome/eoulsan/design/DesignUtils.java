@@ -61,12 +61,10 @@ public final class DesignUtils {
     StringBuffer sb = new StringBuffer();
 
     // Write header
-    sb.append("SlideNumber");
+    sb.append(Design.SAMPLE_NUMBER_FIELD);
     sb.append("\t");
-    sb.append("Name");
+    sb.append(Design.NAME_FIELD);
     sb.append("\t");
-
-    sb.append("FileName");
 
     for (String f : metadataFields) {
 

@@ -67,10 +67,10 @@ public class SimpleDesignWriter extends DesignWriter {
       List<String> metadataFields = design.getMetadataFieldsNames();
 
       // Write header
-      bw.append("SampleNumber");
+      bw.append(Design.SAMPLE_NUMBER_FIELD);
       bw.append(SEPARATOR);
 
-      bw.append("Name");
+      bw.append(Design.NAME_FIELD);
 
       for (String f : metadataFields) {
 
