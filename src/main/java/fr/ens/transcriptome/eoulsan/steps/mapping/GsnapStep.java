@@ -229,8 +229,7 @@ public class GsnapStep extends AbstractStep {
       final File outSamFile, final Reporter reporter) throws IOException {
 
     // Build the command line
-    final String cmdArgs =
-        this.mapperArguments + " " + inFile.getAbsolutePath();
+    final String cmdArgs = inFile.getAbsolutePath();
 
     map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
@@ -243,8 +242,7 @@ public class GsnapStep extends AbstractStep {
 
     // Build the command line
     final String cmdArgs =
-        this.mapperArguments
-            + " " + inFile1.getAbsolutePath() + " " + inFile2.getAbsolutePath();
+        inFile1.getAbsolutePath() + " " + inFile2.getAbsolutePath();
 
     map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
@@ -252,6 +250,8 @@ public class GsnapStep extends AbstractStep {
   private void map(final Context context, final String cmdArg,
       final FastqFormat format, final File archiveIndexFile,
       final File outSamFile, final Reporter reporter) throws IOException {
+
+    int mapperThreads = Runtime.getRuntime().availableProcessors();
 
     // Extract and install the gsnap binary for eoulsan jar archive
     final String gsnapPath =
@@ -288,8 +288,7 @@ public class GsnapStep extends AbstractStep {
     // Build the command line
     final String cmd =
         gsnapPath
-            + " -A sam " + formatArg + " -t "
-            + context.getSettings().getLocalThreadsNumber() + " -D "
+            + " -A sam " + formatArg + " -t " + mapperThreads + " -D "
             + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
             + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
 
