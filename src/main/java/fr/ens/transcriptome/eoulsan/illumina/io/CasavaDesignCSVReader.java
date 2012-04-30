@@ -110,4 +110,23 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     this.reader = FileUtils.createBufferedReader(file);
   }
 
+  /**
+   * Public constructor
+   * @param filename File to use
+   */
+  public CasavaDesignCSVReader(final String filename)
+      throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("Filename is null");
+
+    final File file = new File(filename);
+
+    if (!file.isFile())
+      throw new FileNotFoundException("File not found: "
+          + file.getAbsolutePath());
+
+    this.reader = FileUtils.createBufferedReader(file);
+  }
+
 }
