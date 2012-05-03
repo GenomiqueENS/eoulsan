@@ -248,6 +248,8 @@ public class GmapStep extends AbstractStep {
       final File archiveIndexFile, final File outSamFile,
       final Reporter reporter) throws IOException {
 
+    int mapperThreads = Runtime.getRuntime().availableProcessors();
+
     // Extract and install the gsnap binary for eoulsan jar archive
     final String gsnapPath =
         BinariesInstaller.install("gmap", context.getSettings()
@@ -286,8 +288,7 @@ public class GmapStep extends AbstractStep {
         "cat "
             + StringUtils.join(filenames, " ")
             + " | awk '{ if (NR%4==1) {print \">\" substr($0,2);} else if (NR%4==2) {print $0;} }' | "
-            + gsnapPath + " " + formatArg + " -t "
-            + context.getSettings().getLocalThreadsNumber() + " -D "
+            + gsnapPath + " " + formatArg + " -t " + mapperThreads + " -D "
             + archiveIndexDir.getAbsolutePath() + " -d genome -f samse"
             + cmdArg + (filenames.length == 1 ? "" : " | LANG=C sort") + " > "
             + outSamFile.getAbsolutePath() + " 2> /dev/null";
