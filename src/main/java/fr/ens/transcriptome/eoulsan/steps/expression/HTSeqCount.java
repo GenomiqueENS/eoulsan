@@ -60,15 +60,14 @@ public class HTSeqCount {
   public static void countReadsInFeatures(final File samFile,
       final File gffFile, final String stranded, final String overlapMode,
       final String featureType, final String attributeId, final boolean quiet,
-      final int minAvarageQual, final File samOutFile) throws EoulsanException,
+      final int minAverageQual, final File samOutFile) throws EoulsanException,
       IOException, BadBioEntryException {
 
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
     // !!!!!!!!!!!!!!!!! à supprimer
-    Writer writer =
-        new FileWriter("/home/wallon/Bureau/TEST_HTSEQ/SE/2-nonempty-java");
+    Writer writer = new FileWriter("/home/wallon/Bureau/TEST_HTSEQ/EOULSAN/test-apres");
 
     boolean pairedEnd = false;
 
@@ -104,7 +103,7 @@ public class HTSeqCount {
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
 
-    final List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
     final SAMFileReader inputSam = new SAMFileReader(samFile);
 
@@ -150,28 +149,30 @@ public class HTSeqCount {
         }
 
         // too low quality
-        if (samRecord.getMappingQuality() < minAvarageQual) {
+        if (samRecord.getMappingQuality() < minAverageQual) {
           lowqual++;
           continue;
         }
+        
+        ivSeq.addAll(addIntervals(samRecord, stranded));
 
-        // the read has to be mapped to the opposite strand as the feature
-        if ("reverse".equals(stranded)) {
-          ivSeq.addAll(parseCigar(samRecord.getCigar(),
-              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
-              samRecord.getReadNegativeStrandFlag() ? '+' : '-'));
-        }
-
-        // stranded == "true" (so the read has to be mapped to the same strand
-        // as
-        // the feature) or stranded == "false" (so the read is considered
-        // overlapping with a feature regardless of whether it is mapped to the
-        // same or the opposite strand as the feature)
-        else {
-          ivSeq.addAll(parseCigar(samRecord.getCigar(),
-              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
-              samRecord.getReadNegativeStrandFlag() ? '-' : '+'));
-        }
+//        // the read has to be mapped to the opposite strand as the feature
+//        if ("reverse".equals(stranded)) {
+//          ivSeq.addAll(parseCigar(samRecord.getCigar(),
+//              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
+//              samRecord.getReadNegativeStrandFlag() ? '+' : '-'));
+//        }
+//
+//        // stranded == "true" (so the read has to be mapped to the same strand
+//        // as
+//        // the feature) or stranded == "false" (so the read is considered
+//        // overlapping with a feature regardless of whether it is mapped to the
+//        // same or the opposite strand as the feature)
+//        else {
+//          ivSeq.addAll(parseCigar(samRecord.getCigar(),
+//              samRecord.getReferenceName(), samRecord.getAlignmentStart(),
+//              samRecord.getReadNegativeStrandFlag() ? '-' : '+'));
+//        }
 
       }
 
@@ -189,49 +190,60 @@ public class HTSeqCount {
         else
           sam2 = samRecord;
 
-        if (sam2 == null && sam1 != null && !sam1.getReadUnmappedFlag())
+        if (sam1 == null || sam2 == null)
           continue;
 
-        if (sam1 == null && sam2 != null && !sam2.getReadUnmappedFlag())
+        if (!sam1.getReadName().equals(sam2.getReadName())) {
+          sam1 = sam2;
+          sam2 = null;
           continue;
-
+        }
+        
         if (sam1 != null && !sam1.getReadUnmappedFlag()) {
-          if ("reverse".equals(stranded))
-            ivSeq.addAll(parseCigar(sam1.getCigar(), sam1.getReferenceName(),
-                sam1.getAlignmentStart(), sam1.getReadNegativeStrandFlag()
-                    ? '+' : '-'));
-          else
-            ivSeq.addAll(parseCigar(sam1.getCigar(), sam1.getReferenceName(),
-                sam1.getAlignmentStart(), sam1.getReadNegativeStrandFlag()
-                    ? '-' : '+'));
+          ivSeq.addAll(addIntervals(sam1, stranded));
+          // System.out.println("sam1");
+//          if ("reverse".equals(stranded))
+//            ivSeq.addAll(parseCigar(sam1.getCigar(), sam1.getReferenceName(),
+//                sam1.getAlignmentStart(), sam1.getReadNegativeStrandFlag()
+//                    ? '+' : '-'));
+//          else
+//            ivSeq.addAll(parseCigar(sam1.getCigar(), sam1.getReferenceName(),
+//                sam1.getAlignmentStart(), sam1.getReadNegativeStrandFlag()
+//                    ? '-' : '+'));
         }
 
         if (sam2 != null && !sam2.getReadUnmappedFlag()) {
-          if ("reverse".equals(stranded))
-            ivSeq.addAll(parseCigar(sam2.getCigar(), sam2.getReferenceName(),
-                sam2.getAlignmentStart(), sam2.getReadNegativeStrandFlag()
-                    ? '-' : '+'));
-          else
-            ivSeq.addAll(parseCigar(sam2.getCigar(), sam2.getReferenceName(),
-                sam2.getAlignmentStart(), sam2.getReadNegativeStrandFlag()
-                    ? '+' : '-'));
+          ivSeq.addAll(addIntervals(sam2, stranded));
+          // System.out.println("sam2");
+//          if ("reverse".equals(stranded))
+//            ivSeq.addAll(parseCigar(sam2.getCigar(), sam2.getReferenceName(),
+//                sam2.getAlignmentStart(), sam2.getReadNegativeStrandFlag()
+//                    ? '-' : '+'));
+//          else
+//            ivSeq.addAll(parseCigar(sam2.getCigar(), sam2.getReferenceName(),
+//                sam2.getAlignmentStart(), sam2.getReadNegativeStrandFlag()
+//                    ? '+' : '-'));
         }
 
         // unmapped read
-        if (samRecord == null || samRecord.getReadUnmappedFlag()) {
+        if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
           notaligned++;
+          // System.out.println("not_aligned");
           continue;
         }
 
         // multiple alignment
-        if (samRecord.getAttribute("NH") != null
-            && samRecord.getIntegerAttribute("NH") > 1) {
+        if ((sam1.getAttribute("NH") != null && sam1.getIntegerAttribute("NH") > 1)
+            || (sam2.getAttribute("NH") != null && sam2
+                .getIntegerAttribute("NH") > 1)) {
           nonunique++;
+          // System.out.println("non_unique");
           continue;
         }
 
         // too low quality
-        if (samRecord.getMappingQuality() < minAvarageQual) {
+        if (sam1.getMappingQuality() < minAverageQual
+            || sam2.getMappingQuality() < minAverageQual) {
           lowqual++;
           continue;
         }
@@ -239,141 +251,143 @@ public class HTSeqCount {
       }
 
       Set<String> fs = null;
+      
+      fs = featuresOverlapped(ivSeq, features, overlapMode);
 
-      // Overlap mode "union"
-      if (overlapMode.equals("union")) {
-
-        fs = new HashSet<String>();
-
-        for (final GenomicInterval iv : ivSeq) {
-
-          // writer.write(iv.getChromosome()
-          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
-          // + iv.getStrand() + "\n");
-
-          final String chr = iv.getChromosome();
-
-          if (!features.containsChromosome(chr))
-            throw new EoulsanException("Unknown chromosome: " + chr);
-
-          final Map<GenomicInterval, String> intervals =
-              features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-          if (intervals != null) {
-            Collection<String> values = intervals.values();
-            if (values != null)
-              fs.addAll(values);
-          }
-        }
-      }
-
-      // Overlap mode "intersection-nonempty"
-      else if (overlapMode.equals("intersection-nonempty")) {
-
-        final Set<String> featureTmp = new HashSet<String>();
-
-        for (final GenomicInterval iv : ivSeq) {
-
-          // writer.write(iv.getChromosome()
-          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
-          // + iv.getStrand() + "\n");
-
-          final String chr = iv.getChromosome();
-
-          if (!features.containsChromosome(chr))
-            throw new EoulsanException("Unknown chromosome: " + chr);
-
-          // Get features that overlapped the current interval of the read
-          final Map<GenomicInterval, String> intervals =
-              features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-          // At least one interval is found
-          if (intervals != null) {
-            Collection<String> values = intervals.values();
-            if (values != null) {
-
-              for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
-
-                featureTmp.clear();
-
-                for (Map.Entry<GenomicInterval, String> inter : intervals
-                    .entrySet()) {
-                  if (inter.getKey().include(pos, pos))
-                    featureTmp.add(inter.getValue());
-                }
-
-                if (featureTmp.size() > 0) {
-                  if (fs == null) {
-                    fs = new HashSet<String>();
-                    fs.addAll(featureTmp);
-                  } else
-                    fs.retainAll(featureTmp);
-                }
-
-              }
-            }
-          }
-        }
-      }
-
-      else if (overlapMode == "intersection-strict") {
-
-        final Set<String> featureTmp = new HashSet<String>();
-
-        for (final GenomicInterval iv : ivSeq) {
-
-          // writer.write(iv.getChromosome()
-          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
-          // + iv.getStrand() + "\n");
-
-          final String chr = iv.getChromosome();
-
-          if (!features.containsChromosome(chr))
-            throw new EoulsanException("Unknown chromosome: " + chr);
-
-          final Map<GenomicInterval, String> intervals =
-              features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-          // At least one interval is found
-          if (intervals != null) {
-            Collection<String> values = intervals.values();
-            if (values != null) {
-
-              for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
-
-                featureTmp.clear();
-
-                for (Map.Entry<GenomicInterval, String> inter : intervals
-                    .entrySet()) {
-                  if (inter.getKey().include(pos, pos)) {
-                    featureTmp.add(inter.getValue());
-                  }
-                }
-
-                if (fs == null) {
-                  fs = new HashSet<String>();
-                  fs.addAll(featureTmp);
-                } else
-                  fs.retainAll(featureTmp);
-              }
-            }
-          }
-
-          // no interval found
-          else {
-            if (fs == null)
-              fs = new HashSet<String>();
-            else
-              fs.clear();
-          }
-
-        }
-      }
-
-      // TODO : exceptions
-      else {
-        System.err.println("Illegal overlap mode.");
-      }
+//      // Overlap mode "union"
+//      if (overlapMode.equals("union")) {
+//
+//        fs = new HashSet<String>();
+//
+//        for (final GenomicInterval iv : ivSeq) {
+//
+//          // writer.write(iv.getChromosome()
+//          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
+//          // + iv.getStrand() + "\n");
+//
+//          final String chr = iv.getChromosome();
+//
+//          if (!features.containsChromosome(chr))
+//            throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//          final Map<GenomicInterval, String> intervals =
+//              features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//          if (intervals != null) {
+//            Collection<String> values = intervals.values();
+//            if (values != null)
+//              fs.addAll(values);
+//          }
+//        }
+//      }
+//
+//      // Overlap mode "intersection-nonempty"
+//      else if (overlapMode.equals("intersection-nonempty")) {
+//
+//        final Set<String> featureTmp = new HashSet<String>();
+//
+//        for (final GenomicInterval iv : ivSeq) {
+//
+//          // writer.write(iv.getChromosome()
+//          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
+//          // + iv.getStrand() + "\n");
+//
+//          final String chr = iv.getChromosome();
+//
+//          if (!features.containsChromosome(chr))
+//            throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//          // Get features that overlapped the current interval of the read
+//          final Map<GenomicInterval, String> intervals =
+//              features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//          // At least one interval is found
+//          if (intervals != null) {
+//            Collection<String> values = intervals.values();
+//            if (values != null) {
+//
+//              for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+//
+//                featureTmp.clear();
+//
+//                for (Map.Entry<GenomicInterval, String> inter : intervals
+//                    .entrySet()) {
+//                  if (inter.getKey().include(pos, pos))
+//                    featureTmp.add(inter.getValue());
+//                }
+//
+//                if (featureTmp.size() > 0) {
+//                  if (fs == null) {
+//                    fs = new HashSet<String>();
+//                    fs.addAll(featureTmp);
+//                  } else
+//                    fs.retainAll(featureTmp);
+//                }
+//
+//              }
+//            }
+//          }
+//        }
+//      }
+//
+//      else if (overlapMode == "intersection-strict") {
+//
+//        final Set<String> featureTmp = new HashSet<String>();
+//
+//        for (final GenomicInterval iv : ivSeq) {
+//
+//          // writer.write(iv.getChromosome()
+//          // + ":[" + (iv.getStart() - 1) + "," + iv.getEnd() + ")/"
+//          // + iv.getStrand() + "\n");
+//
+//          final String chr = iv.getChromosome();
+//
+//          if (!features.containsChromosome(chr))
+//            throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//          final Map<GenomicInterval, String> intervals =
+//              features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//          // At least one interval is found
+//          if (intervals != null) {
+//            Collection<String> values = intervals.values();
+//            if (values != null) {
+//
+//              for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+//
+//                featureTmp.clear();
+//
+//                for (Map.Entry<GenomicInterval, String> inter : intervals
+//                    .entrySet()) {
+//                  if (inter.getKey().include(pos, pos)) {
+//                    featureTmp.add(inter.getValue());
+//                  }
+//                }
+//
+//                if (fs == null) {
+//                  fs = new HashSet<String>();
+//                  fs.addAll(featureTmp);
+//                } else
+//                  fs.retainAll(featureTmp);
+//              }
+//            }
+//          }
+//
+//          // no interval found
+//          else {
+//            if (fs == null)
+//              fs = new HashSet<String>();
+//            else
+//              fs.clear();
+//          }
+//
+//        }
+//      }
+//
+//      // TODO : exceptions
+//      else {
+//        System.err.println("Illegal overlap mode.");
+//      }
 
       if (fs == null)
         fs = new HashSet<String>();
@@ -550,7 +564,7 @@ public class HTSeqCount {
     return fs;
   }
 
-  private static List<GenomicInterval> addInterval(SAMRecord record,
+  private static List<GenomicInterval> addIntervals(SAMRecord record,
       String stranded) {
 
     if (record == null)
@@ -590,19 +604,25 @@ public class HTSeqCount {
     if (cigar == null)
       return null;
 
-    // OLD VERSION
-    // final List<GenomicInterval> result =
-    // new ArrayList<GenomicInterval>(cigar.numCigarElements());
-    // NEW VERSION : why impose the length of the ArrayList ?
     final List<GenomicInterval> result = new ArrayList<GenomicInterval>();
 
     int pos = start;
     for (CigarElement ce : cigar.getCigarElements()) {
 
       final int len = ce.getLength();
-      if (ce.getOperator() == CigarOperator.M)
+
+      // the CIGAR element correspond to a mapped region
+      if (ce.getOperator() == CigarOperator.M) {
         result.add(new GenomicInterval(chromosome, pos, pos + len - 1, strand));
-      pos += len;
+        pos += len;
+      }
+      // the CIGAR element did not correspond to a mapped region
+      else {
+        // regions coded by a 'I' (insertion) do not have to be counted
+        // (are there other cases like this one ?)
+        if (pos != start && ce.getOperator() != CigarOperator.I)
+          pos += len;
+      }
     }
 
     return result;
@@ -611,14 +631,17 @@ public class HTSeqCount {
   public static void main(String[] args) throws EoulsanException, IOException,
       BadBioEntryException {
 
-    final File dir = new File("/home/wallon/Bureau/TEST_HTSEQ/SE/FULL");
-    final File samFile = new File(dir, "filtered_mapper_results_2.sam");
-    final File gffFile = new File(dir, "annotation.gff");
+    final File dir = new File("/home/wallon/Bureau/TEST_HTSEQ/EOULSAN");
+//    final File samFile = new File(dir, "filtered_mapper_results_1.sam");
+    final File samFile = new File("/home/wallon/Bureau/GSNAP/PE/500head.sam");
+//    final File samFile = new File(dir, "500head.sam");
+//    final File gffFile = new File("/home/wallon/Bureau/TEST_EOULSAN/TEST_modifications/annotation.gff");
+    final File gffFile = new File("/home/wallon/Bureau/GSNAP/PE/mouse.gff");
 
     final long startTime = System.currentTimeMillis();
     System.out.println("start.");
-    countReadsInFeatures(samFile, gffFile, "no", "intersection-nonempty",
-        "exon", "ID", false, 0, null);
+    countReadsInFeatures(samFile, gffFile, "no", "union", "exon", "ID", false,
+        0, null);
     System.out.println("end.");
     System.out.println("Duration: "
         + (System.currentTimeMillis() - startTime) + " ms.");

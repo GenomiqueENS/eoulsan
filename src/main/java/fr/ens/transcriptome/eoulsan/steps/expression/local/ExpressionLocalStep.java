@@ -25,8 +25,8 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -44,11 +45,13 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
+import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
  * This class is the step to compute expression in local mode
  * @since 1.0
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 @LocalOnly
 public class ExpressionLocalStep extends AbstractExpressionStep {
@@ -59,7 +62,70 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
+    // // NEW VERSION
+    // try {
+    // final long startTime = System.currentTimeMillis();
+    // final StringBuilder log = new StringBuilder();
+    //
+    // final ExpressionCounter counter = getCounter();
+    //
+    // // ExpressionPseudoMapReduce epmr = null;
+    // // String lastAnnotationKey = null;
+    // final String genomicType = getGenomicType();
+    //
+    // for (Sample s : design.getSamples()) {
+    //
+    // // Create the reporter
+    // final Reporter reporter = new Reporter();
+    //
+    // // Get annotation file
+    // final DataFile annotationFile =
+    // context.getInputDataFile(ANNOTATION_GFF, s);
+    //
+    // // final String annotationKey = annotationFile.getName() + " " +
+    // // genomicType;
+    //
+    // // Get alignment file
+    // final File alignmentFile =
+    // context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s).toFile();
+    //
+    // // Get genome desc file
+    // final DataFile genomeDescFile =
+    // context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s);
+    //
+    // // Get final expression file
+    // final File expressionFile =
+    // context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s).toFile();
+    //
+    // // Expression counting
+    // count(context, s, counter, annotationFile, alignmentFile,
+    // expressionFile, genomeDescFile, reporter);
+    //
+    // log.append(reporter.countersValuesToString(
+    // COUNTER_GROUP,
+    // "Expression computation ("
+    // + s.getName() + ", " + alignmentFile.getName() + ", "
+    // + annotationFile.getName() + ", " + genomicType + ")"));
+    //
+    // }
+    //
+    // // Write log file
+    // return new StepResult(context, startTime, log.toString());
+    //
+    // } catch (FileNotFoundException e) {
+    // return new StepResult(context, e, "File not found: " + e.getMessage());
+    // } catch (IOException e) {
+    // return new StepResult(context, e, "Error while filtering: "
+    // + e.getMessage());
+    // } /*
+    // * catch (BadBioEntryException e) { return new StepResult(context, e,
+    // * "Invalid annotation entry: " + e.getEntry()); }
+    // */
+
+    
+    // OLD VERSION
     try {
+
       final long startTime = System.currentTimeMillis();
       final StringBuilder log = new StringBuilder();
 
@@ -133,16 +199,57 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       return new StepResult(context, startTime, log.toString());
 
     } catch (FileNotFoundException e) {
-
       return new StepResult(context, e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-
       return new StepResult(context, e, "Error while filtering: "
           + e.getMessage());
     } catch (BadBioEntryException e) {
-
       return new StepResult(context, e, "Invalid annotation entry: "
           + e.getEntry());
     }
+
   }
+
+  private void count(final Context context, final Sample s,
+      final ExpressionCounter counter, final DataFile annotationFile,
+      final File alignmentFile, final File expressionFile,
+      final DataFile genomeDescFile, final Reporter reporter)
+      throws IOException {
+
+    // Get expression temporary file
+    // final File expressionTmpFile =
+    // new File(alignmentFile.getAbsolutePath() + ".tmp");
+
+    final String annotationKey =
+        annotationFile.getName() + " " + getGenomicType();
+
+    // Init expression counter
+    counter.init(annotationKey, reporter, COUNTER_GROUP);
+
+    // Set counter arguments
+    initCounterArguments(counter, context.getSettings().getTempDirectory());
+
+    LOGGER.info("Expression computation in SAM file: "
+        + alignmentFile + ", use " + counter.getCounterName());
+
+    // Process to counting
+    counter
+        .count(alignmentFile, annotationFile, expressionFile, genomeDescFile);
+  }
+
+  private void initCounterArguments(ExpressionCounter counter,
+      final String tempDirectory) {
+
+    if (getStranded() != null)
+      counter.setStranded(getStranded());
+
+    if (getOverlapMode() != null)
+      counter.setOverlapMode(getOverlapMode());
+
+    // Set counter temporary directory
+    counter.setTempDirectory(tempDirectory);
+
+    // ...
+  }
+
 }

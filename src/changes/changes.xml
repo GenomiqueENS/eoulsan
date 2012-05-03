@@ -47,7 +47,7 @@
                 Fix FASTQ parsing in local mode.
             </action>
             <action dev="jourdren" type="fix">
-                Fix trim sequence when sequence comtains only 'N' nucleotides.
+                Fix trim sequence when sequence contains only 'N' nucleotides.
             </action>
         </release>
         
