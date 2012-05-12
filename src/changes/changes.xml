@@ -303,7 +303,13 @@
 filtersam step log is lower than the number of alignements filtered. 
             </action>        
          </release>
-         
+
+         <release version="1.1.1" description="Eoulsan 1.1.1 release" date="2012-05-12">
+            <action dev="jourdren" type="fix" issue="14">
+                In local mode in filter alignement step, the unique alignment written was not the
+unique alignment but the next alignment to proceed. 
+            </action>
+	</release>         
 		
 	</body>
 </document>
