@@ -181,7 +181,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
               if (lastIdCount == 1) {
 
-                outputSam.addAlignment(samRecord);
+                outputSam.addAlignment(lastRecord);
                 reporter.incrCounter(COUNTER_GROUP,
                     OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
 
