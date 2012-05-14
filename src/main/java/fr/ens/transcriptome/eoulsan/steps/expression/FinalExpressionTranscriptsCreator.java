@@ -168,8 +168,6 @@ public class FinalExpressionTranscriptsCreator {
    */
   public void initializeExpressionResults() {
 
-    
-    LOGGER.info("initializeExpressionResults...");
     this.expressionResults.clear();
     for (String id : tef.getTranscriptsIds())
       this.expressionResults.put(id,
@@ -197,8 +195,6 @@ public class FinalExpressionTranscriptsCreator {
   public void loadPreResults(final InputStream is, final long readsUsed)
       throws IOException {
 
-    LOGGER.info("loadPreResults...");
-    
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(is, CHARSET));
 
@@ -238,8 +234,6 @@ public class FinalExpressionTranscriptsCreator {
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
     
-    LOGGER.info("saveFinalResults...");
-
     final List<ExpressionTranscript> list =
         new ArrayList<ExpressionTranscript>(this.expressionResults.values());
 

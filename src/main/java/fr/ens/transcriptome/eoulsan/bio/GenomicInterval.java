@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * This class define a genomic interval.
  * @since 1.2
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class GenomicInterval implements Serializable,
     Comparable<GenomicInterval> {
@@ -114,7 +115,7 @@ public class GenomicInterval implements Serializable,
         || (end >= this.start && end <= this.end)
         || (start < this.start && end > this.end);
   }
-  
+
   // /**
   // *
   // * @param start
@@ -223,18 +224,18 @@ public class GenomicInterval implements Serializable,
    */
   public GenomicInterval(final GFFEntry gffEntry) {
 
-    this(gffEntry, "true");
+    this(gffEntry, "yes");
   }
 
   /**
    * Public constructor
    * @param gffEntry GFF entry
-   * @param stranded save the strand information if "true"
+   * @param stranded save the strand information if "true" or "reverse"
    */
   public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
 
     this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
-        .equals("true") ? gffEntry.getStrand() : '.');
+        .equals("yes") || stranded.equals("reverse") ? gffEntry.getStrand() : '.');
   }
 
 }

@@ -291,6 +291,25 @@
 
          </release>
          
+         <release version="1.2" description="" date="2012-05-03">
+         
+            <action dev="wallon" type="add">
+                Add the paired-end mode in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="add">
+                Add the mapping quality score filter in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="update">
+                Update documentation. 
+            </action>
+            <action dev="wallon" type="add">
+                The expression estimation step is now modular. 
+            </action>
+            <action dev="wallon" type="add">
+                Add the HTSeq-count program for the expression estimation step.
+            </action>
+         </release>
+         
 		
 	</body>
 </document>

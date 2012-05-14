@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Claire Wallon
  */
 public class EoulsanCounter extends AbstractExpressionCounter {
-  
+
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
@@ -53,17 +53,16 @@ public class EoulsanCounter extends AbstractExpressionCounter {
   }
 
   @Override
-  public String getCounterVersion() {
-
-    return null;
-  }
-
-  @Override
   protected void internalCount(File alignmentFile, DataFile annotationFile,
       File expressionFile, final DataFile genomeDescFile, Reporter reporter,
       String counterGroup) throws IOException {
 
     ExpressionPseudoMapReduce epmr = null;
+    String lastAnnotationKey = null;
+    final String genomicType = getGenomicType();
+
+    final String annotationKey =
+        annotationFile.getName() + " " + getGenomicType();
 
     // Get expression temporary file
     final File expressionTmpFile =
@@ -71,12 +70,13 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
     try {
 
-      epmr =
-          new ExpressionPseudoMapReduce(annotationFile.open(),
-              getAnnotationKey(), genomeDescFile.open(), counterGroup);
+      if (!annotationKey.equals(lastAnnotationKey)) {
+        epmr =
+            new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
+                genomeDescFile.open(), counterGroup);
+        lastAnnotationKey = annotationKey;
+      }
 
-      LOGGER.info("getTempDirectory() : "+getTempDirectory());
-      
       if (getTempDirectory() != null)
         epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));
       epmr.doMap(alignmentFile);
@@ -87,7 +87,7 @@ public class EoulsanCounter extends AbstractExpressionCounter {
               epmr.getTranscriptAndExonFinder());
 
       fetc.initializeExpressionResults();
-      fetc.loadPreResults(expressionTmpFile, reporter
+      fetc.loadPreResults(expressionTmpFile, epmr.getReporter()
           .getCounterValue(counterGroup, "reads used"));
       fetc.saveFinalResults(expressionFile);
 

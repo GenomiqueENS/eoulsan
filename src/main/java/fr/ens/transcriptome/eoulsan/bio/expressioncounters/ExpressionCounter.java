@@ -47,12 +47,6 @@ public interface ExpressionCounter {
    */
   String getCounterName();
 
-  /**
-   * Get counter version.
-   * @return a string with the version of the counter
-   */
-  String getCounterVersion();
-
   String getStranded();
 
   String getOverlapMode();

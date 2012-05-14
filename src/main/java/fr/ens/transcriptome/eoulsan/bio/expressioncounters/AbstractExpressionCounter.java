@@ -46,7 +46,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private String annotationKey;
+  private String genomicType;
   private String stranded;
   private String overlapMode;
   private Reporter reporter;
@@ -69,17 +69,9 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     return this.tempDir;
   }
   
-  public String getAnnotationKey() {
-    return this.annotationKey;
+  public String getGenomicType() {
+    return this.genomicType;
   }
-
-  // public Reporter getReporter() {
-  // return this.reporter;
-  // }
-  //
-  // public String getCounterGroup() {
-  // return this.counterGroup;
-  // }
 
   //
   // Setters
@@ -121,17 +113,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     checkNotNull(expressionFile, "expressionFile is null");
     checkExistingStandardFile(alignmentFile,
         "alignmentFile not exits or is not a standard file.");
-    // checkExistingStandardFile(annotationFile,
-    // "The archive index file not exits or is not a standard file.");
 
     // Process to counting
     internalCount(alignmentFile, annotationFile, expressionFile,
         genomeDescFile, this.reporter, this.counterGroup);
   }
 
-  // protected abstract void internalCount(final File alignmentFile,
-  // final DataFile annotationFile, final File expressionFile,
-  // Reporter reporter, String counterGroup) throws IOException;
   protected abstract void internalCount(final File alignmentFile,
       final DataFile annotationFile, final File expressionFile,
       final DataFile genomeDescFile, Reporter reporter, String counterGroup)
@@ -147,13 +134,13 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
    * @param counterGroup counter name group
    */
   @Override
-  public void init(final String annotationKey, final Reporter reporter,
+  public void init(final String genomicType, final Reporter reporter,
       final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
-    this.annotationKey = annotationKey;
+    this.genomicType = genomicType;
     this.reporter = reporter;
     this.counterGroup = counterGroup;
   }

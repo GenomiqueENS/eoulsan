@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -188,10 +189,11 @@ public class GenomicArray<T> {
   }
 
   /**
-   * This class define an object that contains all the zones of a chromosome.
+   * This class define an object that contains all the stranded zones of a
+   * chromosome.
    * @author Laurent Jourdren
    */
-  private static final class ChromosomeZones<T> implements Serializable {
+  private static final class ChromosomeStrandedZones<T> implements Serializable {
 
     private final String chromosomeName;
     private int length = 0;
@@ -264,6 +266,44 @@ public class GenomicArray<T> {
       }
     }
 
+    // private int findIndexPos(final int pos, final char strand,
+    // final String stranded) {
+    //
+    // if (pos < 1 || pos > this.length)
+    // return -1;
+    //
+    // int minIndex = 0;
+    // int maxIndex = zones.size() - 1;
+    // int index = 0;
+    //
+    // while (true) {
+    //
+    // final int diff = maxIndex - minIndex;
+    // index = minIndex + diff / 2;
+    //
+    // if (diff == 1) {
+    //
+    // if (get(minIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
+    // return minIndex;
+    // if (get(maxIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
+    // return maxIndex;
+    //
+    // assert (false);
+    // }
+    //
+    // final Zone<T> z = get(index);
+    //
+    // final int comp = z.compareTo(pos);
+    // if (comp == 0 && z.strand == strand)
+    // return index;
+    //
+    // if (comp < 0)
+    // maxIndex = index;
+    // else
+    // minIndex = index;
+    // }
+    // }
+
     /**
      * Split a zone in two zone.
      * @param zone zone to split
@@ -301,13 +341,7 @@ public class GenomicArray<T> {
 
       final Zone<T> z1 = get(indexStart);
       final Zone<T> z1b;
-      final int count1b, count2;
-
-//      if (value.toString().equals("exon:ENSMUST00000121430:1")) {
-//        System.out.println("... addEntry ...\t"
-//            + intervalStart + "\t" + intervalEnd);
-//        System.out.println("z1 : " + z1.start + "\t" + z1.end);
-//      }
+      final int count1b;
 
       if (z1.start == intervalStart) {
         z1b = z1;
@@ -339,62 +373,103 @@ public class GenomicArray<T> {
 
         final Zone<T> z2 = get(indexEnd);
         final Zone<T> z2b;
-        
-//        if (value.toString().equals("exon:ENSMUST00000121430:1"))
-//          System.out.println("z2 : "+z2.start+"\t"+z2.end);
 
         if (z2.end != intervalEnd) {
           z2b = splitZone(z2, intervalEnd + 1);
-//          if (value.toString().equals("exon:ENSMUST00000121430:1")) {
-//            System.out.println("z2b : "+z2b.start+"\t"+z2b.end);
-//            System.out.println("z2 : "+z2.start+"\t"+z2.end);
-//          }
         } else
           z2b = z2;
 
         if (z1 != z1b) {
-          
           add(indexStart + 1, z1b);
-          
-//          if (z1b.end + 1 != z2.start) {
-////            final Zone<T> z3 = new Zone<T>(z1b.end + 1, z2.start -1, interval.getStrand());
-//            add(indexStart + 1 + count1b, new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand()));
-//            count2 = count1b + 1;
-////            if (value.toString().equals("exon:ENSMUST00000121430:1"))
-////              System.out.println("z3 : "+(z3.start)+"\t"+(z3.end));
-//          }
-//          else
-//            count2 = count1b;
         }
-//        else {
-//          if (z1.end + 1 != z2.start) {
-////            final Zone<T> z3 = new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand());
-//            add(indexStart + 1 + count1b, new Zone<T>(z1.end + 1, z2.start -1, interval.getStrand()));
-//            count2 = count1b + 1;
-////            if (value.toString().equals("exon:ENSMUST00000121430:1"))
-////              System.out.println("z3 : "+(z3.start)+"\t"+(z3.end));
-//          }
-//          else
-//            count2 = count1b;
-//        }
-        
+
         if (z2 != z2b)
           add(indexEnd + 1 + count1b, z2b);
-        
-//        if (value.toString().equals("exon:ENSMUST00000121430:1")) {
-//          System.out.println("indexStart : "+indexStart);
-//          System.out.println("indexEnd : "+indexEnd);
-//          System.out.println("count1b : "+count1b);
-//          System.out.println("count2 : "+count2);
-//        }
 
         for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
           get(i).addExon(value);
-//          if (value.toString().equals("exon:ENSMUST00000121430:1"))
-//            System.out.println(i+"\t"+get(i).start+"\t"+get(i).end);
         }
       }
     }
+
+    // public void addEntry(final GenomicInterval interval, final T value,
+    // final String stranded) {
+    //
+    // final int intervalStart = interval.getStart();
+    // final int intervalEnd = interval.getEnd();
+    // final char intervalStrand = interval.getStrand();
+    //
+    // // Create an empty zone if the interval is after the end of the
+    // // last chromosome zone
+    // if (interval.getEnd() > this.length) {
+    // add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
+    // this.length = intervalEnd;
+    // }
+    //
+    // final int indexStart;
+    // final int indexEnd;
+    //
+    // if (stranded.equals("no")) {
+    // indexStart = findIndexPos(intervalStart);
+    // indexEnd = findIndexPos(intervalEnd);
+    // } else {
+    // indexStart =
+    // findIndexPos(intervalStart, intervalStrand, stranded);
+    // indexEnd = findIndexPos(intervalEnd, intervalStrand, stranded);
+    // }
+    //
+    // final Zone<T> z1 = get(indexStart);
+    // final Zone<T> z1b;
+    // final int count1b;
+    //
+    // if (z1.start == intervalStart) {
+    // z1b = z1;
+    // count1b = 0;
+    // } else {
+    // z1b = splitZone(z1, intervalStart);
+    // count1b = 1;
+    // }
+    //
+    // // Same index
+    // if (indexStart == indexEnd) {
+    //
+    // if (z1b.end == intervalEnd) {
+    // z1b.addExon(value);
+    // } else {
+    //
+    // final Zone<T> z1c = splitZone(z1b, intervalEnd + 1);
+    // add(indexStart + 1, z1c);
+    // }
+    //
+    // if (z1 != z1b) {
+    // z1b.addExon(value);
+    // add(indexStart + 1, z1b);
+    //
+    // } else
+    // z1.addExon(value);
+    //
+    // } else {
+    //
+    // final Zone<T> z2 = get(indexEnd);
+    // final Zone<T> z2b;
+    //
+    // if (z2.end != intervalEnd) {
+    // z2b = splitZone(z2, intervalEnd + 1);
+    // } else
+    // z2b = z2;
+    //
+    // if (z1 != z1b) {
+    // add(indexStart + 1, z1b);
+    // }
+    //
+    // if (z2 != z2b)
+    // add(indexEnd + 1 + count1b, z2b);
+    //
+    // for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
+    // get(i).addExon(value);
+    // }
+    // }
+    // }
 
     /**
      * Get entries.
@@ -422,12 +497,19 @@ public class GenomicArray<T> {
         if (r != null) {
 
           for (T e : r)
-            
+
             // Really needed ?
             if (intersect(start, stop, zone.start, zone.end)) {
-              
+
               if (result == null)
                 result = Utils.newHashMap();
+
+              // if (chromosomeName.equals("chr2")) {
+              // System.out.println(e);
+              // System.out.println("zone.start : " + zone.start);
+              // System.out.println("zone.end : " + zone.end);
+              // System.out.println("zone.strand : " + zone.strand);
+              // }
 
               result.put(new GenomicInterval(this.chromosomeName, zone.start,
                   zone.end, zone.strand), e);
@@ -463,9 +545,69 @@ public class GenomicArray<T> {
      * Public constructor.
      * @param chromosomeName name of the chromosome
      */
-    public ChromosomeZones(final String chromosomeName) {
+    public ChromosomeStrandedZones(final String chromosomeName) {
 
       this.chromosomeName = chromosomeName;
+    }
+  }
+
+  /**
+   * This class define an object that contains all the zones of a chromosome.
+   * These zones are stranded if "yes" or "reverse". 
+   * @author Claire Wallon
+   */
+  private static final class ChromosomeZones<T> implements Serializable {
+
+    private ChromosomeStrandedZones<T> plus;
+    private ChromosomeStrandedZones<T> minus;
+
+    /**
+     * Add a stranded entry.
+     * @param interval interval of the entry
+     * @param value value to add
+     */
+    public void addEntry(final GenomicInterval interval, final T value) {
+
+      if (interval.getStrand() == '+' || interval.getStrand() == '.')
+        plus.addEntry(interval, value);
+      else if (interval.getStrand() == '-')
+        minus.addEntry(interval, value);
+    }
+
+    /**
+     * Get stranded entries.
+     * @param start start of the interval
+     * @param stop end of the interval
+     * @return a map with the values
+     */
+    public Map<GenomicInterval, T> getEntries(final int start, final int stop) {
+
+      Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
+      Map<GenomicInterval, T> inter = new HashMap<GenomicInterval, T>();
+
+      inter = plus.getEntries(start, stop);
+      if (inter != null)
+        result.putAll(inter);
+      inter = minus.getEntries(start, stop);
+      if (inter != null)
+        result.putAll(inter);
+
+      return result;
+
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Public constructor.
+     * @param chromosomeName name of the chromosome
+     */
+    public ChromosomeZones(final String chromosomeName) {
+
+      this.plus = new ChromosomeStrandedZones<T>(chromosomeName);
+      this.minus = new ChromosomeStrandedZones<T>(chromosomeName);
     }
   }
 

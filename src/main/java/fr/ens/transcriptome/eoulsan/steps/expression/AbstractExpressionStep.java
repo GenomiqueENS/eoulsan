@@ -171,7 +171,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
           + getName() + " step.");
 
     if (counterName == null)
-      throw new EoulsanException("No counter set.");
+      counterName = "eoulsanCounter";
 
     this.counter =
         ExpressionCounterService.getInstance().getCounter(counterName);
@@ -185,8 +185,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     // Log Step parameters
     LOGGER.info("In "
-        + getName() + ", counter=" + this.counter.getCounterName()
-        + " (version: " + counter.getCounterVersion() + ")");
+        + getName() + ", counter=" + this.counter.getCounterName());
     LOGGER.info("In "
         + getName() + ", stranded=" + this.stranded + ", overlapmode="
         + this.overlapmode);

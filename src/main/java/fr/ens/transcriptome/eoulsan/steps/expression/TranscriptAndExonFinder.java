@@ -784,7 +784,6 @@ public class TranscriptAndExonFinder {
 
     int count = 0;
 
-    // while (reader.readEntry()) {
     for (final GFFEntry e : reader) {
 
       count++;
