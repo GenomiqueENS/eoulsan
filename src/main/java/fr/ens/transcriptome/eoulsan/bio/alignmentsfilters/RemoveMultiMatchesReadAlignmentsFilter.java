@@ -25,9 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.List;
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.Globals;
 
 import net.sf.samtools.SAMRecord;
 
@@ -36,6 +33,7 @@ import net.sf.samtools.SAMRecord;
  * alignments for a read.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class RemoveMultiMatchesReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {

@@ -53,6 +53,8 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 public class AnnotationChecker implements Checker {
 
   private String genomicType;
+  private String stranded;
+  private String overlapmode;
 
   @Override
   public String getName() {
@@ -62,11 +64,20 @@ public class AnnotationChecker implements Checker {
 
   @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+    
+    String counterName = null;
+    
     for (Parameter p : stepParameters) {
 
       if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
           .equals(p.getName()))
         this.genomicType = p.getStringValue();
+      else if ("counter".equals(p.getName()))
+        counterName = p.getStringValue();
+      else if ("stranded".equals(p.getName()))
+        this.stranded = p.getStringValue();
+      else if ("overlapmode".equals(p.getName()))
+        this.overlapmode = p.getStringValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());

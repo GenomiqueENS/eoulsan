@@ -25,9 +25,13 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -38,8 +42,12 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
  * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
+ * @author Claire Wallon
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
 
@@ -51,6 +59,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private String genomicType = DEFAULT_GENOMIC_TYPE;
   private String tmpDir;
 
+  private ExpressionCounter counter;
+  private String stranded = "no";
+  private String overlapmode = "union";
+
   //
   // Getters
   //
@@ -61,6 +73,40 @@ public abstract class AbstractExpressionStep extends AbstractStep {
    */
   protected String getGenomicType() {
     return genomicType;
+  }
+
+  /**
+   * Get the name of the counter to use.
+   * @return Returns the counterName
+   */
+  protected String getCounterName() {
+    return this.counter.getCounterName();
+  }
+
+  /**
+   * Get the arguments of the counter to use.
+   * @return Returns the counterArguments
+   */
+//  protected String getCounterArguments() {
+//    // return this.counterArguments;
+//    return null;
+//  }
+  
+  protected String getStranded() {
+    return this.stranded;
+  }
+  
+  protected String getOverlapMode() {
+    return this.overlapmode;
+  }
+
+  /**
+   * Get the counter object.
+   * @return the counter object
+   */
+  protected ExpressionCounter getCounter() {
+
+    return this.counter;
   }
 
   /**
@@ -84,7 +130,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   @Override
   public String getDescription() {
 
-    return "This class compute the expression.";
+    return "This step compute the expression.";
   }
 
   @Override
@@ -101,11 +147,19 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
+    
+    String counterName = null;
 
     for (Parameter p : stepParameters) {
 
       if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
         this.genomicType = p.getStringValue();
+      else if ("counter".equals(p.getName()))
+        counterName = p.getStringValue();
+      else if ("stranded".equals(p.getName()))
+        this.stranded = p.getStringValue();
+      else if ("overlapmode".equals(p.getName()))
+        this.overlapmode = p.getStringValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
@@ -116,8 +170,24 @@ public abstract class AbstractExpressionStep extends AbstractStep {
       throw new EoulsanException("Parent type in no set for "
           + getName() + " step.");
 
+    if (counterName == null)
+      counterName = "eoulsanCounter";
+
+    this.counter =
+        ExpressionCounterService.getInstance().getCounter(counterName);
+
+    if (this.counter == null) {
+      throw new EoulsanException("Unknown counter: " + counterName);
+    }
+
     // Set temporary directory
     this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();
-  }
 
+    // Log Step parameters
+    LOGGER.info("In "
+        + getName() + ", counter=" + this.counter.getCounterName());
+    LOGGER.info("In "
+        + getName() + ", stranded=" + this.stranded + ", overlapmode="
+        + this.overlapmode);
+  }
 }

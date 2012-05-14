@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * alignments filters.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 

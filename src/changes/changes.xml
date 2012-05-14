@@ -47,7 +47,7 @@
                 Fix FASTQ parsing in local mode.
             </action>
             <action dev="jourdren" type="fix">
-                Fix trim sequence when sequence comtains only 'N' nucleotides.
+                Fix trim sequence when sequence contains only 'N' nucleotides.
             </action>
         </release>
         
@@ -320,7 +320,25 @@ unique alignment but the next alignment to proceed.
 of reads that reject each filter like in local mode.
             </action>
          </release>
-	         
+
+         <release version="1.2" description="Eoulsan 1.2" date="TBD">
+         
+            <action dev="wallon" type="add">
+                Add the paired-end mode in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="add">
+                Add the mapping quality score filter in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="update">
+                Update documentation. 
+            </action>
+            <action dev="wallon" type="add">
+                The expression estimation step is now modular. 
+            </action>
+            <action dev="wallon" type="add">
+                Add the HTSeq-count program for the expression estimation step.
+            </action>
+         </release>
 		
 	</body>
 </document>

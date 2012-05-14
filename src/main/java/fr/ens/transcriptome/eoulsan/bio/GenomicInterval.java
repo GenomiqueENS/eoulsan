@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * This class define a genomic interval.
  * @since 1.2
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class GenomicInterval implements Serializable,
     Comparable<GenomicInterval> {
@@ -103,10 +104,10 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Test if a sequence is in the genomic interval.
+   * Test if a sequence and the genomic interval have an intersection.
    * @param start start position of the sequence
    * @param end end position of the sequence
-   * @return true if the sequence is in the genomic interval
+   * @return true if the sequence and the genomic interval have an intersection
    */
   public final boolean intersect(final int start, final int end) {
 
@@ -114,6 +115,17 @@ public class GenomicInterval implements Serializable,
         || (end >= this.start && end <= this.end)
         || (start < this.start && end > this.end);
   }
+
+  // /**
+  // *
+  // * @param start
+  // * @param end
+  // * @return
+  // */
+  // public final boolean equals(final int start, final int end) {
+  //
+  // return (start == this.start && end == this.end);
+  // }
 
   @Override
   public int compareTo(final GenomicInterval e) {
@@ -162,7 +174,7 @@ public class GenomicInterval implements Serializable,
   }
 
   /**
-   * Overide toString()
+   * Override toString()
    * @return a String with the start and end position of the ORF
    */
   @Override
@@ -178,28 +190,29 @@ public class GenomicInterval implements Serializable,
 
   /**
    * Public constructor.
+   * @param chromosome Chromosome of the genomic interval
    * @param start Start position of the genomic interval
    * @param end End position of the genomic interval
    * @param strand the strand of the genomic interval
    */
-  public GenomicInterval(final String chromosone, final int start,
+  public GenomicInterval(final String chromosome, final int start,
       final int end, final char strand) {
 
-    if (chromosone == null)
+    if (chromosome == null)
       throw new NullPointerException("The chromosome value is null");
 
     if (start < 1)
-      throw new IllegalArgumentException("Start position is lower that 1: "
+      throw new IllegalArgumentException("Start position is lower than 1: "
           + start);
 
     if (end < start)
-      throw new IllegalArgumentException("End position is greater that end: "
+      throw new IllegalArgumentException("Start position is greater than end: "
           + end);
 
     if (strand != '+' && strand != '-' && strand != '.')
       throw new IllegalArgumentException("Invalid strand value: " + strand);
 
-    this.chromosome = chromosone;
+    this.chromosome = chromosome;
     this.start = start;
     this.end = end;
     this.strand = strand;
@@ -211,18 +224,18 @@ public class GenomicInterval implements Serializable,
    */
   public GenomicInterval(final GFFEntry gffEntry) {
 
-    this(gffEntry, true);
+    this(gffEntry, "yes");
   }
 
   /**
    * Public constructor
    * @param gffEntry GFF entry
-   * @param stranded save the strand information if true
+   * @param stranded save the strand information if "true" or "reverse"
    */
-  public GenomicInterval(final GFFEntry gffEntry, final boolean stranded) {
+  public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
 
     this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
-        ? gffEntry.getStrand() : '.');
+        .equals("yes") || stranded.equals("reverse") ? gffEntry.getStrand() : '.');
   }
 
 }

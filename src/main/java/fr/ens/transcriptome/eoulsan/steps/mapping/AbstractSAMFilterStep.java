@@ -37,9 +37,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -49,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * This class define an abstract step for alignments filtering.
  * @since 1.0
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public abstract class AbstractSAMFilterStep extends AbstractStep {
 
@@ -59,7 +57,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
   protected static final String COUNTER_GROUP = "sam_filtering";
-  
+
   private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
 
   private int mappingQualityThreshold = -1;
@@ -70,12 +68,10 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   /**
    * Get the mapping quality threshold.
-   * @return the quality mapping threshold
-   * 
-   * !!!!!!!!!!!! Problem for the class SAMFilterHadoopStep.java : 
-   * mappingQualityThreshold is no longer used here 
-   * (getMappingQualityThreshold() called in this class) (cf. comments in
-   * configure())
+   * @return the quality mapping threshold !!!!!!!!!!!! Problem for the class
+   *         SAMFilterHadoopStep.java : mappingQualityThreshold is no longer
+   *         used here (getMappingQualityThreshold() called in this class) (cf.
+   *         comments in configure())
    */
   protected int getMappingQualityThreshold() {
 
@@ -111,54 +107,28 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
-    
-    final MultiReadAlignmentsFilterBuilder mrafb = 
+
+    final MultiReadAlignmentsFilterBuilder mrafb =
         new MultiReadAlignmentsFilterBuilder();
-    
+
     for (Parameter p : stepParameters) {
-      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()), 
+      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
           p.getStringValue());
     }
-    
+
     // Force parameter checking
     mrafb.getAlignmentsFilter();
-    
+
     this.readAlignmentsFilterBuilder = mrafb;
-
-    /*for (Parameter p : stepParameters) {
-
-      if ("mappingqualitythreshold".equals(p.getName()))
-        mappingQualityThreshold = p.getIntValue();
-
-      else
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
-
-    }
-
-    if (this.mappingQualityThreshold == -1) {
-      throw new EoulsanException("Mapping quality theshold not set.");
-    }
-
-    if (this.mappingQualityThreshold < 0
-        || this.mappingQualityThreshold > MAX_MAPPING_QUALITY_THRESHOLD) {
-      throw new EoulsanException("Invalid mapping quality theshold: "
-          + this.mappingQualityThreshold);
-    }*/
-
-    // Log Step parameters
-//    LOGGER.info("In "
-//        + getName() + ", mappingQualityThreshold="
-//        + this.mappingQualityThreshold);
   }
-  
+
   /**
    * Convert old key names to new names
    * @param key key to convert
    * @return the new key name if necessary
    */
   static String convertCompatibilityFilterKey(final String key) {
-    
+
     if (key == null)
       return null;
 
@@ -167,7 +137,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     return key;
   }
-  
+
   /**
    * Get the ReadAlignmentsFilter object.
    * @param incrementer incrementer to use
@@ -176,10 +146,12 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected ReadAlignmentsFilter getAlignmentsFilter(final ReporterIncrementer incrementer,
-      final String counterGroup) throws EoulsanException {
+  protected ReadAlignmentsFilter getAlignmentsFilter(
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws EoulsanException {
 
-    return this.readAlignmentsFilterBuilder.getAlignmentsFilter(incrementer, counterGroup);
+    return this.readAlignmentsFilterBuilder.getAlignmentsFilter(incrementer,
+        counterGroup);
   }
 
   /**

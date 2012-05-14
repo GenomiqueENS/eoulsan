@@ -35,6 +35,7 @@ import net.sf.samtools.SAMRecord;
  * alignment data where all the alignments for a read name are in straight.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class ReadAlignmentsFilterBuffer {
   

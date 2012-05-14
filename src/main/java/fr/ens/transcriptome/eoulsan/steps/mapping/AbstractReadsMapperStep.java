@@ -70,16 +70,16 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   /**
-   * Get the name of the mapper to use.
-   * @return Returns the mapperName
+   * Get the arguments of the mapper to use.
+   * @return Returns the mapperArguments
    */
   protected String getMapperArguments() {
     return this.mapperArguments;
   }
 
   /**
-   * Get the name of the mapper to use.
-   * @return Returns the mapperName
+   * Get the number of threads to use.
+   * @return Returns the mapperThreads
    */
   protected int getMapperThreads() {
     return this.mapperThreads;

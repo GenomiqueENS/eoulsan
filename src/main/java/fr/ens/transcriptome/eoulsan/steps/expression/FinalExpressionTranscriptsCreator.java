@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
 
@@ -52,6 +53,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
+  
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset
@@ -230,7 +233,7 @@ public class FinalExpressionTranscriptsCreator {
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
-
+    
     final List<ExpressionTranscript> list =
         new ArrayList<ExpressionTranscript>(this.expressionResults.values());
 

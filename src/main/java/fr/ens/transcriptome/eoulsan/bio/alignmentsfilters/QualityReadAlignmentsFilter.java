@@ -36,14 +36,14 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   
-  public static final String FILTER_NAME = "mappingQuality";
+  public static final String FILTER_NAME = "mappingquality";
   private int qualityThreshold = -1;
   
   private final List<SAMRecord> result = new ArrayList<SAMRecord>();
   
   @Override
   public String getName() {
-    return "mappingQuality";
+    return "mappingquality";
   }
 
   @Override
