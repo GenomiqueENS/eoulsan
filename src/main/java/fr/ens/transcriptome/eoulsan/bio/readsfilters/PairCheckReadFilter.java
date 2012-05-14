@@ -99,5 +99,11 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   public void setParameter(String key, String value) {
     // this filter has no parameter
   }
+  
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{}";
+  }
 
 }

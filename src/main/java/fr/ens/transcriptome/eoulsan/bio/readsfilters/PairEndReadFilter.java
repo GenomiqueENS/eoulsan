@@ -86,6 +86,14 @@ public class PairEndReadFilter implements ReadFilter {
   public void init() {
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{acceptSingleEnd=" + this.acceptSingleEnd + ", acceptPairEnd="
+        + acceptPairEnd + "}";
+  }
+
   //
   // Constructor
   //
