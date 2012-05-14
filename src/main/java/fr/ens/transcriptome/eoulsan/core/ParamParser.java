@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -201,7 +201,7 @@ public class ParamParser {
   private Set<Parameter> parseParameters(final Element root,
       String elementName, final String stepName) throws EoulsanException {
 
-    final Set<Parameter> result = new HashSet<Parameter>();
+    final Set<Parameter> result = new LinkedHashSet<Parameter>();
 
     final NodeList nList = root.getElementsByTagName(elementName);
 
