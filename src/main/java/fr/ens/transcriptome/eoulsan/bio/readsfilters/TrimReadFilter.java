@@ -127,6 +127,13 @@ public class TrimReadFilter extends AbstractReadFilter {
           + getName() + " read filter.");
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{lengthThreshold=" + this.lengthThreshold + "}";
+  }
+
   //
   // Constructor
   //

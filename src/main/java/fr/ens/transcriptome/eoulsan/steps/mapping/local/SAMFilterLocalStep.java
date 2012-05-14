@@ -73,7 +73,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    */
   @Override
   public StepResult execute(final Design design, final Context context) {
-    
+
     final GenomeDescription genomeDescription;
 
     // Load genome description object
@@ -94,9 +94,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       return new StepResult(context, e, "error while filtering: "
           + e.getMessage());
     }
-    
+
     // Get threshold
-    //final int mappingQualityThreshold = getMappingQualityThreshold();
+    // final int mappingQualityThreshold = getMappingQualityThreshold();
 
     // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design,
@@ -105,38 +105,39 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
           @Override
           public String processSample(Context context, Sample sample)
               throws ProcessSampleException {
-            
+
             // Define Result
             String resultString = null;
-            
+
             // Create the reporter
             final Reporter reporter = new Reporter();
 
             try {
-              
+
               // Create parser object
               final SAMParser parser = new SAMParser();
               parser.setGenomeDescription(genomeDescription);
 
               // Get the read filter
-              final ReadAlignmentsFilter filter = 
+              final ReadAlignmentsFilter filter =
                   getAlignmentsFilter(reporter, COUNTER_GROUP);
 
-              resultString = filterSample(context, sample, reporter, 
-                  parser, filter);
-                
+              resultString =
+                  filterSample(context, sample, reporter, parser, filter);
+
             } catch (IOException e) {
               throwException(e, "Error while filtering: " + e.getMessage());
             } catch (EoulsanException e) {
-              throwException(e, "Error while initializing filter: " + e.getMessage());
+              throwException(e,
+                  "Error while initializing filter: " + e.getMessage());
             }
-            
+
             return resultString;
           }
 
         });
   }
-  
+
   /**
    * Filter a sample data in single-end mode and in paired-end mode.
    * @param context Eoulsan context
@@ -148,26 +149,27 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static String filterSample(final Context context, final Sample sample,
-    final Reporter reporter, final SAMParser parser, 
-    final ReadAlignmentsFilter filter) throws IOException {
-    
- // Get the source
-  final DataFile inFile =
-      context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample);
+  private static String filterSample(final Context context,
+      final Sample sample, final Reporter reporter, final SAMParser parser,
+      final ReadAlignmentsFilter filter) throws IOException {
 
-  // Get the dest
-  final DataFile outFile =
-      context.getOutputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample);
-  
-  // filter alignments in single-end mode or in paired-end mode
-  filterFile(inFile, outFile, reporter, filter);
-  
-  // Add counters for this sample to log file
-  return reporter.countersValuesToString(COUNTER_GROUP, "Filter SAM file ("
-      + sample.getName() + ", " + inFile + ")");
+    // Get the source
+    final DataFile inFile =
+        context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample);
+
+    // Get the dest
+    final DataFile outFile =
+        context.getOutputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+            sample);
+
+    // filter alignments in single-end mode or in paired-end mode
+    filterFile(inFile, outFile, reporter, filter);
+
+    // Add counters for this sample to log file
+    return reporter.countersValuesToString(COUNTER_GROUP, "Filter SAM file ("
+        + sample.getName() + ", " + inFile + ")");
   }
-  
+
   /**
    * Filter a file in single-end mode or paired-end mode.
    * @param inFile input file
@@ -178,92 +180,91 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final ReadAlignmentsFilter filter) 
-          throws IOException {
-    
+      final Reporter reporter, final ReadAlignmentsFilter filter)
+      throws IOException {
+
     final List<SAMRecord> records = new ArrayList<SAMRecord>();
     int counterInput = 0;
     int counterOutput = 0;
     int counterInvalid = 0;
     boolean pairedEnd = false;
-    
-    // Creation of a buffer object to store alignments with the same read name 
-    final ReadAlignmentsFilterBuffer rafb = 
+
+    // Creation of a buffer object to store alignments with the same read name
+    final ReadAlignmentsFilterBuffer rafb =
         new ReadAlignmentsFilterBuffer(filter);
-    
+
     LOGGER.info("Filter SAM file: " + inFile);
-    
+
     // Get reader
-    final SAMFileReader inputSam =
-        new SAMFileReader(inFile.open());
+    final SAMFileReader inputSam = new SAMFileReader(inFile.open());
 
     // Get Writer
-    final SAMFileWriter outputSam =
-        new SAMFileWriterFactory().makeSAMWriter(
-            inputSam.getFileHeader(), false, outFile.create());
-    
+    final SAMFileWriter outputSam = new SAMFileWriterFactory().makeSAMWriter(
+
+    inputSam.getFileHeader(), false, outFile.create());
+
     try {
-      
+
       for (SAMRecord samRecord : inputSam) {
-        
+
         // single-end or paired-end mode ?
         if (counterInput == 0) {
           if (samRecord.getReadPairedFlag())
             pairedEnd = true;
         }
-        
+
         counterInput++;
-        
+
         if (!rafb.addAlignment(samRecord)) {
-          
+
           records.clear();
           records.addAll(rafb.getFilteredAlignments());
-          
+
           // writing records
           for (SAMRecord r : records) {
             outputSam.addAlignment(r);
             counterOutput++;
           }
-          
+
           rafb.addAlignment(samRecord);
         }
-        
+
       }
-      
+
       // treatment of the last record
       records.clear();
       records.addAll(rafb.getFilteredAlignments());
-      
+
       // writing records
       for (SAMRecord r : records) {
         outputSam.addAlignment(r);
         counterOutput++;
       }
-      
+
     } catch (SAMFormatException e) {
       counterInvalid++;
     }
-    
+
     // paired-end mode
     if (pairedEnd) {
-      reporter.incrCounter(COUNTER_GROUP, 
-          INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput/2);
-      reporter.incrCounter(COUNTER_GROUP, 
-          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput/2);
-      reporter.incrCounter(COUNTER_GROUP, 
-          ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid/2);
+      reporter.incrCounter(COUNTER_GROUP,
+          INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput / 2);
+      reporter.incrCounter(COUNTER_GROUP,
+          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput / 2);
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid / 2);
     }
-    
+
     // single-end mode
     else {
-      reporter.incrCounter(COUNTER_GROUP, 
+      reporter.incrCounter(COUNTER_GROUP,
           INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput);
-      reporter.incrCounter(COUNTER_GROUP, 
+      reporter.incrCounter(COUNTER_GROUP,
           OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput);
-      reporter.incrCounter(COUNTER_GROUP, 
+      reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid);
     }
-    
+
     // Close files
     inputSam.close();
     outputSam.close();

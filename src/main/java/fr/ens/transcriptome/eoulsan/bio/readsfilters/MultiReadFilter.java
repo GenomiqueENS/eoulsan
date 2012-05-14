@@ -117,6 +117,12 @@ public class MultiReadFilter implements ReadFilter {
   public void init() {
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{list=" + this.list + "}";
+  }
+
   //
   // Constructors
   //

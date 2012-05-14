@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
 
 /**
  * This class define a read filter mapper.
@@ -92,7 +93,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
-    
+
     // Initialize Eoulsan Settings
     if (!EoulsanRuntime.isRuntime()) {
       HadoopEoulsanRuntime.newEoulsanRuntime(conf);
@@ -126,7 +127,9 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
         }
       }
 
-      filter = mrfb.getReadFilter();
+      this.filter =
+          mrfb.getReadFilter(new HadoopReporter(context), this.counterGroup);
+
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());
     }
