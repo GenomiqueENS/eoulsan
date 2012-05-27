@@ -1,44 +1,44 @@
-///*
-// *                  Eoulsan development code
-// *
-// * This code may be freely distributed and modified under the
-// * terms of the GNU Lesser General Public License version 2.1 or
-// * later and CeCILL-C. This should be distributed with the code.
-// * If you do not have a copy, see:
-// *
-// *      http://www.gnu.org/licenses/lgpl-2.1.txt
-// *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
-// *
-// * Copyright for this code is held jointly by the Genomic platform
-// * of the Institut de Biologie de l'École Normale Supérieure and
-// * the individual authors. These should be listed in @author doc
-// * comments.
-// *
-// * For more information on the Eoulsan project and its aims,
-// * or to join the Eoulsan Google group, visit the home page
-// * at:
-// *
-// *      http://www.transcriptome.ens.fr/eoulsan
-// *
-// */
-//
-//package fr.ens.transcriptome.eoulsan.bio;
-//
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertFalse;
-//import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.assertNull;
-//import static org.junit.Assert.assertTrue;
-//import static org.junit.Assert.fail;
-//
-//import org.junit.Before;
-//import org.junit.Test;
-//
-///**
-// * @author Claire Wallon
-// */
-//public class GenomicIntervalTest {
-//
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
+package fr.ens.transcriptome.eoulsan.bio;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author Claire Wallon
+ */
+public class GenomicIntervalTest {
+
 //  String gffStr = "chr18\tprotein_coding\texon\t32322743\t32323204\t.\t+\t."
 //      + "\tID=exon:ENSMUST00000025242:1; PARENT=ENSMUST00000025242;";
 //  GFFEntry gffEnt = new GFFEntry();
@@ -286,5 +286,5 @@
 //    assertEquals(32323204, tok2.getEnd());
 //    assertEquals('.', tok2.getStrand());
 //  }
-//
-//}
+
+}
