@@ -32,6 +32,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 public enum MappingCounters {
 
   INPUT_RAW_READS_COUNTER("input raw reads"), 
+  OUTPUT_PRETREATMENT_READS_COUNTER("output pretreatment reads"),
   OUTPUT_FILTERED_READS_COUNTER("output accepted reads"), 
   READS_REJECTED_BY_FILTERS_COUNTER("reads rejected by filters"), 
   INPUT_MAPPING_READS_COUNTER("input mapping reads"), 

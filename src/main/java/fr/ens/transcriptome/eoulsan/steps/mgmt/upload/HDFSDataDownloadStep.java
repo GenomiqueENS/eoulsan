@@ -246,6 +246,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return;
     }
 
+    /*
     final DataFile inFile = context.getOtherDataFile(df, sample);
 
     if (!inFile.exists()) {
@@ -257,6 +258,31 @@ public class HDFSDataDownloadStep extends AbstractStep {
             + CompressionType.BZIP2.getExtension());
 
     files.put(inFile, outFile);
+    */
+
+    if (df.getMaxFilesCount() > 1) {
+
+      int i = 0;
+      DataFile f = null;
+
+      while ((f = context.getOtherDataFile(df, sample, i)).exists()) {
+
+        files.put(f,
+            new DataFile(f.getName() + CompressionType.BZIP2.getExtension()));
+        i++;
+      }
+
+    } else {
+
+      final DataFile inFile = context.getOtherDataFile(df, sample);
+
+      if (!inFile.exists()) {
+        return;
+      }
+
+      files.put(inFile, new DataFile(outputDir, inFile.getName()
+          + CompressionType.BZIP2.getExtension()));
+    }
   }
 
   /**

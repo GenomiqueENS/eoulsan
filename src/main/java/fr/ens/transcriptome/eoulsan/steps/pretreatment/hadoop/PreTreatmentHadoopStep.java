@@ -22,16 +22,15 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
+package fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -40,6 +39,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -51,44 +51,32 @@ import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 
-/**
- * This class is the main class for the filter reads program in hadoop mode.
- * @since 1.0
- * @author Laurent Jourdren
- */
 @HadoopOnly
-public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
+public class PreTreatmentHadoopStep extends AbstractPreTreatmentStep {
 
-  //
-  // Step methods
-  //
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public String getLogName() {
 
-    return "filterreads";
+    return "paired_end_pretreatment";
   }
 
   @Override
   public DataFormat[] getInputFormats() {
-    // OLD VERSION => TO KEEP
-     return new DataFormat[] {READS_FASTQ, READS_TFQ};
-    
-    // NEW VERSION
-//    return new DataFormat[] {READS_TFQ};
+    return new DataFormat[] {READS_FASTQ, READS_TFQ};
   }
 
-  @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {FILTERED_READS_TFQ};
-  }
+  // @Override
+  // public DataFormat[] getOutputFormats() {
+  // return new DataFormat[] {READS_TFQ};
+  // }
 
   @Override
-  public StepResult execute(Design design, final Context context) {
+  public StepResult execute(Design design, Context context) {
 
     // Create configuration object
     final Configuration conf = new Configuration();// this.conf;
@@ -121,7 +109,6 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       return new StepResult(context, e, "Error while running job: "
           + e.getMessage());
     }
-
   }
 
   /**
@@ -136,56 +123,70 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    // Get input DataFile
-    final DataFile inputDataFile =
-        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ, READS_TFQ},
-            sample);
+    // get input file count for the sample
+    final int inFileCount =
+        context.getDataFileCount(DataFormats.READS_FASTQ, sample);
 
-    if (inputDataFile == null)
+    if (inFileCount < 1)
       throw new IOException("No input file found.");
 
+    if (inFileCount > 2)
+      throw new IOException(
+          "Cannot handle more than 2 reads files at the same time.");
+
+    // Get the source
+    final DataFile inputDataFile1 =
+        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 0);
+    final DataFile inputDataFile2 =
+        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 1);
+
+    // Get input DataFile
+    // final DataFile inputDataFile =
+    // context
+    // .getExistingInputDataFile(new DataFormat[] {READS_FASTQ}, sample);
+    //
+    // if (inputDataFile == null)
+    // throw new IOException("No input file found.");
+
     // Set input path
-    final Path inputPath = new Path(inputDataFile.getSource());
+    final Path inputPath1 = new Path(inputDataFile1.getSource());
+    final Path inputPath2 = new Path(inputDataFile2.getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set fastq format
-    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, sample.getMetadata()
+    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, sample.getMetadata()
         .getFastqFormat().getName());
-
-    // Set read filter parameters
-    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
-
-      jobConf.set(
-          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
 
     // Set Job name
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Filter reads ("
-            + sample.getName() + ", " + inputDataFile.getSource() + ")");
+        new Job(jobConf, "Pretreatment ("
+            + sample.getName() + ", " + inputDataFile1.getSource() + ", "
+            + inputDataFile2.getSource() + ")");
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
 
     // Set the jar
-    job.setJarByClass(ReadsFilterHadoopStep.class);
+    job.setJarByClass(PreTreatmentHadoopStep.class);
 
-    // Set input path
-    FileInputFormat.addInputPath(job, inputPath);
+    // Set input path : paired-end mode so two input files
+    FileInputFormat.addInputPath(job, inputPath1);
+    FileInputFormat.addInputPath(job, inputPath2);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat(DataTypes.READS)))
+    if (READS_FASTQ.equals(inputDataFile1.getDataFormat(DataTypes.READS))
+        && READS_FASTQ.equals(inputDataFile2.getDataFormat(DataTypes.READS)))
       job.setInputFormatClass(FastQFormatNew.class);
+    // job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
-    job.setMapperClass(ReadsFilterMapper.class);
+    job.setMapperClass(PreTreatmentMapper.class);
 
-    // Set the reducer class
-    // job.setMapperClass(ReadsFilterReducer.class);
+    // Set the Reducer class
+    // job.setReducerClass(PreTreatmentReducer.class);
 
     // Set the output key class
     job.setOutputKeyClass(Text.class);
@@ -197,11 +198,12 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(context.getOutputDataFile(DataFormats.FILTERED_READS_TFQ,
-            sample).getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(inputPath2.getParent(),
+        "toto.tfq"));
+    // new Path(context.getOutputDataFile(DataFormats.READS_TFQ, sample)
+    // .getSource()));
 
     return job;
   }
+
 }

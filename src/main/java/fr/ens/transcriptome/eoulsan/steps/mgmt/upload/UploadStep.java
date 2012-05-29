@@ -362,7 +362,7 @@ public abstract class UploadStep extends AbstractStep {
         } else if (nValues > 1) {
 
           for (int i = 0; i < nValues; i++) {
-            final DataFile inFile = new DataFile(oldValues.get(0));
+            final DataFile inFile = new DataFile(oldValues.get(i));
             final DataFormat format = inFile.getDataFormat();
             final DataFile outFile = getUploadedDataFile(inFile, s, format, i);
             filesToCopy.put(inFile, outFile);

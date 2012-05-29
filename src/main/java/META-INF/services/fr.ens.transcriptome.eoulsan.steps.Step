@@ -1,3 +1,6 @@
+# Pretreatment steps (paired-end data)
+fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop.PreTreatmentHadoopStep
+
 # Filter reads steps
 fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsFilterLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
