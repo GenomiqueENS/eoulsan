@@ -33,9 +33,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -58,6 +61,92 @@ public abstract class PseudoMapReduce {
   private File mapOutputFile;
   private File sortOutputFile;
   private Reporter reporter = new Reporter();
+
+  /**
+   * This class avoid storing repeated entries of a list in memory.
+   * @author Laurent Jourdren
+   */
+  private static final class RepeatedEntriesList<E> extends AbstractList<E> {
+
+    private int count;
+    private final Map<E, Integer> map = new LinkedHashMap<E, Integer>();
+
+    @Override
+    public E get(final int index) {
+
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int size() {
+
+      return count;
+    }
+
+    @Override
+    public boolean add(final E e) {
+
+      if (this.map.containsKey(e)) {
+
+        final int count = this.map.get(e);
+        this.map.put(e, count + 1);
+
+        return true;
+      }
+      this.map.put(e, 1);
+
+      return true;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+
+      return new Iterator<E>() {
+
+        private final Iterator<Map.Entry<E, Integer>> it = map.entrySet()
+            .iterator();
+        private E currentValue;
+        private int currentCount;
+
+        @Override
+        public boolean hasNext() {
+
+          return this.it.hasNext() || this.currentCount > 0;
+        }
+
+        @Override
+        public E next() {
+
+          if (this.currentCount == 0) {
+
+            if (!this.it.hasNext())
+              return null;
+
+            final Map.Entry<E, Integer> e = this.it.next();
+            this.currentValue = e.getKey();
+            this.currentCount = e.getValue();
+          }
+
+          this.currentCount--;
+          return this.currentValue;
+        }
+
+        @Override
+        public void remove() {
+
+          throw new UnsupportedOperationException();
+        }
+
+      };
+    }
+
+    @Override
+    public void clear() {
+
+      this.map.clear();
+    }
+
+  }
 
   //
   // Abstract methods
@@ -235,7 +324,7 @@ public abstract class PseudoMapReduce {
 
     String line = null;
     String currentKey = null;
-    final List<String> values = new ArrayList<String>();
+    final List<String> values = new RepeatedEntriesList<String>();
     final List<String> results = new ArrayList<String>();
 
     final StringBuilder sb = new StringBuilder();
