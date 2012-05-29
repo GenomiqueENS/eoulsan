@@ -321,6 +321,14 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 	         
-		
+	     <release version="1.1.4" description="Eoulsan 1.1.4 release" date="2012-05-29">
+		    <action dev="jourdren" type="fix" issue="16">
+                Fix out of memory in expression step in local mode with big sam files. 
+            </action>
+            <action dev="jourdren" type="update">
+                Update documentation: Eoulsan application note is now publish in Bioinformatics. 
+            </action>
+         </release>
+         
 	</body>
 </document>
