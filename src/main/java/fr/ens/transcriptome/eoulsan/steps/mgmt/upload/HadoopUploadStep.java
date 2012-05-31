@@ -81,7 +81,8 @@ public class HadoopUploadStep extends UploadStep {
       filename = file.getName();
     } else {
 
-      final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
+//    	final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
+      final DataFormat format = df;
 
       if (fileIndex == -1 || format.getMaxFilesCount() == 1)
         filename = ContextUtils.getNewDataFilename(format, sample);

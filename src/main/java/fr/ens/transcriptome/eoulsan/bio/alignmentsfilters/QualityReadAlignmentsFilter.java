@@ -32,15 +32,16 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This class define a filter based on the quality of an alignment (SAM format).
+ * @since 1.2
  * @author Claire Wallon
  */
 public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
-  
+
   public static final String FILTER_NAME = "mappingquality";
   private int qualityThreshold = -1;
-  
+
   private final List<SAMRecord> result = new ArrayList<SAMRecord>();
-  
+
   @Override
   public String getName() {
     return "mappingquality";
@@ -48,51 +49,51 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
   @Override
   public String getDescription() {
-    return "Quality score of the alignment filter";
+    return "With this filter, the alignments are filtered by their quality score.";
   }
-  
+
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
-    
+
     if (records == null)
       return;
-    
+
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
       for (SAMRecord r : records) {
-        
+
         // storage in 'result' of records that do not pass the quality filter
         if (r.getMappingQuality() < this.qualityThreshold) {
           this.result.add(r);
         }
       }
     }
-    
+
     // paired-end mode
     else {
-      for (int counterRecord = 0; counterRecord < records.size()-1; 
-          counterRecord+=2) {
+      for (int counterRecord = 0; counterRecord < records.size() - 1; counterRecord +=
+          2) {
 
         // storage in 'result' of records that do not pass the quality filter
         if (records.get(counterRecord).getMappingQuality() < this.qualityThreshold
-            || records.get(counterRecord+1).getMappingQuality() < this.qualityThreshold) {
-          
+            || records.get(counterRecord + 1).getMappingQuality() < this.qualityThreshold) {
+
           // records are stored 2 by 2 because of the paired-end mode
           this.result.add(records.get(counterRecord));
-          this.result.add(records.get(counterRecord+1));
+          this.result.add(records.get(counterRecord + 1));
         }
       }
     }
-    
+
     // all records that do not pass the quality filter are removed
     records.removeAll(result);
     result.clear();
   }
-  
+
   @Override
   public void setParameter(final String key, final String value)
       throws EoulsanException {
-    
+
     if (key == null || value == null)
       return;
 
@@ -112,24 +113,13 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
   }
-  
+
   @Override
   public void init() {
 
     if (this.qualityThreshold < 0.0)
       throw new IllegalArgumentException("Quality threshold is not set for "
           + getName() + " read alignments filter.");
-  }
-  
-  //
-  // Constructor
-  //
-
-  /**
-   * Public constructor.
-   */
-  public QualityReadAlignmentsFilter() {
-    
   }
 
 }

@@ -2,3 +2,5 @@ fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveUnmappedReadAlignmentsF
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveMultiMatchesReadAlignmentsFilter
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepOneMatchReadAlignmentsFilter
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter
+fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter
+fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.DistanceFromReferenceReadAlignmentsFilter

@@ -163,7 +163,7 @@ public final class DesignUtils {
   public static boolean checkGenomes(final Design design) {
 
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
-      return false;
+      return true;
 
     final Set<String> genomes = new HashSet<String>();
 
@@ -189,7 +189,7 @@ public final class DesignUtils {
   public static boolean checkAnnotations(final Design design) {
 
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
-      return false;
+      return true;
 
     final Set<String> annotations = new HashSet<String>();
 

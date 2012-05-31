@@ -22,27 +22,11 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
+package fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.Reducer;
 
-/**
- * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
- * framework.
- * @since 1.0
- * @author Laurent Jourdren
- */
-public class FastQFormatNew extends TextInputFormat {
+public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
 
-  @Override
-  public RecordReader<LongWritable, Text> createRecordReader(
-      InputSplit inputSplit, TaskAttemptContext taskAttemptContext) {
-    
-    return new FastQRecordReaderNew();
-  }
 }

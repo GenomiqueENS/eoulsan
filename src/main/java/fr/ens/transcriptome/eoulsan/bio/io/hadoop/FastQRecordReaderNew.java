@@ -45,7 +45,7 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
   private Text value = new Text();
 
   private final String[] lines = new String[4];
-  private final long[] poss = new long[4];
+  private final long[] pos = new long[4];
 
   private LineRecordReader lrr;
 
@@ -93,14 +93,14 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
       if (!this.lrr.nextKeyValue())
         return false;
 
-      final String s = this.getCurrentValue().toString().trim();
+      final String s = this.lrr.getCurrentValue().toString().trim();
 
       // Prevent empty lines
       if (s.length() == 0)
         continue;
 
       this.lines[count] = s;
-      this.poss[count] = this.lrr.getCurrentKey().get();
+      this.pos[count] = this.lrr.getCurrentKey().get();
 
       if (count < 3)
         count++;
@@ -114,28 +114,28 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
           this.lines[0] = this.lines[1];
           this.lines[1] = this.lines[2];
           this.lines[2] = this.lines[3];
-          
+
           // Shift positions
-          this.poss[0] = this.poss[1];
-          this.poss[1] = this.poss[2];
-          this.poss[2] = this.poss[3];
+          this.pos[0] = this.pos[1];
+          this.pos[1] = this.pos[2];
+          this.pos[2] = this.pos[3];
         }
       }
 
     }
 
     // Set key
-    this.key = new LongWritable(this.poss[0]);
-    
+    this.key = new LongWritable(this.pos[0]);
+
     // Set value
     this.value =
-        new Text(this.lines[0]
-            + '\n' + this.lines[1] + '\n' + this.lines[2] + '\n'
-            + this.lines[3]);
+        new Text(this.lines[0].substring(1)
+            + '\t' + this.lines[1] + '\t' + this.lines[3]);
 
     // Clean array
     this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;
 
     return true;
+
   }
 }
