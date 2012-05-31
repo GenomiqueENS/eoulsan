@@ -209,7 +209,8 @@ public class QualityReadAlignmentsFilterTest {
    */
   @Test
   public void testGetDescription() {
-    assertEquals("Quality score of the alignment filter",
+    assertEquals(
+        "With this filter, the alignments are filtered by their quality score.",
         filter.getDescription());
     assertFalse("ko".equals(filter.getName()));
   }

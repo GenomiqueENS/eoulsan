@@ -72,7 +72,7 @@ public class MultiReadAlignmentsFilterBuilder {
     final String filterName;
     final String filterKey;
 
-    // Get the the filter name and parameter name
+    // Get the filter name and parameter name
     if (index == -1) {
       filterName = keyTrimmed;
       filterKey = null;

@@ -40,13 +40,11 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
   @Override
   public String getName() {
-
     return "keeponematch";
   }
 
   @Override
   public String getDescription() {
-
     return "After this filter only one alignment is keeped by read";
   }
 

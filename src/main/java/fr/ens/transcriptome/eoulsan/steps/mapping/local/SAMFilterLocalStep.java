@@ -69,9 +69,6 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  /**
-   * My version...
-   */
   @Override
   public StepResult execute(final Design design, final Context context) {
 
@@ -200,9 +197,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     final SAMFileReader inputSam = new SAMFileReader(inFile.open());
 
     // Get Writer
-    final SAMFileWriter outputSam = new SAMFileWriterFactory().makeSAMWriter(
-
-    inputSam.getFileHeader(), false, outFile.create());
+    final SAMFileWriter outputSam =
+        new SAMFileWriterFactory().makeSAMWriter(inputSam.getFileHeader(),
+            false, outFile.create());
 
     try {
 
