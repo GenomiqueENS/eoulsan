@@ -22,14 +22,11 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop;
+package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_PRETREATMENT_READS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.util.MapReduceUtilsNewAPI.parseKeyValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,20 +36,22 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 
 import com.google.common.base.Splitter;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQRecordReaderNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
+/**
+ * This class define a mapper for the pretreatment of paired-end data before the
+ * reads filtering step.
+ * @since 1.2
+ * @author Claire Wallon
+ */
 public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */
@@ -64,11 +63,8 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private String counterGroup;
 
-  private IlluminaReadId iri;
-
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
   private List<String> fields = newArrayList();
-  private String[] idFields;
 
   private final ReadSequence read = new ReadSequence();
 
@@ -132,14 +128,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
     this.read.setSequence(fields.get(1));
     this.read.setQuality(fields.get(2));
 
-    // try {
-    // iri = new IlluminaReadId(fields.get(0));
-
-    // idFields = null;
-    // idFields = fields.get(0).split(" ");
-
     // Illumina technology and Casava 1.8 format for the '@' line
-    // if (iri.getSequenceIndex() != null) {
     if (!fields.get(0).contains("/")) {
       this.outKey = new Text(this.read.getName().split(" ")[0]);
       this.outValue =
@@ -148,37 +137,15 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
     // Before Casava 1.8 or technology other than Illumina
     else {
-      this.outKey = new Text(this.read.getName().split("/")[0]);
+      this.outKey = new Text(this.read.getName().split("/")[0] + "/");
       this.outValue =
           new Text(this.read.getName().split("/")[1]
               + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
 
-    // } catch (EoulsanException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // context.write(new Text("key :"), new Text(line));
-
-    // fields.clear();
-    // for (String e : TAB_SPLITTER.split(line)) {
-    // fields.add(e);
-    // }
-    //
-    // final String readId = fields.get(0);
-    //
-    // idFields.clear();
-    // for (String s : SPACE_SPLITTER.split(readId)) {
-    // idFields.add(s);
-    // }
-    //
-    // this.outKey.set(idFields.get(0));
-    // this.outValue.set(idFields.get(1)
-    // + "\t" + fields.get(1) + "\t" + fields.get(2));
-
-    // context.write(new Text("key"), value);
-    // context.getCounter(this.counterGroup,
-    // OUTPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
+    context.write(this.outKey, this.outValue);
+    context.getCounter(this.counterGroup,
+        OUTPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
 
   }
 

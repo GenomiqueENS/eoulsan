@@ -144,7 +144,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
-    
+
     context
         .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
         .increment(1);
@@ -195,7 +195,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
         this.outKey.set(this.read1.getName());
         this.outValue.set(this.read1.getSequence()
             + "\t" + this.read1.getQuality() + "\t" + this.read2.getName()
-            + this.read2.getSequence() + "\t" + this.read2.getQuality());
+            + "\t" + this.read2.getSequence() + "\t" + this.read2.getQuality());
 
         context.write(this.outKey, this.outValue);
         context.getCounter(this.counterGroup,
