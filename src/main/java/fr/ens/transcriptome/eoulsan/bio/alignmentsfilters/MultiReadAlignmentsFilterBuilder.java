@@ -103,7 +103,7 @@ public class MultiReadAlignmentsFilterBuilder {
     if (filterKey != null) {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
-      this.mapParameters.put(filterKey, valueTrimmed);
+      this.mapParameters.put(keyTrimmed, valueTrimmed);
       LOGGER
           .info("Set alignments filter \""
               + filterName + "\" with parameter: " + filterKey + "="

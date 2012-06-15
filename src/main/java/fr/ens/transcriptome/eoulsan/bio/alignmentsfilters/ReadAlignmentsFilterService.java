@@ -63,7 +63,8 @@ public class ReadAlignmentsFilterService {
    * @param alignmentsFilterName name of the filter to get
    * @return an Action
    */
-  public ReadAlignmentsFilter getAlignmentsFilter(final String alignmentsFilterName) {
+  public ReadAlignmentsFilter getAlignmentsFilter(
+      final String alignmentsFilterName) {
 
     if (alignmentsFilterName == null) {
       return null;

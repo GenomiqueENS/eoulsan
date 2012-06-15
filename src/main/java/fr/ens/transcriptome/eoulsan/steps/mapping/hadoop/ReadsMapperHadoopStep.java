@@ -132,10 +132,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    // final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
-
-    // final Path inputPath =
-    // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
         new Path(context.getInputDataFilename(DataFormats.FILTERED_READS_TFQ,
             sample));

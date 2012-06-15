@@ -42,8 +42,6 @@ import net.sf.samtools.SAMRecord;
 public class KeepNumberMatchReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
 
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   public static final String FILTER_NAME = "keepnumbermatch";
   private int numberMatch = -1;
 

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -187,7 +186,6 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    // et si un seul fichier d'entrée
     if (READS_FASTQ.equals(inputDataFile.getDataFormat(DataTypes.READS)))
       job.setInputFormatClass(FastQFormatNew.class);
 

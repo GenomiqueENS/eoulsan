@@ -34,9 +34,13 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepOneMatchReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveMultiMatchesReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveUnmappedReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -50,17 +54,13 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public abstract class AbstractSAMFilterStep extends AbstractStep {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   private static final String STEP_NAME = "filtersam";
 
-  private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
   protected static final String COUNTER_GROUP = "sam_filtering";
 
   private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
 
-  private int mappingQualityThreshold = -1;
+//  private int mappingQualityThreshold = -1;
 
   //
   // Getters
@@ -73,10 +73,10 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    *         used here (getMappingQualityThreshold() called in this class) (cf.
    *         comments in configure())
    */
-  protected int getMappingQualityThreshold() {
-
-    return this.mappingQualityThreshold;
-  }
+//  protected int getMappingQualityThreshold() {
+//
+//    return this.mappingQualityThreshold;
+//  }
 
   //
   // Step methods
@@ -134,7 +134,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     if ("mappingqualitythreshold".equals(key))
       return QualityReadAlignmentsFilter.FILTER_NAME + ".threshold";
-
+    
     return key;
   }
 

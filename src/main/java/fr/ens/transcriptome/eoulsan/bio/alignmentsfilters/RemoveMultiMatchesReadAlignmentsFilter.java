@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+
 import net.sf.samtools.SAMRecord;
 
 /**
@@ -37,6 +39,9 @@ import net.sf.samtools.SAMRecord;
  */
 public class RemoveMultiMatchesReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
+  
+  public static final String FILTER_NAME = "removemultimatches";
+  private boolean remove = false;
 
   @Override
   public String getName() {
@@ -67,6 +72,27 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
       if (records.size() > 2)
         records.clear();
     }
+  }
+  
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null || value == null)
+      return;
+
+    if ("remove".equals(key.trim())) {
+
+      try {
+        this.remove = Boolean.parseBoolean(value.trim());
+      } catch (NumberFormatException e) {
+        return;
+      }
+
+    } else
+
+      throw new EoulsanException("Unknown parameter for "
+          + getName() + " read filter: " + key);
   }
 
 }

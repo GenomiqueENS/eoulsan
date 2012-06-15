@@ -214,6 +214,13 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set counter group
     jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
         Integer.toString(getMappingQualityThreshold()));
+    // Set SAM filter parameters
+//    for (Map.Entry<String, String> e : getAlignmentsFilterParameters().entrySet()) {
+//
+//      jobConf.set(
+//          SAMFilterMapper.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
+//          e.getValue());
+//    }
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,

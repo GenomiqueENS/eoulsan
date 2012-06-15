@@ -25,16 +25,30 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
 
 /**
  * This class define a reducer for alignments filtering.
@@ -43,49 +57,110 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
+  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
+      + ".samfilter.genome.desc.file";
+  static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
+      Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
+
+  private final SAMParser parser = new SAMParser();
   private String counterGroup;
+  private ReadAlignmentsFilter filter;
+
+  private Text outKey = new Text();
+  private Text outValue = new Text();
+  private List<SAMRecord> records = new ArrayList<SAMRecord>();
 
   @Override
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
+    // Get configuration object
     final Configuration conf = context.getConfiguration();
+
+    // Initialize Eoulsan DataProtocols
+    if (!EoulsanRuntime.isRuntime()) {
+      HadoopEoulsanRuntime.newEoulsanRuntime(conf);
+    }
 
     // Counter group
     this.counterGroup = conf.get(Globals.PARAMETER_PREFIX + ".counter.group");
     if (this.counterGroup == null) {
       throw new IOException("No counter group defined");
     }
+
+    // Get the genome description filename
+    final String genomeDescFile = conf.get(GENOME_DESC_PATH_KEY);
+
+    if (genomeDescFile == null) {
+      throw new IOException("No genome desc file set");
+    }
+
+    // Load genome description object
+    final GenomeDescription genomeDescription =
+        GenomeDescription.load(new DataFile(genomeDescFile).open());
+
+    // Set the chromosomes sizes in the parser
+    this.parser.setGenomeDescription(genomeDescription);
+
+    // Set the filters
+    try {
+      final MultiReadAlignmentsFilterBuilder mrafb =
+          new MultiReadAlignmentsFilterBuilder();
+
+      for (Map.Entry<String, String> e : conf) {
+
+        if (e.getKey().startsWith(MAP_FILTER_PARAMETER_KEY_PREFIX))
+          mrafb.addParameter(
+              e.getKey().substring(MAP_FILTER_PARAMETER_KEY_PREFIX.length()),
+              e.getValue());
+      }
+
+      this.filter =
+          mrafb.getAlignmentsFilter(new HadoopReporter(context),
+              this.counterGroup);
+
+    } catch (EoulsanException e) {
+      throw new IOException(e.getMessage());
+    }
+
   }
 
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
 
-    int count = 0;
-    Text firstValue = null;
+    // Creation of a buffer object to store alignments with the same read name
+    final ReadAlignmentsFilterBuffer rafb =
+        new ReadAlignmentsFilterBuffer(this.filter);
+
+    int cptRecords = 0;
+    String strRecord = null;
+    records.clear();
 
     for (Text val : values) {
 
-      if (count == 0) {
-        firstValue = val;
-        count++;
-      } else {
-        count++;
-        break;
-      }
+      cptRecords++;
+      strRecord = key.toString() + val.toString();
+      rafb.addAlignment(this.parser.parseLine(strRecord));
+
     }
 
-    if (count == 1) {
-      context.write(key, firstValue);
+    records.addAll(rafb.getFilteredAlignments());
+    context.getCounter(this.counterGroup,
+        ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(
+        cptRecords - records.size());
+
+    // Writing records
+    for (SAMRecord r : records) {
+      strRecord = r.getSAMString();
+
+      final int indexOfFirstTab = strRecord.indexOf("\t");
+      this.outKey.set(strRecord.substring(0, indexOfFirstTab));
+      this.outValue.set(strRecord.substring(indexOfFirstTab + 1));
+
+      context.write(this.outKey, this.outValue);
       context.getCounter(this.counterGroup,
           OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName()).increment(1);
-    } else {
-
-      context.getCounter(this.counterGroup,
-          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(count);
-      context.getCounter(this.counterGroup,
-          ALIGNMENTS_WITH_MORE_ONE_HIT_COUNTER.counterName()).increment(count);
     }
 
   }
