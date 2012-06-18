@@ -122,6 +122,7 @@ public final class CasavaDesignUtil {
         throw new EoulsanException(
             "Found a null or empty sample reference for sample: "
                 + sample.getSampleId() + ".");
+      checkCharset(sample.getSampleRef());
 
       // Check index
       checkIndex(sample.getIndex());
@@ -134,20 +135,24 @@ public final class CasavaDesignUtil {
         throw new EoulsanException(
             "Found a null or empty description for sample: "
                 + sample.getSampleId() + ".");
+      checkCharset(sample.getDescription());
 
       // Check recipe
       if (isNullOrEmpty(sample.getRecipe()))
         throw new EoulsanException("Found a null or empty recipe for sample: "
             + sample.getSampleId() + ".");
+      checkCharset(sample.getRecipe());
 
       // Check operator
       if (isNullOrEmpty(sample.getOperator()))
         throw new EoulsanException(
             "Found a null or empty operator for sample: "
                 + sample.getSampleId() + ".");
+      checkCharset(sample.getOperator());
 
       // Check sample project
       checkSampleProject(sample.getSampleProject());
+      checkCharset(sample.getSampleProject());
 
       final String index = sample.getIndex();
       final int lane = sample.getLane();
@@ -203,10 +208,29 @@ public final class CasavaDesignUtil {
     return result;
   }
 
+  private static void checkCharset(final String s) throws EoulsanException {
+
+    if (s == null)
+      return;
+
+    for (int i = 0; i < s.length(); i++) {
+
+      final int c = s.codePointAt(i);
+
+      if (c < ' ' || c >= 127)
+        throw new EoulsanException("Found invalid character '"
+            + (char) c + "' in \"" + s + "\".");
+    }
+
+  }
+
   private static void checkFCID(final String fcid) throws EoulsanException {
 
     if (isNullOrEmpty(fcid))
       throw new EoulsanException("Flow cell id is null or empty.");
+
+    // Check charset
+    checkCharset(fcid);
 
     for (int i = 0; i < fcid.length(); i++) {
 
@@ -225,6 +249,9 @@ public final class CasavaDesignUtil {
     // Check if null of empty
     if (isNullOrEmpty(sampleId))
       throw new EoulsanException("Found a null or empty sample id.");
+
+    // Check charset
+    checkCharset(sampleId);
 
     // Check for forbidden characters
     for (int i = 0; i < sampleId.length(); i++) {
@@ -344,7 +371,8 @@ public final class CasavaDesignUtil {
     if (samplesIndex.containsKey(sampleName)
         && !samplesIndex.get(sampleName).equals(index))
       throw new EoulsanException("The sample \""
-          + sampleName + "\" is defined in several lanes but without the same index.");
+          + sampleName
+          + "\" is defined in several lanes but without the same index.");
 
     samplesIndex.put(sampleName, index);
   }
