@@ -89,7 +89,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Configuration conf = new Configuration();// this.conf;
 
     try {
-      
+
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
         if (context.getDataFileCount(READS_FASTQ, s) == 2)
@@ -141,9 +141,17 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // Get input DataFile
-    final DataFile inputDataFile =
-        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
-            READS_TFQ}, sample);
+    DataFile inputDataFile = null;
+    inputDataFile =
+        context.getExistingInputDataFile(new DataFormat[] {READS_TFQ}, sample);
+    if (inputDataFile == null)
+      inputDataFile =
+          context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ},
+              sample);
+    
+//    final DataFile inputDataFile =
+//        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
+//            READS_TFQ}, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -168,7 +176,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, ""
         + sample.getMetadata().getFastqFormat());
 
-    // Set read filter parameters
+    // Set read filters parameters
     for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
 
       jobConf.set(
@@ -177,7 +185,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     }
 
     // Set pair end mode
-    jobConf.set(ReadsMapperMapper.PAIR_END_KEY, "" + isPairend());
+    // jobConf.set(ReadsMapperMapper.PAIR_END_KEY, "" + isPairend());
 
     //
     // Reads mapping parameters
@@ -192,6 +200,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
+    
+    // Set pair end or single end mode
+    if (context.getDataFileCount(READS_FASTQ, sample) == 2)
+      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
+    else
+      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
 
     // Set the number of threads for the mapper
     if (getMapperThreads() < 0) {
@@ -207,20 +221,23 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set Mapper fastq format
     jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
         + sample.getMetadata().getFastqFormat());
+
     //
     // Alignment filtering
     //
 
     // Set counter group
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
-        Integer.toString(getMappingQualityThreshold()));
-    // Set SAM filter parameters
-//    for (Map.Entry<String, String> e : getAlignmentsFilterParameters().entrySet()) {
-//
-//      jobConf.set(
-//          SAMFilterMapper.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-//          e.getValue());
-//    }
+    // jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
+    // Integer.toString(getMappingQualityThreshold()));
+
+    // Set read alignments filters parameters
+    for (Map.Entry<String, String> e : getAlignmentsFilterParameters()
+        .entrySet()) {
+
+      jobConf.set(
+          SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
+          e.getValue());
+    }
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
@@ -269,7 +286,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     return job;
   }
-  
+
   /**
    * Create a job for the pretreatment step in case of paired-end data.
    * @param basePath base path
@@ -281,7 +298,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final Context context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
-
+    
     // get input file count for the sample
     final int inFileCount =
         context.getDataFileCount(DataFormats.READS_FASTQ, sample);

@@ -102,7 +102,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      return jobsResults.getStepResult(context, startTime);
+      StepResult stepResult = jobsResults.getStepResult(context, startTime);
+      
+      DistributedCache.purgeCache(conf);
+      
+      return stepResult;
 
     } catch (IOException e) {
 
