@@ -54,23 +54,23 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
-//  static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
-//      Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
+  // static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
+  // Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
-  
+
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private List<String> idFields = newArrayList();
 
-//  private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
+  // private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
 
-//  private int mappingQualityThreshold;
+  // private int mappingQualityThreshold;
 
-//  private ReadAlignmentsFilter filter;
+  // private ReadAlignmentsFilter filter;
 
-//  private final SAMParser parser = new SAMParser();
+  // private final SAMParser parser = new SAMParser();
   private String counterGroup;
 
   private final Text outKey = new Text();
@@ -111,12 +111,12 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
-    
+
     idFields.clear();
     for (String e : ID_SPLITTER.split(completeId)) {
       idFields.add(e);
     }
-    
+
     // Read identifiant format : before Casava 1.8 or other technologies that
     // Illumina
     if (idFields.size() < 7) {
@@ -128,11 +128,11 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       }
       // paired-end mode
       else {
-        this.outKey.set(line.substring(0, endReadId+1));
-        this.outValue.set(line.substring(endReadId+1));
+        this.outKey.set(line.substring(0, endReadId + 1));
+        this.outValue.set(line.substring(endReadId + 1));
       }
     }
-    
+
     // Read identifiant format : Illumina - Casava 1.8
     else {
       endReadId = completeId.indexOf(' ');

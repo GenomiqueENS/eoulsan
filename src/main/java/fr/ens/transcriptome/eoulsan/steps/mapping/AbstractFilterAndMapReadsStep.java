@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
@@ -63,6 +64,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private boolean pairEnd;
 
   private MultiReadFilterBuilder readFilterBuilder;
+  private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
   private SequenceReadsMapper mapper;
   private String mapperArguments;
   private int mapperThreads = -1;
@@ -162,77 +164,156 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
+    // NEW VERSION...
+
     String mapperName = null;
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
+    final MultiReadAlignmentsFilterBuilder mrafb =
+        new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
 
-      if ("pairend".equals(p.getName()))
-        this.pairEnd = p.getBooleanValue();
-      else if ("mapper".equals(p.getName()))
+      if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
+
       else if ("mapperArguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
-      else if ("mappingqualitythreshold".equals(p.getName()))
-        mappingQualityThreshold = p.getIntValue();
-      else
+
+      // read filters parameters
+      else if ("paircheck".equals(p.getName())
+          || "pairend.accept.pairend".equals(p.getName())
+          || "pairend.accept.accept.singlend".equals(p.getName())
+          || "illuminaid".equals(p.getName())
+          || "quality.threshold".equals(p.getName())
+          || "qualityThreshold".equals(p.getName())
+          || "trim.length.threshold".equals(p.getName())
+          || "lengthThreshold".equals(p.getName())) {
         mrfb.addParameter(
             AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
             p.getStringValue());
+      }
 
-      // Force parameter checking
-      mrfb.getReadFilter();
-
-      this.readFilterBuilder = mrfb;
+      // read alignments filters parameters
+      else {
+        mrafb.addParameter(
+            AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue());
+      }
 
     }
 
-    if (mapperName == null) {
+    // Force parameter checking
+    mrfb.getReadFilter();
+    mrafb.getAlignmentsFilter();
+
+    this.readFilterBuilder = mrfb;
+    this.readAlignmentsFilterBuilder = mrafb;
+
+    if (mapperName == null)
       throw new EoulsanException("No mapper set.");
-    }
 
     this.mapper =
         SequenceReadsMapperService.getInstance().getMapper(mapperName);
 
-    if (this.mapper == null) {
+    if (this.mapper == null)
       throw new EoulsanException("Unknown mapper: " + mapperName);
-    }
 
-    if (this.mapper.isIndexGeneratorOnly()) {
+    if (this.mapper.isIndexGeneratorOnly())
       throw new EoulsanException(
           "The selected mapper can only be used for index generation: "
               + mapperName);
-    }
-
-    if (this.mappingQualityThreshold == -1) {
-      throw new EoulsanException("Mapping quality theshold not set.");
-    }
-
-    if (this.mappingQualityThreshold < 0
-        || this.mappingQualityThreshold > MAX_MAPPING_QUALITY_THRESHOLD) {
-      throw new EoulsanException("Invalid mapping quality theshold: "
-          + this.mappingQualityThreshold);
-    }
 
     // Log Step parameters
-    LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
     LOGGER.info("In "
         + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
         + mapper.getMapperVersion() + ")");
     LOGGER
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
-    LOGGER.info("In "
-        + getName() + ", mappingQualityThreshold="
-        + this.mappingQualityThreshold);
+
+    // ... NEW VERSION
+
+    // OLD VERSION...
+    // String mapperName = null;
+    // final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
+    //
+    // for (Parameter p : stepParameters) {
+    //
+    // if ("pairend".equals(p.getName()))
+    // this.pairEnd = p.getBooleanValue();
+    // else if ("mapper".equals(p.getName()))
+    // mapperName = p.getStringValue();
+    // else if ("mapperArguments".equals(p.getName()))
+    // this.mapperArguments = p.getStringValue();
+    // else if ("mappingqualitythreshold".equals(p.getName()))
+    // mappingQualityThreshold = p.getIntValue();
+    // else
+    // mrfb.addParameter(
+    // AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
+    // p.getStringValue());
+    //
+    // // Force parameter checking
+    // mrfb.getReadFilter();
+    //
+    // this.readFilterBuilder = mrfb;
+    //
+    // }
+    //
+    // if (mapperName == null) {
+    // throw new EoulsanException("No mapper set.");
+    // }
+    //
+    // this.mapper =
+    // SequenceReadsMapperService.getInstance().getMapper(mapperName);
+    //
+    // if (this.mapper == null) {
+    // throw new EoulsanException("Unknown mapper: " + mapperName);
+    // }
+    //
+    // if (this.mapper.isIndexGeneratorOnly()) {
+    // throw new EoulsanException(
+    // "The selected mapper can only be used for index generation: "
+    // + mapperName);
+    // }
+    //
+    // if (this.mappingQualityThreshold == -1) {
+    // throw new EoulsanException("Mapping quality theshold not set.");
+    // }
+    //
+    // if (this.mappingQualityThreshold < 0
+    // || this.mappingQualityThreshold > MAX_MAPPING_QUALITY_THRESHOLD) {
+    // throw new EoulsanException("Invalid mapping quality theshold: "
+    // + this.mappingQualityThreshold);
+    // }
+    //
+    // // Log Step parameters
+    // LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
+    // LOGGER.info("In "
+    // + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+    // + mapper.getMapperVersion() + ")");
+    // LOGGER
+    // .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    // LOGGER.info("In "
+    // + getName() + ", mappingQualityThreshold="
+    // + this.mappingQualityThreshold);
+    // ... OLD VERSION
   }
 
   /**
-   * Get the parameters of the read filter.
-   * @return a map with all the parameters of the filter
+   * Get the parameters of the read filters.
+   * @return a map with all the parameters of the filters
    */
   protected Map<String, String> getReadFilterParameters() {
 
     return this.readFilterBuilder.getParameters();
+  }
+
+  /**
+   * Get the parameters of the read alignments filters.
+   * @return a map with all the parameters of the filters
+   */
+  protected Map<String, String> getAlignmentsFilterParameters() {
+
+    return this.readAlignmentsFilterBuilder.getParameters();
   }
 
 }

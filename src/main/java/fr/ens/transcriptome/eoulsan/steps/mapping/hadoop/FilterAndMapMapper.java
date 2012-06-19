@@ -180,7 +180,7 @@ public class FilterAndMapMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     }.getContext();
 
-   this.contextMapReads = new ContextWrapper(context) {
+    this.contextMapReads = new ContextWrapper(context) {
 
       @Override
       public void internalWrite(final Text arg0, final Text arg1)
