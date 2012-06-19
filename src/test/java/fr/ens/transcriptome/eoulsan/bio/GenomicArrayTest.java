@@ -34,6 +34,10 @@ import org.junit.Test;
  */
 public class GenomicArrayTest {
 
+    @Test
+    public void bidon() {
+    }
+  
 //  /**
 //   * @throws java.lang.Exception
 //   */

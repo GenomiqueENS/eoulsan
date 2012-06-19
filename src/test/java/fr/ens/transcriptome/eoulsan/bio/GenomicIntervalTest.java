@@ -39,6 +39,10 @@ import org.junit.Test;
  */
 public class GenomicIntervalTest {
 
+  @Test
+  public void bidon() {
+  }  
+  
 //  String gffStr = "chr18\tprotein_coding\texon\t32322743\t32323204\t.\t+\t."
 //      + "\tID=exon:ENSMUST00000025242:1; PARENT=ENSMUST00000025242;";
 //  GFFEntry gffEnt = new GFFEntry();
