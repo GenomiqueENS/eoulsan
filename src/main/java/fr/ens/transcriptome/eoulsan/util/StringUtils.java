@@ -756,11 +756,33 @@ public final class StringUtils {
   }
 
   /**
-   * Join an element of an array of string into a string.
-   * @param array array of string to join
+   * Join elements of an array of strings into a string.
+   * @param array array of strings to join
    * @param separator separator to use
    */
   public static String join(final String[] array, final String separator) {
+
+    if (array == null)
+      return null;
+
+    final StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < array.length; i++) {
+
+      if (i > 0 && separator != null)
+        sb.append(separator);
+      sb.append(array[i]);
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Join elements of an array of objects into a string.
+   * @param array array of objects to join
+   * @param separator separator to use
+   */
+  public static String join(final Object[] array, final String separator) {
 
     if (array == null)
       return null;
