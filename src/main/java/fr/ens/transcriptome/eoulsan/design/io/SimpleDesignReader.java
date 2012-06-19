@@ -85,11 +85,19 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
             String field = fields[i].trim();
 
+            if ("".equals(field))
+              throw new EoulsanIOException(
+                  "Found an empty field name in design file header.");
+
             // Compatibility with old design files
             if (field.equals(FILENAME_FIELD)) {
               field = SampleMetadata.READS_FIELD;
               fields[i] = field;
             }
+
+            if (data.containsKey(field))
+              throw new EoulsanIOException("There is two or more field \""
+                  + field + "\" in design file header.");
 
             data.put(field, new ArrayList<String>());
 
@@ -155,18 +163,18 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       design.getSample(name).setId(Integer.parseInt(ids.get(i)));
     }
 
-    for (String fd : fieldnames) {
+    for (String field : fieldnames) {
 
-      if (Design.SAMPLE_NUMBER_FIELD.equals(fd) || Design.NAME_FIELD.equals(fd))
+      if (Design.SAMPLE_NUMBER_FIELD.equals(field)
+          || Design.NAME_FIELD.equals(field))
         continue;
 
-      design.addMetadataField(fd);
-      List<String> descriptions = data.get(fd);
+      design.addMetadataField(field);
+      List<String> fieldValues = data.get(field);
 
       int k = 0;
-      for (String desc : descriptions)
-        design.setMetadata(names.get(k++), fd, desc);
-
+      for (String value : fieldValues)
+        design.setMetadata(names.get(k++), field, value);
     }
 
     return design;
