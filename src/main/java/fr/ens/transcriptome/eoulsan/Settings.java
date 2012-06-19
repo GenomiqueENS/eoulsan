@@ -172,7 +172,8 @@ public final class Settings {
    */
   public boolean isRServeServerEnabled() {
 
-    return getBooleanSetting(RSERVE_ENABLED_KEY);
+    return Boolean
+        .parseBoolean(this.properties.getProperty(RSERVE_ENABLED_KEY));
   }
 
   /**
