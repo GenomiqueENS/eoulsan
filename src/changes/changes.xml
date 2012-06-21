@@ -329,7 +329,16 @@ of reads that reject each filter like in local mode.
                 Update documentation: Eoulsan application note is now publish in Bioinformatics. 
             </action>
          </release>
-         
+
+         <release version="1.1.5" description="Eoulsan 1.1.5 release" date="2012-06-21">
+            <action dev="jourdren" type="fix" issue="17">
+                Genome files created from GFF files only contains the first chromosome. 
+            </action>
+            <action dev="jourdren" type="fix" issue="18">
+                The _genericindexgenerator step fail when the genome was extracted from a GFF file. 
+            </action>
+         </release>
+
          <release version="1.2" description="Eoulsan 1.2" date="TBD">
          
             <action dev="wallon" type="add">
@@ -348,6 +357,6 @@ of reads that reject each filter like in local mode.
                 Add the HTSeq-count program for the expression estimation step.
             </action>
          </release>
-		
+
 	</body>
 </document>
