@@ -330,5 +330,14 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
          
+         <release version="1.1.5" description="Eoulsan 1.1.5 release" date="2012-06-21">
+            <action dev="jourdren" type="fix" issue="17">
+                Genome files created from GFF files only contains the first chromosome. 
+            </action>
+            <action dev="jourdren" type="fix" issue="18">
+                The _genericindexgenerator step fail when the genome was extracted from a GFF file. 
+            </action>
+         </release>
+         
 	</body>
 </document>
