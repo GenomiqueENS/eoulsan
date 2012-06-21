@@ -36,16 +36,23 @@ import java.io.InputStream;
  */
 public class GFFFastaReader extends FastaReader {
 
+  private boolean fastaSectionFound;
+
   @Override
   public boolean hasNext() {
+
+    if (this.fastaSectionFound)
+      return super.hasNext();
 
     String line = null;
 
     try {
       while ((line = this.reader.readLine()) != null) {
 
-        if (line.startsWith("##FASTA"))
+        if (line.startsWith("##FASTA")) {
+          this.fastaSectionFound = true;
           return super.hasNext();
+        }
 
       }
     } catch (IOException e) {
