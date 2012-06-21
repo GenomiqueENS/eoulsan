@@ -190,7 +190,7 @@ public class TranscriptAndExonFinder {
 
       if (this.strand != exon.getStrand())
         throw new IllegalArgumentException(
-            "The strand is not the same that the gene");
+            "The strand is not the same that the gene (Transcript: " + getName() +", Exon: " + exon);
 
       if (this.chromosome == null)
         this.chromosome = exon.getChromosome();
