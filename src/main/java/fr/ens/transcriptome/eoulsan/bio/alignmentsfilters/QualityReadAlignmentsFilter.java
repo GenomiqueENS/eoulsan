@@ -63,7 +63,8 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
       for (SAMRecord r : records) {
 
         // storage in 'result' of records that do not pass the quality filter
-        if (r.getMappingQuality() < this.qualityThreshold) {
+        if (r.getMappingQuality() > this.qualityThreshold
+            && r.getMappingQuality() != 255) {
           this.result.add(r);
         }
       }
@@ -75,8 +76,10 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
           2) {
 
         // storage in 'result' of records that do not pass the quality filter
-        if (records.get(counterRecord).getMappingQuality() < this.qualityThreshold
-            || records.get(counterRecord + 1).getMappingQuality() < this.qualityThreshold) {
+        if ((records.get(counterRecord).getMappingQuality() > this.qualityThreshold && records
+            .get(counterRecord).getMappingQuality() != 255)
+            || (records.get(counterRecord + 1).getMappingQuality() > this.qualityThreshold && records
+                .get(counterRecord + 1).getMappingQuality() != 255)) {
 
           // records are stored 2 by 2 because of the paired-end mode
           this.result.add(records.get(counterRecord));
