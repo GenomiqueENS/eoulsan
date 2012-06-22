@@ -210,7 +210,7 @@ public class DataFormatRegistry {
     final String f =
         StringUtils.filenameWithoutCompressionExtension(filename.trim());
 
-    final int dotPos = f.indexOf('.');
+    final int dotPos = f.lastIndexOf('.');
 
     if (dotPos == -1)
       return null;

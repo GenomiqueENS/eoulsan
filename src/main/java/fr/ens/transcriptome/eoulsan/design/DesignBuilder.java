@@ -197,11 +197,12 @@ public class DesignBuilder {
       if (!this.fastqList.contains(entry))
         this.fastqList.add(entry);
 
-    } else if (isDataTypeExtension(DataTypes.GENOME, extension, md))
+    } else if (isDataTypeExtension(DataTypes.GENOME, extension, md)) {
       this.genomeFile = file;
-
-    else if (isDataTypeExtension(DataTypes.ANNOTATION, extension, md))
+    } else if (isDataTypeExtension(DataTypes.ANNOTATION, extension, md))
       this.gffFile = file;
+    else
+      throw new EoulsanException("Unknown file type: " + file);
 
   }
 
