@@ -72,6 +72,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
+  public String getProjectName() {
+
+    return getField(PROJECT_NAME);
+  }
+
+  @Override
   public String getDescription() {
 
     return getField(DESCRIPTION_FIELD);
@@ -155,6 +161,12 @@ public class SampleMetadataImpl implements SampleMetadata {
     return result;
   }
 
+  @Override
+  public String getRepTechGroup() {
+
+    return getField(REP_TECH_GROUP_FIELD);
+  }
+
   //
   // Setters
   //
@@ -233,7 +245,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public void setGenome(final String genome) {
 
     setField(GENOME_FIELD, genome);
+  }
 
+  @Override
+  public void setProjectName(String projectName) {
+
+    setField(PROJECT_NAME, projectName);
   }
 
   @Override
@@ -268,6 +285,12 @@ public class SampleMetadataImpl implements SampleMetadata {
       throw new NullPointerException("FastqFormat is null");
 
     setField(FASTQ_FORMAT_FIELD, fastqFormat.getName());
+  }
+
+  @Override
+  public void setRepTechGroup(String repTechGroup) {
+
+    setField(REP_TECH_GROUP_FIELD, repTechGroup);
   }
 
   //
@@ -322,6 +345,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
+  public boolean isProjecName() {
+
+    return isField(PROJECT_NAME);
+  }
+
+  @Override
   public boolean isReadsField() {
 
     return isField(READS_FIELD);
@@ -355,6 +384,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isFastqFormat() {
 
     return isField(FASTQ_FORMAT_FIELD);
+  }
+
+  @Override
+  public boolean isRepTechGroup() {
+
+    return isField(REP_TECH_GROUP_FIELD);
   }
 
   //
