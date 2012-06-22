@@ -51,14 +51,18 @@ public interface SampleMetadata {
   String SERIAL_NUMBER_FIELD = "SerialNumber";
   /** Operator field. */
   String OPERATOR_FIELD = "Operator";
-  /** Operator field. */
+  /** Condition field. */
   String CONDITION_FIELD = "Condition";
-  /** Operator field. */
+  /** Replicate type field. */
   String REPLICAT_TYPE_FIELD = "ReplicateType";
   /** UUID field. */
   String UUID_TYPE_FIELD = "UUID";
   /** Fastq format field. */
   String FASTQ_FORMAT_FIELD = "FastqFormat";
+  /** repTechGroup field. */
+  String REP_TECH_GROUP_FIELD = "RepTechGroup";
+  /** project name field */
+  String PROJECT_NAME = "ProjectName";
 
   /**
    * Get a field value.
@@ -104,6 +108,12 @@ public interface SampleMetadata {
    */
   String getGenome();
 
+  /**
+   * Get project name 
+   * @return Returns the project name
+   */
+  String getProjectName();
+  
   /**
    * Get the annotation relative to the sample.
    * @return Returns the annotation
@@ -153,6 +163,12 @@ public interface SampleMetadata {
   FastqFormat getFastqFormat();
 
   /**
+   * Get repTechGroup
+   * @return The repTechGroup
+   */
+  String getRepTechGroup();
+  
+  /**
    * Set a field of the metadata.
    * @param field Field to set
    * @param value value to set
@@ -190,6 +206,11 @@ public interface SampleMetadata {
    */
   void setGenome(String genome);
 
+  /**
+   * Set the project name
+   * @param projectName
+   */
+  void setProjectName(String projectName);
   /**
    * Set the annotation file relative to the sample.
    * @param annotation file to set
@@ -239,6 +260,12 @@ public interface SampleMetadata {
   void setFastqFormat(final FastqFormat fastqFormat);
 
   /**
+   * Set the repTechGroup.
+   * @param repTechGroup the technical replicate group to set
+   */
+  void setRepTechGroup(final String repTechGroup);
+  
+  /**
    * Test if a field exists.
    * @param field The field to test
    * @return true if the field exists
@@ -263,6 +290,11 @@ public interface SampleMetadata {
    */
   boolean isGenomeField();
 
+  /**
+   * Test id the projectName filed exists
+   * @return
+   */
+  boolean isProjecName();
   /**
    * Test if the annoatation field exists.
    * @return true if the field exists
@@ -312,9 +344,15 @@ public interface SampleMetadata {
   boolean isUUIDField();
 
   /**
-   * Test if the FastqFormat field exits.
+   * Test if the FastqFormat field exists.
    * @return true if the field exists
    */
   boolean isFastqFormat();
-
+  
+  /**
+   * Test if the technical replicates group field exists.
+   * @return true if the field exists
+   */
+  boolean isRepTechGroup();
+  
 }
