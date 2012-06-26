@@ -339,8 +339,16 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
+         <release version="1.1.6" description="Eoulsan 1.1.6 release" date="2012-06-26">
+            <action dev="jourdren" type="fix" issue="19">
+                The create design action did not add genome:// or annotation:// file in design file if the URL contains '.' character. 
+            </action>
+            <action dev="jourdren" type="fix" issue="20">
+                The illuminaid filter in filterreads step reject all the reads with ids that contains index sequence with nucleotide 'N'. 
+            </action>
+         </release>
+
          <release version="1.2" description="Eoulsan 1.2" date="TBD">
-         
             <action dev="wallon" type="add">
                 Add the paired-end mode in the alignments filtering step.
             </action>
