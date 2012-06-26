@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -49,6 +50,8 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  * @author Laurent Jourdren
  */
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
+  // public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text>
+  // {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
