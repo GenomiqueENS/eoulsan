@@ -26,10 +26,13 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -62,6 +65,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
+import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.NewAPIJobsResults;
 import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -116,8 +120,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
-        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
+        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
         new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
@@ -163,10 +167,94 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(context
-            .getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT, sample)
-            .getSourceWithoutExtension()
+    FileOutputFormat.setOutputPath(
+        job,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+            sample).getSourceWithoutExtension()
+            + ".tmp"));
+
+    return job;
+  }
+
+  private static final Job createJobPairedEnd(final Configuration parentConf,
+      final Context context, final Sample sample, final String genomicType)
+      throws IOException, BadBioEntryException {
+
+    final Configuration jobConf = new Configuration(parentConf);
+
+    // Create JobConf
+    // final JobConf conf = new JobConf(ExpressionHadoopStep.class);
+
+    final Path inputPath =
+        new Path(context.getInputDataFilename(
+            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample));
+
+    // Get annotation DataFile
+    final DataFile annotationDataFile =
+        context.getInputDataFile(DataFormats.ANNOTATION_GFF, sample);
+
+    LOGGER.fine("sample: " + sample);
+    LOGGER.fine("inputPath.getName(): " + inputPath.getName());
+    LOGGER.fine("sample.getMetadata(): " + sample.getMetadata());
+    LOGGER.fine("annotationDataFile: " + annotationDataFile.getSource());
+
+    jobConf.set("mapred.child.java.opts", "-Xmx1024m");
+
+    // Set counter group
+    jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
+
+    // Set Genome description path
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
+        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+
+    final Path exonsIndexPath =
+        new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+    LOGGER.info("exonsIndexPath: " + exonsIndexPath);
+
+    if (!PathUtils.isFile(exonsIndexPath, jobConf))
+      createExonsIndex(context, new Path(annotationDataFile.getSource()),
+          genomicType, exonsIndexPath, jobConf);
+
+    // Set the path to the exons index
+    // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
+    // exonsIndexPath.toString());
+    DistributedCache.addCacheFile(exonsIndexPath.toUri(), jobConf);
+
+    // Debug
+    // conf.set("mapred.job.tracker", "local");
+
+    // Create the job and its name
+    final Job job =
+        new Job(jobConf, "Expression computation ("
+            + sample.getName() + ", " + inputPath.getName() + ", "
+            + annotationDataFile.getSource() + ", " + genomicType + ")");
+
+    // Set the jar
+    job.setJarByClass(ReadsMapperHadoopStep.class);
+
+    // Set input path
+    FileInputFormat.setInputPaths(job, inputPath);
+
+    // Set the Mapper class
+    job.setMapperClass(ExpressionMapper.class);
+
+    // Set the reducer class
+    job.setReducerClass(ExpressionReducer.class);
+
+    // Set the output key class
+    job.setOutputKeyClass(Text.class);
+
+    // Set the output value class
+    job.setOutputValueClass(Text.class);
+
+    // Set the number of reducers
+    // job.setNumReduceTasks(1);
+
+    // Set output path
+    FileOutputFormat.setOutputPath(
+        job,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+            sample).getSourceWithoutExtension()
             + ".tmp"));
 
     return job;
@@ -224,7 +312,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load the annotation index
       final Path exonsIndexPath =
-          new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+          new Path(
+              context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
       // Set the result path
@@ -235,8 +324,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load map-reduce results
       fetc.loadPreResults(
-          new DataFile(context.getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
-              .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
+          new DataFile(context
+              .getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
+              .getSourceWithoutExtension()
+              + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));
     }
@@ -257,6 +348,83 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
+    // // Create configuration object
+    // final Configuration conf = new Configuration(false);
+    //
+    // // Create the list of jobs to run
+    // final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
+    //
+    // try {
+    // final long startTime = System.currentTimeMillis();
+    //
+    // LOGGER.info("Genomic type: " + getGenomicType());
+
+    // ///////////////////////////////////////////
+    if (getCounter().getCounterName().equals("eoulsanCounter"))
+      return executeJobEoulsanCounter(design, context);
+    else if (getCounter().getCounterName().equals("htseq-count"))
+      return executeJobHTSeqCounter(design, context);
+    else
+      return null;
+    // ///////////////////////////////////////////
+
+    // final List<Job> jobsPairedEnd = new ArrayList<Job>();
+    // for (Sample s : design.getSamples()) {
+    // if (context.getDataFileCount(READS_FASTQ, s) == 2)
+    // jobsPairedEnd.add(createJobPairedEnd(conf, context, s,
+    // getGenomicType()));
+    // }
+    //
+    // MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
+    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+
+    // for (Sample s : design.getSamples()) {
+    //
+    // final Job jconf = createJob(conf, context, s, getGenomicType());
+    //
+    // jconf.submit();
+    // jobsRunning.put(s, jconf);
+    // }
+    //
+    // // Compute map-reduce part of the expression computation
+    // final JobsResults jobsResults =
+    // new NewAPIJobsResults(jobsRunning.values(),
+    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+    //
+    // final long mapReduceEndTime = System.currentTimeMillis();
+    // LOGGER.info("Finish the part of the expression computation in "
+    // + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
+    //
+    // // Create the final expression files
+    // createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
+    //
+    // LOGGER.info("Finish the create of the final expression files in "
+    // + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
+    // + " seconds.");
+    //
+    // return jobsResults.getStepResult(context, startTime);
+    //
+    // } catch (IOException e) {
+    //
+    // return new StepResult(context, e, "Error while running job: "
+    // + e.getMessage());
+    // } catch (InterruptedException e) {
+    //
+    // return new StepResult(context, e, "Error while running job: "
+    // + e.getMessage());
+    // } catch (BadBioEntryException e) {
+    //
+    // return new StepResult(context, e, "Invalid annotation entry: "
+    // + e.getEntry());
+    // } catch (ClassNotFoundException e) {
+    // return new StepResult(context, e, "Class not found: " + e.getMessage());
+    // }
+
+  }
+
+  public StepResult executeJobEoulsanCounter(final Design design,
+      final Context context) {
+
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
@@ -267,6 +435,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final long startTime = System.currentTimeMillis();
 
       LOGGER.info("Genomic type: " + getGenomicType());
+
+      // final List<Job> jobsPairedEnd = new ArrayList<Job>();
+      // for (Sample s : design.getSamples()) {
+      // if (context.getDataFileCount(READS_FASTQ, s) == 2)
+      // jobsPairedEnd.add(createJobPairedEnd(conf, context, s,
+      // getGenomicType()));
+      // }
+      //
+      // MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
+      // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
       for (Sample s : design.getSamples()) {
 
@@ -309,7 +487,74 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     } catch (ClassNotFoundException e) {
       return new StepResult(context, e, "Class not found: " + e.getMessage());
     }
+  }
 
+  public StepResult executeJobHTSeqCounter(final Design design,
+      final Context context) {
+
+    // Create configuration object
+    final Configuration conf = new Configuration(false);
+
+    // Create the list of jobs to run
+    final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
+
+    // try {
+    // final long startTime = System.currentTimeMillis();
+    //
+    // LOGGER.info("Genomic type: " + getGenomicType());
+    //
+    // // final List<Job> jobsPairedEnd = new ArrayList<Job>();
+    // // for (Sample s : design.getSamples()) {
+    // // if (context.getDataFileCount(READS_FASTQ, s) == 2)
+    // // jobsPairedEnd.add(createJobPairedEnd(conf, context, s,
+    // // getGenomicType()));
+    // // }
+    // //
+    // // MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
+    // // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+    //
+    // for (Sample s : design.getSamples()) {
+    //
+    // final Job jconf = createJob(conf, context, s, getGenomicType());
+    //
+    // jconf.submit();
+    // jobsRunning.put(s, jconf);
+    // }
+    //
+    // // Compute map-reduce part of the expression computation
+    // final JobsResults jobsResults =
+    // new NewAPIJobsResults(jobsRunning.values(),
+    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+    //
+    // final long mapReduceEndTime = System.currentTimeMillis();
+    // LOGGER.info("Finish the part of the expression computation in "
+    // + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
+    //
+    // // Create the final expression files
+    // createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
+    //
+    // LOGGER.info("Finish the create of the final expression files in "
+    // + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
+    // + " seconds.");
+    //
+    // return jobsResults.getStepResult(context, startTime);
+    //
+    // } catch (IOException e) {
+    //
+    // return new StepResult(context, e, "Error while running job: "
+    // + e.getMessage());
+    // } catch (InterruptedException e) {
+    //
+    // return new StepResult(context, e, "Error while running job: "
+    // + e.getMessage());
+    // } catch (BadBioEntryException e) {
+    //
+    // return new StepResult(context, e, "Invalid annotation entry: "
+    // + e.getEntry());
+    // } catch (ClassNotFoundException e) {
+    // return new StepResult(context, e, "Class not found: " + e.getMessage());
+    // }
+    return null;
   }
 
 }

@@ -22,10 +22,9 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
+package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -45,39 +43,27 @@ import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This class define a mapper for alignment filtering.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class define a mapper for the pretreatment of paired-end data before
+ * the expression estimation step.
+ * @since 1.2
+ * @author Claire Wallon
  */
-public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
-  // public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text>
-  // {
-
+public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
+  
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  // Parameters keys
-  // static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
-  // Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
-  static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.mapping.quality.threshold";
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.genome.desc.file";
-
+  private String counterGroup;
+  
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private List<String> idFields = newArrayList();
 
-  // private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
+  private Text outKey = new Text();
+  private Text outValue = new Text();
 
-  // private int mappingQualityThreshold;
-
-  // private ReadAlignmentsFilter filter;
-
-  // private final SAMParser parser = new SAMParser();
-  private String counterGroup;
-
-  private final Text outKey = new Text();
-  private final Text outValue = new Text();
+  //
+  // Setup
+  //
 
   @Override
   protected void setup(final Context context) throws IOException,
@@ -88,7 +74,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Get configuration object
     final Configuration conf = context.getConfiguration();
 
-    // Initialize Eoulsan DataProtocols
+    // Initialize Eoulsan Settings
     if (!EoulsanRuntime.isRuntime()) {
       HadoopEoulsanRuntime.newEoulsanRuntime(conf);
     }
@@ -102,15 +88,16 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     LOGGER.info("End of setup()");
   }
 
+  //
+  // Map
+  //
+
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
-
-    context.getCounter(this.counterGroup,
-        INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
+    
     final String line = value.toString();
-
+    
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
@@ -158,4 +145,5 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void cleanup(Context context) throws IOException,
       InterruptedException {
   }
+  
 }

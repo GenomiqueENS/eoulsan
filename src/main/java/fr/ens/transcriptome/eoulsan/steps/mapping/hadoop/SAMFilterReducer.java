@@ -29,9 +29,11 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 
@@ -56,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
  * @author Laurent Jourdren
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
+  // public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
@@ -150,9 +153,11 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
         ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(
         cptRecords - records.size());
 
+    Collections.sort(records, new SAMComparator());
+
     // Writing records
     for (SAMRecord r : records) {
-      strRecord = r.getSAMString();
+      strRecord = r.getSAMString().replaceAll("\n", "");
 
       final int indexOfFirstTab = strRecord.indexOf("\t");
       this.outKey.set(strRecord.substring(0, indexOfFirstTab));
@@ -164,5 +169,4 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     }
 
   }
-
 }

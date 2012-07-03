@@ -34,6 +34,8 @@ import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -148,6 +150,10 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set the reducer class
     job.setReducerClass(SAMFilterReducer.class);
 
+    // job.setPartitionerClass(SAMRecordsPartitioner.class);
+//    job.setSortComparatorClass(SAMRecordsKeyComparator.class);
+    // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
+
     // Set the output key class
     job.setOutputKeyClass(Text.class);
 
@@ -155,7 +161,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set the number of reducers
-    // job.setNumReduceTasks(1);
+    // job.setNumReduceTasks(9);
 
     // Set output path
     FileOutputFormat.setOutputPath(

@@ -104,8 +104,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       StepResult stepResult = jobsResults.getStepResult(context, startTime);
       
-      DistributedCache.purgeCache(conf);
-      
       return stepResult;
 
     } catch (IOException e) {

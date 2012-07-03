@@ -24,16 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_PRETREATMENT_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INVALID_INPUT_PRETREATMENT_READS_COUNTER;
 
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;

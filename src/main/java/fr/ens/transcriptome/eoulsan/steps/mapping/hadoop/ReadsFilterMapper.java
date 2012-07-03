@@ -181,7 +181,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       }
 
     } else if (fieldsSize == 6) {
-      // Pair end
+      // Paired-end
       this.read1.setName(fields.get(0));
       this.read1.setSequence(fields.get(1));
       this.read1.setQuality(fields.get(2));
