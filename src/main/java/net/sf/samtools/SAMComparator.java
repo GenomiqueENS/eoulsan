@@ -25,13 +25,18 @@
 package net.sf.samtools;
 
 import java.util.Comparator;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This class is a Comparator for SAM records
+ * This class is a Comparator for SAM records.
  * @since 1.2
  * @author Claire Wallon
  */
 public class SAMComparator implements Comparator<SAMRecord> {
+  
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public int compare(SAMRecord r0, SAMRecord r1) {
@@ -41,23 +46,106 @@ public class SAMComparator implements Comparator<SAMRecord> {
     // Compare the two read names
     comp = r0.getReadName().compareTo(r1.getReadName());
 
-    // Compare the reference names (chromosomes)
     if (comp == 0) {
-      comp = r0.getReferenceName().compareTo(r1.getReferenceName());
+      // Compare the mapping quality scores
+      Integer score0 = new Integer(r0.getMappingQuality());
+      Integer score1 = new Integer(r1.getMappingQuality());
+      comp = score0.compareTo(score1);
 
-      // For paired-end reads, compare the start position of the first alignment
-      // of the pair
-      if (comp == 0 && r0.getReadPairedFlag()) {
-        Integer start0 = new Integer(r0.getAlignmentStart());
-        Integer start1 = new Integer(r1.getMateAlignmentStart());
-        comp = start0.compareTo(start1);
-      }
-
-      // Compare the alignment flags
       if (comp == 0) {
-        Integer flag0 = new Integer(r0.getFlags());
-        Integer flag1 = new Integer(r1.getFlags());
-        comp = flag0.compareTo(flag1);
+        // Compare the reference names (chromosomes)
+        comp = r0.getReferenceName().compareTo(r1.getReferenceName());
+
+        if (comp == 0) {
+
+          // paired-end mode
+          if (r0.getReadPairedFlag()) {
+
+            // the two alignments to compare are a pair
+            if (r0.getAlignmentStart() == r1.getMateAlignmentStart()
+                && r1.getAlignmentStart() == r0.getMateAlignmentStart()) {
+              Integer flag0 = new Integer(r0.getFlags());
+              Integer flag1 = new Integer(r1.getFlags());
+              comp = flag0.compareTo(flag1);
+            }
+
+            // the two alignments to compare are part of different pairs
+            else {
+
+              if (r0.getFirstOfPairFlag() && r1.getFirstOfPairFlag()) {
+                Integer start0 = new Integer(r0.getAlignmentStart());
+                Integer start1 = new Integer(r1.getAlignmentStart());
+                comp = start0.compareTo(start1);
+                if (comp == 0) {
+                  Integer mateStart0 = new Integer(r0.getMateAlignmentStart());
+                  Integer mateStart1 = new Integer(r1.getMateAlignmentStart());
+                  comp = mateStart0.compareTo(mateStart1);
+                }
+              }
+
+              else if (!r0.getFirstOfPairFlag() && !r1.getFirstOfPairFlag()) {
+                Integer mateStart0 = new Integer(r0.getMateAlignmentStart());
+                Integer mateStart1 = new Integer(r1.getMateAlignmentStart());
+                comp = mateStart0.compareTo(mateStart1);
+                if (comp == 0) {
+                  Integer start0 = new Integer(r0.getAlignmentStart());
+                  Integer start1 = new Integer(r1.getAlignmentStart());
+                  comp = start0.compareTo(start1);
+                }
+              }
+
+              else if (r0.getFirstOfPairFlag() && !r1.getFirstOfPairFlag()) {
+                Integer start0 = new Integer(r0.getAlignmentStart());
+                Integer mateStart1 = new Integer(r1.getMateAlignmentStart());
+                comp = start0.compareTo(mateStart1);
+                if (comp == 0) {
+                  Integer mateStart0 = new Integer(r0.getMateAlignmentStart());
+                  Integer start1 = new Integer(r1.getAlignmentStart());
+                  comp = mateStart0.compareTo(start1);
+                }
+              }
+
+              else {
+                Integer mateStart0 = new Integer(r0.getMateAlignmentStart());
+                Integer start1 = new Integer(r1.getAlignmentStart());
+                comp = mateStart0.compareTo(start1);
+                if (comp == 0) {
+                  Integer start0 = new Integer(r0.getAlignmentStart());
+                  Integer mateStart1 = new Integer(r1.getMateAlignmentStart());
+                  comp = start0.compareTo(mateStart1);
+                }
+              }
+
+              if (comp == 0) {
+                // Compare the CIGAR code
+                comp = r0.getCigarString().compareTo(r1.getCigarString());
+              }
+
+            }
+          }
+
+          // single-end mode
+          else {
+
+            // Compare the 1-based leftmost mapping position
+            Integer start0 = new Integer(r0.getAlignmentStart());
+            Integer start1 = new Integer(r1.getAlignmentStart());
+            comp = start0.compareTo(start1);
+
+            if (comp == 0) {
+              // Compare the end position of the alignment
+              Integer end0 = new Integer(r0.getAlignmentEnd());
+              Integer end1 = new Integer(r1.getAlignmentEnd());
+              comp = end0.compareTo(end1);
+
+              if (comp == 0) {
+                // Compare the CIGAR code
+                comp = r0.getCigarString().compareTo(r1.getCigarString());
+              }
+            }
+          }
+
+        }
       }
     }
 

@@ -126,7 +126,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       endReadId = completeId.indexOf('/');
       // single-end mode
       if (endReadId == -1) {
-        this.outKey.set(line.substring(0, indexOfFirstTab));
+        this.outKey.set(completeId);
         this.outValue.set(line.substring(indexOfFirstTab));
       }
       // paired-end mode
@@ -152,9 +152,6 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     context.write(this.outKey, this.outValue);
-    context.getCounter(this.counterGroup,
-        INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
   }
 
   @Override

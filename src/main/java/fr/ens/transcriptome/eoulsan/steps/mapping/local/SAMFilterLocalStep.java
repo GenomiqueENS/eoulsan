@@ -31,9 +31,11 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
@@ -213,10 +215,14 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
         counterInput++;
 
+        // storage and filtering of all the alignments of a read in the list
+        // "records"
         if (!rafb.addAlignment(samRecord)) {
 
           records.clear();
           records.addAll(rafb.getFilteredAlignments());
+          
+          Collections.sort(records, new SAMComparator());
 
           // writing records
           for (SAMRecord r : records) {
@@ -232,6 +238,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       // treatment of the last record
       records.clear();
       records.addAll(rafb.getFilteredAlignments());
+
+      Collections.sort(records, new SAMComparator());
 
       // writing records
       for (SAMRecord r : records) {
