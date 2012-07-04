@@ -72,6 +72,7 @@ public class DesignBuilder {
   private final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
   private final Map<String, List<FastqEntry>> fastqMap = Maps
       .newLinkedHashMap();
+  private final Map<String, String> prefixMap = Maps.newHashMap();
   private DataFile genomeFile;
   private DataFile gffFile;
 
@@ -88,6 +89,9 @@ public class DesignBuilder {
     private final String sampleDesc;
     private final String sampleOperator;
     private final String sampleDate;
+    private final String firstReadId;
+    private final String prefix;
+    private final int pairMember;
 
     private static final String getDate(DataFile file) {
 
@@ -101,6 +105,75 @@ public class DesignBuilder {
       }
 
     }
+
+    //
+    // static methods
+    //
+
+    /**
+     * Get the identifier of the first read of a fastq file.
+     * @param f the input file
+     * @return the identifier of the first read of a fastq file as a string
+     * @throws EoulsanException if an error occurs while reading the file or if
+     *           the read format is invalid
+     */
+    private static String getFirstReadSeqId(final DataFile f)
+        throws EoulsanException {
+
+      final FastqReader reader;
+      try {
+        reader = new FastqReader(f.open());
+
+        if (!reader.hasNext()) {
+          reader.throwException();
+          throw new EoulsanException("Fastq file is empty: " + f.getSource());
+        }
+
+        reader.throwException();
+        return reader.next().getName();
+
+      } catch (IOException e) {
+        throw new EoulsanException(e.getMessage());
+      } catch (BadBioEntryException e) {
+        throw new EoulsanException(e.getMessage());
+      }
+
+    }
+
+    private Object[] initPairedend() {
+
+      String prefix = this.firstReadId;
+      int pairMember = -1;
+
+      try {
+        IlluminaReadId irid = new IlluminaReadId(firstReadId);
+        prefix =
+            irid.getInstrumentId()
+                + "\t" + irid.getFlowCellLane() + "\t"
+                + irid.getTileNumberInFlowCellLane() + "\t"
+                + irid.getXClusterCoordinateInTile() + "\t"
+                + irid.getYClusterCoordinateInTile();
+
+        pairMember = irid.getPairMember();
+
+      } catch (EoulsanException e) {
+
+        if (firstReadId.endsWith("/1")) {
+          prefix = firstReadId.substring(0, firstReadId.length() - 3);
+          pairMember = 1;
+        } else if (firstReadId.endsWith("/2")) {
+          prefix = firstReadId.substring(0, firstReadId.length() - 3);
+          pairMember = 2;
+        } else
+          pairMember = 1;
+      }
+
+      return new Object[] {prefix, pairMember};
+    }
+
+    //
+    // Object methods
+    //
 
     @Override
     public boolean equals(final Object obj) {
@@ -147,23 +220,32 @@ public class DesignBuilder {
     // Constructors
     //
 
-    public FastqEntry(final DataFile path) {
+    public FastqEntry(final DataFile path) throws EoulsanException {
 
       this.path = path;
       this.sampleName = StringUtils.basename(path.getName());
       this.sampleDesc = null;
       this.sampleOperator = null;
       this.sampleDate = getDate(path);
+      this.firstReadId = getFirstReadSeqId(path);
+      final Object[] array = initPairedend();
+      this.prefix = (String) array[0];
+      this.pairMember = (Integer) array[1];
     }
 
     public FastqEntry(final DataFile path, final String sampleName,
-        final String sampleDesc, final String sampleOperator) {
+        final String sampleDesc, final String sampleOperator)
+        throws EoulsanException {
 
       this.path = path;
       this.sampleName = sampleName;
       this.sampleDesc = sampleDesc;
       this.sampleOperator = sampleOperator;
       this.sampleDate = getDate(path);
+      this.firstReadId = getFirstReadSeqId(path);
+      final Object[] array = initPairedend();
+      this.prefix = (String) array[0];
+      this.pairMember = (Integer) array[1];
     }
 
   }
@@ -195,7 +277,16 @@ public class DesignBuilder {
     if (isDataTypeExtension(DataTypes.READS, extension, md)) {
 
       final FastqEntry entry = new FastqEntry(file);
-      final String sampleName = entry.sampleName;
+
+      final String sampleName;
+
+      if (this.prefixMap.containsKey(entry.prefix))
+        sampleName = this.prefixMap.get(entry.prefix);
+      else {
+        sampleName = entry.sampleName;
+        this.prefixMap.put(entry.prefix, sampleName);
+      }
+
       final List<FastqEntry> sampleEntries;
 
       if (!this.fastqMap.containsKey(sampleName)) {
@@ -229,6 +320,20 @@ public class DesignBuilder {
 
     LOGGER.info("Add file " + filename + " to design.");
     addFile(new DataFile(filename));
+  }
+
+  /**
+   * Add filenames to the design builder
+   * @param filenames array with the filenames to add
+   * @throws EoulsanException if the file does not exists
+   */
+  public void addFiles(final String[] filenames) throws EoulsanException {
+
+    if (filenames == null)
+      return;
+
+    for (String filename : filenames)
+      addFile(filename);
   }
 
   /**
@@ -461,6 +566,8 @@ public class DesignBuilder {
     // Set the description of the sample if exists
     if (desc != null)
       smd.setDescription(desc);
+    else if (design.isMetadataField(SampleMetadata.DESCRIPTION_FIELD))
+      smd.setDescription("no description");
 
     // Set the date of the sample if exists
     if (date != null)
@@ -469,6 +576,8 @@ public class DesignBuilder {
     // Set the operator of the sample if exists
     if (operator != null)
       smd.setOperator(operator);
+    else if (design.isMetadataField(SampleMetadata.OPERATOR_FIELD))
+      smd.setOperator("unknown operator");
 
     // Set the genome file if exists
     if (this.genomeFile != null)
@@ -525,40 +634,15 @@ public class DesignBuilder {
 
     for (FastqEntry fe : files) {
 
-      final String readId = getFirstReadSeqId(fe.path);
-
-      String prefix = readId;
-
-      try {
-        IlluminaReadId irid = new IlluminaReadId(readId);
-        prefix =
-            irid.getInstrumentId()
-                + "\t" + irid.getFlowCellLane() + "\t"
-                + irid.getTileNumberInFlowCellLane() + "\t"
-                + irid.getXClusterCoordinateInTile() + "\t"
-                + irid.getYClusterCoordinateInTile();
-
-        mapPair.put(fe, irid.getPairMember());
-
-      } catch (EoulsanException e) {
-
-        if (readId.endsWith("/1")) {
-          prefix = readId.substring(0, readId.length() - 3);
-          mapPair.put(fe, 1);
-        } else if (readId.endsWith("/2")) {
-          prefix = readId.substring(0, readId.length() - 3);
-          mapPair.put(fe, 2);
-        } else
-          mapPair.put(fe, 1);
-      }
+      mapPair.put(fe, fe.pairMember);
 
       final List<FastqEntry> list;
 
-      if (mapPrefix.containsKey(prefix))
-        list = mapPrefix.get(prefix);
+      if (mapPrefix.containsKey(fe.prefix))
+        list = mapPrefix.get(fe.prefix);
       else {
         list = Lists.newArrayList();
-        mapPrefix.put(prefix, list);
+        mapPrefix.put(fe.prefix, list);
         result.add(list);
       }
 
@@ -604,38 +688,15 @@ public class DesignBuilder {
     return result;
   }
 
-  /**
-   * Get the identifier of the first read of a fastq file.
-   * @param f the input file
-   * @return the identifier of the first read of a fastq file as a string
-   * @throws EoulsanException if an error occurs while reading the file or if
-   *           the read format is invalid
-   */
-  private String getFirstReadSeqId(final DataFile f) throws EoulsanException {
-
-    final FastqReader reader;
-    try {
-      reader = new FastqReader(f.open());
-
-      if (!reader.hasNext()) {
-        reader.throwException();
-        throw new EoulsanException("Fastq file is empty: " + f.getSource());
-      }
-
-      reader.throwException();
-      return reader.next().getName();
-
-    } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (BadBioEntryException e) {
-      throw new EoulsanException(e.getMessage());
-    }
-
-  }
-
   //
   // Constructor
   //
+
+  /**
+   * Public constructor.
+   */
+  public DesignBuilder() {
+  }
 
   /**
    * Public constructor.
@@ -645,11 +706,7 @@ public class DesignBuilder {
    */
   public DesignBuilder(final String[] filenames) throws EoulsanException {
 
-    if (filenames == null)
-      return;
-
-    for (String filename : filenames)
-      addFile(filename);
+    addFiles(filenames);
   }
 
 }
