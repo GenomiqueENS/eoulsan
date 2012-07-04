@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GWT_PATH=~/Téléchargements/gwt-2.4.0
-PROJECT_NAME=CasavaDesignValidator
+PROJECT_NAME=DesignValidator
 
 BASEDIR=`dirname $0`
 if [ ! -d $BASEDIR/target ]; then
@@ -17,7 +17,7 @@ PACKAGE_PATH=`echo $PACKAGE | sed 's/\./\//g'`
 
 
 rm -rf $PROJECT_NAME
-$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.CasavaDesignValidator
+$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.DesignValidator
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/client/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/server/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/shared/*
@@ -202,7 +202,7 @@ public class $PROJECT_NAME implements EntryPoint {
     indexesTextarea.setVisibleLines(40);
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
-    flowcellTextBox.setText(Window.Location.getParameter("flowcellid"));
+    flowcellTextBox.setText(Window.Location.getParameter("id"));
     inputTextarea.setText("[Paste here your Casava design]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
@@ -235,8 +235,8 @@ public class $PROJECT_NAME implements EntryPoint {
 
           // Get the flowcell id
           final String flowcellId = getFlowcellId(flowcellTextBox.getText());
-          if (flowcellId == null)
-            throw new EoulsanException("Invalid run id: " + flowcellTextBox.getText());
+          //if (flowcellId == null)
+          //  throw new EoulsanException("Invalid run id: " + flowcellTextBox.getText());
 
           // Check Casava design
           final List<String> warnings = 
@@ -290,19 +290,19 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
-    <link type="text/css" rel="stylesheet" href="CasavaDesignValidator.css">
+    <link type="text/css" rel="stylesheet" href="DesignValidator.css">
 
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>Casava design checker</title>
+    <title>Casava design validator</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="casavadesignvalidator/casavadesignvalidator.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="designvalidator/designvalidator.nocache.js"></script>
   </head>
 
   <!--                                           -->
@@ -323,7 +323,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
       </div>
     </noscript>
 
-<h1>Casava design checker</h1>
+<h1>Casava design validator</h1>
 
     <table align="center">
       <!--tr>
@@ -363,6 +363,7 @@ EOF
 cd $PROJECT_NAME
 ant build
 
+mv war/$PROJECT_NAME.html war/index.html
 mv war ../$PROJECT_NAME-tmp
 rm -rf ../$PROJECT_NAME-tmp/WEB-INF
 cd ..
