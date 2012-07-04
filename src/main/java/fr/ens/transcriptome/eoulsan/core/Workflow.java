@@ -282,7 +282,7 @@ class Workflow implements WorkflowDescription {
             if (file.exists())
               throw new EoulsanException("For sample "
                   + s.getId() + ", generated \"" + df.getFormatName()
-                  + "\" already exists.");
+                  + "\" already exists (" + file + ").");
             checkedDatafile.add(file);
           }
       }

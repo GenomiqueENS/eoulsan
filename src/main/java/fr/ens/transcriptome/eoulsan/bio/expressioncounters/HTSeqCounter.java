@@ -82,13 +82,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     try {
 
-      LOGGER.info("alignmentFile : " + alignmentFile.toString());
-      LOGGER.info("annotationFile : " + annotationFile.toString());
-      LOGGER.info("expressionFile : " + expressionFile.toString());
-      LOGGER.info("getStranded() : " + getStranded());
-      LOGGER.info("getOverlapMode() : " + getOverlapMode());
-      LOGGER.info("getGenomicType() : " + getGenomicType());
-
       countReadsInFeatures(alignmentFile, annotationFile.open(),
           expressionFile, getStranded(), getOverlapMode(), getGenomicType(),
           "ID", false, 0, null, reporter, counterGroup);

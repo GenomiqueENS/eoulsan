@@ -194,6 +194,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set mapper temporary directory
     mapper.setTempDirectory(tempDir);
 
+//    DistributedCache.purgeCache(conf);
+    
     // Download genome reference
     final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
 
