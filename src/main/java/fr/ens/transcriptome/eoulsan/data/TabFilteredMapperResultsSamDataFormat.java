@@ -25,30 +25,30 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 /**
- * This class define a filtered SAM mappper result DataFormat.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class define a tabulated filtered SAM mappper result DataFormat.
+ * @since 1.2
+ * @author Claire Wallon
  */
-public final class FilteredMapperResultsSamDataFormat extends
-    AbstractDataFormat {
+public class TabFilteredMapperResultsSamDataFormat extends AbstractDataFormat {
+  
+  public static final String FORMAT_NAME = "tab_filtered_sam_results";
 
-  public static final String FORMAT_NAME = "filtered_sam_results";
+  @Override
+  public String getFormatName() {
+    
+    return FORMAT_NAME;
+  }
 
+  @Override
   public DataType getType() {
-
+    
     return DataTypes.FILTERED_MAPPER_RESULTS;
   }
 
   @Override
   public String getDefaultExtention() {
-
-    return ".sam";
+    
+    return ".tsam";
   }
 
-  @Override
-  public String getFormatName() {
-
-    return FORMAT_NAME;
-  }
-  
 }

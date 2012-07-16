@@ -76,7 +76,6 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String counterGroup;
 
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
-  // private final AlignResult ar = new AlignResult();
 
   private final SAMParser parser = new SAMParser();
 

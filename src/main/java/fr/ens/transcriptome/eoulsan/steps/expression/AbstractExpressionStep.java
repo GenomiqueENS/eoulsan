@@ -83,15 +83,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     return this.counter.getCounterName();
   }
 
-  /**
-   * Get the arguments of the counter to use.
-   * @return Returns the counterArguments
-   */
-//  protected String getCounterArguments() {
-//    // return this.counterArguments;
-//    return null;
-//  }
-  
   protected String getStranded() {
     return this.stranded;
   }
