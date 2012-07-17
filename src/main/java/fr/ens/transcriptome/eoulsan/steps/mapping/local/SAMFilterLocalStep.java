@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -221,7 +222,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
           records.clear();
           records.addAll(rafb.getFilteredAlignments());
-          
+
           Collections.sort(records, new SAMComparator());
 
           // writing records
@@ -253,12 +254,17 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // paired-end mode
     if (pairedEnd) {
+      int nbInput = counterInput / 2;
+      int nbOutput = counterOutput / 2;
       reporter.incrCounter(COUNTER_GROUP,
-          INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput / 2);
+          INPUT_ALIGNMENTS_COUNTER.counterName(), nbInput);
       reporter.incrCounter(COUNTER_GROUP,
-          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput / 2);
+          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), nbOutput);
       reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid / 2);
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), nbInput
+              - nbOutput);
     }
 
     // single-end mode
@@ -269,6 +275,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
           OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput);
       reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid);
+      reporter.incrCounter(COUNTER_GROUP,
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), counterInput
+              - counterOutput);
     }
 
     // Close files

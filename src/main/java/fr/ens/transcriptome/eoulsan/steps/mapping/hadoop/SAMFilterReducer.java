@@ -58,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
  * @author Laurent Jourdren
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
-  // public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";

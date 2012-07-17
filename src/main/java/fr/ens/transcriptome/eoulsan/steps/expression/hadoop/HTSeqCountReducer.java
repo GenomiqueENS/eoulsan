@@ -25,43 +25,54 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This class define a reducer for the pretreatment of paired-end data before
- * the expression estimation step.
+ * Reducer for the expression estimation with htseq-count.
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
-
+public class HTSeqCountReducer extends Reducer<Text, Text, Text, Text> {
+  
+  /** Logger */
+  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  
   private String counterGroup;
-  private Text outValue, outKey;
 
   @Override
   protected void setup(final Context context) throws IOException,
       InterruptedException {
-
-    final Configuration conf = context.getConfiguration();
+    
+    LOGGER.info("Start of setup()");
 
     // Counter group
-    this.counterGroup = conf.get(Globals.PARAMETER_PREFIX + ".counter.group");
+    this.counterGroup =
+        context.getConfiguration().get(CommonHadoop.COUNTER_GROUP_KEY);
     if (this.counterGroup == null) {
       throw new IOException("No counter group defined");
     }
 
+    LOGGER.info("End of setup()");
   }
 
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
-    System.err.println("key : " + key);
+
+    int counts = 0;
+
+    for (Text val : values) {
+      counts++;
+    }
+
+    context.write(key, new Text(String.valueOf(counts)));
+
   }
 
 }

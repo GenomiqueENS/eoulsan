@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);

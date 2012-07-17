@@ -116,17 +116,6 @@ public class GenomicInterval implements Serializable,
         || (start < this.start && end > this.end);
   }
 
-  // /**
-  // *
-  // * @param start
-  // * @param end
-  // * @return
-  // */
-  // public final boolean equals(final int start, final int end) {
-  //
-  // return (start == this.start && end == this.end);
-  // }
-
   @Override
   public int compareTo(final GenomicInterval e) {
 

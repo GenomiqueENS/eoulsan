@@ -42,66 +42,52 @@ import java.util.logging.Logger;
 import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class generates the final expression file after counting the alignment
- * for each transcript.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class generates the final expression file after counting the alignments
+ * for each feature with HTSeq-count.
+ * @since 1.2
+ * @author Claire Wallon
  */
-public class FinalExpressionTranscriptsCreator {
-  
+public class FinalExpressionFeaturesCreator {
+
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
-  private final Map<String, ExpressionTranscript> expressionResults =
-      new HashMap<String, ExpressionTranscript>();
+  private GenomicArray<String> ga = new GenomicArray<String>();
+  private final Map<String, ExpressionFeature> expressionResults =
+      new HashMap<String, ExpressionFeature>();
 
-  private static final class ExpressionTranscript implements
-      Comparable<ExpressionTranscript> {
+  private static final class ExpressionFeature implements
+      Comparable<ExpressionFeature> {
 
-    private Transcript transcript;
-    private int baseNotCovered;
+    private String id;
     private int alignementCount = 0;
-    private double ratio;
 
-    public void setExpressionResult(final int baseNotCovered,
-        final int alignementCount, final long readsUsed) {
+    public void setExpressionResult(final int alignementCount) {
 
-      this.baseNotCovered = baseNotCovered;
       this.alignementCount = alignementCount;
-      this.ratio = (double) alignementCount / (double) readsUsed;
     }
 
     @Override
-    public int compareTo(final ExpressionTranscript o) {
+    public int compareTo(final ExpressionFeature o) {
 
       if (o == null)
         return 1;
 
-      int diff = o.alignementCount - this.alignementCount;
+      int diff = this.id.compareTo(o.id);
 
       if (diff != 0)
         return diff;
 
-      diff = transcript.getName().compareTo(o.transcript.getName());
-
-      if (diff != 0)
-        return diff;
-
-      diff = o.baseNotCovered - this.baseNotCovered;
-
-      if (diff != 0)
-        return diff;
-
-      return (int) (o.ratio - this.ratio);
+      return (o.alignementCount - this.alignementCount);
 
     }
 
@@ -111,15 +97,12 @@ public class FinalExpressionTranscriptsCreator {
       if (o == null)
         return false;
 
-      if (!(o instanceof ExpressionTranscript))
+      if (!(o instanceof ExpressionFeature))
         return false;
 
-      final ExpressionTranscript et = (ExpressionTranscript) o;
+      final ExpressionFeature et = (ExpressionFeature) o;
 
-      if (this.alignementCount == et.alignementCount
-          && this.transcript.equals(et.transcript)
-          && this.baseNotCovered == et.baseNotCovered
-          && Math.abs(this.ratio - et.ratio) < .0000001)
+      if (this.id == et.id && this.alignementCount == et.alignementCount)
         return true;
 
       return false;
@@ -128,20 +111,13 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hashCode(this.transcript, baseNotCovered, alignementCount,
-          ratio);
+      return Objects.hashCode(this.id, this.alignementCount);
     }
 
     @Override
     public String toString() {
 
-      final Transcript t = this.transcript;
-
-      return t.getName()
-          + "\t" + t.getType() + "\t" + t.getChromosome() + "\t" + t.getStart()
-          + "\t" + t.getEnd() + "\t" + t.getStrand() + "\t" + t.getLength()
-          + "\t" + (this.baseNotCovered == 0) + "\t" + this.baseNotCovered
-          + "\t" + this.ratio + "\t" + alignementCount;
+      return this.id + "\t" + this.alignementCount;
     }
 
     //
@@ -152,13 +128,12 @@ public class FinalExpressionTranscriptsCreator {
      * Constructor for ExpressionTranscript
      * @param transcript Transcript to set
      */
-    public ExpressionTranscript(final Transcript transcript) {
+    public ExpressionFeature(String id) {
 
-      if (transcript == null)
-        throw new NullPointerException("Transcript to add is null");
+      if (id == null)
+        throw new NullPointerException("Identifier to add is null");
 
-      this.transcript = transcript;
-      this.baseNotCovered = this.transcript.getLength();
+      this.id = id;
     }
 
   }
@@ -167,11 +142,10 @@ public class FinalExpressionTranscriptsCreator {
    * Clear.
    */
   public void initializeExpressionResults() {
-
+    
     this.expressionResults.clear();
-    for (String id : tef.getTranscriptsIds())
-      this.expressionResults.put(id,
-          new ExpressionTranscript(tef.getTranscript(id)));
+    for (String id : ga.getFeaturesIds())
+      this.expressionResults.put(id, new ExpressionFeature(id));
   }
 
   /**
@@ -180,10 +154,9 @@ public class FinalExpressionTranscriptsCreator {
    * @param readsUsed the number of read useds
    * @throws IOException if an error occurs while reading data
    */
-  public void loadPreResults(final File preResultFile, final long readsUsed)
-      throws IOException {
+  public void loadPreResults(final File preResultFile) throws IOException {
 
-    loadPreResults(FileUtils.createInputStream(preResultFile), readsUsed);
+    loadPreResults(FileUtils.createInputStream(preResultFile));
   }
 
   /**
@@ -192,13 +165,12 @@ public class FinalExpressionTranscriptsCreator {
    * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
-  public void loadPreResults(final InputStream is, final long readsUsed)
-      throws IOException {
-
+  public void loadPreResults(final InputStream is) throws IOException {
+    
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(is, CHARSET));
 
-    final String[] tab = new String[3];
+    final String[] tab = new String[2];
     String line = null;
 
     while ((line = br.readLine()) != null) {
@@ -206,12 +178,10 @@ public class FinalExpressionTranscriptsCreator {
       StringUtils.fastSplit(line, tab);
 
       final String id = tab[0];
-      final int baseNotCovered = Integer.parseInt(tab[1]);
-      final int alignementCount = Integer.parseInt(tab[2]);
+      final int alignementCount = Integer.parseInt(tab[1]);
 
       if (this.expressionResults.containsKey(id))
-        this.expressionResults.get(id).setExpressionResult(baseNotCovered,
-            alignementCount, readsUsed);
+        this.expressionResults.get(id).setExpressionResult(alignementCount);
     }
 
     br.close();
@@ -234,18 +204,18 @@ public class FinalExpressionTranscriptsCreator {
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
     
-    final List<ExpressionTranscript> list =
-        new ArrayList<ExpressionTranscript>(this.expressionResults.values());
+    final List<ExpressionFeature> list =
+        new ArrayList<ExpressionFeature>(this.expressionResults.values());
 
     Collections.sort(list);
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
-    osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
-    for (ExpressionTranscript et : list)
-      osw.write(et.toString() + "\n");
+    for (ExpressionFeature ef : list)
+      osw.write(ef.toString() + "\n");
 
     osw.close();
+    
   }
 
   //
@@ -256,7 +226,7 @@ public class FinalExpressionTranscriptsCreator {
    * Public constructor.
    * @param indexFile index file
    */
-  public FinalExpressionTranscriptsCreator(final File indexFile)
+  public FinalExpressionFeaturesCreator(final File indexFile)
       throws IOException {
 
     this(FileUtils.createInputStream(indexFile));
@@ -266,23 +236,23 @@ public class FinalExpressionTranscriptsCreator {
    * Public constructor.
    * @param indexIs index input stream
    */
-  public FinalExpressionTranscriptsCreator(final InputStream indexIs)
+  public FinalExpressionFeaturesCreator(final InputStream indexIs)
       throws IOException {
 
-    this.tef = new TranscriptAndExonFinder();
-    tef.load(indexIs);
+    this.ga = new GenomicArray<String>();
+    this.ga.load(indexIs);
   }
 
   /**
    * Public constructor.
    * @param tef TranscriptAndExonFinder object
    */
-  public FinalExpressionTranscriptsCreator(final TranscriptAndExonFinder tef) {
+  public FinalExpressionFeaturesCreator(final GenomicArray<String> ga) {
 
-    if (tef == null)
-      throw new NullPointerException("TranscriptAndExonFinder is null.");
+    if (ga == null)
+      throw new NullPointerException("GenomicArray is null.");
 
-    this.tef = tef;
+    this.ga = ga;
   }
 
 }

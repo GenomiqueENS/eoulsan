@@ -22,311 +22,294 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
+package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
+
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.ELIMINATED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNMAPPED_READS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.CigarOperator;
-import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMFormatException;
+import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.filecache.DistributedCache;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
-import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
-import fr.ens.transcriptome.eoulsan.util.Reporter;
+import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
- * This class define a wrapper on the HTSeq-count counter.
+ * Mapper for the expression estimation with htseq-count.
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCounter extends AbstractExpressionCounter {
+public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-  private static final String COUNTER_NAME = "htseq-count";
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  // Parameters keys
+  static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
+      + ".expression.stranded.parameter";
+  static final String OVERLAPMODE_PARAM = Globals.PARAMETER_PREFIX
+      + ".expression.overlapmode.parameter";
+
+  private GenomicArray<String> features = new GenomicArray<String>();
+  private Map<String, Integer> counts = Utils.newHashMap();
+
+  private String counterGroup;
+  private String stranded;
+  private String overlapMode;
+
+  private final SAMParser parser = new SAMParser();
+
+  private Text outKey = new Text();
+  private Text outValue = new Text();
 
   @Override
-  public String getCounterName() {
+  public void setup(final Context context) throws IOException,
+      InterruptedException {
 
-    return COUNTER_NAME;
-  }
-
-  @Override
-  protected void internalCount(File alignmentFile, DataFile annotationFile,
-      File expressionFile, final DataFile GenomeDescFile, Reporter reporter,
-      String counterGroup) throws IOException {
+    LOGGER.info("Start of configure()");
 
     try {
 
-      countReadsInFeatures(alignmentFile, annotationFile.open(),
-          expressionFile, getStranded(), getOverlapMode(), getGenomicType(),
-          "ID", false, 0, null, reporter, counterGroup);
+      final Configuration conf = context.getConfiguration();
 
-    } catch (EoulsanException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (BadBioEntryException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+
+      if (localCacheFiles == null || localCacheFiles.length == 0)
+        throw new IOException("Unable to retrieve genome index");
+
+      if (localCacheFiles.length > 1)
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+
+      LOGGER.info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
+
+      final File indexFile = new File(localCacheFiles[0].toString());
+      this.features.load(indexFile);
+
+      // Counter group
+      this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
+      if (this.counterGroup == null) {
+        throw new IOException("No counter group defined");
+      }
+
+      // Get the genome description filename
+      final String genomeDescFile =
+          conf.get(ExpressionMapper.GENOME_DESC_PATH_KEY);
+
+      if (genomeDescFile == null) {
+        throw new IOException("No genome desc file set");
+      }
+
+      // Load genome description object
+      final GenomeDescription genomeDescription =
+          GenomeDescription.load(PathUtils.createInputStream(new Path(
+              genomeDescFile), conf));
+
+      // Set the chromosomes sizes in the parser
+      this.parser.setGenomeDescription(genomeDescription);
+
+      // Get the "stranded" parameter
+      this.stranded = conf.get(STRANDED_PARAM);
+
+      // Get the "overlap mode" parameter
+      this.overlapMode = conf.get(OVERLAPMODE_PARAM);
+
+    } catch (IOException e) {
+      LOGGER.severe("Error while loading annotation data in Mapper: "
+          + e.getMessage());
     }
 
+    LOGGER.info("End of configure()");
   }
 
-  /**
-   * Count the number of alignments for all the features of the annotation file.
-   * @param samFile SAM file that contains alignments.
-   * @param gffFile annotation file.
-   * @param outFile output file.
-   * @param stranded strand to consider.
-   * @param overlapMode overlap mode to consider.
-   * @param featureType annotation feature type to consider.
-   * @param attributeId annotation attribute id to consider.
-   * @param quiet if true : suppress progress report and warnings.
-   * @param minAverageQual minimum value for alignment quality.
-   * @param samOutFile output SAM file annotating each line with its assignment
-   *          to a feature or a special counter (as an optional field with tag
-   *          'XF').
-   * @param reporter Reporter object.
-   * @param counterGroup counter group for the Reporter object.
-   * @throws EoulsanException
-   * @throws IOException
-   * @throws BadBioEntryException
-   */
-  private static void countReadsInFeatures(final File samFile,
-      final InputStream gffFile, final File outFile, final String stranded,
-      final String overlapMode, final String featureType,
-      final String attributeId, final boolean quiet, final int minAverageQual,
-      final File samOutFile, Reporter reporter, String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+  @Override
+  public void map(final LongWritable key, final Text value,
+      final Context context) throws IOException, InterruptedException {
 
-    final GenomicArray<String> features = new GenomicArray<String>();
-    final Map<String, Integer> counts = Utils.newHashMap();
+    context.getCounter(this.counterGroup,
+        TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
-    Writer writer = new FileWriter(outFile);
-
-    boolean pairedEnd = false;
-
-    final GFFReader gffReader = new GFFReader(gffFile);
-
-    // Read the annotation file
-    for (final GFFEntry gff : gffReader) {
-
-      if (featureType.equals(gff.getType())) {
-
-        final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
-          throw new EoulsanException("Feature "
-              + featureType + " does not contain a " + attributeId
-              + " attribute");
-
-        if ((stranded.equals("yes") || stranded.equals("reverse"))
-            && '.' == gff.getStrand())
-          throw new EoulsanException("Feature "
-              + featureType
-              + " does not have strand information but you are running "
-              + "htseq-count in stranded mode.");
-
-        // Addition to the list of features of a GenomicInterval object
-        // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
-        counts.put(featureId, 0);
-      }
-    }
-    gffReader.throwException();
-    gffReader.close();
-
-    if (counts.size() == 0)
-      throw new EoulsanException("Warning: No features of type '"
-          + featureType + "' found.\n");
+    final String line = value.toString();
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
-    final SAMFileReader inputSam = new SAMFileReader(samFile);
+    String[] fields = line.split("£");
 
-    // paired-end mode ?
-    final SAMFileReader input = new SAMFileReader(samFile);
-    SAMRecordIterator samIterator = input.iterator();
-    SAMRecord firstRecord = samIterator.next();
-    if (firstRecord.getReadPairedFlag())
-      pairedEnd = true;
-    input.close();
+    try {
 
-    int empty = 0;
-    int ambiguous = 0;
-    int notaligned = 0;
-    int lowqual = 0;
-    int nonunique = 0;
-    int i = 0;
-    SAMRecord sam1 = null, sam2 = null;
+      // paired-end data
+      if (line.contains("£")) {
+        final SAMRecord samRecord1, samRecord2;
+        samRecord1 = this.parser.parseLine(fields[0]);
+        samRecord2 = this.parser.parseLine(fields[1]);
 
-    // Read the SAM file
-    for (final SAMRecord samRecord : inputSam) {
+        if (!samRecord1.getReadUnmappedFlag()) {
+          ivSeq.addAll(addIntervals(samRecord1, stranded));
+        }
 
-      reporter.incrCounter(counterGroup,
-          ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(), 1);
+        if (!samRecord2.getReadUnmappedFlag()) {
+          ivSeq.addAll(addIntervals(samRecord2, stranded));
+        }
 
-      i++;
-      if (i % 1000000 == 0)
-        System.out.println(i + " sam entries read.");
+        // unmapped read
+        if (samRecord1.getReadUnmappedFlag()
+            && samRecord2.getReadUnmappedFlag()) {
+          context.getCounter(this.counterGroup,
+              NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
+        }
 
-      // single-end mode
-      if (!pairedEnd) {
+        // multiple alignment
+        if ((samRecord1.getAttribute("NH") != null && samRecord1
+            .getIntegerAttribute("NH") > 1)
+            || (samRecord2.getAttribute("NH") != null && samRecord2
+                .getIntegerAttribute("NH") > 1)) {
+          context.getCounter(this.counterGroup,
+              NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
+        }
 
-        ivSeq.clear();
+        // too low quality
+        if (samRecord1.getMappingQuality() < 0
+            || samRecord2.getMappingQuality() < 0) {
+          context.getCounter(this.counterGroup,
+              LOW_QUAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
+        }
+
+      }
+      // single-end data
+      else {
+        final SAMRecord samRecord;
+        samRecord = this.parser.parseLine(line);
 
         // unmapped read
         if (samRecord.getReadUnmappedFlag()) {
-          notaligned++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
+          context.getCounter(this.counterGroup,
+              NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
         }
 
         // multiple alignment
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
-          nonunique++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
+          context.getCounter(this.counterGroup,
+              NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
         }
 
         // too low quality
-        if (samRecord.getMappingQuality() < minAverageQual) {
-          lowqual++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
+        if (samRecord.getMappingQuality() < 0) {
+          context.getCounter(this.counterGroup,
+              LOW_QUAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          return;
         }
 
         ivSeq.addAll(addIntervals(samRecord, stranded));
-
-      }
-
-      // paired-end mode
-      else {
-
-        if (sam1 != null && sam2 != null) {
-          sam1 = null;
-          sam2 = null;
-          ivSeq.clear();
-        }
-
-        if (samRecord.getFirstOfPairFlag())
-          sam1 = samRecord;
-        else
-          sam2 = samRecord;
-
-        if (sam1 == null || sam2 == null)
-          continue;
-
-        if (!sam1.getReadName().equals(sam2.getReadName())) {
-          sam1 = sam2;
-          sam2 = null;
-          continue;
-        }
-
-        if (sam1 != null && !sam1.getReadUnmappedFlag()) {
-          ivSeq.addAll(addIntervals(sam1, stranded));
-        }
-
-        if (sam2 != null && !sam2.getReadUnmappedFlag()) {
-          ivSeq.addAll(addIntervals(sam2, stranded));
-        }
-
-        // unmapped read
-        if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
-          notaligned++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
-        }
-
-        // multiple alignment
-        if ((sam1.getAttribute("NH") != null && sam1.getIntegerAttribute("NH") > 1)
-            || (sam2.getAttribute("NH") != null && sam2
-                .getIntegerAttribute("NH") > 1)) {
-          nonunique++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
-        }
-
-        // too low quality
-        if (sam1.getMappingQuality() < minAverageQual
-            || sam2.getMappingQuality() < minAverageQual) {
-          lowqual++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
-          continue;
-        }
-
       }
 
       Set<String> fs = null;
 
-      fs = featuresOverlapped(ivSeq, features, overlapMode, stranded);
+      fs = featuresOverlapped(ivSeq, this.features, overlapMode, stranded);
 
       if (fs == null)
         fs = new HashSet<String>();
 
       switch (fs.size()) {
       case 0:
-        empty++;
-        reporter.incrCounter(counterGroup,
-            ExpressionCounters.UNMAPPED_READS_COUNTER.counterName(), 1);
+        context.getCounter(this.counterGroup,
+            EMPTY_ALIGNMENTS_COUNTER.counterName()).increment(1);
+        context.getCounter(this.counterGroup,
+            UNMAPPED_READS_COUNTER.counterName()).increment(1);
         break;
 
       case 1:
         final String id = fs.iterator().next();
-        counts.put(id, counts.get(id) + 1);
+        this.outKey.set(id);
+        this.outValue.set("1");
+        System.err.println("key : " + outKey);
+        System.err.println("value : " + outValue);
+        context.write(this.outKey, this.outValue);
         break;
 
       default:
-        ambiguous++;
-        reporter.incrCounter(counterGroup,
-            ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+        context.getCounter(this.counterGroup,
+            AMBIGUOUS_ALIGNMENTS_COUNTER.counterName()).increment(1);
+        context.getCounter(this.counterGroup,
+            ELIMINATED_READS_COUNTER.counterName()).increment(1);
         break;
       }
 
+    } catch (SAMFormatException e) {
+
+      context.getCounter(this.counterGroup,
+          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+      LOGGER.info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
+      return;
+    } catch (EoulsanException e) {
+
+      context.getCounter(this.counterGroup,
+          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+      LOGGER.info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
+      return;
     }
 
-    inputSam.close();
+  }
 
-    // Write results
-    final List<String> keysSorted = new ArrayList<String>(counts.keySet());
-    Collections.sort(keysSorted);
+  @Override
+  public void cleanup(final Context context) throws IOException {
 
-    for (String key : keysSorted) {
-      writer.write(key + "\t" + counts.get(key) + "\n");
-    }
-
-    writer.write(String.format("no_feature\t%d\n", empty));
-    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-    writer.write(String.format("not_aligned\t%d\n", notaligned));
-    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
-
-    writer.close();
+    this.features.clear();
+    this.counts.clear();
   }
 
   /**
