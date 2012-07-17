@@ -77,6 +77,23 @@ public class DesignBuilder {
   private DataFile gffFile;
 
   /**
+   * This class define a exception thrown when a fastq file is empty.
+   * @author Laurent Jourdren
+   */
+  private static class EmptyFastqException extends EoulsanException {
+
+    /**
+     * Public constructor
+     * @param msg exception message
+     */
+    public EmptyFastqException(final String msg) {
+
+      super(msg);
+    }
+
+  }
+
+  /**
    * This inner class define a fastq entry.
    * @author Laurent Jourdren
    */
@@ -126,7 +143,7 @@ public class DesignBuilder {
 
         if (!reader.hasNext()) {
           reader.throwException();
-          throw new EoulsanException("Fastq file is empty: " + f.getSource());
+          throw new EmptyFastqException("Fastq file is empty: " + f.getSource());
         }
 
         reader.throwException();
@@ -276,7 +293,14 @@ public class DesignBuilder {
 
     if (isDataTypeExtension(DataTypes.READS, extension, md)) {
 
-      final FastqEntry entry = new FastqEntry(file);
+      final FastqEntry entry;
+
+      try {
+        entry = new FastqEntry(file);
+      } catch (EmptyFastqException e) {
+        LOGGER.warning(e.getMessage());
+        return;
+      }
 
       final String sampleName;
 
@@ -403,8 +427,12 @@ public class DesignBuilder {
           fastqMap.put(sampleName, list);
         }
 
-        list.add(new FastqEntry(new DataFile(fastqFile), sampleName,
-            sampleDesc, sampleOperator));
+        try {
+          list.add(new FastqEntry(new DataFile(fastqFile), sampleName,
+              sampleDesc, sampleOperator));
+        } catch (EmptyFastqException e) {
+          LOGGER.warning(e.getMessage());
+        }
       }
     }
 
