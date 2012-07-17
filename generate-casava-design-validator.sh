@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GWT_PATH=~/Téléchargements/gwt-2.4.0
-PROJECT_NAME=CasavaDesignValidator
+PROJECT_NAME=DesignValidator
 
 BASEDIR=`dirname $0`
 if [ ! -d $BASEDIR/target ]; then
@@ -17,7 +17,7 @@ PACKAGE_PATH=`echo $PACKAGE | sed 's/\./\//g'`
 
 
 rm -rf $PROJECT_NAME
-$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.CasavaDesignValidator
+$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.DesignValidator
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/client/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/server/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/shared/*
@@ -46,6 +46,7 @@ cat > $PROJECT_NAME/src/$PACKAGE_PATH/client/$PROJECT_NAME.java << EOF
 package $PACKAGE.client;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -81,7 +82,25 @@ public class $PROJECT_NAME implements EntryPoint {
       + "I33=CAGGCG\n" + "I34=CATGGC\n" + "I35=CATTTT\n" + "I36=CCAACA\n"
       + "I37=CGGAAT\n" + "I38=CTAGCT\n" + "I39=CTATAC\n" + "I40=CTCAGA\n"
       + "I41=GACGAC\n" + "I42=TAATCG\n" + "I43=TACAGC\n" + "I44=TATAAT\n"
-      + "I45=TCATTC\n" + "I46=TCCCGA\n" + "I47=TCGAAG\n" + "I48=TCGGCA\n";
+      + "I45=TCATTC\n" + "I46=TCCCGA\n" + "I47=TCGAAG\n" + "I48=TCGGCA\n"
+      + "B1=CGATGT\n"
+      + "B2=TGACCA\n" + "B3=ACAGTG\n" + "B4=GCCAAT\n" + "B5=CAGATC\n"
+      + "B6=CTTGTA\n" + "B7=ATCACG\n" + "B8=TTAGGC\n" + "B9=ACTTGA\n"
+      + "B10=GATCAG\n" + "B11=TAGCTT\n" + "B12=GGCTAC\n" + "B13=AGTCAA\n"
+      + "B14=AGTTCC\n" + "B15=ATGTCA\n" + "B16=CCGTCC\n" + "B17=GTAGAG\n"
+      + "B18=GTCCGC\n" + "B19=GTGAAA\n" + "B20=GTGGCC\n" + "B21=GTTTCG\n"
+      + "B22=CGTACG\n" + "B23=GAGTGG\n" + "B24=GGTAGC\n" + "B25=ACTGAT\n"
+      + "B26=ATGAGC\n" + "B27=ATTCCT\n" + "B28=CAAAAG\n" + "B29=CAACTA\n"
+      + "B30=CACCGG\n" + "B31=CACGAT\n" + "B32=CACTCA\n" + "B33=CAGGCG\n"
+      + "B34=CATGGC\n" + "B35=CATTTT\n" + "B36=CCAACA\n" + "B37=CGGAAT\n"
+      + "B38=CTAGCT\n" + "B39=CTATAC\n" + "B40=CTCAGA\n" + "B41=GCGCTA\n"
+      + "B42=TAATCG\n" + "B43=TACAGC\n" + "B44=TATAAT\n" + "B45=TCATTC\n"
+      + "B46=TCCCGA\n" + "B47=TCGAAG\n" + "B48=TCGGCA\n" + "E1=ATCACG\n"
+      + "E2=CGATGT\n" + "E3=TTAGGC\n" + "E4=TGACCA\n" + "E5=ACAGTG\n"
+      + "E6=GCCAAT\n" + "E7=CAGATC\n" + "E8=ACTTGA\n" + "E9=GATCAG\n"
+      + "E10=TAGCTT\n" + "E11=GGCTAC\n" + "E12=CTTGTA\n";
+
+
 
   private static String DEFAULT_RESULT_MSG = "<pre>No valid design entered.</pre>";
 
@@ -131,7 +150,34 @@ public class $PROJECT_NAME implements EntryPoint {
 
     String[] fields = s.split("_");
 
-    return fields[fields.length - 1].trim();
+    if (fields==null || fields.length!=4)
+      return null;
+
+    String flowcellId = fields[3];
+    if (flowcellId==null)
+      return null;
+
+    flowcellId = flowcellId.trim();
+    if (flowcellId.length()<2)
+      return null;
+
+    return flowcellId.substring(1);
+  }
+
+  private String createWarningMessage(List<String> warnings) {
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Warnings:\n");
+
+    for (String warn : warnings) {
+      sb.append("  - ");
+      sb.append(warn);
+      sb.append('\n');
+    } 
+
+    sb.append("\nAre you sure that your design is correct?");
+
+    return sb.toString();
   }
 
   public void onModuleLoad() {
@@ -144,16 +190,6 @@ public class $PROJECT_NAME implements EntryPoint {
     tp.setHeight("100%");
     tp.setWidth("100%");
 
-    //final DockLayoutPanel fp = new DockLayoutPanel(Unit.EM);
-    //fp.addWest(new HTML("Flow cell ID: "), 20);
-    //fp.addEast(button, 20);
-    //fp.add(flowcellTextBox);
-
-    //DockLayoutPanel dlp = new DockLayoutPanel(Unit.EM);
-    //dlp.addNorth(new HTML("Casava design checker"), 2);
-    //dlp.addSouth(fp, 2);
-    //dlp.add(tp);
-
     //RootLayoutPanel rp = RootLayoutPanel.get();
     //rp.add(dlp);
 
@@ -161,18 +197,12 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("sendButtonContainer").add(button);
     RootPanel.get("tabsContainer").add(tp);
 
-    // From demo
-    // RootPanel.get("nameFieldContainer").add(nameField);
-    // RootPanel.get("sendButtonContainer").add(sendButton);
-    // RootPanel.get("errorLabelContainer").add(errorLabel);
-
-
     // Initialize widget values
     indexesTextarea.setText(DEFAULT_INDEXES);
     indexesTextarea.setVisibleLines(40);
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
-    flowcellTextBox.setText(Window.Location.getParameter("flowcellid"));
+    flowcellTextBox.setText(Window.Location.getParameter("id"));
     inputTextarea.setText("[Paste here your Casava design]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
@@ -190,27 +220,38 @@ public class $PROJECT_NAME implements EntryPoint {
         // Clear ouput
         outputHTML.setHTML(DEFAULT_RESULT_MSG);
 
+        tp.selectTab(0);
+
         try {
-          CasavaDesign design =
-              CasavaDesignUtil.parseTabulatedDesign(inputText);
+          final CasavaDesign design;
+
+          if (inputText.indexOf('\t')!=-1)
+	    design = CasavaDesignUtil.parseTabulatedDesign(inputText);
+          else
+            design = CasavaDesignUtil.parseCSVDesign(inputText);
 
           updateDesignWithIndexes(design,
               indexesTextarea.getText());
 
-          CasavaDesignUtil.checkCasavaDesign(design,
-              getFlowcellId(flowcellTextBox.getText()));
+          // Get the flowcell id
+          final String flowcellId = getFlowcellId(flowcellTextBox.getText());
+          //if (flowcellId == null)
+          //  throw new EoulsanException("Invalid run id: " + flowcellTextBox.getText());
 
-          //boolean b = Window.confirm("Warning message:\ntoto\ntiti");
+          // Check Casava design
+          final List<String> warnings = 
+            CasavaDesignUtil.checkCasavaDesign(design, flowcellId);
 
-          //if (b) {
+          if (warnings.size()==0 || Window.confirm(createWarningMessage(warnings))) {
+       
             outputHTML.setHTML("<pre>"
                 + CasavaDesignUtil.toCSV(design) + "</pre>");
             tp.selectTab(1);
-          //}
+          }
         } catch (IOException e) {
-          Window.alert(e.getMessage());
+          Window.alert("Invalid design: " + e.getMessage());
         } catch (EoulsanException e) {
-          Window.alert(e.getMessage());
+          Window.alert("Invalid design: " + e.getMessage());
         }
 
       }
@@ -249,19 +290,19 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
-    <link type="text/css" rel="stylesheet" href="CasavaDesignValidator.css">
+    <link type="text/css" rel="stylesheet" href="DesignValidator.css">
 
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>Casava design checker</title>
+    <title>Casava design validator</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="casavadesignvalidator/casavadesignvalidator.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="designvalidator/designvalidator.nocache.js"></script>
   </head>
 
   <!--                                           -->
@@ -282,7 +323,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
       </div>
     </noscript>
 
-<h1>Casava design checker</h1>
+<h1>Casava design validator</h1>
 
     <table align="center">
       <!--tr>
@@ -322,6 +363,7 @@ EOF
 cd $PROJECT_NAME
 ant build
 
+mv war/$PROJECT_NAME.html war/index.html
 mv war ../$PROJECT_NAME-tmp
 rm -rf ../$PROJECT_NAME-tmp/WEB-INF
 cd ..

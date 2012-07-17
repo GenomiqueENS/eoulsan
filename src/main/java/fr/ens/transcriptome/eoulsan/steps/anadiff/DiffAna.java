@@ -38,81 +38,175 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REngineException;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.RSConnectionNewImpl;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class create and launch a R script to compute differential analysis.
  * @since 1.0
  * @author Laurent Jourdren
+ * @author Vivien Deshaies
  */
 public class DiffAna {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String ANADIFF_SCRIPT = "/anadiff.R";
+  private static final String NORMALISATION_WHITH_TECHREP =
+      "/normalisationWithTechRep.Rnw";
+  private static final String NORMALISATION_WHITHOUT_TECHREP =
+      "/normalisationWithoutTechRep.Rnw";
+  private static final String NORMALISATION_FUNCTIONS =
+      "/normalizationRNAseqFunctions.R";
+  private static final String ANADIFF_WITH_REPLICATES =
+      "/anadiffWithReplicates.Rnw";
+  private static final String ANADIFF_WITHOUT_REPLICATES =
+      "/anadiffWithoutReplicates.Rnw";
 
   private Design design;
-  private File tempDir;
   private File expressionFilesDirectory;
+  private File outPath;
   private String expressionFilesPrefix;
   private String expressionFilesSuffix;
+  private RSConnectionNewImpl rConnection;
 
-  /**
-   * Execute the analysis.
-   * @throws EoulsanException if an error occurs while creating or executing the
-   *           R script
-   */
+  //
+  // Public methods
+  //
+
   public void run() throws EoulsanException {
 
-    final Map<String, Integer> conditionsMap = new HashMap<String, Integer>();
+    try {
+      if (EoulsanRuntime.getSettings().isRServeServerEnabled())
+        putExpressionFiles();
+
+      String rScript = writeScript();
+      runRnwScript(rScript);
+
+      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+        removeExpressionFiles();
+        this.rConnection.removeFile(rScript);
+        this.rConnection.getAllFiles(outPath.toString() + "/");
+      }
+
+    } catch (REngineException e) {
+      throw new EoulsanException("Error while running differential analysis: "
+          + e.getMessage());
+    } catch (REXPMismatchException e) {
+      throw new EoulsanException("Error while getting file : " + e.getMessage());
+
+    } finally {
+      try {
+        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+          this.rConnection.removeAllFiles();
+          this.rConnection.disConnect();
+        }
+      } catch (Exception e) {
+        throw new EoulsanException("Error while removing files on server : "
+            + e.getMessage());
+      }
+    }
+
+  }
+
+  /**
+   * Write the R script
+   * @return rScript a String containing script to run
+   * @throws EoulsanException
+   */
+  public String writeScript() throws EoulsanException {
+
+    final Map<String, List<Integer>> conditionsMap =
+        new HashMap<String, List<Integer>>();
 
     final List<Integer> rSampleIds = new ArrayList<Integer>();
     final List<String> rSampleNames = new ArrayList<String>();
     final List<String> rCondNames = new ArrayList<String>();
-    final List<Integer> rCondIndexes = new ArrayList<Integer>();
-    final List<String> rCondRep = new ArrayList<String>();
+    final List<String> rRepTechGroup = new ArrayList<String>();
+    int i = 0;
 
-    // Get samples ids, conditions names/indexes and replicat types
+    // Get samples ids, conditions names/indexes and replicate types
     for (Sample s : this.design.getSamples()) {
 
       if (!s.getMetadata().isConditionField())
         throw new EoulsanException("No condition field found in design file.");
 
-      if (!s.getMetadata().isReplicatTypeField())
-        throw new EoulsanException(
-            "No ReplicatType field found in design file.");
-
       final String condition = s.getMetadata().getCondition().trim();
-      final String replicatType =
-          s.getMetadata().getReplicatType().trim().toLowerCase();
 
       if ("".equals(condition))
-        throw new EoulsanException("No value for condtion in sample: "
+        throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
-      if (!("t".equals(replicatType) || "b".equals(replicatType)))
-        throw new EoulsanException("Invalid replicat type ("
-            + replicatType + ") for condtion in sample: " + s.getName() + " ("
-            + s.getId() + ")");
+
+      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
+
+      if (!"".equals(repTechGroup)) {
+        rRepTechGroup.add(repTechGroup);
+      }
 
       if (!conditionsMap.containsKey(condition)) {
-        conditionsMap.put(condition, conditionsMap.size() + 1);
-        rCondNames.add(condition);
+        List<Integer> index = new ArrayList<Integer>();
+        index.add(i);
+        conditionsMap.put(condition, index);
+      } else {
+        conditionsMap.get(condition).add(i);
       }
 
       rSampleIds.add(s.getId());
       rSampleNames.add(s.getName());
-      rCondIndexes.add(conditionsMap.get(condition));
-      rCondRep.add(replicatType);
+      rCondNames.add(condition);
+
+      i++;
+    }
+
+    // Determine if there is biological replicates
+    boolean biologicalReplicate = false;
+    for (String condition : rCondNames) {
+      List<Integer> condPos = conditionsMap.get(condition);
+      for (i = 0; i < condPos.size() - 1; i++) {
+        int pos1 = condPos.get(i);
+        int pos2 = condPos.get(i + 1);
+        if (!rRepTechGroup.get(pos1).equals(rRepTechGroup.get(pos2))) {
+          biologicalReplicate = true;
+        }
+        if (biologicalReplicate)
+          break;
+      }
+      if (biologicalReplicate)
+        break;
     }
 
     final StringBuilder sb = new StringBuilder();
+
+    sb.append("\\documentclass[a4paper,10pt]{article}\n");
+    sb.append("\\usepackage[utf8]{inputenc}\n");
+    sb.append("\\usepackage{lmodern}\n");
+    sb.append("\\usepackage{a4wide}\n");
+    sb.append("\\usepackage{marvosym}\n");
+    sb.append("\\usepackage{graphicx}\n\n");
+
+    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE}\n");
+    sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
+
+    sb.append("\\title{"
+        + this.design.getSample(1).getMetadata().getProjectName()
+        + " analysis}\n\n");
+
+    sb.append("\\begin{document}\n");
+
+    sb.append("\\maketitle\n\n");
+
+    // Add function part of the script
+    sb.append("<<echo=FALSE>>=\n");
 
     sb.append("### Auto generated by ");
     sb.append(Globals.APP_NAME);
@@ -122,69 +216,139 @@ public class DiffAna {
     sb.append(new Date(System.currentTimeMillis()));
     sb.append(" ###\n\n");
 
-    // Add function part of the script
-    sb.append(readStaticScript());
+    // add function part to string builder
+    sb.append(readStaticScript(NORMALISATION_FUNCTIONS));
+    sb.append("@\n\n");
 
-    if (isBiologicalReplicates(rCondIndexes, rCondRep))
-      writeWithBiologicalReplicate(sb, rSampleIds, rSampleNames, rCondIndexes,
-          rCondNames, rCondRep);
-    else
-      writeWithoutBiologicalReplicate(sb, rSampleIds, rSampleNames,
-          rCondIndexes, rCondNames);
-
-    final File rScript;
-
-    try {
-      rScript = FileUtils.createTempFile(this.tempDir, "anadiff", ".R");
-
-      LOGGER.fine("rScript: " + rScript.getAbsolutePath());
-
-      Writer writer = FileUtils.createFastBufferedWriter(rScript);
-      writer.write(sb.toString());
-      writer.close();
-
-      // Set script executable
-      rScript.setExecutable(true);
-
-    } catch (IOException e) {
-
-      throw new EoulsanException("Error while creating R script in anadiff: "
-          + e.getMessage());
+    // determine if there is technical replicates
+    boolean rep = false;
+    for (int j = 0; j < rSampleIds.size(); j++) {
+      if (!rRepTechGroup.get(j).toLowerCase().equals("na")) {
+        rep = true;
+      } else {
+        // replace "na" values of repTechGroup by unique sample ids to avoid
+        // pooling problem while executing R script
+        rRepTechGroup.set(j, rSampleIds.get(j).toString());
+      }
     }
 
+    // Add normalization part
+    if (rep)
+      writeWithTechnicalReplicate(sb, rSampleIds, rSampleNames, rCondNames,
+          rRepTechGroup);
+    else
+      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames);
+
+    // add differential analysis part
+    if (biologicalReplicate) {
+      sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
+    } else {
+      sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
+    }
+
+    String rScript = null;
     try {
-
-      final ProcessBuilder pb =
-          new ProcessBuilder("/usr/bin/R", "-f",
-              StringUtils.bashEscaping(rScript.getAbsolutePath()));
-
-      // Set the temporary directory for R
-      pb.environment().put("TMPDIR", this.tempDir.getAbsolutePath());
-
-      ProcessUtils.logEndTime(pb.start(), pb.toString(),
-          System.currentTimeMillis());
-
-      if (!rScript.delete())
-        LOGGER.warning("Unable to remove R script: "
-            + rScript.getAbsolutePath());
-
+      rScript = FileUtils.createTempFile("anadiff", ".Rnw").getName();
+      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+        this.rConnection.writeStringAsFile(rScript, sb.toString());
+      } else {
+        Writer writer = FileUtils.createFastBufferedWriter(rScript);
+        writer.write(sb.toString());
+        writer.close();
+      }
+    } catch (REngineException e) {
+      e.printStackTrace();
     } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-      throw new EoulsanException("Error while executing R script in anadiff: "
-          + e.getMessage());
+    return rScript;
+
+  }
+
+  /**
+   * Put all expression files needed for the analysis on the R server
+   * @throws REngineException
+   */
+  public void putExpressionFiles() throws REngineException {
+
+    int i;
+
+    for (Sample s : this.design.getSamples()) {
+      i = s.getId();
+
+      // put file on rserve server
+      this.rConnection.putFile(new File(expressionFilesDirectory
+          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix),
+          this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+    }
+  }
+
+  public void removeExpressionFiles() throws REngineException {
+    int i;
+
+    for (Sample s : this.design.getSamples()) {
+      i = s.getId();
+
+      // remove file from rserve server
+      this.rConnection.removeFile(expressionFilesDirectory
+          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Execute the analysis.
+   * @param rScript
+   * @throws IOException
+   * @throws REngineException
+   * @throws EoulsanException
+   */
+  private void runRnwScript(String rnwScript) throws REngineException,
+      EoulsanException {
+
+    if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+      this.rConnection.executeRnwCode(rnwScript);
+
+    } else {
+
+      try {
+
+        final ProcessBuilder pb =
+            new ProcessBuilder("/usr/bin/R", "CMD", "Sweave",
+                StringUtils.bashEscaping(rnwScript));
+
+        // Set the temporary directory for R
+        pb.environment().put("TMPDIR", this.outPath.getAbsolutePath());
+
+        ProcessUtils.logEndTime(pb.start(), pb.toString(),
+            System.currentTimeMillis());
+
+        if (!new File(rnwScript).delete())
+          LOGGER.warning("Unable to remove R script: " + rnwScript);
+
+      } catch (IOException e) {
+
+        throw new EoulsanException(
+            "Error while executing R script in anadiff: " + e.getMessage());
+      }
+
     }
 
   }
 
   /**
-   * Read the static part of the the generated script.
+   * Read a static part of the generated script.
    * @return a String with the static part of the script
    */
-  private String readStaticScript() {
+  private String readStaticScript(String ST) {
 
     final StringBuilder sb = new StringBuilder();
 
-    final InputStream is = DiffAna.class.getResourceAsStream(ANADIFF_SCRIPT);
+    final InputStream is = DiffAna.class.getResourceAsStream(ST);
 
     try {
       final BufferedReader br = FileUtils.createBufferedReader(is);
@@ -203,216 +367,188 @@ public class DiffAna {
   }
 
   /**
-   * Test if there is biological replicates
-   * @param rCondIndexes R conditions indexes
-   * @param rCondRep R condition replicat
-   * @return true if there is some biological replicates
-   */
-  private boolean isBiologicalReplicates(List<Integer> rCondIndexes,
-      final List<String> rCondRep) {
-
-    final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-
-    for (int i = 0; i < rCondIndexes.size(); i++) {
-
-      final int index = rCondIndexes.get(i);
-      final boolean biologicalReplicate =
-          "b".equals(rCondRep.get(i).trim().toLowerCase());
-
-      if (!biologicalReplicate)
-        continue;
-
-      if (map.containsKey(index))
-        map.put(index, map.get(index) + 1);
-      else
-        map.put(index, 1);
-
-    }
-
-    for (int count : map.values())
-      if (count > 1)
-        return true;
-
-    return false;
-  }
-
-  /**
-   * Write the load data part of the R script
-   * @param sb StringBuilder to use to write data
-   * @param rSampleIds R samples ids
-   * @param rSampleNames R samples names
-   * @param rCondIndexes R conditions indexes
-   * @param rCondNames R conditions names
-   */
-  private void writeLoadData(final StringBuilder sb,
-      final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<Integer> rCondIndexes, final List<String> rCondNames) {
-
-    // Read files
-    boolean first = true;
-    for (int i = 0; i < rSampleIds.size(); i++) {
-
-      sb.append("expr");
-      sb.append(i + 1);
-      sb.append(" = read.table(\"");
-      sb.append(StringUtils.bashEscaping(this.expressionFilesDirectory
-          .getAbsolutePath()));
-      sb.append('/');
-      sb.append(this.expressionFilesPrefix);
-      sb.append(rSampleIds.get(i));
-      sb.append(this.expressionFilesSuffix);
-      sb.append("\",header=T,stringsAsFactors=F)[,c(1,11)]\n");
-
-      if (first)
-        first = false;
-      else {
-
-        sb.append("expr1 = merge(expr1,expr");
-        sb.append(i + 1);
-        sb.append(",by.x=\"Id\",by.y=\"Id\")\n");
-
-      }
-
-      sb.append("colnames(expr1)[dim(expr1)[2]]=\"");
-      sb.append(rSampleNames.get(i));
-      sb.append("\"\n\n");
-
-    }
-
-    sb.append("count =  expr1[,-1]\n" + "rownames(count) = expr1[,1]\n\n");
-
-    // Add conditions names to R script
-    sb.append("# vector of condition Names\n");
-    sb.append("condNames = c(");
-    first = true;
-    for (String c : rCondNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('"');
-      sb.append(c);
-      sb.append('"');
-    }
-    sb.append(")\n");
-
-    // Add conditions indexes to R script
-    sb.append("#vector of condition code for each colomne of the count tab. condition 1 corresponding to the first name in the condNames vector ...\n");
-    sb.append("cond = c(");
-    first = true;
-    for (int i : rCondIndexes) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-
-      sb.append(i);
-    }
-    sb.append(")\n");
-
-  }
-
-  /**
-   * Write code without biological replicates.
+   * Write code with technical replicates.
    * @param sb StringBuilder to use
    * @param rSampleIds R samples ids
    * @param rSampleNames R samples names
    * @param rCondIndexes R conditions indexes
    * @param rCondNames R conditions names
+   * @param rRepTechGroup R technical replicate group
    */
-  private void writeWithoutBiologicalReplicate(final StringBuilder sb,
+  private void writeWithTechnicalReplicate(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<Integer> rCondIndexes, final List<String> rCondNames) {
+      final List<String> rCondNames, final List<String> rRepTechGroup) {
 
-    writeLoadData(sb, rSampleIds, rSampleNames, rCondIndexes, rCondNames);
+    sb.append("\\section{Initialization}\n");
+    sb.append("<<>>=\n");
 
-    sb.append("# Sum of technical replicates (if there is technical replicat) and normalisation\n"
-        + "# for all conditions sums of technical replicates expression\n"
-        + "tab=c()\n"
-        + "for (i in 1:length(unique(cond)))\n"
-        + "{\n"
-        + "  tab = cbind(tab,rowSums(count[which(cond == i)]))\n"
-        + "}\n\n"
-        + "colnames(tab) = condNames\n"
-        + "rownames(tab)=rownames(count)\n\n"
-        + "# deleting genes that are not expressed in any condition\n"
-        + "tab = tab[rowSums(tab)>0,]\n\n");
-
-    for (int i = 0; i < rCondNames.size(); i++)
-      for (int j = i + 1; j < rCondNames.size(); j++) {
-
-        sb.append("# path to the output file\n" + "out = \"diffana-");
-        sb.append(rCondNames.get(i));
-        sb.append('-');
-        sb.append(rCondNames.get(j));
-        sb.append(".txt\"\n"
-            + "# statistical analysis of differentially expressed genes of condition 1 vs condition 2 (give the names)\n"
-            + "ana_diff_without_bio_rep(tab, condNames[");
-        sb.append(i + 1);
-        sb.append("],condNames[");
-        sb.append(j + 1);
-        sb.append("],out) # condition 1 vs condition 2\n\n");
-      }
-
-  }
-
-  /**
-   * Write code without biological replicates.
-   * @param sb StringBuilder to use
-   * @param rSampleIds R samples ids
-   * @param rSampleNames R samples names
-   * @param rCondIndexes R conditions indexes
-   * @param rCondNames R conditions names
-   * @param RCondRep R conditions replicates
-   */
-  private void writeWithBiologicalReplicate(final StringBuilder sb,
-      final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<Integer> rCondIndexes, final List<String> rCondNames,
-      final List<String> rCondRep) {
-
-    writeLoadData(sb, rSampleIds, rSampleNames, rCondIndexes, rCondNames);
-
-    // Add replicates to R script
-    sb.append("# vector of condition Names\n");
-    sb.append("rep = c(");
+    // Add samples names to R script
+    sb.append("# create sample names vector\n");
+    sb.append("sampleNames <- c(");
     boolean first = true;
-    for (String r : rCondRep) {
+    for (String r : rSampleNames) {
 
       if (first)
         first = false;
       else
         sb.append(',');
-      sb.append('\'');
-      sb.append(r.toUpperCase());
-      sb.append('\'');
+      sb.append('\"');
+      sb.append(r.toLowerCase());
+      sb.append('\"');
     }
-    sb.append(")\n");
+    sb.append(")\n\n");
 
-    sb.append("library(DESeq)\n");
-    sb.append("\ncds = ana_diff_with_bio_rep(count,cond,rep)\n");
+    // put sample ids into R vector
+    sb.append("sampleIds <- c(");
+    int i = 0;
+    for (int id : rSampleIds) {
+      i++;
+      sb.append("" + id);
+      if (i < rSampleIds.size())
+        sb.append(",");
+    }
+    sb.append(")\n\n");
 
-    for (int i = 0; i < rCondNames.size(); i++)
-      for (int j = i + 1; j < rCondNames.size(); j++) {
+    // Add file names vector
+    sb.append("#create file names vector\n");
+    sb.append("fileNames <- paste(\"" + expressionFilesPrefix + '\"' + ',');
+    sb.append("sampleIds"
+        + ',' + '\"' + expressionFilesSuffix + '\"' + ',' + "sep=\"\"" + ")"
+        + "\n\n");
 
-        sb.append("# path of the output file\n");
-        sb.append("out = \"diffana-");
-        sb.append(rCondNames.get(i));
-        sb.append('-');
-        sb.append(rCondNames.get(j));
-        sb.append(".txt\"\n");
+    // Add repTechGroup vector
+    sb.append("# create technical replicates groups vector\n");
+    sb.append("repTechGroup <- c(");
+    first = true;
+    for (String r : rRepTechGroup) {
 
-        sb.append("resDESeqAll=nbinomTest(cds,"); // 2,1)\n"
-        sb.append(j + 1);
+      if (first)
+        first = false;
+      else
         sb.append(',');
-        sb.append(i + 1);
-        sb.append(")\n");
 
-        sb.append("res = resDESeqAll[order(resDESeqAll$padj),]\n");
-        sb.append("write.table(res,out,quote=F, row.names=F, sep='\t')\n\n");
+      sb.append('\"');
+      sb.append(r.toLowerCase());
+      sb.append('\"');
+    }
+    sb.append(")\n\n");
 
-      }
+    // Add condition to R script
+    sb.append("# create condition vector\n");
+    sb.append("condition <- c(");
+    first = true;
+    for (String r : rCondNames) {
+
+      if (first)
+        first = false;
+      else
+        sb.append(',');
+      sb.append('\"');
+      sb.append(r.toLowerCase());
+      sb.append('\"');
+    }
+    sb.append(")\n\n");
+
+    // Add exp, projectPath, outPath and projectName
+    sb.append("# create vector of comparision to proceed\n");
+    sb.append("exp <- c()\n");
+    sb.append("# projectPath : path of count files directory\n");
+    sb.append("projectPath <- \"\"\n");
+    sb.append("# outPath path of the outputs\n");
+    sb.append("outPath <- \"\"\n");
+    sb.append("projectName <- ");
+    sb.append("\""
+        + this.design.getSample(1).getMetadata().getProjectName() + "\"" + "\n");
+    sb.append("@\n\n");
+
+    // add not variable part of the analysis
+    sb.append(readStaticScript(NORMALISATION_WHITH_TECHREP));
+
+  }
+
+  /**
+   * Write normalization code without replicates
+   * @param sb A StringBuilder
+   * @param rSampleIds
+   * @param rSampleNames
+   * @param rCondNames
+   */
+  private void writeWithoutTechnicalReplicates(final StringBuilder sb,
+      final List<Integer> rSampleIds, final List<String> rSampleNames,
+      final List<String> rCondNames) {
+
+    sb.append("\\section{Initialization}\n");
+    sb.append("<<>>=\n");
+
+    // Add samples names to R script
+    sb.append("# create sample names vector\n");
+    sb.append("sampleNames <- c(");
+    boolean first = true;
+    for (String r : rSampleNames) {
+
+      if (first)
+        first = false;
+      else
+        sb.append(',');
+      sb.append('\"');
+      sb.append(r.toLowerCase());
+      sb.append('\"');
+    }
+    sb.append(")\n\n");
+
+    // put sample ids into R vector
+    sb.append("sampleIds <- c(");
+    int i = 0;
+    for (int id : rSampleIds) {
+      i++;
+      sb.append("" + id);
+      if (i < rSampleIds.size())
+        sb.append(",");
+    }
+    sb.append(")\n\n");
+
+    // Add file names vector
+    sb.append("#create file names vector\n");
+    sb.append("fileNames <- paste(\"" + expressionFilesPrefix + '\"' + ',');
+    sb.append("sampleIds"
+        + ',' + '\"' + expressionFilesSuffix + '\"' + ',' + "sep=\"\"" + ")"
+        + "\n\n");
+
+    // Add repTechGroup vector equal to sampleNames to avoid error in R
+    // function buildTarget
+    sb.append("# create technical replicates groups vector\n");
+    sb.append("repTechGroup <- sampleNames\n\n");
+
+    // Add condition to R script
+    sb.append("# create condition vector\n");
+    sb.append("condition <- c(");
+    first = true;
+    for (String r : rCondNames) {
+
+      if (first)
+        first = false;
+      else
+        sb.append(',');
+      sb.append('\"');
+      sb.append(r.toLowerCase());
+      sb.append('\"');
+    }
+    sb.append(")\n\n");
+
+    // Add exp, projectPath, outPath and projectName
+    sb.append("# create vector of comparision to proceed\n");
+    sb.append("exp <- c()\n");
+    sb.append("# projectPath : path of count files directory\n");
+    sb.append("projectPath <- \"\"\n");
+    sb.append("# outPath path of the outputs\n");
+    sb.append("outPath <- \"\"\n");
+    sb.append("projectName <- ");
+    sb.append("\""
+        + this.design.getSample(1).getMetadata().getProjectName() + "\"" + "\n");
+    sb.append("@\n\n");
+
+    // add not variable part of the analysis
+    sb.append(readStaticScript(NORMALISATION_WHITHOUT_TECHREP));
 
   }
 
@@ -426,7 +562,7 @@ public class DiffAna {
    */
   public DiffAna(final Design design, final File expressionFilesDirectory,
       final String expressionFilesPrefix, final String expressionFilesSuffix,
-      final File tempDir) {
+      final File outPath, final String rServerName) {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -437,7 +573,6 @@ public class DiffAna {
         "The suffix for expression files is null");
 
     this.design = design;
-    this.tempDir = tempDir;
     this.expressionFilesPrefix = expressionFilesPrefix;
     this.expressionFilesSuffix = expressionFilesSuffix;
 
@@ -447,6 +582,16 @@ public class DiffAna {
           "The path of the expression files doesn't exist or is not a directory.");
 
     this.expressionFilesDirectory = expressionFilesDirectory;
+
+    if (!(outPath.isDirectory() && outPath.exists()))
+      throw new NullPointerException(
+          "The outpath file doesn't exist or is not a directory.");
+
+    this.outPath = outPath;
+
+    LOGGER.info("Rserve server: " + rServerName);
+
+    this.rConnection = new RSConnectionNewImpl(rServerName);
   }
 
 }

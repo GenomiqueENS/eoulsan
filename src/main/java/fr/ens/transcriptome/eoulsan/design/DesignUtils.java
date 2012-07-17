@@ -61,12 +61,10 @@ public final class DesignUtils {
     StringBuffer sb = new StringBuffer();
 
     // Write header
-    sb.append("SlideNumber");
+    sb.append(Design.SAMPLE_NUMBER_FIELD);
     sb.append("\t");
-    sb.append("Name");
+    sb.append(Design.NAME_FIELD);
     sb.append("\t");
-
-    sb.append("FileName");
 
     for (String f : metadataFields) {
 
@@ -165,7 +163,7 @@ public final class DesignUtils {
   public static boolean checkGenomes(final Design design) {
 
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
-      return false;
+      return true;
 
     final Set<String> genomes = new HashSet<String>();
 
@@ -191,7 +189,7 @@ public final class DesignUtils {
   public static boolean checkAnnotations(final Design design) {
 
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
-      return false;
+      return true;
 
     final Set<String> annotations = new HashSet<String>();
 
@@ -328,12 +326,13 @@ public final class DesignUtils {
             if (!inFile.exists())
               throw new EoulsanIOException("File not exists: " + df);
 
-            if (outFile.exists()
-                || inFile.getAbsoluteFile().equals(outFile.getAbsoluteFile()))
-              continue;
+            if (outFile.exists())
+              throw new EoulsanIOException(
+                  "The symlink to create, already exists: " + outFile);
 
-            FileUtils.createSymbolicLink(df.toFile(),
-                new File(symlinksDir, df.getName()));
+            if (!FileUtils.createSymbolicLink(df.toFile(), outFile))
+              throw new EoulsanIOException("Cannot create symlink: " + outFile);
+
             values.set(i, df.getName());
           }
 

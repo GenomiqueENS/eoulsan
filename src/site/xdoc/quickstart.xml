@@ -161,11 +161,11 @@ $ eoulsan.sh exec param-local.xml design.txt
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
 			  <li>The design file and parameter file are valid</li>
-			  <li>All the steps exits</li>
+			  <li>All the steps exit</li>
 			  <li>The parameter of all the steps are valid</li>
 			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>
-			  <li>A genome mapper index is needed. In this case, a step to generated this index is automatically added</li>
+			  <li>A genome mapper index is needed. In this case, a step to generate this index is automatically added</li>
 			</ul>
 			
 			<p>If successful, you wil obtain a new directory name like <b>eoulsan-20110310-101235</b> 

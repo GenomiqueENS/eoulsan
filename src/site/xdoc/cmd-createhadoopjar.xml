@@ -57,10 +57,10 @@ $ eoulsan.sh createhadoopjar
 
    <section name="Run manualy Eoulsan in Hadoop mode">
 
-     <p>With the jar file generated your can manualy launch Eoulsan with a Hadoop command:</p>
+     <p>With the jar file generated you can manualy launch Eoulsan with a Hadoop command:</p>
 
 <source>
-$ hadoop -jar eoulsan-@@@VERSION@@@-a19e9799.jar hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
+$ hadoop jar eoulsan-@@@VERSION@@@-a19e9799.jar execjarhadoop hdfs://toto.example.com/test/param.xml hdfs://toto.example.com/test/design.txt hdfs://toto.example.com/test
 </source>
 
 <ul>

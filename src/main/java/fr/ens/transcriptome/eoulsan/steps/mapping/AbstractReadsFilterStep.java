@@ -57,10 +57,6 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   private MultiReadFilterBuilder readFilterBuilder;
 
-  // private int lengthThreshold = -1;
-  // private double qualityThreshold = -1;
-  // private boolean pairEnd;
-
   //
   // Step methods
   //

@@ -112,7 +112,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
       reporter.incrCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName(), 1);
-      LOGGER.info("Invalid soap output entry: "
+      LOGGER.info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + value + "'");
       return;
     }

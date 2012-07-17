@@ -36,30 +36,44 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * alignments filters.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
   private final List<ReadAlignmentsFilter> list = newArrayList();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
-
+  
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
+    boolean pairedEnd = false;
+    
     if (records == null)
       return;
+    
+    if (records.get(0).getReadPairedFlag())
+      pairedEnd = true;
 
     for (ReadAlignmentsFilter af : this.list) {
 
       final int sizeBefore = records.size();
       af.filterReadAlignments(records);
 
-      final int sizeAfter = list.size();
+      final int sizeAfter = records.size();
       final int diff = sizeBefore - sizeAfter;
 
       if (diff > 0 && incrementer != null)
-        this.incrementer.incrCounter(counterGroup, "alignments rejected by "
-            + af.getName() + " filter", diff);
+        
+        // paired-end mode
+        if (pairedEnd)
+          this.incrementer.incrCounter(counterGroup, "alignments rejected by "
+              + af.getName() + " filter", diff/2);
+
+      // single-end mode
+        else
+          this.incrementer.incrCounter(counterGroup, "alignments rejected by "
+              + af.getName() + " filter", diff);
 
       if (sizeAfter == 0)
         return;

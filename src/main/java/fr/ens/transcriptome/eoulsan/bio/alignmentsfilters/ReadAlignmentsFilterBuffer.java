@@ -35,51 +35,56 @@ import net.sf.samtools.SAMRecord;
  * alignment data where all the alignments for a read name are in straight.
  * @since 1.1
  * @author Laurent Jourdren
+ * @author Claire Wallon
  */
 public class ReadAlignmentsFilterBuffer {
-
+  
   private final ReadAlignmentsFilter filter;
   private final List<SAMRecord> list = new ArrayList<SAMRecord>();
-  private SAMRecord firstNewList;
   private String currentName;
   private boolean reuseResultList;
 
+  /**
+   * Add the provided alignment to a list of SAMRecord objects if this
+   * alignment has the same read name as the other alignments of the list.
+   * @param alignment
+   * @return true if the alignment provides is stored, i.e. if it has the same
+   * read name as the other alignments already stored. 
+   * @return false if the alignment provides has not the same read name than
+   * the previous one, so this alignment is not stored. 
+   */
   public boolean addAlignment(final SAMRecord alignment) {
 
-    if (alignment == null)
-      return false;
-
-    final String name = alignment.getReadName();
-
-    // Special case for the first alignment
-    if (currentName == null) {
-      currentName = name;
-      this.list.add(alignment);
+    if (alignment == null) {
       return false;
     }
-
-    // Last alignment has a new read name
-    if (firstNewList != null) {
-      this.list.clear();
-      this.list.add(this.firstNewList);
-      this.firstNewList = null;
+    
+    final String name = alignment.getReadName().split(" ")[0];
+    
+    // The previous list of alignments has been already treated
+    if (this.currentName == null) {
+      this.currentName = name;
     }
-
-    // New alignment with a new read name
-    if (!currentName.equals(name)) {
-      firstNewList = alignment;
-      return true;
+    
+    // The previous list of alignments is not already treated
+    else {
+      // The current alignment has a new read name
+      if (!this.currentName.equals(name)) {
+        this.currentName = null;
+        return false;
+      }
     }
-
-    // The read name is equals to the previous
+    
+    // The read name is equal to the previous
+    // (so the alignment is in the same multiple alignment than the 
+    // previous one)
     this.list.add(alignment);
-    return false;
-
+    return true;
   }
 
   /**
    * Get the list of the alignments that pass the tests of the filter with the
-   * same read name.records. Warning if reuseResultList argument in the
+   * same read name. Warning if reuseResultList argument in the
    * constructor is set to true, this method will always returns the same
    * object.
    * @return a list of SAM record
@@ -92,8 +97,12 @@ public class ReadAlignmentsFilterBuffer {
     // Return the list of filtered alignment
     if (this.reuseResultList)
       return this.list;
-
-    return new ArrayList<SAMRecord>(this.list);
+    
+    List<SAMRecord> results = new ArrayList<SAMRecord>(this.list);
+    this.list.clear();
+    this.currentName = null;
+    
+    return results;
   }
 
   //

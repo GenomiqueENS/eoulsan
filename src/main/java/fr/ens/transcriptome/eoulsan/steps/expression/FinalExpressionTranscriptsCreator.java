@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
 
@@ -52,6 +53,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
+  
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset
@@ -184,9 +187,9 @@ public class FinalExpressionTranscriptsCreator {
   }
 
   /**
-   * Load pre result file
+   * Load pre-result file
    * @param is input stream of pre-results
-   * @param readsUsed the number of read useds
+   * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final InputStream is, final long readsUsed)
@@ -230,7 +233,7 @@ public class FinalExpressionTranscriptsCreator {
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
-
+    
     final List<ExpressionTranscript> list =
         new ArrayList<ExpressionTranscript>(this.expressionResults.values());
 
@@ -238,7 +241,7 @@ public class FinalExpressionTranscriptsCreator {
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
-    osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tlength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
+    osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
     for (ExpressionTranscript et : list)
       osw.write(et.toString() + "\n");
 

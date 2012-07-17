@@ -137,11 +137,14 @@ public class CreateDesignAction extends AbstractAction {
       final String[] newArgs =
           StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
 
-      final DesignBuilder db = new DesignBuilder(newArgs);
+      final DesignBuilder db = new DesignBuilder();
 
       // Add all the files of a Casava design if Casava design path is defined
       if (casavaDesignPath != null)
         db.addCasavaDesignProject(new File(casavaDesignPath), casavaProject);
+
+      // Add files in the command line
+      db.addFiles(newArgs);
 
       design = db.getDesign(pairEndMode);
 

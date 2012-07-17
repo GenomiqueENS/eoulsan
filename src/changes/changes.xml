@@ -47,7 +47,7 @@
                 Fix FASTQ parsing in local mode.
             </action>
             <action dev="jourdren" type="fix">
-                Fix trim sequence when sequence comtains only 'N' nucleotides.
+                Fix trim sequence when sequence contains only 'N' nucleotides.
             </action>
         </release>
         
@@ -291,6 +291,80 @@
 
          </release>
          
-		
+         <release version="1.1.1" description="Eoulsan 1.1.1 release" date="2012-04-17">
+            <action dev="jourdren" type="fix" issue="13">
+                In distributed mode in mapping step, if temporary directory does not exist, create it. 
+            </action>
+            <action dev="jourdren" type="fix">
+                Fix bug in expression computation. 
+            </action>            
+             <action dev="jourdren" type="fix" issue="12">
+                Fix: The number of alignment with more than one match filtered in
+filtersam step log is lower than the number of alignements filtered. 
+            </action>        
+         </release>
+
+         <release version="1.1.2" description="Eoulsan 1.1.2 release" date="2012-05-12">
+            <action dev="jourdren" type="fix" issue="14">
+                In local mode in filter alignement step, the unique alignment written was not the
+unique alignment but the next alignment to proceed. 
+            </action>
+	     </release>
+	     
+	     <release version="1.1.3" description="Eoulsan 1.1.3 release" date="2012-05-14">
+            <action dev="jourdren" type="fix" issue="15">
+                The order of the parameter steps was not retained. 
+            </action>
+            <action dev="jourdren" type="update">
+                In hadoop mode now for reads filter, show in reporters the count
+of reads that reject each filter like in local mode.
+            </action>
+         </release>
+         
+         <release version="1.1.4" description="Eoulsan 1.1.4 release" date="2012-05-29">
+            <action dev="jourdren" type="fix" issue="16">
+                Fix out of memory in expression step in local mode with big sam files. 
+            </action>
+            <action dev="jourdren" type="update">
+                Update documentation: Eoulsan application note is now publish in Bioinformatics. 
+            </action>
+         </release>
+
+         <release version="1.1.5" description="Eoulsan 1.1.5 release" date="2012-06-21">
+            <action dev="jourdren" type="fix" issue="17">
+                Genome files created from GFF files only contains the first chromosome. 
+            </action>
+            <action dev="jourdren" type="fix" issue="18">
+                The _genericindexgenerator step fail when the genome was extracted from a GFF file. 
+            </action>
+         </release>
+
+         <release version="1.1.6" description="Eoulsan 1.1.6 release" date="2012-06-26">
+            <action dev="jourdren" type="fix" issue="19">
+                The create design action did not add genome:// or annotation:// file in design file if the URL contains '.' character. 
+            </action>
+            <action dev="jourdren" type="fix" issue="20">
+                The illuminaid filter in filterreads step reject all the reads with ids that contains index sequence with nucleotide 'N'. 
+            </action>
+         </release>
+
+         <release version="1.2" description="Eoulsan 1.2" date="TBD">
+            <action dev="wallon" type="add">
+                Add the paired-end mode in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="add">
+                Add the mapping quality score filter in the alignments filtering step.
+            </action>
+            <action dev="wallon" type="update">
+                Update documentation. 
+            </action>
+            <action dev="wallon" type="add">
+                The expression estimation step is now modular. 
+            </action>
+            <action dev="wallon" type="add">
+                Add the HTSeq-count program for the expression estimation step.
+            </action>
+         </release>
+
 	</body>
 </document>

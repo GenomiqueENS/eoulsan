@@ -41,7 +41,8 @@ public interface ReadAlignmentsFilter {
    * Filter a list of alignments from a list of alignment of one unique read.
    * All the read id in the records are the same. The input list is modified
    * after the call of the method.
-   * @param records
+   * @param records the list of alignments with the same read name
+   * @param pairedEnd true if data are in paired-end mode
    */
   void filterReadAlignments(List<SAMRecord> records);
 

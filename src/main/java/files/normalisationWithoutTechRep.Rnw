@@ -1,0 +1,99 @@
+
+\section{Target creation}
+
+<<targetCreation>>=
+# create target list containing various objects use in the analysis
+target <- buildTarget(
+		sampleNames,
+		projectName,
+		fileNames,
+		projectPath,
+		repTechGroup,
+		condition,
+		exp
+)
+
+# sort target by condition
+target <- sortTarget(target)
+@
+
+\section{Analysis}
+
+\subsection{Normalization}
+
+\begin{itemize}
+	\item Hierarchical clustering on raw data
+
+<<clusterRaw,fig=TRUE, width=12, height=8>>=
+# compute clustering on unormalized counts
+repClust(target)
+@
+
+	\item Barplot of null counts in raw data
+<<barplotNullRaw,fig=TRUE, width=12, height=8>>=
+# plot barplot of null counts by sample
+barplotNull(target)
+@
+
+	\item Delete rows (genes) with only null counts
+<<del>>=
+# delete unexpressed gene
+target$counts <- deleteUnexpressedGene(target$counts)
+@
+	\item Barplot of total counts in raw counts
+<<barplotTotalCountRaw, fig=TRUE, width=12, height=8>>=
+barplotTotalCount(target)
+@
+	\item Boxplot of log2(raw counts + 1)
+<<boxplotRaw, fig=TRUE, width=12, height=8>>=
+boxplotCounts(target)
+@
+	\item Density plot of log2(raw counts + 1)
+<<densityPlotRaw,fig=TRUE, width=12, height=8>>=
+densityplotRNA(target)
+@
+	\item{Save raw matrix}
+<<matrixRaw>>=
+saveCountMatrix(
+		target$counts,
+		# path of the file (do not omit the last "/")
+		outPath,
+		# file name
+		"rawCountMatrix.txt"
+)
+@
+
+	\item create countDataSet (DESeq object) with count matrix and estimate size
+	factor 
+
+<<cds>>=
+countDataSet <- normDESeq(target$counts, target$condition)
+# print size factors
+print("Size factors : ", quote=F)
+print(sizeFactors(countDataSet))
+@
+	\item Normalize count
+<<norm>>=
+normTarget <- normalizeTarget(target)
+@
+	\item Compute clustering of normTarget biological replicates and plot dendrogram
+<<clusterNorm, fig=TRUE, width=12, height=8>>= 
+repClust(normTarget)
+@
+	\item Plot boxplot and densityplot of normalized counts
+<<boxplotNorm, fig=TRUE, width=12, height=8>>=
+boxplotCounts(normTarget)
+@
+<<densityPlotNorm, fig=TRUE, width=12, height=8>>=
+densityplotRNA(normTarget)
+@
+	\item Save normalized matrix
+<<matrixNorm>>=
+saveCountMatrix(
+		normTarget$counts,
+		# file path
+		outPath,
+		# file name
+		"normalizedPooledCountMatrix.txt"
+)
+@

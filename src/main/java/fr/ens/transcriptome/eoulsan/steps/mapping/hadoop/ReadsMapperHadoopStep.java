@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
               + getMapper().getMapperName());
     }
   }
-  
+
   @Override
   public StepResult execute(final Design design, final Context context) {
 
@@ -101,7 +102,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
-      return jobsResults.getStepResult(context, startTime);
+      StepResult stepResult = jobsResults.getStepResult(context, startTime);
+      
+      return stepResult;
 
     } catch (IOException e) {
 
@@ -131,10 +134,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    // final JobConf conf = new JobConf(FilterReadsHadoopStep.class);
-
-    // final Path inputPath =
-    // new Path(context.getBasePathname(), sample.getSource());
     final Path inputPath =
         new Path(context.getInputDataFilename(DataFormats.FILTERED_READS_TFQ,
             sample));
@@ -150,7 +149,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
+    if (context.getDataFileCount(READS_FASTQ, sample) == 2)
+      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
+    else
+      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
 
     // Set the number of threads for the mapper
     if (getMapperThreads() < 0) {

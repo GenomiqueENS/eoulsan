@@ -37,30 +37,27 @@
 
 		<section name="How to cite Eoulsan">
 		
-			<p>Eoulsan is currently under submission process.</p>
+			<!--p>Eoulsan is currently under submission process.</p-->
 
-			<!--	
                         <p>
                                 <b>
-                                        Eoulsan: my fovorite RNAseq pipeline
+                                        Eoulsan: A Cloud Computing-Based Framework Facilitating High Throughput Sequencing Analyses.
                                 </b>
                         </p>
                         <p>
                                 <small>
-                                        Laurent Jourdren, Aurélie Duclos, Christian Brion, Thomas Portnoy, Hugues Mathis, Antoine Margeot and Stéphane Le Crom
+                                        Laurent Jourdren, Maria Bernard, Marie-Agnès Dillies and Stéphane Le Crom
                                 </small>
                                 <br />
-                                <small><i>
-                                        Nucleic Acids Research,
-                                        2010, <b>1-9</b> doi:10.1093/nar/gkq110
-                                </i></small>
+                                <small><i>Bioinformatics (2012) <b>28</b> <b>(11)</b>: 1542-1543. doi: 10.1093/bioinformatics/bts165</i></small>
                                 <br/>
                                 <small>
-                                  <a href="http://nar.oxfordjournals.org/cgi/content/abstract/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Abstract] </a>
-                                  <a href="http://nar.oxfordjournals.org/cgi/content/full/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[Full Text] </a>
-                                  <a href="http://nar.oxfordjournals.org/cgi/reprint/gkq110?ijkey=XbGwzIKPrHAyFqz&amp;keytype=ref">[PDF]</a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/28/11/1542">[Abstract] </a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/28/11/1542.full">[Full Text] </a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/28/11/1542.full.pdf+html">[Full Text PDF]</a>
+                                  <a href="http://bioinformatics.oxfordjournals.org/content/28/11/1542/suppl/DC1">[Supplementary Data]</a>
                                 </small>
-                        </p> -->
+                        </p>
 
 		</section>
 	</body>

@@ -29,14 +29,19 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -105,13 +110,10 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
+    // Set input path
     final Path inputPath =
         new Path(context.getInputDataFile(MAPPER_RESULTS_SAM, sample)
             .getSource());
-
-    // Set threshold quality
-    jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
-        Integer.toString(getMappingQualityThreshold()));
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
@@ -121,14 +123,15 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
-    // Debug
-    // jobConf.set("mapred.job.tracker", "local");
+    // Set SAM filter parameters
+    for (Map.Entry<String, String> e : getAlignmentsFilterParameters()
+        .entrySet())
+      jobConf.set(
+          SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
+          e.getValue());
 
     // timeout
     jobConf.set("mapred.task.timeout", "" + 30 * 60 * 1000);
-
-    // No JVM task resuse
-    // job. setNumTasksToExecutePerJvm(1);
 
     // Create the job and its name
     final Job job =
@@ -147,6 +150,10 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set the reducer class
     job.setReducerClass(SAMFilterReducer.class);
 
+    // job.setPartitionerClass(SAMRecordsPartitioner.class);
+//    job.setSortComparatorClass(SAMRecordsKeyComparator.class);
+    // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
+
     // Set the output key class
     job.setOutputKeyClass(Text.class);
 
@@ -154,7 +161,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set the number of reducers
-    // job.setNumReduceTasks(1);
+    // job.setNumReduceTasks(9);
 
     // Set output path
     FileOutputFormat.setOutputPath(

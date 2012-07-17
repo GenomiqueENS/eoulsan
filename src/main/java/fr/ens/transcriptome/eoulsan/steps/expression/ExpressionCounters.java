@@ -32,8 +32,12 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 public enum ExpressionCounters {
 
   INVALID_SAM_ENTRIES_COUNTER("invalid SAM input entries"),
-  TOTAL_READS_COUNTER("reads total"), UNUSED_READS_COUNTER("reads unused"),
+  TOTAL_READS_COUNTER("reads total"), 
+  UNUSED_READS_COUNTER("reads unused"),
   USED_READS_COUNTER("reads used"),
+  UNMAPPED_READS_COUNTER("unmapped reads"), 
+  ELIMINATED_READS_COUNTER("reads eliminated"),
+  TOTAL_ALIGNMENTS_COUNTER("total number of alignments"),
 
   PARENTS_COUNTER("parent"), INVALID_CHROMOSOME_COUNTER("invalid chromosome"),
   PARENT_ID_NOT_FOUND_COUNTER("Parent Id not found in exon range");

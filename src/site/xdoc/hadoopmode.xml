@@ -53,7 +53,7 @@ deb http://archive.cloudera.com/debian maverick-cdh3 contrib
 
 	<p>Add the public key for Cloudera packages:</p>
 <source> 
-curl -s http://archive.cloudera.com/debian/archive.key | sudo apt-key add -
+$ curl -s http://archive.cloudera.com/debian/archive.key | sudo apt-key add -
 </source>
 
 	<p>Install the necessary packages:</p>
@@ -155,7 +155,7 @@ $ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc
 </source>
 
         <br/>
-	<li>In <b>hadoop-end.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
+	<li>In <b>hadoop-env.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
 <source>
 export JAVA_HOME=/usr/lib/jvm/java-6-sun
 # Disable IPv6 for hadoop

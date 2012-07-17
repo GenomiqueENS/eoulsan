@@ -70,4 +70,10 @@ public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
     return "Filter read with illumina id";
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{}";
+  }
+
 }
