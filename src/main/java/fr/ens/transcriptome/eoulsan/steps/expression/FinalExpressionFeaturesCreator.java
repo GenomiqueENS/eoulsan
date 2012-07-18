@@ -211,6 +211,7 @@ public class FinalExpressionFeaturesCreator {
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
+    osw.write("Id\tCount\n");
     for (ExpressionFeature ef : list)
       osw.write(ef.toString() + "\n");
 
