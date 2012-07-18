@@ -185,6 +185,22 @@ public class DiffAna {
         break;
     }
 
+    // Check repTechGroup field coherence
+    for (i = 0; i < rRepTechGroup.size(); i++) {
+      String repTechGroup1 = rRepTechGroup.get(i);
+      String condition = rCondNames.get(i);
+      for (int j = 0; j < rRepTechGroup.size(); j++) {
+        String repTechGroup2 = rRepTechGroup.get(j);
+        if (repTechGroup2.equals(repTechGroup1)) {
+          if (rCondNames.get(j).equals(condition)) {
+            throw new EoulsanException(
+                "There is a mistake in RepTechGroup field of design file : "
+                    + "two condition have the same repTechGroup");
+          }
+        }
+      }
+    }
+
     final StringBuilder sb = new StringBuilder();
 
     sb.append("\\documentclass[a4paper,10pt]{article}\n");
@@ -198,7 +214,7 @@ public class DiffAna {
     sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
 
     sb.append("\\title{"
-        + this.design.getSample(1).getMetadata().getProjectName()
+        + this.design.getSample(1).getMetadata().getExperiment()
         + " analysis}\n\n");
 
     sb.append("\\begin{document}\n");
@@ -239,16 +255,18 @@ public class DiffAna {
     else
       writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames);
 
-    // add differential analysis part
-    if (biologicalReplicate) {
-      sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
-    } else {
-      sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
-    }
+//     add differential analysis part
+     if (biologicalReplicate) {
+     sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
+     } else {
+     sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
+     }
 
     String rScript = null;
     try {
-      rScript = FileUtils.createTempFile("anadiff", ".Rnw").getName();
+      rScript =
+          this.design.getSample(1).getMetadata().getExperiment()
+              + "_" + "Anadiff" + ".Rnw";
       if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
@@ -455,10 +473,10 @@ public class DiffAna {
     sb.append("# projectPath : path of count files directory\n");
     sb.append("projectPath <- \"\"\n");
     sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"\"\n");
+    sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\""
-        + this.design.getSample(1).getMetadata().getProjectName() + "\"" + "\n");
+        + this.design.getSample(1).getMetadata().getExperiment() + "\"" + "\n");
     sb.append("@\n\n");
 
     // add not variable part of the analysis
@@ -541,10 +559,10 @@ public class DiffAna {
     sb.append("# projectPath : path of count files directory\n");
     sb.append("projectPath <- \"\"\n");
     sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"\"\n");
+    sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\""
-        + this.design.getSample(1).getMetadata().getProjectName() + "\"" + "\n");
+        + this.design.getSample(1).getMetadata().getExperiment() + "\"" + "\n");
     sb.append("@\n\n");
 
     // add not variable part of the analysis
