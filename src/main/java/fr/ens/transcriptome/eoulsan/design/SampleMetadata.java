@@ -62,7 +62,7 @@ public interface SampleMetadata {
   /** repTechGroup field. */
   String REP_TECH_GROUP_FIELD = "RepTechGroup";
   /** project name field */
-  String PROJECT_NAME = "ProjectName";
+  String EXPERIMENT = "Experiment";
 
   /**
    * Get a field value.
@@ -112,7 +112,7 @@ public interface SampleMetadata {
    * Get project name 
    * @return Returns the project name
    */
-  String getProjectName();
+  String getExperiment();
   
   /**
    * Get the annotation relative to the sample.
@@ -208,9 +208,9 @@ public interface SampleMetadata {
 
   /**
    * Set the project name
-   * @param projectName
+   * @param experiment
    */
-  void setProjectName(String projectName);
+  void setExperiment(String experiment);
   /**
    * Set the annotation file relative to the sample.
    * @param annotation file to set
@@ -291,10 +291,10 @@ public interface SampleMetadata {
   boolean isGenomeField();
 
   /**
-   * Test id the projectName filed exists
+   * Test id the experiment filed exists
    * @return
    */
-  boolean isProjecName();
+  boolean isExperiment();
   /**
    * Test if the annoatation field exists.
    * @return true if the field exists
