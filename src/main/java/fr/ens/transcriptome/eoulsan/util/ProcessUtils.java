@@ -362,7 +362,7 @@ public final class ProcessUtils {
 
     final long startTime = System.currentTimeMillis();
 
-    Process p = Runtime.getRuntime().exec(cmd);
+    Process p = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
 
     InputStream std = p.getInputStream();
 
