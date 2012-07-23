@@ -42,9 +42,23 @@
 
       <ul>
         <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the parameter files.</li>
+        <li>The <a href="#constantssection">constants section</a> that contains constants parameters that can be used in parameters values.</li>
         <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
         <li>The <a href="#globalsection">global section</a> that contains global parameters (override configuration settings) that can be use in all the steps of the analysis.</li>
      </ul>
+
+	<p>In all parameter values you can use variables (e.g. <code>${variable}</code>) that contains values for : </p>
+	<ul>
+		<li>Built-in variables (<code>${eoulsan.version}</code>, <code>${eoulsan.version}</code>, <code>${eoulsan.build.number}</code>, <code>${eoulsan.build.date}</code> and <code>${available.processors}</code>)</li>
+		<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/System.html#getProperty(java.lang.String)">java properties</a> (e.g. <code>${java.version}</code>)</li>
+		<li>System environment variables (e.g. <code>${PATH}</code>, <code>${PWD}</code>)</li>
+		<li><a href="#constantssection">user defined constants</a></li>
+	</ul> 
+	<p>User can also insert in parameter values the output of a shell command with expression between "<b>`</b>"</p>
+	<source>
+	 &lt;value&gt;`cat /proc/cpuinfo | grep processor | wc -l`&lt;/value&gt;
+	 &lt;value&gt;`pwd`/tmp&lt;/value&gt;
+	 &lt;value&gt;`basedir ${user.home}`/tmp&lt;/value&gt;</source>
 
 	<p>All the tags must be in lower case. The following source show the structure of a typical <b>design.xml</b> file:</p>
 
@@ -54,6 +68,14 @@
     &lt;name&gt;my analysis&lt;/name&gt;
     &lt;description&gt;Demo analysis&lt;/description&gt;
     &lt;author&gt;Laurent Jourdren&lt;/author&gt;
+
+    &lt;constants&gt;
+        &lt;parameter&gt;
+	        &lt;name&gt;my.constant&lt;/name&gt;
+	        &lt;value&gt;myconstantvalue&lt;/value&gt;
+        &lt;/parameter&gt;
+    &lt;/constants&gt;
+
 
     &lt;steps&gt;
 
@@ -146,6 +168,28 @@
                 <li><b>author:</b> The author of this parameter file.</li>
         </ul> 
 
+     </subsection>
+
+     <subsection name="Constants section">
+        <a name="constantssection" />
+ 
+ 		<p>The constant section allow to define additional variables that can be used in the values of the parameters with the <code>${variable}</code> syntax. 
+ 		Previously defined constants (and other variables) can be used in a new constant.</p>       
+        <p>Note that the constants section is optional.</p>
+        
+ <source>       
+    &lt;constants&gt;
+        &lt;parameter&gt;
+	        &lt;name&gt;my.constant1&lt;/name&gt;
+	        &lt;value&gt;foo&lt;/value&gt;
+        &lt;/parameter&gt;
+         &lt;parameter&gt;
+	        &lt;name&gt;my.constant2&lt;/name&gt;
+	        &lt;value&gt;${my.constant1}-bar&lt;/value&gt;
+        &lt;/parameter&gt;
+    &lt;/constants&gt;        
+ </source>
+ 
      </subsection>
 
      <subsection name="Steps section">
