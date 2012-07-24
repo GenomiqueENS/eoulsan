@@ -123,6 +123,12 @@ public class HadoopExecutor extends Executor {
 
   }
 
+  @Override
+  protected void checkTemporaryDirectory() {
+
+    // Do nothing
+  }
+
   private void writeResultLog(final Path logPath, final FileSystem fs,
       final StepResult result) throws IOException {
 
