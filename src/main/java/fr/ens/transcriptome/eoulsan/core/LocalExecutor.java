@@ -30,6 +30,7 @@ import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -103,6 +104,38 @@ public class LocalExecutor extends Executor {
           + result.getStep() + " step.");
     }
 
+  }
+
+  @Override
+  protected void checkTemporaryDirectory() {
+
+    final File tempDir = getContext().getSettings().getTempDirectoryFile();
+
+    if (tempDir == null)
+      throw new EoulsanRuntimeException("Temporary directory is null");
+
+    if ("".equals(tempDir.getAbsolutePath()))
+      throw new EoulsanRuntimeException("Temporary directory is null");
+
+    if (!tempDir.exists())
+      throw new EoulsanRuntimeException("Temporary directory does not exists: "
+          + tempDir);
+
+    if (!tempDir.isDirectory())
+      throw new EoulsanRuntimeException(
+          "Temporary directory is not a directory: " + tempDir);
+
+    if (!tempDir.canRead())
+      throw new EoulsanRuntimeException("Temporary directory cannot be read: "
+          + tempDir);
+
+    if (!tempDir.canWrite())
+      throw new EoulsanRuntimeException(
+          "Temporary directory cannot be written: " + tempDir);
+    
+    if (!tempDir.canExecute())
+      throw new EoulsanRuntimeException(
+          "Temporary directory is not executable: " + tempDir);
   }
 
   //
