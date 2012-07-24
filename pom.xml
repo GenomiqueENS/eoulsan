@@ -371,11 +371,13 @@
 								<buildnumber file="${basedir}/build.num"/>
 								<tstamp>
 									<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss z" />
+									<format property="YEAR" pattern="yyyy" />
 								</tstamp>
 
 								<manifest file="${basedir}/target/generated-resources/MANIFEST.MF">
 									<attribute name="Built-By" value="${user.name}"/>
 									<attribute name="Built-Date" value="${TODAY}"/>  
+									<attribute name="Built-Year" value="${YEAR}"/>  
 
 									<attribute name="Specification-Title" value="${pom.name}"/>   
 									<attribute name="Specification-Version" value="${pom.version}"/>   
