@@ -51,6 +51,8 @@
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 		
+        <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
+		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>	
 		<tr><td>mappingquality.threshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td></tr>
 		<tr><td>removeunmapped.remove</td><td>boolean</td><td>Remove unmapped reads if true.</td></tr>
 		<tr><td>removemultimatches.remove</td><td>boolean</td><td>Remove all alignments of a multi-matches read if true.</td></tr>

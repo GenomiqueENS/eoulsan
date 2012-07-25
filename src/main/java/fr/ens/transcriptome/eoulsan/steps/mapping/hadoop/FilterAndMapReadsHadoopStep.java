@@ -208,9 +208,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
 
     // Set the number of threads for the mapper
-    if (getMapperThreads() < 0) {
+    if (getMapperHadoopThreads() < 0) {
       jobConf
-          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperThreads());
+          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments

@@ -69,7 +69,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   public StepResult execute(final Design design, final Context context) {
 
     return ProcessSampleExecutor.processAllSamples(context, design,
-        new ProcessSample() {
+        getLocalThreads(), new ProcessSample() {
 
           @Override
           public String processSample(final Context context, final Sample sample)

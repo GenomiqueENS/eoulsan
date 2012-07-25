@@ -103,7 +103,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
       StepResult stepResult = jobsResults.getStepResult(context, startTime);
-      
+
       return stepResult;
 
     } catch (IOException e) {
@@ -155,9 +155,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
 
     // Set the number of threads for the mapper
-    if (getMapperThreads() < 0) {
-      jobConf
-          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperThreads());
+    if (getMapperLocalThreads() < 0) {
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
+          + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
