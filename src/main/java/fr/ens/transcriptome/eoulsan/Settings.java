@@ -233,7 +233,7 @@ public final class Settings {
   public int getLocalThreadsNumber() {
 
     return Integer.parseInt(this.properties.getProperty(LOCAL_THREADS_NUMBER,
-        "0"));
+        "" + Runtime.getRuntime().availableProcessors()));
   }
 
   /**
