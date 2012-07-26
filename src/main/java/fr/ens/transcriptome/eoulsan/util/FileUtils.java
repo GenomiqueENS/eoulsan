@@ -41,9 +41,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -1538,6 +1541,52 @@ public class FileUtils {
       isa.close();
       isb.close();
     }
+  }
+
+  /**
+   * Compute MD5 sum of a file.
+   * @param file the input file
+   * @return a string with the MD5 sum
+   * @throws IOException In case of an I/O problem or digest error
+   */
+  public static String computeMD5Sum(File file) throws IOException {
+
+    if (file == null)
+      throw new NullPointerException("The file argument is null");
+
+    return computeMD5Sum(new FileInputStream(file));
+  }
+
+  /**
+   * Compute MD5 sum of a file.
+   * @param input the InputStream to read from
+   * @return a string with the MD5 sum
+   * @throws IOException In case of an I/O problem or digest error
+   */
+  public static String computeMD5Sum(final InputStream input)
+      throws IOException {
+
+    final MessageDigest md5Digest;
+    try {
+      md5Digest = MessageDigest.getInstance("MD5");
+
+      byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+
+      int n = 0;
+
+      while (-1 != (n = input.read(buffer))) {
+        md5Digest.update(buffer, 0, n);
+      }
+
+    } catch (NoSuchAlgorithmException e) {
+      throw new IOException("No MD5 digest algorithm found: " + e.getMessage());
+    }
+
+    input.close();
+
+    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
+
+    return bigInt.toString(16);
   }
 
 }
