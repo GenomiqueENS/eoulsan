@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -35,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.storages.GenomeDescStorage;
+import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeDescStorage;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -105,14 +108,11 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       LOGGER.fine("Output genome description file: "
           + genomeDescriptionDataFile);
 
+      // Create genome description DataFile
       final GenomeDescription desc =
-          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
-              genomeDataFile.getName());
+          createGenomeDescription(genomeDataFile, genomeDescriptionDataFile);
 
       LOGGER.fine("Genome description object: " + desc.toString());
-
-      desc.save(genomeDescriptionDataFile.create());
-
     } catch (BadBioEntryException e) {
 
       return new StepResult(context, e);
@@ -125,6 +125,61 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
     }
 
     return new StepResult(context, startTime, "Genome description creation");
+  }
+
+  /**
+   * Create genome description object from the storage if already exists or
+   * compute it from the genome.
+   * @param genomeDataFile genome file
+   * @param genomeDescriptionDataFile output genome description file
+   * @return the genome description object
+   * @throws BadBioEntryException if an error occurs while computing the genome
+   *           description
+   * @throws IOException if an error occurs while computing the genome
+   *           description
+   */
+  private GenomeDescription createGenomeDescription(
+      final DataFile genomeDataFile, final DataFile genomeDescriptionDataFile)
+      throws BadBioEntryException, IOException {
+
+    final GenomeDescStorage storage = checkForGenomeDescStore();
+    GenomeDescription desc = null;
+
+    if (storage != null)
+      desc = storage.get(genomeDataFile);
+
+    if (desc == null) {
+
+      // Compute the genome description
+      desc =
+          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
+              genomeDataFile.getName());
+
+      // Store it if storage exists
+      if (storage != null)
+        storage.put(genomeDataFile, desc);
+    }
+
+    desc.save(genomeDescriptionDataFile.create());
+
+    return desc;
+  }
+
+  /**
+   * Check if a genome description storage has been defined.
+   * @return a GenomedescStorage object if genome storage has been defined or
+   *         null if not
+   */
+  private GenomeDescStorage checkForGenomeDescStore() {
+
+    final String genomeDescStoragePath =
+        EoulsanRuntime.getSettings().getGenomeDescStoragePath();
+
+    if (genomeDescStoragePath == null)
+      return null;
+
+    return SimpleGenomeDescStorage.getInstance(new DataFile(
+        genomeDescStoragePath));
   }
 
 }

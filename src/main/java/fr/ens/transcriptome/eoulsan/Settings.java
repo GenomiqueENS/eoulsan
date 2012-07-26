@@ -87,6 +87,9 @@ public final class Settings {
   private static final String GENOME_MAPPER_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
       + "genome.mapper.index.storage.path";
 
+  private static final String GENOME_DESC_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "genome.desc.storage.path";
+
   private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY
       + "genome.storage.path";
 
@@ -263,6 +266,15 @@ public final class Settings {
   public String getGenomeMapperIndexStoragePath() {
 
     return this.properties.getProperty(GENOME_MAPPER_INDEX_STORAGE_KEY);
+  }
+
+  /**
+   * Get the genome description storage path.
+   * @return the path to genome description storage path
+   */
+  public String getGenomeDescStoragePath() {
+
+    return this.properties.getProperty(GENOME_DESC_STORAGE_KEY);
   }
 
   /**
@@ -538,6 +550,15 @@ public final class Settings {
 
     this.properties.setProperty(GENOME_MAPPER_INDEX_STORAGE_KEY,
         genomeMapperIndexStoragePath);
+  }
+
+  /**
+   * Set the genome description storage path.
+   * @param genomeDescStoragePath the path to genome index storage path
+   */
+  public void setGenomeDescStoragePath(final String genomeDescStoragePath) {
+
+    this.properties.setProperty(GENOME_DESC_STORAGE_KEY, genomeDescStoragePath);
   }
 
   /**
