@@ -385,8 +385,14 @@ class Workflow implements WorkflowDescription {
             c.configure(this.command.getStepParameters(step.getName()));
             LOGGER.info("Start checking "
                 + df.getFormatName() + " for " + step.getName() + " step.");
+
+            final long startTime = System.currentTimeMillis();
             c.check(this.design, this.context, checkStore);
-            LOGGER.info("End of checking of " + df.getFormatName() + ".");
+            final long endTime = System.currentTimeMillis();
+
+            LOGGER.info("End of checking of "
+                + df.getFormatName() + " in "
+                + StringUtils.toTimeHumanReadable(endTime - startTime) + ".");
           }
         }
     }
