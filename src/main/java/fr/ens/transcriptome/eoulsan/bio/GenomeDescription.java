@@ -90,7 +90,7 @@ public class GenomeDescription {
    */
   public void addSequence(final String sequenceName, final long sequenceLength) {
 
-    LOGGER.fine("Add sequence: "
+    LOGGER.fine("Add sequence in genome description: "
         + sequenceName + " with " + sequenceLength + " pb");
 
     this.sequences.put(sequenceName, sequenceLength);
@@ -301,6 +301,8 @@ public class GenomeDescription {
 
     checkNotNull(genomeFastaIs, "The input stream of the genome is null");
 
+    LOGGER.fine("Compute genome description from genome fasta file.");
+
     final GenomeDescription result = new GenomeDescription();
     result.setGenomeName(StringUtils.basename(filename));
 
@@ -322,6 +324,10 @@ public class GenomeDescription {
     while ((seqName = parser.parseNextLineAndGetSequenceName()) != null) {
 
       if (!seqName.equals(lastSeqName)) {
+
+        if (result.getSequenceLength(lastSeqName) != -1)
+          throw new BadBioEntryException("Sequence name found twice: "
+              + lastSeqName, lastSeqName);
 
         // Add sequence
         if (lastSeqName != null)
