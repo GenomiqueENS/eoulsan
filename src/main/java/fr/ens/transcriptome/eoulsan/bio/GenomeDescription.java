@@ -325,6 +325,7 @@ public class GenomeDescription {
 
       if (!seqName.equals(lastSeqName)) {
 
+        // Check if sequence has been found more than one time
         if (result.getSequenceLength(lastSeqName) != -1)
           throw new BadBioEntryException("Sequence name found twice: "
               + lastSeqName, lastSeqName);
@@ -367,16 +368,27 @@ public class GenomeDescription {
     return result;
   }
 
-  private static String parseChromosomeName(final String fastaHeader) {
+  private static String parseChromosomeName(final String fastaHeader)
+      throws BadBioEntryException {
 
     if (fastaHeader == null)
       return null;
+
+    if ("".equals(fastaHeader.trim()))
+      throw new BadBioEntryException("Sequence header is empty", ">"
+          + fastaHeader);
+
+    if (fastaHeader.startsWith(" "))
+      throw new BadBioEntryException(
+          "A whitespace was found at the begining of the sequence name", ">"
+              + fastaHeader);
 
     final String s = fastaHeader.trim();
     String[] fields = s.split("\\s");
 
     if (fields == null || fields.length == 0)
-      return null;
+      throw new BadBioEntryException("Invalid sequence header", ">"
+          + fastaHeader);
 
     return fields[0];
   }
