@@ -371,7 +371,7 @@ class Workflow implements WorkflowDescription {
   private void runChecker(final Map<DataFormat, Checker> checkers)
       throws EoulsanException {
 
-    final CheckStore checkStore = new CheckStore();
+    final CheckStore checkStore = CheckStore.getCheckStore();
 
     for (Step step : this.steps) {
 
