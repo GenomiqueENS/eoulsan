@@ -24,9 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -40,7 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class GFFEntry {
 
-  private Map<String, String> metaData = new LinkedHashMap<String, String>();
+  private Map<String, List<String>> metaData =
+      new LinkedHashMap<String, List<String>>();
   private int id;
   private String seqId;
   private String source;
@@ -185,18 +188,18 @@ public class GFFEntry {
   }
 
   /**
-   * Get a metadata entry value.
+   * Get the metadata values for a key.
    * @param key name of the metadata entry
-   * @return the value of the attribute or null if the attribute name does not
+   * @return the values of the attribute or null if the metadata name does not
    *         exists
    */
-  public final String getMetadataEntryValue(final String key) {
+  public final List<String> getMetadataEntryValues(final String key) {
 
     if (key == null) {
       return null;
     }
 
-    return this.metaData.get(key);
+    return Collections.unmodifiableList(this.metaData.get(key));
   }
 
   /**
@@ -335,7 +338,15 @@ public class GFFEntry {
       return false;
     }
 
-    this.metaData.put(key, value);
+    final List<String> list;
+
+    if (!this.metaData.containsKey(key)) {
+      list = new ArrayList<String>();
+      this.metaData.put(key, list);
+    } else
+      list = this.metaData.get(key);
+
+    list.add(value);
 
     return true;
   }

@@ -53,11 +53,13 @@ public class GFFWriter implements Closeable {
       sb.append("##gff-version\t3\n");
 
     for (String k : entry.getMetadataKeyNames()) {
-      sb.append("##");
-      sb.append(StringUtils.protectGFF(k));
-      sb.append('\t');
-      sb.append(StringUtils.protectGFF(entry.getMetadataEntryValue(k)));
-      sb.append('\n');
+      for (String e : entry.getMetadataEntryValues(k)) {
+        sb.append("##");
+        sb.append(StringUtils.protectGFF(k));
+        sb.append('\t');
+        sb.append(StringUtils.protectGFF(e));
+        sb.append('\n');
+      }
     }
 
     this.writer.write(sb.toString());
