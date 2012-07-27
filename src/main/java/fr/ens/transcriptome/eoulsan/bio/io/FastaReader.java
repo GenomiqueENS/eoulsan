@@ -107,6 +107,12 @@ public class FastaReader implements SequenceReader {
           this.nextSequenceName = trim.substring(1);
 
         } else {
+
+          if (this.nextSequenceName == null)
+            throw new IOException(
+                "No fasta header found at the beginning of the fasta file: "
+                    + line);
+
           sb.append(trim);
         }
       }
