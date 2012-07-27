@@ -26,13 +26,14 @@ package fr.ens.transcriptome.eoulsan.checkers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
@@ -64,9 +65,9 @@ public class AnnotationChecker implements Checker {
 
   @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
-    
+
     String counterName = null;
-    
+
     for (Parameter p : stepParameters) {
 
       if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
@@ -109,7 +110,8 @@ public class AnnotationChecker implements Checker {
     final Sample s = samples.get(0);
 
     try {
-      final DataFile file = context.getOtherDataFile(DataFormats.ANNOTATION_GFF, s);
+      final DataFile file =
+          context.getOtherDataFile(DataFormats.ANNOTATION_GFF, s);
 
       if (!file.exists())
         return true;
@@ -170,7 +172,8 @@ public class AnnotationChecker implements Checker {
 
     // TODO compare chromosomes names
     final Set<String> genomeChromosomes =
-        getGenomeChromosomes(design, context, checkInfo);
+        new HashSet<String>(getGenomeChromosomes(design, context, checkInfo)
+            .getSequencesNames());
 
     if (genomeChromosomes != null) {
 
@@ -185,23 +188,22 @@ public class AnnotationChecker implements Checker {
   }
 
   @SuppressWarnings("unchecked")
-  private Set<String> getGenomeChromosomes(final Design design,
+  private GenomeDescription getGenomeChromosomes(final Design design,
       final Context context, final CheckStore checkInfo)
       throws EoulsanException {
 
-    Object o = checkInfo.get(GenomeChecker.INFO_CHROMOSOME);
+    Object o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
     if (o == null) {
 
       DataFormats.GENOME_FASTA.getChecker().check(design, context, checkInfo);
-      o = checkInfo.get(GenomeChecker.INFO_CHROMOSOME);
+      o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
       if (o == null)
         return null;
     }
 
-    return ((Map<String, Integer>) checkInfo.get(GenomeChecker.INFO_CHROMOSOME))
-        .keySet();
+    return (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
   }
 
 }

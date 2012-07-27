@@ -110,7 +110,11 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
       // Create genome description DataFile
       final GenomeDescription desc =
-          createGenomeDescription(genomeDataFile, genomeDescriptionDataFile);
+          new GenomeDescriptionCreator()
+              .createGenomeDescription(genomeDataFile);
+
+      // Save the genome description in the analysis folder
+      desc.save(genomeDescriptionDataFile.create());
 
       LOGGER.fine("Genome description object: " + desc.toString());
     } catch (BadBioEntryException e) {
@@ -128,49 +132,11 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   /**
-   * Create genome description object from the storage if already exists or
-   * compute it from the genome.
-   * @param genomeDataFile genome file
-   * @param genomeDescriptionDataFile output genome description file
-   * @return the genome description object
-   * @throws BadBioEntryException if an error occurs while computing the genome
-   *           description
-   * @throws IOException if an error occurs while computing the genome
-   *           description
-   */
-  private GenomeDescription createGenomeDescription(
-      final DataFile genomeDataFile, final DataFile genomeDescriptionDataFile)
-      throws BadBioEntryException, IOException {
-
-    final GenomeDescStorage storage = checkForGenomeDescStore();
-    GenomeDescription desc = null;
-
-    if (storage != null)
-      desc = storage.get(genomeDataFile);
-
-    if (desc == null) {
-
-      // Compute the genome description
-      desc =
-          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
-              genomeDataFile.getName());
-
-      // Store it if storage exists
-      if (storage != null)
-        storage.put(genomeDataFile, desc);
-    }
-
-    desc.save(genomeDescriptionDataFile.create());
-
-    return desc;
-  }
-
-  /**
    * Check if a genome description storage has been defined.
    * @return a GenomedescStorage object if genome storage has been defined or
    *         null if not
    */
-  private GenomeDescStorage checkForGenomeDescStore() {
+  static GenomeDescStorage checkForGenomeDescStore() {
 
     final String genomeDescStoragePath =
         EoulsanRuntime.getSettings().getGenomeDescStoragePath();
