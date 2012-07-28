@@ -149,11 +149,30 @@ public class FastaLineParser {
     if (file == null)
       throw new NullPointerException("File is null");
 
-    if (!file.isFile())
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
+    this.reader = FileUtils.createBufferedReader(file, CHARSET);
 
-    this.reader = FileUtils.createBufferedReader(file);
+    if (!gffFile)
+      this.fastaSectionFound = true;
+  }
+
+  /**
+   * Public constructor
+   * @param filename File to use
+   */
+  public FastaLineParser(final String filename) throws FileNotFoundException {
+
+    this(filename, false);
+  }
+
+  /**
+   * Public constructor
+   * @param file File to use
+   * @param the input file is a GFF file
+   */
+  public FastaLineParser(final String filename, final boolean gffFile)
+      throws FileNotFoundException {
+
+    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
 
     if (!gffFile)
       this.fastaSectionFound = true;

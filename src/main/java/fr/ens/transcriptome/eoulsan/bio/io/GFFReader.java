@@ -213,11 +213,15 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     if (file == null)
       throw new NullPointerException("File is null");
 
-    if (!file.isFile())
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
-
-    this.reader = FileUtils.createBufferedReader(file);
+    this.reader = FileUtils.createBufferedReader(file, CHARSET);
   }
 
+  /**
+   * Public constructor.
+   * @param filename File to use
+   */
+  public GFFReader(final String filename) throws FileNotFoundException {
+
+    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
+  }
 }
