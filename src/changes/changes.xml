@@ -368,6 +368,9 @@ of reads that reject each filter like in local mode.
                 Variables and shell expression can be evaluated in the parameter file. 
                 This file can also now contains a "constants" section.
             </action>
+            <action dev="jourdren" type="add">
+                Add a genome description storage to speed up the startup of analysis and avoid multiple genome sequence parsing.
+            </action>
          </release>
 
 	</body>
