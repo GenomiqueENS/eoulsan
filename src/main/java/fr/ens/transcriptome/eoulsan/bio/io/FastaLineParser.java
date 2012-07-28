@@ -48,6 +48,7 @@ public class FastaLineParser {
   final BufferedReader reader;
   private String seqName;
   private String sequence;
+  private boolean fastaSectionFound;
 
   /**
    * Parse the next sequence line of the FASTA file and return the current
@@ -67,6 +68,13 @@ public class FastaLineParser {
       // discard empty lines
       if ("".equals(trim))
         continue;
+
+      if (!this.fastaSectionFound) {
+        if (line.startsWith("##FASTA")) {
+          this.fastaSectionFound = true;
+        }
+        continue;
+      }
 
       if (trim.charAt(0) == '>') {
 
@@ -103,10 +111,22 @@ public class FastaLineParser {
    */
   public FastaLineParser(final InputStream is) {
 
+    this(is, false);
+  }
+
+  /**
+   * Public constructor
+   * @param is InputStream to use
+   * @param the input file is a GFF file
+   */
+  public FastaLineParser(final InputStream is, final boolean gffFile) {
+
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
     this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
+    if (!gffFile)
+      this.fastaSectionFound = true;
   }
 
   /**
@@ -114,6 +134,17 @@ public class FastaLineParser {
    * @param file File to use
    */
   public FastaLineParser(final File file) throws FileNotFoundException {
+
+    this(file, false);
+  }
+
+  /**
+   * Public constructor
+   * @param file File to use
+   * @param the input file is a GFF file
+   */
+  public FastaLineParser(final File file, final boolean gffFile)
+      throws FileNotFoundException {
 
     if (file == null)
       throw new NullPointerException("File is null");
@@ -123,6 +154,9 @@ public class FastaLineParser {
           + file.getAbsolutePath());
 
     this.reader = FileUtils.createBufferedReader(file);
+
+    if (!gffFile)
+      this.fastaSectionFound = true;
   }
 
 }
