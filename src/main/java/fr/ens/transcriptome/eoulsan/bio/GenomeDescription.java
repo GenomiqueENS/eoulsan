@@ -299,6 +299,44 @@ public class GenomeDescription {
       final InputStream genomeFastaIs, final String filename)
       throws BadBioEntryException, IOException {
 
+    return createGenomeDesc(genomeFastaIs, filename, false);
+  }
+
+  /**
+   * Create a GenomeDescription object from a GFF file.
+   * @param gffFile genome in GFF file
+   */
+  public static GenomeDescription createGenomeDescFromGFF(final File gffFile)
+      throws BadBioEntryException, IOException {
+
+    checkNotNull(gffFile, "The genome file is null");
+
+    return createGenomeDescFromGFF(FileUtils.createInputStream(gffFile),
+        gffFile.getName());
+  }
+
+  /**
+   * Create a GenomeDescription object from a GFF file.
+   * @param gffFile genome in GFF input stream
+   * @param filename name of the file of the input stream
+   */
+  public static GenomeDescription createGenomeDescFromGFF(
+      final InputStream gffFile, final String filename)
+      throws BadBioEntryException, IOException {
+
+    return createGenomeDesc(gffFile, filename, true);
+  }
+
+  /**
+   * Create a GenomeDescription object from a Fasta file of GFF file.
+   * @param genomeFastaIs genome fasta input stream
+   * @param filename name of the file of the input stream
+   * @param gffFormat the input file is in GFF format
+   */
+  public static GenomeDescription createGenomeDesc(
+      final InputStream genomeFastaIs, final String filename,
+      final boolean gffFormat) throws BadBioEntryException, IOException {
+
     checkNotNull(genomeFastaIs, "The input stream of the genome is null");
 
     LOGGER.fine("Compute genome description from genome fasta file.");
@@ -313,7 +351,8 @@ public class GenomeDescription {
       md5Digest = null;
     }
 
-    final FastaLineParser parser = new FastaLineParser(genomeFastaIs);
+    final FastaLineParser parser =
+        new FastaLineParser(genomeFastaIs, gffFormat);
 
     final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
     String seqName = null;
