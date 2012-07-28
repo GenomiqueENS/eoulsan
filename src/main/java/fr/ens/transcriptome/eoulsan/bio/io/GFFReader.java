@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
-import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
-
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
@@ -34,7 +32,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -59,7 +60,8 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
   private boolean end;
   private boolean fastaSectionFound;
 
-  private Map<String, String> metadata = newLinkedHashMap();
+  private Map<String, List<String>> metadata =
+      new LinkedHashMap<String, List<String>>();
   private boolean nextCallDone = true;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
@@ -103,14 +105,21 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
 
         if (line.startsWith("##")) {
 
-          final int posTab = line.indexOf('\t');
+          final int posTab = line.indexOf(' ');
           if (posTab == -1)
             continue;
 
           final String mdKey = line.substring(2, posTab).trim();
           final String mdValue = line.substring(posTab + 1).trim();
 
-          this.metadata.put(mdKey, mdValue);
+          final List<String> list;
+          if (!this.metadata.containsKey(mdKey)) {
+            list = new ArrayList<String>();
+            this.metadata.put(mdKey, list);
+          } else
+            list = this.metadata.get(mdKey);
+
+          list.add(mdValue);
 
         } else if (line.startsWith("#"))
           continue;

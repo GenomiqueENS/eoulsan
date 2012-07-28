@@ -199,7 +199,12 @@ public class GFFEntry {
       return null;
     }
 
-    return Collections.unmodifiableList(this.metaData.get(key));
+    final List<String> list = this.metaData.get(key);
+
+    if (list == null)
+      return null;
+
+    return Collections.unmodifiableList(list);
   }
 
   /**
@@ -356,17 +361,19 @@ public class GFFEntry {
    * @param entries the entries to add
    * @return true if all the entries are correctly added to the metadata
    */
-  public final boolean addMetaDataEntries(final Map<String, String> entries) {
+  public final boolean addMetaDataEntries(
+      final Map<String, List<String>> entries) {
 
     if (entries == null)
       return false;
 
-    for (Map.Entry<String, String> e : entries.entrySet()) {
+    for (Map.Entry<String, List<String>> e : entries.entrySet())
+      for (String v : e.getValue()) {
 
-      if (!addMetaDataEntry(e.getKey(), e.getValue()))
-        return false;
+        if (!addMetaDataEntry(e.getKey(), v))
+          return false;
 
-    }
+      }
 
     return true;
   }
