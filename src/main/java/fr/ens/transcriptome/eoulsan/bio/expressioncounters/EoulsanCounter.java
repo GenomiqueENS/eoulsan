@@ -53,16 +53,14 @@ public class EoulsanCounter extends AbstractExpressionCounter {
   }
 
   @Override
-  protected void internalCount(File alignmentFile, DataFile annotationFile,
-      File expressionFile, final DataFile genomeDescFile, Reporter reporter,
-      String counterGroup) throws IOException {
+  protected void internalCount(final File alignmentFile,
+      final DataFile annotationFile, final File expressionFile,
+      final DataFile genomeDescFile, final Reporter reporter,
+      final String counterGroup) throws IOException {
 
     ExpressionPseudoMapReduce epmr = null;
-    String lastAnnotationKey = null;
+    // String lastAnnotationKey = null;
     final String genomicType = getGenomicType();
-
-    final String annotationKey =
-        annotationFile.getName() + " " + getGenomicType();
 
     // Get expression temporary file
     final File expressionTmpFile =
@@ -70,12 +68,9 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
     try {
 
-      if (!annotationKey.equals(lastAnnotationKey)) {
-        epmr =
-            new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
-                genomeDescFile.open(), counterGroup);
-        lastAnnotationKey = annotationKey;
-      }
+      epmr =
+          new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
+              genomeDescFile.open(), counterGroup);
 
       if (getTempDirectory() != null)
         epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));

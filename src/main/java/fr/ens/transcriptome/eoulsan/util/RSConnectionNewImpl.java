@@ -165,7 +165,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       is.close();
       os.close();
-      
+
     } catch (REngineException e) {
       throw new REngineException(rconnection, "Unable to get file");
     } catch (FileNotFoundException e) {
@@ -467,8 +467,6 @@ public class RSConnectionNewImpl implements RSConnection {
    * @param serverName RServe server to use
    */
   public RSConnectionNewImpl(final String serverName) {
-    
-    System.out.println(this.serverName);
 
     this.serverName = serverName == null ? "127.0.0.1" : serverName.trim();
   }

@@ -376,6 +376,9 @@ public class GenomeDescription {
         // Parse chromosome name
         parsedSeqName = parseChromosomeName(seqName);
 
+        if (parsedSeqName == null)
+          throw new IOException("No fasta header found.");
+
         // Update digest with chromosome name
         if (md5Digest != null)
           md5Digest.update(parsedSeqName
@@ -386,6 +389,8 @@ public class GenomeDescription {
       }
 
       final String sequence = parser.getSequence();
+      if (sequence == null)
+        throw new IOException("No fasta sequence found.");
 
       // Check the sequence and increment the length of the sequence
       chrSize += checkBases(sequence, lastSeqName, alphabet);
