@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
@@ -49,7 +48,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   private String genomicType;
   private StrandUsage stranded;
-  private String overlapMode;
+  private OverlapMode overlapMode;
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
@@ -60,7 +59,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   }
 
   @Override
-  public String getOverlapMode() {
+  public OverlapMode getOverlapMode() {
     return this.overlapMode;
   }
 
@@ -94,9 +93,15 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public void setOverlapMode(final String mode) {
+    
+    setOverlapMode(OverlapMode.getOverlapModeFromName(mode));
+  }
+  
+  @Override
+  public void setOverlapMode(final OverlapMode mode) {
 
     if (mode == null)
-      this.overlapMode = "union";
+      this.overlapMode = OverlapMode.UNION;
     else
       this.overlapMode = mode;
   }

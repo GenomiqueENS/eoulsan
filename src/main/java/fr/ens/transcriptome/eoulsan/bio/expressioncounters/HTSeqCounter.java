@@ -118,7 +118,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    */
   private static void countReadsInFeatures(final File samFile,
       final InputStream gffFile, final File outFile,
-      final StrandUsage stranded, final String overlapMode,
+      final StrandUsage stranded, final OverlapMode overlapMode,
       final String featureType, final String attributeId, final boolean quiet,
       final int minAverageQual, final File samOutFile, Reporter reporter,
       String counterGroup) throws EoulsanException, IOException,
@@ -479,14 +479,14 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @throws EoulsanException
    */
   private static Set<String> featuresOverlapped(List<GenomicInterval> ivList,
-      GenomicArray<String> features, String mode, StrandUsage stranded)
+      GenomicArray<String> features, OverlapMode mode, StrandUsage stranded)
       throws EoulsanException {
 
     Set<String> fs = null;
     Map<GenomicInterval, String> inter = new HashMap<GenomicInterval, String>();
 
     // Overlap mode "union"
-    if (mode.equals("union")) {
+    if (mode == OverlapMode.UNION) {
 
       fs = new HashSet<String>();
 
@@ -520,7 +520,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     }
 
     // Overlap mode "intersection-nonempty"
-    else if (mode.equals("intersection-nonempty")) {
+    else if (mode == OverlapMode.INTERSECTION_NONEMPTY) {
 
       final Set<String> featureTmp = new HashSet<String>();
 
@@ -573,7 +573,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     }
 
     // Overlap mode "intersection-strict"
-    else if (mode.equals("intersection-strict")) {
+    else if (mode == OverlapMode.INTERSECTION_STRICT) {
 
       final Set<String> featureTmp = new HashSet<String>();
 
@@ -657,8 +657,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final long startTime = System.currentTimeMillis();
     System.out.println("start.");
     countReadsInFeatures(samFile, gffFile, output, StrandUsage.YES,
-        "intersection-strict", "exon", "ID", false, 0, null, reporter,
-        counterGroup);
+        OverlapMode.INTERSECTION_STRICT, "exon", "ID", false, 0, null,
+        reporter, counterGroup);
     System.out.println("end.");
     System.out.println("Duration: "
         + (System.currentTimeMillis() - startTime) + " ms.");
