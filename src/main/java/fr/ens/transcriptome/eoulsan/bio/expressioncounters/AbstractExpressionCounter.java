@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
@@ -47,28 +48,27 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String genomicType;
-  private String stranded;
+  private StrandUsage stranded;
   private String overlapMode;
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
-  
-  //
-  // Getters
-  //
 
-  public String getStranded() {
+  @Override
+  public StrandUsage getStranded() {
     return this.stranded;
   }
 
+  @Override
   public String getOverlapMode() {
     return this.overlapMode;
   }
 
+  @Override
   public String getTempDirectory() {
     return this.tempDir;
   }
-  
+
   public String getGenomicType() {
     return this.genomicType;
   }
@@ -77,15 +77,23 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   // Setters
   //
 
-  public void setStranded(String stranded) {
+  @Override
+  public void setStranded(final String stranded) {
+
+    setStranded(StrandUsage.getStrandUsageFromName(stranded));
+  }
+
+  @Override
+  public void setStranded(final StrandUsage stranded) {
 
     if (stranded == null)
-      this.stranded = "false";
+      this.stranded = StrandUsage.NO;
     else
       this.stranded = stranded;
   }
 
-  public void setOverlapMode(String mode) {
+  @Override
+  public void setOverlapMode(final String mode) {
 
     if (mode == null)
       this.overlapMode = "union";
@@ -93,7 +101,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
       this.overlapMode = mode;
   }
 
-  public void setTempDirectory(String tempDirectory) {
+  @Override
+  public void setTempDirectory(final String tempDirectory) {
 
     this.tempDir = tempDirectory;
   }

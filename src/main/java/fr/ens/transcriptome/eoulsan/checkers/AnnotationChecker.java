@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 public class AnnotationChecker implements Checker {
 
   private String genomicType;
-  private String stranded = "yes";
+  private boolean stranded = true;
 
   @Override
   public String getName() {
@@ -73,7 +73,9 @@ public class AnnotationChecker implements Checker {
           .equals(p.getName()))
         this.genomicType = p.getStringValue();
       else if ("stranded".equals(p.getName()))
-        this.stranded = p.getStringValue();
+        this.stranded =
+            "yes".equals(p.getStringValue())
+                || "reverse".equals(p.getStringValue());
       else if (!"counter".equals(p.getName())
           && !"overlapmode".equals(p.getName()))
         throw new EoulsanException("Unknown parameter for "
@@ -135,7 +137,7 @@ public class AnnotationChecker implements Checker {
 
   private static void validationAnnotation(final DataFile file,
       final GenomeDescription desc, final String featureType,
-      final String attributeId, final String stranded) throws IOException,
+      final String attributeId, final boolean stranded) throws IOException,
       BadBioEntryException, EoulsanException {
 
     InputStream is = file.open();

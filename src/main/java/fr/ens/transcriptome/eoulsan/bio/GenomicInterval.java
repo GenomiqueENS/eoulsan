@@ -224,18 +224,30 @@ public class GenomicInterval implements Serializable,
    */
   public GenomicInterval(final GFFEntry gffEntry) {
 
-    this(gffEntry, "yes");
+    this(gffEntry, true);
   }
 
   /**
    * Public constructor
    * @param gffEntry GFF entry
-   * @param stranded save the strand information if "true" or "reverse"
+   * @param stranded save the strand information
    */
-  public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
+  public GenomicInterval(final GFFEntry gffEntry, final boolean saveStrandInfo) {
 
-    this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
-        .equals("yes") || stranded.equals("reverse") ? gffEntry.getStrand() : '.');
+    this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(),
+        saveStrandInfo ? gffEntry.getStrand() : '.');
   }
+
+  // /**
+  // * Public constructor
+  // * @param gffEntry GFF entry
+  // * @param stranded save the strand information if "true" or "reverse"
+  // */
+  // public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
+  //
+  // this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
+  // .equals("yes") || stranded.equals("reverse")
+  // ? gffEntry.getStrand() : '.');
+  // }
 
 }

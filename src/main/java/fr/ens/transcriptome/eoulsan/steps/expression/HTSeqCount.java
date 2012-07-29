@@ -95,7 +95,9 @@ public class HTSeqCount {
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        boolean saveStrandInfo =
+            "yes".equals(stranded) || "reverse".equals(stranded);
+        features.addEntry(new GenomicInterval(gff, saveStrandInfo), featureId);
         counts.put(featureId, 0);
       }
     }
@@ -304,7 +306,9 @@ public class HTSeqCount {
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        boolean saveStrandInfo =
+            "yes".equals(stranded) || "reverse".equals(stranded);
+        features.addEntry(new GenomicInterval(gff, saveStrandInfo), featureId);
         counts.put(featureId, 0);
       }
     }
