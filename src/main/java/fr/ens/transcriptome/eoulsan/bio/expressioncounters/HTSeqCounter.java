@@ -329,11 +329,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
 
-    writer.write(String.format("no_feature\t%d\n", empty));
-    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-    writer.write(String.format("not_aligned\t%d\n", notaligned));
-    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+    writer.write("no_feature\t" + empty + '\n');
+    writer.write("ambiguous\t" + ambiguous + '\n');
+    writer.write("too_low_aQual\t" + lowqual + '\n');
+    writer.write("not_aligned\t" + notaligned + '\n');
+    writer.write("alignment_not_unique\t" + nonunique + '\n');
 
     writer.close();
   }
