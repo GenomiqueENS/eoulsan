@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.JobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**

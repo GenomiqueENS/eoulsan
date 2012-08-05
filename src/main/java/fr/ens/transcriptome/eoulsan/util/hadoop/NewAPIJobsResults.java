@@ -39,7 +39,6 @@ import org.apache.hadoop.mapreduce.Job;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
 
 /**
  * This is the version for the new Hadoop API of JobsResults.

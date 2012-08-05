@@ -38,7 +38,6 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Job;
 
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
 
 /**
  * This class provide utility methods to run map reduce jobs.

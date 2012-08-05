@@ -40,7 +40,6 @@ import org.apache.hadoop.mapred.Counters.Group;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
 
 /**
  * This is the version for the old Hadoop API of JobsResults.
