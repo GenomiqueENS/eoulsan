@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -39,6 +39,8 @@ import org.apache.hadoop.mapred.Counters.Group;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import fr.ens.transcriptome.eoulsan.util.JobsResults;
 
 /**
  * This is the version for the old Hadoop API of JobsResults.

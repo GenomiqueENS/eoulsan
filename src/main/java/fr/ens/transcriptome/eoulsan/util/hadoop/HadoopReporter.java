@@ -22,11 +22,13 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 import com.google.common.base.Preconditions;
+
+import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a Hadoop reporter.

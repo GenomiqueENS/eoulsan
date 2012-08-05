@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.JarRepack;
 
 /**
  * This class allow to repackage the application.

@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
  * This class define a filter alignment step in Hadoop mode.

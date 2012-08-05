@@ -65,10 +65,10 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
-import fr.ens.transcriptome.eoulsan.util.NewAPIJobsResults;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.NewAPIJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class is the main class for the expression program of the reads in

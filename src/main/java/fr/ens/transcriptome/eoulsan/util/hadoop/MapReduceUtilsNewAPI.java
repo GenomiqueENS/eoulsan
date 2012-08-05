@@ -22,29 +22,26 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapred.JobClient;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
+
 /**
- * This class provide utility methods to run map reduce jobs.
+ * This class contains utility method to easily manipulate the new Hadoop
+ * MapReduce API.
  * @since 1.0
  * @author Laurent Jourdren
  */
-@SuppressWarnings("deprecation")
-public class MapReduceUtils {
+public final class MapReduceUtilsNewAPI {
 
   /**
    * Move the content of the result of a map reduce into a new place
@@ -89,65 +86,18 @@ public class MapReduceUtils {
   }
 
   /**
-   * Submit a collection of jobs and get running jobs.
-   * @param jobconfs Collection of jobs to submit
-   * @return a collection of running jobs
-   * @throws IOException if an IO error occurs while creating jobs
-   */
-  public static Collection<RunningJob> submitJobConfs(
-      final Collection<JobConf> jobconfs) throws IOException {
-
-    if (jobconfs == null)
-      throw new NullPointerException("The list of jobs is null");
-
-    final Set<RunningJob> jobs = new HashSet<RunningJob>();
-    JobClient jc = null;
-
-    for (JobConf jconf : jobconfs) {
-      if (jconf == null)
-        continue;
-      if (jc == null)
-        jc = new JobClient(jconf);
-      jobs.add(jc.submitJob(jconf));
-    }
-
-    return jobs;
-  }
-
-  /**
-   * Submit a collection of jobs and wait the completion of all jobs.
-   * @param jobconfs Collection of jobs to submit
-   * @param waitTimeInMillis waiting time between 2 checks of the completion of
-   *          jobs
-   * @param counterGroup the counter group
-   * @throws IOException if an IO error occurs while waiting for jobs
-   * @throws InterruptedException if an error occurs while waiting for jobs
-   * @throws ClassNotFoundException if a class needed for map reduce execution
-   *           is not found
-   */
-  public static JobsResults submitAndWaitForRunningJobs(
-      final Collection<JobConf> jobconfs, final int waitTimeInMillis,
-      final String counterGroup) throws IOException, InterruptedException,
-      ClassNotFoundException {
-
-    return new OldAPIJobsResults(submitJobConfs(jobconfs), waitTimeInMillis,
-        counterGroup);
-  }
-
-  /**
    * Submit a collection of jobs and wait the completion of all jobs.
    * @param jobs Collection of jobs to submit
    * @param waitTimeInMillis waiting time between 2 checks of the completion of
    *          jobs
-   * @param counterGroup the counter group
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static JobsResults submitAndWaitForJobs(final Collection<Job> jobs,
-      final int waitTimeInMillis, final String counterGroup)
-      throws IOException, InterruptedException, ClassNotFoundException {
+  public static void submitandWaitForJobs(final Collection<Job> jobs,
+      final int waitTimeInMillis) throws IOException, InterruptedException,
+      ClassNotFoundException {
 
     if (jobs == null)
       throw new NullPointerException("The list of jobs is null");
@@ -155,14 +105,74 @@ public class MapReduceUtils {
     for (Job j : jobs)
       j.submit();
 
-    return new NewAPIJobsResults(jobs, waitTimeInMillis, counterGroup);
+    waitForJobs(jobs, waitTimeInMillis);
+  }
+
+  /**
+   * Wait the completion of a collection of jobs.
+   * @param jobs Collection of jobs to submit
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of
+   *          jobs
+   * @throws IOException if an IO error occurs while waiting for jobs
+   * @throws InterruptedException if an error occurs while waiting for jobs
+   * @throws ClassNotFoundException if a class needed for map reduce execution
+   *           is not found
+   */
+  public static void waitForJobs(final Collection<Job> jobs,
+      final int waitTimeInMillis) throws InterruptedException, IOException {
+
+    if (jobs == null)
+      throw new NullPointerException("The list of jobs is null");
+
+    final int totalJobs = jobs.size();
+    int completedJobs = 0;
+
+    while (completedJobs != totalJobs) {
+
+      Thread.sleep(waitTimeInMillis);
+      completedJobs = 0;
+      for (Job j : jobs)
+        if (j.isComplete())
+          completedJobs++;
+    }
+  }
+
+  /**
+   * Parse a tabulated line to fill out text key and values.
+   * @param line line to parse
+   * @param outKey text out key
+   * @param outValue text out value
+   * @return true if the parsing is ok
+   */
+  public static final boolean parseKeyValue(final String line,
+      final Text outKey, final Text outValue) {
+
+    if (line == null) {
+
+      return false;
+    }
+
+    final int posTab = line.indexOf('\t');
+
+    if (posTab == -1) {
+
+      outKey.set(line);
+      outValue.clear();
+
+      return false;
+    }
+
+    outKey.set(line.substring(0, posTab));
+    outValue.set(line.substring(posTab + 1));
+
+    return true;
   }
 
   //
   // Constructor
   //
 
-  private MapReduceUtils() {
+  private MapReduceUtilsNewAPI() {
   }
 
 }
