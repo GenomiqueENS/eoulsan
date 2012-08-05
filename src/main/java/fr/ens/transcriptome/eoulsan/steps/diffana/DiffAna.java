@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.anadiff;
+package fr.ens.transcriptome.eoulsan.steps.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

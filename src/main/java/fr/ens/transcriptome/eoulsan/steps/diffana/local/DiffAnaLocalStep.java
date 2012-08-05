@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.anadiff.local;
+package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.anadiff.DiffAna;
+import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna;
 
 /**
  * This class define the step of differential analysis in local mode.
