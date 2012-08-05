@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.AWSMapReduceExecStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.AWSElasticMapReduceExecStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -224,7 +224,7 @@ public class AWSExecAction extends AbstractAction {
       // Execute
       final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
-          (Step) new AWSMapReduceExecStep(), (Step) new TerminalStep()), null,
+          (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()), null,
           true);
 
     } catch (FileNotFoundException e) {

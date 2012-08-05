@@ -49,33 +49,33 @@ import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This class define an AWS MapReduce job.
+ * This class define an AWS Elastic MapReduce job.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class AWSMapReduceJob {
+public class AWSElasticMapReduceJob {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final int MAX_FAIL_COUNT = 5;
 
-  /** Version of hadoop to use with AWS MapReduce. */
+  /** Version of hadoop to use with AWS Elastic MapReduce. */
   private String hadoopVersion = "0.20";
 
-  /** Number of instance to use with AWS MapReduce. */
+  /** Number of instance to use with AWS Elastic MapReduce. */
   private int nInstances = -1;
 
-  /** Type of instance to use with AWS MapReduce master. */
+  /** Type of instance to use with AWS Elastic MapReduce master. */
   private String masterInstanceType;
 
-  /** Type of instance to use with AWS MapReduce slaves. */
+  /** Type of instance to use with AWS Elastic MapReduce slaves. */
   private String slavesInstanceType = InstanceType.M1Xlarge.toString();
 
-  /** End point to use with AWS MapReduce. */
+  /** End point to use with AWS Elastic MapReduce. */
   private String endpoint = "eu-west-1.elasticmapreduce.amazonaws.com";
 
-  /** Log path to use with AWS MapReduce. */
+  /** Log path to use with AWS Elastic MapReduce. */
   private String logPathname;
 
   /** Path to jar file. */
@@ -95,7 +95,7 @@ public class AWSMapReduceJob {
 
   private RunJobFlowRequest runFlowRequest;
   private RunJobFlowResult runFlowResult;
-  private AmazonElasticMapReduce mapReduceClient;
+  private AmazonElasticMapReduce elasticMapReduceClient;
 
   //
   // Getters
@@ -354,13 +354,13 @@ public class AWSMapReduceJob {
     final AWSCredentials credentials =
         new BasicAWSCredentials(this.AWSAccessKey, this.AWSSecretKey);
 
-    // Create the Amazon MapReduce object
-    this.mapReduceClient = new AmazonElasticMapReduceClient(credentials);
+    // Create the Amazon Elastic MapReduce object
+    this.elasticMapReduceClient = new AmazonElasticMapReduceClient(credentials);
 
     // Set the end point
-    mapReduceClient.setEndpoint(this.endpoint);
+    elasticMapReduceClient.setEndpoint(this.endpoint);
 
-    this.runFlowResult = mapReduceClient.runJobFlow(this.runFlowRequest);
+    this.runFlowResult = elasticMapReduceClient.runJobFlow(this.runFlowRequest);
 
     return this.runFlowResult.getJobFlowId();
   }
@@ -392,7 +392,7 @@ public class AWSMapReduceJob {
 
         try {
           final DescribeJobFlowsResult jobFlowsResult =
-              this.mapReduceClient.describeJobFlows(describeJobFlowsRequest);
+              this.elasticMapReduceClient.describeJobFlows(describeJobFlowsRequest);
           final JobFlowDetail detail = jobFlowsResult.getJobFlows().get(0);
           final JobFlowExecutionStatusDetail executionStatusDetail =
               detail.getExecutionStatusDetail();
@@ -425,7 +425,7 @@ public class AWSMapReduceJob {
 
     } catch (InterruptedException e) {
       LOGGER
-          .warning("Error while waiting AWS MapReduce Job: " + e.getMessage());
+          .warning("Error while waiting AWS Elastic MapReduce Job: " + e.getMessage());
     }
 
     return null;
@@ -438,6 +438,6 @@ public class AWSMapReduceJob {
   /**
    * Package constructor
    */
-  AWSMapReduceJob() {
+  AWSElasticMapReduceJob() {
   }
 }

@@ -25,20 +25,20 @@
 package fr.ens.transcriptome.eoulsan.util.cloud;
 
 /**
- * This class allow to easily create a AWS MapReduce job.
+ * This class allow to easily create a AWS Elastic MapReduce job.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class AWSMapReduceBuilder {
+public class AWSElasticMapReduceBuilder {
 
-  private AWSMapReduceJob result = new AWSMapReduceJob();
+  private AWSElasticMapReduceJob result = new AWSElasticMapReduceJob();
   private boolean created = false;
 
   /**
    * Set the hadoop version.
    * @param hadoopVersion The hadoop version to set
    */
-  public AWSMapReduceBuilder withHadoopVersion(final String hadoopVersion) {
+  public AWSElasticMapReduceBuilder withHadoopVersion(final String hadoopVersion) {
 
     if (created)
       throw new IllegalStateException();
@@ -52,7 +52,7 @@ public class AWSMapReduceBuilder {
    * Set the number of instance to use.
    * @param nInstances The number of instances to use
    */
-  public AWSMapReduceBuilder withInstancesNumber(final int nInstances) {
+  public AWSElasticMapReduceBuilder withInstancesNumber(final int nInstances) {
 
     if (created)
       throw new IllegalStateException();
@@ -66,7 +66,8 @@ public class AWSMapReduceBuilder {
    * Set the type of slaves instances.
    * @param instanceType The instanceType to set
    */
-  public AWSMapReduceBuilder withSlavesInstanceType(final String instanceType) {
+  public AWSElasticMapReduceBuilder withSlavesInstanceType(
+      final String instanceType) {
 
     if (created)
       throw new IllegalStateException();
@@ -80,7 +81,8 @@ public class AWSMapReduceBuilder {
    * Set the type of master instance.
    * @param instanceType The instanceType to set
    */
-  public AWSMapReduceBuilder withMasterInstanceType(final String instanceType) {
+  public AWSElasticMapReduceBuilder withMasterInstanceType(
+      final String instanceType) {
 
     if (created)
       throw new IllegalStateException();
@@ -94,7 +96,7 @@ public class AWSMapReduceBuilder {
    * Set the endpoint.
    * @param endpoint The endpoint to set
    */
-  public AWSMapReduceBuilder withEndpoint(final String endpoint) {
+  public AWSElasticMapReduceBuilder withEndpoint(final String endpoint) {
 
     if (created)
       throw new IllegalStateException();
@@ -108,7 +110,7 @@ public class AWSMapReduceBuilder {
    * Set the log path.
    * @param logPathname The logPathname to set
    */
-  public AWSMapReduceBuilder withLogPathname(final String logPathname) {
+  public AWSElasticMapReduceBuilder withLogPathname(final String logPathname) {
 
     if (created)
       throw new IllegalStateException();
@@ -122,7 +124,7 @@ public class AWSMapReduceBuilder {
    * Set the jar location.
    * @param jarLocation jar location
    */
-  public AWSMapReduceBuilder withJarLocation(final String jarLocation) {
+  public AWSElasticMapReduceBuilder withJarLocation(final String jarLocation) {
 
     if (created)
       throw new IllegalStateException();
@@ -136,7 +138,7 @@ public class AWSMapReduceBuilder {
    * Set the jar arguments.
    * @param jarArguments jar arguments
    */
-  public AWSMapReduceBuilder withJarArguments(final String[] jarArguments) {
+  public AWSElasticMapReduceBuilder withJarArguments(final String[] jarArguments) {
 
     if (created)
       throw new IllegalStateException();
@@ -150,7 +152,7 @@ public class AWSMapReduceBuilder {
    * Set the job flow name.
    * @param jobFlowName job flow name
    */
-  public AWSMapReduceBuilder withJobFlowName(final String jobFlowName) {
+  public AWSElasticMapReduceBuilder withJobFlowName(final String jobFlowName) {
 
     if (created)
       throw new IllegalStateException();
@@ -164,7 +166,7 @@ public class AWSMapReduceBuilder {
    * Set the AWS access key.
    * @param AWSAccessKey set AWS access key
    */
-  public AWSMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
+  public AWSElasticMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
 
     if (created)
       throw new IllegalStateException();
@@ -178,7 +180,7 @@ public class AWSMapReduceBuilder {
    * Set the AWS access key.
    * @param AWSSecretKey set AWS secret key
    */
-  public AWSMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
+  public AWSElasticMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
 
     if (created)
       throw new IllegalStateException();
@@ -189,10 +191,10 @@ public class AWSMapReduceBuilder {
   }
 
   /**
-   * Create the instance of AWSMapReduce
-   * @return an instance of AWSMapReduce
+   * Create the instance of AWSElasticMapReduceJob
+   * @return an instance of AWSElasticMapReduceJob
    */
-  public AWSMapReduceJob create() {
+  public AWSElasticMapReduceJob create() {
 
     if (!this.created) {
       this.created = true;

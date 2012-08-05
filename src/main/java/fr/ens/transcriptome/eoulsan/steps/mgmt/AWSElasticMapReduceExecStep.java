@@ -42,16 +42,16 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.cloud.AWSMapReduceBuilder;
-import fr.ens.transcriptome.eoulsan.util.cloud.AWSMapReduceJob;
+import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceBuilder;
+import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceJob;
 
 /**
- * This class launch Eoulsan on Amazon MapReduce.
+ * This class launch Eoulsan on Amazon Elastic MapReduce.
  * @since 1.0
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class AWSMapReduceExecStep extends AbstractStep {
+public class AWSElasticMapReduceExecStep extends AbstractStep {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -70,22 +70,22 @@ public class AWSMapReduceExecStep extends AbstractStep {
   private static final String LOG_PATH_KEY = "aws.mapreduce.log.path";
   private static final String WAIT_JOB_KEY = "aws.mapreduce.wait.job";
 
-  /** Version of hadoop to use with AWS MapReduce. */
+  /** Version of hadoop to use with AWS Elastic MapReduce. */
   private String hadoopVersion = "0.20";
 
-  /** Number of instance to use with AWS MapReduce. */
+  /** Number of instance to use with AWS Elastic MapReduce. */
   private int nInstances = -1;
 
-  /** Type of instance to use with AWS MapReduce. */
+  /** Type of instance to use with AWS Elastic MapReduce. */
   private String instanceType = InstanceType.M1Xlarge.toString();
 
-  /** End point to use with AWS MapReduce. */
+  /** End point to use with AWS Elastic MapReduce. */
   private String endpoint = "eu-west-1.elasticmapreduce.amazonaws.com";
 
-  /** Log path to use with AWS MapReduce. */
+  /** Log path to use with AWS Elastic MapReduce. */
   private String logPathname = null;
 
-  /** Wait the end of AWS Job. */
+  /** Wait the end of AWS Elastic MapReduce Job. */
   private boolean waitJob = false;
 
   @Override
@@ -160,7 +160,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
     final String[] eoulsanArgs = eoulsanArgsList.toArray(new String[0]);
 
     // AWS builder
-    final AWSMapReduceBuilder builder = new AWSMapReduceBuilder();
+    final AWSElasticMapReduceBuilder builder = new AWSElasticMapReduceBuilder();
 
     // Set Job flow name
     builder.withJobFlowName(context.getJobDescription());
@@ -189,11 +189,11 @@ public class AWSMapReduceExecStep extends AbstractStep {
       builder.withLogPathname(this.logPathname);
 
     // Create job
-    final AWSMapReduceJob job = builder.create();
+    final AWSElasticMapReduceJob job = builder.create();
 
     showCountDown(COUNTDOWN_START);
 
-    LOGGER.info("Start Amazon MapReduce job.");
+    LOGGER.info("Start Amazon Elastic MapReduce job.");
 
     // Run job
     final String jobFlowId = job.runJob();
@@ -211,18 +211,19 @@ public class AWSMapReduceExecStep extends AbstractStep {
                 + jobFlowId + " with " + jobStatus + " status.");
       }
 
-      return new StepResult(context, startTime, "End of Amazon MapReduce Job "
-          + jobFlowId + " with " + jobStatus + " status.");
+      return new StepResult(context, startTime,
+          "End of Amazon Elastic MapReduce Job "
+              + jobFlowId + " with " + jobStatus + " status.");
     }
 
-    return new StepResult(context, startTime, "Launch of Amazon MapReduce Job "
-        + jobFlowId + ".");
+    return new StepResult(context, startTime,
+        "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
   }
 
   @Override
   public String getName() {
 
-    return "_aws_mapreduce_exec";
+    return "_aws_elasticmapreduce_exec";
   }
 
   private static void showCountDown(final int sec) {
@@ -230,7 +231,7 @@ public class AWSMapReduceExecStep extends AbstractStep {
     for (int i = sec; i > 0; i--) {
 
       if (i < 10 || i % 5 == 0) {
-        System.out.println("WARNING: Start Amazon MapReduce job in "
+        System.out.println("WARNING: Start Amazon Elastic MapReduce job in "
             + i + " seconds. Press Ctrl-C to cancel execution.");
 
       }
