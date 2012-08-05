@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.bio.readsmappers;
+package fr.ens.transcriptome.eoulsan.data.storages;
 
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 

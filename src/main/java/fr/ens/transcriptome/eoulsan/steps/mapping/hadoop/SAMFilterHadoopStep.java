@@ -30,18 +30,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -151,7 +147,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setReducerClass(SAMFilterReducer.class);
 
     // job.setPartitionerClass(SAMRecordsPartitioner.class);
-//    job.setSortComparatorClass(SAMRecordsKeyComparator.class);
+    // job.setSortComparatorClass(SAMRecordsKeyComparator.class);
     // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
 
     // Set the output key class

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #
 # This script set the right classpath and start the application
@@ -30,11 +30,38 @@ LIBDIR=$BASEDIR/lib
 # By Default 2048
 MEMORY=2048
 
+# Additional JVM options
+JVM_OPTS="-server"
+
 # Add here your plugins and dependencies
 PLUGINS=
 
+# Parse options
+OPTERR=0
+while getopts “j:m:J:p:” OPTION
+do
+	case $OPTION in
+		j)
+			JAVA_HOME=$OPTARG
+		;;
+		m)
+			MEMORY=$OPTARG
+		;;
+		J)
+			JVM_OPTS=$OPTARG
+		;;
+		p)
+			PLUGINS=$OPTARG
+		;;
+	esac
+done
+
 # Set the path to java
-JAVA_CMD=java
+if [ -z "$JAVA_HOME" ] ; then
+	JAVA_CMD="java"
+else
+	JAVA_CMD="$JAVA_HOME/bin/java"
+fi
 
 COMMON_LIBS=$(make_paths $LIBDIR)
 LOCAL_LIBS=$(make_paths $LIBDIR/local)
@@ -42,7 +69,7 @@ PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS)
 
 # Launch Eoulsan
 $JAVA_CMD \
-		-server \
+		$JVM_OPTS \
 		-Xmx${MEMORY}m \
 		-cp $COMMON_LIBS:$LOCAL_LIBS:$PLUGINS:$PLUGINS_LIBS \
 		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \

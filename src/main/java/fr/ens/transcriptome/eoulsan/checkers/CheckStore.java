@@ -35,6 +35,7 @@ import java.util.Map;
  */
 public class CheckStore {
 
+  private static CheckStore singleton;
   private Map<String, Object> info = new HashMap<String, Object>();
 
   /**
@@ -68,6 +69,40 @@ public class CheckStore {
   public boolean contains(final String key) {
 
     return this.info.containsKey(key);
+  }
+
+  /**
+   * Clear the content of the CheckStore.
+   */
+  public void clear() {
+
+    this.info.clear();
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Get the instance of the CheckStore.
+   * @return the CheckStore object
+   */
+  public static CheckStore getCheckStore() {
+
+    if (singleton == null)
+      singleton = new CheckStore();
+
+    return singleton;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Private constructor.
+   */
+  private CheckStore() {
   }
 
 }

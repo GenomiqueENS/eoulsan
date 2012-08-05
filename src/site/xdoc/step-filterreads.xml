@@ -53,7 +53,9 @@ of the filter as the key and an empty string for the value.</p>
         <li><b>Optional parameters</b>:</li>
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		
+
+		<tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
+		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
 		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td></tr>
 		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td></tr>
 		<tr><td>pairend.accept.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td></tr>

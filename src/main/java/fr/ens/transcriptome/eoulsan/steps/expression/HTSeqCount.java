@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -50,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -69,7 +69,7 @@ public class HTSeqCount {
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
-    Writer writer = new FileWriter(output);
+    Writer writer = FileUtils.createBufferedWriter(output);
 
     boolean pairedEnd = false;
 
@@ -81,30 +81,40 @@ public class HTSeqCount {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
         if ((stranded.equals("yes") || stranded.equals("reverse"))
-            && '.' == gff.getStrand())
+            && '.' == gff.getStrand()) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        boolean saveStrandInfo =
+            "yes".equals(stranded) || "reverse".equals(stranded);
+        features.addEntry(new GenomicInterval(gff, saveStrandInfo), featureId);
         counts.put(featureId, 0);
       }
     }
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
@@ -221,7 +231,6 @@ public class HTSeqCount {
 
       fs = featuresOverlapped(ivSeq, features, overlapMode, stranded);
 
-
       if (fs == null)
         fs = new HashSet<String>();
 
@@ -260,11 +269,11 @@ public class HTSeqCount {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
 
-    writer.write(String.format("no_feature\t%d\n", empty));
-    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-    writer.write(String.format("not_aligned\t%d\n", notaligned));
-    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+    writer.write("no_feature\t%" + empty + '\n');
+    writer.write("ambiguous\t%d\n" + ambiguous + '\n');
+    writer.write("too_low_aQual\t%d\n" + lowqual + '\n');
+    writer.write("not_aligned\t%d\n" + notaligned + '\n');
+    writer.write("alignment_not_unique\t%d\n" + nonunique + '\n');
 
     writer.close();
   }
@@ -279,7 +288,7 @@ public class HTSeqCount {
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
-    Writer writer = new FileWriter(output);
+    Writer writer = FileUtils.createBufferedWriter(output);
 
     boolean pairedEnd = false;
 
@@ -291,29 +300,39 @@ public class HTSeqCount {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
-        if (stranded.equals("yes") && '.' == gff.getStrand())
+        if (stranded.equals("yes") && '.' == gff.getStrand()) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        boolean saveStrandInfo =
+            "yes".equals(stranded) || "reverse".equals(stranded);
+        features.addEntry(new GenomicInterval(gff, saveStrandInfo), featureId);
         counts.put(featureId, 0);
       }
     }
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
@@ -325,8 +344,12 @@ public class HTSeqCount {
     SAMRecord firstRecord;
     if (samIterator.hasNext())
       firstRecord = samIterator.next();
-    else
+    else {
+      writer.close();
+      input.close();
+      inputSam.close();
       throw new EoulsanException("The SAM file is empty.");
+    }
     if (firstRecord.getReadPairedFlag())
       pairedEnd = true;
     input.close();
@@ -461,11 +484,11 @@ public class HTSeqCount {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
 
-    writer.write(String.format("no_feature\t%d\n", empty));
-    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-    writer.write(String.format("not_aligned\t%d\n", notaligned));
-    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+    writer.write("no_feature\t" + empty + '\n');
+    writer.write("ambiguous\t" + ambiguous + '\n');
+    writer.write("too_low_aQual\t" + lowqual + '\n');
+    writer.write("not_aligned\t" + notaligned + '\n');
+    writer.write("alignment_not_unique\t" + nonunique + '\n');
 
     writer.close();
   }
@@ -562,7 +585,7 @@ public class HTSeqCount {
     }
 
     // Overlap mode "intersection-strict"
-    else if (mode == "intersection-strict") {
+    else if ("intersection-strict".equals(mode)) {
 
       final Set<String> featureTmp = new HashSet<String>();
 

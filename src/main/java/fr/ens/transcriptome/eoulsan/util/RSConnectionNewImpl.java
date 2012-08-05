@@ -33,7 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -85,10 +85,17 @@ public class RSConnectionNewImpl implements RSConnection {
     if (outputFilename == null)
       return;
 
-    PrintWriter pw = new PrintWriter(getFileOutputStream(outputFilename));
-    if (value != null)
-      pw.write(value);
-    pw.close();
+    try {
+
+      final Writer writer =
+          FileUtils.createBufferedWriter(getFileOutputStream(outputFilename));
+      if (value != null) {
+        writer.write(value);
+        writer.close();
+      }
+    } catch (IOException e) {
+      throw new REngineException(getRConnection(), "Error: " + e.getMessage());
+    }
 
   }
 
@@ -165,7 +172,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       is.close();
       os.close();
-      
+
     } catch (REngineException e) {
       throw new REngineException(rconnection, "Unable to get file");
     } catch (FileNotFoundException e) {
@@ -278,7 +285,7 @@ public class RSConnectionNewImpl implements RSConnection {
     final RConnection connection = getRConnection();
 
     if (connection == null)
-      throw new REngineException(connection, "Connection is null");
+      throw new REngineException(null, "Connection is null");
 
     try {
       RFileInputStream is = connection.openFile(filename);
@@ -343,7 +350,7 @@ public class RSConnectionNewImpl implements RSConnection {
     final RConnection connection = getRConnection();
 
     if (connection == null)
-      throw new REngineException(connection, "Connection is null");
+      throw new REngineException(null, "Connection is null");
 
     try {
       RFileInputStream is = connection.openFile(filename);
@@ -467,8 +474,6 @@ public class RSConnectionNewImpl implements RSConnection {
    * @param serverName RServe server to use
    */
   public RSConnectionNewImpl(final String serverName) {
-    
-    System.out.println(this.serverName);
 
     this.serverName = serverName == null ? "127.0.0.1" : serverName.trim();
   }

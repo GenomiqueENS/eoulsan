@@ -16,8 +16,7 @@ anaDiff(countDataSet, outPath)
 
 
 \section{Session info}
-<<>>=
+<<sessionInfo>>=
 sessionInfo()
 @
-\end{itemize}
 \end{document}

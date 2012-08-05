@@ -50,10 +50,14 @@ usage: eoulsan [options] command arguments
  -about              display information about this software
  -conf &lt;file&gt;        configuration file to use
  -h,--help           display this help
+ -j &lt;path&gt;           JAVA_HOME path
+ -J &lt;args&gt;           JVM arguments (-server by default)
  -license            display information about the license of this
                      software
  -log &lt;file&gt;         external log file
  -loglevel &lt;level&gt;   log level
+ -m &lt;size&gt;           maximal memory usage for JVM in MB (2048 by default)
+ -p &lt;classpath&gt;      additional classpath for eoulsan plugins
  -version            show version of the software
 Available commands:
  - awsexec      execute eoulsan on Amazon cloud.
@@ -75,9 +79,18 @@ Available commands:
 
   <p>You can display general help and specific help about a command using <b>-h</b> argument.</p>
 
+    <subsection name="-about">
+      <p>When you run Eoulsan with this option, you will get information about Eoulsan authors and and then returns to the shell.</p>
+    </subsection>
     <subsection name="-conf &lt;file&gt;">
       <p>With this option, Eoulsan will load the <b>file</b> as configuration file. See the <a href="conffile.html">configuration section</a> for more information.</p>
     </subsection>
+	<subsection name="-j &lt;path&gt;">
+		<p>This option allow to define the path to the JVM to use for running Eoulsan.</p>
+	</subsection>
+	<subsection name="-J &lt;args&gt;">
+		<p>Define the JVM options when running Eoulsan. The default value is "<b>-server</b>".</p>
+	</subsection>
     <subsection name="-license">
       <p>When you run Eoulsan with this option, you will get information about Eoulsan license and and then returns to the shell.</p>
     </subsection>
@@ -85,12 +98,17 @@ Available commands:
       <p>Define the log file.</p>
     </subsection>
     <subsection name="-loglevel &lt;level&gt;">
-      <p>Set the log level, there are 5 log level define in Eoulsan : <b>Severe</b>, <b>Warning</b>, <b>Info</b>, <b>Fine</b> and <b>all</b>. By default the log level is set to <b>Info</b></p>
+      <p>Set the log level, there are 5 log level define in Eoulsan : <b>Severe</b>, <b>Warning</b>, <b>Info</b>, <b>Fine</b> and <b>all</b>. By default the log level is set to <b>Info</b>.</p>
     </subsection>
+	<subsection name="-m &lt;size&gt;">
+		<p>Define the maximal size in megabytes that can be allocated by the JVM. The default value is <b>2048</b>.</p>
+	</subsection>
+	<subsection name="-p &lt;classpath&gt;">
+		<p>Define additional classpath for Eoulsan plug-ins or dependencies.</p>
+	</subsection>
     <subsection name="-version">
       <p>When you run Eoulsan with this option, you will get information about Eoulsan version and then Eoulsan returns to the shell.</p>
     </subsection>
-
   </section>
 
 </body>

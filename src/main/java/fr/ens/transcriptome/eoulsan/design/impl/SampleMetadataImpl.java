@@ -72,9 +72,9 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public String getProjectName() {
+  public String getExperiment() {
 
-    return getField(PROJECT_NAME);
+    return getField(EXPERIMENT);
   }
 
   @Override
@@ -248,9 +248,9 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setProjectName(String projectName) {
+  public void setExperiment(String experiment) {
 
-    setField(PROJECT_NAME, projectName);
+    setField(EXPERIMENT, experiment);
   }
 
   @Override
@@ -345,9 +345,9 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public boolean isProjecName() {
+  public boolean isExperiment() {
 
-    return isField(PROJECT_NAME);
+    return isField(EXPERIMENT);
   }
 
   @Override

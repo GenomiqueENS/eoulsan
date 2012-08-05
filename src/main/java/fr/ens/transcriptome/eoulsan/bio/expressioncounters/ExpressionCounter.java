@@ -47,9 +47,9 @@ public interface ExpressionCounter {
    */
   String getCounterName();
 
-  String getStranded();
+  StrandUsage getStranded();
 
-  String getOverlapMode();
+  OverlapMode getOverlapMode();
 
   String getTempDirectory();
 
@@ -59,7 +59,11 @@ public interface ExpressionCounter {
 
   void setStranded(String stranded);
 
+  void setStranded(StrandUsage stranded);
+
   void setOverlapMode(String mode);
+  
+  void setOverlapMode(OverlapMode mode);
 
   void setTempDirectory(String tempDirectory);
 

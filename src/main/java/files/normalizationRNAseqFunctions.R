@@ -13,7 +13,6 @@ library(DESeq)
 # Output :
 #	cds2 : a countDataSet with estimated dispersion
 # -----------------------------------------------------------------------------
-
 dispersionEstimation <- function(cds1, replicates=FALSE){
 	
 	if (replicates){
@@ -51,11 +50,11 @@ plotDispEsts <- function( cds ) {
 			rowMeans( readCount ), 
 			fitInfo(cds)$perGeneDispEsts, pch = '.', log="xy",
 			xlab="log gene counts mean",
-			ylab="log estimated dispersion"
+			ylab="log dispersion"
 	)
 	xg <- 10^seq( -.5, 5, length.out=300 )
 	lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
-	legend("bottomright", "regression curve", lwd=1, col="red")
+	legend("bottomright", "fitted dispersion line", lwd=1, col="red")
 	
 }
 
@@ -80,16 +79,21 @@ anaDiff <- function(cds, outpath){
 			# rename columns
 			colnames(result)[3] <- paste("baseMean", cond1, sep="_")
 			colnames(result)[4] <- paste("baseMean", cond2, sep="_")
+			colnames(result)[5] <- paste("FoldChange", cond1,"-", cond2, sep="")
+			# sort results by padj
+			sortedResult<- result[order(result$padj),]
 			# write results into a file
-			nameComp <- paste(cond1, cond2, sep="_vs_")
+			nameComp <- paste(cond1, cond2, sep="-")
 			write.table(
-					result, 
-					paste(outpath, "diffana-", nameComp, ".tsv", sep=""),
+					sortedResult, 
+					paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
 					sep="\t",row.names=F, quote=F
 			)
 			
 			# plot MA-plot of the differential analysis
 			maPlot(result, nameComp, outpath, out = TRUE)
+			# plot pvalue distribution
+			plotPvalueDist(result, cond1, cond2, outpath, out = TRUE)
 		}
 	}	
 	
@@ -238,7 +242,7 @@ buildCountMatrix <- function(files, sampleLabel, projectPath){
 			header=T,
 			stringsAsFactors=F,
 			quote=""
-	)[,c(1,11)]
+	)[,c("Id","Count")]
 	# lowercase countMatrix columns names
 	colnames(countMatrix) <- tolower(colnames(countMatrix))
 	
@@ -249,7 +253,7 @@ buildCountMatrix <- function(files, sampleLabel, projectPath){
 				header=T,
 				stringsAsFactors=F,
 				quote=""
-		)[,c(1,11)]
+		)[,c("Id","Count")]
 		# lowercase exp columns names
 		colnames(exp) <- tolower(colnames(exp))
 		# merge file data to count matrix by id
@@ -386,7 +390,7 @@ barplotTotalCount <- function(target, outpath = "", out= FALSE){
 	barplot(colSums(target$counts),
 			las=3, 
 			col=bioGroupColors,
-			ylab="log2(counts+1)",
+			ylab="total read counts",
 			main = paste(target$projectName, " total counts", sep="") 
 	)
 	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
@@ -751,4 +755,64 @@ sortTarget <- function(target){
 	sortedTarget$exp <- target$exp # 
 			
 	return(sortedTarget)
+}
+
+# -----------------------------------------------------------------------------
+# plotPvalueDist
+# plot a barplot of p-values
+# -----------------------------------------------------------------------------
+
+plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
+	if (out){
+		# verify if '/' is not missing at the end of path
+		pathChar <- strsplit(outpath, "")
+		if(!(pathChar[[1]][length(pathChar[[1]])] == "/")
+				){
+			stop("path must finish by '/'")
+		}
+		
+		# create plot file
+		png(paste(
+				outpath, target$projectName, "_", cond1, "-", cond2, 
+				"PvalueDistribution.png", sep=""
+			),
+			width=1000, height=600
+		)
+	}
+	
+	# set plot margins
+	par(omd=c(0.01,0.85,0.1,0.99),mfrow=c(1,2))
+	
+	# plot the p-value distribution
+	hist(anadiffResult$pval,
+			breaks=100,
+			col="skyblue",
+			border="slateblue",
+			xla="p-value",
+			main = paste(cond1, "-", cond2," unajusted p-value distribution", sep=""),
+	)
+	# plot padj distribution
+	hist(anadiffResult$padj,
+			breaks=100,
+			col="skyblue",
+			border="slateblue",
+			xla="padj",
+			main = paste(cond1, "-", cond2," padj distribution", sep=""),
+	)
+	
+#	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
+#	userCoordinates <- par('usr')
+#	# set plot clipping to device region
+#	par(xpd=NA)
+#	# print legend on the plot
+#	legend(
+#			userCoordinates[2]*1.01,
+#			userCoordinates[4],
+#			title = "Legend",
+#			as.character(unique(target$condition)),
+#			fill = unique(bioGroupColors),
+#	)
+	
+	if (out) { dev.off() }
+	
 }

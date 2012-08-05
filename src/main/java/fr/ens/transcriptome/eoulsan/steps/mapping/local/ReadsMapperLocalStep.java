@@ -240,7 +240,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     }
 
     // Get the number of threads to use
-    int mapperThreads = getMapperThreads();
+    int mapperThreads = getMapperLocalThreads();
 
     if (mapperThreads > Runtime.getRuntime().availableProcessors()
         || mapperThreads < 1) {

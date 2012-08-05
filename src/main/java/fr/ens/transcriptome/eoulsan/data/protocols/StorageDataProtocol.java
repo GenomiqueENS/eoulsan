@@ -61,12 +61,8 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   public boolean exists(final DataFile src) {
 
     try {
-      final DataFile f = internalDataFile(src);
 
-      if (f == null)
-        return false;
-
-      return f.exists();
+      return internalDataFile(src).exists();
     } catch (IOException e) {
 
       return false;

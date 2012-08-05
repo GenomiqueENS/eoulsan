@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -35,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.data.storages.GenomeDescStorage;
+import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeDescStorage;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -105,14 +108,15 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       LOGGER.fine("Output genome description file: "
           + genomeDescriptionDataFile);
 
+      // Create genome description DataFile
       final GenomeDescription desc =
-          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
-              genomeDataFile.getName());
+          new GenomeDescriptionCreator()
+              .createGenomeDescription(genomeDataFile);
 
-      LOGGER.fine("Genome description object: " + desc.toString());
-
+      // Save the genome description in the analysis folder
       desc.save(genomeDescriptionDataFile.create());
 
+      LOGGER.fine("Genome description object: " + desc.toString());
     } catch (BadBioEntryException e) {
 
       return new StepResult(context, e);
@@ -125,6 +129,23 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
     }
 
     return new StepResult(context, startTime, "Genome description creation");
+  }
+
+  /**
+   * Check if a genome description storage has been defined.
+   * @return a GenomedescStorage object if genome storage has been defined or
+   *         null if not
+   */
+  static GenomeDescStorage checkForGenomeDescStore() {
+
+    final String genomeDescStoragePath =
+        EoulsanRuntime.getSettings().getGenomeDescStoragePath();
+
+    if (genomeDescStoragePath == null)
+      return null;
+
+    return SimpleGenomeDescStorage.getInstance(new DataFile(
+        genomeDescStoragePath));
   }
 
 }

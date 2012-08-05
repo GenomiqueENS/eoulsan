@@ -539,12 +539,7 @@ public final class CasavaDesignUtil {
     if (s == null)
       return null;
 
-    final String[] fields = s.split("\t");
-
-    if (fields == null)
-      return null;
-
-    return Arrays.asList(fields);
+    return Arrays.asList(s.split("\t"));
   }
 
   /**

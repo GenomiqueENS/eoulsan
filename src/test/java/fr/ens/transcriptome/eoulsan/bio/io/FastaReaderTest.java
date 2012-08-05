@@ -26,6 +26,7 @@ public class FastaReaderTest {
           s.getName());
       assertEquals(5386, s.length());
     }
+    reader.close();
     reader.throwException();
 
   }

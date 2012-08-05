@@ -184,11 +184,16 @@ public class FastqReader implements ReadSequenceReader {
     if (file == null)
       throw new NullPointerException("File is null");
 
-    if (!file.isFile())
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
-
     this.reader = FileUtils.createBufferedReader(file, CHARSET);
+  }
+
+  /**
+   * Public constructor
+   * @param filename File to use
+   */
+  public FastqReader(final String filename) throws FileNotFoundException {
+
+    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
   }
 
 }

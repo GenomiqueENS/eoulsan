@@ -124,8 +124,25 @@ public class ProcessSampleExecutor {
   public static final StepResult processAllSamples(final Context context,
       final Design design, final ProcessSample ps) {
 
-    return processAllSamples(System.currentTimeMillis(), context, design, ps,
-        EoulsanRuntime.getSettings().getLocalThreadsNumber());
+    return processAllSamples(System.currentTimeMillis(), context, design,
+        EoulsanRuntime.getSettings().getLocalThreadsNumber(), ps);
+  }
+
+  /**
+   * Process all the samples of a design.
+   * @param context The Eouslan context of execution
+   * @param design Design of to process
+   * @param localThreads number of threads
+   * @param maxLocalThreads maximum number of threads
+   * @param ps ProcessSample Object
+   * @return a StepResult object
+   */
+  public static final StepResult processAllSamples(final Context context,
+      final Design design, final int localThreads, final int maxLocalThreads,
+      final ProcessSample ps) {
+
+    return processAllSamples(System.currentTimeMillis(), context, design,
+        getThreadsNumber(localThreads, maxLocalThreads), ps);
   }
 
   /**
@@ -139,22 +156,23 @@ public class ProcessSampleExecutor {
   public static final StepResult processAllSamples(final long startTime,
       final Context context, final Design design, final ProcessSample ps) {
 
-    return processAllSamples(startTime, context, design, ps, EoulsanRuntime
-        .getSettings().getLocalThreadsNumber());
+    return processAllSamples(startTime, context, design, EoulsanRuntime
+        .getSettings().getLocalThreadsNumber(), ps);
   }
 
   /**
    * Process all the samples of a design.
    * @param context The Eouslan context of execution
    * @param design Design of to process
+   * @param threadNumber the number of threads to use
    * @param ps ProcessSample Object
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final Context context,
-      final Design design, final ProcessSample ps, final int threadNumber) {
+      final Design design, final int threadNumber, final ProcessSample ps) {
 
-    return processAllSamples(System.currentTimeMillis(), context, design, ps,
-        threadNumber);
+    return processAllSamples(System.currentTimeMillis(), context, design,
+        threadNumber, ps);
   }
 
   /**
@@ -162,12 +180,13 @@ public class ProcessSampleExecutor {
    * @param startTime the time of the start of step
    * @param context The Eouslan context of execution
    * @param design Design of to process
+   * @param threadNumber the number of threads to use
    * @param ps ProcessSample Object
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
-      final Context context, final Design design, final ProcessSample ps,
-      final int threadNumber) {
+      final Context context, final Design design, final int threadNumber,
+      final ProcessSample ps) {
 
     if (threadNumber > 1) {
 
@@ -298,6 +317,26 @@ public class ProcessSampleExecutor {
     }
 
     return new StepResult(context, startTime, log.toString());
+  }
+
+  /**
+   * Get the number of threads to use from localThreads, maxLocalThreads and
+   * global threads number.
+   * @param localThreads number of threads
+   * @param maxLocalThreads maximum number of threads
+   * @return the number of threads to use
+   */
+  public static final int getThreadsNumber(final int localThreads,
+      final int maxLocalThreads) {
+    int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
+
+    if (localThreads > 0)
+      threads = localThreads;
+
+    if (maxLocalThreads > 0)
+      threads = Math.min(threads, maxLocalThreads);
+
+    return threads;
   }
 
 }

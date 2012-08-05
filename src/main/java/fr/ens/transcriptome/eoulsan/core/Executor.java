@@ -98,6 +98,11 @@ public abstract class Executor {
   protected abstract SimpleContext getContext();
 
   /**
+   * Check temporary directory.
+   */
+  protected abstract void checkTemporaryDirectory();
+  
+  /**
    * Check design.
    * @param design design to check
    * @throws EoulsanException if there is an issue with the design
@@ -184,8 +189,13 @@ public abstract class Executor {
     // Init steps of the workflow
     workflow.init();
 
+    // Check temporary directory
+    checkTemporaryDirectory();
+    
     // Check workflow
     workflow.check();
+    
+
 
     LOGGER.info("Date: " + new Date(System.currentTimeMillis()));
     LOGGER.info("Host: " + SystemUtils.getHostName());

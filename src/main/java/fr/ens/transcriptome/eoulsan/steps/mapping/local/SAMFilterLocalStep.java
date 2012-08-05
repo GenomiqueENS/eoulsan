@@ -100,7 +100,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design,
-        new ProcessSample() {
+        getLocalThreads(), new ProcessSample() {
 
           @Override
           public String processSample(Context context, Sample sample)
@@ -221,7 +221,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
           records.clear();
           records.addAll(rafb.getFilteredAlignments());
-          
+
           Collections.sort(records, new SAMComparator());
 
           // writing records

@@ -22,32 +22,31 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.data.storages;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * A nestable Eoulsan exception. This class came from from Biojava code.
- * @since 1.0
+ * This interface define a genome description storage.
+ * @since 1.2
  * @author Laurent Jourdren
- * @author Matthew Pocock
  */
-public class EoulsanIOException extends EoulsanException {
-
-  private static final long serialVersionUID = 2347936040194578705L;
+public interface GenomeDescStorage {
 
   /**
-   * Create a new EoulsanRuntimeException with a message.
-   * @param message the message
+   * Get the genome description that corresponds to a genome DataFile
+   * @param genomeFile genome DataFile
+   * @return a GenomeDescription object or null if the genome description has
+   *         not yet been computed
    */
-  public EoulsanIOException(final String message) {
-    super(message);
-  }
+  GenomeDescription get(final DataFile genomeFile);
 
   /**
-   * Create a new EoulsanIOException.
+   * Put the genome description in the storage.
+   * @param genomeFile genome DataFile
+   * @param genomeDesc genome description object
    */
-  public EoulsanIOException() {
-    super();
-  }
+  void put(final DataFile genomeFile, final GenomeDescription genomeDesc);
+
 }

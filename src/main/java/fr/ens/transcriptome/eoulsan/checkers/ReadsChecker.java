@@ -196,9 +196,11 @@ public class ReadsChecker implements Checker {
             readPairMember = 2;
         }
 
-        if (readPairMember > 0 && readPairMember != pairMember)
+        if (readPairMember > 0 && readPairMember != pairMember) {
+          reader.close();
           throw new BadBioEntryException("Invalid pair member number, "
               + pairMember + " was excepted", read.getName());
+        }
       }
 
       // check the quality string
@@ -206,17 +208,19 @@ public class ReadsChecker implements Checker {
 
         final int invalidChar = format.findInvalidChar(read.getQuality());
 
-        if (invalidChar != -1)
+        if (invalidChar != -1) {
+          reader.close();
           throw new BadBioEntryException("Invalid quality character found for "
               + format.getName() + " format: " + (char) invalidChar,
               read.getQuality());
+        }
       }
 
       count++;
     }
     reader.throwException();
 
-    is.close();
+    reader.close();
     return true;
   }
 }
