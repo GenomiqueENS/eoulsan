@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -53,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -123,7 +123,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
-    Writer writer = new FileWriter(outFile);
+    final Writer writer = FileUtils.createBufferedWriter(outFile);
 
     boolean pairedEnd = false;
 

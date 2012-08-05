@@ -33,7 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -85,10 +85,17 @@ public class RSConnectionNewImpl implements RSConnection {
     if (outputFilename == null)
       return;
 
-    PrintWriter pw = new PrintWriter(getFileOutputStream(outputFilename));
-    if (value != null)
-      pw.write(value);
-    pw.close();
+    try {
+
+      final Writer writer =
+          FileUtils.createBufferedWriter(getFileOutputStream(outputFilename));
+      if (value != null) {
+        writer.write(value);
+        writer.close();
+      }
+    } catch (IOException e) {
+      throw new REngineException(getRConnection(), "Error: " + e.getMessage());
+    }
 
   }
 
