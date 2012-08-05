@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.r;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -45,6 +45,8 @@ import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RserveException;
+
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define an enhanced connection to RServe.
