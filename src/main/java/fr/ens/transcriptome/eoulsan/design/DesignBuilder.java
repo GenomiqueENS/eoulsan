@@ -82,6 +82,8 @@ public class DesignBuilder {
    */
   private static class EmptyFastqException extends EoulsanException {
 
+    private static final long serialVersionUID = 5672764893232380662L;
+
     /**
      * Public constructor
      * @param msg exception message

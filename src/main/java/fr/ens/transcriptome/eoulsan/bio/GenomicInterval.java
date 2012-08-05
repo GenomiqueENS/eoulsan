@@ -37,6 +37,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class GenomicInterval implements Serializable,
     Comparable<GenomicInterval> {
 
+  private static final long serialVersionUID = 1974207984076778441L;
+
   private String chromosome;
   private int start;
   private int end;

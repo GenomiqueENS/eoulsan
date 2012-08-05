@@ -52,6 +52,8 @@ public class GenomicArray<T> {
    */
   private static final class Zone<T> implements Serializable {
 
+    private static final long serialVersionUID = 3581472137861260840L;
+
     private final int start;
     private int end;
     private final char strand;
@@ -193,6 +195,8 @@ public class GenomicArray<T> {
    * @author Laurent Jourdren
    */
   private static final class ChromosomeStrandedZones<T> implements Serializable {
+
+    private static final long serialVersionUID = 8073207058699194059L;
 
     private final String chromosomeName;
     private int length = 0;
@@ -552,10 +556,12 @@ public class GenomicArray<T> {
 
   /**
    * This class define an object that contains all the zones of a chromosome.
-   * These zones are stranded if "yes" or "reverse". 
+   * These zones are stranded if "yes" or "reverse".
    * @author Claire Wallon
    */
   private static final class ChromosomeZones<T> implements Serializable {
+
+    private static final long serialVersionUID = -6312870823086177216L;
 
     private ChromosomeStrandedZones<T> plus;
     private ChromosomeStrandedZones<T> minus;
