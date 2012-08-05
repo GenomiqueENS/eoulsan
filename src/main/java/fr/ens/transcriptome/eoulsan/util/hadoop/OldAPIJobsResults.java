@@ -47,7 +47,7 @@ import com.google.common.collect.Maps;
  * @author Laurent Jourdren
  */
 @SuppressWarnings("deprecation")
-public class OldAPIJobsResults extends JobsResults {
+public class OldAPIJobsResults extends HadoopJobsResults {
 
   /**
    * Wait the completion of a collection of jobs.

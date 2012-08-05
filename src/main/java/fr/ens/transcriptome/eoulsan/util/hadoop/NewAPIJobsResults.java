@@ -45,7 +45,7 @@ import com.google.common.collect.Maps;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class NewAPIJobsResults extends JobsResults {
+public class NewAPIJobsResults extends HadoopJobsResults {
 
   /**
    * Wait the completion of a collection of jobs.

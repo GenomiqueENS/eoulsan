@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.JobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.NewAPIJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
@@ -455,7 +455,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       }
 
       // Compute map-reduce part of the expression computation
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           new NewAPIJobsResults(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 

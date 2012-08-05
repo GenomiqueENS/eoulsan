@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.JobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
@@ -106,7 +106,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       final long startTime = System.currentTimeMillis();
 
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, getCounterGroup());
 

@@ -126,7 +126,7 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static JobsResults submitAndWaitForRunningJobs(
+  public static HadoopJobsResults submitAndWaitForRunningJobs(
       final Collection<JobConf> jobconfs, final int waitTimeInMillis,
       final String counterGroup) throws IOException, InterruptedException,
       ClassNotFoundException {
@@ -146,7 +146,7 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static JobsResults submitAndWaitForJobs(final Collection<Job> jobs,
+  public static HadoopJobsResults submitAndWaitForJobs(final Collection<Job> jobs,
       final int waitTimeInMillis, final String counterGroup)
       throws IOException, InterruptedException, ClassNotFoundException {
 
