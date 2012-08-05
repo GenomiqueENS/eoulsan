@@ -67,14 +67,17 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class EMRExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  /** Action name. */
+  static final String ACTION_NAME = "emrexec";
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
 
   @Override
   public String getName() {
-    return "emrexec";
+    return ACTION_NAME;
   }
 
   @Override
@@ -190,9 +193,9 @@ public class EMRExecAction extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    logger.info(Globals.WELCOME_MSG + " Local mode.");
-    logger.info("Parameter file: " + paramFile);
-    logger.info("Design file: " + designFile);
+    LOGGER.info(Globals.WELCOME_MSG + " Local mode.");
+    LOGGER.info("Parameter file: " + paramFile);
+    LOGGER.info("Design file: " + designFile);
 
     final String desc;
 
