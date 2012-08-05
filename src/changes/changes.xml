@@ -371,6 +371,9 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="add">
                 Add a genome description storage to speed up the startup of analysis and avoid multiple genome sequence parsing.
             </action>
+            <action dev="jourdren" type="update">
+                The "awsexec" command is renamed to "emrexec".
+            </action>
          </release>
 
 	</body>

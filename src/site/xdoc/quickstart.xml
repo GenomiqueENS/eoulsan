@@ -237,7 +237,7 @@ aws.secret.key=kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct
 
 			<p>Then you can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh awsexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybucket/test
+$ eoulsan.sh emrexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybucket/test
 </source>
 
 			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 

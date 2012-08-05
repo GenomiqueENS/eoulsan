@@ -46,7 +46,7 @@
          and launch Amazon Elastic MapReduce jobs.</p>  
 
       <ul>
-         <li><b>Command name</b>: awsexec</li>
+         <li><b>Command name</b>: emrexec</li>
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
@@ -65,7 +65,7 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh awsexec -d 'My Eoulsan test' param.xml design.txt s3://my-bucket/test
+$ eoulsan.sh emrexec -d 'My Eoulsan test' param.xml design.txt s3://my-bucket/test
 </source>
 
 </li>

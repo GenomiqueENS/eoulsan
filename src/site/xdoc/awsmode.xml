@@ -71,7 +71,7 @@
     <section name="Launch Eoulsan in AWS mode">
 
 	<p>The launch of an Eoulsan analysis on AWS is described in 
-           <a href="./cmd-awsexec.html">AWS exec command section</a>.</p>
+           <a href="./cmd-emrexec.html">AWS Elastic MapReduce exec command section</a>.</p>
 
     </section>
 
