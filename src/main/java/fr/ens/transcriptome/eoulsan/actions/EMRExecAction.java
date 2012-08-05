@@ -60,11 +60,11 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class define an action that execute Eoulsan on AWS MapReduce.
+ * This class define an action that execute Eoulsan on AWS Elastic MapReduce.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class AWSExecAction extends AbstractAction {
+public class EMRExecAction extends AbstractAction {
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -74,12 +74,12 @@ public class AWSExecAction extends AbstractAction {
 
   @Override
   public String getName() {
-    return "awsexec";
+    return "emrexec";
   }
 
   @Override
   public String getDescription() {
-    return "execute eoulsan on Amazon cloud.";
+    return "execute eoulsan on Amazon Elastic MapReduce service.";
   }
 
   @Override
@@ -224,8 +224,8 @@ public class AWSExecAction extends AbstractAction {
       // Execute
       final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
-          (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()), null,
-          true);
+          (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()),
+          null, true);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
