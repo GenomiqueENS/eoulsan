@@ -313,14 +313,11 @@ public class FileUtils {
 
     final InputStream is = createInputStream(file);
 
-    if (is == null)
-      return null;
-
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is, charset != null
-        ? charset : Charset.forName(CHARSET)));
+    return new BufferedReader(new InputStreamReader(is,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -348,8 +345,8 @@ public class FileUtils {
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is, charset != null
-        ? charset : Charset.forName(CHARSET)));
+    return new BufferedReader(new InputStreamReader(is,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -407,9 +404,6 @@ public class FileUtils {
       final File file, final Charset charset) throws IOException {
 
     final OutputStream os = createOutputStream(file);
-
-    if (os == null)
-      return null;
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
         charset != null ? charset : Charset.forName(CHARSET)));
@@ -531,9 +525,6 @@ public class FileUtils {
       final Charset charset) throws IOException {
 
     final OutputStream os = createOutputStream(file);
-
-    if (os == null)
-      return null;
 
     return new BufferedWriter(new OutputStreamWriter(os, charset != null
         ? charset : Charset.forName(CHARSET)));

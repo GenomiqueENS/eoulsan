@@ -326,7 +326,7 @@ public final class Settings {
     if (value == null)
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName + " parameter: null");
 
     try {
 
@@ -355,7 +355,7 @@ public final class Settings {
     if (value == null)
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName + " parameter: null");
 
     try {
 

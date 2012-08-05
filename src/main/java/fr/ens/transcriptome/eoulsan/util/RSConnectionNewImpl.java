@@ -285,7 +285,7 @@ public class RSConnectionNewImpl implements RSConnection {
     final RConnection connection = getRConnection();
 
     if (connection == null)
-      throw new REngineException(connection, "Connection is null");
+      throw new REngineException(null, "Connection is null");
 
     try {
       RFileInputStream is = connection.openFile(filename);
@@ -350,7 +350,7 @@ public class RSConnectionNewImpl implements RSConnection {
     final RConnection connection = getRConnection();
 
     if (connection == null)
-      throw new REngineException(connection, "Connection is null");
+      throw new REngineException(null, "Connection is null");
 
     try {
       RFileInputStream is = connection.openFile(filename);

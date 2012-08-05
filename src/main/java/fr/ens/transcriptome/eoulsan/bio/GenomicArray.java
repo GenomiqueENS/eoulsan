@@ -269,44 +269,6 @@ public class GenomicArray<T> {
       }
     }
 
-    // private int findIndexPos(final int pos, final char strand,
-    // final String stranded) {
-    //
-    // if (pos < 1 || pos > this.length)
-    // return -1;
-    //
-    // int minIndex = 0;
-    // int maxIndex = zones.size() - 1;
-    // int index = 0;
-    //
-    // while (true) {
-    //
-    // final int diff = maxIndex - minIndex;
-    // index = minIndex + diff / 2;
-    //
-    // if (diff == 1) {
-    //
-    // if (get(minIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
-    // return minIndex;
-    // if (get(maxIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
-    // return maxIndex;
-    //
-    // assert (false);
-    // }
-    //
-    // final Zone<T> z = get(index);
-    //
-    // final int comp = z.compareTo(pos);
-    // if (comp == 0 && z.strand == strand)
-    // return index;
-    //
-    // if (comp < 0)
-    // maxIndex = index;
-    // else
-    // minIndex = index;
-    // }
-    // }
-
     /**
      * Split a zone in two zone.
      * @param zone zone to split
@@ -395,85 +357,6 @@ public class GenomicArray<T> {
       }
     }
 
-    // public void addEntry(final GenomicInterval interval, final T value,
-    // final String stranded) {
-    //
-    // final int intervalStart = interval.getStart();
-    // final int intervalEnd = interval.getEnd();
-    // final char intervalStrand = interval.getStrand();
-    //
-    // // Create an empty zone if the interval is after the end of the
-    // // last chromosome zone
-    // if (interval.getEnd() > this.length) {
-    // add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
-    // this.length = intervalEnd;
-    // }
-    //
-    // final int indexStart;
-    // final int indexEnd;
-    //
-    // if (stranded.equals("no")) {
-    // indexStart = findIndexPos(intervalStart);
-    // indexEnd = findIndexPos(intervalEnd);
-    // } else {
-    // indexStart =
-    // findIndexPos(intervalStart, intervalStrand, stranded);
-    // indexEnd = findIndexPos(intervalEnd, intervalStrand, stranded);
-    // }
-    //
-    // final Zone<T> z1 = get(indexStart);
-    // final Zone<T> z1b;
-    // final int count1b;
-    //
-    // if (z1.start == intervalStart) {
-    // z1b = z1;
-    // count1b = 0;
-    // } else {
-    // z1b = splitZone(z1, intervalStart);
-    // count1b = 1;
-    // }
-    //
-    // // Same index
-    // if (indexStart == indexEnd) {
-    //
-    // if (z1b.end == intervalEnd) {
-    // z1b.addExon(value);
-    // } else {
-    //
-    // final Zone<T> z1c = splitZone(z1b, intervalEnd + 1);
-    // add(indexStart + 1, z1c);
-    // }
-    //
-    // if (z1 != z1b) {
-    // z1b.addExon(value);
-    // add(indexStart + 1, z1b);
-    //
-    // } else
-    // z1.addExon(value);
-    //
-    // } else {
-    //
-    // final Zone<T> z2 = get(indexEnd);
-    // final Zone<T> z2b;
-    //
-    // if (z2.end != intervalEnd) {
-    // z2b = splitZone(z2, intervalEnd + 1);
-    // } else
-    // z2b = z2;
-    //
-    // if (z1 != z1b) {
-    // add(indexStart + 1, z1b);
-    // }
-    //
-    // if (z2 != z2b)
-    // add(indexEnd + 1 + count1b, z2b);
-    //
-    // for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
-    // get(i).addExon(value);
-    // }
-    // }
-    // }
-
     /**
      * Get entries.
      * @param start start of the interval
@@ -506,13 +389,6 @@ public class GenomicArray<T> {
 
               if (result == null)
                 result = Utils.newHashMap();
-
-              // if (chromosomeName.equals("chr2")) {
-              // System.out.println(e);
-              // System.out.println("zone.start : " + zone.start);
-              // System.out.println("zone.end : " + zone.end);
-              // System.out.println("zone.strand : " + zone.strand);
-              // }
 
               result.put(new GenomicInterval(this.chromosomeName, zone.start,
                   zone.end, zone.strand), e);
@@ -574,9 +450,9 @@ public class GenomicArray<T> {
     public void addEntry(final GenomicInterval interval, final T value) {
 
       if (interval.getStrand() == '+' || interval.getStrand() == '.')
-        plus.addEntry(interval, value);
+        this.plus.addEntry(interval, value);
       else if (interval.getStrand() == '-')
-        minus.addEntry(interval, value);
+        this.minus.addEntry(interval, value);
     }
 
     /**
@@ -587,18 +463,21 @@ public class GenomicArray<T> {
      */
     public Map<GenomicInterval, T> getEntries(final int start, final int stop) {
 
-      Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
-      Map<GenomicInterval, T> inter = new HashMap<GenomicInterval, T>();
+      final Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
 
-      inter = plus.getEntries(start, stop);
-      if (inter != null)
-        result.putAll(inter);
-      inter = minus.getEntries(start, stop);
-      if (inter != null)
-        result.putAll(inter);
+      final Map<GenomicInterval, T> interPlus =
+          this.plus.getEntries(start, stop);
+
+      if (interPlus != null)
+        result.putAll(interPlus);
+
+      final Map<GenomicInterval, T> interMinus =
+          this.minus.getEntries(start, stop);
+
+      if (interMinus != null)
+        result.putAll(interMinus);
 
       return result;
-
     }
 
     //

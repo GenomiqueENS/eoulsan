@@ -246,20 +246,6 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return;
     }
 
-    /*
-    final DataFile inFile = context.getOtherDataFile(df, sample);
-
-    if (!inFile.exists()) {
-      return;
-    }
-
-    final DataFile outFile =
-        new DataFile(outputDir, inFile.getName()
-            + CompressionType.BZIP2.getExtension());
-
-    files.put(inFile, outFile);
-    */
-
     if (df.getMaxFilesCount() > 1) {
 
       int i = 0;
@@ -303,10 +289,6 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     final String[] fields = list.split(",");
-
-    if (fields == null) {
-      return result;
-    }
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
