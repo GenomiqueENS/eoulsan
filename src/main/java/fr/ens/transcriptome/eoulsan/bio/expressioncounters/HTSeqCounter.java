@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
@@ -47,7 +46,6 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -64,8 +62,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @author Claire Wallon
  */
 public class HTSeqCounter extends AbstractExpressionCounter {
-
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String COUNTER_NAME = "htseq-count";
 
@@ -141,17 +137,23 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          gffReader.close();
+          writer.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
         if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
-            && '.' == gff.getStrand())
+            && '.' == gff.getStrand()) {
+          gffReader.close();
+          writer.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
@@ -163,9 +165,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 

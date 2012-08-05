@@ -142,13 +142,15 @@ public class DesignBuilder {
         reader = new FastqReader(f.open());
 
         if (!reader.hasNext()) {
+          reader.close();
           reader.throwException();
           throw new EmptyFastqException("Fastq file is empty: " + f.getSource());
         }
 
+        reader.close();
         reader.throwException();
-        return reader.next().getName();
 
+        return reader.next().getName();
       } catch (IOException e) {
         throw new EoulsanException(e.getMessage());
       } catch (BadBioEntryException e) {

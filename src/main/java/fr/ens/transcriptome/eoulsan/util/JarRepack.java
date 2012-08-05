@@ -103,6 +103,7 @@ public class JarRepack {
     }
 
     if (file.length() != count) {
+      origin.close();
       throw new IOException("Copied size of zip entry "
           + count + " is not as excepted: " + file.length());
     }

@@ -135,11 +135,12 @@ public class SOAP2SAM {
 
     } catch (IOException e) {
 
-      reader.close();
       throw e;
-    }
+    } finally {
 
-    bw.close();
+      reader.close();
+      bw.close();
+    }
 
   }
 

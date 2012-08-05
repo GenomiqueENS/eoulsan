@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import java.io.Serializable;
 
-import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**

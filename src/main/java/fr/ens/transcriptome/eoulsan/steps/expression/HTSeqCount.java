@@ -81,17 +81,23 @@ public class HTSeqCount {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
         if ((stranded.equals("yes") || stranded.equals("reverse"))
-            && '.' == gff.getStrand())
+            && '.' == gff.getStrand()) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
@@ -104,9 +110,11 @@ public class HTSeqCount {
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
@@ -292,16 +300,22 @@ public class HTSeqCount {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
-        if (stranded.equals("yes") && '.' == gff.getStrand())
+        if (stranded.equals("yes") && '.' == gff.getStrand()) {
+          writer.close();
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
@@ -314,9 +328,11 @@ public class HTSeqCount {
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
@@ -328,8 +344,12 @@ public class HTSeqCount {
     SAMRecord firstRecord;
     if (samIterator.hasNext())
       firstRecord = samIterator.next();
-    else
+    else {
+      writer.close();
+      input.close();
+      inputSam.close();
       throw new EoulsanException("The SAM file is empty.");
+    }
     if (firstRecord.getReadPairedFlag())
       pairedEnd = true;
     input.close();
