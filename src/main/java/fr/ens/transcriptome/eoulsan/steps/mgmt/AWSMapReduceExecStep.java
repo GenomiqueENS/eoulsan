@@ -42,8 +42,8 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.AWSMapReduceBuilder;
-import fr.ens.transcriptome.eoulsan.util.AWSMapReduceJob;
+import fr.ens.transcriptome.eoulsan.util.cloud.AWSMapReduceBuilder;
+import fr.ens.transcriptome.eoulsan.util.cloud.AWSMapReduceJob;
 
 /**
  * This class launch Eoulsan on Amazon MapReduce.

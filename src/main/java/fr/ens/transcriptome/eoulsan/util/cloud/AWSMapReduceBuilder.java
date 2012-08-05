@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.cloud;
 
 /**
  * This class allow to easily create a AWS MapReduce job.
