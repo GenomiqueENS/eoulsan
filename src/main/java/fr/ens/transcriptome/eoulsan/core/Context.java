@@ -104,6 +104,12 @@ public interface Context {
   String getJobId();
 
   /**
+   * Get the host of the job.
+   * @return a string with the host of the job
+   */
+  String getJobHost();
+
+  /**
    * Get the creation time of the context.
    * @return the creation time of the context in milliseconds since epoch
    *         (1.1.1970)
