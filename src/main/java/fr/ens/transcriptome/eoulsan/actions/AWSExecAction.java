@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import java.util.logging.Logger;
+
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -35,6 +37,9 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Laurent Jourdren
  */
 public class AWSExecAction extends AbstractAction {
+
+  /** Logger */
+  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public boolean isHidden() {
@@ -56,6 +61,10 @@ public class AWSExecAction extends AbstractAction {
 
   @Override
   public void action(final String[] arguments) {
+
+    LOGGER.severe("The \""
+        + getName() + "\" action has been renamed to \""
+        + EMRExecAction.ACTION_NAME + "\".");
 
     System.err.println("The \""
         + getName() + "\" action has been renamed to \""
