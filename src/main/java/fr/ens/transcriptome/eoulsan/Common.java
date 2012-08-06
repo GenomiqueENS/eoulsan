@@ -30,7 +30,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Logger;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -164,6 +172,61 @@ public final class Common {
   public static void exit(final int exitCode) {
 
     System.exit(exitCode);
+  }
+
+  public static void sendMail(final String subject, final String message) {
+
+    if (!EoulsanRuntime.isRuntime())
+      return;
+
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    final boolean sendMail = true;
+    final Properties properties = settings.getJavaMailSMTPProperties();
+    final String userMail = settings.getResultMail();
+
+    if (!sendMail)
+      return;
+
+    if (!properties.containsKey("mail.smtp.host")) {
+      LOGGER.warning("No SMTP server set");
+      return;
+    }
+
+    if (userMail == null) {
+      LOGGER.warning("No user mail set");
+      return;
+    }
+
+    final Session session = Session.getInstance(properties);
+
+    try {
+      // Instantiate a message
+      Message msg = new MimeMessage(session);
+
+      // Set message attributes
+      msg.setFrom(new InternetAddress(userMail));
+      InternetAddress[] address = {new InternetAddress(userMail)};
+      msg.setRecipients(Message.RecipientType.TO, address);
+      msg.setSubject(subject);
+      msg.setSentDate(new Date());
+
+      // Set message content
+      msg.setText(message);
+
+      // Send the message
+      Transport.send(msg);
+
+    } catch (MessagingException mex) {
+
+      LOGGER.warning("Error while sending mail: " + mex.getMessage());
+
+      // Prints all nested (chained) exceptions as well
+      if (!EoulsanRuntime.isRuntime()
+          || EoulsanRuntime.getSettings().isPrintStackTrace())
+        mex.printStackTrace();
+    }
+
   }
 
   //
