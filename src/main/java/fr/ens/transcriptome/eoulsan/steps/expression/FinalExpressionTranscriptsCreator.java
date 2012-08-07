@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class generate the final expression file after counting the alignment
+ * This class generates the final expression file after counting the alignment
  * for each transcript.
  * @since 1.0
  * @author Laurent Jourdren

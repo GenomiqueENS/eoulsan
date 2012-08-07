@@ -89,7 +89,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   public StepResult execute(Design design, final Context context) {
 
     // Create configuration object
-    final Configuration conf = new Configuration();// this.conf;
+    final Configuration conf = new Configuration();
 
     try {
 
