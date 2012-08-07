@@ -276,12 +276,16 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
+    
+    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
     if (!samOutputFile.delete())
       LOGGER.warning("Can not delete "
           + this.mapper.getMapperName() + " output file: "
           + samOutputFile.getAbsolutePath());
+    
+    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Clean mapper input files
     this.mapper.clean();
