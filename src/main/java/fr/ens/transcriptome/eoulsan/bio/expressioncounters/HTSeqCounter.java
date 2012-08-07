@@ -316,15 +316,28 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final List<String> keysSorted = new ArrayList<String>(counts.keySet());
     Collections.sort(keysSorted);
 
+    writer.write("Id\tCount\n");
     for (String key : keysSorted) {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
+    
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(), empty);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(), ambiguous);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowqual);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(), notaligned);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(), nonunique);
+    
 
-    writer.write(String.format("no_feature\t%d\n", empty));
-    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-    writer.write(String.format("not_aligned\t%d\n", notaligned));
-    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+//    writer.write(String.format("no_feature\t%d\n", empty));
+//    writer.write(String.format("ambiguous\t%d\n", ambiguous));
+//    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
+//    writer.write(String.format("not_aligned\t%d\n", notaligned));
+//    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
 
     writer.close();
   }
