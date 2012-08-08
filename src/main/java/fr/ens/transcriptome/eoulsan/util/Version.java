@@ -234,10 +234,7 @@ public final class Version implements Comparable<Version> {
     if (o == this)
       return true;
 
-    if (o == null)
-      return false;
-
-    if (!(o instanceof Version))
+    if (o == null || !(o instanceof Version))
       return false;
 
     final Version v = (Version) o;

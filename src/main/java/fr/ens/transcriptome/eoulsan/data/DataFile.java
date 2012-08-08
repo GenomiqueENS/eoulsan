@@ -405,10 +405,10 @@ public class DataFile {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == null)
-      return false;
+    if (o == this)
+      return true;
 
-    if (!(o instanceof DataFile))
+    if (o == null || !(o instanceof DataFile))
       return false;
 
     final DataFile df = (DataFile) o;

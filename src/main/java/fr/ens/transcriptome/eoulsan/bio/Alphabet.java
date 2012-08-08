@@ -90,10 +90,7 @@ public abstract class Alphabet {
     if (o == this)
       return true;
 
-    if (o == null)
-      return false;
-
-    if (!(o instanceof Alphabet))
+    if (o == null || !(o instanceof Alphabet))
       return false;
 
     final Alphabet that = (Alphabet) o;

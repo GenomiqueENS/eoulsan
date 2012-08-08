@@ -94,10 +94,10 @@ public class FinalExpressionFeaturesCreator {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == null)
-        return false;
+      if (o == this)
+        return true;
 
-      if (!(o instanceof ExpressionFeature))
+      if (o == null || !(o instanceof ExpressionFeature))
         return false;
 
       final ExpressionFeature et = (ExpressionFeature) o;
@@ -142,7 +142,7 @@ public class FinalExpressionFeaturesCreator {
    * Clear.
    */
   public void initializeExpressionResults() {
-    
+
     this.expressionResults.clear();
     for (String id : ga.getFeaturesIds())
       this.expressionResults.put(id, new ExpressionFeature(id));
@@ -166,7 +166,7 @@ public class FinalExpressionFeaturesCreator {
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final InputStream is) throws IOException {
-    
+
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(is, CHARSET));
 
@@ -203,7 +203,7 @@ public class FinalExpressionFeaturesCreator {
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
-    
+
     final List<ExpressionFeature> list =
         new ArrayList<ExpressionFeature>(this.expressionResults.values());
 
@@ -216,7 +216,7 @@ public class FinalExpressionFeaturesCreator {
       osw.write(ef.toString() + "\n");
 
     osw.close();
-    
+
   }
 
   //
