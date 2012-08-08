@@ -307,6 +307,12 @@
 			<version>0.6-1</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.5</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -699,6 +705,16 @@
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>sam.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+						                  <groupId>javax.mail</groupId>
+						                  <artifactId>mail</artifactId>
+						                  <version>1.4.5</version>
+						                  <!--type></type-->
+				                                  <!--classifier> [classifier - optional] </classifier-->
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>mail.jar</destFileName>
 						                </artifactItem>
 					              </artifactItems>
 					              <!-- other configurations here -->

@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -126,8 +125,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final Writer writer = FileUtils.createBufferedWriter(outFile);
 
     boolean pairedEnd = false;
-
-    // features = readAnnotation(gffFile, stranded, featureType, attributeId);
 
     final GFFReader gffReader = new GFFReader(gffFile);
 
@@ -329,9 +326,24 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final List<String> keysSorted = new ArrayList<String>(counts.keySet());
     Collections.sort(keysSorted);
 
+    writer.write("Id\tCount\n");
     for (String key : keysSorted) {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
+
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(), empty);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
+        ambiguous);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowqual);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
+        notaligned);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
+        nonunique);
 
     writer.write("no_feature\t" + empty + '\n');
     writer.write("ambiguous\t" + ambiguous + '\n');
@@ -342,44 +354,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     writer.close();
   }
 
-  // private static final GenomicArray<String> readAnnotation(
-  // final InputStream gffFile, final String stranded,
-  // final String featureType, final String attributeId) {
-  //
-  // final GenomicArray<String> features = new GenomicArray<String>();
-  // final GFFReader gffReader = new GFFReader(gffFile);
-  //
-  // // Read the annotation file
-  // for (final GFFEntry gff : gffReader) {
-  //
-  // if (featureType.equals(gff.getType())) {
-  //
-  // final String featureId = gff.getAttributeValue(attributeId);
-  // if (featureId == null)
-  // throw new EoulsanException("Feature "
-  // + featureType + " does not contain a " + attributeId
-  // + " attribute");
-  //
-  // if (stranded.equals("yes") && '.' == gff.getStrand())
-  // throw new EoulsanException("Feature "
-  // + featureType
-  // + " does not have strand information but you are running "
-  // + "htseq-count in stranded mode.");
-  //
-  // // Addition to the list of features of a GenomicInterval object
-  // // corresponding to the current annotation line
-  // features.addEntry(new GenomicInterval(gff, stranded), featureId);
-  // counts.put(featureId, 0);
-  // }
-  // }
-  // gffReader.throwException();
-  // gffReader.close();
-  //
-  // return features;
-  // }
-
   /**
-   * Add intervals of a SAM record that are alignment matches.
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code).
    * @param record the SAM record to treat.
    * @param stranded strand to consider.
    * @return the list of intervals of the SAM record.
@@ -602,8 +579,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           intervals = inter;
         }
 
-        // LOGGER.info("intervals size after : "+intervals.size());
-
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
           Collection<String> values = intervals.values();
@@ -641,32 +616,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     }
 
     return fs;
-  }
-
-  public static void main(String[] args) throws EoulsanException, IOException,
-      BadBioEntryException {
-
-    final File dir = new File("/home/wallon/Bureau/TEST_HTSEQ/EOULSAN");
-    // final File samFile = new File(dir, "filtered_mapper_results_1.sam");
-    // final File samFile = new
-    // File("/home/wallon/Bureau/GSNAP/PE/500head.sam");
-    final File samFile = new File(dir, "filtered_mapper_results_1.sam");
-    final FileInputStream gffFile =
-        new FileInputStream(new File("/home/wallon/Bureau/DATA/annotation.gff"));
-    // final File gffFile = new File("/home/wallon/Bureau/GSNAP/PE/mouse.gff");
-    final File output = new File(dir, "counter-test-java-strict-yes");
-    Reporter reporter = new Reporter();
-    String counterGroup = "expression-test";
-
-    final long startTime = System.currentTimeMillis();
-    System.out.println("start.");
-    countReadsInFeatures(samFile, gffFile, output, StrandUsage.YES,
-        OverlapMode.INTERSECTION_STRICT, "exon", "ID", false, 0, null,
-        reporter, counterGroup);
-    System.out.println("end.");
-    System.out.println("Duration: "
-        + (System.currentTimeMillis() - startTime) + " ms.");
-
   }
 
 }

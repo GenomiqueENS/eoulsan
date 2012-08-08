@@ -24,6 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +39,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -43,8 +54,10 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class GenomicArray<T> {
 
-  private final Map<String, ChromosomeZones<T>> chromosomes = Utils
-      .newHashMap();
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  private Map<String, ChromosomeZones<T>> chromosomes = Utils.newHashMap();
 
   /**
    * This class define a zone in a ChromosomeZone object.
@@ -297,7 +310,9 @@ public class GenomicArray<T> {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (interval.getEnd() > this.length) {
-        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
+        final Set<T> val = new TreeSet<T>();
+        val.add(value);
+        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand(), val));
         this.length = intervalEnd;
       }
 
@@ -495,6 +510,47 @@ public class GenomicArray<T> {
     }
   }
 
+  // private void populateMapsFromGFFFile(final InputStream is,
+  // final String featureType, final String stranded, final String attributeId)
+  // throws IOException, BadBioEntryException, EoulsanException {
+  //
+  // // final GenomicArray<String> features = new GenomicArray<String>();
+  // // final Map<String, Integer> counts = Utils.newHashMap();
+  //
+  // final GFFReader gffReader = new GFFReader(is);
+  //
+  // for (final GFFEntry gff : gffReader) {
+  //
+  // if (featureType.equals(gff.getType())) {
+  //
+  // final String featureId = gff.getAttributeValue(attributeId);
+  // if (featureId == null)
+  // throw new EoulsanException("Feature "
+  // + featureType + " does not contain a " + attributeId
+  // + " attribute");
+  //
+  // if ((stranded.equals("yes") || stranded.equals("reverse"))
+  // && '.' == gff.getStrand())
+  // throw new EoulsanException("Feature "
+  // + featureType
+  // + " does not have strand information but you are running "
+  // + "htseq-count in stranded mode.");
+  //
+  // // Addition to the list of features of a GenomicInterval object
+  // // corresponding to the current annotation line
+  // features.addEntry(new GenomicInterval(gff, stranded), featureId);
+  // counts.put(featureId, 0);
+  // }
+  // }
+  // gffReader.throwException();
+  // gffReader.close();
+  //
+  // if (counts.size() == 0)
+  // throw new EoulsanException("Warning: No features of type '"
+  // + featureType + "' found.\n");
+  //
+  // }
+
   /**
    * Add an entry on the genomic array.
    * @param interval genomic interval
@@ -563,5 +619,140 @@ public class GenomicArray<T> {
 
     return this.chromosomes.containsKey(chromosomeName);
   }
+
+  /**
+   * Get a set with zone identifiers.
+   * @return a set of strings with identifiers
+   */
+  public Set<String> getFeaturesIds() {
+
+    Set<String> results = new TreeSet<String>();
+
+    for (Map.Entry<String, ChromosomeZones<T>> strandedZone : this.chromosomes
+        .entrySet()) {
+      for (Zone<T> zone : strandedZone.getValue().plus.zones) {
+        if (zone.valueCount != 0) {
+          for (T value : zone.getValues()) {
+            results.add(String.valueOf(value));
+          }
+        }
+      }
+    }
+
+    return results;
+  }
+
+  //
+  // Save
+  //
+
+  /**
+   * Save the annotation.
+   * @param os Output stream
+   */
+  public void save(final OutputStream os) throws IOException {
+
+    final ObjectOutputStream oos = new ObjectOutputStream(os);
+    oos.writeObject(this.chromosomes);
+    oos.close();
+  }
+
+  /**
+   * Save the annotation.
+   * @param outputFile Output file
+   */
+  public void save(final File outputFile) throws FileNotFoundException,
+      IOException {
+
+    save(FileUtils.createOutputStream(outputFile));
+  }
+
+  //
+  // Load
+  //
+
+  /**
+   * Load the annotation.
+   * @param is InputStream input stream
+   */
+  @SuppressWarnings(value = "unchecked")
+  public void load(final InputStream is) throws IOException {
+
+    final ObjectInputStream ois = new ObjectInputStream(is);
+    try {
+      this.chromosomes = (Map<String, ChromosomeZones<T>>) ois.readObject();
+
+    } catch (ClassNotFoundException e) {
+      throw new IOException("Unable to load data.");
+    }
+    ois.close();
+  }
+
+  /**
+   * Load the annotation.
+   * @param inputFile input file
+   */
+  public void load(final File inputFile) throws FileNotFoundException,
+      IOException {
+
+    load(FileUtils.createInputStream(inputFile));
+  }
+
+  //
+  // Other
+  //
+
+  public void clear() {
+
+    this.chromosomes.clear();
+
+  }
+  //
+  // @Override
+  // public String toString() {
+  //
+  // return "Transcripts size: "
+  // + (this.transcripts == null ? "null" : this.transcripts.size());
+  // }
+  //
+  // //
+  // // Constructors
+  // //
+  //
+  // /**
+  // * Public constructor used to create the index.
+  // * @param annotationFile annotation file to use
+  // * @param expressionType the expression type to filter
+  // * @throws IOException if an error occurs while creating the index
+  // * @throws BadBioEntryException if an invalid entry of the annotation file
+  // is
+  // * found
+  // */
+  // public TranscriptAndExonFinder(final File annotationFile,
+  // final String expressionType) throws IOException, BadBioEntryException {
+  //
+  // this(FileUtils.createInputStream(annotationFile), expressionType);
+  // }
+  //
+  // /**
+  // * Public constructor used to create the index.
+  // * @param is annotation input stream to use
+  // * @param expressionType the expression type to filter
+  // * @throws IOException if an error occurs while creating the index
+  // * @throws BadBioEntryException if an invalid entry of the annotation file
+  // is
+  // * found
+  // */
+  // public TranscriptAndExonFinder(final InputStream is,
+  // final String expressionType) throws IOException, BadBioEntryException {
+  //
+  // populateMapsFromGFFFile(is, expressionType);
+  // }
+  //
+  // /**
+  // * Public constructor.
+  // */
+  // public TranscriptAndExonFinder() {
+  // }
 
 }

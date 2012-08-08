@@ -52,8 +52,8 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
  * This class define an mapper step in Hadoop mode.
@@ -98,7 +98,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       final long startTime = System.currentTimeMillis();
 
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 

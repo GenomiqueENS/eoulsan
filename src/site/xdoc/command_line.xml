@@ -60,7 +60,7 @@ usage: eoulsan [options] command arguments
  -p &lt;classpath&gt;      additional classpath for eoulsan plugins
  -version            show version of the software
 Available commands:
- - awsexec      execute eoulsan on Amazon cloud.
+ - emrexec      execute eoulsan on Amazon Elastic MapReduce service.
  - createdesign create a design file from a list of files.
  - createhadoopjar      create a jar file for hadoop with all dependencies include.
  - exec execute Eoulsan in local mode.
@@ -70,7 +70,7 @@ Available commands:
 
   <p>Actually, Eoulsan has 5 available commands:</p>
   <ul>
-    <li><b>awsexec</b>: Upload data and launch Eoulsan analysis on Amazon Web Services cloud.</li>
+    <li><b>emrexec</b>: Upload data and launch Eoulsan analysis on Amazon Web Services cloud.</li>
     <li><b>exec</b>: Launch Eoulsan analysis in local mode.</li>
     <li><b>hadoopexec</b>: Launch Eoulsan analysis on a Hadoop cluster.</li>
     <li><b>createdesign</b>: Create a design file from a list of fastq, gff and fasta files.</li>
