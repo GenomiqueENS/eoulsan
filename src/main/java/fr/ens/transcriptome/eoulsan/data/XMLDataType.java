@@ -35,6 +35,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
@@ -146,11 +148,10 @@ public class XMLDataType extends AbstractDataType {
   @Override
   public String toString() {
 
-    return "XMLDataType{name="
-        + this.name + ", description=" + description + ", prefix="
-        + this.prefix + ", oneFilePerAnalysis=" + this.oneFilePerAnalysis
-        + ", dataTypeFromDesignFile=" + dataTypeFromDesignFile
-        + ", designFieldName=" + designFieldName + "}";
+    return Objects.toStringHelper(this).add("name", this.name)
+        .add("description", description).add("prefix", prefix)
+        .add("dataTypeFromDesignFile", dataTypeFromDesignFile)
+        .add("designFieldName", designFieldName).toString();
   }
 
   //
