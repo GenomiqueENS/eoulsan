@@ -4,3 +4,4 @@ fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepOneMatchReadAlignmentsFil
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter
 fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.DistanceFromReferenceReadAlignmentsFilter
+fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.GSNAPReadAlignmentsFilter
