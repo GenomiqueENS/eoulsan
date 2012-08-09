@@ -102,7 +102,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
 }

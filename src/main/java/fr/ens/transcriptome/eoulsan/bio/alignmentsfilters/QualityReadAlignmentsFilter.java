@@ -119,7 +119,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
     if (this.qualityThreshold < 0.0)
       throw new IllegalArgumentException("Quality threshold is not set for "
-          + getName() + " read alignments filter.");
+          + getName() + " alignments alignments filter.");
   }
 
 }

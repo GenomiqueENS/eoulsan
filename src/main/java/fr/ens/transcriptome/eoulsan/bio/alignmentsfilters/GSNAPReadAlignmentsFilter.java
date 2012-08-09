@@ -24,12 +24,75 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+
 /**
  * This class define a filter to use after the mapper GSNAP (for the
  * compatibility with the expression estimation step).
  * @since 1.2
  * @author Claire Wallon
  */
-public class GSNAPReadAlignmentsFilter {
+public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
+
+  public static final String FILTER_NAME = "gsnapfilter";
+  private boolean remove = false;
+
+  private final List<SAMRecord> result = new ArrayList<SAMRecord>();
+
+  @Override
+  public String getName() {
+
+    return "gsnapfilter";
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "Remove all GSNAP alignments that are not supported by the expression estimation step";
+  }
+
+  @Override
+  public void filterReadAlignments(final List<SAMRecord> records) {
+
+    if (records == null)
+      return;
+
+    // single-end mode
+    if (!records.get(0).getReadPairedFlag()) {
+      if (records.size() > 1)
+        records.removeAll(records);
+    }
+
+    // paired-end mode
+    else {
+      if (records.size() > 2)
+        records.removeAll(records);
+    }
+  }
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null || value == null)
+      return;
+
+    if ("remove".equals(key.trim())) {
+
+      try {
+        this.remove = Boolean.parseBoolean(value.trim());
+      } catch (NumberFormatException e) {
+        return;
+      }
+
+    } else
+
+      throw new EoulsanException("Unknown parameter for "
+          + getName() + " alignments filter: " + key);
+  }
 
 }
