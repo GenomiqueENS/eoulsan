@@ -23,6 +23,8 @@
  */
 package fr.ens.transcriptome.eoulsan.data;
 
+import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public class XMLDataType extends AbstractDataType {
+public final class XMLDataType extends AbstractDataType {
 
   private String name;
   private String description;
@@ -145,13 +147,47 @@ public class XMLDataType extends AbstractDataType {
       this.designFieldName.trim();
   }
 
+  //
+  // Object methods
+  //
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof DataType))
+      return false;
+
+    if (!(o instanceof XMLDataType))
+      return super.equals(o);
+
+    final XMLDataType that = (XMLDataType) o;
+
+    return equal(this.name, that.name)
+        && equal(this.description, that.description)
+        && equal(this.prefix, that.prefix)
+        && equal(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
+        && equal(this.dataTypeFromDesignFile, that.dataTypeFromDesignFile)
+        && equal(this.designFieldName, that.designFieldName);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(this.name, this.description, this.prefix,
+        this.oneFilePerAnalysis, this.dataTypeFromDesignFile,
+        this.designFieldName);
+  }
+
   @Override
   public String toString() {
 
     return Objects.toStringHelper(this).add("name", this.name)
-        .add("description", description).add("prefix", prefix)
-        .add("dataTypeFromDesignFile", dataTypeFromDesignFile)
-        .add("designFieldName", designFieldName).toString();
+        .add("description", this.description).add("prefix", this.prefix)
+        .add("dataTypeFromDesignFile", this.dataTypeFromDesignFile)
+        .add("designFieldName", this.designFieldName).toString();
   }
 
   //
