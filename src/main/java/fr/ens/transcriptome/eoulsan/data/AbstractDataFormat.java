@@ -24,6 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.base.Objects.equal;
+
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
@@ -84,6 +88,46 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public int getMaxFilesCount() {
     return 1;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof DataFormat)) {
+      return false;
+    }
+
+    final DataFormat that = (DataFormat) o;
+
+    return equal(this.getFormatName(), that.getFormatName())
+        && equal(this.getDescription(), that.getDescription())
+        && equal(this.getType(), that.getType())
+        && equal(this.getContentType(), that.getContentType())
+        && equal(this.getDefaultExtention(), that.getDefaultExtention())
+        && equal(this.getExtensions(), that.getExtensions())
+        && equal(this.isGenerator(), that.isGenerator())
+        && equal(this.isChecker(), that.isChecker())
+        && ((this.getGenerator() == null && that.getGenerator() == null) || (this
+            .getGenerator() != null && that.getGenerator() != null && equal(
+              this.getGenerator().getClass().getName(), that.getGenerator()
+                  .getClass().getName())))
+        && ((this.getChecker() == null && that.getChecker() == null) || (this
+            .getChecker() != null && that.getChecker() != null && equal(this
+            .getChecker().getClass().getName(), that.getChecker().getClass()
+            .getName())))
+        && equal(this.getMaxFilesCount(), that.getMaxFilesCount());
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(getFormatName(), getDescription(), getType(),
+        getContentType(), getDefaultExtention(), getExtensions(),
+        isGenerator(), isChecker(), getGenerator(), getChecker(),
+        getMaxFilesCount());
   }
 
 }
