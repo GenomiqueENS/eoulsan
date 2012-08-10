@@ -23,10 +23,11 @@
  */
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.base.Objects.equal;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -38,13 +39,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
-public class XMLDataFormat extends AbstractDataFormat {
+public final class XMLDataFormat extends AbstractDataFormat {
 
   private static final String DEFAULT_CONTENT_TYPE = "text/plain";
   private static final int DEFAULT_MAX_FILES_COUNT = 1;
@@ -122,6 +125,9 @@ public class XMLDataFormat extends AbstractDataFormat {
   //
 
   private final Object loadClass(final String classname, Class<?> interf) {
+
+    if (classname == null)
+      return null;
 
     try {
 
@@ -227,15 +233,53 @@ public class XMLDataFormat extends AbstractDataFormat {
           + this.name + ": " + this.maxFilesCount);
   }
 
+  //
+  // Object methods
+  //
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof DataFormat)) {
+      return false;
+    }
+
+    if (!(o instanceof XMLDataFormat))
+      return super.equals(o);
+
+    final XMLDataFormat that = (XMLDataFormat) o;
+
+    return equal(this.name, that.name)
+        && equal(this.description, that.description)
+        && equal(this.typeName, that.typeName)
+        && equal(this.contentType, that.contentType)
+        && equal(this.extensions, that.extensions)
+        && equal(this.generatorClassName, that.generatorClassName)
+        && equal(this.checkerClassName, that.checkerClassName)
+        && equal(this.maxFilesCount, that.maxFilesCount);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(this.name, this.description, this.typeName,
+        this.contentType, this.extensions, this.generatorClassName,
+        this.checkerClassName, this.maxFilesCount);
+  }
+
   @Override
   public String toString() {
 
-    return "XMLDataFormat{name="
-        + this.name + ", description=" + this.description + ", typeName="
-        + typeName + ", contentType=" + this.contentType + ", extensions="
-        + Arrays.toString(this.getExtensions()) + ", generatorClassName="
-        + this.generatorClassName + ", checkerClassName="
-        + this.checkerClassName + ", maxFilesCount=" + this.maxFilesCount + "}";
+    return Objects.toStringHelper(this).add("name", this.name)
+        .add("description", this.description).add("typeName", typeName)
+        .add("contentType", this.contentType)
+        .add("extensions", this.getExtensions())
+        .add("generatorClassName", this.generatorClassName)
+        .add("checkerClassName", this.checkerClassName)
+        .add("maxFilesCount", this.maxFilesCount).toString();
   }
 
   //
