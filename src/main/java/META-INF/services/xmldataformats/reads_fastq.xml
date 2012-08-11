@@ -1,0 +1,14 @@
+<dataformat>
+  <maxfilescount>2</maxfilescount>
+  <name>reads_fastq</name>
+  <description>reads_fastq description.</description>
+  <type>reads</type>
+  <!--contenttype>text/plain</contenttype-->
+  <generator/>
+  <checker>fr.ens.transcriptome.eoulsan.checkers.ReadsChecker</checker>
+  <extensions>
+  	<extension default="true">.fq</extension>
+  	<extension>.fastq</extension>
+  </extensions>
+
+</dataformat>
