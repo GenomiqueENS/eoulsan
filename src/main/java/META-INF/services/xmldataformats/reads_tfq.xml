@@ -1,0 +1,10 @@
+<dataformat>
+  <name>reads_tfq</name>
+  <description>reads_tfq description.</description>
+  <type>reads</type>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.tfq</extension>
+  </extensions>
+</dataformat>

@@ -1,0 +1,11 @@
+<dataformat>
+  <name>bowtie_index_zip</name>
+  <description>bowtie_index_zip description.</description>
+  <type>bowtie_index</type>
+  <contenttype>application/zip</contenttype>
+  <generator mapperName="bowtie" >fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
+  <checker/>
+  <extensions>
+  	<extension default="true">.zip</extension>
+  </extensions>
+</dataformat>

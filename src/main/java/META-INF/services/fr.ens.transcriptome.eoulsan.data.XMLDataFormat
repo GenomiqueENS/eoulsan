@@ -1,1 +1,8 @@
 reads_fastq.xml
+reads_tfq.xml
+filtered_reads_fastq.xml
+filtered_reads_tfq.xml
+soap_index_zip.xml
+bwa_index_zip.xml
+bowtie_index_zip.xml
+gmap_index_zip.xml
