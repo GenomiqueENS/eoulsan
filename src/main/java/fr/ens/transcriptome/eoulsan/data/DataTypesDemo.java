@@ -49,7 +49,7 @@ public class DataTypesDemo {
     // bwa_index.xml
     test("bwa_index", DataTypes.BWA_INDEX);
     // diffana.xml
-    //test("diffana", DataTypes.DIFFANA_RESULTS);
+    test("diffana_results", DataTypes.DIFFANA_RESULTS);
     // expression.xml
     test("expression", DataTypes.EXPRESSION_RESULTS);
     // filtered_mapper_results_index.xml
