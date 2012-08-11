@@ -24,6 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import java.util.Collections;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep;
 
@@ -33,6 +39,9 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorS
  * @author Laurent Jourdren
  */
 public final class BWAIndexZipDataFormat extends AbstractDataFormat {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static final String FORMAT_NAME = "bwa_index_zip";
 
@@ -68,7 +77,17 @@ public final class BWAIndexZipDataFormat extends AbstractDataFormat {
   @Override
   public Step getGenerator() {
 
-    return new GenomeMapperIndexGeneratorStep("bwa");
+    try {
+      final Step generator = new GenomeMapperIndexGeneratorStep();
+      generator.configure(Collections.singleton(new Parameter("mapperName",
+          "bwa")));
+
+      return generator;
+    } catch (EoulsanException e) {
+
+      LOGGER.severe("Cannot create generator: " + e.getMessage());
+      return null;
+    }
   }
 
 }
