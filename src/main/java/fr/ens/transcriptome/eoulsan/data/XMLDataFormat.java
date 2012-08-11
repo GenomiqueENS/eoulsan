@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,14 +43,25 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
+/**
+ * This class define a DataFormat from an XML file.
+ * @since 1.2
+ * @author Laurent Jourdren
+ */
 public final class XMLDataFormat extends AbstractDataFormat {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String DEFAULT_CONTENT_TYPE = "text/plain";
   private static final int DEFAULT_MAX_FILES_COUNT = 1;
@@ -59,6 +72,7 @@ public final class XMLDataFormat extends AbstractDataFormat {
   private String contentType = "text/plain";
   private String[] extensions;
   private String generatorClassName;
+  private Set<Parameter> generatorParameters = Sets.newLinkedHashSet();
   private String checkerClassName;
   private int maxFilesCount;
 
@@ -101,7 +115,21 @@ public final class XMLDataFormat extends AbstractDataFormat {
   @Override
   public Step getGenerator() {
 
-    return (Step) loadClass(this.generatorClassName, Step.class);
+    final Step generator =
+        (Step) loadClass(this.generatorClassName, Step.class);
+
+    if (generator == null)
+      return null;
+
+    try {
+      generator.configure(this.generatorParameters);
+
+      return generator;
+    } catch (EoulsanException e) {
+
+      LOGGER.severe("Cannot create generator: " + e.getMessage());
+      return null;
+    }
   }
 
   @Override
@@ -183,6 +211,17 @@ public final class XMLDataFormat extends AbstractDataFormat {
       this.contentType = XMLUtils.getTagValue(e, "contenttype");
       this.generatorClassName = XMLUtils.getTagValue(e, "generator");
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
+
+      // Get the parameters of the generator step
+      for (Element generatorElement : XMLUtils.getElementsByTagName(e,
+          "generator")) {
+        final List<String> attributeNames =
+            XMLUtils.getAttributeNames(generatorElement);
+
+        for (String attributeName : attributeNames)
+          this.generatorParameters.add(new Parameter(attributeName,
+              generatorElement.getAttribute(attributeName)));
+      }
 
       // Parse max files count
       final String maxFiles = XMLUtils.getTagValue(e, "maxfilescount");
@@ -288,6 +327,7 @@ public final class XMLDataFormat extends AbstractDataFormat {
         .add("defaultExtension", this.extensions[0])
         .add("extensions", Arrays.toString(this.extensions))
         .add("generatorClassName", this.generatorClassName)
+        .add("generatorParameters", this.generatorParameters)
         .add("checkerClassName", this.checkerClassName)
         .add("maxFilesCount", this.maxFilesCount).toString();
   }
