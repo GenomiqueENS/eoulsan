@@ -28,6 +28,7 @@ import static com.google.common.base.Objects.equal;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -184,17 +185,17 @@ public final class XMLDataFormat extends AbstractDataFormat {
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
 
       // Parse max files count
-      final String max =
-          XMLUtils.getTagValue(e, XMLUtils.getTagValue(e, "maxfilescount"));
+      final String maxFiles = XMLUtils.getTagValue(e, "maxfilescount");
+
       try {
-        if (max == null)
+        if (maxFiles == null)
           this.maxFilesCount = DEFAULT_MAX_FILES_COUNT;
         else
-          this.maxFilesCount = Integer.parseInt(max);
+          this.maxFilesCount = Integer.parseInt(maxFiles);
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + max);
+                + this.name + ": " + maxFiles);
       }
 
       // Parse extensions
@@ -225,8 +226,16 @@ public final class XMLDataFormat extends AbstractDataFormat {
     if (this.description != null)
       this.description.trim();
 
-    if (this.contentType == null)
+    if (this.contentType == null || "".equals(this.contentType.trim()))
       this.contentType = DEFAULT_CONTENT_TYPE;
+
+    if (this.generatorClassName != null
+        && "".equals(this.generatorClassName.trim()))
+      this.generatorClassName = null;
+
+    if (this.checkerClassName != null
+        && "".equals(this.checkerClassName.trim()))
+      this.checkerClassName = null;
 
     if (this.maxFilesCount < 1 || this.maxFilesCount > 2)
       throw new EoulsanException("Invalid maximal files count for data format "
@@ -276,7 +285,8 @@ public final class XMLDataFormat extends AbstractDataFormat {
     return Objects.toStringHelper(this).add("name", this.name)
         .add("description", this.description).add("typeName", typeName)
         .add("contentType", this.contentType)
-        .add("extensions", this.getExtensions())
+        .add("defaultExtension", this.extensions[0])
+        .add("extensions", Arrays.toString(this.extensions))
         .add("generatorClassName", this.generatorClassName)
         .add("checkerClassName", this.checkerClassName)
         .add("maxFilesCount", this.maxFilesCount).toString();
