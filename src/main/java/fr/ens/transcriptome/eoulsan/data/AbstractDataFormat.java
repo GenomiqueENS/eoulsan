@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import static com.google.common.base.Objects.equal;
 
+import java.util.Arrays;
+
 import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
@@ -81,11 +83,6 @@ abstract class AbstractDataFormat implements DataFormat {
   }
 
   @Override
-  public String toString() {
-    return getFormatName();
-  }
-
-  @Override
   public int getMaxFilesCount() {
     return 1;
   }
@@ -107,7 +104,7 @@ abstract class AbstractDataFormat implements DataFormat {
         && equal(this.getType(), that.getType())
         && equal(this.getContentType(), that.getContentType())
         && equal(this.getDefaultExtention(), that.getDefaultExtention())
-        && equal(this.getExtensions(), that.getExtensions())
+        && Arrays.equals(this.getExtensions(), that.getExtensions())
         && equal(this.isGenerator(), that.isGenerator())
         && equal(this.isChecker(), that.isChecker())
         && ((this.getGenerator() == null && that.getGenerator() == null) || (this
@@ -128,6 +125,27 @@ abstract class AbstractDataFormat implements DataFormat {
         getContentType(), getDefaultExtention(), getExtensions(),
         isGenerator(), isChecker(), getGenerator(), getChecker(),
         getMaxFilesCount());
+  }
+
+  @Override
+  public String toString() {
+
+    final Step generator = getGenerator();
+    final Checker checker = getChecker();
+
+    return Objects
+        .toStringHelper(this)
+        .add("name", getFormatName())
+        .add("description", getDescription())
+        .add("typeName", getType().getName())
+        .add("contentType", getContentType())
+        .add("defaultExtension", getDefaultExtention())
+        .add("extensions", Arrays.toString(getExtensions()))
+        .add("generatorClassName",
+            generator != null ? generator.getClass().getCanonicalName() : null)
+        .add("checkerClassName",
+            checker != null ? checker.getClass().getCanonicalName() : null)
+        .add("maxFilesCount", getMaxFilesCount()).toString();
   }
 
 }
