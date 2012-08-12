@@ -24,7 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.base.Objects.equal;
+
 import java.io.IOException;
+
+import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
@@ -39,8 +43,26 @@ public class DataFormatsDemo {
 
     final boolean result = df1.equals(df2);
 
+    System.out.println(df1.getFormatName() + ": " + (result ? "ok" : "issue"));
+
     if (!result) {
+
+      if (!equal(df1.getFormatName(), df2.getFormatName()))
+        System.err.println("format names not equal");
+
+      if (!equal(df1.getDescription(), df2.getDescription()))
+        System.err.println("format description not equal");
+
+      if (!equal(df1.getType(), df2.getType()))
+        System.err.println("format type not equal: "
+            + df1.getType() + "\t" + df2.getType());
+
+      if (!equal(df1.getContentType(), df2.getContentType()))
+        System.err.println("format content type not equal");
+
+      System.out.println(df1.getClass().getName());
       System.out.println(df1);
+      System.out.println(df2.getClass().getName());
       System.out.println(df2);
       System.out.println();
     }
@@ -50,22 +72,36 @@ public class DataFormatsDemo {
   public static void main(String[] args) throws EoulsanException, IOException {
 
     EoulsanRuntimeDebug.initDebugEoulsanRuntime();
-    
+
     final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
     System.out
-    .println(loader
-        .getResource("META-INF/services/fr.ens.transcriptome.eoulsan.data.XMLDataFormat"));
-    
-    for (String filename : ServiceListLoader.load(XMLDataType.class.getName())) {
+        .println(loader
+            .getResource("META-INF/services/fr.ens.transcriptome.eoulsan.data.XMLDataFormat"));
 
-      final String resource = RESOURCE_PREFIX + filename;
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    System.out.println(registry.getAllFormats());
+    System.out.println(registry.getAllFormats().size());
+    
+    for (String filename : ServiceListLoader
+        .load(XMLDataFormat.class.getName())) {
+
+      final String ressource = RESOURCE_PREFIX + filename;
+
+      //System.out.println(ressource);
       final DataFormat dfx =
-          new XMLDataFormat(loader.getResourceAsStream(resource));
+          new XMLDataFormat(loader.getResourceAsStream(ressource));
+
       final DataFormat dfs =
           registry.getDataFormatFromName(dfx.getFormatName());
 
+      if (dfs == null) {
+        System.err.println("Original dataformat not found: "
+            + dfx.getFormatName());
+        return;
+      }
+      //System.out.println(dfx);
       test(dfx, dfs);
     }
 

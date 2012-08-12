@@ -359,13 +359,15 @@ public class DataFormatRegistry {
       }
     }
 
+    // Get the classloader
+    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
     try {
       for (String filename : ServiceListLoader.load(XMLDataFormat.class
           .getName())) {
 
         final String resource = RESOURCE_PREFIX + filename;
-        register(new XMLDataFormat(this.getClass()
-            .getResourceAsStream(resource)));
+        register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
 
       }
     } catch (EoulsanException e) {
