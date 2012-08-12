@@ -3,8 +3,8 @@
   <description>annotation_gff description.</description>
   <type>annotation</type>
   <contenttype>text/plain</contenttype>
-  <generator/>
-  <checker/>
+  <generator/>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker
+  <checker></checker>
   <extensions>
   	<extension default="true">.gff</extension>
   </extensions>

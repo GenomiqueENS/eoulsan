@@ -17,4 +17,6 @@ expression_results_tsv.xml
 diffana_results_tsv.xml
 genome_fasta.xml
 genome_desc_txt.xml
+annotation_gff.xml
+annotation_index_serial.xml
 unmap_reads_fasta.xml
