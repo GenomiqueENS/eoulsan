@@ -1,0 +1,11 @@
+<dataformat>
+  <name>genome_desc_txt</name>
+  <description>genome_desc_txt description.</description>
+  <type>genome_desc</type>
+  <contenttype>text/plain</contenttype>
+  <generator>fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionGeneratorStep</generator>
+  <checker/>
+  <extensions>
+  	<extension default="true">.txt</extension>
+  </extensions>
+</dataformat>

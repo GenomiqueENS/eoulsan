@@ -1,0 +1,11 @@
+<dataformat>
+  <name>annotation_gff</name>
+  <description>annotation_gff description.</description>
+  <type>annotation</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.gff</extension>
+  </extensions>
+</dataformat>

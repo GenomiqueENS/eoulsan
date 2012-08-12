@@ -1,0 +1,11 @@
+<dataformat>
+  <name>diffana_results</name>
+  <description>diffana_results description.</description>
+  <type>diffana_results</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.txt</extension>
+  </extensions>
+</dataformat>

@@ -1,0 +1,11 @@
+<dataformat>
+  <name>filtered_bam_results</name>
+  <description>filtered_mapper_results_bam description.</description>
+  <type>filtered_mapper_results</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.bam</extension>
+  </extensions>
+</dataformat>

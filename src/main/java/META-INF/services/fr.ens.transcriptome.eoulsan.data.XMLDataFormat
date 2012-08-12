@@ -6,3 +6,15 @@ soap_index_zip.xml
 bwa_index_zip.xml
 bowtie_index_zip.xml
 gmap_index_zip.xml
+filtered_mapper_results_sam.xml
+filtered_mapper_results_bam.xml
+filtered_mapper_results_bam_index.xml
+tab_filtered_mapper_results_sam.xml
+mapper_results_sam.xml
+mapper_results_bam.xml
+mapper_results_bam_index.xml
+expression_results_tsv.xml
+diffana_results_tsv.xml
+genome_fasta.xml
+genome_desc_txt.xml
+unmap_reads_fasta.xml

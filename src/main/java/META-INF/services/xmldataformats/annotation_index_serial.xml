@@ -1,0 +1,11 @@
+<dataformat>
+  <name>annotation_index_serial</name>
+  <description>annotation_index_serial description.</description>
+  <type>annotation_index</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.ser</extension>
+  </extensions>
+</dataformat>

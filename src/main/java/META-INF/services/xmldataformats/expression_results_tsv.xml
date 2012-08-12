@@ -1,0 +1,12 @@
+<dataformat>
+  <name>expression</name>
+  <description>expression description.</description>
+  <type>expression</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.tsv</extension>
+  	<extension>.txt</extension>
+  </extensions>
+</dataformat>

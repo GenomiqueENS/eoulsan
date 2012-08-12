@@ -1,0 +1,11 @@
+<dataformat>
+  <name>sam_results</name>
+  <description>sam_results description.</description>
+  <type>mapper_results</type>
+  <contenttype>text/plain</contenttype>
+  <generator/>
+  <checker/>
+  <extensions>
+  	<extension default="true">.sam</extension>
+  </extensions>
+</dataformat>
