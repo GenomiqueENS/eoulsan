@@ -1,10 +1,8 @@
 <dataformat>
   <name>annotation_index_serial</name>
-  <description>annotation_index_serial description.</description>
+  <description>serialized annotation index format</description>
   <type>annotation_index</type>
-  <contenttype>application/java-serialized-object</contenttype>
-  <generator/>
-  <checker/>
+  <content-type>application/java-serialized-object</content-type>
   <extensions>
   	<extension default="true">.ser</extension>
   </extensions>

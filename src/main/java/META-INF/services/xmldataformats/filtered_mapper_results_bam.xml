@@ -1,10 +1,8 @@
 <dataformat>
-  <name>filtered_bam_results</name>
-  <description>filtered_mapper_results_bam description.</description>
+  <name>filtered_mapper_results_bam</name>
+  <description>bam filtered alignments format</description>
   <type>filtered_mapper_results</type>
-  <contenttype>text/plain</contenttype>
-  <generator/>
-  <checker/>
+  <content-type>application/octet-stream</content-type>
   <extensions>
   	<extension default="true">.bam</extension>
   </extensions>

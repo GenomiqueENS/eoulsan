@@ -74,7 +74,7 @@ public class DataTypes {
 
   /** Expression results datatype. */
   public static final DataType EXPRESSION_RESULTS = registry
-      .getDataTypeFromName("expression");
+      .getDataTypeFromName("expression_results");
 
   /** Annotation datatype. */
   public static final DataType ANNOTATION = registry

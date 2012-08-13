@@ -1,10 +1,8 @@
 <dataformat>
-  <name>filtered_read_fastq</name>
-  <description>filtered_read_fastq description.</description>
+  <name>filtered_reads_fastq</name>
+  <description>filtered reads in fastq format</description>
   <type>filtered_reads</type>
   <maxfilescount>2</maxfilescount>
-  <generator/>
-  <checker/>
   <extensions>
   	<extension default="true">.fq</extension>
   </extensions>

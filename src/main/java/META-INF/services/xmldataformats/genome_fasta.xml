@@ -1,8 +1,7 @@
 <dataformat>
   <name>genome_fasta</name>
-  <description>genome_fasta description.</description>
+  <description>genome fasta format</description>
   <type>genome</type>
-  <contenttype>text/plain</contenttype>
   <generator>fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
   <checker>fr.ens.transcriptome.eoulsan.checkers.GenomeChecker</checker>
   <extensions>

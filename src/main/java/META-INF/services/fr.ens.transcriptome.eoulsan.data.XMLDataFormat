@@ -8,11 +8,11 @@ bowtie_index_zip.xml
 gmap_index_zip.xml
 filtered_mapper_results_sam.xml
 filtered_mapper_results_bam.xml
-filtered_mapper_results_bam_index.xml
-tab_filtered_mapper_results_sam.xml
+filtered_mapper_results_index_bai.xml
+filtered_mapper_results_tsam.xml
 mapper_results_sam.xml
 mapper_results_bam.xml
-mapper_results_bam_index.xml
+mapper_results_index_bai.xml
 expression_results_tsv.xml
 diffana_results_tsv.xml
 genome_fasta.xml

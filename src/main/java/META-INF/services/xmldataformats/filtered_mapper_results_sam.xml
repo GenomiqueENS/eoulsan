@@ -1,10 +1,7 @@
 <dataformat>
-  <name>filtered_sam_results</name>
-  <description>filtered_mapper_results_sam description.</description>
+  <name>filtered_mapper_results_sam</name>
+  <description>sam filtered alignments format</description>
   <type>filtered_mapper_results</type>
-  <contenttype>text/plain</contenttype>
-  <generator/>
-  <checker/>
   <extensions>
   	<extension default="true">.sam</extension>
   </extensions>

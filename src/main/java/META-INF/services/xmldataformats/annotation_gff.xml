@@ -1,10 +1,8 @@
 <dataformat>
   <name>annotation_gff</name>
-  <description>annotation_gff description.</description>
+  <description>gff annotation format</description>
   <type>annotation</type>
-  <contenttype>text/plain</contenttype>
   <generator/>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker
-  <checker></checker>
   <extensions>
   	<extension default="true">.gff</extension>
   </extensions>

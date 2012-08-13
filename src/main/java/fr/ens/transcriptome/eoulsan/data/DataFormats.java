@@ -44,11 +44,11 @@ public class DataFormats {
 
   /** Filtered reads fasta data format. */
   public static final DataFormat FILTERED_READS_FASTQ = registry
-      .getDataFormatFromName("filtered_read_fastq");
+      .getDataFormatFromName("filtered_reads_fastq");
 
   /** Filtered reads fasta data format. */
   public static final DataFormat FILTERED_READS_TFQ = registry
-      .getDataFormatFromName("filtered_read_tfq");
+      .getDataFormatFromName("filtered_reads_tfq");
 
   /** SOAP index data format. */
   public static final DataFormat SOAP_INDEX_ZIP = registry
@@ -68,38 +68,38 @@ public class DataFormats {
 
   /** Filtered SAM data format. */
   public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = registry
-      .getDataFormatFromName("filtered_sam_results");
+      .getDataFormatFromName("filtered_mapper_results_sam");
 
   /** Filtered BAM data format. */
   public static final DataFormat FILTERED_MAPPER_RESULTS_BAM = registry
-      .getDataFormatFromName("filtered_bam_results");
+      .getDataFormatFromName("filtered_mapper_results_bam");
 
   /** Filtered BAM index data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM_INDEX = registry
-      .getDataFormatFromName("filtered_bam_index_results");
+  public static final DataFormat FILTERED_MAPPER_RESULTS_INDEX_BAI = registry
+      .getDataFormatFromName("filtered_mapper_results_index_bai");
 
   /**
    * Filtered SAM data format for paired-end data : the two alignments of a read
    * are on the same line, separated by a '£'.
    */
-  public static final DataFormat TAB_FILTERED_MAPPER_RESULTS_SAM = registry
-      .getDataFormatFromName("tab_filtered_sam_results");
+  public static final DataFormat FILTERED_MAPPER_RESULTS_TSAM = registry
+      .getDataFormatFromName("filtered_mapper_results_tsam");
 
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM = registry
-      .getDataFormatFromName("sam_results");
+      .getDataFormatFromName("mapper_results_sam");
 
   /** BAM results data format. */
   public static final DataFormat MAPPER_RESULTS_BAM = registry
-      .getDataFormatFromName("bam_results");
+      .getDataFormatFromName("mapper_results_bam");
 
   /** BAM index results data format. */
   public static final DataFormat MAPPER_RESULTS_BAM_INDEX = registry
-      .getDataFormatFromName("bam_index_results");
+      .getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
   public static final DataFormat EXPRESSION_RESULTS_TXT = registry
-      .getDataFormatFromName("expression");
+      .getDataFormatFromName("expression_results_tsv");
 
   /** Annotation data format. */
   public static final DataFormat ANNOTATION_GFF = registry
@@ -110,8 +110,8 @@ public class DataFormats {
       .getDataFormatFromName("annotation_index_serial");
 
   /** Diffana results data format. */
-  public static final DataFormat DIFFANA_RESULTS_TXT = registry
-      .getDataFormatFromName("diffana_results");
+  public static final DataFormat DIFFANA_RESULTS_TSV = registry
+      .getDataFormatFromName("diffana_results_tsv");
 
   /** Genome data format. */
   public static final DataFormat GENOME_FASTA = registry

@@ -1,10 +1,7 @@
 <dataformat>
   <name>unmap_fasta</name>
-  <description>unmap_reads_fasta description.</description>
+  <description>unmap reads in fasta format</description>
   <type>unmap</type>
-  <contenttype>text/plain</contenttype>
-  <generator/>
-  <checker/>
   <extensions>
   	<extension default="true">.fasta</extension>
   </extensions>

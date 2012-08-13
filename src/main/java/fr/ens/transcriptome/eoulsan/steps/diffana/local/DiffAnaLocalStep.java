@@ -75,7 +75,7 @@ public class DiffAnaLocalStep extends AbstractStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TXT};
+    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TSV};
   }
 
   @Override

@@ -208,7 +208,7 @@ public final class XMLDataFormat extends AbstractDataFormat {
       this.name = XMLUtils.getTagValue(e, "name");
       this.description = XMLUtils.getTagValue(e, "description");
       this.typeName = XMLUtils.getTagValue(e, "type");
-      this.contentType = XMLUtils.getTagValue(e, "contenttype");
+      this.contentType = XMLUtils.getTagValue(e, "content-type");
       this.generatorClassName = XMLUtils.getTagValue(e, "generator");
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
 
