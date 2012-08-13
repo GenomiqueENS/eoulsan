@@ -1,5 +1,5 @@
 <datatype>
   <name>unmap</name>
-  <description>unmap</description>
+  <description>unmap reads type</description>
   <prefix>unmap_</prefix>
 </datatype>

@@ -1,5 +1,5 @@
 <datatype>
   <name>diffana_results</name>
-  <description>differential_analysis</description>
+  <description>differential analysis results</description>
   <prefix>diffana_</prefix>
 </datatype>

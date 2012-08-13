@@ -1,6 +1,6 @@
 <datatype>
   <name>annotation</name>
-  <description>annotation</description>
+  <description>annotation type</description>
   <prefix>annotation_</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designfieldname>Annotation</designfieldname>

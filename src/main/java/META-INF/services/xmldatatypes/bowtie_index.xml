@@ -1,6 +1,6 @@
 <datatype>
   <name>bowtie_index</name>
-  <description>bowtie_index</description>
+  <description>bowtie index type</description>
   <prefix>bowtie_index_</prefix>
   <onefileperanalysis>true</onefileperanalysis>
 </datatype>

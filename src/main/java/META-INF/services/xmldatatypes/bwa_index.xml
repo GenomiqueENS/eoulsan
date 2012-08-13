@@ -1,6 +1,6 @@
 <datatype>
   <name>bwa_index</name>
-  <description>bwa_index</description>
+  <description>bwa index type</description>
   <prefix>bwa_index_</prefix>
   <onefileperanalysis>true</onefileperanalysis>
 </datatype>

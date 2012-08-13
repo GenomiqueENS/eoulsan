@@ -1,6 +1,6 @@
 <datatype>
   <name>reads</name>
-  <description>reads</description>
+  <description>reads type</description>
   <prefix>reads_</prefix>
   <onefileperanalysis>false</onefileperanalysis>
   <designfieldname>Reads</designfieldname>

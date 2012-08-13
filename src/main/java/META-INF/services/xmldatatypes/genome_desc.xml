@@ -1,6 +1,6 @@
 <datatype>
   <name>genome_desc</name>
-  <description>genome_desc</description>
+  <description>genome description type</description>
   <prefix>genome_desc_</prefix>
   <onefileperanalysis>true</onefileperanalysis>
 </datatype>
