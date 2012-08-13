@@ -642,6 +642,15 @@ public class GenomicArray<T> {
     return results;
   }
 
+  /**
+   * Get the names of the chromosomes that contains the GenomicArray.
+   * @return a set with the name of the chromosomes
+   */
+  public Set<String> getChromosomesNames() {
+
+    return Collections.unmodifiableSet(this.chromosomes.keySet());
+  }
+
   //
   // Save
   //
