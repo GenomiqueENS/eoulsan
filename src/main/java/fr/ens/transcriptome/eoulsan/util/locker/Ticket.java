@@ -89,7 +89,10 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public boolean equals(final Object o) {
 
-    if (!(o instanceof Ticket))
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof Ticket))
       return false;
 
     final Ticket t = (Ticket) o;

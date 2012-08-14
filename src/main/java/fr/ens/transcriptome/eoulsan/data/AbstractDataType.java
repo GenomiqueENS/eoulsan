@@ -65,10 +65,7 @@ public abstract class AbstractDataType implements DataType {
     if (o == this)
       return true;
 
-    if (o == null)
-      return false;
-
-    if (!(o instanceof DataType))
+    if (o == null || !(o instanceof DataType))
       return false;
 
     final DataType dt = (DataType) o;

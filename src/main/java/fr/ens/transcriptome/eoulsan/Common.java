@@ -181,7 +181,7 @@ public final class Common {
 
     final Settings settings = EoulsanRuntime.getSettings();
 
-    final boolean sendMail = true;
+    final boolean sendMail = settings.isSendResultMail();
     final Properties properties = settings.getJavaMailSMTPProperties();
     final String userMail = settings.getResultMail();
 

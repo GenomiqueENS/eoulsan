@@ -229,10 +229,7 @@ public class TranscriptAndExonFinder {
       if (o == this)
         return true;
 
-      if (o == null)
-        return false;
-
-      if (!(o instanceof Transcript))
+      if (o == null || !(o instanceof Transcript))
         return false;
 
       final Transcript t = (Transcript) o;
