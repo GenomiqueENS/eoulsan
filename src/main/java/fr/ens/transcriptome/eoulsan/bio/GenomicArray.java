@@ -166,7 +166,46 @@ public class GenomicArray<T> {
         for (T e : getValues())
           r.add(e.toString());
 
-      return "[" + this.start + "," + this.end + "," + r + "]";
+      return this.getClass().getSimpleName()
+          + "{" + this.start + "," + this.end + "," + r + "}";
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof Zone<?>))
+        return false;
+
+      final Zone<T> that = (Zone<T>) o;
+
+      if (!(Utils.equal(this.valueCount, that.valueCount)
+          && Utils.equal(this.start, that.start)
+          && Utils.equal(this.end, that.end) && Utils.equal(this.strand,
+          that.strand)))
+        return false;
+
+      switch (this.valueCount) {
+
+      case 0:
+        return true;
+
+      case 1:
+        return Utils.equal(this._value, that._value);
+
+      default:
+        return Utils.equal(this._values, that._values);
+      }
+
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this._value, this._values, this.start, this.end,
+          this.strand, this.valueCount);
     }
 
     //
@@ -431,6 +470,36 @@ public class GenomicArray<T> {
           || (start < startZone && end > endZone);
     }
 
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+        return false;
+
+      final ChromosomeStrandedZones<T> that = (ChromosomeStrandedZones<T>) o;
+
+      return Utils.equal(this.chromosomeName, that.chromosomeName)
+          && Utils.equal(this.length, that.length)
+          && Utils.equal(this.zones, that.zones);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this.chromosomeName, this.length, this.zones);
+    }
+
+    @Override
+    public String toString() {
+
+      return this.getClass().getSimpleName()
+          + "{chromosomeName=" + this.chromosomeName + ", length="
+          + this.length + ", zones=" + this.zones + "}";
+    }
+
     //
     // Constructor
     //
@@ -493,6 +562,34 @@ public class GenomicArray<T> {
         result.putAll(interMinus);
 
       return result;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+        return false;
+
+      final ChromosomeZones<T> that = (ChromosomeZones<T>) o;
+
+      return Utils.equal(this.minus, that.minus)
+          && Utils.equal(this.plus, that.plus);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this.minus, this.plus);
+    }
+
+    @Override
+    public String toString() {
+
+      return this.getClass().getSimpleName()
+          + "{minus=" + this.minus + ", plus=" + this.plus + "}";
     }
 
     //
@@ -716,6 +813,48 @@ public class GenomicArray<T> {
     this.chromosomes.clear();
 
   }
+
+  //
+  // Object methods
+  //
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof GenomicArray))
+      return false;
+
+    final GenomicArray<T> that = (GenomicArray<T>) o;
+
+    return Utils.equal(this.chromosomes, that.chromosomes);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(this.chromosomes);
+  }
+
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.getClass().getSimpleName()
+        + "{chromosmes=" + this.chromosomes + "}";
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Public constructor.
+   */
+  public GenomicArray() {
+  }
+
   //
   // @Override
   // public String toString() {
