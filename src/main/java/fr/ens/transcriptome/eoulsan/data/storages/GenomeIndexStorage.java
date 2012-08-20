@@ -22,9 +22,10 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.bio.readsmappers;
+package fr.ens.transcriptome.eoulsan.data.storages;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**

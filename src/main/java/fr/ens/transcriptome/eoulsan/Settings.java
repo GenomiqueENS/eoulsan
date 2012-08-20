@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -87,11 +88,23 @@ public final class Settings {
   private static final String GENOME_MAPPER_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
       + "genome.mapper.index.storage.path";
 
+  private static final String GENOME_DESC_STORAGE_KEY = MAIN_PREFIX_KEY
+      + "genome.desc.storage.path";
+
   private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY
       + "genome.storage.path";
 
   private static final String ANNOTATION_STORAGE_KEY = MAIN_PREFIX_KEY
       + "annotation.storage.path";
+
+  private static final String SEND_RESULT_MAIL_KEY = MAIN_PREFIX_KEY
+      + ".mail.send.result.mail";
+
+  private static final String RESULT_MAIL_KEY = MAIN_PREFIX_KEY
+      + ".mail.send.result.mail.to";
+
+  private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
+      + ".mail.smtp.host";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
@@ -233,7 +246,7 @@ public final class Settings {
   public int getLocalThreadsNumber() {
 
     return Integer.parseInt(this.properties.getProperty(LOCAL_THREADS_NUMBER,
-        "0"));
+        "" + Runtime.getRuntime().availableProcessors()));
   }
 
   /**
@@ -266,6 +279,15 @@ public final class Settings {
   }
 
   /**
+   * Get the genome description storage path.
+   * @return the path to genome description storage path
+   */
+  public String getGenomeDescStoragePath() {
+
+    return this.properties.getProperty(GENOME_DESC_STORAGE_KEY);
+  }
+
+  /**
    * Get the genome storage path.
    * @return the path to genome storage path
    */
@@ -281,6 +303,34 @@ public final class Settings {
   public String getAnnotationStoragePath() {
 
     return this.properties.getProperty(ANNOTATION_STORAGE_KEY);
+  }
+
+  /**
+   * Test if an email must be sent at the end of the analysis.
+   * @return true if an email must be sent at the end of the analysis
+   */
+  public boolean isSendResultMail() {
+
+    return Boolean.parseBoolean(this.properties
+        .getProperty(SEND_RESULT_MAIL_KEY));
+  }
+
+  /**
+   * Get the mail address for eoulsan results.
+   * @return the mail address as a string
+   */
+  public String getResultMail() {
+
+    return this.properties.getProperty(RESULT_MAIL_KEY);
+  }
+
+  /**
+   * Get the name of the SMTP server host.
+   * @return the name of the SMTP server host
+   */
+  public String getSMTPHost() {
+
+    return this.properties.getProperty(SMTP_HOST_KEY);
   }
 
   /**
@@ -314,7 +364,7 @@ public final class Settings {
     if (value == null)
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName + " parameter: null");
 
     try {
 
@@ -343,7 +393,7 @@ public final class Settings {
     if (value == null)
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName + " parameter: null");
 
     try {
 
@@ -541,6 +591,15 @@ public final class Settings {
   }
 
   /**
+   * Set the genome description storage path.
+   * @param genomeDescStoragePath the path to genome index storage path
+   */
+  public void setGenomeDescStoragePath(final String genomeDescStoragePath) {
+
+    this.properties.setProperty(GENOME_DESC_STORAGE_KEY, genomeDescStoragePath);
+  }
+
+  /**
    * Set the genome storage path.
    * @param genomeStoragePath the path to genome index storage path
    */
@@ -556,6 +615,35 @@ public final class Settings {
   public void setAnnotationStoragePath(final String annotationStoragePath) {
 
     this.properties.setProperty(ANNOTATION_STORAGE_KEY, annotationStoragePath);
+  }
+
+  /**
+   * Set if an email must be sent at the end of the analysis.
+   * @param enableSendResultMail true if an email must be sent at the end of the
+   *          analysis
+   */
+  public void setSendResultMail(final boolean enableSendResultMail) {
+
+    this.properties.setProperty(SEND_RESULT_MAIL_KEY,
+        Boolean.toString(enableSendResultMail));
+  }
+
+  /**
+   * Set the mail address for eoulsan results.
+   * @param the mail address as a string
+   */
+  public void setResultMail(final String mail) {
+
+    this.properties.setProperty(RESULT_MAIL_KEY, mail);
+  }
+
+  /**
+   * Set the SMTP server host.
+   * @return the name of the SMTP server host
+   */
+  public void setSMTPHost(final String smtpHost) {
+
+    this.properties.setProperty(SMTP_HOST_KEY, smtpHost);
   }
 
   /**
@@ -608,6 +696,31 @@ public final class Settings {
     }
 
     return home + File.separator + "." + Globals.APP_NAME_LOWER_CASE;
+  }
+
+  /**
+   * Create a property object for javamail smtp configuration from the settings.
+   * @return a property object
+   */
+  public Properties getJavaMailSMTPProperties() {
+
+    final Properties result = new Properties();
+
+    for (Map.Entry<Object, Object> e : this.properties.entrySet()) {
+
+      final String key = (String) e.getKey();
+      final String value = (String) e.getValue();
+
+      final String prefix = MAIN_PREFIX_KEY + "mail.smtp.";
+      final int keyPosStart = MAIN_PREFIX_KEY.length();
+
+      if (key != null && key.startsWith(prefix)) {
+        result.setProperty(key.substring(keyPosStart), value);
+      }
+
+    }
+
+    return result;
   }
 
   /**

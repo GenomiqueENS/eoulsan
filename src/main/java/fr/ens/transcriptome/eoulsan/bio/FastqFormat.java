@@ -415,7 +415,7 @@ public enum FastqFormat {
     }
     reader.throwException();
 
-    is.close();
+    reader.close();
 
     return identifyFormatByHeristic(formats, range[0], range[1]);
   }

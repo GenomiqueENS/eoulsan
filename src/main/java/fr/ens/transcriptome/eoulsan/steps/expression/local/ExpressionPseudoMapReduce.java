@@ -189,10 +189,6 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
       final String exonChr = this.fields[0];
       final int exonStart = Integer.parseInt(this.fields[1]);
       final int exonEnd = Integer.parseInt(this.fields[2]);
-      // codingStrand = Boolean.parseBoolean(this.fields[3]);
-
-      // final int exonNumber = Integer.parseInt(this.fields[4]);
-      // final int exonTotal = Integer.parseInt(this.fields[5]);
 
       final String alignementChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);
@@ -243,7 +239,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   }
 
   //
-  //
+  // Annotation file loader
   //
 
   /**

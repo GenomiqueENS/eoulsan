@@ -19,6 +19,7 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -32,16 +33,15 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 import org.apache.hadoop.util.LineReader;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * Treats keys as offset in file and value as line.
  */
 public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
-  private static final Log LOG = LogFactory.getLog(LineRecordReader.class);
+  private static final Logger LOG = Logger.getLogger(Globals.APP_NAME);
 
   private CompressionCodecFactory compressionCodecs = null;
   private long start;

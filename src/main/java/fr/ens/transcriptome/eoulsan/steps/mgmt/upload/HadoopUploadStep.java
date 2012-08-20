@@ -24,12 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
-import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
-import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.compressionExtension;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,8 +40,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class define a Step for Hadoop file uploading.

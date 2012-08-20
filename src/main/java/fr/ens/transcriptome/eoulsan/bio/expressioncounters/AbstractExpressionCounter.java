@@ -47,28 +47,27 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String genomicType;
-  private String stranded;
-  private String overlapMode;
+  private StrandUsage stranded;
+  private OverlapMode overlapMode;
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
-  
-  //
-  // Getters
-  //
 
-  public String getStranded() {
+  @Override
+  public StrandUsage getStranded() {
     return this.stranded;
   }
 
-  public String getOverlapMode() {
+  @Override
+  public OverlapMode getOverlapMode() {
     return this.overlapMode;
   }
 
+  @Override
   public String getTempDirectory() {
     return this.tempDir;
   }
-  
+
   public String getGenomicType() {
     return this.genomicType;
   }
@@ -77,23 +76,38 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   // Setters
   //
 
-  public void setStranded(String stranded) {
+  @Override
+  public void setStranded(final String stranded) {
+
+    setStranded(StrandUsage.getStrandUsageFromName(stranded));
+  }
+
+  @Override
+  public void setStranded(final StrandUsage stranded) {
 
     if (stranded == null)
-      this.stranded = "false";
+      this.stranded = StrandUsage.NO;
     else
       this.stranded = stranded;
   }
 
-  public void setOverlapMode(String mode) {
+  @Override
+  public void setOverlapMode(final String mode) {
+    
+    setOverlapMode(OverlapMode.getOverlapModeFromName(mode));
+  }
+  
+  @Override
+  public void setOverlapMode(final OverlapMode mode) {
 
     if (mode == null)
-      this.overlapMode = "union";
+      this.overlapMode = OverlapMode.UNION;
     else
       this.overlapMode = mode;
   }
 
-  public void setTempDirectory(String tempDirectory) {
+  @Override
+  public void setTempDirectory(final String tempDirectory) {
 
     this.tempDir = tempDirectory;
   }

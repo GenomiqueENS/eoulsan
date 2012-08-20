@@ -75,6 +75,9 @@ public final class Globals {
   /** The build date of the application. */
   public static final String APP_BUILD_DATE = getBuiltDate();
 
+  /** The build year of the application. */
+  public static final String APP_BUILD_YEAR = getBuiltYear();
+
   /** The welcome message. */
   public static final String WELCOME_MSG = Globals.APP_NAME
       + " version " + Globals.APP_VERSION_STRING + " ("
@@ -126,7 +129,7 @@ public final class Globals {
   /** Teolenn Website url. */
   public static final String WEBSITE_URL = getWebSiteURL();
 
-  private static final String COPYRIGHT_DATE = "2010-2011";
+  private static final String COPYRIGHT_DATE = "2010-" + APP_BUILD_YEAR;
 
   /** Licence text. */
   public static final String LICENSE_TXT =
@@ -136,16 +139,17 @@ public final class Globals {
   /** About string, plain text version. */
   public static final String ABOUT_TXT = Globals.APP_NAME
       + " version " + Globals.APP_VERSION_STRING + " ("
-      + Globals.APP_BUILD_NUMBER + ")"
-      + " is a pipeline for RNAseq analysis.\n"
+      + Globals.APP_BUILD_NUMBER + ")" + " is a pipeline for NGS analysis.\n"
       + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
       + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
       + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
-      + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n" + "Contacts:\n"
+      + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n"
+      + "  Claire Wallon <wallon@biologie.ens.fr>\n"
+      + "  Vivien Deshaies <deshaies@biologie.ens.fr>\n" + "Contacts:\n"
       + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
       + "  Google group: http://groups.google.com/group/" + APP_NAME_LOWER_CASE
-      + "\n" + "Copyright " + COPYRIGHT_DATE + " IBENS genomic platform\n"
-      + LICENSE_TXT + "\n";
+      + "\n" + "  Website: " + WEBSITE_URL + "\n" + "Copyright "
+      + COPYRIGHT_DATE + " IBENS genomic platform\n" + LICENSE_TXT + "\n";
 
   /** Default standard output state. */
   public static final boolean STD_OUTPUT_DEFAULT = false;
@@ -191,6 +195,7 @@ public final class Globals {
   private static final String UNKNOWN_VERSION = "UNKNOWN_VERSION";
   private static final String UNKNOWN_BUILD = "UNKNOWN_BUILD";
   private static final String UNKNOWN_DATE = "UNKNOWN_DATE";
+  private static final String UNKNOWN_YEAR = "UNKNOWN_YEAR";
 
   //
   // Methods
@@ -215,6 +220,13 @@ public final class Globals {
     final String builtDate = getManifestProperty("Built-Date");
 
     return builtDate != null ? builtDate : UNKNOWN_DATE;
+  }
+  
+  private static String getBuiltYear() {
+
+    final String builtYear = getManifestProperty("Built-Year");
+
+    return builtYear != null ? builtYear : UNKNOWN_YEAR;
   }
 
   private static String getWebSiteURL() {

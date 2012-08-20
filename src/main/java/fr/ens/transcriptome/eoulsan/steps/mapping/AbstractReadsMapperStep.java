@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 
 /**
  * This class define an abstract step for read mapping.
@@ -55,7 +56,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
   private SequenceReadsMapper mapper;
   private String mapperArguments;
-  private int mapperThreads = -1;
+
+  private int hadoopThreads;
+  private int localThreads;
+  private int maxLocalThreads;
 
   //
   // Getters
@@ -78,11 +82,22 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   /**
-   * Get the number of threads to use.
+   * Get the number of threads to use in local mode.
    * @return Returns the mapperThreads
    */
-  protected int getMapperThreads() {
-    return this.mapperThreads;
+  protected int getMapperLocalThreads() {
+
+    return ProcessSampleExecutor.getThreadsNumber(this.localThreads,
+        this.maxLocalThreads);
+  }
+
+  /**
+   * Get the number of threads to use in local mode.
+   * @return Returns the mapperThreads
+   */
+  protected int getMapperHadoopThreads() {
+
+    return this.hadoopThreads;
   }
 
   /**
@@ -125,8 +140,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
-      else if ("mapperarguments".equals(p.getName()))
+      else if ("mapper.arguments".equals(p.getName())
+          || "mapperarguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
+      else if ("hadoop.threads".equals(p.getName()))
+        this.hadoopThreads = p.getIntValue();
+      else if ("local.threads".equals(p.getName()))
+        this.localThreads = p.getIntValue();
+      else if ("max.local.threads".equals(p.getName()))
+        this.maxLocalThreads = p.getIntValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());

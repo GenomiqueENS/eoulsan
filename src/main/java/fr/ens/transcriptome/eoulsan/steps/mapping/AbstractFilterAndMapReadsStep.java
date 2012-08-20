@@ -53,8 +53,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
-
   private static final String STEP_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
@@ -67,7 +65,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
   private SequenceReadsMapper mapper;
   private String mapperArguments;
-  private int mapperThreads = -1;
+  private int hadoopThreads = -1;
 
   private int mappingQualityThreshold = -1;
 
@@ -111,8 +109,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    * Get the name of the mapper to use.
    * @return Returns the mapperName
    */
-  protected int getMapperThreads() {
-    return this.mapperThreads;
+  protected int getMapperHadoopThreads() {
+    return this.hadoopThreads;
   }
 
   /**
@@ -176,8 +174,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
 
-      else if ("mapperArguments".equals(p.getName()))
+      else if ("mapperArguments".equals(p.getName())
+          || "mapper.arguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
+      else if ("hadoop.threads".equals(p.getName()))
+        this.hadoopThreads = p.getIntValue();
 
       // read filters parameters
       else if ("paircheck".equals(p.getName())
@@ -229,73 +230,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         + mapper.getMapperVersion() + ")");
     LOGGER
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
-
-    // ... NEW VERSION
-
-    // OLD VERSION...
-    // String mapperName = null;
-    // final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
-    //
-    // for (Parameter p : stepParameters) {
-    //
-    // if ("pairend".equals(p.getName()))
-    // this.pairEnd = p.getBooleanValue();
-    // else if ("mapper".equals(p.getName()))
-    // mapperName = p.getStringValue();
-    // else if ("mapperArguments".equals(p.getName()))
-    // this.mapperArguments = p.getStringValue();
-    // else if ("mappingqualitythreshold".equals(p.getName()))
-    // mappingQualityThreshold = p.getIntValue();
-    // else
-    // mrfb.addParameter(
-    // AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
-    // p.getStringValue());
-    //
-    // // Force parameter checking
-    // mrfb.getReadFilter();
-    //
-    // this.readFilterBuilder = mrfb;
-    //
-    // }
-    //
-    // if (mapperName == null) {
-    // throw new EoulsanException("No mapper set.");
-    // }
-    //
-    // this.mapper =
-    // SequenceReadsMapperService.getInstance().getMapper(mapperName);
-    //
-    // if (this.mapper == null) {
-    // throw new EoulsanException("Unknown mapper: " + mapperName);
-    // }
-    //
-    // if (this.mapper.isIndexGeneratorOnly()) {
-    // throw new EoulsanException(
-    // "The selected mapper can only be used for index generation: "
-    // + mapperName);
-    // }
-    //
-    // if (this.mappingQualityThreshold == -1) {
-    // throw new EoulsanException("Mapping quality theshold not set.");
-    // }
-    //
-    // if (this.mappingQualityThreshold < 0
-    // || this.mappingQualityThreshold > MAX_MAPPING_QUALITY_THRESHOLD) {
-    // throw new EoulsanException("Invalid mapping quality theshold: "
-    // + this.mappingQualityThreshold);
-    // }
-    //
-    // // Log Step parameters
-    // LOGGER.info("In " + getName() + ", pairend=" + this.pairEnd);
-    // LOGGER.info("In "
-    // + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
-    // + mapper.getMapperVersion() + ")");
-    // LOGGER
-    // .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
-    // LOGGER.info("In "
-    // + getName() + ", mappingQualityThreshold="
-    // + this.mappingQualityThreshold);
-    // ... OLD VERSION
   }
 
   /**

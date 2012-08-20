@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
  * This class define a abstract step class for files uploading.

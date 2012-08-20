@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -56,6 +57,9 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   public static final double QUALITY_THRESHOLD = 15;
 
   private MultiReadFilterBuilder readFilterBuilder;
+
+  private int localThreads;
+  private int maxLocalThreads;
 
   //
   // Step methods
@@ -89,9 +93,16 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
-    for (Parameter p : stepParameters)
-      mrfb.addParameter(convertCompatibilityFilterKey(p.getName()),
-          p.getStringValue());
+    for (Parameter p : stepParameters) {
+
+      if ("local.threads".equals(p.getName()))
+        this.localThreads = p.getIntValue();
+      else if ("max.local.threads".equals(p.getName()))
+        this.maxLocalThreads = p.getIntValue();
+      else
+        mrfb.addParameter(convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue());
+    }
 
     // Force parameter checking
     mrfb.getReadFilter();
@@ -138,6 +149,16 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   protected Map<String, String> getReadFilterParameters() {
 
     return this.readFilterBuilder.getParameters();
+  }
+
+  /**
+   * Get the number of threads to use in local mode.
+   * @return Returns the mapperThreads
+   */
+  protected int getLocalThreads() {
+
+    return ProcessSampleExecutor.getThreadsNumber(this.localThreads,
+        this.maxLocalThreads);
   }
 
 }

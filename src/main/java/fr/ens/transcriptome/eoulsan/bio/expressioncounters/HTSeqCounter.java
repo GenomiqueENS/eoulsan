@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -52,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -112,16 +112,17 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @throws BadBioEntryException
    */
   private static void countReadsInFeatures(final File samFile,
-      final InputStream gffFile, final File outFile, final String stranded,
-      final String overlapMode, final String featureType,
-      final String attributeId, final boolean quiet, final int minAverageQual,
-      final File samOutFile, Reporter reporter, String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+      final InputStream gffFile, final File outFile,
+      final StrandUsage stranded, final OverlapMode overlapMode,
+      final String featureType, final String attributeId, final boolean quiet,
+      final int minAverageQual, final File samOutFile, Reporter reporter,
+      String counterGroup) throws EoulsanException, IOException,
+      BadBioEntryException {
 
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
-    Writer writer = new FileWriter(outFile);
+    final Writer writer = FileUtils.createBufferedWriter(outFile);
 
     boolean pairedEnd = false;
 
@@ -133,30 +134,39 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          gffReader.close();
+          writer.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
-        if ((stranded.equals("yes") || stranded.equals("reverse"))
-            && '.' == gff.getStrand())
+        if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
+            && '.' == gff.getStrand()) {
+          gffReader.close();
+          writer.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
+        }
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        features.addEntry(
+            new GenomicInterval(gff, stranded.isSaveStrandInfo()), featureId);
         counts.put(featureId, 0);
       }
     }
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
+      writer.close();
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
@@ -320,24 +330,26 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     for (String key : keysSorted) {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
-    
+
     reporter.incrCounter(counterGroup,
         ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(), empty);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(), ambiguous);
+        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
+        ambiguous);
     reporter.incrCounter(counterGroup,
         ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowqual);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(), notaligned);
+        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
+        notaligned);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(), nonunique);
-    
+        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
+        nonunique);
 
-//    writer.write(String.format("no_feature\t%d\n", empty));
-//    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-//    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-//    writer.write(String.format("not_aligned\t%d\n", notaligned));
-//    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+    writer.write("no_feature\t" + empty + '\n');
+    writer.write("ambiguous\t" + ambiguous + '\n');
+    writer.write("too_low_aQual\t" + lowqual + '\n');
+    writer.write("not_aligned\t" + notaligned + '\n');
+    writer.write("alignment_not_unique\t" + nonunique + '\n');
 
     writer.close();
   }
@@ -349,8 +361,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @param stranded strand to consider.
    * @return the list of intervals of the SAM record.
    */
-  private static List<GenomicInterval> addIntervals(SAMRecord record,
-      String stranded) {
+  private static List<GenomicInterval> addIntervals(final SAMRecord record,
+      final StrandUsage stranded) {
 
     if (record == null)
       return null;
@@ -362,7 +374,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         || (record.getReadPairedFlag() && record.getFirstOfPairFlag())) {
 
       // the read has to be mapped to the opposite strand as the feature
-      if ("reverse".equals(stranded))
+      if (stranded == StrandUsage.REVERSE)
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
             record.getAlignmentStart(), record.getReadNegativeStrandFlag()
                 ? '+' : '-'));
@@ -381,7 +393,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     else if (record.getReadPairedFlag() && !record.getFirstOfPairFlag()) {
 
       // the read has to be mapped to the opposite strand as the feature
-      if ("reverse".equals(stranded))
+      if (stranded == StrandUsage.REVERSE)
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
             record.getAlignmentStart(), record.getReadNegativeStrandFlag()
                 ? '-' : '+'));
@@ -448,14 +460,14 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @throws EoulsanException
    */
   private static Set<String> featuresOverlapped(List<GenomicInterval> ivList,
-      GenomicArray<String> features, String mode, String stranded)
+      GenomicArray<String> features, OverlapMode mode, StrandUsage stranded)
       throws EoulsanException {
 
     Set<String> fs = null;
     Map<GenomicInterval, String> inter = new HashMap<GenomicInterval, String>();
 
     // Overlap mode "union"
-    if (mode.equals("union")) {
+    if (mode == OverlapMode.UNION) {
 
       fs = new HashSet<String>();
 
@@ -470,7 +482,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         Map<GenomicInterval, String> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
+        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
           for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());
@@ -489,7 +501,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     }
 
     // Overlap mode "intersection-nonempty"
-    else if (mode.equals("intersection-nonempty")) {
+    else if (mode == OverlapMode.INTERSECTION_NONEMPTY) {
 
       final Set<String> featureTmp = new HashSet<String>();
 
@@ -504,7 +516,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         Map<GenomicInterval, String> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
+        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
           for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());
@@ -542,7 +554,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     }
 
     // Overlap mode "intersection-strict"
-    else if (mode.equals("intersection-strict")) {
+    else if (mode == OverlapMode.INTERSECTION_STRICT) {
 
       final Set<String> featureTmp = new HashSet<String>();
 
@@ -557,7 +569,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         Map<GenomicInterval, String> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
+        // LOGGER.info("intervals size before : "+intervals.size());
+
+        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
           for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());

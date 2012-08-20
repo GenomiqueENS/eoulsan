@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class JobsResults {
+public class HadoopJobsResults {
 
   private String log;
   private List<String> failedJobname = new ArrayList<String>();

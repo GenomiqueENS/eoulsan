@@ -44,7 +44,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class define a reducer for the pretreatment of paired-end data before

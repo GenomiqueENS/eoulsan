@@ -3,4 +3,4 @@
  * @since 1.0
  */
 
-package fr.ens.transcriptome.eoulsan.steps.anadiff;
+package fr.ens.transcriptome.eoulsan.steps.diffana;

@@ -43,8 +43,8 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
  * This class launch Eoulsan in hadoop mode.

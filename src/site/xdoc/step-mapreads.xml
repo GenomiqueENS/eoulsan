@@ -50,8 +50,11 @@
     <li><b>Optional parameters</b>:</li>
 		<table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+                <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
+				<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
+				<tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr> 
                 <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap, gsnap)</td></tr>
-                <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
+                <tr><td>mapper.arguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
         </table>
         
 	<br/>
@@ -61,7 +64,7 @@
                 <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie</a></td><td>0.12.7</td><td>--best -k 2</td></tr>
                 <tr><td><a href="http://bio-bwa.sourceforge.net/">BWA</a></td><td>0.5.8c</td><td>-l 28</td></tr>
                 <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP2</a></td><td>2.20</td><td>-r 2 -l 28</td></tr>
-                <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</></td><td>2012-07-12</td><td>-N 1</td></tr>
+                <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</a></td><td>2012-07-12</td><td>-N 1</td></tr>
         </table>
       </ul>
     </section>

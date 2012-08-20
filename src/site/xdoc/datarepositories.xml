@@ -95,6 +95,27 @@ lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 		<p><b>Note</b>: The path to the genome indexes cannot be an URL. The path must be writtable for the user to allow Eoulsan storing genome indexes.</p>
 	
 	</subsection>
+	
+	<subsection name="Genome description repository">
+	
+		<p>The genome description file contains some basic informations about the genome like the chromosome lengths. This file is useful for creation of 
+		valid SAM/BAM files and using the genome index repository. This file is created from the genome file at each new analysis. 
+		However creating this file is quite long for large genome (like mouse or human genome) when compressed. The genome description repository allow 
+		to avoid useless genome sequence parsing once it has been already parsed in a previous analysis.</p>
+	
+	
+		<p>To use genome description repository, user must only define the following global parameter (In <a href="conffile.html">configuration file</a>
+		or in the <a href="paramfile.html#Global_parameter_section">globals section of the parameter file</a>) :</p>
+			
+		<table>
+		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+		  <tr><td>main.genome.desc.storage.path</td><td>string</td><td>Path to the genome descriptions repository</td></tr>
+		</table>
+	
+		<p><b>Note</b>: The path to the genome description cannot be an URL. The path must be writtable for the user to allow Eoulsan storing genome descriptions.</p>
+	
+	
+	</subsection>
 
     </section>
 

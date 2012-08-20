@@ -34,6 +34,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class EoulsanIOException extends EoulsanException {
 
+  private static final long serialVersionUID = 2347936040194578705L;
+
   /**
    * Create a new EoulsanRuntimeException with a message.
    * @param message the message

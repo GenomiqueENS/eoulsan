@@ -61,7 +61,10 @@ public abstract class AbstractDataType implements DataType {
   @Override
   public boolean equals(final Object o) {
 
-    if (!(o instanceof DataType))
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof DataType))
       return false;
 
     final DataType dt = (DataType) o;

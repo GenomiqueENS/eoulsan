@@ -364,6 +364,19 @@ of reads that reject each filter like in local mode.
             <action dev="wallon" type="add">
                 Add the HTSeq-count program for the expression estimation step.
             </action>
+            <action dev="jourdren" type="update">
+                Variables and shell expressions can be evaluated in the parameter file. 
+                This file can also now contains a "constants" section.
+            </action>
+            <action dev="jourdren" type="add">
+                Add a genome description storage to speed up the startup of analysis and avoid multiple genome sequence parsing.
+            </action>
+            <action dev="jourdren" type="update">
+                The "awsexec" command is renamed to "emrexec".
+            </action>
+            <action dev="jourdren" type="add">
+                Eoulsan can now send mail to inform user of the end of the analysis.
+            </action>
          </release>
 
 	</body>

@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -160,7 +159,7 @@ public class TFQReader implements ReadSequenceReader {
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
+    this.reader = FileUtils.createBufferedReader(is, CHARSET);
     this.reuse = reuseResultObject;
   }
 
@@ -187,11 +186,34 @@ public class TFQReader implements ReadSequenceReader {
     if (file == null)
       throw new NullPointerException("File is null");
 
-    if (!file.isFile())
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
+    this.reader = FileUtils.createBufferedReader(file, CHARSET);
+    this.reuse = reuseResultObject;
+  }
 
-    this.reader = FileUtils.createBufferedReader(file);
+  /**
+   * Public constructor
+   * @param filename File to use
+   * @throws FileNotFoundException if cannot find the input file
+   */
+  public TFQReader(final String filename) throws FileNotFoundException {
+
+    this(filename, false);
+  }
+
+  /**
+   * Public constructor
+   * @param filename File to use
+   * @param reuseResultObject if the object returns by the next() method will be
+   *          always the same
+   * @throws FileNotFoundException if cannot find the input file
+   */
+  public TFQReader(final String filename, final boolean reuseResultObject)
+      throws FileNotFoundException {
+
+    if (filename == null)
+      throw new NullPointerException("File is null");
+
+    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
     this.reuse = reuseResultObject;
   }
 

@@ -82,10 +82,6 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
       final String cmd = bowtiePath + " --version";
 
       final String s = ProcessUtils.execToString(cmd);
-
-      if (s == null)
-        return null;
-
       final String[] lines = s.split("\n");
       if (lines.length == 0)
         return null;

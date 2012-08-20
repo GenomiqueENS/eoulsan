@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 
 /**
  * This class define a reducer for alignments filtering.

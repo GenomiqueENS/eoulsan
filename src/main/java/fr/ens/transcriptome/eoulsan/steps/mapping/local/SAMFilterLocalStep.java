@@ -101,7 +101,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design,
-        new ProcessSample() {
+        getLocalThreads(), new ProcessSample() {
 
           @Override
           public String processSample(Context context, Sample sample)

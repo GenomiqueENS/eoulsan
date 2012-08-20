@@ -39,8 +39,9 @@ import net.sf.samtools.SAMRecord;
  */
 public class RemoveMultiMatchesReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
-  
+
   public static final String FILTER_NAME = "removemultimatches";
+  // TODO Claire : Why remove is not used ?
   private boolean remove = false;
 
   @Override
@@ -60,20 +61,20 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
 
     if (records == null)
       return;
-    
+
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
       if (records.size() > 1)
         records.clear();
     }
-    
+
     // paired-end mode
     else {
       if (records.size() > 2)
         records.clear();
     }
   }
-  
+
   @Override
   public void setParameter(final String key, final String value)
       throws EoulsanException {

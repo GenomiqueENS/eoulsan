@@ -123,18 +123,15 @@ public class SampleImpl implements Sample {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == null)
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof SampleImpl))
       return false;
 
-    if (o instanceof SampleImpl) {
+    final SampleImpl that = (SampleImpl) o;
 
-      final SampleImpl that = (SampleImpl) o;
-
-      return that.design.equals(this.design) && that.sampleId == this.sampleId;
-    }
-
-    return false;
-
+    return that.design.equals(this.design) && that.sampleId == this.sampleId;
   }
 
   @Override

@@ -41,9 +41,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -62,7 +65,7 @@ public class FileUtils {
   /** The default size of the buffer. */
   private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
   /** The charset to use. */
-  private static final String CHARSET = "ISO-8859-1";
+  private static final String CHARSET = System.getProperty("file.encoding");
 
   private static final boolean USE_CHANNEL = false;
 
@@ -201,6 +204,9 @@ public class FileUtils {
     if (file == null)
       throw new NullPointerException("The file is null.");
 
+    if (file.isDirectory())
+      throw new FileNotFoundException("The file is a directory: " + file);
+
     if (USE_CHANNEL) {
 
       final FileInputStream inFile = new FileInputStream(file);
@@ -263,10 +269,24 @@ public class FileUtils {
   public static final BufferedReader createBufferedReader(final String filename)
       throws FileNotFoundException {
 
+    return createBufferedReader(filename, null);
+  }
+
+  /**
+   * Utility method to create fast BufferedReader.
+   * @param filename Name of the file to read
+   * @param charset Charset to use
+   * @return a BufferedReader
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedReader createBufferedReader(
+      final String filename, final Charset charset)
+      throws FileNotFoundException {
+
     if (filename == null)
       throw new NullPointerException("The filename is null");
 
-    return createBufferedReader(new File(filename));
+    return createBufferedReader(new File(filename), charset);
   }
 
   /**
@@ -293,14 +313,11 @@ public class FileUtils {
 
     final InputStream is = createInputStream(file);
 
-    if (is == null)
-      return null;
-
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is, Charset.forName(System
-        .getProperty("file.encoding"))));
+    return new BufferedReader(new InputStreamReader(is,
+        Charset.forName(CHARSET)));
   }
 
   /**
@@ -328,8 +345,25 @@ public class FileUtils {
     if (charset != null)
       return new BufferedReader(new InputStreamReader(is, charset));
 
-    return new BufferedReader(new InputStreamReader(is, Charset.forName(System
-        .getProperty("file.encoding"))));
+    return new BufferedReader(new InputStreamReader(is,
+        Charset.forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param filename Name of the file to write
+   * @param charset Charset to use
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
+      final String filename, final Charset charset) throws IOException {
+
+    if (filename == null)
+      throw new NullPointerException("The filename is null");
+
+    return createFastBufferedWriter(new File(filename), charset);
   }
 
   /**
@@ -342,10 +376,7 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final String filename) throws IOException {
 
-    if (filename == null)
-      throw new NullPointerException("The filename is null");
-
-    return createFastBufferedWriter(new File(filename));
+    return createFastBufferedWriter(filename, null);
   }
 
   /**
@@ -358,13 +389,24 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final File file) throws IOException {
 
+    return createFastBufferedWriter(file, (Charset) null);
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param file File to write
+   * @param charset Charset to use
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
+      final File file, final Charset charset) throws IOException {
+
     final OutputStream os = createOutputStream(file);
 
-    if (os == null)
-      return null;
-
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
-        Charset.forName(CHARSET)));
+        charset != null ? charset : Charset.forName(CHARSET)));
   }
 
   /**
@@ -377,16 +419,30 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final OutputStream os) throws FileNotFoundException {
 
-    if (os == null)
-      throw new NullPointerException("The output stream is null");
-
-    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
-        Charset.forName(CHARSET)));
+    return createFastBufferedWriter(os, null);
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
    * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param os OutputStream to write
+   * @return a BufferedWriter
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
+      final OutputStream os, final Charset charset)
+      throws FileNotFoundException {
+
+    if (os == null)
+      throw new NullPointerException("The output stream is null");
+
+    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
+        charset != null ? charset : Charset.forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use default encoding.
    * @param file File to write
    * @return a BufferedWriter
    * @throws IOException if an error occurs while creating the Writer
@@ -424,10 +480,24 @@ public class FileUtils {
   public static final BufferedWriter createBufferedWriter(final String filename)
       throws IOException {
 
+    return createBufferedWriter(filename, null);
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param filename Name of the file to write
+   * @param charset Charset to use
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(
+      final String filename, final Charset charset) throws IOException {
+
     if (filename == null)
       throw new NullPointerException("The filename is null");
 
-    return createBufferedWriter(new File(filename));
+    return createBufferedWriter(new File(filename), charset);
   }
 
   /**
@@ -440,13 +510,24 @@ public class FileUtils {
   public static final BufferedWriter createBufferedWriter(final File file)
       throws IOException {
 
+    return createBufferedWriter(file, null);
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param file File to write
+   * @param charset Charset to use
+   * @return a BufferedWriter
+   * @throws IOException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(final File file,
+      final Charset charset) throws IOException {
+
     final OutputStream os = createOutputStream(file);
 
-    if (os == null)
-      return null;
-
-    return new BufferedWriter(new OutputStreamWriter(os,
-        Charset.forName(CHARSET)));
+    return new BufferedWriter(new OutputStreamWriter(os, charset != null
+        ? charset : Charset.forName(CHARSET)));
   }
 
   /**
@@ -459,16 +540,31 @@ public class FileUtils {
   public static final BufferedWriter createBufferedWriter(final OutputStream os)
       throws FileNotFoundException {
 
-    if (os == null)
-      throw new NullPointerException("The output stream is null");
-
-    return new BufferedWriter(new OutputStreamWriter(os,
-        Charset.forName(CHARSET)));
+    return createBufferedWriter(os, null);
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
    * safe-thread. The created file use ISO-8859-1 encoding.
+   * @param os OutputStream to write
+   * @param charset Charset to use
+   * @return a BufferedWriter
+   * @throws FileNotFoundException if the file is not found
+   */
+  public static final BufferedWriter createBufferedWriter(
+      final OutputStream os, final Charset charset)
+      throws FileNotFoundException {
+
+    if (os == null)
+      throw new NullPointerException("The output stream is null");
+
+    return new BufferedWriter(new OutputStreamWriter(os, charset != null
+        ? charset : Charset.forName(CHARSET)));
+  }
+
+  /**
+   * Utility method to create fast BufferedWriter. Warning the buffer is not
+   * safe-thread. The created file use default encoding.
    * @param file File to write
    * @return a BufferedWriter
    * @throws IOException if an error occurs while creating the Writer
@@ -1538,6 +1634,52 @@ public class FileUtils {
       isa.close();
       isb.close();
     }
+  }
+
+  /**
+   * Compute MD5 sum of a file.
+   * @param file the input file
+   * @return a string with the MD5 sum
+   * @throws IOException In case of an I/O problem or digest error
+   */
+  public static String computeMD5Sum(File file) throws IOException {
+
+    if (file == null)
+      throw new NullPointerException("The file argument is null");
+
+    return computeMD5Sum(new FileInputStream(file));
+  }
+
+  /**
+   * Compute MD5 sum of a file.
+   * @param input the InputStream to read from
+   * @return a string with the MD5 sum
+   * @throws IOException In case of an I/O problem or digest error
+   */
+  public static String computeMD5Sum(final InputStream input)
+      throws IOException {
+
+    final MessageDigest md5Digest;
+    try {
+      md5Digest = MessageDigest.getInstance("MD5");
+
+      byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+
+      int n = 0;
+
+      while (-1 != (n = input.read(buffer))) {
+        md5Digest.update(buffer, 0, n);
+      }
+
+    } catch (NoSuchAlgorithmException e) {
+      throw new IOException("No MD5 digest algorithm found: " + e.getMessage());
+    }
+
+    input.close();
+
+    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
+
+    return bigInt.toString(16);
   }
 
 }

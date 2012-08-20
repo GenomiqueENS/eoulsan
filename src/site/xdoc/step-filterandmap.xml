@@ -51,6 +51,7 @@
         <li><b>Optional parameters</b>:</li>
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
 		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not set</td></tr>
 		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not set</td></tr>
 		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters.</td><td>Not set</td></tr>

@@ -98,10 +98,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String cmd = execPath;
 
       final String s = ProcessUtils.execToString(cmd, true, false);
-
-      if (s == null)
-        return null;
-
       final String[] lines = s.split("\n");
 
       for (int i = 0; i < lines.length; i++)

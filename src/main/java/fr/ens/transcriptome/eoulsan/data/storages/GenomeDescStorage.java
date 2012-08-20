@@ -22,41 +22,31 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.data.storages;
 
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
-
-import com.google.common.base.Preconditions;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * This class define a Hadoop reporter.
- * @since 1.0
+ * This interface define a genome description storage.
+ * @since 1.2
  * @author Laurent Jourdren
  */
-@SuppressWarnings("unchecked")
-public class HadoopReporter implements ReporterIncrementer {
-
-  private final TaskInputOutputContext context;
-
-  @Override
-  public void incrCounter(String counterGroup, String counterName, long amount) {
-
-    context.getCounter(counterGroup, counterName).increment(amount);
-  }
-
-  //
-  // Constructor
-  //
+public interface GenomeDescStorage {
 
   /**
-   * Constructor.
-   * @param context context to use for counter incrementation
+   * Get the genome description that corresponds to a genome DataFile
+   * @param genomeFile genome DataFile
+   * @return a GenomeDescription object or null if the genome description has
+   *         not yet been computed
    */
-  public HadoopReporter(final TaskInputOutputContext context) {
+  GenomeDescription get(final DataFile genomeFile);
 
-    Preconditions.checkNotNull(context, "Context is null");
-
-    this.context = context;
-  }
+  /**
+   * Put the genome description in the storage.
+   * @param genomeFile genome DataFile
+   * @param genomeDesc genome description object
+   */
+  void put(final DataFile genomeFile, final GenomeDescription genomeDesc);
 
 }

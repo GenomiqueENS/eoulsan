@@ -64,6 +64,8 @@ public class TranscriptAndExonFinder {
 
   public static final class Transcript implements Serializable {
 
+    private static final long serialVersionUID = 2038535926105490728L;
+
     private String name;
     private String type;
     private String chromosome;
@@ -190,7 +192,8 @@ public class TranscriptAndExonFinder {
 
       if (this.strand != exon.getStrand())
         throw new IllegalArgumentException(
-            "The strand is not the same that the gene (Transcript: " + getName() +", Exon: " + exon);
+            "The strand is not the same that the gene (Transcript: "
+                + getName() + ", Exon: " + exon);
 
       if (this.chromosome == null)
         this.chromosome = exon.getChromosome();
@@ -226,10 +229,7 @@ public class TranscriptAndExonFinder {
       if (o == this)
         return true;
 
-      if (o == null)
-        return false;
-
-      if (!(o instanceof Transcript))
+      if (o == null || !(o instanceof Transcript))
         return false;
 
       final Transcript t = (Transcript) o;
@@ -277,6 +277,8 @@ public class TranscriptAndExonFinder {
    * @author Laurent Jourdren
    */
   public static final class Exon implements Serializable, Comparable<Exon> {
+
+    private static final long serialVersionUID = -7430959183439062516L;
 
     private String chromosome;
     private int start;
@@ -355,7 +357,7 @@ public class TranscriptAndExonFinder {
     }
 
     /**
-     * Test if a sequence and the ORF have an intersection (the sequence may 
+     * Test if a sequence and the ORF have an intersection (the sequence may
      * cover the ORF)
      * @param start start position of the ORF
      * @param end end position of the ORF
@@ -371,13 +373,13 @@ public class TranscriptAndExonFinder {
     //
     // Object class overrides
     //
-    
+
     /**
      * Compare two Exon objects
      * @param e Exon to be compared
-     * @return a positive integer if the current Exon is considered superior,
-     * a negative integer if the current Exon is considered inferior, 0 if they
-     * are considered equals 
+     * @return a positive integer if the current Exon is considered superior, a
+     *         negative integer if the current Exon is considered inferior, 0 if
+     *         they are considered equals
      */
     @Override
     public int compareTo(final Exon e) {
@@ -405,7 +407,7 @@ public class TranscriptAndExonFinder {
      * Test if two Objects are equals
      * @param o the object to be compared with the Exon
      * @return true if the object is an Exon with the same parameters as the
-     * current Exon
+     *         current Exon
      */
     @Override
     public boolean equals(final Object o) {
@@ -477,6 +479,8 @@ public class TranscriptAndExonFinder {
    * @author Laurent Jourdren
    */
   private static final class Zone implements Serializable {
+
+    private static final long serialVersionUID = -5852998623482759805L;
 
     private int start;
     private int end;
@@ -602,6 +606,8 @@ public class TranscriptAndExonFinder {
   }
 
   public static final class ChromosomeZone implements Serializable {
+
+    private static final long serialVersionUID = 6344269628891493512L;
 
     private int length = 0;
     private final List<Zone> zones = new ArrayList<Zone>();

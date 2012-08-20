@@ -85,7 +85,7 @@
 				<item name="Create Hadoop jar" href="/cmd-createhadoopjar.html" />
 				<item name="Local Exec" href="/cmd-localexec.html" />
 				<item name="Hadoop Exec" href="/cmd-hadoopexec.html" />
-				<item name="AWS Exec" href="/cmd-awsexec.html" />
+				<item name="EMR Exec" href="/cmd-emrexec.html" />
 				<item name="S3 Upload" href="/cmd-s3upload.html" />
 			</item>
 

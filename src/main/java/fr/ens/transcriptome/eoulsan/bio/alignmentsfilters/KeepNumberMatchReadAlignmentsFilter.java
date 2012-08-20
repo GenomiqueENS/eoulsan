@@ -26,12 +26,9 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 
 import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This alignments filter keep a given number of the first alignments for a

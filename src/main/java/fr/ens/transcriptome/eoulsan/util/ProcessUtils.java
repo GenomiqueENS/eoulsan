@@ -362,14 +362,15 @@ public final class ProcessUtils {
 
     final long startTime = System.currentTimeMillis();
 
-    Process p = Runtime.getRuntime().exec(cmd);
+    final Process p =
+        Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
 
-    InputStream std = p.getInputStream();
+    final InputStream std = p.getInputStream();
 
-    BufferedReader stdr =
+    final BufferedReader stdr =
         new BufferedReader(new InputStreamReader(std, CHARSET));
 
-    StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     String l1 = null;
 
     while ((l1 = stdr.readLine()) != null) {
@@ -453,8 +454,7 @@ public final class ProcessUtils {
     try {
       final String s =
           ProcessUtils.execToString("pgrep " + executableName.trim());
-      if (s == null)
-        return result;
+
       final String[] lines = s.split("\n");
       for (String line : lines)
         try {

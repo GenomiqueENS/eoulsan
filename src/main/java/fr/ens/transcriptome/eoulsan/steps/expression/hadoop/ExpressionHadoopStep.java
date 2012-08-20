@@ -26,9 +26,9 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.TAB_FILTERED_MAPPER_RESULTS_SAM;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -72,12 +73,12 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionFeaturesCrea
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
-import fr.ens.transcriptome.eoulsan.util.NewAPIJobsResults;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.NewAPIJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class is the main class for the expression program of the reads in
@@ -260,7 +261,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf))
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, stranded, featuresIndexPath, jobConf);
+          genomicType, StrandUsage.getStrandUsageFromName(stranded),
+          featuresIndexPath, jobConf);
 
     // Set the path to the features index
     DistributedCache.addCacheFile(featuresIndexPath.toUri(), jobConf);
@@ -474,7 +476,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    *           identifiants
    */
   private static final Path createFeaturesIndex(final Context context,
-      final Path gffPath, final String featureType, final String stranded,
+      final Path gffPath, final String featureType, final StrandUsage stranded,
       final Path featuresIndexPath, final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
 
@@ -499,7 +501,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
               + featureType + " does not contain a " + attributeId
               + " attribute");
 
-        if ((stranded.equals("yes") || stranded.equals("reverse"))
+        if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
             && '.' == gff.getStrand())
           throw new EoulsanException("Feature "
               + featureType
@@ -508,7 +510,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
-        features.addEntry(new GenomicInterval(gff, stranded), featureId);
+        features.addEntry(
+            new GenomicInterval(gff, stranded.isSaveStrandInfo()), featureId);
         counts.put(featureId, 0);
       }
     }
@@ -604,11 +607,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       fefc.initializeExpressionResults();
 
       // Load map-reduce results
-      fefc.loadPreResults(
-          new DataFile(context
-              .getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
-              .getSourceWithoutExtension()
-              + ".tmp").open());
+      fefc.loadPreResults(new DataFile(context.getOutputDataFile(
+          EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
+          + ".tmp").open());
 
       fefc.saveFinalResults(fs.create(resultPath));
     }
@@ -727,7 +728,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       }
 
       // Compute map-reduce part of the expression computation
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           new NewAPIJobsResults(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
@@ -797,7 +798,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       }
 
       // Compute map-reduce part of the expression computation
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           new NewAPIJobsResults(jobsRunning.values(),
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
@@ -806,7 +807,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
       // Create the final expression files
-       createFinalExpressionFeaturesFile(context, jobsRunning, this.conf);
+      createFinalExpressionFeaturesFile(context, jobsRunning, this.conf);
 
       LOGGER.info("Finish the create of the final expression files in "
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)

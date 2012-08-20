@@ -33,10 +33,10 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.GenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.SimpleGenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.storages.GenomeIndexStorage;
+import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**

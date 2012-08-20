@@ -67,8 +67,8 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToO
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class define an action that allow to execute a jar on an Hadoop cluster.

@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.util;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,18 +33,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.mapreduce.CounterGroup;
-import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapred.RunningJob;
+import org.apache.hadoop.mapred.Counters.Counter;
+import org.apache.hadoop.mapred.Counters.Group;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+
 /**
- * This is the version for the new Hadoop API of JobsResults.
+ * This is the version for the old Hadoop API of JobsResults.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class NewAPIJobsResults extends JobsResults {
+@SuppressWarnings("deprecation")
+public class OldAPIJobsResults extends HadoopJobsResults {
 
   /**
    * Wait the completion of a collection of jobs.
@@ -56,7 +59,7 @@ public class NewAPIJobsResults extends JobsResults {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  private void waitForJobs(final Collection<Job> jobs,
+  private void waitForRunningJobs(final Collection<RunningJob> jobs,
       final int waitTimeInMillis, final String counterGroup)
       throws InterruptedException, IOException {
 
@@ -67,18 +70,18 @@ public class NewAPIJobsResults extends JobsResults {
     int completedJobs = 0;
 
     final StringBuilder sb = new StringBuilder();
-    final Set<Job> completedJobsSet = new HashSet<Job>();
+    final Set<RunningJob> completedJobsSet = new HashSet<RunningJob>();
 
     while (completedJobs != totalJobs) {
 
       Thread.sleep(waitTimeInMillis);
       completedJobs = 0;
-
-      for (Job j : jobs)
+      for (RunningJob j : jobs) {
         if (j.isComplete()) {
           completedJobs++;
 
           if (counterGroup != null && !completedJobsSet.contains(j)) {
+
             sb.append(j.getJobName());
             sb.append('\n');
 
@@ -89,17 +92,15 @@ public class NewAPIJobsResults extends JobsResults {
 
             } else {
 
-              final CounterGroup g = j.getCounters().getGroup(counterGroup);
+              final Group g = j.getCounters().getGroup(counterGroup);
               if (g != null) {
-
-                final Iterator<org.apache.hadoop.mapreduce.Counter> it =
-                    g.iterator();
 
                 final Map<String, Long> map = Maps.newHashMap();
 
+                final Iterator<Counter> it = g.iterator();
                 while (it.hasNext()) {
 
-                  org.apache.hadoop.mapreduce.Counter counter = it.next();
+                  final Counter counter = it.next();
                   map.put(counter.getName(), counter.getValue());
                 }
 
@@ -115,11 +116,13 @@ public class NewAPIJobsResults extends JobsResults {
 
               }
             }
+
           }
 
           completedJobsSet.add(j);
         }
 
+      }
     }
 
     setLog(sb.toString());
@@ -131,19 +134,20 @@ public class NewAPIJobsResults extends JobsResults {
 
   /**
    * Wait the completion of a collection of jobs.
-   * @param jobs Collection of jobs to submit
+   * @param runningJobs Collection of running jobs
    * @param waitTimeInMillis waiting time between 2 checks of the completion of
    *          jobs
+   * @param counterGroup the counter group
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public NewAPIJobsResults(final Collection<Job> jobs,
+  public OldAPIJobsResults(final Collection<RunningJob> runningJobs,
       final int waitTimeInMillis, final String counterGroup)
       throws InterruptedException, IOException {
 
-    waitForJobs(jobs, waitTimeInMillis, counterGroup);
+    waitForRunningJobs(runningJobs, waitTimeInMillis, counterGroup);
   }
 
 }

@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
@@ -41,6 +42,9 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastaWriter implements SequenceWriter {
 
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+  
   private Writer writer;
 
   /**
@@ -88,7 +92,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os);
+    this.writer = FileUtils.createFastBufferedWriter(os, CHARSET);
   }
 
   /**
@@ -97,7 +101,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile, CHARSET);
   }
 
   /**
@@ -106,7 +110,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
+    this.writer = FileUtils.createFastBufferedWriter(outputFilename, CHARSET);
   }
 
 }

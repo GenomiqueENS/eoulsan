@@ -69,6 +69,14 @@ public class GFFFastaReader extends FastaReader {
 
   /**
    * Public constructor
+   * @param filename File to use
+   */
+  public GFFFastaReader(final String filename) throws FileNotFoundException {
+    super(filename);
+  }
+
+  /**
+   * Public constructor
    * @param file File to use
    */
   public GFFFastaReader(final File file) throws FileNotFoundException {
