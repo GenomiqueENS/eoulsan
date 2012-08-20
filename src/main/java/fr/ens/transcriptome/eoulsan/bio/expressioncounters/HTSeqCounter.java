@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
@@ -45,6 +46,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -62,6 +64,9 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class HTSeqCounter extends AbstractExpressionCounter {
 
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
   private static final String COUNTER_NAME = "htseq-count";
 
   @Override
@@ -74,6 +79,20 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   protected void internalCount(File alignmentFile, DataFile annotationFile,
       File expressionFile, final DataFile GenomeDescFile, Reporter reporter,
       String counterGroup) throws IOException {
+
+    LOGGER
+        .info("Command line equivalent to the program HTSeq-count: htseq-count -m "
+            + getOverlapMode()
+            + " -s "
+            + getStranded()
+            + " -t "
+            + getGenomicType()
+            + " -i ID "
+            + alignmentFile.getAbsolutePath()
+            + " -o " + alignmentFile.getParent() + "htseq-out.sam "
+            + annotationFile.getName()
+            + " > "
+            + expressionFile.getAbsolutePath());
 
     try {
 
@@ -122,6 +141,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final Map<String, Integer> counts = Utils.newHashMap();
 
     Writer writer = new FileWriter(outFile);
+    Writer samout = new FileWriter(new File("htseq-out.sam"));
 
     boolean pairedEnd = false;
 
@@ -196,8 +216,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         // unmapped read
         if (samRecord.getReadUnmappedFlag()) {
           notaligned++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(samRecord.getSAMString() + " XF:Z:not_aligned\n");
           continue;
         }
 
@@ -205,16 +224,14 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
           nonunique++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(samRecord.getSAMString() + " XF:Z:not_unique\n");
           continue;
         }
 
         // too low quality
         if (samRecord.getMappingQuality() < minAverageQual) {
           lowqual++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(samRecord.getSAMString() + " XF:Z:too_low_qual\n");
           continue;
         }
 
@@ -256,8 +273,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         // unmapped read
         if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
           notaligned++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(sam1.getSAMString() + " XF:Z:not_aligned\n");
+          samout.write(sam2.getSAMString() + " XF:Z:not_aligned\n");
           continue;
         }
 
@@ -266,8 +283,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
             || (sam2.getAttribute("NH") != null && sam2
                 .getIntegerAttribute("NH") > 1)) {
           nonunique++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(sam1.getSAMString() + " XF:Z:not_unique\n");
+          samout.write(sam2.getSAMString() + " XF:Z:not_unique\n");
           continue;
         }
 
@@ -275,8 +292,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (sam1.getMappingQuality() < minAverageQual
             || sam2.getMappingQuality() < minAverageQual) {
           lowqual++;
-          reporter.incrCounter(counterGroup,
-              ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+          samout.write(sam1.getSAMString() + " XF:Z:too_low_qual\n");
+          samout.write(sam2.getSAMString() + " XF:Z:too_low_qual\n");
           continue;
         }
 
@@ -292,19 +309,36 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       switch (fs.size()) {
       case 0:
         empty++;
-        reporter.incrCounter(counterGroup,
-            ExpressionCounters.UNMAPPED_READS_COUNTER.counterName(), 1);
+        if (sam1 == null)
+          samout.write(samRecord.getSAMString() + " XF:Z:no_feature\n");
+        else {
+          samout.write(sam1.getSAMString() + " XF:Z:no_feature\n");
+          samout.write(sam2.getSAMString() + " XF:Z:no_feature\n");
+        }
         break;
 
       case 1:
         final String id = fs.iterator().next();
         counts.put(id, counts.get(id) + 1);
+        if (sam1 == null)
+          samout.write(samRecord.getSAMString() + " XF:Z:" + id + "\n");
+        else {
+          samout.write(sam1.getSAMString() + " XF:Z:" + id + "\n");
+          samout.write(sam2.getSAMString() + " XF:Z:" + id + "\n");
+        }
         break;
 
       default:
         ambiguous++;
-        reporter.incrCounter(counterGroup,
-            ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), 1);
+        if (sam1 == null)
+          samout.write(samRecord.getSAMString()
+              + " XF:Z:ambiguous" + fs.toString() + "\n");
+        else {
+          samout.write(sam1.getSAMString()
+              + " XF:Z:ambiguous" + fs.toString() + "\n");
+          samout.write(sam2.getSAMString()
+              + " XF:Z:ambiguous" + fs.toString() + "\n");
+        }
         break;
       }
 
@@ -320,24 +354,23 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     for (String key : keysSorted) {
       writer.write(key + "\t" + counts.get(key) + "\n");
     }
-    
+
     reporter.incrCounter(counterGroup,
         ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(), empty);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(), ambiguous);
+        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
+        ambiguous);
     reporter.incrCounter(counterGroup,
         ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowqual);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(), notaligned);
+        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
+        notaligned);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(), nonunique);
-    
-
-//    writer.write(String.format("no_feature\t%d\n", empty));
-//    writer.write(String.format("ambiguous\t%d\n", ambiguous));
-//    writer.write(String.format("too_low_aQual\t%d\n", lowqual));
-//    writer.write(String.format("not_aligned\t%d\n", notaligned));
-//    writer.write(String.format("alignment_not_unique\t%d\n", nonunique));
+        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
+        nonunique);
+    reporter.incrCounter(counterGroup,
+        ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), empty
+            + ambiguous + lowqual + notaligned + nonunique);
 
     writer.close();
   }
