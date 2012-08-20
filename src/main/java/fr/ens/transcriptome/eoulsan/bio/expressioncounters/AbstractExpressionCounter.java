@@ -52,7 +52,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
-  
+
   //
   // Getters
   //
@@ -68,7 +68,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   public String getTempDirectory() {
     return this.tempDir;
   }
-  
+
   public String getGenomicType() {
     return this.genomicType;
   }
