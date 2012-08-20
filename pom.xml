@@ -244,7 +244,7 @@
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.74</version>
+			<version>1.75</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -615,7 +615,7 @@
 								<artifactItem>
 						                  <groupId>net.sourceforge.picard</groupId>
 						                  <artifactId>sam</artifactId>
-						                  <version>1.74</version>
+						                  <version>1.75</version>
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>sam.jar</destFileName>
