@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Filter reads step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Filter reads step">
+
+      <p>This step allow to filter input reads. Currently, this step can trim polyN read tails, remove reads with a short length
+and discard reads with bad base quality mean. Eoulsan provides a plugin system for reads filters.
+To enable a filter, a parameter for this filter must be set. If the filter takes no option, add a parameter with the name 
+of the filter as the key and an empty string for the value.</p>  
+
+      <ul>
+ 	<li><b>Internal name</b>: filterreads</li> 
+    <li><b>Available</b>: Both local and distributed mode</li>
+    <li><b>Multithreaded in local mode</b>: Yes</li>
+ 	<li><b>Input</b>: Fastq or tfq file</li>
+	<li><b>Output</b>: filtered fastq or filtered tfq file (e.g. <code>filtered_reads_1.fq</code>)</li>
+
+	<br/> 
+        <li><b>Optional parameters</b>:</li>
+	<table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		
+		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td></tr>
+		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td></tr>
+		<tr><td>pairend.accept.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td></tr>
+		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td></tr>
+		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td></tr>
+		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads</td><td>Not set</td></tr>
+		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td></tr>
+		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td></tr>
+	</table>
+			
+	<br/> 
+        <li><b>Compatibility parameters with Eoulsan 1.0.x</b>:</li>
+	<table>
+		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>15</td></tr>
+		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>15.0</td></tr>
+		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
+	</table>
+      </ul>
+      
+    </section>
+
+
+  </body>
+  
+</document>

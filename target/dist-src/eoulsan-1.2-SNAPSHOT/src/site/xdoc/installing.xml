@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Installing Eoulsan</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+  <body>
+    
+    <section name="Installation">
+     
+      <p>The installation of Eoulsan on all *nix systems is quite similar and very easy. You don't need to be the root user of your system to install Eoulsan.</p> 
+     
+      <p>The only tool you need to have is a tar/gz/bz2/zip extractor.</p>
+     
+      <ul>
+        <li><a href="download.html">Download Eoulsan</a> on our website.</li>
+
+<source>
+$ wget http://transcriptome.ens.fr/eoulsan/eoulsan-@@@VERSION@@@.tar.gz
+</source>
+
+        <li>Unzip the archive where you want install the software.</li>
+
+<source>
+$ tar xzf eoulsan-@@@VERSION@@@.tar.gz
+</source>
+
+        <li>Eoulsan is ready to run.</li>
+
+<source>
+$ cd eoulsan-@@@VERSION@@@
+$ ./eoulsan.sh
+</source>
+
+      </ul>
+
+      <p>If you want to run Eoulsan on a local Hadoop cluster, see the <a href="hadoopmode.html">Hadoop configuration page</a> for more informations about Hadoop installation and configuration.</p>
+     
+
+   </section>
+   
+  </body>
+</document>

@@ -1,0 +1,38 @@
+# Pretreatment steps (paired-end data)
+fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop.PreTreatmentHadoopStep
+
+# Filter reads steps
+fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsFilterLocalStep
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
+
+# Mapping reads steps
+fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsMapperLocalStep
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep
+fr.ens.transcriptome.eoulsan.steps.mapping.GsnapStep
+fr.ens.transcriptome.eoulsan.steps.mapping.GmapStep
+
+# Filter and mapping steps
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
+
+# Filter SAM file steps
+fr.ens.transcriptome.eoulsan.steps.mapping.local.SAMFilterLocalStep
+fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterHadoopStep
+
+# Filter samples
+fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesHadoopStep
+fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesLocalStep
+
+# Expression steps
+fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
+fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
+
+# Diffana step
+fr.ens.transcriptome.eoulsan.steps.anadiff.local.DiffAnaLocalStep
+
+# Management steps
+fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
+fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep

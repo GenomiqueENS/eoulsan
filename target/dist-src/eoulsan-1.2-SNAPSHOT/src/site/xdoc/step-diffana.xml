@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Differential analysis step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Differential analysis step">
+
+      <p>This step allow to perform differential analysis on expression step results.</p>  
+
+      <ul>
+         <li><b>Name</b>: diffana</li>
+         <li><b>Available</b>: Only in local mode</li>
+         <li><b>Multithreaded in local mode</b>: No</li>
+         <li><b>Input</b>: expression file (e.g. <code>expression_1.tsv</code>)</li>
+         <li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>)</li>
+	  <br/>
+         <li><b>Optional parameters</b>: none.</li>
+       </ul>
+      
+    </section>
+    
+    <section name="Required R packages installation">
+    
+    <p>Eoulsan differential analysis module use R as statistical backend. 
+    Anadiff module was tested with R 2.10. You also need to install 2 R packages:</p>
+    
+    <ul>
+        <li><b>statmod</b></li>
+        <source>
+$ wget http://cran.r-project.org/src/contrib/statmod_1.4.14.tar.gz
+$ sudo R CMD INSTALL statmod_1.4.14.tar.gz
+        </source>
+        
+        <li><b>edgeR and DESeq</b></li>
+        <source>
+$ sudo R
+&gt; source("http://bioconductor.org/biocLite.R")
+&gt; biocLite("edgeR")   
+&gt; biocLite("DESeq")    
+        </source>
+
+    </ul>    
+    
+    </section>
+
+
+  </body>
+  
+</document>

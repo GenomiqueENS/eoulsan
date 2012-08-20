@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Expression step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Expression step">
+
+      <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.</p>  
+
+      <ul>
+         <li><b>Name</b>: expression.</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
+         <li><b>Multithreaded in local mode</b>: No</li>
+        <li><b>Input</b>: filtered alignments (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
+        <li><b>Output</b>: expression file (e.g. <code>expression_1.tsv</code>).</li>
+	 <br/>
+	 
+         <li><b>Optional parameters</b>:</li>
+    <table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).</td><td>eoulsanCounter</td></tr>
+		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
+	</table>
+	<br/>
+	
+		<li><b>Optional parameters of HTSeq-count</b>:</li>
+	<table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>stranded</td><td>string</td>If "reverse", the read has to be mapped to the opposite strand as the feature. 
+If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature 
+regardless of whether it is mapped to the same or the opposite strand as the feature.<td></td><td>no</td></tr>
+		<tr><td>overlapmode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
+	</table>
+
+<!-- OLD VERSION
+	<table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
+	</table>
+-->
+
+       </ul>
+      
+	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
+
+    </section>
+
+
+  </body>
+  
+</document>

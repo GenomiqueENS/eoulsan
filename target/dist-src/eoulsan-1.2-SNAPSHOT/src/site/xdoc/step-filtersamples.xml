@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Filter samples</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Filter samples">
+
+      <p>This step allow to discard samples with low mapped read number. The ratio 
+         for each sample is the number of filtered alignments by the number of reads after 
+         filtering. Note that this step need log files from read filtering and 
+         alignement filtering.</p>  
+
+      <ul>
+	<li><b>Internal name</b>: filtersamples</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: No</li>
+	<br/>
+        <li><b>Optional parameters</b>:
+
+	<table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>threshold</td><td>integer</td><td>The threshold of the filter in percent.</td><td>50</td></tr>
+	</table>
+        </li>
+       </ul>
+      
+    </section>
+
+
+  </body>
+  
+</document>

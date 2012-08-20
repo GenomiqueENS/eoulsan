@@ -156,9 +156,6 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set the output value class
     job.setOutputValueClass(Text.class);
 
-    // Set the number of reducers
-    // job.setNumReduceTasks(9);
-
     // Set output path
     FileOutputFormat.setOutputPath(
         job,

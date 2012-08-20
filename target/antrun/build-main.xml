@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main" unless="distrib.package.compression.skip">
+  <mkdir dir="/home/wallon/workspace/eoulsan/target/site"/>
+  <replace dir="/home/wallon/workspace/eoulsan/target/site" encoding="iso-8859-1" value="http://transcriptome.ens.fr/eoulsan">
+    <include name="**/*.jnlp"/>
+    <include name="**/*.html"/>
+    <include name="**/*.rss"/>
+    <replacetoken>@@@WEBSITE@@@</replacetoken>
+  </replace>
+  <replace dir="/home/wallon/workspace/eoulsan/target/site" encoding="iso-8859-1" value="1.2-SNAPSHOT">
+    <include name="**/*.jnlp"/>
+    <include name="**/*.html"/>
+    <include name="**/*.rss"/>
+    <replacetoken>@@@VERSION@@@</replacetoken>
+  </replace>
+  <replace dir="/home/wallon/workspace/eoulsan/target/site" encoding="iso-8859-1" value="Eoulsan">
+    <include name="**/*.jnlp"/>
+    <include name="**/*.html"/>
+    <include name="**/*.rss"/>
+    <replacetoken>@@@APPNAME@@@</replacetoken>
+  </replace>
+  <replace dir="/home/wallon/workspace/eoulsan/target/site" encoding="iso-8859-1" value="eoulsan">
+    <include name="**/*.jnlp"/>
+    <include name="**/*.html"/>
+    <include name="**/*.rss"/>
+    <replacetoken>@@@APPNAMEMIN@@@</replacetoken>
+  </replace>
+  <tstamp>
+    <format pattern="EEE, dd MMM yyyy HH:mm:ss z" locale="en,UK" property="TODAY_UK"/>
+  </tstamp>
+  <replace dir="/home/wallon/workspace/eoulsan/target/site" encoding="iso-8859-1" value="${TODAY_UK}">
+    <include name="**/*.jnlp"/>
+    <include name="**/*.html"/>
+    <include name="**/*.rss"/>
+    <replacetoken>@@@DATE@@@</replacetoken>
+  </replace>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-1.2-SNAPSHOT.tar.gz"/>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-src-1.2-SNAPSHOT.tar.gz"/>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-1.2-SNAPSHOT.tar.bz2"/>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-src-1.2-SNAPSHOT.tar.bz2"/>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-1.2-SNAPSHOT.zip"/>
+  <copy todir="/home/wallon/workspace/eoulsan/target/site" file="/home/wallon/workspace/eoulsan/target/eoulsan-src-1.2-SNAPSHOT.zip"/>
+</target>
+</project>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Create design</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Create design">
+
+      <p>This command allow to easly create a design file from a list of (compressed or not) files (reads in fastq format, genome in fasta, annotation in gff).
+      An Eoulsan design file can also be easily created from Casvasa demultiplexed data (Casava 1.8 only).</p>  
+      <p>In paired-end mode, this command parse reads ids in fastq files to get the couples of paired-end fastq files. 
+      The create design command try to identify the fastq format,
+       if format cannot be identified it is set to fastq-sanger (or default format set in the 
+       <a href="./conffile.html">configuration file</a>).</p>
+
+      <ul>
+         <li><b>Available</b>: Only in local mode.</li>
+	 <br/>
+         <li><b>Optional parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>-o, --output</td><td>a filename</td><td>The name of new design file</td></tr>
+		<tr><td>-p, --pairend</td><td>none</td><td>Create a design file with paired-end fastq files</td></tr>
+		<tr><td>-s, --symlinks</td><td>none</td><td>Create symbolic links in the output design directory for all the files in the design that are not in design directory</td></tr>
+		<tr><td>-c, --casava-design</td><td>a path</td><td>The path to the Casava design file in the Casava demultiplexing output directory</td></tr>
+		<tr><td>-n --casava-project</td><td>a project name</td><td>The name of the project in the Casava design file</td></tr>		
+	</table>
+        </li>
+	<br/>
+        <li><b>Usage</b>:
+<source>
+$ eoulsan.sh createdesign [options] fastq_file1...fastq_filen fasta_file gff_gfile
+</source>
+		</li>
+<br/>
+        <li><b>Usage with a Casava output directory</b>:
+<source>
+$ eoulsan.sh createdesign --casava-design path_to_casava_output --casava-project my_project [other_options] fasta_file gff_file
+</source>
+		</li>
+        
+       </ul>
+      
+    </section>
+
+
+  </body>
+  
+</document>

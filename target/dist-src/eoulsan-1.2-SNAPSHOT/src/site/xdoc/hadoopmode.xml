@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Run Eoulsan in local mode</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+  <body>
+  
+     <section name="Configure a Hadoop cluster for a debian or ubuntu node">
+
+   <p>For this tutorial, we use Cloudera Distribution for Hadoop 3 (CDH3) for the 
+       cluster installation on an Debian/Ubuntu system. For more information about this distribution see 
+       the <a href="https://ccp.cloudera.com/display/DOC/Documentation">
+       Cloudera distribution documentation</a>. Eoulsan has been tested on Hadoop 0.20.x/1.0.x clusters.</p>
+
+
+       <subsection name="Package installation">
+
+
+	<p>You need to install the packages on all the nodes of your cluster. 
+           In /etc/apt/sources.list add the following line (replace maverick 
+           by the name of the version of your system, e.g. oneiric, lucid, lenny...):</p>
+<source>
+deb http://archive.cloudera.com/debian maverick-cdh3 contrib
+</source>
+
+	<p>Add the public key for Cloudera packages:</p>
+<source> 
+$ curl -s http://archive.cloudera.com/debian/archive.key | sudo apt-key add -
+</source>
+
+	<p>Install the necessary packages:</p>
+<source>
+$ sudo apt-get install hadoop-0.20 hadoop-0.20-conf-pseudo hadoop-0.20-doc hadoop-0.20-source
+</source>
+
+
+       </subsection>
+       <subsection name="Configuration files">
+
+	<p>Create a directory for cluster configuration:</p>
+<source>
+$ sudo cp -r /etc/hadoop-0.20/conf.empty /etc/hadoop-0.20/conf.my_cluster
+$ sudo chown hadoop:hadoop /etc/hadoop-0.20/conf.my_cluster/*
+</source>
+
+	<p>CDH uses alternatives to manage your Hadoop configuration so that you can easily switch between cluster configurations. Change the alternative for hadoop configuration to the my_cluster configuration:</p>
+<source>
+$ sudo update-alternatives --install /etc/hadoop-0.20/conf hadoop-0.20-conf /etc/hadoop-0.20/conf.my_cluster 50
+</source>
+
+	<p>Now we can edit the configuration files in <b>/etc/hadoop-0.20/conf.my_cluster</b>. 
+           We provide here samples of configurations files for a small cluster.</p>
+
+
+        <ul>
+          <li>The <b>core-site.xml</b> configuration file contains the name of the master node and the path to hadoop data on the node. Here, a sample of a <b>core-site.xml</b>:</li>
+<source>
+&lt;?xml version="1.0"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;
+
+&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;fs.default.name&lt;/name&gt;
+    &lt;value&gt;hdfs://master.example.com:8020&lt;/value&gt;
+    &lt;description&gt;
+      The name of the default file system.  A URI whose
+      scheme and authority determine the FileSystem implementation.  The
+      uri's scheme determines the config property (fs.SCHEME.impl) naming
+      the FileSystem implementation class.  The uri's authority is used to
+      determine the host, port, etc. for a filesystem.
+    &lt;/description&gt;
+  &lt;/property&gt;
+
+  &lt;property&gt;
+     &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+     &lt;value&gt;/var/lib/hadoop-0.20/cache/${user.name}&lt;/value&gt;
+     &lt;description&gt;A base for other temporary directories.&lt;/description&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;
+</source>
+
+        <br/>
+	<li>The <b>hdfs-site.xml</b> file contains the configuration of the distributed file system:</li>
+<source>
+&lt;?xml version="1.0"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;
+
+&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;dfs.replication&lt;/name&gt;
+    &lt;value&gt;3&lt;/value&gt;
+    &lt;description&gt;
+      Default block replication.
+      The actual number of replications can be specified when the file is created.
+      The default is used if replication is not specified in create time.
+    &lt;/description&gt;
+  &lt;/property&gt;
+  &lt;property&gt;
+     &lt;name&gt;dfs.permissions&lt;/name&gt;
+     &lt;value&gt;false&lt;/value&gt;
+  &lt;/property&gt;
+  &lt;!--property--&gt;
+     &lt;!-- specify this so that running 'hadoop namenode -format' formats the right dir --&gt;
+     &lt;!--name&gt;dfs.name.dir&lt;/name&gt;
+     &lt;value&gt;/var/lib/hadoop-0.20/cache/hadoop/dfs/name&lt;/value&gt;
+  &lt;/property--&gt;
+&lt;/configuration&gt;
+</source>
+
+        <br/>
+	<li>The <b>mapred-site.xml</b> file contains the configuration of map-reduce:</li>
+<source>
+&lt;?xml version="1.0"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;
+
+&lt;configuration&gt;
+  &lt;property&gt;
+    &lt;name&gt;mapred.job.tracker&lt;/name&gt;
+    &lt;value&gt;master.example.com:8021&lt;/value&gt;
+    &lt;description&gt;
+      The host and port that the MapReduce job tracker runs
+      at.  If "local", then jobs are run in-process as a single map
+      and reduce task.
+    &lt;/description&gt;
+  &lt;/property&gt;
+&lt;/configuration&gt;
+</source>
+
+        <br/>
+	<li>In <b>hadoop-env.sh</b> set the path to java. We strongly recommend to use Sun JRE (or openJDK). You can also disable IPv6 support of hadoop.</li>
+<source>
+export JAVA_HOME=/usr/lib/jvm/java-6-sun
+# Disable IPv6 for hadoop
+export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true
+</source>
+       </ul>
+
+	<p>Once the configuration of the master node is ready, copy the content 
+           of the configuration directory on configuration directory of all the 
+           other nodes of your cluster.</p>
+
+   </subsection>
+
+   <subsection name="Starting Hadoop">
+
+        <p>Before starting Hadoop for the first time, you need to format the distributed file system of each node:</p>
+<source>
+$ sudo su
+# su -s /bin/bash - hdfs -c 'hadoop namenode -format'
+</source> 
+
+	<p>Start the services for all the nodes:</p>
+<source>
+$ sudo service hadoop-0.20-datanode start &amp;&amp; \
+  sudo service hadoop-0.20-tasktracker start
+</source>
+
+	<p>Start dedicated services to the master node:</p>
+<source>
+$ sudo service hadoop-0.20-namenode start &amp;&amp; \
+  sudo service hadoop-0.20-jobtracker start
+</source>
+
+   </subsection>
+
+	</section>
+
+    <section name="Launch Eoulsan in Hadoop mode">
+
+        <p>The launch of an Eoulsan analysis in Hadoop mode is described in
+           <a href="./cmd-hadoopexec.html">Hadoop exec command section</a>.</p>
+
+    </section>
+
+
+  </body>
+
+</document>

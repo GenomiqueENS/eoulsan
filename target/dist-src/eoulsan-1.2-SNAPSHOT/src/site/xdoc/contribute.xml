@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Eoulsan community</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+  <body>
+
+   <section name="How I can conctact the authors">
+   
+      <!-- eoulsan 0 biologie ens fr -->	 
+      <p>You can contact the authors of Eoulsan by <a href="mailto:%65%6f%75%6c%73%61%6e%40%62%69%6f%6c%6f%67%69%65%2e%65%6e%73%2e%66%72">mail</a> or using the the <a href="http://groups.google.com/group/eoulsan"> eoulsan group</a> on Google group.</p>
+    
+    </section>
+    
+    <section name="How can I contribute to Eoulsan?">
+    
+
+      <p>Eoulsan is a free software project. Everybody is encouraged to contribute to Eoulsan. There are lots of ways in which you can help to continue Eoulsan:</p>
+
+
+      <ul>
+        <li>Testing new versions</li>
+        <li>Submitting bug reports to the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a></li>
+        <li>Programming new <a href="./writingstepplugin.html">Eoulsan plugins</a> and redistributing them (by yourself or in Eoulsan source repository)</li>
+        <li>Submitting patches</li>
+        <li>Writing developer documentation on <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan Wiki</a> if you become Eoulsan committer</li>
+      </ul>
+
+      <p>There are several places to look for more information if you want to get involved in the development. The first step is to subscribe to the eoulsan group. You will soon see something that can be improved or added.</p>
+
+    </section>
+    
+
+    <section name="How do I commit a bug report?">
+      <p>As Eoulsan code is  hosting by Google, you can use the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> bind to our project.</p>
+    </section>
+
+   <section name="How do I get access to the code repository ?">
+      <p>The Eoulsan project uses the Git system to develop the core parts of the software. To facilitate contributions to our project, 
+      Eoulsan code is hosted by Google code hosting. You can freely access to the 
+      <a href="http://code.google.com/p/eoulsan">main page of the project</a> and to the
+      <a href="http://code.google.com/p/eoulsan/source/checkout">git repository.</a></p>
+    </section>
+
+    
+  </body>
+</document>
