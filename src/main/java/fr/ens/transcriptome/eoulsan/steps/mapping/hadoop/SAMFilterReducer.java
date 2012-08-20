@@ -152,6 +152,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
         ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(
         cptRecords - records.size());
 
+    // sort alignments of the current read
     Collections.sort(records, new SAMComparator());
 
     // Writing records

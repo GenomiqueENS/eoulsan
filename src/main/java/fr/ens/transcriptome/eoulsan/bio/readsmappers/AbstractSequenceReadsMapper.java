@@ -407,7 +407,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private void checkWritePairEnd() throws IOException {
 
-    checkState(isPairEnd(), "Can not write pair-end read in single end mode.");
+    checkState(isPairEnd(), "Can not write paired-end read in single-end mode.");
 
     if (noReadWritten) {
 
@@ -430,7 +430,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private void checkWriteSingleEnd() throws IOException {
 
-    checkState(!isPairEnd(), "Can not write single-end read in pair-end mode.");
+    checkState(!isPairEnd(), "Can not write single-end read in paired-end mode.");
 
     if (noReadWritten) {
 

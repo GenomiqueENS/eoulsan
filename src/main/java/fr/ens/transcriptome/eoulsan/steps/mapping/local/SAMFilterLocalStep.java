@@ -223,6 +223,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
           records.clear();
           records.addAll(rafb.getFilteredAlignments());
 
+          // sort alignments of the current read
           Collections.sort(records, new SAMComparator());
 
           // writing records
@@ -240,6 +241,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       records.clear();
       records.addAll(rafb.getFilteredAlignments());
 
+      // sort alignments of the last read
       Collections.sort(records, new SAMComparator());
 
       // writing records

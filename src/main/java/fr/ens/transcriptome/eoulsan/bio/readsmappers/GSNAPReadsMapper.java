@@ -236,10 +236,10 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairedEnd, fastqFormat, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

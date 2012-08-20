@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This abstract class implements a generic Counter.
+ * This abstract class implements a generic Expression Counter.
  * @since 1.2
  * @author Claire Wallon
  */

@@ -150,18 +150,11 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set the reducer class
     job.setReducerClass(SAMFilterReducer.class);
 
-    // job.setPartitionerClass(SAMRecordsPartitioner.class);
-//    job.setSortComparatorClass(SAMRecordsKeyComparator.class);
-    // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
-
     // Set the output key class
     job.setOutputKeyClass(Text.class);
 
     // Set the output value class
     job.setOutputValueClass(Text.class);
-
-    // Set the number of reducers
-    // job.setNumReduceTasks(9);
 
     // Set output path
     FileOutputFormat.setOutputPath(
