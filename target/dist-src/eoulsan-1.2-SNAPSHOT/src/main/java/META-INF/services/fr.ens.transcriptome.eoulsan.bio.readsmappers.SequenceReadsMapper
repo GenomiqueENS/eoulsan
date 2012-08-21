@@ -1,6 +1,0 @@
-# Reads mapper
-fr.ens.transcriptome.eoulsan.bio.readsmappers.SOAPReadsMapper
-fr.ens.transcriptome.eoulsan.bio.readsmappers.BWAReadsMapper
-fr.ens.transcriptome.eoulsan.bio.readsmappers.BowtieReadsMapper
-fr.ens.transcriptome.eoulsan.bio.readsmappers.GSNAPReadsMapper
-fr.ens.transcriptome.eoulsan.bio.readsmappers.GmapReadsMapper

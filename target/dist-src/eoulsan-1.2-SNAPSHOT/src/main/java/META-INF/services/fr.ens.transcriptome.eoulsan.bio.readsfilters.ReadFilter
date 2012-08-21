@@ -1,8 +1,0 @@
-fr.ens.transcriptome.eoulsan.bio.readsfilters.PairCheckReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.PairEndReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.ValidReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.IlluminaFilterFlagReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadNameStartsWithReadFilter
-fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadNameRegexReadFilter
