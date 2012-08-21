@@ -192,7 +192,7 @@ public class DiffAna {
       for (int j = 0; j < rRepTechGroup.size(); j++) {
         String repTechGroup2 = rRepTechGroup.get(j);
         if (repTechGroup2.equals(repTechGroup1)) {
-          if (rCondNames.get(j).equals(condition)) {
+          if (!(rCondNames.get(j).equals(condition))) {
             throw new EoulsanException(
                 "There is a mistake in RepTechGroup field of design file : "
                     + "two condition have the same repTechGroup");
@@ -255,18 +255,19 @@ public class DiffAna {
     else
       writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames);
 
-//     add differential analysis part
-     if (biologicalReplicate) {
-     sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
-     } else {
-     sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
-     }
+    // add differential analysis part
+    if (biologicalReplicate) {
+      sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
+    } else {
+      sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
+    }
 
     String rScript = null;
     try {
       rScript =
-          this.design.getSample(1).getMetadata().getExperiment()
-              + "_" + "Anadiff" + ".Rnw";
+          "diffAna"
+              + "_" + this.design.getSample(1).getMetadata().getExperiment()
+              + ".Rnw";
       if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
