@@ -32,9 +32,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -84,7 +83,7 @@ public class DistCp implements Tool {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  public static final Log LOG = LogFactory.getLog(DistCp.class);
+  public static final Logger LOG = Logger.getLogger(Globals.APP_NAME);
 
   private static final String NAME = "distcp";
 
@@ -585,7 +584,7 @@ public class DistCp implements Tool {
                 break;
             } catch (Throwable ex) {
               // ignore, we are just cleaning up
-              LOG.debug("Ignoring cleanup exception", ex);
+              LOG.fine("Ignoring cleanup exception: " + ex.getMessage());
             }
             // update status, so we don't get timed out
             updateStatus(reporter);
@@ -777,9 +776,9 @@ public class DistCp implements Tool {
       this.sizelimit = sizelimit;
       this.mapredSslConf = mapredSslConf;
 
-      if (LOG.isTraceEnabled()) {
-        LOG.trace("this = " + this);
-      }
+      // if (LOG.isTraceEnabled()) {
+      // LOG.trace("this = " + this);
+      // }
     }
 
     static Arguments valueOf(String[] args, Configuration conf)
@@ -995,7 +994,7 @@ public class DistCp implements Tool {
       Path tmp = new Path(dir);
       boolean success = tmp.getFileSystem(conf).delete(tmp, true);
       if (!success) {
-        LOG.warn("Could not fully delete " + tmp);
+        LOG.warning("Could not fully delete " + tmp);
       }
     }
   }
@@ -1145,9 +1144,9 @@ public class DistCp implements Tool {
                 ++fileCount;
                 byteCount += child.getLen();
 
-                if (LOG.isTraceEnabled()) {
-                  LOG.trace("adding file " + child.getPath());
-                }
+                // if (LOG.isTraceEnabled()) {
+                // LOG.trace("adding file " + child.getPath());
+                // }
 
                 ++cnsyncf;
                 cbsyncs += child.getLen();
@@ -1404,7 +1403,7 @@ public class DistCp implements Tool {
       try {
         io.close();
       } catch (IOException ioe) {
-        LOG.warn(StringUtils.stringifyException(ioe));
+        LOG.warning(StringUtils.stringifyException(ioe));
         return false;
       }
     }

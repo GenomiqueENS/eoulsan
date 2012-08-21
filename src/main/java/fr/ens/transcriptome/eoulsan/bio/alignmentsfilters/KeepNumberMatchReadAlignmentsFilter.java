@@ -26,12 +26,9 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 
 import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This alignments filter keep a given number of the first alignments for a
@@ -76,7 +73,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
   @Override
@@ -85,7 +82,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     if (this.numberMatch < 0)
       throw new IllegalArgumentException(
           "The number of match to keep is not set for "
-              + getName() + " read alignments filter.");
+              + getName() + " alignments alignments filter.");
   }
 
   @Override

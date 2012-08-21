@@ -98,6 +98,11 @@ public abstract class Executor {
   protected abstract SimpleContext getContext();
 
   /**
+   * Check temporary directory.
+   */
+  protected abstract void checkTemporaryDirectory();
+
+  /**
    * Check design.
    * @param design design to check
    * @throws EoulsanException if there is an issue with the design
@@ -184,6 +189,9 @@ public abstract class Executor {
     // Init steps of the workflow
     workflow.init();
 
+    // Check temporary directory
+    checkTemporaryDirectory();
+
     // Check workflow
     workflow.check();
 
@@ -223,7 +231,7 @@ public abstract class Executor {
       // End of the analysis if the analysis fail
       if (!result.isSuccess()) {
         LOGGER.severe("Fail of the analysis: " + result.getErrorMessage());
-        logEndAnalysis(false, startTime);
+        logEndAnalysis(context, false, startTime);
 
         if (result.getException() != null)
           Common.errorExit(result.getException(), result.getErrorMessage());
@@ -237,7 +245,7 @@ public abstract class Executor {
         break;
     }
 
-    logEndAnalysis(true, startTime);
+    logEndAnalysis(context, true, startTime);
   }
 
   //
@@ -271,17 +279,45 @@ public abstract class Executor {
 
   /**
    * Log the state and the time of the analysis
+   * @param context Context object
    * @param success true if analysis was successful
    * @param startTime start time of the analysis is milliseconds since Java
    *          epoch
    */
-  private void logEndAnalysis(final boolean success, final long startTime) {
+  private void logEndAnalysis(final Context context, final boolean success,
+      final long startTime) {
 
     final long endTime = System.currentTimeMillis();
+    final String successString = success ? "Successful" : "Unsuccessful";
 
-    LOGGER.info((success ? "Successful" : "Unsuccessful")
+    // Log the end of the analysis
+    LOGGER.info(successString
         + " end of the analysis in "
         + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
-  }
 
+    // Send a mail
+
+    final String mailSubject =
+        "["
+            + Globals.APP_NAME + "] " + successString + " end of your job "
+            + context.getJobId() + " on " + context.getJobHost();
+
+    final String mailMessage =
+        "THIS IS AN AUTOMATED MESSAGE.\n\n"
+            + successString
+            + " end of your job "
+            + context.getJobId()
+            + " on "
+            + context.getJobHost()
+            + ".\nJob finished at "
+            + new Date(System.currentTimeMillis())
+            + " in "
+            + StringUtils.toTimeHumanReadable(endTime - startTime)
+            + " s.\n\nOutput files and logs can be found in the following location:\n"
+            + context.getOutputPathname() + "\n\nThe " + Globals.APP_NAME
+            + "team.";
+
+    // Send mail
+    Common.sendMail(mailSubject, mailMessage);
+  }
 }

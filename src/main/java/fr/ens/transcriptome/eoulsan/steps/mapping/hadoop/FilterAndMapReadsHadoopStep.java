@@ -55,9 +55,9 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
  * This class define a Step that filter and map read in Hadoop mode.
@@ -106,7 +106,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       final long startTime = System.currentTimeMillis();
 
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, getCounterGroup());
 
@@ -208,9 +208,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
 
     // Set the number of threads for the mapper
-    if (getMapperThreads() < 0) {
+    if (getMapperHadoopThreads() < 0) {
       jobConf
-          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperThreads());
+          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments

@@ -124,14 +124,16 @@ public class DataFormatConverter {
 
       } catch (BadBioEntryException e) {
         throw new IOException("Bad read sequence entry: " + e.getEntry());
-      }
+      } finally {
 
-      reader.close();
-      writer.close();
+        reader.close();
+        writer.close();
+      }
 
       return;
     }
 
+    destOs.close();
     throw new IOException("This copy case is not implementated");
   }
 

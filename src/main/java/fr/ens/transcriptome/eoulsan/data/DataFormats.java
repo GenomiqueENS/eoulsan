@@ -58,7 +58,7 @@ public class DataFormats {
   public static final DataFormat BWA_INDEX_ZIP = resgistry
       .getDataFormatFromName(BWAIndexZipDataFormat.FORMAT_NAME);
 
-  /** BWA index data format. */
+  /** Bowtie index data format. */
   public static final DataFormat BOWTIE_INDEX_ZIP = resgistry
       .getDataFormatFromName(BowtieIndexZipDataFormat.FORMAT_NAME);
 
@@ -78,6 +78,13 @@ public class DataFormats {
   public static final DataFormat FILTERED_MAPPER_RESULTS_BAM_INDEX =
       resgistry
           .getDataFormatFromName(FilteredMapperResultsBamIndexDataFormat.FORMAT_NAME);
+
+  /**
+   * Filtered SAM data format for paired-end data : the two alignments of a read
+   * are on the same line, separated by a '£'.
+   */
+  public static final DataFormat TAB_FILTERED_MAPPER_RESULTS_SAM = resgistry
+      .getDataFormatFromName(TabFilteredMapperResultsSamDataFormat.FORMAT_NAME);
 
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM = resgistry

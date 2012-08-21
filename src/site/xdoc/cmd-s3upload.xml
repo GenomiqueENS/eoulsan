@@ -45,7 +45,7 @@
          Eoulsan use the AWS Java SDK library to transfer data to Amazon S3.</p>  
 
       <ul>
-         <li><b>Command name</b>: awsexec</li>
+         <li><b>Command name</b>: s3upload</li>
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>

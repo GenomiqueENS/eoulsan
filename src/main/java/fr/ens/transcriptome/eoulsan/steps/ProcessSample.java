@@ -41,6 +41,8 @@ public abstract class ProcessSample {
    */
   public static final class ProcessSampleException extends Exception {
 
+    private static final long serialVersionUID = 7583366020863214461L;
+
     private Exception e;
     private String msg;
 

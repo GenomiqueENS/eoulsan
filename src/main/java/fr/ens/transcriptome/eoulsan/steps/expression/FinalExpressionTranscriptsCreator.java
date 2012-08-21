@@ -47,13 +47,13 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class generate the final expression file after counting the alignment
+ * This class generates the final expression file after counting the alignment
  * for each transcript.
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
-  
+
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /* Default Charset. */
@@ -108,10 +108,10 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == null)
-        return false;
+      if (o == this)
+        return true;
 
-      if (!(o instanceof ExpressionTranscript))
+      if (o == null || !(o instanceof ExpressionTranscript))
         return false;
 
       final ExpressionTranscript et = (ExpressionTranscript) o;
@@ -233,7 +233,7 @@ public class FinalExpressionTranscriptsCreator {
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
-    
+
     final List<ExpressionTranscript> list =
         new ArrayList<ExpressionTranscript>(this.expressionResults.values());
 

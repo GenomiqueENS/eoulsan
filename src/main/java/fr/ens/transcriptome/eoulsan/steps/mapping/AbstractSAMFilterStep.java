@@ -30,20 +30,15 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.KeepOneMatchReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveMultiMatchesReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.RemoveUnmappedReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -60,7 +55,10 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
 
-//  private int mappingQualityThreshold = -1;
+  private int localThreads;
+  private int maxLocalThreads;
+
+  // private int mappingQualityThreshold = -1;
 
   //
   // Getters
@@ -73,10 +71,10 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    *         used here (getMappingQualityThreshold() called in this class) (cf.
    *         comments in configure())
    */
-//  protected int getMappingQualityThreshold() {
-//
-//    return this.mappingQualityThreshold;
-//  }
+  // protected int getMappingQualityThreshold() {
+  //
+  // return this.mappingQualityThreshold;
+  // }
 
   //
   // Step methods
@@ -112,8 +110,14 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
         new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
-      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
-          p.getStringValue());
+
+      if ("local.threads".equals(p.getName()))
+        this.localThreads = p.getIntValue();
+      else if ("max.local.threads".equals(p.getName()))
+        this.maxLocalThreads = p.getIntValue();
+      else
+        mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue());
     }
 
     // Force parameter checking
@@ -134,7 +138,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     if ("mappingqualitythreshold".equals(key))
       return QualityReadAlignmentsFilter.FILTER_NAME + ".threshold";
-    
+
     return key;
   }
 
@@ -161,6 +165,16 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected Map<String, String> getAlignmentsFilterParameters() {
 
     return this.readAlignmentsFilterBuilder.getParameters();
+  }
+
+  /**
+   * Get the number of threads to use in local mode.
+   * @return Returns the mapperThreads
+   */
+  protected int getLocalThreads() {
+
+    return ProcessSampleExecutor.getThreadsNumber(this.localThreads,
+        this.maxLocalThreads);
   }
 
 }

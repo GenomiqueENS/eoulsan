@@ -35,7 +35,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.util.HadoopJarRepackager;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
  * This class define an action to create hadoop jar file.

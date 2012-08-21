@@ -30,18 +30,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -50,8 +46,8 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
-import fr.ens.transcriptome.eoulsan.util.JobsResults;
-import fr.ens.transcriptome.eoulsan.util.MapReduceUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
+import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
  * This class define a filter alignment step in Hadoop mode.
@@ -76,7 +72,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
       final long startTime = System.currentTimeMillis();
 
-      final JobsResults jobsResults =
+      final HadoopJobsResults jobsResults =
           MapReduceUtils.submitAndWaitForJobs(jobs,
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
@@ -151,7 +147,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setReducerClass(SAMFilterReducer.class);
 
     // job.setPartitionerClass(SAMRecordsPartitioner.class);
-//    job.setSortComparatorClass(SAMRecordsKeyComparator.class);
+    // job.setSortComparatorClass(SAMRecordsKeyComparator.class);
     // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
 
     // Set the output key class
@@ -159,9 +155,6 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     // Set the output value class
     job.setOutputValueClass(Text.class);
-
-    // Set the number of reducers
-    // job.setNumReduceTasks(9);
 
     // Set output path
     FileOutputFormat.setOutputPath(

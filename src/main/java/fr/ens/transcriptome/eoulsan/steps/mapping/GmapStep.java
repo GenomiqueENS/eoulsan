@@ -178,7 +178,7 @@ public class GmapStep extends AbstractStep {
 
           logMsg =
               "Mapping reads in "
-                  + sample.getMetadata().getFastqFormat() + " with Gsnap ("
+                  + sample.getMetadata().getFastqFormat() + " with Gmap ("
                   + sample.getName() + ", " + inFile.getName() + ")";
         }
 
@@ -204,7 +204,7 @@ public class GmapStep extends AbstractStep {
 
           logMsg =
               "Mapping reads in "
-                  + sample.getMetadata().getFastqFormat() + " with Gsnap ("
+                  + sample.getMetadata().getFastqFormat() + " with Gmap ("
                   + sample.getName() + ", " + inFile1.getName() + ","
                   + inFile2.getName() + ")";
         }
@@ -274,7 +274,7 @@ public class GmapStep extends AbstractStep {
       formatArg = "--quality-protocol=illumina";
       break;
     case FASTQ_SOLEXA:
-      throw new IOException("Gsnap not handle the Solexa FASTQ format.");
+      throw new IOException("Gmap not handle the Solexa FASTQ format.");
 
     case FASTQ_SANGER:
     default:

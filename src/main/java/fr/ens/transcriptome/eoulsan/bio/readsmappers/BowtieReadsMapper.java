@@ -50,7 +50,7 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_EXECUTABLE = "bowtie";
   private static final String INDEXER_EXECUTABLE = "bowtie-build";
 
-  public static final String DEFAULT_ARGUMENTS = "-k 10";
+  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie";
@@ -82,10 +82,6 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
       final String cmd = bowtiePath + " --version";
 
       final String s = ProcessUtils.execToString(cmd);
-
-      if (s == null)
-        return null;
-
       final String[] lines = s.split("\n");
       if (lines.length == 0)
         return null;

@@ -24,11 +24,18 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_DATE;
+import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_NUMBER;
+import static fr.ens.transcriptome.eoulsan.Globals.APP_NAME_LOWER_CASE;
+import static fr.ens.transcriptome.eoulsan.Globals.APP_VERSION_STRING;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -46,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
  * This class allow parse the parameter file.
@@ -61,6 +69,8 @@ public class ParamParser {
   private static final String FORMAT_VERSION = "1.0";
 
   private InputStream is;
+
+  private Map<String, String> constants = initConstants();
 
   /**
    * Parse the parameter file.
@@ -133,6 +143,12 @@ public class ParamParser {
         command.setAuthor(author);
 
         //
+        // Parse constants
+        //
+
+        setConstants(parseParameters(eElement, "constants", null, false));
+
+        //
         // Parse steps
         //
 
@@ -167,7 +183,8 @@ public class ParamParser {
                 if (!"true".equals(skip)) {
 
                   final Set<Parameter> parameters =
-                      parseParameters(eStepElement, "parameters", stepName);
+                      parseParameters(eStepElement, "parameters", stepName,
+                          true);
 
                   LOGGER.info("In parameter file found "
                       + stepName + " step (parameters: " + parameters + ").");
@@ -183,7 +200,8 @@ public class ParamParser {
         // Parse globals parameters
         //
 
-        command.setGlobalParameters(parseParameters(eElement, "globals", null));
+        command.setGlobalParameters(parseParameters(eElement, "globals", null,
+            true));
 
       }
     }
@@ -195,11 +213,13 @@ public class ParamParser {
    * Parse parameter sections
    * @param root root element to parse
    * @param elementName name of the element
+   * @param evaluateValues evaluate parameters values
    * @return a set of Parameter object
    * @throws EoulsanException if the tags of the parameter are not found
    */
   private Set<Parameter> parseParameters(final Element root,
-      String elementName, final String stepName) throws EoulsanException {
+      String elementName, final String stepName, final boolean evaluateValues)
+      throws EoulsanException {
 
     final Set<Parameter> result = new LinkedHashSet<Parameter>();
 
@@ -236,7 +256,8 @@ public class ParamParser {
                       + (stepName == null ? "global parameters" : stepName
                           + " step") + " in parameter file.");
 
-            result.add(new Parameter(paramName, paramValue));
+            result.add(new Parameter(paramName, evaluateValues
+                ? evaluateExpressions(paramValue, true) : paramValue));
           }
         }
 
@@ -260,10 +281,134 @@ public class ParamParser {
       final Node n = nl.item(i);
       if (n.getNodeType() == Node.ELEMENT_NODE && tag.equals(n.getNodeName()))
         return n.getTextContent();
-
     }
 
     return null;
+  }
+
+  //
+  // Constants handling
+  //
+
+  /**
+   * Set the constants values
+   * @param parameters a set with the parameters
+   * @throws EoulsanException if an error occurs while evaluating the parameters
+   */
+  private void setConstants(final Set<Parameter> parameters)
+      throws EoulsanException {
+
+    if (parameters == null)
+      return;
+
+    for (Parameter p : parameters)
+      if (!"".equals(p.getName()))
+        this.constants.put(p.getName().trim(),
+            evaluateExpressions(p.getValue(), true));
+  }
+
+  /**
+   * Initialize the constants values
+   * @return
+   */
+  private static final Map<String, String> initConstants() {
+
+    final Map<String, String> constants = new HashMap<String, String>();
+
+    constants.put(APP_NAME_LOWER_CASE + ".version", APP_VERSION_STRING);
+    constants.put(APP_NAME_LOWER_CASE + ".build.number", APP_BUILD_NUMBER);
+    constants.put(APP_NAME_LOWER_CASE + ".build.date", APP_BUILD_DATE);
+
+    constants.put("available.processors", ""
+        + Runtime.getRuntime().availableProcessors());
+
+    // Add java properties
+    for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
+      constants.put((String) e.getKey(), (String) e.getValue());
+
+    // Add environment properties
+    for (Map.Entry<String, String> e : System.getenv().entrySet())
+      constants.put(e.getKey(), e.getValue());
+
+    return constants;
+  }
+
+  /**
+   * Evaluate expression in a string.
+   * @param s string in witch expression must be replaced
+   * @param allowExec allow execution of code
+   * @return a string with expression evaluated
+   * @throws EoulsanException if an error occurs while parsing the string or
+   *           executing an expression
+   */
+  private String evaluateExpressions(final String s, boolean allowExec)
+      throws EoulsanException {
+
+    if (s == null)
+      return null;
+
+    final StringBuilder result = new StringBuilder();
+
+    final int len = s.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final int c0 = s.codePointAt(i);
+
+      // Variable substitution
+      if (c0 == '$' && i + 1 < len) {
+
+        final int c1 = s.codePointAt(i + 1);
+        if (c1 == '{') {
+
+          final String expr = subStr(s, i + 2, '}');
+
+          final String trimmedExpr = expr.trim();
+          if (this.constants.containsKey(trimmedExpr))
+            result.append(this.constants.get(trimmedExpr));
+
+          i += expr.length() + 2;
+          continue;
+        }
+      }
+
+      // Command substitution
+      if (c0 == '`') {
+        final String expr = subStr(s, i + 1, '`');
+        try {
+          final String r =
+              ProcessUtils.execToString(evaluateExpressions(expr, false));
+
+          // remove last '\n' in the result
+          if (r.charAt(r.length() - 1) == '\n')
+            result.append(r.substring(0, r.length() - 1));
+          else
+            result.append(r);
+
+        } catch (IOException e) {
+          throw new EoulsanException("Error while evaluating expression \""
+              + expr + "\"");
+        }
+        i += expr.length() + 1;
+        continue;
+      }
+
+      result.appendCodePoint(c0);
+    }
+
+    return result.toString();
+  }
+
+  private String subStr(final String s, final int beginIndex,
+      final int charPoint) throws EoulsanException {
+
+    final int endIndex = s.indexOf(charPoint, beginIndex);
+
+    if (endIndex == -1)
+      throw new EoulsanException("Unexpected end of expression in \""
+          + s + "\"");
+
+    return s.substring(beginIndex, endIndex);
   }
 
   //

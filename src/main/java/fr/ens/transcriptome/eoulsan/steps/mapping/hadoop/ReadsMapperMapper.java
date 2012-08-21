@@ -50,9 +50,9 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
 
 /**
@@ -276,12 +276,16 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
+    
+    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
     if (!samOutputFile.delete())
       LOGGER.warning("Can not delete "
           + this.mapper.getMapperName() + " output file: "
           + samOutputFile.getAbsolutePath());
+    
+    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Clean mapper input files
     this.mapper.clean();

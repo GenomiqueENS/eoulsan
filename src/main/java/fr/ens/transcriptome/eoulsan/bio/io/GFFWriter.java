@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -42,6 +43,9 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class GFFWriter implements Closeable {
 
+  /* Default Charset. */
+  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+
   private Writer writer;
 
   private boolean first = true;
@@ -53,11 +57,13 @@ public class GFFWriter implements Closeable {
       sb.append("##gff-version\t3\n");
 
     for (String k : entry.getMetadataKeyNames()) {
-      sb.append("##");
-      sb.append(StringUtils.protectGFF(k));
-      sb.append('\t');
-      sb.append(StringUtils.protectGFF(entry.getMetadataEntryValue(k)));
-      sb.append('\n');
+      for (String e : entry.getMetadataEntryValues(k)) {
+        sb.append("##");
+        sb.append(StringUtils.protectGFF(k));
+        sb.append('\t');
+        sb.append(StringUtils.protectGFF(e));
+        sb.append('\n');
+      }
     }
 
     this.writer.write(sb.toString());
@@ -113,7 +119,7 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os);
+    this.writer = FileUtils.createFastBufferedWriter(os, CHARSET);
   }
 
   /**
@@ -122,7 +128,7 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile, CHARSET);
   }
 
   /**
@@ -131,6 +137,6 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFilename);
+    this.writer = FileUtils.createFastBufferedWriter(outputFilename, CHARSET);
   }
 }

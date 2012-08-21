@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
-import fr.ens.transcriptome.eoulsan.util.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * Mapper for Expression computation.
@@ -76,7 +76,6 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String counterGroup;
 
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
-  // private final AlignResult ar = new AlignResult();
 
   private final SAMParser parser = new SAMParser();
 

@@ -90,7 +90,7 @@ public class GenomeDescription {
    */
   public void addSequence(final String sequenceName, final long sequenceLength) {
 
-    LOGGER.fine("Add sequence: "
+    LOGGER.fine("Add sequence in genome description: "
         + sequenceName + " with " + sequenceLength + " pb");
 
     this.sequences.put(sequenceName, sequenceLength);
@@ -299,7 +299,47 @@ public class GenomeDescription {
       final InputStream genomeFastaIs, final String filename)
       throws BadBioEntryException, IOException {
 
+    return createGenomeDesc(genomeFastaIs, filename, false);
+  }
+
+  /**
+   * Create a GenomeDescription object from a GFF file.
+   * @param gffFile genome in GFF file
+   */
+  public static GenomeDescription createGenomeDescFromGFF(final File gffFile)
+      throws BadBioEntryException, IOException {
+
+    checkNotNull(gffFile, "The genome file is null");
+
+    return createGenomeDescFromGFF(FileUtils.createInputStream(gffFile),
+        gffFile.getName());
+  }
+
+  /**
+   * Create a GenomeDescription object from a GFF file.
+   * @param gffFile genome in GFF input stream
+   * @param filename name of the file of the input stream
+   */
+  public static GenomeDescription createGenomeDescFromGFF(
+      final InputStream gffFile, final String filename)
+      throws BadBioEntryException, IOException {
+
+    return createGenomeDesc(gffFile, filename, true);
+  }
+
+  /**
+   * Create a GenomeDescription object from a Fasta file of GFF file.
+   * @param genomeFastaIs genome fasta input stream
+   * @param filename name of the file of the input stream
+   * @param gffFormat the input file is in GFF format
+   */
+  public static GenomeDescription createGenomeDesc(
+      final InputStream genomeFastaIs, final String filename,
+      final boolean gffFormat) throws BadBioEntryException, IOException {
+
     checkNotNull(genomeFastaIs, "The input stream of the genome is null");
+
+    LOGGER.fine("Compute genome description from genome fasta file.");
 
     final GenomeDescription result = new GenomeDescription();
     result.setGenomeName(StringUtils.basename(filename));
@@ -311,7 +351,8 @@ public class GenomeDescription {
       md5Digest = null;
     }
 
-    final FastaLineParser parser = new FastaLineParser(genomeFastaIs);
+    final FastaLineParser parser =
+        new FastaLineParser(genomeFastaIs, gffFormat);
 
     final Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
     String seqName = null;
@@ -323,12 +364,20 @@ public class GenomeDescription {
 
       if (!seqName.equals(lastSeqName)) {
 
+        // Check if sequence has been found more than one time
+        if (result.getSequenceLength(lastSeqName) != -1)
+          throw new BadBioEntryException("Sequence name found twice: "
+              + lastSeqName, lastSeqName);
+
         // Add sequence
         if (lastSeqName != null)
           result.addSequence(parsedSeqName, chrSize);
 
         // Parse chromosome name
         parsedSeqName = parseChromosomeName(seqName);
+
+        if (parsedSeqName == null)
+          throw new IOException("No fasta header found.");
 
         // Update digest with chromosome name
         if (md5Digest != null)
@@ -340,6 +389,8 @@ public class GenomeDescription {
       }
 
       final String sequence = parser.getSequence();
+      if (sequence == null)
+        throw new IOException("No fasta sequence found.");
 
       // Check the sequence and increment the length of the sequence
       chrSize += checkBases(sequence, lastSeqName, alphabet);
@@ -361,16 +412,27 @@ public class GenomeDescription {
     return result;
   }
 
-  private static String parseChromosomeName(final String fastaHeader) {
+  private static String parseChromosomeName(final String fastaHeader)
+      throws BadBioEntryException {
 
     if (fastaHeader == null)
       return null;
+
+    if ("".equals(fastaHeader.trim()))
+      throw new BadBioEntryException("Sequence header is empty", ">"
+          + fastaHeader);
+
+    if (fastaHeader.startsWith(" "))
+      throw new BadBioEntryException(
+          "A whitespace was found at the begining of the sequence name", ">"
+              + fastaHeader);
 
     final String s = fastaHeader.trim();
     String[] fields = s.split("\\s");
 
     if (fields == null || fields.length == 0)
-      return null;
+      throw new BadBioEntryException("Invalid sequence header", ">"
+          + fastaHeader);
 
     return fields[0];
   }

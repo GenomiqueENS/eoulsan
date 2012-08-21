@@ -50,5 +50,5 @@ public final class FilteredMapperResultsSamDataFormat extends
 
     return FORMAT_NAME;
   }
-
+  
 }

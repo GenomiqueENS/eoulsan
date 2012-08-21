@@ -75,7 +75,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
   @Override
@@ -84,7 +84,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
     if (this.distance < 0)
       throw new IllegalArgumentException(
           "The distance from the reference is not set for "
-              + getName() + " read alignments filter.");
+              + getName() + " alignments alignments filter.");
   }
 
   @Override

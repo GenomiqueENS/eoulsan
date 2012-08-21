@@ -41,6 +41,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
   
   public static final String FILTER_NAME = "keeponematch";
+  // TODO Claire : Why keep is not used ?
   private boolean keep = false;
 
   @Override
@@ -102,7 +103,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
 }

@@ -24,16 +24,26 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -44,14 +54,18 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class GenomicArray<T> {
 
-  private final Map<String, ChromosomeZones<T>> chromosomes = Utils
-      .newHashMap();
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  private Map<String, ChromosomeZones<T>> chromosomes = Utils.newHashMap();
 
   /**
    * This class define a zone in a ChromosomeZone object.
    * @author Laurent Jourdren
    */
   private static final class Zone<T> implements Serializable {
+
+    private static final long serialVersionUID = 3581472137861260840L;
 
     private final int start;
     private int end;
@@ -152,7 +166,46 @@ public class GenomicArray<T> {
         for (T e : getValues())
           r.add(e.toString());
 
-      return "[" + this.start + "," + this.end + "," + r + "]";
+      return this.getClass().getSimpleName()
+          + "{" + this.start + "," + this.end + "," + r + "}";
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof Zone<?>))
+        return false;
+
+      final Zone<T> that = (Zone<T>) o;
+
+      if (!(Utils.equal(this.valueCount, that.valueCount)
+          && Utils.equal(this.start, that.start)
+          && Utils.equal(this.end, that.end) && Utils.equal(this.strand,
+          that.strand)))
+        return false;
+
+      switch (this.valueCount) {
+
+      case 0:
+        return true;
+
+      case 1:
+        return Utils.equal(this._value, that._value);
+
+      default:
+        return Utils.equal(this._values, that._values);
+      }
+
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this._value, this._values, this.start, this.end,
+          this.strand, this.valueCount);
     }
 
     //
@@ -194,6 +247,8 @@ public class GenomicArray<T> {
    * @author Laurent Jourdren
    */
   private static final class ChromosomeStrandedZones<T> implements Serializable {
+
+    private static final long serialVersionUID = 8073207058699194059L;
 
     private final String chromosomeName;
     private int length = 0;
@@ -266,44 +321,6 @@ public class GenomicArray<T> {
       }
     }
 
-    // private int findIndexPos(final int pos, final char strand,
-    // final String stranded) {
-    //
-    // if (pos < 1 || pos > this.length)
-    // return -1;
-    //
-    // int minIndex = 0;
-    // int maxIndex = zones.size() - 1;
-    // int index = 0;
-    //
-    // while (true) {
-    //
-    // final int diff = maxIndex - minIndex;
-    // index = minIndex + diff / 2;
-    //
-    // if (diff == 1) {
-    //
-    // if (get(minIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
-    // return minIndex;
-    // if (get(maxIndex).compareTo(pos) == 0 && get(minIndex).strand == strand)
-    // return maxIndex;
-    //
-    // assert (false);
-    // }
-    //
-    // final Zone<T> z = get(index);
-    //
-    // final int comp = z.compareTo(pos);
-    // if (comp == 0 && z.strand == strand)
-    // return index;
-    //
-    // if (comp < 0)
-    // maxIndex = index;
-    // else
-    // minIndex = index;
-    // }
-    // }
-
     /**
      * Split a zone in two zone.
      * @param zone zone to split
@@ -332,7 +349,9 @@ public class GenomicArray<T> {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (interval.getEnd() > this.length) {
-        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
+        final Set<T> val = new TreeSet<T>();
+        val.add(value);
+        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand(), val));
         this.length = intervalEnd;
       }
 
@@ -392,85 +411,6 @@ public class GenomicArray<T> {
       }
     }
 
-    // public void addEntry(final GenomicInterval interval, final T value,
-    // final String stranded) {
-    //
-    // final int intervalStart = interval.getStart();
-    // final int intervalEnd = interval.getEnd();
-    // final char intervalStrand = interval.getStrand();
-    //
-    // // Create an empty zone if the interval is after the end of the
-    // // last chromosome zone
-    // if (interval.getEnd() > this.length) {
-    // add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
-    // this.length = intervalEnd;
-    // }
-    //
-    // final int indexStart;
-    // final int indexEnd;
-    //
-    // if (stranded.equals("no")) {
-    // indexStart = findIndexPos(intervalStart);
-    // indexEnd = findIndexPos(intervalEnd);
-    // } else {
-    // indexStart =
-    // findIndexPos(intervalStart, intervalStrand, stranded);
-    // indexEnd = findIndexPos(intervalEnd, intervalStrand, stranded);
-    // }
-    //
-    // final Zone<T> z1 = get(indexStart);
-    // final Zone<T> z1b;
-    // final int count1b;
-    //
-    // if (z1.start == intervalStart) {
-    // z1b = z1;
-    // count1b = 0;
-    // } else {
-    // z1b = splitZone(z1, intervalStart);
-    // count1b = 1;
-    // }
-    //
-    // // Same index
-    // if (indexStart == indexEnd) {
-    //
-    // if (z1b.end == intervalEnd) {
-    // z1b.addExon(value);
-    // } else {
-    //
-    // final Zone<T> z1c = splitZone(z1b, intervalEnd + 1);
-    // add(indexStart + 1, z1c);
-    // }
-    //
-    // if (z1 != z1b) {
-    // z1b.addExon(value);
-    // add(indexStart + 1, z1b);
-    //
-    // } else
-    // z1.addExon(value);
-    //
-    // } else {
-    //
-    // final Zone<T> z2 = get(indexEnd);
-    // final Zone<T> z2b;
-    //
-    // if (z2.end != intervalEnd) {
-    // z2b = splitZone(z2, intervalEnd + 1);
-    // } else
-    // z2b = z2;
-    //
-    // if (z1 != z1b) {
-    // add(indexStart + 1, z1b);
-    // }
-    //
-    // if (z2 != z2b)
-    // add(indexEnd + 1 + count1b, z2b);
-    //
-    // for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
-    // get(i).addExon(value);
-    // }
-    // }
-    // }
-
     /**
      * Get entries.
      * @param start start of the interval
@@ -504,13 +444,6 @@ public class GenomicArray<T> {
               if (result == null)
                 result = Utils.newHashMap();
 
-              // if (chromosomeName.equals("chr2")) {
-              // System.out.println(e);
-              // System.out.println("zone.start : " + zone.start);
-              // System.out.println("zone.end : " + zone.end);
-              // System.out.println("zone.strand : " + zone.strand);
-              // }
-
               result.put(new GenomicInterval(this.chromosomeName, zone.start,
                   zone.end, zone.strand), e);
             }
@@ -537,6 +470,36 @@ public class GenomicArray<T> {
           || (start < startZone && end > endZone);
     }
 
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+        return false;
+
+      final ChromosomeStrandedZones<T> that = (ChromosomeStrandedZones<T>) o;
+
+      return Utils.equal(this.chromosomeName, that.chromosomeName)
+          && Utils.equal(this.length, that.length)
+          && Utils.equal(this.zones, that.zones);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this.chromosomeName, this.length, this.zones);
+    }
+
+    @Override
+    public String toString() {
+
+      return this.getClass().getSimpleName()
+          + "{chromosomeName=" + this.chromosomeName + ", length="
+          + this.length + ", zones=" + this.zones + "}";
+    }
+
     //
     // Constructor
     //
@@ -553,10 +516,12 @@ public class GenomicArray<T> {
 
   /**
    * This class define an object that contains all the zones of a chromosome.
-   * These zones are stranded if "yes" or "reverse". 
+   * These zones are stranded if "yes" or "reverse".
    * @author Claire Wallon
    */
   private static final class ChromosomeZones<T> implements Serializable {
+
+    private static final long serialVersionUID = -6312870823086177216L;
 
     private ChromosomeStrandedZones<T> plus;
     private ChromosomeStrandedZones<T> minus;
@@ -569,9 +534,9 @@ public class GenomicArray<T> {
     public void addEntry(final GenomicInterval interval, final T value) {
 
       if (interval.getStrand() == '+' || interval.getStrand() == '.')
-        plus.addEntry(interval, value);
+        this.plus.addEntry(interval, value);
       else if (interval.getStrand() == '-')
-        minus.addEntry(interval, value);
+        this.minus.addEntry(interval, value);
     }
 
     /**
@@ -582,18 +547,49 @@ public class GenomicArray<T> {
      */
     public Map<GenomicInterval, T> getEntries(final int start, final int stop) {
 
-      Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
-      Map<GenomicInterval, T> inter = new HashMap<GenomicInterval, T>();
+      final Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
 
-      inter = plus.getEntries(start, stop);
-      if (inter != null)
-        result.putAll(inter);
-      inter = minus.getEntries(start, stop);
-      if (inter != null)
-        result.putAll(inter);
+      final Map<GenomicInterval, T> interPlus =
+          this.plus.getEntries(start, stop);
+
+      if (interPlus != null)
+        result.putAll(interPlus);
+
+      final Map<GenomicInterval, T> interMinus =
+          this.minus.getEntries(start, stop);
+
+      if (interMinus != null)
+        result.putAll(interMinus);
 
       return result;
+    }
 
+    @Override
+    public boolean equals(final Object o) {
+
+      if (o == this)
+        return true;
+
+      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+        return false;
+
+      final ChromosomeZones<T> that = (ChromosomeZones<T>) o;
+
+      return Utils.equal(this.minus, that.minus)
+          && Utils.equal(this.plus, that.plus);
+    }
+
+    @Override
+    public int hashCode() {
+
+      return Utils.hashCode(this.minus, this.plus);
+    }
+
+    @Override
+    public String toString() {
+
+      return this.getClass().getSimpleName()
+          + "{minus=" + this.minus + ", plus=" + this.plus + "}";
     }
 
     //
@@ -610,6 +606,47 @@ public class GenomicArray<T> {
       this.minus = new ChromosomeStrandedZones<T>(chromosomeName);
     }
   }
+
+  // private void populateMapsFromGFFFile(final InputStream is,
+  // final String featureType, final String stranded, final String attributeId)
+  // throws IOException, BadBioEntryException, EoulsanException {
+  //
+  // // final GenomicArray<String> features = new GenomicArray<String>();
+  // // final Map<String, Integer> counts = Utils.newHashMap();
+  //
+  // final GFFReader gffReader = new GFFReader(is);
+  //
+  // for (final GFFEntry gff : gffReader) {
+  //
+  // if (featureType.equals(gff.getType())) {
+  //
+  // final String featureId = gff.getAttributeValue(attributeId);
+  // if (featureId == null)
+  // throw new EoulsanException("Feature "
+  // + featureType + " does not contain a " + attributeId
+  // + " attribute");
+  //
+  // if ((stranded.equals("yes") || stranded.equals("reverse"))
+  // && '.' == gff.getStrand())
+  // throw new EoulsanException("Feature "
+  // + featureType
+  // + " does not have strand information but you are running "
+  // + "htseq-count in stranded mode.");
+  //
+  // // Addition to the list of features of a GenomicInterval object
+  // // corresponding to the current annotation line
+  // features.addEntry(new GenomicInterval(gff, stranded), featureId);
+  // counts.put(featureId, 0);
+  // }
+  // }
+  // gffReader.throwException();
+  // gffReader.close();
+  //
+  // if (counts.size() == 0)
+  // throw new EoulsanException("Warning: No features of type '"
+  // + featureType + "' found.\n");
+  //
+  // }
 
   /**
    * Add an entry on the genomic array.
@@ -679,5 +716,191 @@ public class GenomicArray<T> {
 
     return this.chromosomes.containsKey(chromosomeName);
   }
+
+  /**
+   * Get a set with zone identifiers.
+   * @return a set of strings with identifiers
+   */
+  public Set<String> getFeaturesIds() {
+
+    Set<String> results = new TreeSet<String>();
+
+    for (Map.Entry<String, ChromosomeZones<T>> strandedZone : this.chromosomes
+        .entrySet()) {
+      for (Zone<T> zone : strandedZone.getValue().plus.zones) {
+        if (zone.valueCount != 0) {
+          for (T value : zone.getValues()) {
+            results.add(String.valueOf(value));
+          }
+        }
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Get the names of the chromosomes that contains the GenomicArray.
+   * @return a set with the name of the chromosomes
+   */
+  public Set<String> getChromosomesNames() {
+
+    return Collections.unmodifiableSet(this.chromosomes.keySet());
+  }
+
+  //
+  // Save
+  //
+
+  /**
+   * Save the annotation.
+   * @param os Output stream
+   */
+  public void save(final OutputStream os) throws IOException {
+
+    final ObjectOutputStream oos = new ObjectOutputStream(os);
+    oos.writeObject(this.chromosomes);
+    oos.close();
+  }
+
+  /**
+   * Save the annotation.
+   * @param outputFile Output file
+   */
+  public void save(final File outputFile) throws FileNotFoundException,
+      IOException {
+
+    save(FileUtils.createOutputStream(outputFile));
+  }
+
+  //
+  // Load
+  //
+
+  /**
+   * Load the annotation.
+   * @param is InputStream input stream
+   */
+  @SuppressWarnings(value = "unchecked")
+  public void load(final InputStream is) throws IOException {
+
+    final ObjectInputStream ois = new ObjectInputStream(is);
+    try {
+      this.chromosomes = (Map<String, ChromosomeZones<T>>) ois.readObject();
+
+    } catch (ClassNotFoundException e) {
+      throw new IOException("Unable to load data.");
+    }
+    ois.close();
+  }
+
+  /**
+   * Load the annotation.
+   * @param inputFile input file
+   */
+  public void load(final File inputFile) throws FileNotFoundException,
+      IOException {
+
+    load(FileUtils.createInputStream(inputFile));
+  }
+
+  //
+  // Other
+  //
+
+  public void clear() {
+
+    this.chromosomes.clear();
+
+  }
+
+  //
+  // Object methods
+  //
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof GenomicArray))
+      return false;
+
+    final GenomicArray<T> that = (GenomicArray<T>) o;
+
+    return Utils.equal(this.chromosomes, that.chromosomes);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Utils.hashCode(this.chromosomes);
+  }
+
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.getClass().getSimpleName()
+        + "{chromosmes=" + this.chromosomes + "}";
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Public constructor.
+   */
+  public GenomicArray() {
+  }
+
+  //
+  // @Override
+  // public String toString() {
+  //
+  // return "Transcripts size: "
+  // + (this.transcripts == null ? "null" : this.transcripts.size());
+  // }
+  //
+  // //
+  // // Constructors
+  // //
+  //
+  // /**
+  // * Public constructor used to create the index.
+  // * @param annotationFile annotation file to use
+  // * @param expressionType the expression type to filter
+  // * @throws IOException if an error occurs while creating the index
+  // * @throws BadBioEntryException if an invalid entry of the annotation file
+  // is
+  // * found
+  // */
+  // public TranscriptAndExonFinder(final File annotationFile,
+  // final String expressionType) throws IOException, BadBioEntryException {
+  //
+  // this(FileUtils.createInputStream(annotationFile), expressionType);
+  // }
+  //
+  // /**
+  // * Public constructor used to create the index.
+  // * @param is annotation input stream to use
+  // * @param expressionType the expression type to filter
+  // * @throws IOException if an error occurs while creating the index
+  // * @throws BadBioEntryException if an invalid entry of the annotation file
+  // is
+  // * found
+  // */
+  // public TranscriptAndExonFinder(final InputStream is,
+  // final String expressionType) throws IOException, BadBioEntryException {
+  //
+  // populateMapsFromGFFFile(is, expressionType);
+  // }
+  //
+  // /**
+  // * Public constructor.
+  // */
+  // public TranscriptAndExonFinder() {
+  // }
 
 }

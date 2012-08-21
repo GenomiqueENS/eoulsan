@@ -28,7 +28,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.util.MapReduceUtilsNewAPI.parseKeyValue;
+import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtilsNewAPI.parseKeyValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.util.HadoopReporter;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 
 /**
  * This class define a read filter mapper.

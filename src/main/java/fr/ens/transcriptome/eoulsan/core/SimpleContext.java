@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -68,6 +69,7 @@ public final class SimpleContext implements Context {
   private String logPathname;
   private String outputPathname;
   private String jobId;
+  private final String host;
   private String designPathname;
   private String paramPathname;
   private String jarPathname;
@@ -108,6 +110,11 @@ public final class SimpleContext implements Context {
   @Override
   public String getJobId() {
     return this.jobId;
+  }
+
+  @Override
+  public String getJobHost() {
+    return this.host;
   }
 
   @Override
@@ -820,6 +827,7 @@ public final class SimpleContext implements Context {
    */
   public SimpleContext(final long millisSinceEpoch) {
     createExecutionName(millisSinceEpoch);
+    this.host = SystemUtils.getHostName();
   }
 
 }

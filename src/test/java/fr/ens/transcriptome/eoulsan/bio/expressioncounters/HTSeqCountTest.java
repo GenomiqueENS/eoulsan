@@ -24,20 +24,16 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Test;
-//import org.apache.commons.io;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.steps.expression.HTSeqCount;
+//import org.apache.commons.io;
 
 /**
  * This class test the class
@@ -50,48 +46,48 @@ public class HTSeqCountTest {
   public void testCountReadsInFeatures() throws EoulsanException, IOException,
       BadBioEntryException {
 
-    InputStream isSE =
-        this.getClass().getResourceAsStream("/mapper_results_SE.sam");
-    InputStream isPE =
-        this.getClass().getResourceAsStream("/mapper_results_PE.sam");
-
-    String line;
-    String fields[];
-    BufferedReader br;
-
-    File dirData = new File("/home/wallon/Bureau/DATA");
-    File dirTest = new File("/home/wallon/Bureau/TEST_HTSEQ/JUNIT");
-
-    File samFileSE = new File(dirTest, "mapper_results_SE.sam");
-    File samFilePE = new File(dirTest, "mapper_results_PE.sam");
-
-    File annotationFileSE = new File(dirData, "annotation.gff");
-    File outputFileSE_union = new File(dirTest, "SE-union-java");
-    File outputFileSE_nonempty = new File(dirTest, "SE-nonempty-java");
-    File outputFileSE_strict = new File(dirTest, "SE-strict-java");
-    File outputFileSE_union_yes = new File(dirTest, "SE-union-java-yes");
-    File outputFileSE_nonempty_yes = new File(dirTest, "SE-nonempty-java-yes");
-    File outputFileSE_strict_yes = new File(dirTest, "SE-strict-java-yes");
-    File outputFileSE_union_reverse =
-        new File(dirTest, "SE-union-java-reverse");
-    File outputFileSE_nonempty_reverse =
-        new File(dirTest, "SE-nonempty-java-reverse");
-    File outputFileSE_strict_reverse =
-        new File(dirTest, "SE-strict-java-reverse");
-
-    File annotationFilePE = new File(dirData, "mouse.gff");
-    File outputFilePE_union = new File(dirTest, "PE-union-java");
-    File outputFilePE_nonempty = new File(dirTest, "PE-nonempty-java");
-    File outputFilePE_strict = new File(dirTest, "PE-strict-java");
-    File outputFilePE_union_yes = new File(dirTest, "PE-union-java-yes");
-    File outputFilePE_nonempty_yes = new File(dirTest, "PE-nonempty-java-yes");
-    File outputFilePE_strict_yes = new File(dirTest, "PE-strict-java-yes");
-    File outputFilePE_union_reverse =
-        new File(dirTest, "PE-union-java-reverse");
-    File outputFilePE_nonempty_reverse =
-        new File(dirTest, "PE-nonempty-java-reverse");
-    File outputFilePE_strict_reverse =
-        new File(dirTest, "PE-strict-java-reverse");
+//    InputStream isSE =
+//        this.getClass().getResourceAsStream("/mapper_results_SE.sam");
+//    InputStream isPE =
+//        this.getClass().getResourceAsStream("/mapper_results_PE.sam");
+//
+//    String line;
+//    String fields[];
+//    BufferedReader br;
+//
+//    File dirData = new File("/home/wallon/Bureau/DATA");
+//    File dirTest = new File("/home/wallon/Bureau/TEST_HTSEQ/JUNIT");
+//
+//    File samFileSE = new File(dirTest, "mapper_results_SE.sam");
+//    File samFilePE = new File(dirTest, "mapper_results_PE.sam");
+//
+//    File annotationFileSE = new File(dirData, "annotation.gff");
+//    File outputFileSE_union = new File(dirTest, "SE-union-java");
+//    File outputFileSE_nonempty = new File(dirTest, "SE-nonempty-java");
+//    File outputFileSE_strict = new File(dirTest, "SE-strict-java");
+//    File outputFileSE_union_yes = new File(dirTest, "SE-union-java-yes");
+//    File outputFileSE_nonempty_yes = new File(dirTest, "SE-nonempty-java-yes");
+//    File outputFileSE_strict_yes = new File(dirTest, "SE-strict-java-yes");
+//    File outputFileSE_union_reverse =
+//        new File(dirTest, "SE-union-java-reverse");
+//    File outputFileSE_nonempty_reverse =
+//        new File(dirTest, "SE-nonempty-java-reverse");
+//    File outputFileSE_strict_reverse =
+//        new File(dirTest, "SE-strict-java-reverse");
+//
+//    File annotationFilePE = new File(dirData, "mouse.gff");
+//    File outputFilePE_union = new File(dirTest, "PE-union-java");
+//    File outputFilePE_nonempty = new File(dirTest, "PE-nonempty-java");
+//    File outputFilePE_strict = new File(dirTest, "PE-strict-java");
+//    File outputFilePE_union_yes = new File(dirTest, "PE-union-java-yes");
+//    File outputFilePE_nonempty_yes = new File(dirTest, "PE-nonempty-java-yes");
+//    File outputFilePE_strict_yes = new File(dirTest, "PE-strict-java-yes");
+//    File outputFilePE_union_reverse =
+//        new File(dirTest, "PE-union-java-reverse");
+//    File outputFilePE_nonempty_reverse =
+//        new File(dirTest, "PE-nonempty-java-reverse");
+//    File outputFilePE_strict_reverse =
+//        new File(dirTest, "PE-strict-java-reverse");
 
     // All results from HTSeqCount are compared with the HTSeq-count (pyhton
     // implementation) results

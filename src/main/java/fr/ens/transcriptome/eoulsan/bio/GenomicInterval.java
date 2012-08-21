@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import java.io.Serializable;
 
-import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -37,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class GenomicInterval implements Serializable,
     Comparable<GenomicInterval> {
+
+  private static final long serialVersionUID = 1974207984076778441L;
 
   private String chromosome;
   private int start;
@@ -116,17 +117,6 @@ public class GenomicInterval implements Serializable,
         || (start < this.start && end > this.end);
   }
 
-  // /**
-  // *
-  // * @param start
-  // * @param end
-  // * @return
-  // */
-  // public final boolean equals(final int start, final int end) {
-  //
-  // return (start == this.start && end == this.end);
-  // }
-
   @Override
   public int compareTo(final GenomicInterval e) {
 
@@ -156,7 +146,7 @@ public class GenomicInterval implements Serializable,
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof Exon))
+    if (o == null || !(o instanceof GenomicInterval))
       return false;
 
     final GenomicInterval that = (GenomicInterval) o;
@@ -224,18 +214,30 @@ public class GenomicInterval implements Serializable,
    */
   public GenomicInterval(final GFFEntry gffEntry) {
 
-    this(gffEntry, "yes");
+    this(gffEntry, true);
   }
 
   /**
    * Public constructor
    * @param gffEntry GFF entry
-   * @param stranded save the strand information if "true" or "reverse"
+   * @param stranded save the strand information
    */
-  public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
+  public GenomicInterval(final GFFEntry gffEntry, final boolean saveStrandInfo) {
 
-    this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
-        .equals("yes") || stranded.equals("reverse") ? gffEntry.getStrand() : '.');
+    this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(),
+        saveStrandInfo ? gffEntry.getStrand() : '.');
   }
+
+  // /**
+  // * Public constructor
+  // * @param gffEntry GFF entry
+  // * @param stranded save the strand information if "true" or "reverse"
+  // */
+  // public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
+  //
+  // this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
+  // .equals("yes") || stranded.equals("reverse")
+  // ? gffEntry.getStrand() : '.');
+  // }
 
 }
