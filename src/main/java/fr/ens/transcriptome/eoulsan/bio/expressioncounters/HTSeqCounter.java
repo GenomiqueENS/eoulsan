@@ -30,14 +30,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
@@ -46,7 +44,6 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -59,14 +56,11 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
- * This class define a wrapper on the HTSeq-count counter.
+ * This class defines a wrapper on the HTSeq-count counter.
  * @since 1.2
  * @author Claire Wallon
  */
 public class HTSeqCounter extends AbstractExpressionCounter {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String COUNTER_NAME = "htseq-count";
 
@@ -80,20 +74,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   protected void internalCount(File alignmentFile, DataFile annotationFile,
       File expressionFile, final DataFile GenomeDescFile, Reporter reporter,
       String counterGroup) throws IOException {
-
-    LOGGER
-        .info("Command line equivalent to the program HTSeq-count: htseq-count -m "
-            + getOverlapMode()
-            + " -s "
-            + getStranded()
-            + " -t "
-            + getGenomicType()
-            + " -i ID "
-            + alignmentFile.getAbsolutePath()
-            + " -o " + alignmentFile.getParent() + "htseq-out.sam "
-            + annotationFile.getName()
-            + " > "
-            + expressionFile.getAbsolutePath());
 
     try {
 
@@ -143,7 +123,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final Map<String, Integer> counts = Utils.newHashMap();
 
     final Writer writer = FileUtils.createBufferedWriter(outFile);
-//    Writer writer = new FileWriter(outFile);
+    // Writer writer = new FileWriter(outFile);
     Writer samout = new FileWriter(new File("htseq-out.sam"));
 
     boolean pairedEnd = false;
@@ -159,6 +139,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (featureId == null) {
           gffReader.close();
           writer.close();
+          samout.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
@@ -168,6 +149,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
             && '.' == gff.getStrand()) {
           gffReader.close();
           writer.close();
+          samout.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
@@ -207,7 +189,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     int notaligned = 0;
     int lowqual = 0;
     int nonunique = 0;
-    int i = 0;
     SAMRecord sam1 = null, sam2 = null;
 
     // Read the SAM file
@@ -215,10 +196,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       reporter.incrCounter(counterGroup,
           ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(), 1);
-
-      i++;
-      if (i % 1000000 == 0)
-        System.out.println(i + " sam entries read.");
 
       // single-end mode
       if (!pairedEnd) {
@@ -313,7 +290,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       Set<String> fs = null;
 
-      fs = featuresOverlapped(ivSeq, features, overlapMode, stranded);
+      samout.write("\n" + ivSeq.toString());
+      fs = featuresOverlapped(samout, ivSeq, features, overlapMode, stranded);
 
       if (fs == null)
         fs = new HashSet<String>();
@@ -442,6 +420,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
                 ? '+' : '-'));
     }
 
+    else
+      return null;
+
     return result;
   }
 
@@ -492,13 +473,16 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @return the set of features that overlap genomic intervals according to the
    *         overlap mode.
    * @throws EoulsanException
+   * @throws IOException
    */
-  private static Set<String> featuresOverlapped(List<GenomicInterval> ivList,
-      GenomicArray<String> features, OverlapMode mode, StrandUsage stranded)
-      throws EoulsanException {
+  private static Set<String> featuresOverlapped(Writer samout,
+      List<GenomicInterval> ivList, GenomicArray<String> features,
+      OverlapMode mode, StrandUsage stranded) throws EoulsanException,
+      IOException {
 
     Set<String> fs = null;
-    Map<GenomicInterval, String> inter = new HashMap<GenomicInterval, String>();
+    Map<GenomicInterval, Set<String>> inter =
+        new HashMap<GenomicInterval, Set<String>>();
 
     // Overlap mode "union"
     if (mode == OverlapMode.UNION) {
@@ -513,24 +497,27 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           throw new EoulsanException("Unknown chromosome: " + chr);
 
         // Get features that overlap the current interval of the read
-        Map<GenomicInterval, String> intervals =
+        Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
         if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());
           }
           intervals = inter;
         }
 
+        samout.write("\n" + intervals.toString() + "\n");
+
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          // Add all the features that overlap the current interval to the set
-          if (values != null)
-            fs.addAll(values);
+          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
+            if (e.getValue() != null)
+              fs.addAll(e.getValue());
+          }
         }
+
       }
     }
 
@@ -547,11 +534,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           throw new EoulsanException("Unknown chromosome: " + chr);
 
         // Get features that overlap the current interval of the read
-        Map<GenomicInterval, String> intervals =
+        Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
         if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());
           }
@@ -560,17 +547,25 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          if (values != null) {
 
-            // Determine features that correspond to the overlap mode
-            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+          // Determine features that correspond to the overlap mode
 
-              featureTmp.clear();
+          // for each position (nucleotide) in the GenomicInterval from the read
+          for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
 
-              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+            featureTmp.clear();
+
+            // for each GenomicInterval from the GFF file overlapping the
+            // current GenomicInterval from the read
+            // ???? really needed of this loop for ? => maybe it is better to
+            // loop first on intervals and then on the positions in these
+            // intervals
+            for (Map.Entry<GenomicInterval, Set<String>> e : intervals
+                .entrySet()) {
+              if (e.getValue() != null) {
+
                 if (e.getKey().include(pos, pos))
-                  featureTmp.add(e.getValue());
+                  featureTmp.addAll(e.getValue());
               }
 
               if (featureTmp.size() > 0) {
@@ -580,7 +575,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
                 } else
                   fs.retainAll(featureTmp);
               }
-
             }
           }
         }
@@ -600,13 +594,13 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           throw new EoulsanException("Unknown chromosome: " + chr);
 
         // Get features that overlapped the current interval of the read
-        Map<GenomicInterval, String> intervals =
+        Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
         // LOGGER.info("intervals size before : "+intervals.size());
 
         if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
               inter.put(e.getKey(), e.getValue());
           }
@@ -615,26 +609,29 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          if (values != null) {
 
-            // Determine features that correspond to the overlap mode
-            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+          // Determine features that correspond to the overlap mode
 
-              featureTmp.clear();
+          // for each position (nucleotide) in the GenomicInterval from the read
+          for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
 
-              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-                if (e.getKey().include(pos, pos)) {
-                  featureTmp.add(e.getValue());
-                }
+            featureTmp.clear();
+
+            // for each GenomicInterval from the GFF file overlapping the
+            // current GenomicInterval from the read
+            for (Map.Entry<GenomicInterval, Set<String>> e : intervals
+                .entrySet()) {
+              if (e.getValue() != null) {
+                if (e.getKey().include(pos, pos))
+                  featureTmp.addAll(e.getValue());
               }
-
-              if (fs == null) {
-                fs = new HashSet<String>();
-                fs.addAll(featureTmp);
-              } else
-                fs.retainAll(featureTmp);
             }
+
+            if (fs == null) {
+              fs = new HashSet<String>();
+              fs.addAll(featureTmp);
+            } else
+              fs.retainAll(featureTmp);
           }
         }
 
@@ -645,11 +642,25 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           else
             fs.clear();
         }
-
       }
     }
 
     return fs;
   }
+
+  // public static void main(String[] args) throws EoulsanException,
+  // IOException,
+  // BadBioEntryException {
+  //
+  // File alignmentFile = new
+  // File("/home/Bureau/BOWTIE/filtered_mapper_results_1.sam");
+  // DataFile annotationFile = new DataFile("gene_chr9.gff");
+  // File expressionFile = new File("expression_main.tsv");
+  //
+  // countReadsInFeatures(alignmentFile, annotationFile.open(),
+  // expressionFile, StrandUsage.YES, OverlapMode.UNION, "gene",
+  // "ID", false, 0, null, null, null);
+  //
+  // }
 
 }
