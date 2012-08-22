@@ -111,7 +111,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
   @Override
@@ -119,7 +119,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
     if (this.qualityThreshold < 0.0)
       throw new IllegalArgumentException("Quality threshold is not set for "
-          + getName() + " read alignments filter.");
+          + getName() + " alignments filter.");
   }
 
 }

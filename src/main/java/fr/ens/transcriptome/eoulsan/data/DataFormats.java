@@ -58,7 +58,7 @@ public class DataFormats {
   public static final DataFormat BWA_INDEX_ZIP = resgistry
       .getDataFormatFromName(BWAIndexZipDataFormat.FORMAT_NAME);
 
-  /** BWA index data format. */
+  /** Bowtie index data format. */
   public static final DataFormat BOWTIE_INDEX_ZIP = resgistry
       .getDataFormatFromName(BowtieIndexZipDataFormat.FORMAT_NAME);
 

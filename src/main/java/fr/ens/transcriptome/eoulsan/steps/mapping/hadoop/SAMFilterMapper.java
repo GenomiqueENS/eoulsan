@@ -50,15 +50,11 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  * @author Laurent Jourdren
  */
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
-  // public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text>
-  // {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Parameters keys
-  // static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
-  // Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
@@ -67,13 +63,6 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private List<String> idFields = newArrayList();
 
-  // private static final int MAX_MAPPING_QUALITY_THRESHOLD = 255;
-
-  // private int mappingQualityThreshold;
-
-  // private ReadAlignmentsFilter filter;
-
-  // private final SAMParser parser = new SAMParser();
   private String counterGroup;
 
   private final Text outKey = new Text();
