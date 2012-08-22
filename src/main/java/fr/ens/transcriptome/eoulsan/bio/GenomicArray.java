@@ -570,7 +570,7 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+      if (o == null || !(o instanceof ChromosomeZones<?>))
         return false;
 
       final ChromosomeZones<T> that = (ChromosomeZones<T>) o;
