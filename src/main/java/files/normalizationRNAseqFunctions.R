@@ -49,6 +49,7 @@ plotDispEsts <- function( cds ) {
 	plot(
 			rowMeans( readCount ), 
 			fitInfo(cds)$perGeneDispEsts, pch = '.', log="xy",
+			main = "Dispersion estimation scatter plot",
 			xlab="log gene counts mean",
 			ylab="log dispersion"
 	)
@@ -74,26 +75,29 @@ anaDiff <- function(cds, outpath){
 		for(j in (i + 1):length(cond)){
 			cond1 <- cond[i]
 			cond2 <- cond[j]
-			# compute différential analysis
-			result <- nbinomTest(cds, cond1, cond2)
-			# rename columns
-			colnames(result)[3] <- paste("baseMean", cond1, sep="_")
-			colnames(result)[4] <- paste("baseMean", cond2, sep="_")
-			colnames(result)[5] <- paste("FoldChange", cond1,"-", cond2, sep="")
-			# sort results by padj
-			sortedResult<- result[order(result$padj),]
-			# write results into a file
-			nameComp <- paste(cond1, cond2, sep="-")
-			write.table(
-					sortedResult, 
-					paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
-					sep="\t",row.names=F, quote=F
-			)
 			
-			# plot MA-plot of the differential analysis
-			maPlot(result, nameComp, outpath, out = TRUE)
-			# plot pvalue distribution
-			plotPvalueDist(result, cond1, cond2, outpath, out = TRUE)
+			if(cond1 != cond2){
+				# compute différential analysis
+				result <- nbinomTest(cds, cond1, cond2)
+				# rename columns
+				colnames(result)[3] <- paste("baseMean", cond1, sep="_")
+				colnames(result)[4] <- paste("baseMean", cond2, sep="_")
+				colnames(result)[5] <- paste("FoldChange_", cond2,"-", cond1, sep="")
+				# sort results by padj
+				sortedResult<- result[order(result$padj),]
+				# write results into a file
+				nameComp <- paste(cond1, cond2, sep="-")
+				write.table(
+						sortedResult, 
+						paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
+						sep="\t",row.names=F, quote=F
+				)
+				
+				# plot MA-plot of the differential analysis
+				maPlot(result, nameComp, outpath, out = TRUE)
+				# plot pvalue distribution
+				plotPvalueDist(result, cond2, cond1, outpath, out = TRUE)
+			}else{}
 		}
 	}	
 	
@@ -112,21 +116,26 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 	Conds <- levels(conditions(cds))
 	
 	for (cond in Conds) {
-		# compute différential analysis
-		result <- nbinomTest(cds, ref, cond)
-		# rename columns
-		colnames(result)[3] <- paste("baseMean", ref, sep="_")
-		colnames(result)[4] <- paste("baseMean", cond, sep="_")
-		# write results into a file
-		nameComp <- paste(ref, cond, sep="_vs_")
-		write.table(
-				result, 
-				paste(outpath, "diffana-", nameComp, ".tsv", sep=""),
-				sep="\t",row.names=F, quote=F
-		)
-		
-		# plot MA-plot of the differential analysis
-		maPlot(result, nameComp, outpath, out = TRUE)
+		if(cond != ref){
+			# compute differential analysis
+			result <- nbinomTest(cds, ref, cond)
+			# rename columns
+			colnames(result)[3] <- paste("baseMean", ref, sep="_")
+			colnames(result)[4] <- paste("baseMean", cond, sep="_")
+			colnames(result)[5] <- paste("FoldChange_", cond,"-", ref, sep="")
+			# write results into a file
+			nameComp <- paste(cond, ref, sep="-")
+			write.table(
+					result, 
+					paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
+					sep="\t",row.names=F, quote=F
+			)
+			
+			# plot MA-plot of the differential analysis
+			maPlot(result, nameComp, outpath, out = TRUE)
+			# plot pvalue distribution
+			plotPvalueDist(result, cond, ref, outpath, out = TRUE)
+		}else{}
 	}
 }
 
@@ -522,7 +531,7 @@ barplotNull <- function(target, outpath = "" , out=FALSE){
 	barplot(N,
 			col = bioGroupColors,
 			main = paste(target$projectName, ", proportion of null counts per Sample",sep=""),
-			ylab = "log2(counts+1)",
+			ylab = "proportion of null count",
 			ylim = c(0,1),
 			las=3
 	)
@@ -737,7 +746,7 @@ normalizeTarget <- function(target){
 
 # -----------------------------------------------------------------------------
 # sortTarget
-# sort all element of a target list by condition (condition)
+# sort all element of a target list by condition
 # -----------------------------------------------------------------------------
 
 sortTarget <- function(target){
