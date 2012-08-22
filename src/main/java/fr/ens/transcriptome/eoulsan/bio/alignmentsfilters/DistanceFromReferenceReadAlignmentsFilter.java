@@ -109,11 +109,10 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
 
     // paired-end mode
     else {
-      SAMRecord r1 = null, r2 = null;
       for (int counterRecord = 0; counterRecord < records.size() - 1; counterRecord +=
           2) {
-        r1 = records.get(counterRecord);
-        r2 = records.get(counterRecord + 1);
+        final SAMRecord r1 = records.get(counterRecord);
+        final SAMRecord r2 = records.get(counterRecord + 1);
         if (!r1.getCigarString().contains("S")
             && !r1.getCigarString().contains("H")
             && r1.getAttribute("NM") != null
