@@ -191,7 +191,7 @@ public class DiffAna {
       String condition = rCondNames.get(i);
       for (int j = 0; j < rRepTechGroup.size(); j++) {
         String repTechGroup2 = rRepTechGroup.get(j);
-        if (repTechGroup2.equals(repTechGroup1)) {
+        if (!repTechGroup2.equals(repTechGroup1)) {
           if (rCondNames.get(j).equals(condition)) {
             throw new EoulsanException(
                 "There is a mistake in RepTechGroup field of design file : "
