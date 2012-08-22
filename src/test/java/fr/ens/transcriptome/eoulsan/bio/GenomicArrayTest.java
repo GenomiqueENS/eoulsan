@@ -24,21 +24,19 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
+import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Claire Wallon
  */
 public class GenomicArrayTest {
-
-  @Test
-  public void bidon() {
-  }
 
   // /**
   // * @throws java.lang.Exception
@@ -77,108 +75,142 @@ public class GenomicArrayTest {
     GenomicArray<String> ga = new GenomicArray<String>();
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-    
-    
 
     // Add [10,50]=a
     GenomicInterval iv1 = fgi.iv(10, 50);
     ga.addEntry(iv1, "a");
-    
-    Map<GenomicInterval,String> r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    
-    assertTrue(r.containsKey(fgi.iv(10,50)));
-    assertFalse(r.containsKey(fgi.iv(60,70)));
-    
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 50)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
     // Add [60,70]=a
     ga.addEntry(fgi.iv(60, 70), "b");
-    
-    r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    assertTrue(r.containsKey(fgi.iv(60,70)));
 
-    System.out.println(ga.getEntries(fgi.chromosome, 1, 100));
-    
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(60, 70)));
   }
 
-  
   @Test
   public void testAddEntry2() {
 
-    System.out.println("=====");
-    
     GenomicArray<String> ga = new GenomicArray<String>();
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-    
-    
 
     // Add [10,20]=a
     GenomicInterval iv1 = fgi.iv(10, 20);
     ga.addEntry(iv1, "a");
-    
-    Map<GenomicInterval,String> r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    
-    assertTrue(r.containsKey(fgi.iv(10,20)));
-    assertFalse(r.containsKey(fgi.iv(60,70)));
-    
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 20)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
     // Add [15,25]=a
     ga.addEntry(fgi.iv(15, 25), "b");
-    
-    r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    assertTrue(r.containsKey(fgi.iv(10,14)));
-    assertTrue(r.containsKey(fgi.iv(15,20)));
-    assertTrue(r.containsKey(fgi.iv(21,25)));
-    
 
-    System.out.println(ga.getEntries(fgi.chromosome, 1, 100));
-    
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 14)));
+    assertEquals(1, r.get(fgi.iv(10, 14)).size());
+
+    assertTrue(r.containsKey(fgi.iv(15, 20)));
+    assertEquals(2, r.get(fgi.iv(15, 20)).size());
+
+    assertTrue(r.containsKey(fgi.iv(21, 25)));
+    assertEquals(1, r.get(fgi.iv(21, 25)).size());
   }
-  
-  //@Test
+
+  @Test
   public void testAddEntry3() {
 
-    System.out.println("=====");
-    
     GenomicArray<String> ga = new GenomicArray<String>();
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-    
-    
-
 
     GenomicInterval iv1 = fgi.iv(15, 20);
     ga.addEntry(iv1, "a");
-    
-    Map<GenomicInterval,String> r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    
-    assertTrue(r.containsKey(fgi.iv(15,20)));
-    assertFalse(r.containsKey(fgi.iv(60,70)));
-    
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(15, 20)));
+    assertEquals(1, r.get(fgi.iv(15, 20)).size());
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
     // Add [15,25]=a
     ga.addEntry(fgi.iv(5, 10), "b");
-    
-    r = ga.getEntries(fgi.chromosome, 1, 100);
-    System.out.println(r);
-    
-    assertTrue(r.containsKey(fgi.iv(15,20)));
-    assertTrue(r.containsKey(fgi.iv(5,10)));
-  
-    
 
-    System.out.println(ga.getEntries(fgi.chromosome, 1, 100));
-    
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(15, 20)));
+    assertEquals(1, r.get(fgi.iv(15, 20)).size());
+    assertTrue(r.containsKey(fgi.iv(5, 10)));
+    assertEquals(1, r.get(fgi.iv(5, 10)).size());
   }
-  
-  
+
+  @Test
+  public void testAddEntry4() {
+
+    GenomicArray<String> ga = new GenomicArray<String>();
+
+    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+
+    GenomicInterval iv1 = fgi.iv(10, 20);
+    ga.addEntry(iv1, "a");
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 20)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [15,25]=a
+    ga.addEntry(fgi.iv(20, 30), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 19)));
+    assertEquals(1, r.get(fgi.iv(10, 19)).size());
+
+    assertTrue(r.containsKey(fgi.iv(20, 20)));
+    assertEquals(2, r.get(fgi.iv(20, 20)).size());
+
+    assertTrue(r.containsKey(fgi.iv(21, 30)));
+    assertEquals(1, r.get(fgi.iv(21, 30)).size());
+  }
+
+  @Test
+  public void testAddEntry5() {
+
+    GenomicArray<String> ga = new GenomicArray<String>();
+
+    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+
+    GenomicInterval iv1 = fgi.iv(20, 40);
+    ga.addEntry(iv1, "a");
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [15,25]=a
+    ga.addEntry(fgi.iv(25, 35), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 24)));
+    assertEquals(1, r.get(fgi.iv(20, 24)).size());
+
+    assertTrue(r.containsKey(fgi.iv(25, 35)));
+    assertEquals(2, r.get(fgi.iv(25, 35)).size());
+
+    assertTrue(r.containsKey(fgi.iv(36, 40)));
+    assertEquals(1, r.get(fgi.iv(36, 40)).size());
+  }
+
   //
   // /**
   // * Test method for
