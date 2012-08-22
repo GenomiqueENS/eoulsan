@@ -48,9 +48,11 @@ public class SAMComparator implements Comparator<SAMRecord> {
 
     if (comp == 0) {
       // Compare the mapping quality scores
-      Integer score0 = new Integer(r0.getMappingQuality());
-      Integer score1 = new Integer(r1.getMappingQuality());
-      comp = score0.compareTo(score1);
+//      Integer score0 = new Integer(r0.getMappingQuality());
+//      Integer score1 = new Integer(r1.getMappingQuality());
+      
+      // A VERIFIER 
+      comp = r0.getMappingQuality()-r1.getMappingQuality();
 
       if (comp == 0) {
         // Compare the reference names (chromosomes)
