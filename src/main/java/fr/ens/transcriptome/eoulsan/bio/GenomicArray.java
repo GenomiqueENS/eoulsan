@@ -34,7 +34,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -348,10 +347,10 @@ public class GenomicArray<T> {
 
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
-      if (interval.getEnd() > this.length) {
+      if (intervalEnd > this.length) {
         final Set<T> val = new TreeSet<T>();
         val.add(value);
-        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand(), val));
+        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
       }
 
@@ -417,7 +416,8 @@ public class GenomicArray<T> {
      * @param stop end of the interval
      * @return a map with the values
      */
-    public Map<GenomicInterval, T> getEntries(final int start, final int stop) {
+    public Map<GenomicInterval, Set<T>> getEntries(final int start,
+        final int stop) {
 
       final int indexStart = findIndexPos(start);
       final int indexEnd = findIndexPos(stop);
@@ -428,26 +428,27 @@ public class GenomicArray<T> {
       final int from = indexStart;
       final int to = indexEnd == -1 ? this.zones.size() - 1 : indexEnd;
 
-      Map<GenomicInterval, T> result = null;
+      Map<GenomicInterval, Set<T>> result = null;
 
       for (int i = from; i <= to; i++) {
 
         final Zone<T> zone = get(i);
-        final Set<T> r = zone.getValues();
-        if (r != null) {
 
-          for (T e : r)
+        // Really needed ?
+        if (intersect(start, stop, zone.start, zone.end)) {
 
-            // Really needed ?
-            if (intersect(start, stop, zone.start, zone.end)) {
+          final GenomicInterval iv =
+              new GenomicInterval(this.chromosomeName, zone.start, zone.end,
+                  zone.strand);
 
-              if (result == null)
-                result = Utils.newHashMap();
+          final Set<T> r = zone.getValues();
+          if (r != null) {
 
-              result.put(new GenomicInterval(this.chromosomeName, zone.start,
-                  zone.end, zone.strand), e);
-            }
+            if (result == null)
+              result = Utils.newHashMap();
 
+            result.put(iv, Collections.unmodifiableSet(r));
+          }
         }
       }
 
@@ -545,17 +546,18 @@ public class GenomicArray<T> {
      * @param stop end of the interval
      * @return a map with the values
      */
-    public Map<GenomicInterval, T> getEntries(final int start, final int stop) {
+    public Map<GenomicInterval, Set<T>> getEntries(final int start,
+        final int stop) {
 
-      final Map<GenomicInterval, T> result = new HashMap<GenomicInterval, T>();
+      final Map<GenomicInterval, Set<T>> result = Utils.newHashMap();
 
-      final Map<GenomicInterval, T> interPlus =
+      final Map<GenomicInterval, Set<T>> interPlus =
           this.plus.getEntries(start, stop);
 
       if (interPlus != null)
         result.putAll(interPlus);
 
-      final Map<GenomicInterval, T> interMinus =
+      final Map<GenomicInterval, Set<T>> interMinus =
           this.minus.getEntries(start, stop);
 
       if (interMinus != null)
@@ -607,47 +609,6 @@ public class GenomicArray<T> {
     }
   }
 
-  // private void populateMapsFromGFFFile(final InputStream is,
-  // final String featureType, final String stranded, final String attributeId)
-  // throws IOException, BadBioEntryException, EoulsanException {
-  //
-  // // final GenomicArray<String> features = new GenomicArray<String>();
-  // // final Map<String, Integer> counts = Utils.newHashMap();
-  //
-  // final GFFReader gffReader = new GFFReader(is);
-  //
-  // for (final GFFEntry gff : gffReader) {
-  //
-  // if (featureType.equals(gff.getType())) {
-  //
-  // final String featureId = gff.getAttributeValue(attributeId);
-  // if (featureId == null)
-  // throw new EoulsanException("Feature "
-  // + featureType + " does not contain a " + attributeId
-  // + " attribute");
-  //
-  // if ((stranded.equals("yes") || stranded.equals("reverse"))
-  // && '.' == gff.getStrand())
-  // throw new EoulsanException("Feature "
-  // + featureType
-  // + " does not have strand information but you are running "
-  // + "htseq-count in stranded mode.");
-  //
-  // // Addition to the list of features of a GenomicInterval object
-  // // corresponding to the current annotation line
-  // features.addEntry(new GenomicInterval(gff, stranded), featureId);
-  // counts.put(featureId, 0);
-  // }
-  // }
-  // gffReader.throwException();
-  // gffReader.close();
-  //
-  // if (counts.size() == 0)
-  // throw new EoulsanException("Warning: No features of type '"
-  // + featureType + "' found.\n");
-  //
-  // }
-
   /**
    * Add an entry on the genomic array.
    * @param interval genomic interval
@@ -677,7 +638,7 @@ public class GenomicArray<T> {
    * @param interval the genomic interval
    * @return a map with the values
    */
-  public Map<GenomicInterval, T> getEntries(final GenomicInterval interval) {
+  public Map<GenomicInterval, Set<T>> getEntries(final GenomicInterval interval) {
 
     if (interval == null)
       throw new NullPointerException("The interval is null");
@@ -693,7 +654,7 @@ public class GenomicArray<T> {
    * @param end end of the interval
    * @return a map with the values
    */
-  public Map<GenomicInterval, T> getEntries(final String chromosome,
+  public Map<GenomicInterval, Set<T>> getEntries(final String chromosome,
       final int start, final int end) {
 
     final ChromosomeZones<T> chr = this.chromosomes.get(chromosome);

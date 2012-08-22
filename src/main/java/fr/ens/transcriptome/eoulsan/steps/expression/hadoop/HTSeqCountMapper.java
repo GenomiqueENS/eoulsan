@@ -425,151 +425,151 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
     Map<GenomicInterval, String> inter = new HashMap<GenomicInterval, String>();
 
     // Overlap mode "union"
-    if (mode.equals("union")) {
-
-      fs = new HashSet<String>();
-
-      for (final GenomicInterval iv : ivList) {
-
-        final String chr = iv.getChromosome();
-
-        if (!features.containsChromosome(chr))
-          throw new EoulsanException("Unknown chromosome: " + chr);
-
-        // Get features that overlap the current interval of the read
-        Map<GenomicInterval, String> intervals =
-            features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-            if (e.getKey().getStrand() == iv.getStrand())
-              inter.put(e.getKey(), e.getValue());
-          }
-          intervals = inter;
-        }
-
-        // At least one interval is found
-        if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          // Add all the features that overlap the current interval to the set
-          if (values != null)
-            fs.addAll(values);
-        }
-      }
-    }
-
-    // Overlap mode "intersection-nonempty"
-    else if (mode.equals("intersection-nonempty")) {
-
-      final Set<String> featureTmp = new HashSet<String>();
-
-      for (final GenomicInterval iv : ivList) {
-
-        final String chr = iv.getChromosome();
-
-        if (!features.containsChromosome(chr))
-          throw new EoulsanException("Unknown chromosome: " + chr);
-
-        // Get features that overlap the current interval of the read
-        Map<GenomicInterval, String> intervals =
-            features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-            if (e.getKey().getStrand() == iv.getStrand())
-              inter.put(e.getKey(), e.getValue());
-          }
-          intervals = inter;
-        }
-
-        // At least one interval is found
-        if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          if (values != null) {
-
-            // Determine features that correspond to the overlap mode
-            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
-
-              featureTmp.clear();
-
-              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-                if (e.getKey().include(pos, pos))
-                  featureTmp.add(e.getValue());
-              }
-
-              if (featureTmp.size() > 0) {
-                if (fs == null) {
-                  fs = new HashSet<String>();
-                  fs.addAll(featureTmp);
-                } else
-                  fs.retainAll(featureTmp);
-              }
-
-            }
-          }
-        }
-      }
-    }
-
-    // Overlap mode "intersection-strict"
-    else if (mode.equals("intersection-strict")) {
-
-      final Set<String> featureTmp = new HashSet<String>();
-
-      for (final GenomicInterval iv : ivList) {
-
-        final String chr = iv.getChromosome();
-
-        if (!features.containsChromosome(chr))
-          throw new EoulsanException("Unknown chromosome: " + chr);
-
-        // Get features that overlapped the current interval of the read
-        Map<GenomicInterval, String> intervals =
-            features.getEntries(chr, iv.getStart(), iv.getEnd());
-
-        if (stranded.equals("yes") || stranded.equals("reverse")) {
-          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-            if (e.getKey().getStrand() == iv.getStrand())
-              inter.put(e.getKey(), e.getValue());
-          }
-          intervals = inter;
-        }
-
-        // At least one interval is found
-        if (intervals != null && intervals.size() > 0) {
-          Collection<String> values = intervals.values();
-          if (values != null) {
-
-            // Determine features that correspond to the overlap mode
-            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
-
-              featureTmp.clear();
-
-              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
-                if (e.getKey().include(pos, pos)) {
-                  featureTmp.add(e.getValue());
-                }
-              }
-
-              if (fs == null) {
-                fs = new HashSet<String>();
-                fs.addAll(featureTmp);
-              } else
-                fs.retainAll(featureTmp);
-            }
-          }
-        }
-
-        // no interval found
-        else {
-          if (fs == null)
-            fs = new HashSet<String>();
-          else
-            fs.clear();
-        }
-
-      }
-    }
+//    if (mode.equals("union")) {
+//
+//      fs = new HashSet<String>();
+//
+//      for (final GenomicInterval iv : ivList) {
+//
+//        final String chr = iv.getChromosome();
+//
+//        if (!features.containsChromosome(chr))
+//          throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//        // Get features that overlap the current interval of the read
+//        Map<GenomicInterval, String> intervals =
+//            features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//        if (stranded.equals("yes") || stranded.equals("reverse")) {
+//          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+//            if (e.getKey().getStrand() == iv.getStrand())
+//              inter.put(e.getKey(), e.getValue());
+//          }
+//          intervals = inter;
+//        }
+//
+//        // At least one interval is found
+//        if (intervals != null && intervals.size() > 0) {
+//          Collection<String> values = intervals.values();
+//          // Add all the features that overlap the current interval to the set
+//          if (values != null)
+//            fs.addAll(values);
+//        }
+//      }
+//    }
+//
+//    // Overlap mode "intersection-nonempty"
+//    else if (mode.equals("intersection-nonempty")) {
+//
+//      final Set<String> featureTmp = new HashSet<String>();
+//
+//      for (final GenomicInterval iv : ivList) {
+//
+//        final String chr = iv.getChromosome();
+//
+//        if (!features.containsChromosome(chr))
+//          throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//        // Get features that overlap the current interval of the read
+//        Map<GenomicInterval, String> intervals =
+//            features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//        if (stranded.equals("yes") || stranded.equals("reverse")) {
+//          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+//            if (e.getKey().getStrand() == iv.getStrand())
+//              inter.put(e.getKey(), e.getValue());
+//          }
+//          intervals = inter;
+//        }
+//
+//        // At least one interval is found
+//        if (intervals != null && intervals.size() > 0) {
+//          Collection<String> values = intervals.values();
+//          if (values != null) {
+//
+//            // Determine features that correspond to the overlap mode
+//            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+//
+//              featureTmp.clear();
+//
+//              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+//                if (e.getKey().include(pos, pos))
+//                  featureTmp.add(e.getValue());
+//              }
+//
+//              if (featureTmp.size() > 0) {
+//                if (fs == null) {
+//                  fs = new HashSet<String>();
+//                  fs.addAll(featureTmp);
+//                } else
+//                  fs.retainAll(featureTmp);
+//              }
+//
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//    // Overlap mode "intersection-strict"
+//    else if (mode.equals("intersection-strict")) {
+//
+//      final Set<String> featureTmp = new HashSet<String>();
+//
+//      for (final GenomicInterval iv : ivList) {
+//
+//        final String chr = iv.getChromosome();
+//
+//        if (!features.containsChromosome(chr))
+//          throw new EoulsanException("Unknown chromosome: " + chr);
+//
+//        // Get features that overlapped the current interval of the read
+//        Map<GenomicInterval, String> intervals =
+//            features.getEntries(chr, iv.getStart(), iv.getEnd());
+//
+//        if (stranded.equals("yes") || stranded.equals("reverse")) {
+//          for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+//            if (e.getKey().getStrand() == iv.getStrand())
+//              inter.put(e.getKey(), e.getValue());
+//          }
+//          intervals = inter;
+//        }
+//
+//        // At least one interval is found
+//        if (intervals != null && intervals.size() > 0) {
+//          Collection<String> values = intervals.values();
+//          if (values != null) {
+//
+//            // Determine features that correspond to the overlap mode
+//            for (int pos = iv.getStart(); pos <= iv.getEnd(); pos++) {
+//
+//              featureTmp.clear();
+//
+//              for (Map.Entry<GenomicInterval, String> e : intervals.entrySet()) {
+//                if (e.getKey().include(pos, pos)) {
+//                  featureTmp.add(e.getValue());
+//                }
+//              }
+//
+//              if (fs == null) {
+//                fs = new HashSet<String>();
+//                fs.addAll(featureTmp);
+//              } else
+//                fs.retainAll(featureTmp);
+//            }
+//          }
+//        }
+//
+//        // no interval found
+//        else {
+//          if (fs == null)
+//            fs = new HashSet<String>();
+//          else
+//            fs.clear();
+//        }
+//
+//      }
+//    }
 
     return fs;
   }
