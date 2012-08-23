@@ -89,21 +89,21 @@ public class KeepOneMatchReadAlignmentsFilter extends
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
-      return;
-
-    if ("keep".equals(key.trim())) {
-
-      try {
-        this.keep = Boolean.parseBoolean(value.trim());
-      } catch (NumberFormatException e) {
-        return;
-      }
-
-    } else
-
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+//    if (key == null || value == null)
+//      return;
+//
+//    if ("keep".equals(key.trim())) {
+//
+//      try {
+//        this.keep = Boolean.parseBoolean(value.trim());
+//      } catch (NumberFormatException e) {
+//        return;
+//      }
+//
+//    } else
+//
+//      throw new EoulsanException("Unknown parameter for "
+//          + getName() + " alignments filter: " + key);
   }
 
 }

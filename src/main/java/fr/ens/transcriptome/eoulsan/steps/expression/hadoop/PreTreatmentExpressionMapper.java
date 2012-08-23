@@ -29,6 +29,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -55,8 +56,7 @@ public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Tex
 
   private String counterGroup;
   
-  private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
-  private List<String> idFields = newArrayList();
+  private static final Pattern ID_PATTERN = Pattern.compile(":");
 
   private Text outKey = new Text();
   private Text outValue = new Text();
@@ -102,14 +102,9 @@ public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Tex
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
 
-    idFields.clear();
-    for (String e : ID_SPLITTER.split(completeId)) {
-      idFields.add(e);
-    }
-
     // Read identifiant format : before Casava 1.8 or other technologies that
     // Illumina
-    if (idFields.size() < 7) {
+    if (ID_PATTERN.split(completeId).length < 7) {
       endReadId = completeId.indexOf('/');
       // single-end mode
       if (endReadId == -1) {

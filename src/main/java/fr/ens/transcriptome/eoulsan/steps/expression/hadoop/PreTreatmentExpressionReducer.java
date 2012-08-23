@@ -58,10 +58,6 @@ public class PreTreatmentExpressionReducer extends
   /** Logger */
   private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  // Parameters keys
-  // static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-  // + ".pretreatment.expression.genome.desc.file";
-
   private String counterGroup;
   private Text outKey = new Text();
   private Text outValue = new Text();
@@ -75,9 +71,6 @@ public class PreTreatmentExpressionReducer extends
 
     final Configuration conf = context.getConfiguration();
 
-    // Get the genome description filename
-    // System.err
-    // .println("genome desc : " + ExpressionMapper.GENOME_DESC_PATH_KEY);
     final String genomeDescFile =
         conf.get(ExpressionMapper.GENOME_DESC_PATH_KEY);
 
@@ -122,51 +115,6 @@ public class PreTreatmentExpressionReducer extends
       try {
         samRecord = this.parser.parseLine(stringRecord);
         records.add(samRecord);
-
-        // //////////////////////////////////////////////////////////
-        // the current alignment is the first one for the read (in unique or
-        // multiple alignments)
-        // if (strOutKey == "") {
-        // firstIndexOfTab = stringVal.indexOf("\t");
-        // strOutKey += key.toString() + stringVal.substring(0,
-        // firstIndexOfTab);
-        // }
-
-        // the current alignment is the second one for the read or the read has
-        // multiple alignments
-        // else {
-        // //
-        // if (strOutValue == "") {
-        //
-        // }
-        // }
-
-        // collection des alignements puis Collection.sort() puis écriture
-
-        // //////////////////////////////////////////////////////////
-        // the current alignment is the first one for the read
-        // if (samRecord.getFirstOfPairFlag()) {
-        // firstIndexOfTab = stringVal.indexOf("\t");
-        // strOutKey += key.toString() + stringVal.substring(0,
-        // firstIndexOfTab);
-        //
-        // // unique alignment or first one in a multiple alignment, and the
-        // // second alignment of the read has not already been read
-        // if (strOutValue == "") {
-        // strOutValue += stringVal.substring(firstIndexOfTab + 1);
-        // strOutValue += "£";
-        // }
-        // // the second alignment of the read has already been read
-        // else {
-        // strOutValue =
-        // stringVal.substring(firstIndexOfTab + 1) + "£" + strOutValue;
-        // }
-        // }
-        //
-        // // the current alignment is the second one for the read
-        // else {
-        // strOutValue += stringVal;
-        // }
 
       } catch (SAMFormatException e) {
         context.getCounter(this.counterGroup,

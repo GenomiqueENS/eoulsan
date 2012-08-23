@@ -73,7 +73,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     } else
 
       throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+          + getName() + " alignments filter: " + key);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     if (this.numberMatch < 0)
       throw new IllegalArgumentException(
           "The number of match to keep is not set for "
-              + getName() + " read alignments filter.");
+              + getName() + " alignments alignments filter.");
   }
 
   @Override

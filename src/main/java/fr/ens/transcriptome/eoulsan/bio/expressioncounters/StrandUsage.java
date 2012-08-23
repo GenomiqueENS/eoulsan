@@ -25,7 +25,8 @@
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
 /**
- * This enum define the strand usage for the Expression Counter.
+ * This enum defines the strand usage for the Expression Counter.
+ * @since 1.2
  * @author Laurent Jourdren
  */
 public enum StrandUsage {

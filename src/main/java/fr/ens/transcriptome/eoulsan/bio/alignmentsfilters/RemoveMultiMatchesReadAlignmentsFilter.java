@@ -26,9 +26,8 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-
 import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This alignments filter remove all the alignments if more there is more one
@@ -42,7 +41,7 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
 
   public static final String FILTER_NAME = "removemultimatches";
   // TODO Claire : Why remove is not used ?
-  private boolean remove = false;
+//  private boolean remove = false;
 
   @Override
   public String getName() {
@@ -79,21 +78,21 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
-      return;
-
-    if ("remove".equals(key.trim())) {
-
-      try {
-        this.remove = Boolean.parseBoolean(value.trim());
-      } catch (NumberFormatException e) {
-        return;
-      }
-
-    } else
-
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+    // if (key == null || value == null)
+    // return;
+    //
+    // if ("remove".equals(key.trim())) {
+    //
+    // try {
+    // this.remove = Boolean.parseBoolean(value.trim());
+    // } catch (NumberFormatException e) {
+    // return;
+    // }
+    //
+    // } else
+    //
+    // throw new EoulsanException("Unknown parameter for "
+    // + getName() + " alignments filter: " + key);
   }
 
 }

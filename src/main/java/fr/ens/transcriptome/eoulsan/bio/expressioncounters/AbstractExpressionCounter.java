@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This abstract class implements a generic Counter.
+ * This abstract class implements a generic Expression Counter.
  * @since 1.2
  * @author Claire Wallon
  */
@@ -52,6 +52,10 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
+
+  //
+  // Getters
+  //
 
   @Override
   public StrandUsage getStranded() {
@@ -68,6 +72,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     return this.tempDir;
   }
 
+  @Override
   public String getGenomicType() {
     return this.genomicType;
   }
@@ -93,10 +98,10 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public void setOverlapMode(final String mode) {
-    
+
     setOverlapMode(OverlapMode.getOverlapModeFromName(mode));
   }
-  
+
   @Override
   public void setOverlapMode(final OverlapMode mode) {
 
@@ -112,10 +117,17 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     this.tempDir = tempDirectory;
   }
 
+  @Override
+  public void setGenomicType(final String genomicType) {
+
+    this.genomicType = genomicType;
+  }
+
   //
   // Counting
   //
 
+  @Override
   public final void count(final File alignmentFile,
       final DataFile annotationFile, final File expressionFile,
       final DataFile genomeDescFile) throws IOException {
@@ -133,6 +145,17 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
         genomeDescFile, this.reporter, this.counterGroup);
   }
 
+  /**
+   * This method runs the ExpressionCounter.
+   * @param alignmentFile : file containing SAM alignments
+   * @param annotationFile : file containing the reference genome annotation
+   * @param expressionFile : output file for the expression step
+   * @param genomeDescFile : file containing the genome description
+   * @param reporter : the Reporter object of the Eoulsan run
+   * @param counterGroup : string with the counter name group for the expression
+   *          step
+   * @throws IOException
+   */
   protected abstract void internalCount(final File alignmentFile,
       final DataFile annotationFile, final File expressionFile,
       final DataFile genomeDescFile, Reporter reporter, String counterGroup)
@@ -142,11 +165,6 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   // Init
   //
 
-  /**
-   * Initialize counter.
-   * @param incrementer Objet to use to increment counters
-   * @param counterGroup counter name group
-   */
   @Override
   public void init(final String genomicType, final Reporter reporter,
       final String counterGroup) {

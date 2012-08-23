@@ -43,9 +43,9 @@ import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
-import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class generates the final expression file after counting the alignments
@@ -102,7 +102,8 @@ public class FinalExpressionFeaturesCreator {
 
       final ExpressionFeature et = (ExpressionFeature) o;
 
-      if (this.id == et.id && this.alignementCount == et.alignementCount)
+      if (Utils.equal(this.id, et.id)
+          && this.alignementCount == et.alignementCount)
         return true;
 
       return false;
