@@ -468,8 +468,6 @@ public class RSConnectionNewImpl implements RSConnection {
    */
   public RSConnectionNewImpl(final String serverName) {
     
-    System.out.println(this.serverName);
-
     this.serverName = serverName == null ? "127.0.0.1" : serverName.trim();
   }
 
