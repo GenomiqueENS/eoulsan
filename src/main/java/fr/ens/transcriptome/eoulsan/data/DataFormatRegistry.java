@@ -29,6 +29,7 @@ import static com.google.common.collect.Sets.newHashSet;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -311,6 +313,29 @@ public class DataFormatRegistry {
       return null;
 
     return this.mapDesignDataType.get(fieldName);
+  }
+
+  /**
+   * Get the field name in a Design object that correspond to a datatype.
+   * @param design design object
+   * @param datatype datatype to search
+   * @return the field name if found or null
+   */
+  public String getDesignFieldnameForDataType(final Design design,
+      final DataType datatype) {
+
+    if (design == null || datatype == null)
+      return null;
+
+    final List<String> fieldnames = design.getMetadataFieldsNames();
+    for (String fieldname : fieldnames) {
+
+      final DataType dt = getDataTypeForDesignField(fieldname);
+      if (datatype.equals(dt))
+        return fieldname;
+    }
+
+    return null;
   }
 
   //
