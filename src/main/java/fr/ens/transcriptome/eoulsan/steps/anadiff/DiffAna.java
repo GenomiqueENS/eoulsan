@@ -46,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.design.impl.DesignImpl;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.RSConnectionNewImpl;
@@ -88,16 +87,21 @@ public class DiffAna {
   public void run() throws EoulsanException {
 
     try {
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled())
-        putExpressionFiles();
+      // create an experiment map
+      List<List<Sample>> experiments = experimentsSpliter();
+      for (List<Sample> experiment : experiments) {
 
-      String rScript = writeScript();
-      runRnwScript(rScript);
+        if (EoulsanRuntime.getSettings().isRServeServerEnabled())
+          putExpressionFiles(experiment);
 
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
-        removeExpressionFiles();
-        this.rConnection.removeFile(rScript);
-        this.rConnection.getAllFiles(outPath.toString() + "/");
+        String rScript = writeScript(experiment);
+        runRnwScript(rScript);
+
+        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+          removeExpressionFiles(experiment);
+          this.rConnection.removeFile(rScript);
+          this.rConnection.getAllFiles(outPath.toString() + "/");
+        }
       }
 
     } catch (REngineException e) {
@@ -125,7 +129,7 @@ public class DiffAna {
    * @return rScript a String containing script to run
    * @throws EoulsanException
    */
-  public String writeScript() throws EoulsanException {
+  public String writeScript(List<Sample> experiment) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap =
         new HashMap<String, List<Integer>>();
@@ -137,7 +141,7 @@ public class DiffAna {
     int i = 0;
 
     // Get samples ids, conditions names/indexes and replicate types
-    for (Sample s : this.design.getSamples()) {
+    for (Sample s : experiment) {
 
       if (!s.getMetadata().isConditionField())
         throw new EoulsanException("No condition field found in design file.");
@@ -215,8 +219,7 @@ public class DiffAna {
     sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
 
     sb.append("\\title{"
-        + this.design.getSample(1).getMetadata().getExperiment()
-        + " analysis}\n\n");
+        + experiment.get(1).getMetadata().getExperiment() + " analysis}\n\n");
 
     sb.append("\\begin{document}\n");
 
@@ -252,9 +255,10 @@ public class DiffAna {
     // Add normalization part
     if (rep)
       writeWithTechnicalReplicate(sb, rSampleIds, rSampleNames, rCondNames,
-          rRepTechGroup);
+          rRepTechGroup, experiment.get(1).getMetadata().getExperiment());
     else
-      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames);
+      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames,
+          experiment.get(1).getMetadata().getExperiment());
 
     // add differential analysis part
     if (biologicalReplicate) {
@@ -266,7 +270,7 @@ public class DiffAna {
     String rScript = null;
     try {
       rScript =
-          this.design.getSample(1).getMetadata().getExperiment()
+          experiment.get(1).getMetadata().getExperiment()
               + "_" + "diffAna" + ".Rnw";
       if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
@@ -289,11 +293,12 @@ public class DiffAna {
    * Put all expression files needed for the analysis on the R server
    * @throws REngineException
    */
-  public void putExpressionFiles() throws REngineException {
+  public void putExpressionFiles(List<Sample> experiment)
+      throws REngineException {
 
     int i;
 
-    for (Sample s : this.design.getSamples()) {
+    for (Sample s : experiment) {
       i = s.getId();
 
       // put file on rserve server
@@ -303,10 +308,11 @@ public class DiffAna {
     }
   }
 
-  public void removeExpressionFiles() throws REngineException {
+  public void removeExpressionFiles(List<Sample> experiment)
+      throws REngineException {
     int i;
 
-    for (Sample s : this.design.getSamples()) {
+    for (Sample s : experiment) {
       i = s.getId();
 
       // remove file from rserve server
@@ -319,28 +325,41 @@ public class DiffAna {
   // Private methods
   //
 
-  private HashMap<String, List<Sample>> experimentsSpliter() {
+  private List<List<Sample>> experimentsSpliter() {
     String exp = this.design.getSample(0).getMetadata().getExperiment();
+    List<Sample> samples = this.design.getSamples();
+    // experiment List
+    List<List<Sample>> experimentList = new ArrayList<List<Sample>>();
     List<Sample> sampleList = new ArrayList<Sample>();
-    // create design HashMap
-    HashMap<String, List<Sample>> experimentTab =
-        new HashMap<String, List<Sample>>();
-    // put first key
-    experimentTab.put(exp, sampleList);
-    // create experiment HashMap key
-    for (int i = 1; i < this.design.getSamples().size(); i++) {
-      if (exp != this.design.getSample(i).getMetadata().getExperiment()) {
-        exp = this.design.getSample(i).getMetadata().getExperiment();
-        experimentTab.put(exp, sampleList);
-      } else {
+    for (Sample s : samples) {
+      String expName = s.getMetadata().getExperiment();
+
+      if (exp.equals(expName)) {
+        sampleList.add(s);
       }
     }
-    // add sample at coresponding key
-    for (Sample s : this.design.getSamples()) {
-      experimentTab.get(s.getMetadata().getExperiment()).add(s);
+    // add first experiment
+    experimentList.add(sampleList);
+
+    // add other experiments
+    for (Sample s1 : samples) {
+      String expName = s1.getMetadata().getExperiment();
+      // reinitialize sampleList
+      sampleList = new ArrayList<Sample>();
+
+      if (!expName.equals(exp)) {
+        exp = expName;
+        for (Sample s2 : this.design.getSamples()) {
+          expName = s2.getMetadata().getExperiment();
+          if (exp.equals(expName)) {
+            sampleList.add(s2);
+          }
+        }
+        experimentList.add(sampleList);
+      }
     }
 
-    return experimentTab;
+    return experimentList;
   }
 
   /**
@@ -420,7 +439,8 @@ public class DiffAna {
    */
   private void writeWithTechnicalReplicate(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<String> rCondNames, final List<String> rRepTechGroup) {
+      final List<String> rCondNames, final List<String> rRepTechGroup,
+      final String experimentName) {
 
     sb.append("\\section{Initialization}\n");
     sb.append("<<>>=\n");
@@ -500,8 +520,7 @@ public class DiffAna {
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
-    sb.append("\""
-        + this.design.getSample(1).getMetadata().getExperiment() + "\"" + "\n");
+    sb.append("\"" + experimentName + "\"" + "\n");
     sb.append("@\n\n");
 
     // add not variable part of the analysis
@@ -518,7 +537,7 @@ public class DiffAna {
    */
   private void writeWithoutTechnicalReplicates(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<String> rCondNames) {
+      final List<String> rCondNames, String experimentName) {
 
     sb.append("\\section{Initialization}\n");
     sb.append("<<>>=\n");
@@ -586,8 +605,7 @@ public class DiffAna {
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
-    sb.append("\""
-        + this.design.getSample(1).getMetadata().getExperiment() + "\"" + "\n");
+    sb.append("\"" + experimentName + "\"" + "\n");
     sb.append("@\n\n");
 
     // add not variable part of the analysis
@@ -631,8 +649,6 @@ public class DiffAna {
           "The outpath file doesn't exist or is not a directory.");
 
     this.outPath = outPath;
-
-    LOGGER.info("Rserve server: " + rServerName);
 
     this.rConnection = new RSConnectionNewImpl(rServerName);
   }
