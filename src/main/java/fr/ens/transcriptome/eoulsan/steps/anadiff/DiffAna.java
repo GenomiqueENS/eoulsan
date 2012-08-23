@@ -266,7 +266,7 @@ public class DiffAna {
     try {
       rScript =
           this.design.getSample(1).getMetadata().getExperiment()
-              + "_" + "Anadiff" + ".Rnw";
+              + "_" + "diffAna" + ".Rnw";
       if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
