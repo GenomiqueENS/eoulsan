@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.design.impl.DesignImpl;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.RSConnectionNewImpl;
@@ -255,12 +256,12 @@ public class DiffAna {
     else
       writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames);
 
-//     add differential analysis part
-     if (biologicalReplicate) {
-     sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
-     } else {
-     sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
-     }
+    // add differential analysis part
+    if (biologicalReplicate) {
+      sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
+    } else {
+      sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
+    }
 
     String rScript = null;
     try {
@@ -317,6 +318,30 @@ public class DiffAna {
   //
   // Private methods
   //
+
+  private HashMap<String, List<Sample>> experimentsSpliter() {
+    String exp = this.design.getSample(0).getMetadata().getExperiment();
+    List<Sample> sampleList = new ArrayList<Sample>();
+    // create design HashMap
+    HashMap<String, List<Sample>> experimentTab =
+        new HashMap<String, List<Sample>>();
+    // put first key
+    experimentTab.put(exp, sampleList);
+    // create experiment HashMap key
+    for (int i = 1; i < this.design.getSamples().size(); i++) {
+      if (exp != this.design.getSample(i).getMetadata().getExperiment()) {
+        exp = this.design.getSample(i).getMetadata().getExperiment();
+        experimentTab.put(exp, sampleList);
+      } else {
+      }
+    }
+    // add sample at coresponding key
+    for (Sample s : this.design.getSamples()) {
+      experimentTab.get(s.getMetadata().getExperiment()).add(s);
+    }
+
+    return experimentTab;
+  }
 
   /**
    * Execute the analysis.
