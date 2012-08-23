@@ -367,6 +367,9 @@ public class DataFormatRegistry {
           .getName())) {
 
         final String resource = RESOURCE_PREFIX + filename;
+        LOGGER.fine("Try to register an XML dataformat from "
+            + filename + " resource");
+
         register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
 
       }
