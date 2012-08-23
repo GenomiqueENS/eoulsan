@@ -34,6 +34,9 @@ import java.util.Set;
 import org.junit.Test;
 
 /**
+ * TODO: factorize functions testAddEntryX() and finish the test class. 
+ * @since 1.2
+ * @author Laurent Jourdren
  * @author Claire Wallon
  */
 public class GenomicArrayTest {
@@ -70,7 +73,7 @@ public class GenomicArrayTest {
    * .transcriptome.eoulsan.bio.GenomicInterval, java.lang.Object)}.
    */
   @Test
-  public void testAddEntry() {
+  public void testAddEntry1() {
 
     GenomicArray<String> ga = new GenomicArray<String>();
 
@@ -85,7 +88,7 @@ public class GenomicArrayTest {
     assertTrue(r.containsKey(fgi.iv(10, 50)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [60,70]=a
+    // Add [60,70]=b
     ga.addEntry(fgi.iv(60, 70), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
@@ -109,7 +112,7 @@ public class GenomicArrayTest {
     assertTrue(r.containsKey(fgi.iv(10, 20)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [15,25]=a
+    // Add [15,25]=b
     ga.addEntry(fgi.iv(15, 25), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
@@ -131,6 +134,7 @@ public class GenomicArrayTest {
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
 
+    // Add [15,20]=a
     GenomicInterval iv1 = fgi.iv(15, 20);
     ga.addEntry(iv1, "a");
 
@@ -140,7 +144,7 @@ public class GenomicArrayTest {
     assertEquals(1, r.get(fgi.iv(15, 20)).size());
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [15,25]=a
+    // Add [5,10]=b
     ga.addEntry(fgi.iv(5, 10), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
@@ -158,6 +162,7 @@ public class GenomicArrayTest {
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
 
+    // Add [10,20]=a
     GenomicInterval iv1 = fgi.iv(10, 20);
     ga.addEntry(iv1, "a");
 
@@ -166,7 +171,7 @@ public class GenomicArrayTest {
     assertTrue(r.containsKey(fgi.iv(10, 20)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [15,25]=a
+    // Add [20,30]=b
     ga.addEntry(fgi.iv(20, 30), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
@@ -188,6 +193,7 @@ public class GenomicArrayTest {
 
     final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
 
+    // Add [20,40]=a
     GenomicInterval iv1 = fgi.iv(20, 40);
     ga.addEntry(iv1, "a");
 
@@ -196,7 +202,7 @@ public class GenomicArrayTest {
     assertTrue(r.containsKey(fgi.iv(20, 40)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [15,25]=a
+    // Add [25,35]=b
     ga.addEntry(fgi.iv(25, 35), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
@@ -209,6 +215,90 @@ public class GenomicArrayTest {
 
     assertTrue(r.containsKey(fgi.iv(36, 40)));
     assertEquals(1, r.get(fgi.iv(36, 40)).size());
+  }
+  
+  @Test
+  public void testAddEntry6() {
+
+    GenomicArray<String> ga = new GenomicArray<String>();
+
+    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+
+    // Add [20,40]=a
+    GenomicInterval iv1 = fgi.iv(20, 40);
+    ga.addEntry(iv1, "a");
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [20,55]=b
+    ga.addEntry(fgi.iv(20, 55), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertEquals(2, r.get(fgi.iv(20, 40)).size());
+
+    assertTrue(r.containsKey(fgi.iv(41, 55)));
+    assertEquals(1, r.get(fgi.iv(41, 55)).size());
+  }
+  
+  @Test
+  public void testAddEntry7() {
+
+    GenomicArray<String> ga = new GenomicArray<String>();
+
+    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+
+    // Add [10,40]=a
+    GenomicInterval iv1 = fgi.iv(10, 40);
+    ga.addEntry(iv1, "a");
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [5,30]=b
+    ga.addEntry(fgi.iv(5, 30), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(5, 9)));
+    assertEquals(1, r.get(fgi.iv(5, 9)).size());
+    
+    assertTrue(r.containsKey(fgi.iv(10, 30)));
+    assertEquals(2, r.get(fgi.iv(10, 30)).size());
+    
+    assertTrue(r.containsKey(fgi.iv(31, 40)));
+    assertEquals(1, r.get(fgi.iv(31, 40)).size());
+  }
+  
+  @Test
+  public void testAddEntry8() {
+
+    GenomicArray<String> ga = new GenomicArray<String>();
+
+    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+
+    // Add [10,40]=a
+    GenomicInterval iv1 = fgi.iv(10, 40);
+    ga.addEntry(iv1, "a");
+
+    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [10,40]=b
+    ga.addEntry(fgi.iv(10, 40), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertEquals(2, r.get(fgi.iv(10, 40)).size());
   }
 
   //
