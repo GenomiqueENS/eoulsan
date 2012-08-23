@@ -92,8 +92,9 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
         this.mapper =
             SequenceReadsMapperService.getInstance().getMapper(mapperName);
 
-        throw new EoulsanException("Mapper with the following name not found: "
-            + mapperName);
+        if (this.mapper == null)
+          throw new EoulsanException(
+              "Mapper with the following name not found: " + mapperName);
 
       } else
         throw new EoulsanException("Unknown parameter for "
