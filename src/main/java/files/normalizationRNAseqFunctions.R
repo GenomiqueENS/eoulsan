@@ -1,3 +1,10 @@
+###############################################################################
+# This is a library of functions used in Eoulsan normalization and differential
+# analysis module.
+# 
+# Author : Vivien DESHAIES
+###############################################################################
+
 library(DESeq)
 
 
@@ -119,6 +126,7 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 	
 	for (cond in Conds) {
 		if(cond != ref){
+			
 			# compute differential analysis
 			result <- nbinomTest(cds, ref, cond)
 			# rename columns
