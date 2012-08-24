@@ -70,10 +70,12 @@ public class DiffAna {
       "/normalisationWithoutTechRep.Rnw";
   private static final String NORMALISATION_FUNCTIONS =
       "/normalizationRNAseqFunctions.R";
-  private static final String ANADIFF_WITH_REPLICATES =
-      "/anadiffWithReplicates.Rnw";
-  private static final String ANADIFF_WITHOUT_REPLICATES =
-      "/anadiffWithoutReplicates.Rnw";
+  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
+      "/dispersionEstimationWithReplicates.Rnw";
+  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
+      "/dispersionEstimationWithoutReplicates.Rnw";
+  private static final String KINETIC_ANADIFF = "/kineticAnadiff.Rnw";
+  private static final String NOT_KINETIC_ANADIFF = "/notKineticAnadiff.Rnw";
 
   private Design design;
   private File expressionFilesDirectory;
@@ -88,15 +90,15 @@ public class DiffAna {
 
   public void run() throws EoulsanException {
 
-     try {
-    // create an experiment map
-    HashMap<String, List<Sample>> experiments = experimentsSpliter();
-    // create an iterator on the map
-    Set<String> cles = experiments.keySet();
-    Iterator<String> itr = cles.iterator();
-    while (itr.hasNext()) {
-      String cle = itr.next();
-      List<Sample> experiment = experiments.get(cle);
+    try {
+      // create an experiment map
+      HashMap<String, List<Sample>> experiments = experimentsSpliter();
+      // create an iterator on the map
+      Set<String> cles = experiments.keySet();
+      Iterator<String> itr = cles.iterator();
+      while (itr.hasNext()) {
+        String cle = itr.next();
+        List<Sample> experiment = experiments.get(cle);
 
         if (EoulsanRuntime.getSettings().isRServeServerEnabled())
           putExpressionFiles(experiment);
@@ -267,11 +269,17 @@ public class DiffAna {
       writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames,
           experiment.get(1).getMetadata().getExperiment());
 
-    // add differential analysis part
+    // add dispersion estimation part
     if (biologicalReplicate) {
-      sb.append(readStaticScript(ANADIFF_WITH_REPLICATES));
+      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
     } else {
-      sb.append(readStaticScript(ANADIFF_WITHOUT_REPLICATES));
+      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
+    }
+    
+    if (this.design.getSample(1).getMetadata().isReference()) {
+      sb.append(readStaticScript(KINETIC_ANADIFF));
+    } else {
+      sb.append(readStaticScript(NOT_KINETIC_ANADIFF));
     }
 
     String rScript = null;
@@ -335,7 +343,7 @@ public class DiffAna {
   private HashMap<String, List<Sample>> experimentsSpliter() {
     String exp = this.design.getSample(0).getMetadata().getExperiment();
     List<Sample> samples = this.design.getSamples();
- // create design HashMap
+    // create design HashMap
     HashMap<String, List<Sample>> experimentTab =
         new HashMap<String, List<Sample>>();
     List<Sample> sampleList = new ArrayList<Sample>();
@@ -356,7 +364,7 @@ public class DiffAna {
       sampleList = new ArrayList<Sample>();
 
       exp = s1.getMetadata().getExperiment();
-      
+
       if (!experimentTab.containsKey(exp)) {
         for (Sample s2 : this.design.getSamples()) {
           expName = s2.getMetadata().getExperiment();
@@ -500,7 +508,7 @@ public class DiffAna {
         sb.append(',');
 
       sb.append('\"');
-      sb.append(r.toLowerCase());
+      sb.append(r);
       sb.append('\"');
     }
     sb.append(")\n\n");
@@ -516,7 +524,7 @@ public class DiffAna {
       else
         sb.append(',');
       sb.append('\"');
-      sb.append(r.toLowerCase());
+      sb.append(r);
       sb.append('\"');
     }
     sb.append(")\n\n");
@@ -530,6 +538,20 @@ public class DiffAna {
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\"" + experimentName + "\"" + "\n");
+
+    // Test if there is a reference field for kinetic experiments
+    if (this.design.getSample(1).getMetadata().isReference()) {
+      List<Sample> samples = this.design.getSamples();
+      for (Sample s : samples) {
+        String refval = s.getMetadata().getReference().trim().toLowerCase();
+        if (refval.equals("true")) {
+          // add reference to R script
+          sb.append("ref <- "
+              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
+        }
+      }
+    }
+
     sb.append("@\n\n");
 
     // add not variable part of the analysis
@@ -562,7 +584,7 @@ public class DiffAna {
       else
         sb.append(',');
       sb.append('\"');
-      sb.append(r.toLowerCase());
+      sb.append(r);
       sb.append('\"');
     }
     sb.append(")\n\n");
@@ -601,7 +623,7 @@ public class DiffAna {
       else
         sb.append(',');
       sb.append('\"');
-      sb.append(r.toLowerCase());
+      sb.append(r);
       sb.append('\"');
     }
     sb.append(")\n\n");
@@ -615,6 +637,20 @@ public class DiffAna {
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\"" + experimentName + "\"" + "\n");
+
+    // Test if there is a reference field for kinetic experiments
+    if (this.design.getSample(1).getMetadata().isReference()) {
+      List<Sample> samples = this.design.getSamples();
+      for (Sample s : samples) {
+        String refval = s.getMetadata().getReference().trim().toLowerCase();
+        if (refval.equals("true")) {
+          // add reference to R script
+          sb.append("ref <- "
+              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
+        }
+      }
+    }
+
     sb.append("@\n\n");
 
     // add not variable part of the analysis
