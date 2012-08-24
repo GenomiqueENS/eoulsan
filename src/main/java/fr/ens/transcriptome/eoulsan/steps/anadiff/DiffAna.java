@@ -34,8 +34,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.rosuda.REngine.REXPMismatchException;
@@ -86,10 +88,15 @@ public class DiffAna {
 
   public void run() throws EoulsanException {
 
-    try {
-      // create an experiment map
-      List<List<Sample>> experiments = experimentsSpliter();
-      for (List<Sample> experiment : experiments) {
+     try {
+    // create an experiment map
+    HashMap<String, List<Sample>> experiments = experimentsSpliter();
+    // create an iterator on the map
+    Set<String> cles = experiments.keySet();
+    Iterator<String> itr = cles.iterator();
+    while (itr.hasNext()) {
+      String cle = itr.next();
+      List<Sample> experiment = experiments.get(cle);
 
         if (EoulsanRuntime.getSettings().isRServeServerEnabled())
           putExpressionFiles(experiment);
@@ -325,11 +332,12 @@ public class DiffAna {
   // Private methods
   //
 
-  private List<List<Sample>> experimentsSpliter() {
+  private HashMap<String, List<Sample>> experimentsSpliter() {
     String exp = this.design.getSample(0).getMetadata().getExperiment();
     List<Sample> samples = this.design.getSamples();
-    // experiment List
-    List<List<Sample>> experimentList = new ArrayList<List<Sample>>();
+ // create design HashMap
+    HashMap<String, List<Sample>> experimentTab =
+        new HashMap<String, List<Sample>>();
     List<Sample> sampleList = new ArrayList<Sample>();
     for (Sample s : samples) {
       String expName = s.getMetadata().getExperiment();
@@ -338,8 +346,8 @@ public class DiffAna {
         sampleList.add(s);
       }
     }
-    // add first experiment
-    experimentList.add(sampleList);
+    // put first experiment
+    experimentTab.put(exp, sampleList);
 
     // add other experiments
     for (Sample s1 : samples) {
@@ -347,19 +355,20 @@ public class DiffAna {
       // reinitialize sampleList
       sampleList = new ArrayList<Sample>();
 
-      if (!expName.equals(exp)) {
-        exp = expName;
+      exp = s1.getMetadata().getExperiment();
+      
+      if (!experimentTab.containsKey(exp)) {
         for (Sample s2 : this.design.getSamples()) {
           expName = s2.getMetadata().getExperiment();
           if (exp.equals(expName)) {
             sampleList.add(s2);
           }
         }
-        experimentList.add(sampleList);
+        experimentTab.put(exp, sampleList);
       }
     }
 
-    return experimentList;
+    return experimentTab;
   }
 
   /**
