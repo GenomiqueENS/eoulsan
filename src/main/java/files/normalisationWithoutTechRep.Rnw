@@ -63,7 +63,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		"rawCountMatrix.txt"
+		paste(projectName,"_rawCountMatrix.txt", sep="")
 )
 @
 
@@ -102,7 +102,7 @@ saveCountMatrix(
 		# file path
 		outPath,
 		# file name
-		"normalizedCountMatrix.txt"
+		paste(projectName,"_normalizedCountMatrix.txt", sep="")
 )
 @
 \end{itemize}
