@@ -6,17 +6,3 @@
 countDataSet <- dispersionEstimation(countDataSet)
 plotDispEsts(countDataSet)
 @
-
-		\subsubsection{Differential analysis calling}
-	
-<<diffAna>>=
-anaDiff(countDataSet, outPath)
-@
-
-
-
-\section{Session info}
-<<sessionInfo>>=
-sessionInfo()
-@
-\end{document}
