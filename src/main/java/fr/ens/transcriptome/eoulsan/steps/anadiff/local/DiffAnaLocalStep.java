@@ -87,9 +87,6 @@ public class DiffAnaLocalStep extends AbstractStep {
 
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
-      LOGGER.info("Rserve enable : "
-          + EoulsanRuntime.getSettings().isRServeServerEnabled());
-      
       String rServeName = null;
       if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
         rServeName =
