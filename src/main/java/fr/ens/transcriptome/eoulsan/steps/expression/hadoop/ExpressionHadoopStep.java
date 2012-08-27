@@ -28,7 +28,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SER
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.TAB_FILTERED_MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_TSAM;
 
 import java.io.File;
 import java.io.IOException;
@@ -219,7 +219,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     DataFile inputDataFile = null;
     inputDataFile =
         context.getExistingInputDataFile(
-            new DataFormat[] {TAB_FILTERED_MAPPER_RESULTS_SAM}, sample);
+            new DataFormat[] {FILTERED_MAPPER_RESULTS_TSAM}, sample);
     if (inputDataFile == null)
       inputDataFile =
           context.getExistingInputDataFile(

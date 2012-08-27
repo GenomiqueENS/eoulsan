@@ -28,14 +28,14 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.IOException;
-
-import com.google.common.base.Preconditions;
+import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
  */
 public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
-  private final SequenceReadsMapper mapper;
+  private SequenceReadsMapper mapper;
 
   @Override
   public String getName() {
@@ -74,6 +74,34 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   public DataFormat[] getOutputFormats() {
 
     return new DataFormat[] {this.mapper.getArchiveFormat()};
+  }
+
+  @Override
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
+
+    if (stepParameters == null)
+      throw new EoulsanException("No parameters set in "
+          + getName() + " generator");
+
+    for (Parameter p : stepParameters) {
+
+      if ("mappername".equals(p.getName().toLowerCase())) {
+        final String mapperName = p.getStringValue();
+
+        this.mapper =
+            SequenceReadsMapperService.getInstance().getMapper(mapperName);
+
+        if (this.mapper == null)
+          throw new EoulsanException(
+              "Mapper with the following name not found: " + mapperName);
+
+      } else
+        throw new EoulsanException("Unknown parameter for "
+            + getName() + " step: " + p.getName());
+
+    }
+
   }
 
   @Override
@@ -121,25 +149,6 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     return new StepResult(context, startTime, this.mapper.getMapperName()
         + " index creation");
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Constructor.
-   * @param mapperName name of the mapper
-   */
-  public GenomeMapperIndexGeneratorStep(final String mapperName) {
-
-    Preconditions.checkNotNull(mapperName, "Mapper name is null");
-
-    this.mapper =
-        SequenceReadsMapperService.getInstance().getMapper(mapperName);
-
-    Preconditions.checkNotNull(this.mapper, "Mapper name not found: "
-        + mapperName);
   }
 
 }

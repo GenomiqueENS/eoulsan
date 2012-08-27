@@ -1,0 +1,6 @@
+<datatype>
+  <name>annotation_index</name>
+  <description>annotation index type</description>
+  <prefix>annotation_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+</datatype>

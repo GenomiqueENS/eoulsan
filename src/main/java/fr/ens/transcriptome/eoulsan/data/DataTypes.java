@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
-import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
-
 /**
  * This class contains all the built-in datatypes for Eoulsan.
  * @since 1.0
@@ -33,380 +31,72 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
  */
 public class DataTypes {
 
+  private static final DataTypeRegistry registry = DataTypeRegistry
+      .getInstance();
+
   /** Reads datatype. */
-  public static final DataType READS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "reads";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "reads_";
-    }
-
-    @Override
-    public String getDesignFieldName() {
-
-      return SampleMetadata.READS_FIELD;
-    }
-
-    @Override
-    public boolean isDataTypeFromDesignFile() {
-
-      return true;
-    }
-
-  };
+  public static final DataType READS = registry.getDataTypeFromName("reads");
 
   /** Filtered reads datatype. */
-  public static final DataType FILTERED_READS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "filtered read";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "filtered_reads_";
-    }
-
-  };
+  public static final DataType FILTERED_READS = registry
+      .getDataTypeFromName("filtered_reads");
 
   /** SOAP index data type. */
-  public static final DataType SOAP_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "soap_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "soap_index_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-  };
+  public static final DataType SOAP_INDEX = registry
+      .getDataTypeFromName("soap_index");
 
   /** BWA index data type. */
-  public static final DataType BWA_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "bwa_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "bwa_index_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-  };
+  public static final DataType BWA_INDEX = registry
+      .getDataTypeFromName("bwa_index");
 
   /** Bowtie index data type. */
-  public static final DataType BOWTIE_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "bowtie_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "bowtie_index_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-  };
+  public static final DataType BOWTIE_INDEX = registry
+      .getDataTypeFromName("bowtie_index");
 
   /** Gmap index data type. */
-  public static final DataType GMAP_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "gmap_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "gmap_index_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-  };
+  public static final DataType GMAP_INDEX = registry
+      .getDataTypeFromName("gmap_index");
 
   /** Filtered Mapper results. */
-  public static final DataType FILTERED_MAPPER_RESULTS =
-      new AbstractDataType() {
-
-        @Override
-        public String getName() {
-
-          return "filtered_mapper_results";
-        }
-
-        @Override
-        public String getPrefix() {
-
-          return "filtered_mapper_results_";
-        }
-      };
+  public static final DataType FILTERED_MAPPER_RESULTS = registry
+      .getDataTypeFromName("filtered_mapper_results");
 
   /** Mapper results index datatype. */
-  public static final DataType FILTERED_MAPPER_RESULTS_INDEX =
-      new AbstractDataType() {
-
-        @Override
-        public String getName() {
-
-          return "filtered_mapper_results_index";
-        }
-
-        @Override
-        public String getPrefix() {
-
-          return "filtered_mapper_results_";
-        }
-      };
-
+  public static final DataType FILTERED_MAPPER_RESULTS_INDEX = registry
+      .getDataTypeFromName("filtered_mapper_results_index");
   /** Mapper results datatype. */
-  public static final DataType MAPPER_RESULTS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "mapper_results";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "mapper_results_";
-    }
-  };
+  public static final DataType MAPPER_RESULTS = registry
+      .getDataTypeFromName("mapper_results");
 
   /** Mapper results index datatype. */
-  public static final DataType MAPPER_RESULTS_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "mapper_results_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "mapper_results_";
-    }
-  };
+  public static final DataType MAPPER_RESULTS_INDEX = registry
+      .getDataTypeFromName("mapper_results_index");
 
   /** Expression results datatype. */
-  public static final DataType EXPRESSION_RESULTS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "expression";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "expression_";
-    }
-  };
+  public static final DataType EXPRESSION_RESULTS = registry
+      .getDataTypeFromName("expression_results");
 
   /** Annotation datatype. */
-  public static final DataType ANNOTATION = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "annotation";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "annotation_";
-    }
-
-    @Override
-    public String getDesignFieldName() {
-
-      return SampleMetadata.ANNOTATION_FIELD;
-    }
-
-    @Override
-    public boolean isDataTypeFromDesignFile() {
-
-      return true;
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-
-  };
+  public static final DataType ANNOTATION = registry
+      .getDataTypeFromName("annotation");
 
   /** Annotation datatype. */
-  public static final DataType ANNOTATION_INDEX = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "annotation_index";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "annotation_index_";
-    }
-
-    @Override
-    public boolean isDataTypeFromDesignFile() {
-
-      return false;
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-
-  };
+  public static final DataType ANNOTATION_INDEX = registry
+      .getDataTypeFromName("annotation_index");
 
   /** Diffana results datatype. */
-  public static final DataType DIFFANA_RESULTS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "diffana_results";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "diffana_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-  };
+  public static final DataType DIFFANA_RESULTS = registry
+      .getDataTypeFromName("diffana_results");
 
   /** Genome datatype. */
-  public static final DataType GENOME = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "genome";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "genome_";
-    }
-
-    @Override
-    public String getDesignFieldName() {
-
-      return SampleMetadata.GENOME_FIELD;
-    }
-
-    @Override
-    public boolean isDataTypeFromDesignFile() {
-
-      return true;
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-
-  };
+  public static final DataType GENOME = registry.getDataTypeFromName("genome");
 
   /** Genome description datatype. */
-  public static final DataType GENOME_DESC = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "genome_desc";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "genome_desc_";
-    }
-
-    @Override
-    public boolean isOneFilePerAnalysis() {
-
-      return true;
-    }
-
-  };
+  public static final DataType GENOME_DESC = registry
+      .getDataTypeFromName("genome_desc");
 
   /** Unmap reads results datatype. */
-  public static final DataType UNMAP_READS = new AbstractDataType() {
-
-    @Override
-    public String getName() {
-
-      return "unmap";
-    }
-
-    @Override
-    public String getPrefix() {
-
-      return "unmap_";
-    }
-  };
+  public static final DataType UNMAP_READS = registry
+      .getDataTypeFromName("unmap");
 
 }

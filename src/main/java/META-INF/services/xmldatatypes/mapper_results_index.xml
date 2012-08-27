@@ -1,0 +1,5 @@
+<datatype>
+  <name>mapper_results_index</name>
+  <description>alignments results index type</description>
+  <prefix>mapper_results_index_</prefix>
+</datatype>
