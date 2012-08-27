@@ -249,11 +249,11 @@ public abstract class AbstractSequenceReadsMapper implements
     final String cmd =
         getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
             + " > /dev/null 2> /dev/null";
-    
-    /////////////////////////////////////////////
-    /// TO DELETE...
-    LOGGER.info("!!!!!!!!!!!!! cmd : "+cmd);
-    //////////////////////////////////////////////
+
+    // ///////////////////////////////////////////
+    // / TO DELETE...
+    LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
+    // ////////////////////////////////////////////
 
     LOGGER.fine(cmd);
 
@@ -393,13 +393,16 @@ public abstract class AbstractSequenceReadsMapper implements
     checkState(this.readsWriter1 != null,
         "Can not close writer that has not been created.");
 
-    this.readsWriter1.close();
+    if (this.readsWriter1 != null)
+      this.readsWriter1.close();
 
     if (isPairEnd()) {
 
       checkState(this.readsWriter2 != null,
           "Can not close writer that has not been created.");
-      this.readsWriter2.close();
+
+      if (this.readsWriter2 != null)
+        this.readsWriter2.close();
     }
 
     LOGGER.fine("Write " + entriesWritten + " reads for mapping");
