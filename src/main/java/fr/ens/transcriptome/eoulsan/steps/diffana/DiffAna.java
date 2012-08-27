@@ -50,8 +50,8 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.RSConnectionNewImpl;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
 
 /**
  * This class create and launch a R script to compute differential analysis.
