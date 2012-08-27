@@ -1,3 +1,10 @@
+###############################################################################
+# This is a library of functions used in Eoulsan normalization and differential
+# analysis module.
+# 
+# Author : Vivien DESHAIES
+###############################################################################
+
 library(DESeq)
 
 
@@ -70,34 +77,36 @@ plotDispEsts <- function( cds ) {
 anaDiff <- function(cds, outpath){
 	
 	cond <- levels(conditions(cds))
+	condj <- cond
 	
-	for(i in 1:(length(cond) - 1)){
-		for(j in (i + 1):length(cond)){
-			cond1 <- cond[i]
-			cond2 <- cond[j]
-			
-			if(cond1 != cond2){
-				# compute différential analysis
+	for(cond1 in cond){
+		if (length(condj) > 1){
+			condj <- condj[-1]
+			for(j in 1:length(condj)){
+				cond2 <- condj[j]
+				
+				# compute differential analysis
 				result <- nbinomTest(cds, cond1, cond2)
 				# rename columns
 				colnames(result)[3] <- paste("baseMean", cond1, sep="_")
 				colnames(result)[4] <- paste("baseMean", cond2, sep="_")
 				colnames(result)[5] <- paste("FoldChange_", cond2,"-", cond1, sep="")
 				# sort results by padj
-				sortedResult<- result[order(result$padj),]
+				sortedResult <- result[order(result$padj),]
 				# write results into a file
-				nameComp <- paste(cond1, cond2, sep="-")
+				nameComp <- paste(cond2, cond1, sep="-")
 				write.table(
-						sortedResult, 
-						paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
-						sep="\t",row.names=F, quote=F
+					sortedResult, 
+					paste(outpath, target$projectName, "_diffAna_", nameComp, 
+							".tsv", sep=""),
+					sep="\t",row.names=F, quote=F
 				)
 				
 				# plot MA-plot of the differential analysis
 				maPlot(result, nameComp, outpath, out = TRUE)
 				# plot pvalue distribution
 				plotPvalueDist(result, cond2, cond1, outpath, out = TRUE)
-			}else{}
+			}
 		}
 	}	
 	
@@ -117,6 +126,7 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 	
 	for (cond in Conds) {
 		if(cond != ref){
+			
 			# compute differential analysis
 			result <- nbinomTest(cds, ref, cond)
 			# rename columns
@@ -126,9 +136,10 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 			# write results into a file
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
-					result, 
-					paste(outpath, "diffana_", nameComp, ".tsv", sep=""),
-					sep="\t",row.names=F, quote=F
+				result, 
+				paste(outpath, target$projectName, "_diffAna_", nameComp, 
+						".tsv", sep=""),
+				sep="\t",row.names=F, quote=F
 			)
 			
 			# plot MA-plot of the differential analysis
@@ -152,8 +163,9 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 maPlot <- function(res, compName, outpath = "", pvalThreshold = 0.05, out = FALSE){
 	
 	if (out){
-		png(paste(outpath, "MA-plot-", compName, ".png", sep=""),
-				width=700, height=600
+		png(paste(outpath, target$projectName, "_",
+				compName, "_MA-plot", ".png", sep=""),
+			width=700, height=600
 		)
 	}
 	
@@ -783,14 +795,14 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 		# create plot file
 		png(paste(
 				outpath, target$projectName, "_", cond1, "-", cond2, 
-				"PvalueDistribution.png", sep=""
+				"_PvalueDistribution.png", sep=""
 			),
 			width=1000, height=600
 		)
 	}
 	
 	# set plot margins
-	par(omd=c(0.01,0.85,0.1,0.99),mfrow=c(1,2))
+	par(omd=c(0.01,0.99,0.1,0.99),mfrow=c(1,2))
 	
 	# plot the p-value distribution
 	hist(anadiffResult$pval,

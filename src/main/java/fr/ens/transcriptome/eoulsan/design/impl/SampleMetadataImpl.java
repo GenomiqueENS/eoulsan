@@ -167,6 +167,12 @@ public class SampleMetadataImpl implements SampleMetadata {
     return getField(REP_TECH_GROUP_FIELD);
   }
 
+  @Override
+  public String getReference() {
+
+    return getField(REFERENCE);
+  }
+
   //
   // Setters
   //
@@ -293,6 +299,12 @@ public class SampleMetadataImpl implements SampleMetadata {
     setField(REP_TECH_GROUP_FIELD, repTechGroup);
   }
 
+  @Override
+  public void setReference(String reference) {
+
+    setField(REFERENCE, reference);
+  }
+
   //
   // Fields tester
   //
@@ -390,6 +402,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isRepTechGroup() {
 
     return isField(REP_TECH_GROUP_FIELD);
+  }
+
+  @Override
+  public boolean isReference() {
+
+    return isField(REFERENCE);
   }
 
   //

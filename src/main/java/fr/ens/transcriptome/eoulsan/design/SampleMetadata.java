@@ -63,6 +63,8 @@ public interface SampleMetadata {
   String REP_TECH_GROUP_FIELD = "RepTechGroup";
   /** project name field */
   String EXPERIMENT = "Experiment";
+  /** reference for cinetic RNA-seq */
+  String REFERENCE = "Reference";
 
   /**
    * Get a field value.
@@ -163,10 +165,16 @@ public interface SampleMetadata {
   FastqFormat getFastqFormat();
 
   /**
-   * Get repTechGroup
+   * Get RepTechGroup
    * @return The repTechGroup
    */
   String getRepTechGroup();
+  
+  /**
+   * Get Reference
+   * @return the Reference
+   */
+  String getReference();
   
   /**
    * Set a field of the metadata.
@@ -266,6 +274,12 @@ public interface SampleMetadata {
   void setRepTechGroup(final String repTechGroup);
   
   /**
+   * Set the Reference
+   * @param reference
+   */
+  void setReference(final String reference);
+  
+  /**
    * Test if a field exists.
    * @param field The field to test
    * @return true if the field exists
@@ -354,5 +368,11 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isRepTechGroup();
+  
+  /**
+   * Test if the Reference exists
+   * @return true if the reference exists
+   */
+  boolean isReference();
   
 }
