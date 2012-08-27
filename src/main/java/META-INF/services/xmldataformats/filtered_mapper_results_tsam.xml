@@ -1,0 +1,9 @@
+<dataformat>
+  <name>filtered_mapper_results_tsam</name>
+  <description>tabualar sam filtered alignments format</description>
+  <type>filtered_mapper_results</type>
+  <content-type>text/plain</content-type>
+  <extensions>
+  	<extension default="true">.tsam</extension>
+  </extensions>
+</dataformat>

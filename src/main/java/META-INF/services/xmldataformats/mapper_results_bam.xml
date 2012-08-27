@@ -1,0 +1,8 @@
+<dataformat>
+  <name>mapper_results_bam</name>
+  <description>bam alignments format</description>
+  <type>mapper_results</type>
+  <extensions>
+  	<extension default="true">.bam</extension>
+  </extensions>
+</dataformat>

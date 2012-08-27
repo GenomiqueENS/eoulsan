@@ -377,6 +377,9 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="add">
                 Eoulsan can now send mail to inform user of the end of the analysis.
             </action>
+             <action dev="jourdren" type="add">
+                Datatypes and dataformat can now defined in XML files.
+            </action>
          </release>
 
 	</body>

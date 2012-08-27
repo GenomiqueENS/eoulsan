@@ -1,0 +1,6 @@
+<datatype>
+  <name>soap_index</name>
+  <description>soap index type</description>
+  <prefix>soap_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+</datatype>

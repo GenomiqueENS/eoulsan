@@ -1,0 +1,8 @@
+<dataformat>
+  <name>reads_tfq</name>
+  <description>reads in tfq format</description>
+  <type>reads</type>
+  <extensions>
+  	<extension default="true">.tfq</extension>
+  </extensions>
+</dataformat>

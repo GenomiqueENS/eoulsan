@@ -1,0 +1,5 @@
+<datatype>
+  <name>filtered_mapper_results_index</name>
+  <description>filtered alignments index type</description>
+  <prefix>filtered_mapper_results_index_</prefix>
+</datatype>
