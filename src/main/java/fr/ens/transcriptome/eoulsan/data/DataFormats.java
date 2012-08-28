@@ -94,7 +94,7 @@ public class DataFormats {
       .getDataFormatFromName("mapper_results_bam");
 
   /** BAM index results data format. */
-  public static final DataFormat MAPPER_RESULTS_BAM_INDEX = registry
+  public static final DataFormat MAPPER_RESULTS_INDEX_BAI = registry
       .getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
