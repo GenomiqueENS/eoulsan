@@ -249,6 +249,8 @@ public class DiffAna {
     sb.append(readStaticScript(NORMALISATION_FUNCTIONS));
     sb.append("@\n\n");
 
+    sb.append("\\section{Initialization}\n");
+    sb.append("<<>>=\n");
     // determine if there is technical replicates
     boolean rep = false;
     for (int j = 0; j < rSampleIds.size(); j++) {
@@ -258,6 +260,19 @@ public class DiffAna {
         // replace "na" values of repTechGroup by unique sample ids to avoid
         // pooling problem while executing R script
         rRepTechGroup.set(j, rSampleIds.get(j).toString());
+      }
+    }
+
+    // Test if there is a reference field for kinetic experiments
+    if (isReference(experiment)) {
+      for (Sample s : experiment) {
+        String refval = s.getMetadata().getReference().trim().toLowerCase();
+        if (refval.equals("true")) {
+          // add reference to R script
+          sb.append("ref <- "
+              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
+          break;
+        }
       }
     }
 
@@ -275,8 +290,8 @@ public class DiffAna {
     } else {
       sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
     }
-    
-    if (this.design.getSample(1).getMetadata().isReference()) {
+
+    if (isReference(experiment)) {
       sb.append(readStaticScript(KINETIC_ANADIFF));
     } else {
       sb.append(readStaticScript(NOT_KINETIC_ANADIFF));
@@ -459,9 +474,6 @@ public class DiffAna {
       final List<String> rCondNames, final List<String> rRepTechGroup,
       final String experimentName) {
 
-    sb.append("\\section{Initialization}\n");
-    sb.append("<<>>=\n");
-
     // Add samples names to R script
     sb.append("# create sample names vector\n");
     sb.append("sampleNames <- c(");
@@ -538,20 +550,6 @@ public class DiffAna {
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\"" + experimentName + "\"" + "\n");
-
-    // Test if there is a reference field for kinetic experiments
-    if (this.design.getSample(1).getMetadata().isReference()) {
-      List<Sample> samples = this.design.getSamples();
-      for (Sample s : samples) {
-        String refval = s.getMetadata().getReference().trim().toLowerCase();
-        if (refval.equals("true")) {
-          // add reference to R script
-          sb.append("ref <- "
-              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
-        }
-      }
-    }
-
     sb.append("@\n\n");
 
     // add not variable part of the analysis
@@ -569,9 +567,6 @@ public class DiffAna {
   private void writeWithoutTechnicalReplicates(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<String> rCondNames, String experimentName) {
-
-    sb.append("\\section{Initialization}\n");
-    sb.append("<<>>=\n");
 
     // Add samples names to R script
     sb.append("# create sample names vector\n");
@@ -637,25 +632,29 @@ public class DiffAna {
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
     sb.append("\"" + experimentName + "\"" + "\n");
-
-    // Test if there is a reference field for kinetic experiments
-    if (this.design.getSample(1).getMetadata().isReference()) {
-      List<Sample> samples = this.design.getSamples();
-      for (Sample s : samples) {
-        String refval = s.getMetadata().getReference().trim().toLowerCase();
-        if (refval.equals("true")) {
-          // add reference to R script
-          sb.append("ref <- "
-              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
-        }
-      }
-    }
-
     sb.append("@\n\n");
 
     // add not variable part of the analysis
     sb.append(readStaticScript(NORMALISATION_WHITHOUT_TECHREP));
 
+  }
+
+  /**
+   * Test if there is reference in an experiment
+   * @param experiment
+   * @return boolean isRef
+   */
+  private boolean isReference(List<Sample> experiment) {
+    boolean isRef = false;
+    if (experiment.get(1).getMetadata().isReference()) {
+      for (Sample s : experiment) {
+        if (s.getMetadata().getReference().toLowerCase().equals("true")) {
+          isRef = true;
+          break;
+        }
+      }
+    }
+    return isRef;
   }
 
   //

@@ -181,15 +181,13 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 12	s2	s2.fq	genome://mouse	annotation://mouse	fastq-illumina	c1	repT1	project1	false
 3	s3	s3.fq	genome://mouse	annotation://mouse	fastq-illumina	c2	repT2	project1	false
 54	s4	s4.fq	genome://mouse	annotation://mouse	fastq-illumina	c2	repT2	project1	false
-15	s1	s1.fq	genome://mouse	annotation://mouse	fastq-illumina	c3	repT3	project2	true
+15	s1	s1.fq	genome://mouse	annotation://mouse	fastq-illumina	c3	repT3	project2	false
 5	s2	s2.fq	genome://mouse	annotation://mouse	fastq-illumina	c3	repT3	project2	false
 25	s3	s3.fq	genome://mouse	annotation://mouse	fastq-illumina	c4	repT4	project2	false
 13	s4	s4.fq	genome://mouse	annotation://mouse	fastq-illumina	c4	repT4	project2	false
 </source>
 
-		<b>WARNING</b>: currently it is not possible to describe a kinetic experiment and a not
-		kinetic experiment in the same design file. 	
-		
+As you can see it is possible to describe kinetic and no kinetic experiements in the sams design.
 		</subsection>
 
     </section>
