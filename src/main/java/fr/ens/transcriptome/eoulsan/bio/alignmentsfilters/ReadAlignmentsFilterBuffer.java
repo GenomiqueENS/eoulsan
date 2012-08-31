@@ -26,9 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.Globals;
 
 import net.sf.samtools.SAMRecord;
 
@@ -41,8 +38,6 @@ import net.sf.samtools.SAMRecord;
  * @author Claire Wallon
  */
 public class ReadAlignmentsFilterBuffer {
-
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private final ReadAlignmentsFilter filter;
   private final List<SAMRecord> list = new ArrayList<SAMRecord>();

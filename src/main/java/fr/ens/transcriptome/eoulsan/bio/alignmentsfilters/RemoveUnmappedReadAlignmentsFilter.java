@@ -27,8 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-
 import net.sf.samtools.SAMRecord;
 
 /**
@@ -41,8 +39,6 @@ public class RemoveUnmappedReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "removeunmapped";
-  // TODO Claire : Why remove is not used ?
-  private boolean remove = false;
 
   private final List<SAMRecord> result = new ArrayList<SAMRecord>();
 
@@ -93,26 +89,4 @@ public class RemoveUnmappedReadAlignmentsFilter extends
     records.removeAll(result);
     result.clear();
   }
-
-  @Override
-  public void setParameter(final String key, final String value)
-      throws EoulsanException {
-
-    if (key == null || value == null)
-      return;
-
-    if ("remove".equals(key.trim())) {
-
-      try {
-        this.remove = Boolean.parseBoolean(value.trim());
-      } catch (NumberFormatException e) {
-        return;
-      }
-
-    } else
-
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " alignments filter: " + key);
-  }
-
 }
