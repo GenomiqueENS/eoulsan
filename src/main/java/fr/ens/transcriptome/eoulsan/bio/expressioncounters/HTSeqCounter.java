@@ -108,7 +108,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final Map<String, Integer> counts = Utils.newHashMap();
 
     final Writer writer = FileUtils.createBufferedWriter(outFile);
-    final Writer samout = new FileWriter(new File("eoulsan-htseq-out.sam"));
+//    final Writer samout = new FileWriter(new File("eoulsan-htseq-out.sam"));
 
     boolean pairedEnd = false;
 
@@ -155,8 +155,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         // unmapped read
         if (samRecord.getReadUnmappedFlag()) {
           notaligned++;
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:not_aligned\n");
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:not_aligned\n");
           continue;
         }
 
@@ -164,16 +164,16 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
           nonunique++;
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:not_unique\n");
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:not_unique\n");
           continue;
         }
 
         // too low quality
         if (samRecord.getMappingQuality() < minAverageQual) {
           lowqual++;
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:too_low_qual\n");
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:too_low_qual\n");
           continue;
         }
 
@@ -215,10 +215,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         // unmapped read
         if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
           notaligned++;
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:not_aligned\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:not_aligned\n");
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:not_aligned\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:not_aligned\n");
           continue;
         }
 
@@ -227,10 +227,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
             || (sam2.getAttribute("NH") != null && sam2
                 .getIntegerAttribute("NH") > 1)) {
           nonunique++;
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:not_unique\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:not_unique\n");
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:not_unique\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:not_unique\n");
           continue;
         }
 
@@ -238,10 +238,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (sam1.getMappingQuality() < minAverageQual
             || sam2.getMappingQuality() < minAverageQual) {
           lowqual++;
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:too_low_qual\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:too_low_qual\n");
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:too_low_qual\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:too_low_qual\n");
           continue;
         }
 
@@ -258,49 +258,49 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       switch (fs.size()) {
       case 0:
         empty++;
-        if (sam1 == null)
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:no_feature\n");
-        else {
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:no_feature\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:no_feature\n");
-        }
+//        if (sam1 == null)
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:no_feature\n");
+//        else {
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:no_feature\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:no_feature\n");
+//        }
         break;
 
       case 1:
         final String id = fs.iterator().next();
         counts.put(id, counts.get(id) + 1);
-        if (sam1 == null)
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:" + id + "\n");
-        else {
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:" + id + "\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:" + id + "\n");
-        }
+//        if (sam1 == null)
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:" + id + "\n");
+//        else {
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:" + id + "\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:" + id + "\n");
+//        }
         break;
 
       default:
         ambiguous++;
-        if (sam1 == null)
-          samout.write(samRecord.getSAMString().replace("\n", "")
-              + " XF:Z:ambiguous" + fs.toString() + "\n");
-        else {
-          samout.write(sam1.getSAMString().replace("\n", "")
-              + " XF:Z:ambiguous" + fs.toString() + "\n");
-          samout.write(sam2.getSAMString().replace("\n", "")
-              + " XF:Z:ambiguous" + fs.toString() + "\n");
-        }
+//        if (sam1 == null)
+//          samout.write(samRecord.getSAMString().replace("\n", "")
+//              + " XF:Z:ambiguous" + fs.toString() + "\n");
+//        else {
+//          samout.write(sam1.getSAMString().replace("\n", "")
+//              + " XF:Z:ambiguous" + fs.toString() + "\n");
+//          samout.write(sam2.getSAMString().replace("\n", "")
+//              + " XF:Z:ambiguous" + fs.toString() + "\n");
+//        }
         break;
       }
 
     }
 
     inputSam.close();
-    samout.close();
+//    samout.close();
 
     // Write results
     final List<String> keysSorted = new ArrayList<String>(counts.keySet());

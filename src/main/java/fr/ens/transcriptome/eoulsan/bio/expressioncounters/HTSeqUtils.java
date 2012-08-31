@@ -308,12 +308,6 @@ public class HTSeqUtils {
         Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (iv.toString()
-            .equals("GenomicInterval{chr6 [149514684-149514717]+}")
-            || iv.toString().equals(
-                "GenomicInterval{chrX [144167961-144168016]+}"))
-          System.out.println(iv.toString() + " : " + intervals.toString());
-
         if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
           for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
             if (e.getKey().getStrand() == iv.getStrand())
