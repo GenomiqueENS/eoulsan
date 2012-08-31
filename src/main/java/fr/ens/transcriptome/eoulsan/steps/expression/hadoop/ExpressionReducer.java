@@ -62,6 +62,10 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
   private final String[] fields = new String[9];
   private final Text outputValue = new Text();
 
+  /**
+   * 'key': annotation identifier of the feature (exon). 'values': a list of
+   * '1', the size of this list is the number of reads found on the feature.
+   */
   @Override
   public void reduce(final Text key, Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
@@ -87,10 +91,6 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
       final String exonChr = this.fields[0];
       final int exonStart = Integer.parseInt(this.fields[1]);
       final int exonEnd = Integer.parseInt(this.fields[2]);
-      // codingStrand = Boolean.parseBoolean(this.fields[3]);
-
-      // final int exonNumber = Integer.parseInt(this.fields[4]);
-      // final int exonTotal = Integer.parseInt(this.fields[5]);
 
       final String alignementChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);

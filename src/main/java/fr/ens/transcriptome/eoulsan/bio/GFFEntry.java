@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class define a GFF Entry.
+ * This class defines a GFF Entry.
  * @since 1.0
  * @author Laurent Jourdren
  */

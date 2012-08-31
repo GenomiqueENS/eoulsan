@@ -39,9 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -52,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @author Laurent Jourdren
  */
 public class GenomicArray<T> {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Map<String, ChromosomeZones<T>> chromosomes = Utils.newHashMap();
 
@@ -442,15 +437,23 @@ public class GenomicArray<T> {
                   zone.strand);
 
           final Set<T> r = zone.getValues();
+
+          if (result == null)
+            result = Utils.newHashMap();
+
           if (r != null) {
-
-            if (result == null)
-              result = Utils.newHashMap();
-
             result.put(iv, Collections.unmodifiableSet(r));
-          }
+          } else
+            result.put(iv, new HashSet<T>());
         }
       }
+
+      if (stop > get(to).end && start > get(to).start) {
+        result.put(new GenomicInterval(this.chromosomeName, start, stop,
+            get(to).strand), new HashSet<T>());
+      } else if (stop > get(to).end)
+        result.put(new GenomicInterval(this.chromosomeName, get(to).end + 1,
+            stop, get(to).strand), new HashSet<T>());
 
       return result;
     }

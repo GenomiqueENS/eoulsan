@@ -59,7 +59,7 @@ public class EoulsanCounter extends AbstractExpressionCounter {
   protected void internalCount(final File alignmentFile,
       final DataFile annotationFile, final File expressionFile,
       final DataFile genomeDescFile, final Reporter reporter,
-      final String counterGroup) throws IOException {
+      final String counterGroup) throws IOException, BadBioEntryException {
 
     ExpressionPseudoMapReduce epmr = null;
     // String lastAnnotationKey = null;
@@ -69,34 +69,33 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     final File expressionTmpFile =
         new File(alignmentFile.getAbsolutePath() + ".tmp");
 
-    try {
+    // try {
 
-      epmr =
-          new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
-              genomeDescFile.open(), counterGroup);
+    epmr =
+        new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
+            genomeDescFile.open(), counterGroup);
 
-      if (getTempDirectory() != null)
-        epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));
-      epmr.doMap(alignmentFile);
-      epmr.doReduce(expressionTmpFile);
+    if (getTempDirectory() != null)
+      epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));
+    epmr.doMap(alignmentFile);
+    epmr.doReduce(expressionTmpFile);
 
-      final FinalExpressionTranscriptsCreator fetc =
-          new FinalExpressionTranscriptsCreator(
-              epmr.getTranscriptAndExonFinder());
+    final FinalExpressionTranscriptsCreator fetc =
+        new FinalExpressionTranscriptsCreator(epmr.getTranscriptAndExonFinder());
 
-      fetc.initializeExpressionResults();
-      fetc.loadPreResults(expressionTmpFile, epmr.getReporter()
-          .getCounterValue(counterGroup, "reads used"));
-      fetc.saveFinalResults(expressionFile);
+    fetc.initializeExpressionResults();
+    fetc.loadPreResults(expressionTmpFile,
+        epmr.getReporter().getCounterValue(counterGroup, "reads used"));
+    fetc.saveFinalResults(expressionFile);
 
-      // Remove expression Temp file
-      if (!expressionTmpFile.delete())
-        LOGGER.warning("Can not delete expression temporary file: "
-            + expressionTmpFile.getAbsolutePath());
+    // Remove expression Temp file
+    if (!expressionTmpFile.delete())
+      LOGGER.warning("Can not delete expression temporary file: "
+          + expressionTmpFile.getAbsolutePath());
 
-    } catch (BadBioEntryException e) {
-      // exit("Invalid annotation entry: " + e.getEntry());
-    }
+    // } catch (BadBioEntryException e) {
+    // exit("Invalid annotation entry: " + e.getEntry());
+    // }
   }
 
 }

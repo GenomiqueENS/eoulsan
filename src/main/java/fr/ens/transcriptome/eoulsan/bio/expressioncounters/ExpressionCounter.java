@@ -27,6 +27,8 @@ package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 import java.io.File;
 import java.io.IOException;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
@@ -58,9 +60,9 @@ public interface ExpressionCounter {
    * @return the OverlapMode
    */
   OverlapMode getOverlapMode();
-  
+
   /**
-   * Get the genomic type on which to count expression. 
+   * Get the genomic type on which to count expression.
    * @return a string with the genomic type name
    */
   String getGenomicType();
@@ -98,7 +100,7 @@ public interface ExpressionCounter {
    * @param mode : the OverlapMode object
    */
   void setOverlapMode(OverlapMode mode);
-  
+
   /**
    * Set the genomic type on which to count expression.
    * @param genomicType : string with the genomic type name
@@ -125,7 +127,7 @@ public interface ExpressionCounter {
    * @throws IOException
    */
   void count(File alignmentFile, DataFile annotationFile, File expressionFile,
-      DataFile genomeDescFile) throws IOException;
+      DataFile genomeDescFile) throws IOException, EoulsanException, BadBioEntryException;
 
   //
   // Other methods

@@ -62,6 +62,11 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
 
   }
 
+  /**
+   * 'key': the identifier of the read without the integer indicating the member
+   * of the pair. 'values': the rest of the paired TFQ lines (the member '1'
+   * and then the member '2').
+   */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
@@ -111,7 +116,7 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
           this.completeId2 = key.toString() + fields[0];
         }
       }
-    
+
     }
 
     if (this.read1 == null || this.read2 == null) {
@@ -119,7 +124,7 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
           INVALID_INPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
       return;
     }
-    
+
     this.outKey = new Text(this.completeId1);
 
     // Write results

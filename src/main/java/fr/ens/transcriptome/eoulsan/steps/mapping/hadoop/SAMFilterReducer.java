@@ -127,6 +127,11 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   }
 
+  /**
+   * 'key': identifier of the aligned read, without the integer indicating the
+   * pair member if data are in paired-end mode. 'value': alignments without the
+   * identifier part of the SAM line. 
+   */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
