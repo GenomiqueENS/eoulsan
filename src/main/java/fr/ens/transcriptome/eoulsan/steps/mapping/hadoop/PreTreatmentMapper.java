@@ -47,8 +47,8 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This class define a mapper for the pretreatment of paired-end data before the
- * reads filtering step.
+ * This class defines a mapper for the pretreatment of paired-end data before
+ * the reads filtering step.
  * @since 1.2
  * @author Claire Wallon
  */
@@ -110,6 +110,10 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   // Map
   //
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the TFQ
+   * file. 'value': the TFQ record. 
+   */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {

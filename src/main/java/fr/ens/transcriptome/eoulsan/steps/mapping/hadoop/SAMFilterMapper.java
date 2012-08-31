@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This class define a mapper for alignment filtering.
+ * This class defines a mapper for alignment filtering.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -91,6 +91,11 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     LOGGER.info("End of setup()");
   }
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the SAM
+   * file if data are in single-end mode or in TSAM file if data are in
+   * paired-end mode. 'value': the SAM or TSAM line. 
+   */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {

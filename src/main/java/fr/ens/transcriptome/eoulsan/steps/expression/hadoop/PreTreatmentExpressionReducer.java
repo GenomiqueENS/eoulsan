@@ -94,6 +94,12 @@ public class PreTreatmentExpressionReducer extends
 
   }
 
+  /**
+   * 'key': the identifier of the aligned read without the integer indicating
+   * the member of the pair. 'values': the rest of the paired alignments, i.e
+   * the SAM line of the first paired alignment and the SAM line of the second
+   * paired alignment.
+   */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
@@ -101,7 +107,6 @@ public class PreTreatmentExpressionReducer extends
     String stringVal;
     String strOutKey = "";
     String strOutValue = "";
-    int firstIndexOfTab;
     SAMRecord samRecord;
     String stringRecord;
 
@@ -126,8 +131,10 @@ public class PreTreatmentExpressionReducer extends
 
     }
 
+    // sort alignments of the current read
     Collections.sort(records, new SAMComparator());
 
+    // Writing records
     int indexOfFirstTab = records.get(0).getSAMString().indexOf("\t");
     strOutKey = records.get(0).getSAMString().substring(0, indexOfFirstTab);
     strOutValue =
