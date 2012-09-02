@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -50,7 +52,6 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
 
 /**
@@ -412,13 +413,12 @@ public class DiffAna {
       try {
 
         final ProcessBuilder pb =
-            new ProcessBuilder("/usr/bin/R", "CMD", "Sweave",
-                StringUtils.bashEscaping(rnwScript));
+            new ProcessBuilder("/usr/bin/R", "CMD", "Sweave", rnwScript);
 
         // Set the temporary directory for R
         pb.environment().put("TMPDIR", this.outPath.getAbsolutePath());
 
-        ProcessUtils.logEndTime(pb.start(), pb.toString(),
+        ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
             System.currentTimeMillis());
 
         if (!new File(rnwScript).delete())
