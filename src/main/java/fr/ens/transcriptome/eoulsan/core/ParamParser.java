@@ -170,6 +170,13 @@ public class ParamParser {
 
                 final Element eStepElement = (Element) nStepNode;
 
+                final String stepId =
+                    eStepElement.getAttribute("id").trim().toLowerCase();
+
+                final boolean skip =
+                    Boolean.parseBoolean(eStepElement.getAttribute("skip")
+                        .trim().toLowerCase());
+
                 String stepName = getTagValue("stepname", eStepElement);
                 if (stepName == null)
                   stepName = getTagValue("name", eStepElement);
@@ -177,19 +184,12 @@ public class ParamParser {
                   throw new EoulsanException(
                       "Step name not found in parameter file.");
 
-                final String skip =
-                    eStepElement.getAttribute("skip").trim().toLowerCase();
+                final Set<Parameter> parameters =
+                    parseParameters(eStepElement, "parameters", stepName, true);
 
-                if (!"true".equals(skip)) {
-
-                  final Set<Parameter> parameters =
-                      parseParameters(eStepElement, "parameters", stepName,
-                          true);
-
-                  LOGGER.info("In parameter file found "
-                      + stepName + " step (parameters: " + parameters + ").");
-                  command.addStep(stepName, parameters);
-                }
+                LOGGER.info("In parameter file found "
+                    + stepName + " step (parameters: " + parameters + ").");
+                command.addStep(stepId, stepName, parameters, skip);
 
               }
             }

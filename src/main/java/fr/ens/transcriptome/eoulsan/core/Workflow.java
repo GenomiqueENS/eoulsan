@@ -490,9 +490,13 @@ class Workflow implements WorkflowDescription {
     this.steps = new ArrayList<Step>();
     final Command c = this.command;
 
-    for (String stepName : c.getStepNames()) {
-      LOGGER.info("Create " + stepName + " step.");
-      this.steps.add(findStep(stepName));
+    for (String stepId : c.getStepIds()) {
+
+      if (c.isStepSkipped(stepId))
+        continue;
+
+      LOGGER.info("Create " + stepId + " step.");
+      this.steps.add(findStep(c.getStepName(stepId)));
     }
   }
 

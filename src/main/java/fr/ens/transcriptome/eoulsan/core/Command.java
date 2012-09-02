@@ -24,13 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -43,17 +44,18 @@ import fr.ens.transcriptome.eoulsan.Settings;
  */
 public class Command {
 
-  private static final Set<Parameter> EMPTY_SET_PARAMETER =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
+      .emptySet();
 
   private String name = "";
   private String description = "";
   private String author = "";
 
-  private List<String> stepNamesList = new ArrayList<String>();
-  private final Map<String, Set<Parameter>> stepsMap =
-      new HashMap<String, Set<Parameter>>();
-  private final Set<Parameter> globalParameters = new HashSet<Parameter>();
+  private List<String> stepIdList = Lists.newArrayList();
+  private Map<String, String> stepIdNames = Maps.newHashMap();
+  private final Map<String, Set<Parameter>> stepParameters = Maps.newHashMap();
+  private Map<String, Boolean> stepSkiped = Maps.newHashMap();
+  private final Set<Parameter> globalParameters = Sets.newHashSet();
 
   //
   // Getters
@@ -137,11 +139,14 @@ public class Command {
 
   /**
    * Add a step to the analysis
+   * @param stepId id of the step
    * @param stepName name of the step to add
    * @param parameters parameters of the step
+   * @param skipStep true if the step must be skip
    * @throws EoulsanException if an error occurs while adding the step
    */
-  public void addStep(final String stepName, final Set<Parameter> parameters)
+  public void addStep(final String stepId, final String stepName,
+      final Set<Parameter> parameters, final boolean skipStep)
       throws EoulsanException {
 
     if (stepName == null)
@@ -152,35 +157,66 @@ public class Command {
     if ("".equals(stepNameLower))
       throw new EoulsanException("The name of the step is empty.");
 
-    if (this.stepsMap.containsKey(stepNameLower))
-      throw new EoulsanException("The step already exists: " + stepName);
+    final String stepIdLower;
+    if (stepId == null)
+      stepIdLower = stepNameLower;
+    else
+      stepIdLower = stepId.toLowerCase().trim();
+
+    if ("".equals(stepIdLower))
+      throw new EoulsanException("The id of the step is empty.");
+
+    if (this.stepParameters.containsKey(stepIdLower))
+      throw new EoulsanException("The step id already exists: " + stepIdLower);
 
     if (parameters == null)
       throw new EoulsanException("The parameters are null.");
 
-    this.stepNamesList.add(stepNameLower);
-    this.stepsMap.put(stepNameLower, parameters);
+    this.stepIdList.add(stepIdLower);
+    this.stepIdNames.put(stepIdLower, stepNameLower);
+    this.stepParameters.put(stepNameLower, parameters);
+    this.stepSkiped.put(stepIdLower, skipStep);
   }
 
   /**
-   * Get the list of step names.
-   * @return a list of step names
+   * Get the list of step ids.
+   * @return a list of step ids
    */
-  public List<String> getStepNames() {
+  public List<String> getStepIds() {
 
-    return this.stepNamesList;
+    return this.stepIdList;
+  }
+
+  /**
+   * Get the name of the step.
+   * @param stepId step id
+   * @return the name of the step
+   */
+  public String getStepName(final String stepId) {
+
+    return this.stepIdNames.get(stepId);
   }
 
   /**
    * Get the parameters of a step
-   * @param stepName the name of the step
+   * @param stepId the id of the step
    * @return a set of the parameters of the step
    */
-  public Set<Parameter> getStepParameters(final String stepName) {
+  public Set<Parameter> getStepParameters(final String stepId) {
 
-    final Set<Parameter> result = this.stepsMap.get(stepName);
+    final Set<Parameter> result = this.stepParameters.get(stepId);
 
     return result == null ? EMPTY_SET_PARAMETER : result;
+  }
+
+  /**
+   * Test if the step is skipped.
+   * @param stepId step id
+   * @return true if the step is skipped
+   */
+  public boolean isStepSkipped(final String stepId) {
+
+    return this.stepSkiped.get(stepId);
   }
 
   /**
