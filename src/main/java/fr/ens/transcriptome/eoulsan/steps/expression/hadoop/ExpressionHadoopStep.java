@@ -541,7 +541,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   private static final void createFinalExpressionTranscriptsFile(
       final Context context, final Map<Sample, Job> jobconfs,
-      final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException, InterruptedException {
 
     FinalExpressionTranscriptsCreator fetc = null;
 
