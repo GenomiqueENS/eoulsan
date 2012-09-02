@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -155,13 +157,12 @@ public class DiffAna {
     try {
 
       final ProcessBuilder pb =
-          new ProcessBuilder("/usr/bin/R", "-f",
-              StringUtils.bashEscaping(rScript.getAbsolutePath()));
+          new ProcessBuilder("/usr/bin/R", "-f", rScript.getAbsolutePath());
 
       // Set the temporary directory for R
       pb.environment().put("TMPDIR", this.tempDir.getAbsolutePath());
 
-      ProcessUtils.logEndTime(pb.start(), pb.toString(),
+      ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
           System.currentTimeMillis());
 
       if (!rScript.delete())
