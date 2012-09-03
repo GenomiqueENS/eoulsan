@@ -25,11 +25,17 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -64,12 +70,61 @@ public class WorkflowStep {
   private final Design design;
   private final Context context;
   private final Set<DataFormat> outputFormats = Sets.newHashSet();
+  private final Set<DataFormat> inputFormats = Sets.newHashSet();
+  private final Map<DataFormat, InputDataFileLocation> inputFormatLocations =
+      Maps.newHashMap();
   private boolean configurationDone;
   private long duration = -1;
 
-  public enum StepType {
-    STANDARD_STEP, DESIGN_STEP, FIRST_STEP, TERMINAL_STEP
+  public static enum StepType {
+    STANDARD_STEP, DESIGN_STEP, FIRST_STEP, TERMINAL_STEP, GENERATOR_STEP
   };
+
+  /**
+   * This class allow to retrieve the DataFile that correspond to a input
+   * DataFormat of the Workflow step.
+   * @author Laurent Jourdren
+   */
+  public static final class InputDataFileLocation {
+
+    private final DataFormat format;
+    private final WorkflowStep step;
+
+    /**
+     * Get the DataFile.
+     * @param sample sample
+     * @return the DataFile for the sample
+     */
+    public DataFile getDataFile(final Sample sample) {
+
+      Preconditions.checkNotNull(sample, "Sample cannot be null");
+
+      return this.step.getOutputDataFile(this.format, sample);
+    }
+
+    @Override
+    public String toString() {
+
+      return Objects.toStringHelper(this).add("format", format)
+          .add("Step", this.step.id).toString();
+    }
+
+    /**
+     * Constructor.
+     * @param step Workflow step
+     * @param format format
+     */
+    public InputDataFileLocation(DataFormat format, final WorkflowStep step) {
+
+      Preconditions.checkNotNull(step, "Format cannot be null");
+      Preconditions.checkNotNull(step, "Step cannot be null");
+
+      this.format = format;
+      this.step = step;
+
+    }
+
+  }
 
   //
   // Getters
@@ -120,15 +175,57 @@ public class WorkflowStep {
     return this.duration;
   }
 
+  /**
+   * Get the input DataFormats.
+   * @return a unmodifiable set with DataFormats
+   */
+  Set<DataFormat> getInputDataFormats() {
+
+    return Collections.unmodifiableSet(this.inputFormats);
+  }
+
+  /**
+   * Get the output DataFormats.
+   * @return a unmodifiable set with DataFormats
+   */
+  Set<DataFormat> getOutputDataFormats() {
+
+    return Collections.unmodifiableSet(this.outputFormats);
+  }
+
+  ListMultimap<DataType, DataFormat> getInputDataFormatByDataTypes() {
+
+    final ListMultimap<DataType, DataFormat> result =
+        ArrayListMultimap.create();
+
+    for (DataFormat df : this.inputFormats)
+      result.put(df.getType(), df);
+
+    return result;
+  }
+
+  //
+  // Setters
+  //
+
+  void addInputFormatLocation(DataFormat format, final WorkflowStep step) {
+
+    if (!this.inputFormats.contains(format))
+      throw new EoulsanRuntimeException("Cannot add ");
+
+    if (!this.inputFormatLocations.containsKey(format))
+      this.inputFormatLocations.put(format, new InputDataFileLocation(format,
+          step));
+  }
+
   //
   // Input/output datafiles methods
   //
 
   public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
-    if (format == null || sample == null) {
-      return null;
-    }
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
     switch (this.type) {
 
@@ -137,7 +234,7 @@ public class WorkflowStep {
       if (!this.outputFormats.contains(format))
         throw new EoulsanRuntimeException("The "
             + format.getFormatName()
-            + " format is not an input format of the step "
+            + " format is not an output format of the step "
             + this.step.getName());
 
       // Return a file created by a step
@@ -173,6 +270,26 @@ public class WorkflowStep {
 
   }
 
+  /**
+   * Get a DataFile that correspond to a DataFormat and a Sample for this step.
+   * @param format the input format
+   * @param sample the sample
+   * @return a DataFormat or null if the DataFormat is not available
+   */
+  public DataFile getInputDataFile(final DataFormat format, final Sample sample) {
+
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+
+    if (!this.inputFormatLocations.containsKey(format))
+      throw new EoulsanRuntimeException("The "
+          + format.getFormatName()
+          + " format is not an output format of the step "
+          + this.step.getName());
+
+    return this.inputFormatLocations.get(format).getDataFile(sample);
+  }
+
   //
   // Step lifetime methods
   //
@@ -183,20 +300,29 @@ public class WorkflowStep {
    */
   public void configure() throws EoulsanException {
 
-    if (!this.configurationDone || this.type != StepType.STANDARD_STEP)
+    if (this.configurationDone
+        || (this.type != StepType.STANDARD_STEP && this.type != StepType.GENERATOR_STEP))
       return;
 
     LOGGER.info("Configure "
         + this.id + " step with step parameters: " + this.stepParameters);
 
-    this.step.configure(this.stepParameters);
+    if (this.type == StepType.STANDARD_STEP)
+      this.step.configure(this.stepParameters);
 
     // Get output formats
-    final DataFormat[] dfIn = this.step.getOutputFormats();
-    if (dfIn != null)
-      for (DataFormat df : dfIn)
+    final DataFormat[] dfOut = this.step.getOutputFormats();
+    if (dfOut != null)
+      for (DataFormat df : dfOut)
         this.outputFormats.add(df);
 
+    // Get input format
+    final DataFormat[] dfIn = this.step.getInputFormats();
+    if (dfIn != null)
+      for (DataFormat df : dfIn)
+        this.inputFormats.add(df);
+
+    this.configurationDone = true;
   }
 
   /**
@@ -205,7 +331,8 @@ public class WorkflowStep {
    */
   public StepResult execute() {
 
-    if (this.type != StepType.STANDARD_STEP)
+    if (this.type != StepType.STANDARD_STEP
+        && this.type != StepType.GENERATOR_STEP)
       return null;
 
     Stopwatch stopwatch = new Stopwatch();
@@ -297,6 +424,26 @@ public class WorkflowStep {
     return false;
   }
 
+  public void info() {
+
+    System.out.println("Id: " + this.id);
+    System.out.print("Type: " + this.type);
+
+    if (this.type == StepType.STANDARD_STEP
+        || this.type == StepType.GENERATOR_STEP) {
+      System.out.println("Step name: " + this.step.getName());
+      System.out.println("Inputs:");
+      for (Map.Entry<DataFormat, InputDataFileLocation> e : this.inputFormatLocations
+          .entrySet()) {
+        System.out.println("\t" + e.getValue());
+      }
+      for (DataFormat e : this.outputFormats) {
+        System.out.println("\t" + e);
+      }
+    }
+    System.out.println();
+  }
+
   //
   // Constructors
   //
@@ -306,6 +453,10 @@ public class WorkflowStep {
 
     Preconditions.checkArgument(type == StepType.STANDARD_STEP,
         "This constructor cannot be used for standard steps");
+
+    Preconditions.checkNotNull(design, "Design argument cannot be null");
+    Preconditions.checkNotNull(context, "Context argument cannot be null");
+    Preconditions.checkNotNull(type, "Type argument cannot be null");
 
     this.design = design;
     this.context = context;
@@ -318,9 +469,36 @@ public class WorkflowStep {
   }
 
   public WorkflowStep(final Design design, final Context context,
+      final DataFormat format) {
+
+    Preconditions.checkNotNull(design, "Design argument cannot be null");
+    Preconditions.checkNotNull(context, "Context argument cannot be null");
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+
+    this.design = design;
+    this.context = context;
+    this.step = format.getGenerator();
+
+    Preconditions.checkNotNull(this.step, "The generator step is null");
+
+    this.id = this.step.getName();
+    this.skip = false;
+    this.type = StepType.GENERATOR_STEP;
+
+    this.stepParameters = null;
+  }
+
+  public WorkflowStep(final Design design, final Context context,
       final String id, final String stepName,
       final Set<Parameter> stepParameters, final boolean skip)
       throws EoulsanException {
+
+    Preconditions.checkNotNull(design, "Design argument cannot be null");
+    Preconditions.checkNotNull(context, "Context argument cannot be null");
+    Preconditions.checkNotNull(id, "Step id argument cannot be null");
+    Preconditions.checkNotNull(stepName, "Step name argument cannot be null");
+    Preconditions.checkNotNull(stepParameters,
+        "Step arguments argument cannot be null");
 
     this.design = design;
     this.context = context;

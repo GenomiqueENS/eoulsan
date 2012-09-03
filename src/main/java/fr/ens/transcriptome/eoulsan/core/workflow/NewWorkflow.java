@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -40,6 +42,9 @@ import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
@@ -59,6 +64,8 @@ public class NewWorkflow {
   private final Design design;
   private final Context context;
   private final boolean hadoopMode;
+
+  private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
   //
   // Add steps
@@ -128,7 +135,7 @@ public class NewWorkflow {
    * Initialize the steps of the Workflow
    * @throws EoulsanException if an error occurs while creating the step
    */
-  public void init() throws EoulsanException {
+  private void init() throws EoulsanException {
 
     final Command c = this.command;
     final Set<Parameter> globalParameters = c.getGlobalParameters();
@@ -143,6 +150,94 @@ public class NewWorkflow {
     // Configure all the steps
     for (WorkflowStep step : this.steps)
       step.configure();
+  }
+
+  private Set<DataType> getDesignDataTypes() {
+
+    final Set<DataType> result = Sets.newHashSet();
+    final List<String> fields = this.design.getMetadataFieldsNames();
+
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    for (String fieldName : fields) {
+      DataType dt = registry.getDataTypeForDesignField(fieldName);
+
+      if (dt != null)
+        result.add(dt);
+    }
+
+    return result;
+  }
+
+  private void searchInputDataFormat() throws EoulsanException {
+
+    final Set<DataType> dataTypesFromDesign = getDesignDataTypes();
+
+    for (int i = this.steps.size() - 1; i >= 0; i--) {
+
+      final WorkflowStep step = this.steps.get(i);
+
+      ListMultimap<DataType, DataFormat> lmm =
+          step.getInputDataFormatByDataTypes();
+
+      for (DataType dt : lmm.keySet()) {
+
+        boolean found = false;
+        List<DataFormat> generatorAvaillables = Lists.newArrayList();
+
+        for (DataFormat df : lmm.get(dt)) {
+
+          if (!found)
+            for (int j = i - 1; j >= 0; j--) {
+
+              final WorkflowStep stepTested = this.steps.get(j);
+
+              // The tested step is a standard/generator step
+              if ((stepTested.getType() == StepType.STANDARD_STEP || stepTested
+                  .getType() == StepType.GENERATOR_STEP)
+                  && stepTested.getOutputDataFormats().contains(df)) {
+
+                step.addInputFormatLocation(df, stepTested);
+                found = true;
+                break;
+              }
+
+              // The tested step is the design step
+              if (stepTested.getType() == StepType.DESIGN_STEP
+                  && dataTypesFromDesign.contains(dt)) {
+
+                for (DataFormat df2 : lmm.get(dt))
+                  step.addInputFormatLocation(df2, stepTested);
+                found = true;
+                break;
+              }
+
+            }
+
+          // A generator is available for the DataType
+          if (df.isGenerator() && !this.generatorAdded.contains(df))
+            generatorAvaillables.add(df);
+
+        }
+
+        if (!found) {
+
+          // Add generator if needed
+          if (!generatorAvaillables.isEmpty()) {
+
+            this.steps.add(1, new WorkflowStep(this.design, this.context,
+                generatorAvaillables.get(0)));
+            searchInputDataFormat();
+            return;
+          }
+
+          else
+            throw new EoulsanException("Cannot found \""
+                + dt.getName() + "\" for step " + step.getId() + ".");
+        }
+      }
+    }
+
   }
 
   //
@@ -218,6 +313,17 @@ public class NewWorkflow {
 
     // Add end steps
     addEndSteps(endSteps);
+
+    // initialize steps
+    init();
+
+    // TODO Set manually defined input format source
+
+    // Search others input format sources
+    searchInputDataFormat();
+
+    // TODO check if output files does not exists
+    // TODO check if input files exists
   }
 
 }
