@@ -1,0 +1,8 @@
+<dataformat>
+  <name>filtered_reads_tfq</name>
+  <description>filtered reads in fastq format</description>
+  <type>filtered_reads</type>
+  <extensions>
+  	<extension default="true">.tfq</extension>
+  </extensions>
+</dataformat>

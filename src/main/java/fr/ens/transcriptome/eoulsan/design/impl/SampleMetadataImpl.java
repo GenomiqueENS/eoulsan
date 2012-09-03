@@ -74,7 +74,7 @@ public class SampleMetadataImpl implements SampleMetadata {
   @Override
   public String getExperiment() {
 
-    return getField(EXPERIMENT);
+    return getField(EXPERIMENT_FIELD);
   }
 
   @Override
@@ -126,12 +126,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public String getReplicatType() {
-
-    return getField(REPLICAT_TYPE_FIELD);
-  }
-
-  @Override
   public String getUUID() {
 
     return getField(UUID_TYPE_FIELD);
@@ -165,6 +159,20 @@ public class SampleMetadataImpl implements SampleMetadata {
   public String getRepTechGroup() {
 
     return getField(REP_TECH_GROUP_FIELD);
+  }
+
+  @Override
+  public boolean isReference() {
+
+    String value = getField(REFERENCE_FIELD);
+
+    if (value == null)
+      return false;
+
+    value = value.trim().toLowerCase();
+
+    return "t".equals(value)
+        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
   }
 
   //
@@ -250,7 +258,7 @@ public class SampleMetadataImpl implements SampleMetadata {
   @Override
   public void setExperiment(String experiment) {
 
-    setField(EXPERIMENT, experiment);
+    setField(EXPERIMENT_FIELD, experiment);
   }
 
   @Override
@@ -264,12 +272,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   public void setCondition(final String condition) {
 
     setField(CONDITION_FIELD, condition);
-  }
-
-  @Override
-  public void setReplicatType(final String replicatType) {
-
-    setField(REPLICAT_TYPE_FIELD, replicatType);
   }
 
   @Override
@@ -291,6 +293,12 @@ public class SampleMetadataImpl implements SampleMetadata {
   public void setRepTechGroup(String repTechGroup) {
 
     setField(REP_TECH_GROUP_FIELD, repTechGroup);
+  }
+
+  @Override
+  public void setReference(boolean reference) {
+
+    setField(REFERENCE_FIELD, Boolean.toString(reference));
   }
 
   //
@@ -347,7 +355,7 @@ public class SampleMetadataImpl implements SampleMetadata {
   @Override
   public boolean isExperiment() {
 
-    return isField(EXPERIMENT);
+    return isField(EXPERIMENT_FIELD);
   }
 
   @Override
@@ -369,27 +377,33 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public boolean isReplicatTypeField() {
-
-    return isField(REPLICAT_TYPE_FIELD);
-  }
-
-  @Override
   public boolean isUUIDField() {
 
     return isField(UUID_TYPE_FIELD);
   }
 
   @Override
-  public boolean isFastqFormat() {
+  public boolean isFastqFormatField() {
 
     return isField(FASTQ_FORMAT_FIELD);
   }
 
   @Override
-  public boolean isRepTechGroup() {
+  public boolean isRepTechGroupField() {
 
     return isField(REP_TECH_GROUP_FIELD);
+  }
+
+  @Override
+  public boolean isReferenceField() {
+
+    return isField(REFERENCE_FIELD);
+  }
+
+  @Override
+  public boolean isExperimentField() {
+
+    return isField(EXPERIMENT_FIELD);
   }
 
   //

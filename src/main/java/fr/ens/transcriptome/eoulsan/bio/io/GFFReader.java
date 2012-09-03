@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * This class define a GFF reader.
+ * This class defines a GFF reader.
  * @since 1.0
  * @author Laurent Jourdren
  */

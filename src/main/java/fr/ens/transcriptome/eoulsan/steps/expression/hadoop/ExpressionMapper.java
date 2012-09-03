@@ -84,6 +84,10 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   private final Map<String, Exon> oneExonByParentId =
       new HashMap<String, Exon>();
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the
+   * alignment file. 'value': the SAM record.
+   */
   @Override
   public void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {

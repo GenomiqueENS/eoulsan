@@ -24,6 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.base.Objects.equal;
+
+import java.util.Arrays;
+
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
@@ -33,6 +39,12 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
  * @author Laurent Jourdren
  */
 abstract class AbstractDataFormat implements DataFormat {
+
+  @Override
+  public String getDescription() {
+
+    return getFormatName() + " description.";
+  }
 
   @Override
   public String[] getExtensions() {
@@ -71,13 +83,69 @@ abstract class AbstractDataFormat implements DataFormat {
   }
 
   @Override
-  public String toString() {
-    return getFormatName();
+  public int getMaxFilesCount() {
+    return 1;
   }
 
   @Override
-  public int getMaxFilesCount() {
-    return 1;
+  public boolean equals(final Object o) {
+
+    if (o == this)
+      return true;
+
+    if (o == null || !(o instanceof DataFormat)) {
+      return false;
+    }
+
+    final DataFormat that = (DataFormat) o;
+
+    return equal(this.getFormatName(), that.getFormatName())
+        && equal(this.getDescription(), that.getDescription())
+        && equal(this.getType(), that.getType())
+        && equal(this.getContentType(), that.getContentType())
+        && equal(this.getDefaultExtention(), that.getDefaultExtention())
+        && Arrays.equals(this.getExtensions(), that.getExtensions())
+        && equal(this.isGenerator(), that.isGenerator())
+        && equal(this.isChecker(), that.isChecker())
+        && ((this.getGenerator() == null && that.getGenerator() == null) || (this
+            .getGenerator() != null && that.getGenerator() != null && equal(
+              this.getGenerator().getClass().getName(), that.getGenerator()
+                  .getClass().getName())))
+        && ((this.getChecker() == null && that.getChecker() == null) || (this
+            .getChecker() != null && that.getChecker() != null && equal(this
+            .getChecker().getClass().getName(), that.getChecker().getClass()
+            .getName())))
+        && equal(this.getMaxFilesCount(), that.getMaxFilesCount());
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(getFormatName(), getDescription(), getType(),
+        getContentType(), getDefaultExtention(), getExtensions(),
+        isGenerator(), isChecker(), getGenerator(), getChecker(),
+        getMaxFilesCount());
+  }
+
+  @Override
+  public String toString() {
+
+    final Step generator = getGenerator();
+    final Checker checker = getChecker();
+
+    return Objects
+        .toStringHelper(this)
+        .add("name", getFormatName())
+        .add("description", getDescription())
+        .add("typeName", getType().getName())
+        .add("contentType", getContentType())
+        .add("defaultExtension", getDefaultExtention())
+        .add("extensions", Arrays.toString(getExtensions()))
+        .add("generatorClassName",
+            generator != null ? generator.getClass().getCanonicalName() : null)
+        .add("checkerClassName",
+            checker != null ? checker.getClass().getCanonicalName() : null)
+        .add("maxFilesCount", getMaxFilesCount()).toString();
   }
 
 }

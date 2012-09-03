@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -35,10 +34,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
-import org.apache.hadoop.hdfs.DistributedFileSystem.DiskStatus;
-import org.apache.hadoop.hdfs.server.namenode.DatanodeDescriptor;
-import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
 import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -132,7 +127,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
       if (context.getSettings().isDebug())
         copyCpuinfoAndMeminfo(context, conf);
       sysInfo(conf);
-      dfsInfo(context, conf);
     } catch (IOException e) {
       logger
           .severe("Error while getting system information: " + e.getMessage());
@@ -231,44 +225,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
         + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
         + " available, " + df.getPercentUsed() + "% used");
 
-  }
-
-  private static final void dfsInfo(final Context context,
-      final Configuration conf) throws IOException {
-
-    final Path basePath = new Path(context.getBasePathname());
-    final FileSystem fs = basePath.getFileSystem(conf);
-
-    if (fs instanceof DistributedFileSystem) {
-
-      final DistributedFileSystem dfs = (DistributedFileSystem) fs;
-      final DiskStatus ds = dfs.getDiskStatus();
-
-      final int percent = (int) (100.0 * ds.getDfsUsed() / ds.getCapacity());
-
-      logger.info("SYSINFO "
-          + fs.getUri() + " "
-          + StringUtils.sizeToHumanReadable(ds.getCapacity()) + " capacity, "
-          + StringUtils.sizeToHumanReadable(ds.getDfsUsed()) + " used, "
-          + StringUtils.sizeToHumanReadable(ds.getRemaining()) + " available, "
-          + percent + "% used");
-
-      logger.info("SYSINFO Block size: " + dfs.getDefaultBlockSize());
-      logger.info("SYSINFO Replication: " + dfs.getDefaultReplication());
-
-      FSNamesystem fsn = FSNamesystem.getFSNamesystem();
-
-      ArrayList<DatanodeDescriptor> live = new ArrayList<DatanodeDescriptor>();
-      ArrayList<DatanodeDescriptor> dead = new ArrayList<DatanodeDescriptor>();
-
-      if (fsn != null) {
-        fsn.DFSNodesStatus(live, dead);
-
-        logger.info("SYSINFO DFS live nodes: " + live.size());
-        logger.info("SYSINFO DFS dead nodes: " + dead.size());
-      }
-
-    }
   }
 
   private static final void HadoopInfo() {

@@ -54,20 +54,13 @@
     <section name="Required R packages installation">
     
     <p>Eoulsan differential analysis module use R as statistical backend. 
-    Anadiff module was tested with R 2.10. You also need to install 2 R packages:</p>
+    DiffAna module was tested with R 2.15. You also need to install 1 R packages:</p>
     
     <ul>
-        <li><b>statmod</b></li>
-        <source>
-$ wget http://cran.r-project.org/src/contrib/statmod_1.4.14.tar.gz
-$ sudo R CMD INSTALL statmod_1.4.14.tar.gz
-        </source>
-        
-        <li><b>edgeR and DESeq</b></li>
+        <li><b>DESeq</b></li>
         <source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("edgeR")   
 &gt; biocLite("DESeq")    
         </source>
 

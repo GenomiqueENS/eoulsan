@@ -75,7 +75,7 @@ public class DiffAnaLocalStep extends AbstractStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TXT};
+    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TSV};
   }
 
   @Override
@@ -87,9 +87,6 @@ public class DiffAnaLocalStep extends AbstractStep {
 
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
-      LOGGER.info("Rserve enable : "
-          + EoulsanRuntime.getSettings().isRServeServerEnabled());
-      
       String rServeName = null;
       if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
         rServeName =

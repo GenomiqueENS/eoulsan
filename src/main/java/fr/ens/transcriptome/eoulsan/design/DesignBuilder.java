@@ -637,8 +637,10 @@ public class DesignBuilder {
     }
 
     smd.setFastqFormat(format == null ? defaultFastqFormat : format);
+    smd.setExperiment("exp1");
     smd.setCondition(condition);
-    smd.setReplicatType("T");
+    smd.setRepTechGroup(condition);
+    smd.setReference(false);
     smd.setUUID(UUID.randomUUID().toString());
 
   }

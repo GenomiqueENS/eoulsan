@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 
 /**
- * This class define a read filter mapper.
+ * This class defines a read filter mapper.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -141,6 +141,10 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   // Map
   //
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the TFQ
+   * file. 'value': the TFQ line. 
+   */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {

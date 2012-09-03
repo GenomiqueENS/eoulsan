@@ -31,99 +31,98 @@ package fr.ens.transcriptome.eoulsan.data;
  */
 public class DataFormats {
 
-  private static final DataFormatRegistry resgistry = DataFormatRegistry
+  private static final DataFormatRegistry registry = DataFormatRegistry
       .getInstance();
 
   /** Reads fastq data format. */
-  public static final DataFormat READS_FASTQ = resgistry
-      .getDataFormatFromName(ReadsFastqDataFormat.FORMAT_NAME);
+  public static final DataFormat READS_FASTQ = registry
+      .getDataFormatFromName("reads_fastq");
 
   /** Reads tfq data format. */
-  public static final DataFormat READS_TFQ = resgistry
-      .getDataFormatFromName(ReadsTfqDataFormat.FORMAT_NAME);
+  public static final DataFormat READS_TFQ = registry
+      .getDataFormatFromName("reads_tfq");
 
   /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_FASTQ = resgistry
-      .getDataFormatFromName(FilteredReadsFastqDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_READS_FASTQ = registry
+      .getDataFormatFromName("filtered_reads_fastq");
 
   /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_TFQ = resgistry
-      .getDataFormatFromName(FilteredReadsTfqDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_READS_TFQ = registry
+      .getDataFormatFromName("filtered_reads_tfq");
 
   /** SOAP index data format. */
-  public static final DataFormat SOAP_INDEX_ZIP = resgistry
-      .getDataFormatFromName(SOAPIndexZipDataFormat.FORMAT_NAME);
+  public static final DataFormat SOAP_INDEX_ZIP = registry
+      .getDataFormatFromName("soap_index_zip");
 
   /** BWA index data format. */
-  public static final DataFormat BWA_INDEX_ZIP = resgistry
-      .getDataFormatFromName(BWAIndexZipDataFormat.FORMAT_NAME);
+  public static final DataFormat BWA_INDEX_ZIP = registry
+      .getDataFormatFromName("bwa_index_zip");
 
-  /** Bowtie index data format. */
-  public static final DataFormat BOWTIE_INDEX_ZIP = resgistry
-      .getDataFormatFromName(BowtieIndexZipDataFormat.FORMAT_NAME);
+  /** BWA index data format. */
+  public static final DataFormat BOWTIE_INDEX_ZIP = registry
+      .getDataFormatFromName("bowtie_index_zip");
 
   /** Gmap index data format. */
-  public static final DataFormat GMAP_INDEX_ZIP = resgistry
-      .getDataFormatFromName(GmapIndexZipDataFormat.FORMAT_NAME);
+  public static final DataFormat GMAP_INDEX_ZIP = registry
+      .getDataFormatFromName("gmap_index_zip");
 
   /** Filtered SAM data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = resgistry
-      .getDataFormatFromName(FilteredMapperResultsSamDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = registry
+      .getDataFormatFromName("filtered_mapper_results_sam");
 
   /** Filtered BAM data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM = resgistry
-      .getDataFormatFromName(FilteredMapperResultsBamDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM = registry
+      .getDataFormatFromName("filtered_mapper_results_bam");
 
   /** Filtered BAM index data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM_INDEX =
-      resgistry
-          .getDataFormatFromName(FilteredMapperResultsBamIndexDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_MAPPER_RESULTS_INDEX_BAI = registry
+      .getDataFormatFromName("filtered_mapper_results_index_bai");
 
   /**
    * Filtered SAM data format for paired-end data : the two alignments of a read
    * are on the same line, separated by a '£'.
    */
-  public static final DataFormat TAB_FILTERED_MAPPER_RESULTS_SAM = resgistry
-      .getDataFormatFromName(TabFilteredMapperResultsSamDataFormat.FORMAT_NAME);
+  public static final DataFormat FILTERED_MAPPER_RESULTS_TSAM = registry
+      .getDataFormatFromName("filtered_mapper_results_tsam");
 
   /** SAM results data format. */
-  public static final DataFormat MAPPER_RESULTS_SAM = resgistry
-      .getDataFormatFromName(MapperResultsSamDataFormat.FORMAT_NAME);
+  public static final DataFormat MAPPER_RESULTS_SAM = registry
+      .getDataFormatFromName("mapper_results_sam");
 
   /** BAM results data format. */
-  public static final DataFormat MAPPER_RESULTS_BAM = resgistry
-      .getDataFormatFromName(MapperResultsBamDataFormat.FORMAT_NAME);
+  public static final DataFormat MAPPER_RESULTS_BAM = registry
+      .getDataFormatFromName("mapper_results_bam");
 
   /** BAM index results data format. */
-  public static final DataFormat MAPPER_RESULTS_BAM_INDEX = resgistry
-      .getDataFormatFromName(MapperResultsBamIndexDataFormat.FORMAT_NAME);
+  public static final DataFormat MAPPER_RESULTS_INDEX_BAI = registry
+      .getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
-  public static final DataFormat EXPRESSION_RESULTS_TXT = resgistry
-      .getDataFormatFromName(ExpressionResultsTxtDataFormat.FORMAT_NAME);
+  public static final DataFormat EXPRESSION_RESULTS_TXT = registry
+      .getDataFormatFromName("expression_results_tsv");
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_GFF = resgistry
-      .getDataFormatFromName(AnnotationGffDataFormat.FORMAT_NAME);
+  public static final DataFormat ANNOTATION_GFF = registry
+      .getDataFormatFromName("annotation_gff");
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_INDEX_SERIAL = resgistry
-      .getDataFormatFromName(AnnotationIndexSerialDataFormat.FORMAT_NAME);
+  public static final DataFormat ANNOTATION_INDEX_SERIAL = registry
+      .getDataFormatFromName("annotation_index_serial");
 
   /** Diffana results data format. */
-  public static final DataFormat DIFFANA_RESULTS_TXT = resgistry
-      .getDataFormatFromName(DiffAnaResultsTxtDataFormat.FORMAT_NAME);
+  public static final DataFormat DIFFANA_RESULTS_TSV = registry
+      .getDataFormatFromName("diffana_results_tsv");
 
   /** Genome data format. */
-  public static final DataFormat GENOME_FASTA = resgistry
-      .getDataFormatFromName(GenomeFastaDataFormat.FORMAT_NAME);
+  public static final DataFormat GENOME_FASTA = registry
+      .getDataFormatFromName("genome_fasta");
 
   /** Genome data format. */
-  public static final DataFormat GENOME_DESC_TXT = resgistry
-      .getDataFormatFromName(GenomeDescTxtDataFormat.FORMAT_NAME);
+  public static final DataFormat GENOME_DESC_TXT = registry
+      .getDataFormatFromName("genome_desc_txt");
 
   /** Unmap reads results data format. */
-  public static final DataFormat UNMAP_READS_FASTA = resgistry
-      .getDataFormatFromName(UnMapReadsFastaDataFormat.FORMAT_NAME);;
+  public static final DataFormat UNMAP_READS_FASTA = registry
+      .getDataFormatFromName("unmap_fasta");
 
 }

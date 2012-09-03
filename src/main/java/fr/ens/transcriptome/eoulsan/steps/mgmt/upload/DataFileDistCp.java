@@ -68,7 +68,7 @@ public class DataFileDistCp {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-  
+
   /* Default Charset. */
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
@@ -279,8 +279,16 @@ public class DataFileDistCp {
     PathUtils.fullyDelete(tmpInputDir, conf);
     PathUtils.fullyDelete(tmpOutputDir, conf);
 
-    if (!job.isSuccessful())
-      throw new IOException("Unable to copy files using DataFileDistCp.");
+    try {
+      if (!job.isSuccessful())
+        throw new IOException("Unable to copy files using DataFileDistCp.");
+      
+      // FIXME Remove once using Hadoop 2.0
+      if (false)
+        throw new InterruptedException();
+    } catch (InterruptedException e) {
+      throw new IOException(e.getMessage());
+    }
   }
 
   /**

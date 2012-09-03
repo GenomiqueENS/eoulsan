@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
 
 /**
- * This class define a generic mapper for reads mapping.
+ * This class defines a generic mapper for reads mapping.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -90,6 +90,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private SequenceReadsMapper mapper;
   private List<String> fields = newArrayList();
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the TFQ
+   * file. 'value': the TFQ line (3 fields if data are in single-end mode, 6
+   * fields if data are in paired-end mode). 
+   */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException {
@@ -194,8 +199,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set mapper temporary directory
     mapper.setTempDirectory(tempDir);
 
-//    DistributedCache.purgeCache(conf);
-    
+    // DistributedCache.purgeCache(conf);
+
     // Download genome reference
     final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
 
@@ -276,7 +281,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
-    
+
     LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
@@ -284,7 +289,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       LOGGER.warning("Can not delete "
           + this.mapper.getMapperName() + " output file: "
           + samOutputFile.getAbsolutePath());
-    
+
     LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Clean mapper input files

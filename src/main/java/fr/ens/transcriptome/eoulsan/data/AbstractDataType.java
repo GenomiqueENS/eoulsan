@@ -25,7 +25,8 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
-import fr.ens.transcriptome.eoulsan.util.Utils;
+
+import com.google.common.base.Objects;
 
 /**
  * Define an abstract DataType.
@@ -80,7 +81,7 @@ public abstract class AbstractDataType implements DataType {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(getName(), getDescription(), getPrefix(),
+    return Objects.hashCode(getName(), getDescription(), getPrefix(),
         isOneFilePerAnalysis(), isDataTypeFromDesignFile(),
         getDesignFieldName());
   }

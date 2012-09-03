@@ -1,0 +1,5 @@
+<datatype>
+  <name>filtered_mapper_results</name>
+  <description>filtered alignments type</description>
+  <prefix>filtered_mapper_results_</prefix>
+</datatype>

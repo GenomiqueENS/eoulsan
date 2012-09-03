@@ -38,17 +38,17 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountReducer extends Reducer<Text, Text, Text, Text> {
-  
+public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
+
   /** Logger */
   private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-  
+
   private String counterGroup;
 
   @Override
   protected void setup(final Context context) throws IOException,
       InterruptedException {
-    
+
     LOGGER.info("Start of setup()");
 
     // Counter group
@@ -61,6 +61,11 @@ public class HTSeqCountReducer extends Reducer<Text, Text, Text, Text> {
     LOGGER.info("End of setup()");
   }
 
+  /**
+   * 'key': annotation identifier of the feature (gene, mRNA, exon...).
+   * 'values': a list of '1', the size of this list is the number of reads found
+   * on the feature.
+   */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
@@ -71,8 +76,8 @@ public class HTSeqCountReducer extends Reducer<Text, Text, Text, Text> {
       counts++;
     }
 
-    context.write(key, new Text(String.valueOf(counts)));
-
+    // context.write(key, new Text(String.valueOf(counts)));
+    context.write(key, new Long(counts));
   }
 
 }

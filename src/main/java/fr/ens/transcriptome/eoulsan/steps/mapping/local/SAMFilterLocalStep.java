@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This class define a Step for alignements filtering.
+ * This class define a Step for alignments filtering.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon
@@ -95,9 +95,6 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       return new StepResult(context, e, "error while filtering: "
           + e.getMessage());
     }
-
-    // Get threshold
-    // final int mappingQualityThreshold = getMappingQualityThreshold();
 
     // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design,

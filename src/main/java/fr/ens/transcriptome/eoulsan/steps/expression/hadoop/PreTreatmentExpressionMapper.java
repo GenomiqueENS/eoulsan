@@ -44,18 +44,19 @@ import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This class define a mapper for the pretreatment of paired-end data before
- * the expression estimation step.
+ * This class define a mapper for the pretreatment of paired-end data before the
+ * expression estimation step.
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
-  
+public class PreTreatmentExpressionMapper extends
+    Mapper<LongWritable, Text, Text, Text> {
+
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String counterGroup;
-  
+
   private static final Pattern ID_PATTERN = Pattern.compile(":");
 
   private Text outKey = new Text();
@@ -92,12 +93,16 @@ public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Tex
   // Map
   //
 
+  /**
+   * 'key': offset of the beginning of the line from the beginning of the
+   * TSAM file. 'value': the SAM record. 
+   */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
-    
+
     final String line = value.toString();
-    
+
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
@@ -140,5 +145,5 @@ public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Tex
   protected void cleanup(Context context) throws IOException,
       InterruptedException {
   }
-  
+
 }

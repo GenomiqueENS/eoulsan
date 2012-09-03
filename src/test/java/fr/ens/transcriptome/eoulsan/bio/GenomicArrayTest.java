@@ -31,23 +31,16 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO: factorize functions testAddEntryX() and finish the test class. 
+ * TODO: finish the test class.
  * @since 1.2
  * @author Laurent Jourdren
  * @author Claire Wallon
  */
 public class GenomicArrayTest {
-
-  // /**
-  // * @throws java.lang.Exception
-  // */
-  // @Before
-  // public void setUp() throws Exception {
-  // }
-  //
 
   private class FastGemomicInterval {
 
@@ -67,23 +60,47 @@ public class GenomicArrayTest {
 
   }
 
+  private GenomicArray<String> ga;
+  private FastGemomicInterval fgi;
+  private FastGemomicInterval fgi_stranded;
+  private Map<GenomicInterval, Set<String>> r;
+
+  // /**
+  // * @throws java.lang.Exception
+  // */
+  @Before
+  public void setUp() throws Exception {
+
+    ga = new GenomicArray<String>();
+    fgi = new FastGemomicInterval("chr1", '.');
+    fgi_stranded = new FastGemomicInterval("chr1", '-');
+  }
+
   /**
    * Test method for
    * {fr.ens.transcriptome.eoulsan.bio.GenomicArray#addEntry(fr.ens
    * .transcriptome.eoulsan.bio.GenomicInterval, java.lang.Object)}.
    */
   @Test
-  public void testAddEntry1() {
+  public void testAddEntry() {
 
-    GenomicArray<String> ga = new GenomicArray<String>();
+    /**
+     * In comments of this function, the order of intervals that is indicated is
+     * defined by the starting positions of each intervals on the chromosome.
+     * For example, "the first interval is before the second one" means that the
+     * starting position of the first interval is less than the starting
+     * position of the second interval.
+     */
 
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
+    /**
+     * The two intervals are non-overlapping and the first one is before the
+     * second one.
+     */
     // Add [10,50]=a
     GenomicInterval iv1 = fgi.iv(10, 50);
     ga.addEntry(iv1, "a");
 
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+    r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(10, 50)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
@@ -94,51 +111,17 @@ public class GenomicArrayTest {
     r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(60, 70)));
-  }
 
-  @Test
-  public void testAddEntry2() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
-    // Add [10,20]=a
-    GenomicInterval iv1 = fgi.iv(10, 20);
+    /**
+     * The two intervals are non overlapping and the first one is after the
+     * second.
+     */
+    ga.clear();
+    // Add [15,20]=a
+    iv1 = fgi.iv(15, 20);
     ga.addEntry(iv1, "a");
-
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
-
-    assertTrue(r.containsKey(fgi.iv(10, 20)));
-    assertFalse(r.containsKey(fgi.iv(60, 70)));
-
-    // Add [15,25]=b
-    ga.addEntry(fgi.iv(15, 25), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
-
-    assertTrue(r.containsKey(fgi.iv(10, 14)));
-    assertEquals(1, r.get(fgi.iv(10, 14)).size());
-
-    assertTrue(r.containsKey(fgi.iv(15, 20)));
-    assertEquals(2, r.get(fgi.iv(15, 20)).size());
-
-    assertTrue(r.containsKey(fgi.iv(21, 25)));
-    assertEquals(1, r.get(fgi.iv(21, 25)).size());
-  }
-
-  @Test
-  public void testAddEntry3() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
-    // Add [15,20]=a
-    GenomicInterval iv1 = fgi.iv(15, 20);
-    ga.addEntry(iv1, "a");
-
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(15, 20)));
     assertEquals(1, r.get(fgi.iv(15, 20)).size());
@@ -153,20 +136,73 @@ public class GenomicArrayTest {
     assertEquals(1, r.get(fgi.iv(15, 20)).size());
     assertTrue(r.containsKey(fgi.iv(5, 10)));
     assertEquals(1, r.get(fgi.iv(5, 10)).size());
-  }
 
-  @Test
-  public void testAddEntry4() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
+    /**
+     * The two intervals are overlapping and the first one is before the second
+     * one.
+     */
+    ga.clear();
     // Add [10,20]=a
-    GenomicInterval iv1 = fgi.iv(10, 20);
+    iv1 = fgi_stranded.iv(10, 20);
     ga.addEntry(iv1, "a");
 
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+    r = ga.getEntries(fgi_stranded.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi_stranded.iv(10, 20)));
+    assertFalse(r.containsKey(fgi_stranded.iv(60, 70)));
+
+    // Add [15,25]=b
+    ga.addEntry(fgi_stranded.iv(15, 25), "b");
+
+    r = ga.getEntries(fgi_stranded.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi_stranded.iv(10, 14)));
+    assertEquals(1, r.get(fgi_stranded.iv(10, 14)).size());
+
+    assertTrue(r.containsKey(fgi_stranded.iv(15, 20)));
+    assertEquals(2, r.get(fgi_stranded.iv(15, 20)).size());
+
+    assertTrue(r.containsKey(fgi_stranded.iv(21, 25)));
+    assertEquals(1, r.get(fgi_stranded.iv(21, 25)).size());
+
+    /**
+     * The two intervals are overlapping and the first one is after the second
+     * one.
+     */
+    ga.clear();
+    // Add [10,40]=a
+    iv1 = fgi.iv(10, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [5,30]=b
+    ga.addEntry(fgi.iv(5, 30), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(5, 9)));
+    assertEquals(1, r.get(fgi.iv(5, 9)).size());
+
+    assertTrue(r.containsKey(fgi.iv(10, 30)));
+    assertEquals(2, r.get(fgi.iv(10, 30)).size());
+
+    assertTrue(r.containsKey(fgi.iv(31, 40)));
+    assertEquals(1, r.get(fgi.iv(31, 40)).size());
+
+    /**
+     * The two intervals are overlapping on only one base and the first interval
+     * is before the second one.
+     */
+    ga.clear();
+    // Add [10,20]=a
+    iv1 = fgi.iv(10, 20);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(10, 20)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
@@ -184,20 +220,144 @@ public class GenomicArrayTest {
 
     assertTrue(r.containsKey(fgi.iv(21, 30)));
     assertEquals(1, r.get(fgi.iv(21, 30)).size());
-  }
 
-  @Test
-  public void testAddEntry5() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
-    // Add [20,40]=a
-    GenomicInterval iv1 = fgi.iv(20, 40);
+    /**
+     * The two intervals are overlapping on only one base and the first interval
+     * is after the second one.
+     */
+    ga.clear();
+    // Add [20,30]=a
+    iv1 = fgi.iv(20, 30);
     ga.addEntry(iv1, "a");
 
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 30)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [10,20]=b
+    ga.addEntry(fgi.iv(10, 20), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 19)));
+    assertEquals(1, r.get(fgi.iv(10, 19)).size());
+
+    assertTrue(r.containsKey(fgi.iv(20, 20)));
+    assertEquals(2, r.get(fgi.iv(20, 20)).size());
+
+    assertTrue(r.containsKey(fgi.iv(21, 30)));
+    assertEquals(1, r.get(fgi.iv(21, 30)).size());
+
+    /**
+     * The first interval is included in the second one and they have the same
+     * starting position.
+     */
+    ga.clear();
+    // Add [20,40]=a
+    iv1 = fgi.iv(20, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [20,55]=b
+    ga.addEntry(fgi.iv(20, 55), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertEquals(2, r.get(fgi.iv(20, 40)).size());
+
+    assertTrue(r.containsKey(fgi.iv(41, 55)));
+    assertEquals(1, r.get(fgi.iv(41, 55)).size());
+
+    /**
+     * The second interval is included in the first one and they have the same
+     * starting position.
+     */
+    ga.clear();
+    // Add [20,40]=a
+    iv1 = fgi.iv(20, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [20,35]=b
+    ga.addEntry(fgi.iv(20, 35), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(20, 35)));
+    assertEquals(2, r.get(fgi.iv(20, 35)).size());
+
+    assertTrue(r.containsKey(fgi.iv(36, 40)));
+    assertEquals(1, r.get(fgi.iv(36, 40)).size());
+
+    /**
+     * The first interval is included in the second one and they have the same
+     * ending position.
+     */
+    ga.clear();
+    // Add [10,40]=a
+    iv1 = fgi.iv(10, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [5,40]=b
+    ga.addEntry(fgi.iv(5, 40), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(5, 9)));
+    assertEquals(1, r.get(fgi.iv(5, 9)).size());
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertEquals(2, r.get(fgi.iv(10, 40)).size());
+
+    /**
+     * The second interval is included in the first one and they have the same
+     * ending position.
+     */
+    ga.clear();
+    // Add [5,40]=a
+    iv1 = fgi.iv(5, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(5, 40)));
+    assertFalse(r.containsKey(fgi.iv(60, 70)));
+
+    // Add [10,40]=b
+    ga.addEntry(fgi.iv(10, 40), "b");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
+
+    assertTrue(r.containsKey(fgi.iv(5, 9)));
+    assertEquals(1, r.get(fgi.iv(5, 9)).size());
+
+    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertEquals(2, r.get(fgi.iv(10, 40)).size());
+
+    /**
+     * The second interval is included in the first one.
+     */
+    ga.clear();
+    // Add [20,40]=a
+    iv1 = fgi.iv(20, 40);
+    ga.addEntry(iv1, "a");
+
+    r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(20, 40)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
@@ -215,79 +375,43 @@ public class GenomicArrayTest {
 
     assertTrue(r.containsKey(fgi.iv(36, 40)));
     assertEquals(1, r.get(fgi.iv(36, 40)).size());
-  }
-  
-  @Test
-  public void testAddEntry6() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
-    // Add [20,40]=a
-    GenomicInterval iv1 = fgi.iv(20, 40);
+    
+    /**
+     * The first interval is included in the second one.
+     */
+    ga.clear();
+    // Add [25,35]=a
+    iv1 = fgi.iv(25, 35);
     ga.addEntry(iv1, "a");
-
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
-
-    assertTrue(r.containsKey(fgi.iv(20, 40)));
-    assertFalse(r.containsKey(fgi.iv(60, 70)));
-
-    // Add [20,55]=b
-    ga.addEntry(fgi.iv(20, 55), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
 
-    assertTrue(r.containsKey(fgi.iv(20, 40)));
-    assertEquals(2, r.get(fgi.iv(20, 40)).size());
-
-    assertTrue(r.containsKey(fgi.iv(41, 55)));
-    assertEquals(1, r.get(fgi.iv(41, 55)).size());
-  }
-  
-  @Test
-  public void testAddEntry7() {
-
-    GenomicArray<String> ga = new GenomicArray<String>();
-
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
-
-    // Add [10,40]=a
-    GenomicInterval iv1 = fgi.iv(10, 40);
-    ga.addEntry(iv1, "a");
-
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
-
-    assertTrue(r.containsKey(fgi.iv(10, 40)));
+    assertTrue(r.containsKey(fgi.iv(25, 35)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));
 
-    // Add [5,30]=b
-    ga.addEntry(fgi.iv(5, 30), "b");
+    // Add [20,40]=b
+    ga.addEntry(fgi.iv(20, 40), "b");
 
     r = ga.getEntries(fgi.chromosome, 1, 100);
 
-    assertTrue(r.containsKey(fgi.iv(5, 9)));
-    assertEquals(1, r.get(fgi.iv(5, 9)).size());
-    
-    assertTrue(r.containsKey(fgi.iv(10, 30)));
-    assertEquals(2, r.get(fgi.iv(10, 30)).size());
-    
-    assertTrue(r.containsKey(fgi.iv(31, 40)));
-    assertEquals(1, r.get(fgi.iv(31, 40)).size());
-  }
-  
-  @Test
-  public void testAddEntry8() {
+    assertTrue(r.containsKey(fgi.iv(20, 24)));
+    assertEquals(1, r.get(fgi.iv(20, 24)).size());
 
-    GenomicArray<String> ga = new GenomicArray<String>();
+    assertTrue(r.containsKey(fgi.iv(25, 35)));
+    assertEquals(2, r.get(fgi.iv(25, 35)).size());
 
-    final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '.');
+    assertTrue(r.containsKey(fgi.iv(36, 40)));
+    assertEquals(1, r.get(fgi.iv(36, 40)).size());
 
+    /**
+     * The two intervals are identical.
+     */
+    ga.clear();
     // Add [10,40]=a
-    GenomicInterval iv1 = fgi.iv(10, 40);
+    iv1 = fgi.iv(10, 40);
     ga.addEntry(iv1, "a");
 
-    Map<GenomicInterval, Set<String>> r = ga.getEntries(fgi.chromosome, 1, 100);
+    r = ga.getEntries(fgi.chromosome, 1, 100);
 
     assertTrue(r.containsKey(fgi.iv(10, 40)));
     assertFalse(r.containsKey(fgi.iv(60, 70)));

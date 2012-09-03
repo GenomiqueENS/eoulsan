@@ -40,7 +40,7 @@ public final class EoulsanRuntime {
   public static AbstractEoulsanRuntime getRuntime() {
 
     if (instance == null) {
-      throw new EoulsanRuntimeException("No Eoulsan has been set.");
+      throw new EoulsanRuntimeException("No Eoulsan Runtime has been set.");
     }
 
     return instance;
@@ -53,7 +53,7 @@ public final class EoulsanRuntime {
   public static Settings getSettings() {
 
     if (instance == null) {
-      throw new EoulsanRuntimeException("No Eoulsan has been set.");
+      throw new EoulsanRuntimeException("No Eoulsan Runtime has been set.");
     }
 
     return instance.getSettings();

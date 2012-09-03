@@ -25,14 +25,15 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -44,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
-import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -111,6 +111,12 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     } catch (IOException e) {
       return new StepResult(context, e, "Error while filtering: "
           + e.getMessage());
+    } catch (EoulsanException e) {
+      return new StepResult(context, e,
+          "Error while reading the annotation file: " + e.getMessage());
+    } catch (BadBioEntryException e) {
+      return new StepResult(context, e,
+          "Error while reading the annotation file: " + e.getMessage());
     }
 
   }
@@ -119,7 +125,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       final ExpressionCounter counter, final DataFile annotationFile,
       final File alignmentFile, final File expressionFile,
       final DataFile genomeDescFile, final Reporter reporter)
-      throws IOException {
+      throws IOException, EoulsanException, BadBioEntryException {
 
     // Init expression counter
     counter.init(getGenomicType(), reporter, COUNTER_GROUP);
