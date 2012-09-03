@@ -267,8 +267,8 @@ public class DiffAna {
     // Test if there is a reference field for kinetic experiments
     if (isReference(experiment)) {
       for (Sample s : experiment) {
-        String refval = s.getMetadata().getReference().trim().toLowerCase();
-        if (refval.equals("true")) {
+        boolean refval = s.getMetadata().isReference();
+        if (refval) {
           // add reference to R script
           sb.append("ref <- "
               + "\"" + s.getMetadata().getCondition() + "\"\n\n");
@@ -646,9 +646,9 @@ public class DiffAna {
    */
   private boolean isReference(List<Sample> experiment) {
     boolean isRef = false;
-    if (experiment.get(1).getMetadata().isReference()) {
+    if (experiment.get(1).getMetadata().isReferenceField()) {
       for (Sample s : experiment) {
-        if (s.getMetadata().getReference().toLowerCase().equals("true")) {
+        if (s.getMetadata().isReference()) {
           isRef = true;
           break;
         }
