@@ -53,8 +53,6 @@ public interface SampleMetadata {
   String OPERATOR_FIELD = "Operator";
   /** Condition field. */
   String CONDITION_FIELD = "Condition";
-  /** Replicate type field. */
-  String REPLICAT_TYPE_FIELD = "ReplicateType";
   /** UUID field. */
   String UUID_TYPE_FIELD = "UUID";
   /** Fastq format field. */
@@ -143,12 +141,6 @@ public interface SampleMetadata {
    * @return Returns the condition
    */
   String getCondition();
-
-  /**
-   * Get replicat type of the sample.
-   * @return Returns the replicat
-   */
-  String getReplicatType();
 
   /**
    * Get UUID.
@@ -259,12 +251,6 @@ public interface SampleMetadata {
   void setCondition(String condition);
 
   /**
-   * Set the replicat type of the sample.
-   * @param replicatType The replicat type to set
-   */
-  void setReplicatType(String replicatType);
-
-  /**
    * Set the UUID of the sample.
    * @param uuid
    */
@@ -358,12 +344,6 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isConditionField();
-
-  /**
-   * Test if the replicat type field exists.
-   * @return true if the field exists
-   */
-  boolean isReplicatTypeField();
 
   /**
    * Test if the UUID field exists.

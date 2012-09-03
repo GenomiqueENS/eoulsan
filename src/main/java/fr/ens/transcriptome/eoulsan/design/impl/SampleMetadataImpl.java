@@ -126,12 +126,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public String getReplicatType() {
-
-    return getField(REPLICAT_TYPE_FIELD);
-  }
-
-  @Override
   public String getUUID() {
 
     return getField(UUID_TYPE_FIELD);
@@ -281,12 +275,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   }
 
   @Override
-  public void setReplicatType(final String replicatType) {
-
-    setField(REPLICAT_TYPE_FIELD, replicatType);
-  }
-
-  @Override
   public void setUUID(final String uuid) {
 
     setField(UUID_TYPE_FIELD, uuid);
@@ -386,12 +374,6 @@ public class SampleMetadataImpl implements SampleMetadata {
   public boolean isConditionField() {
 
     return isField(CONDITION_FIELD);
-  }
-
-  @Override
-  public boolean isReplicatTypeField() {
-
-    return isField(REPLICAT_TYPE_FIELD);
   }
 
   @Override
