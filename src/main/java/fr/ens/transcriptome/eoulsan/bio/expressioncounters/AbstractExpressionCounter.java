@@ -35,7 +35,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -130,10 +129,9 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public final void count(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
-      final DataFile genomeDescFile) throws IOException, EoulsanException,
-      BadBioEntryException {
+  public final void count(final File alignmentFile, final File annotationFile,
+      final File expressionFile, final File genomeDescFile) throws IOException,
+      EoulsanException, BadBioEntryException {
 
     LOGGER.fine("Counting with " + getCounterName());
 
@@ -160,8 +158,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
    * @throws IOException
    */
   protected abstract void internalCount(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
-      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
+      final File annotationFile, final File expressionFile,
+      final File genomeDescFile, Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException;
 
   //

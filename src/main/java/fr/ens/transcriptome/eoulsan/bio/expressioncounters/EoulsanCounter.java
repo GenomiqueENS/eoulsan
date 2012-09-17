@@ -30,9 +30,9 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
 import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionPseudoMapReduce;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -57,8 +57,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
   @Override
   protected void internalCount(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
-      final DataFile genomeDescFile, final Reporter reporter,
+      final File annotationFile, final File expressionFile,
+      final File genomeDescFile, final Reporter reporter,
       final String counterGroup) throws IOException, BadBioEntryException {
 
     ExpressionPseudoMapReduce epmr = null;
@@ -72,8 +72,9 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     // try {
 
     epmr =
-        new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
-            genomeDescFile.open(), counterGroup);
+        new ExpressionPseudoMapReduce(
+            FileUtils.createInputStream(annotationFile), genomicType,
+            FileUtils.createInputStream(genomeDescFile), counterGroup);
 
     if (getTempDirectory() != null)
       epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));

@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -76,24 +75,24 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         final Reporter reporter = new Reporter();
 
         // Get annotation file
-        final DataFile annotationFile =
-            context.getInputDataFile(ANNOTATION_GFF, s);
+        final File annotationFile =
+            context.getInputDataFile(ANNOTATION_GFF, s).toFile();
 
         // Get alignment file
         final File alignmentFile =
             context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s).toFile();
 
         // Get genome desc file
-        final DataFile genomeDescFile =
-            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s);
+        final File genomeDescFile =
+            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s).toFile();
 
         // Get final expression file
         final File expressionFile =
             context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s).toFile();
 
         // Expression counting
-        count(context, s, counter, annotationFile, alignmentFile,
-            expressionFile, genomeDescFile, reporter);
+        count(context, counter, annotationFile, alignmentFile, expressionFile,
+            genomeDescFile, reporter);
 
         log.append(reporter.countersValuesToString(
             COUNTER_GROUP,
@@ -121,11 +120,11 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
   }
 
-  private void count(final Context context, final Sample s,
-      final ExpressionCounter counter, final DataFile annotationFile,
-      final File alignmentFile, final File expressionFile,
-      final DataFile genomeDescFile, final Reporter reporter)
-      throws IOException, EoulsanException, BadBioEntryException {
+  private void count(final Context context, final ExpressionCounter counter,
+      final File annotationFile, final File alignmentFile,
+      final File expressionFile, final File genomeDescFile,
+      final Reporter reporter) throws IOException, EoulsanException,
+      BadBioEntryException {
 
     // Init expression counter
     counter.init(getGenomicType(), reporter, COUNTER_GROUP);
