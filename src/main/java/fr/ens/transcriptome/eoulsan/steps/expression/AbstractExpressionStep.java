@@ -50,13 +50,16 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
+  public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
 
   protected static final String COUNTER_GROUP = "expression";
 
   private static final String STEP_NAME = "expression";
   private static final String DEFAULT_GENOMIC_TYPE = "gene";
+  private static final String DEFAULT_ATTRIBUTE_ID = "ID";
 
   private String genomicType = DEFAULT_GENOMIC_TYPE;
+  private String attributeId = DEFAULT_ATTRIBUTE_ID;
   private String tmpDir;
 
   private ExpressionCounter counter;
@@ -68,11 +71,19 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   //
 
   /**
-   * Get the genomic type
+   * Get the genomic type.
    * @return Returns the genomicType
    */
   protected String getGenomicType() {
-    return genomicType;
+    return this.genomicType;
+  }
+
+  /**
+   * Get the attribute id.
+   * @return Returns the attribute id
+   */
+  protected String getAttributeId() {
+    return this.attributeId;
   }
 
   /**
@@ -86,7 +97,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   protected String getStranded() {
     return this.stranded;
   }
-  
+
   protected String getOverlapMode() {
     return this.overlapmode;
   }
@@ -138,13 +149,15 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
-    
+
     String counterName = null;
 
     for (Parameter p : stepParameters) {
 
       if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
         this.genomicType = p.getStringValue();
+      else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName()))
+        this.attributeId = p.getStringValue();
       else if ("counter".equals(p.getName()))
         counterName = p.getStringValue();
       else if ("stranded".equals(p.getName()))
@@ -158,7 +171,11 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     }
 
     if (this.genomicType == null)
-      throw new EoulsanException("Parent type in no set for "
+      throw new EoulsanException("Parent type not set for "
+          + getName() + " step.");
+
+    if (this.attributeId == null)
+      throw new EoulsanException("Attribute id not set for "
           + getName() + " step.");
 
     if (counterName == null)

@@ -67,8 +67,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
-        getStranded(), getOverlapMode(), getGenomicType(), "ID", false, 0,
-        null, reporter, counterGroup);
+        getStranded(), getOverlapMode(), getGenomicType(), getAttributeId(),
+        false, 0, null, reporter, counterGroup);
 
   }
 

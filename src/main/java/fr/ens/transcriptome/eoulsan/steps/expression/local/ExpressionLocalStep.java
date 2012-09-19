@@ -127,7 +127,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       BadBioEntryException {
 
     // Init expression counter
-    counter.init(getGenomicType(), reporter, COUNTER_GROUP);
+    counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);
 
     // Set counter arguments
     initCounterArguments(counter, context.getSettings().getTempDirectory());

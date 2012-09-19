@@ -48,6 +48,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String genomicType;
+  private String attributeId;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private Reporter reporter;
@@ -76,6 +77,11 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public String getGenomicType() {
     return this.genomicType;
+  }
+  
+  @Override
+  public String getAttributeId() {
+    return this.attributeId;
   }
 
   //
@@ -123,6 +129,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
     this.genomicType = genomicType;
   }
+  
+  @Override
+  public void setAttributeId(final String attributeId) {
+
+    this.attributeId = attributeId;
+  }
 
   //
   // Counting
@@ -167,13 +179,14 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void init(final String genomicType, final Reporter reporter,
+  public void init(final String genomicType, String attributeId, final Reporter reporter,
       final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
     this.genomicType = genomicType;
+    this.attributeId = attributeId;
     this.reporter = reporter;
     this.counterGroup = counterGroup;
   }

@@ -67,6 +67,12 @@ public interface ExpressionCounter {
   String getGenomicType();
 
   /**
+   * Get the GFF attribute ID to be used as feature ID.
+   * @return a string with the attribute ID
+   */
+  String getAttributeId();
+
+  /**
    * Get the temporary directory.
    * @return a string with the absolute path of the temporary directory
    */
@@ -78,37 +84,43 @@ public interface ExpressionCounter {
 
   /**
    * Set the strand usage for the ExpressionCounter.
-   * @param stranded : a string with the strand usage name
+   * @param stranded a string with the strand usage name
    */
   void setStranded(String stranded);
 
   /**
    * Set the strand usage for the ExpressionCounter.
-   * @param stranded : the StrandUsage object
+   * @param stranded the StrandUsage object
    */
   void setStranded(StrandUsage stranded);
 
   /**
    * Set the overlap mode for the ExpressionCounter.
-   * @param mode : a string with the overlap mdoe name
+   * @param mode a string with the overlap mdoe name
    */
   void setOverlapMode(String mode);
 
   /**
    * Set the overlap mode for the ExpressionCounter.
-   * @param mode : the OverlapMode object
+   * @param mode the OverlapMode object
    */
   void setOverlapMode(OverlapMode mode);
 
   /**
    * Set the genomic type on which to count expression.
-   * @param genomicType : string with the genomic type name
+   * @param genomicType string with the genomic type name
    */
   void setGenomicType(String genomicType);
 
   /**
+   * Set the attribute ID to be used as feature ID.
+   * @param attributeID string with the attribute ID
+   */
+  void setAttributeId(String attributeId);
+
+  /**
    * Set the temporary directory.
-   * @param tempDirectory : a string with the absolute path of the temporary
+   * @param tempDirectory a string with the absolute path of the temporary
    *          directory
    */
   void setTempDirectory(String tempDirectory);
@@ -125,8 +137,9 @@ public interface ExpressionCounter {
    * @param genomeDescFile : file containing the genome description
    * @throws IOException
    */
-  void count(DataFile alignmentFile, DataFile annotationFile, DataFile expressionFile,
-      DataFile genomeDescFile) throws IOException, EoulsanException, BadBioEntryException;
+  void count(DataFile alignmentFile, DataFile annotationFile,
+      DataFile expressionFile, DataFile genomeDescFile) throws IOException,
+      EoulsanException, BadBioEntryException;
 
   //
   // Other methods
@@ -136,10 +149,12 @@ public interface ExpressionCounter {
    * This method initializes the ExpressionCounter.
    * @param genomicType : a string with the genomic type on which to count
    *          expression
+   * @param attributeId GFF attribute to be used as feature ID
    * @param reporter : the Reporter object of the Eoulsan run
    * @param counterGroup : string with the counter name group for the expression
    *          step
    */
-  void init(String genomicType, Reporter reporter, String counterGroup);
+  void init(String genomicType, String attributeId, Reporter reporter,
+      String counterGroup);
 
 }

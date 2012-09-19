@@ -62,8 +62,6 @@ public class EoulsanCounter extends AbstractExpressionCounter {
       final String counterGroup) throws IOException, BadBioEntryException {
 
     ExpressionPseudoMapReduce epmr = null;
-    // String lastAnnotationKey = null;
-    final String genomicType = getGenomicType();
 
     // Get expression temporary file
     final File expressionTmpFile =
@@ -72,8 +70,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     // try {
 
     epmr =
-        new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
-            genomeDescFile.open(), counterGroup);
+        new ExpressionPseudoMapReduce(annotationFile.open(), getGenomicType(),
+            getAttributeId(), genomeDescFile.open(), counterGroup);
 
     if (getTempDirectory() != null)
       epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));

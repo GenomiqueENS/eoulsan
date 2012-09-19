@@ -246,11 +246,13 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * Load annotation information.
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while reading annotation file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private void loadAnnotationFile(final File annotationFile,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(annotationFile.getName());
@@ -258,23 +260,26 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     final InputStream is =
         ct.createInputStream(FileUtils.createInputStream(annotationFile));
 
-    this.tef = new TranscriptAndExonFinder(is, expressionType);
+    this.tef = new TranscriptAndExonFinder(is, expressionType, attributeId);
   }
 
   /**
    * Load annotation information.
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while reading annotation file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private void loadAnnotationFile(final InputStream annotationIs,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
     checkNotNull(annotationIs, "Annotation stream is null");
     checkNotNull(expressionType, "Expression type is null");
 
-    this.tef = new TranscriptAndExonFinder(annotationIs, expressionType);
+    this.tef =
+        new TranscriptAndExonFinder(annotationIs, expressionType, attributeId);
   }
 
   //
@@ -285,14 +290,16 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * Load annotation information.
    * @param annotationFile annotation file to load
    * @param expressionType expression type to use
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @param genomeDescFile genome description file\
    * @param counterGroup counter group
    * @throws IOException if an error occurs while reading annotation file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   public ExpressionPseudoMapReduce(final File annotationFile,
-      final String expressionType, final File genomeDescFile,
-      final String counterGroup) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId,
+      final File genomeDescFile, final String counterGroup) throws IOException,
+      BadBioEntryException {
 
     this.counterGroup = counterGroup;
 
@@ -306,21 +313,23 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     // Set the chromosomes sizes in the parser
     this.parser.setGenomeDescription(genomeDescription);
 
-    loadAnnotationFile(annotationFile, expressionType);
+    loadAnnotationFile(annotationFile, expressionType, attributeId);
   }
 
   /**
    * Load annotation information.
    * @param annotationIs annotation input stream to load
    * @param expressionType expression type to use
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @param genomeDescIs genome description input stream
    * @param counterGroup counter group
    * @throws IOException if an error occurs while reading annotation file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   public ExpressionPseudoMapReduce(final InputStream annotationIs,
-      final String expressionType, final InputStream genomeDescIs,
-      final String counterGroup) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId,
+      final InputStream genomeDescIs, final String counterGroup)
+      throws IOException, BadBioEntryException {
 
     this.counterGroup = counterGroup;
 
@@ -334,7 +343,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     // Set the chromosomes sizes in the parser
     this.parser.setGenomeDescription(genomeDescription);
 
-    loadAnnotationFile(annotationIs, expressionType);
+    loadAnnotationFile(annotationIs, expressionType, attributeId);
   }
 
 }
