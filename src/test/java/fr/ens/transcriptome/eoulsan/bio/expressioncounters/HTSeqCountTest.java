@@ -24,20 +24,21 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.util.Reporter;
+
 //import org.apache.commons.io;
 
 /**
  * This class test the class
- * fr.ens.transcriptome.eoulsan.steps.expression.HTSeqCount.java. 
+ * fr.ens.transcriptome.eoulsan.steps.expression.HTSeqCount.java.
  * @author Claire Wallon
  */
 public class HTSeqCountTest {
@@ -46,48 +47,50 @@ public class HTSeqCountTest {
   public void testCountReadsInFeatures() throws EoulsanException, IOException,
       BadBioEntryException {
 
-//    InputStream isSE =
-//        this.getClass().getResourceAsStream("/mapper_results_SE.sam");
-//    InputStream isPE =
-//        this.getClass().getResourceAsStream("/mapper_results_PE.sam");
-//
-//    String line;
-//    String fields[];
-//    BufferedReader br;
-//
-//    File dirData = new File("/home/wallon/Bureau/DATA");
-//    File dirTest = new File("/home/wallon/Bureau/TEST_HTSEQ/JUNIT");
-//
-//    File samFileSE = new File(dirTest, "mapper_results_SE.sam");
-//    File samFilePE = new File(dirTest, "mapper_results_PE.sam");
-//
-//    File annotationFileSE = new File(dirData, "annotation.gff");
-//    File outputFileSE_union = new File(dirTest, "SE-union-java");
-//    File outputFileSE_nonempty = new File(dirTest, "SE-nonempty-java");
-//    File outputFileSE_strict = new File(dirTest, "SE-strict-java");
-//    File outputFileSE_union_yes = new File(dirTest, "SE-union-java-yes");
-//    File outputFileSE_nonempty_yes = new File(dirTest, "SE-nonempty-java-yes");
-//    File outputFileSE_strict_yes = new File(dirTest, "SE-strict-java-yes");
-//    File outputFileSE_union_reverse =
-//        new File(dirTest, "SE-union-java-reverse");
-//    File outputFileSE_nonempty_reverse =
-//        new File(dirTest, "SE-nonempty-java-reverse");
-//    File outputFileSE_strict_reverse =
-//        new File(dirTest, "SE-strict-java-reverse");
-//
-//    File annotationFilePE = new File(dirData, "mouse.gff");
-//    File outputFilePE_union = new File(dirTest, "PE-union-java");
-//    File outputFilePE_nonempty = new File(dirTest, "PE-nonempty-java");
-//    File outputFilePE_strict = new File(dirTest, "PE-strict-java");
-//    File outputFilePE_union_yes = new File(dirTest, "PE-union-java-yes");
-//    File outputFilePE_nonempty_yes = new File(dirTest, "PE-nonempty-java-yes");
-//    File outputFilePE_strict_yes = new File(dirTest, "PE-strict-java-yes");
-//    File outputFilePE_union_reverse =
-//        new File(dirTest, "PE-union-java-reverse");
-//    File outputFilePE_nonempty_reverse =
-//        new File(dirTest, "PE-nonempty-java-reverse");
-//    File outputFilePE_strict_reverse =
-//        new File(dirTest, "PE-strict-java-reverse");
+    // InputStream isSE =
+    // this.getClass().getResourceAsStream("/mapper_results_SE.sam");
+    // InputStream isPE =
+    // this.getClass().getResourceAsStream("/mapper_results_PE.sam");
+    //
+    // String line;
+    // String fields[];
+    // BufferedReader br;
+    //
+    // File dirData = new File("/home/wallon/Bureau/DATA");
+    // File dirTest = new File("/home/wallon/Bureau/TEST_HTSEQ/JUNIT");
+    //
+    // File samFileSE = new File(dirTest, "mapper_results_SE.sam");
+    // File samFilePE = new File(dirTest, "mapper_results_PE.sam");
+    //
+    // File annotationFileSE = new File(dirData, "annotation.gff");
+    // File outputFileSE_union = new File(dirTest, "SE-union-java");
+    // File outputFileSE_nonempty = new File(dirTest, "SE-nonempty-java");
+    // File outputFileSE_strict = new File(dirTest, "SE-strict-java");
+    // File outputFileSE_union_yes = new File(dirTest, "SE-union-java-yes");
+    // File outputFileSE_nonempty_yes = new File(dirTest,
+    // "SE-nonempty-java-yes");
+    // File outputFileSE_strict_yes = new File(dirTest, "SE-strict-java-yes");
+    // File outputFileSE_union_reverse =
+    // new File(dirTest, "SE-union-java-reverse");
+    // File outputFileSE_nonempty_reverse =
+    // new File(dirTest, "SE-nonempty-java-reverse");
+    // File outputFileSE_strict_reverse =
+    // new File(dirTest, "SE-strict-java-reverse");
+    //
+    // File annotationFilePE = new File(dirData, "mouse.gff");
+    // File outputFilePE_union = new File(dirTest, "PE-union-java");
+    // File outputFilePE_nonempty = new File(dirTest, "PE-nonempty-java");
+    // File outputFilePE_strict = new File(dirTest, "PE-strict-java");
+    // File outputFilePE_union_yes = new File(dirTest, "PE-union-java-yes");
+    // File outputFilePE_nonempty_yes = new File(dirTest,
+    // "PE-nonempty-java-yes");
+    // File outputFilePE_strict_yes = new File(dirTest, "PE-strict-java-yes");
+    // File outputFilePE_union_reverse =
+    // new File(dirTest, "PE-union-java-reverse");
+    // File outputFilePE_nonempty_reverse =
+    // new File(dirTest, "PE-nonempty-java-reverse");
+    // File outputFilePE_strict_reverse =
+    // new File(dirTest, "PE-strict-java-reverse");
 
     // All results from HTSeqCount are compared with the HTSeq-count (pyhton
     // implementation) results
@@ -400,6 +403,88 @@ public class HTSeqCountTest {
     // else
     // assertEquals(fields[1], "0");
     // }
+
+  }
+
+  public static final void main(String[] args) throws IOException,
+      EoulsanException, BadBioEntryException {
+
+    EoulsanRuntimeDebug.initDebugEoulsanRuntime();
+
+    final File dir = new File("/home/jourdren/tmp/htseq-claire");
+
+    final File gffFile = new File(dir, "mouse_build37.gff");
+    final String genomicType = "exon";
+    final String attribute = "PARENT";
+    
+    final String counterGroup = "my reporters";
+
+//     HTSeqCounter counter = new HTSeqCounter();
+//     counter.init(genomicType, reporter, counterGroup);
+//     counter.setStranded(StrandUsage.REVERSE);
+//     counter.setOverlapMode(OverlapMode.INTERSECTION_STRICT);
+//     counter.count(new File(dir, "lulu4.sam"), gffFile,
+//     new File(dir, "lulu.eoulsan.txt"), null);
+
+    for (final OverlapMode om : OverlapMode.values())
+      for (final StrandUsage su : StrandUsage.values()) {
+
+        new Thread(new Runnable() {
+          
+          @Override
+          public void run() {
+            
+            try {
+            final Reporter reporter = new Reporter();
+            
+            HTSeqCounter counter = new HTSeqCounter();
+            counter.init(genomicType, reporter, counterGroup);
+            counter.setStranded(su);
+            counter.setOverlapMode(om);
+            File outputFile =
+                new File(dir, "result_"
+                    + om.name().toLowerCase() + "_" + su.name().toLowerCase()
+                    + "_1.eoulsan");
+
+            System.out.println("start " + outputFile);
+            counter.count(new File(dir, "filtered_mapper_results_1.sam"), gffFile,
+                outputFile, null);
+
+            counter = new HTSeqCounter();
+            counter.init(genomicType, reporter, counterGroup);
+            counter.setStranded(su);
+            counter.setOverlapMode(om);
+            outputFile =
+                new File(dir, "result_"
+                    + om.name().toLowerCase() + "_" + su.name().toLowerCase()
+                    + "_2.eoulsan");
+
+            System.out.println(outputFile);
+            counter.count(new File(dir, "filtered_mapper_results_2.sam"), gffFile,
+                outputFile, null);
+            
+            System.out.println("end   " + outputFile);
+            
+            } catch (IOException e) {
+              System.err.println(e);
+              e.printStackTrace();
+            } catch (EoulsanException e) {
+              // TODO Auto-generated catch block
+              System.err.println(e);
+              e.printStackTrace();
+            } catch (BadBioEntryException e) {
+              // TODO Auto-generated catch block
+              System.err.println(e);
+              e.printStackTrace();
+            }
+          }
+        }).start();
+        
+       
+
+      }
+
+    
 
   }
 }
