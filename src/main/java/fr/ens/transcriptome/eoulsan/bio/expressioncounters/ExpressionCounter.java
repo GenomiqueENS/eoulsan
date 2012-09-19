@@ -24,11 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import java.io.File;
 import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -125,8 +125,8 @@ public interface ExpressionCounter {
    * @param genomeDescFile : file containing the genome description
    * @throws IOException
    */
-  void count(File alignmentFile, File annotationFile, File expressionFile,
-      File genomeDescFile) throws IOException, EoulsanException, BadBioEntryException;
+  void count(DataFile alignmentFile, DataFile annotationFile, DataFile expressionFile,
+      DataFile genomeDescFile) throws IOException, EoulsanException, BadBioEntryException;
 
   //
   // Other methods

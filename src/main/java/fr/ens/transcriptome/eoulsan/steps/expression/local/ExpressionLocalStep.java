@@ -28,7 +28,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -39,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -75,20 +75,20 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         final Reporter reporter = new Reporter();
 
         // Get annotation file
-        final File annotationFile =
-            context.getInputDataFile(ANNOTATION_GFF, s).toFile();
+        final DataFile annotationFile =
+            context.getInputDataFile(ANNOTATION_GFF, s);
 
         // Get alignment file
-        final File alignmentFile =
-            context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s).toFile();
+        final DataFile alignmentFile =
+            context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s);
 
         // Get genome desc file
-        final File genomeDescFile =
-            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s).toFile();
+        final DataFile genomeDescFile =
+            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s);
 
         // Get final expression file
-        final File expressionFile =
-            context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s).toFile();
+        final DataFile expressionFile =
+            context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s);
 
         // Expression counting
         count(context, counter, annotationFile, alignmentFile, expressionFile,
@@ -121,8 +121,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
   }
 
   private void count(final Context context, final ExpressionCounter counter,
-      final File annotationFile, final File alignmentFile,
-      final File expressionFile, final File genomeDescFile,
+      final DataFile annotationFile, final DataFile alignmentFile,
+      final DataFile expressionFile, final DataFile genomeDescFile,
       final Reporter reporter) throws IOException, EoulsanException,
       BadBioEntryException {
 

@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -61,9 +61,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   }
 
   @Override
-  protected void internalCount(final File alignmentFile,
-      final File annotationFile, final File expressionFile,
-      final File GenomeDescFile, Reporter reporter, String counterGroup)
+  protected void internalCount(final DataFile alignmentFile,
+      final DataFile annotationFile, final DataFile expressionFile,
+      final DataFile GenomeDescFile, Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
@@ -92,22 +92,23 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @throws IOException
    * @throws BadBioEntryException
    */
-  private static void countReadsInFeatures(final File samFile,
-      final File gffFile, final File outFile, final StrandUsage stranded,
-      final OverlapMode overlapMode, final String featureType,
-      final String attributeId, final boolean quiet, final int minAverageQual,
-      final File samOutFile, Reporter reporter, String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+  private static void countReadsInFeatures(final DataFile samFile,
+      final DataFile gffFile, final DataFile outFile,
+      final StrandUsage stranded, final OverlapMode overlapMode,
+      final String featureType, final String attributeId, final boolean quiet,
+      final int minAverageQual, final DataFile samOutFile, Reporter reporter,
+      String counterGroup) throws EoulsanException, IOException,
+      BadBioEntryException {
 
     final GenomicArray<String> features = new GenomicArray<String>();
     final Map<String, Integer> counts = Utils.newHashMap();
 
-    final Writer writer = FileUtils.createBufferedWriter(outFile);
+    final Writer writer = FileUtils.createBufferedWriter(outFile.create());
 
     boolean pairedEnd = false;
 
     // read and store in 'features' the annotation file
-    HTSeqUtils.storeAnnotation(features, gffFile, featureType, stranded,
+    HTSeqUtils.storeAnnotation(features, gffFile.open(), featureType, stranded,
         attributeId, counts);
 
     if (counts.size() == 0) {
@@ -118,10 +119,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
-    final SAMFileReader inputSam = new SAMFileReader(samFile);
+    final SAMFileReader inputSam = new SAMFileReader(samFile.open());
 
     // paired-end mode ?
-    final SAMFileReader input = new SAMFileReader(samFile);
+    final SAMFileReader input = new SAMFileReader(samFile.open());
     SAMRecordIterator samIterator = input.iterator();
     SAMRecord firstRecord = samIterator.next();
     if (firstRecord.getReadPairedFlag())

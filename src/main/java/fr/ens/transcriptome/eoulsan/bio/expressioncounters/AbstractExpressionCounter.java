@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -35,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -129,8 +129,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public final void count(final File alignmentFile, final File annotationFile,
-      final File expressionFile, final File genomeDescFile) throws IOException,
+  public final void count(final DataFile alignmentFile, final DataFile annotationFile,
+      final DataFile expressionFile, final DataFile genomeDescFile) throws IOException,
       EoulsanException, BadBioEntryException {
 
     LOGGER.fine("Counting with " + getCounterName());
@@ -138,7 +138,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     checkNotNull(alignmentFile, "alignmentFile is null");
     checkNotNull(annotationFile, "annotationFile is null");
     checkNotNull(expressionFile, "expressionFile is null");
-    checkExistingStandardFile(alignmentFile,
+    checkExistingStandardFile(alignmentFile.toFile(),
         "alignmentFile not exits or is not a standard file.");
 
     // Process to counting
@@ -157,9 +157,9 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
    *          step
    * @throws IOException
    */
-  protected abstract void internalCount(final File alignmentFile,
-      final File annotationFile, final File expressionFile,
-      final File genomeDescFile, Reporter reporter, String counterGroup)
+  protected abstract void internalCount(final DataFile alignmentFile,
+      final DataFile annotationFile, final DataFile expressionFile,
+      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException;
 
   //

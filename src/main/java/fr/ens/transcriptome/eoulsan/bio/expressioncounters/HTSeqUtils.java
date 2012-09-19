@@ -60,12 +60,12 @@ import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 public class HTSeqUtils {
 
   public static void storeAnnotation(GenomicArray<String> features,
-      final InputStream gffFile, final String featureType,
+      final InputStream gffIs, final String featureType,
       final StrandUsage stranded, final String attributeId,
       final Map<String, Integer> counts) throws IOException, EoulsanException,
       BadBioEntryException {
 
-    final GFFReader gffReader = new GFFReader(gffFile);
+    final GFFReader gffReader = new GFFReader(gffIs);
 
     // Read the annotation file
     for (final GFFEntry gff : gffReader) {
