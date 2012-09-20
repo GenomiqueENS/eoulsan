@@ -51,7 +51,8 @@
     <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).</td><td>eoulsanCounter</td></tr>
-		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
+		<tr><td>genomictype</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
+		<tr><td>attributeid</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
 	</table>
 	<br/>
 	

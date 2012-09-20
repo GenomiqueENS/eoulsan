@@ -55,8 +55,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "expression";
 
   private static final String STEP_NAME = "expression";
-  private static final String DEFAULT_GENOMIC_TYPE = "gene";
-  private static final String DEFAULT_ATTRIBUTE_ID = "ID";
+  private static final String DEFAULT_GENOMIC_TYPE = "exon";
+  private static final String DEFAULT_ATTRIBUTE_ID = "PARENT";
 
   private String genomicType = DEFAULT_GENOMIC_TYPE;
   private String attributeId = DEFAULT_ATTRIBUTE_ID;
