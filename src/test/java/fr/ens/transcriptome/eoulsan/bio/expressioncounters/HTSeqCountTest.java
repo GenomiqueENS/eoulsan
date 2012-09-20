@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -32,6 +31,7 @@ import org.junit.Test;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 //import org.apache.commons.io;
@@ -411,60 +411,61 @@ public class HTSeqCountTest {
 
     EoulsanRuntimeDebug.initDebugEoulsanRuntime();
 
-    final File dir = new File("/home/jourdren/tmp/htseq-claire");
+    final DataFile dir = new DataFile("/home/jourdren/tmp/htseq-claire");
 
-    final File gffFile = new File(dir, "mouse_build37.gff");
+    final DataFile gffFile = new DataFile(dir, "mouse_build37.gff");
     final String genomicType = "exon";
     final String attribute = "PARENT";
-    
+
     final String counterGroup = "my reporters";
 
-//     HTSeqCounter counter = new HTSeqCounter();
-//     counter.init(genomicType, reporter, counterGroup);
-//     counter.setStranded(StrandUsage.REVERSE);
-//     counter.setOverlapMode(OverlapMode.INTERSECTION_STRICT);
-//     counter.count(new File(dir, "lulu4.sam"), gffFile,
-//     new File(dir, "lulu.eoulsan.txt"), null);
+    // HTSeqCounter counter = new HTSeqCounter();
+    // counter.init(genomicType, reporter, counterGroup);
+    // counter.setStranded(StrandUsage.REVERSE);
+    // counter.setOverlapMode(OverlapMode.INTERSECTION_STRICT);
+    // counter.count(new File(dir, "lulu4.sam"), gffFile,
+    // new File(dir, "lulu.eoulsan.txt"), null);
 
     for (final OverlapMode om : OverlapMode.values())
       for (final StrandUsage su : StrandUsage.values()) {
 
         new Thread(new Runnable() {
-          
+
           @Override
           public void run() {
-            
+
             try {
-            final Reporter reporter = new Reporter();
-            
-            HTSeqCounter counter = new HTSeqCounter();
-            counter.init(genomicType, reporter, counterGroup);
-            counter.setStranded(su);
-            counter.setOverlapMode(om);
-            File outputFile =
-                new File(dir, "result_"
-                    + om.name().toLowerCase() + "_" + su.name().toLowerCase()
-                    + "_1.eoulsan");
+              final Reporter reporter = new Reporter();
 
-            System.out.println("start " + outputFile);
-            counter.count(new File(dir, "filtered_mapper_results_1.sam"), gffFile,
-                outputFile, null);
+              HTSeqCounter counter = new HTSeqCounter();
+              counter.init(genomicType, attribute, reporter, counterGroup);
+              counter.setStranded(su);
+              counter.setOverlapMode(om);
+              DataFile outputFile =
+                  new DataFile(dir, "result_"
+                      + om.name().toLowerCase() + "_" + su.name().toLowerCase()
+                      + "_1.eoulsan");
 
-            counter = new HTSeqCounter();
-            counter.init(genomicType, reporter, counterGroup);
-            counter.setStranded(su);
-            counter.setOverlapMode(om);
-            outputFile =
-                new File(dir, "result_"
-                    + om.name().toLowerCase() + "_" + su.name().toLowerCase()
-                    + "_2.eoulsan");
+              System.out.println("start " + outputFile);
+              counter.count(new DataFile(dir, "filtered_mapper_results_1.sam"),
+                  gffFile, outputFile, null);
+              System.out.println("end   " + outputFile);
 
-            System.out.println(outputFile);
-            counter.count(new File(dir, "filtered_mapper_results_2.sam"), gffFile,
-                outputFile, null);
-            
-            System.out.println("end   " + outputFile);
-            
+              counter = new HTSeqCounter();
+              counter.init(genomicType, attribute, reporter, counterGroup);
+              counter.setStranded(su);
+              counter.setOverlapMode(om);
+              outputFile =
+                  new DataFile(dir, "result_"
+                      + om.name().toLowerCase() + "_" + su.name().toLowerCase()
+                      + "_2.eoulsan");
+
+              System.out.println("start " + outputFile);
+              counter.count(new DataFile(dir, "filtered_mapper_results_2.sam"),
+                  gffFile, outputFile, null);
+
+              System.out.println("end   " + outputFile);
+
             } catch (IOException e) {
               System.err.println(e);
               e.printStackTrace();
@@ -479,12 +480,8 @@ public class HTSeqCountTest {
             }
           }
         }).start();
-        
-       
 
       }
-
-    
 
   }
 }
