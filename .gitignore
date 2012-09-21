@@ -1,0 +1,8 @@
+target/
+.settings/
+.classpath
+.externalToolBuilders/
+.gitignore
+.project
+build.num
+maven-eclipse.xml
