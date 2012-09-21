@@ -35,10 +35,13 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 @HadoopCompatible
 public class GenomeDataProtocol extends StorageDataProtocol {
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "genome";
+
   @Override
   public String getName() {
 
-    return "genome";
+    return PROTOCOL_NAME;
   }
 
   @Override

@@ -34,10 +34,13 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 @LocalOnly
 public class HTTPURLDataProtocol extends URLDataProtocol{
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "http";
+
   @Override
   public String getName() {
     
-    return "http";
+    return PROTOCOL_NAME;
   }
   
 }

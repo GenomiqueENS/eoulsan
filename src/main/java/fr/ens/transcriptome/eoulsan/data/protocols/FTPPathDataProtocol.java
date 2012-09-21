@@ -32,12 +32,15 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class FTPPathDataProtocol extends PathDataProtocol{
+public class FTPPathDataProtocol extends PathDataProtocol {
+
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "ftp";
 
   @Override
   public String getName() {
 
-    return "ftp";
+    return PROTOCOL_NAME;
   }
-  
+
 }
