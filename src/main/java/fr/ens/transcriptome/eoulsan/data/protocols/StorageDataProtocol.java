@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,6 +86,16 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   public boolean isWritable() {
 
     return false;
+  }
+
+  @Override
+  public File getSourceAsFile(DataFile src) {
+
+    try {
+      return internalDataFile(src).toFile();
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   private DataFile internalDataFile(final DataFile src) throws IOException {
