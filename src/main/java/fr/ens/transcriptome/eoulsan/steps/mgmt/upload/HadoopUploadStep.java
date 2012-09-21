@@ -25,20 +25,19 @@
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.ContextUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
-import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
+import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
@@ -74,7 +73,7 @@ public class HadoopUploadStep extends UploadStep {
       filename = file.getName();
     } else {
 
-//    	final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
+      // final DataFormat format = df == READS_FASTQ ? READS_TFQ : df;
       final DataFormat format = df;
 
       if (fileIndex == -1 || format.getMaxFilesCount() == 1)
@@ -92,13 +91,8 @@ public class HadoopUploadStep extends UploadStep {
     if (files == null)
       throw new NullPointerException("The files argument is null.");
 
-    // Copy local files
-
-    final Set<DataFile> stdCopyFiles = new HashSet<DataFile>();
-    final DataProtocol fileProtocol =
-        DataProtocolService.getInstance().getProtocol("file");
-
-    for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
+    // Process to local copies
+    for (Map.Entry<DataFile, DataFile> e : Maps.newHashMap(files).entrySet()) {
 
       final DataFile src = e.getKey();
       final DataFile dest = e.getValue();
@@ -107,24 +101,41 @@ public class HadoopUploadStep extends UploadStep {
         continue;
       }
 
-      if (src.getProtocol() == fileProtocol) {
+      // Test if the file exists
+      if (!src.exists())
+        throw new IOException("The file does not exists: " + src);
 
-        new DataFormatConverter(src, dest).convert();
-        stdCopyFiles.add(src);
+      // If the file is local file to a local copy/conversion
+      if (src.toFile() != null) {
+
+        // Process to copy now
+        new DataFormatConverter(new DataFile(src.toFile()), dest).convert();
+
+        // Remove the file from the list of files to copy
+        files.remove(src);
+
+      } else
+      // If the file comes from a storage
+      if (src.getProtocol() instanceof StorageDataProtocol) {
+
+        final DataFile newSrc =
+            ((StorageDataProtocol) src.getProtocol()).getUnderLyingData(src);
+
+        // Update the map of files to copy
+        if (src != null) {
+          files.remove(src);
+          files.put(newSrc, dest);
+        }
       }
     }
 
-    // Remove already copied files from list files for distributed copy
-    for (DataFile file : stdCopyFiles)
-      files.remove(file);
-
+    // Process to distributed copies
     if (files.size() > 0) {
       final Path jobPath =
           PathUtils.createTempPath(new Path(getDest().getSource()), "distcp-",
               "", this.conf);
 
-      DataFileDistCp distCp = new DataFileDistCp(this.conf, jobPath);
-      distCp.copy(files);
+      new DataFileDistCp(this.conf, jobPath).copy(files);
     }
   }
 
