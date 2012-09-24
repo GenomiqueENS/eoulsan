@@ -202,15 +202,13 @@ public class DiffAna {
 
     // Check repTechGroup field coherence
     for (i = 0; i < rRepTechGroup.size(); i++) {
-      String repTechGroup1 = rRepTechGroup.get(i);
-      String condition = rCondNames.get(i);
       for (int j = 0; j < rRepTechGroup.size(); j++) {
-        String repTechGroup2 = rRepTechGroup.get(j);
-        if (!repTechGroup2.equals(repTechGroup1)) {
-          if (rCondNames.get(j).equals(condition)) {
+        if (rRepTechGroup.get(j).equals(rRepTechGroup.get(i))) {
+          if (!rCondNames.get(j).equals(rCondNames.get(i))) {
             throw new EoulsanException(
                 "There is a mistake in RepTechGroup field of design file : "
-                    + "two condition have the same repTechGroup");
+                    + "two condition have the same repTechGroup : "
+                    + rRepTechGroup.get(i));
           }
         }
       }
