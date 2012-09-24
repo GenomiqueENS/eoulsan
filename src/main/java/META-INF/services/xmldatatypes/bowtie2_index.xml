@@ -1,0 +1,6 @@
+<datatype>
+  <name>bowtie2_index</name>
+  <description>bowtie 2 index type</description>
+  <prefix>bowtie2_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+</datatype>

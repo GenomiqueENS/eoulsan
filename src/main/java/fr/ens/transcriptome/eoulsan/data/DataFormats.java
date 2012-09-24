@@ -58,9 +58,13 @@ public class DataFormats {
   public static final DataFormat BWA_INDEX_ZIP = registry
       .getDataFormatFromName("bwa_index_zip");
 
-  /** BWA index data format. */
+  /** Bowtie index data format. */
   public static final DataFormat BOWTIE_INDEX_ZIP = registry
       .getDataFormatFromName("bowtie_index_zip");
+
+  /** Bowtie2 index data format. */
+  public static final DataFormat BOWTIE2_INDEX_ZIP = registry
+      .getDataFormatFromName("bowtie2_index_zip");
 
   /** Gmap index data format. */
   public static final DataFormat GMAP_INDEX_ZIP = registry

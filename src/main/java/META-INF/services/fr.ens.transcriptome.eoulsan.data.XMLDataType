@@ -1,6 +1,7 @@
 annotation_index.xml
 annotation.xml
 bowtie_index.xml
+bowtie2_index.xml
 bwa_index.xml
 diffana_results.xml
 expression_results.xml
