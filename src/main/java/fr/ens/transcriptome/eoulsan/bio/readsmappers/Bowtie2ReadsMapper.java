@@ -51,10 +51,10 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_EXECUTABLE_BIN = "bowtie2-align";
   private static final String INDEXER_EXECUTABLE = "bowtie2-build";
 
-  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
+  public static final String DEFAULT_ARGUMENTS = "";
 
   private static final String SYNC = BowtieReadsMapper.class.getName();
-  private static final String MAPPER_NAME = "Bowtie";
+  private static final String MAPPER_NAME = "Bowtie2";
 
   private File outputFile;
 
@@ -77,7 +77,7 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = install(MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN);
+        bowtiePath = install(MAPPER_EXECUTABLE_BIN, MAPPER_EXECUTABLE);
       }
 
       final String cmd = bowtiePath + " --version";
@@ -102,7 +102,7 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.BOWTIE_INDEX_ZIP;
+    return DataFormats.BOWTIE2_INDEX_ZIP;
   }
 
   @Override
@@ -129,7 +129,7 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN);
+      bowtiePath = install(MAPPER_EXECUTABLE_BIN, MAPPER_EXECUTABLE);
     }
 
     final String bt2 =
@@ -143,11 +143,11 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
     // Build the command line
     final String cmd =
         "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
+            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " "
             + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + bt2
+            + getMapperArguments() + " -p " + getThreadsNumber() + " -x " + bt2
             + " -1 " + readsFile1.getAbsolutePath() + " -2 "
-            + readsFile2.getAbsolutePath() + " > "
+            + readsFile2.getAbsolutePath() + " -S "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
     LOGGER.info(cmd);
@@ -170,7 +170,7 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN);
+      bowtiePath = install(MAPPER_EXECUTABLE_BIN, MAPPER_EXECUTABLE);
     }
 
     final String bt2 =
@@ -184,10 +184,10 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
     // Build the command line
     final String cmd =
         "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
+            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " "
             + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + bt2
-            + " -q " + readsFile.getAbsolutePath() + " > "
+            + getMapperArguments() + " -p " + getThreadsNumber() + " -x " + bt2
+            + " -q " + readsFile.getAbsolutePath() + " -S "
             + outputFile.getAbsolutePath() + " 2> /dev/null";
 
     LOGGER.info(cmd);
@@ -207,15 +207,16 @@ public class Bowtie2ReadsMapper extends AbstractSequenceReadsMapper {
     switch (format) {
 
     case FASTQ_SOLEXA:
+      // TODO BOWTIE do not support solexa quality scores
       return "--solexa-quals";
 
     case FASTQ_ILLUMINA:
     case FASTQ_ILLUMINA_1_5:
-      return "--phred64-quals";
+      return "--phred64";
 
     case FASTQ_SANGER:
     default:
-      return "--phred33-quals";
+      return "--phred33";
     }
   }
 
