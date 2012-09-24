@@ -433,7 +433,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private void checkWriteSingleEnd() throws IOException {
 
-    checkState(!isPairEnd(), "Can not write single-end read in paired-end mode.");
+    checkState(!isPairEnd(),
+        "Can not write single-end read in paired-end mode.");
 
     if (noReadWritten) {
 
@@ -666,7 +667,7 @@ public abstract class AbstractSequenceReadsMapper implements
    *          of the last installed binary
    * @throws IOException if an error occurs while installing binary
    */
-  protected String install(final String[] binaryFilenames) throws IOException {
+  protected String install(final String... binaryFilenames) throws IOException {
 
     String result = null;
 
