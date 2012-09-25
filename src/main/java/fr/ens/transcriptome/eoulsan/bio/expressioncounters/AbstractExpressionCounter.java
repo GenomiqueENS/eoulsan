@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -49,6 +48,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String genomicType;
+  private String attributeId;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private Reporter reporter;
@@ -77,6 +77,11 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public String getGenomicType() {
     return this.genomicType;
+  }
+  
+  @Override
+  public String getAttributeId() {
+    return this.attributeId;
   }
 
   //
@@ -124,23 +129,28 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
     this.genomicType = genomicType;
   }
+  
+  @Override
+  public void setAttributeId(final String attributeId) {
+
+    this.attributeId = attributeId;
+  }
 
   //
   // Counting
   //
 
   @Override
-  public final void count(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
-      final DataFile genomeDescFile) throws IOException, EoulsanException,
-      BadBioEntryException {
+  public final void count(final DataFile alignmentFile, final DataFile annotationFile,
+      final DataFile expressionFile, final DataFile genomeDescFile) throws IOException,
+      EoulsanException, BadBioEntryException {
 
     LOGGER.fine("Counting with " + getCounterName());
 
     checkNotNull(alignmentFile, "alignmentFile is null");
     checkNotNull(annotationFile, "annotationFile is null");
     checkNotNull(expressionFile, "expressionFile is null");
-    checkExistingStandardFile(alignmentFile,
+    checkExistingStandardFile(alignmentFile.toFile(),
         "alignmentFile not exits or is not a standard file.");
 
     // Process to counting
@@ -159,8 +169,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
    *          step
    * @throws IOException
    */
-  protected abstract void internalCount(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
+  protected abstract void internalCount(final DataFile alignmentFile,
+      final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException;
 
@@ -169,13 +179,14 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void init(final String genomicType, final Reporter reporter,
+  public void init(final String genomicType, String attributeId, final Reporter reporter,
       final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
     this.genomicType = genomicType;
+    this.attributeId = attributeId;
     this.reporter = reporter;
     this.counterGroup = counterGroup;
   }

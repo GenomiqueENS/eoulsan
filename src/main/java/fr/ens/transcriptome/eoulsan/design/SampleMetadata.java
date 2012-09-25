@@ -53,18 +53,20 @@ public interface SampleMetadata {
   String OPERATOR_FIELD = "Operator";
   /** Condition field. */
   String CONDITION_FIELD = "Condition";
-  /** Replicate type field. */
-  String REPLICAT_TYPE_FIELD = "ReplicateType";
   /** UUID field. */
   String UUID_TYPE_FIELD = "UUID";
   /** Fastq format field. */
   String FASTQ_FORMAT_FIELD = "FastqFormat";
-  /** repTechGroup field. */
+  /** RepTechGroup field. */
   String REP_TECH_GROUP_FIELD = "RepTechGroup";
-  /** project name field */
-  String EXPERIMENT = "Experiment";
-  /** reference for cinetic RNA-seq */
-  String REFERENCE = "Reference";
+  /** Experiment name field */
+  String EXPERIMENT_FIELD = "Experiment";
+  /** Sample reference */
+  String REFERENCE_FIELD = "Reference";
+
+  //
+  // Getters
+  //
 
   /**
    * Get a field value.
@@ -111,12 +113,6 @@ public interface SampleMetadata {
   String getGenome();
 
   /**
-   * Get project name 
-   * @return Returns the project name
-   */
-  String getExperiment();
-  
-  /**
    * Get the annotation relative to the sample.
    * @return Returns the annotation
    */
@@ -147,12 +143,6 @@ public interface SampleMetadata {
   String getCondition();
 
   /**
-   * Get replicat type of the sample.
-   * @return Returns the replicat
-   */
-  String getReplicatType();
-
-  /**
    * Get UUID.
    * @return Returns the UUID
    */
@@ -169,13 +159,23 @@ public interface SampleMetadata {
    * @return The repTechGroup
    */
   String getRepTechGroup();
-  
+
+  /**
+   * Test if the sample is the reference for the experiment.
+   * @return true if the sample is the reference
+   */
+  boolean isReference();
+
   /**
    * Get Reference
    * @return the Reference
    */
-  String getReference();
-  
+  String getExperiment();
+
+  //
+  // Setters
+  //
+
   /**
    * Set a field of the metadata.
    * @param field Field to set
@@ -219,6 +219,7 @@ public interface SampleMetadata {
    * @param experiment
    */
   void setExperiment(String experiment);
+
   /**
    * Set the annotation file relative to the sample.
    * @param annotation file to set
@@ -250,12 +251,6 @@ public interface SampleMetadata {
   void setCondition(String condition);
 
   /**
-   * Set the replicat type of the sample.
-   * @param replicatType The replicat type to set
-   */
-  void setReplicatType(String replicatType);
-
-  /**
    * Set the UUID of the sample.
    * @param uuid
    */
@@ -272,13 +267,17 @@ public interface SampleMetadata {
    * @param repTechGroup the technical replicate group to set
    */
   void setRepTechGroup(final String repTechGroup);
-  
+
   /**
-   * Set the Reference
-   * @param reference
+   * Set if the sample is the reference of the experiment.
+   * @param reference true if the sample is a reference
    */
-  void setReference(final String reference);
-  
+  void setReference(final boolean reference);
+
+  //
+  // Fields tests
+  //
+
   /**
    * Test if a field exists.
    * @param field The field to test
@@ -305,12 +304,13 @@ public interface SampleMetadata {
   boolean isGenomeField();
 
   /**
-   * Test id the experiment filed exists
-   * @return
+   * Test id the experiment field exists
+   * @return true if the field exists
    */
   boolean isExperiment();
+
   /**
-   * Test if the annoatation field exists.
+   * Test if the annotation field exists.
    * @return true if the field exists
    */
   boolean isAnnotationField();
@@ -346,12 +346,6 @@ public interface SampleMetadata {
   boolean isConditionField();
 
   /**
-   * Test if the replicat type field exists.
-   * @return true if the field exists
-   */
-  boolean isReplicatTypeField();
-
-  /**
    * Test if the UUID field exists.
    * @return true if the field exists
    */
@@ -361,18 +355,24 @@ public interface SampleMetadata {
    * Test if the FastqFormat field exists.
    * @return true if the field exists
    */
-  boolean isFastqFormat();
-  
+  boolean isFastqFormatField();
+
+  /**
+   * Test if the experiment field exists.
+   * @return true if the field exists
+   */
+  boolean isExperimentField();
+
   /**
    * Test if the technical replicates group field exists.
    * @return true if the field exists
    */
-  boolean isRepTechGroup();
-  
+  boolean isRepTechGroupField();
+
   /**
    * Test if the Reference exists
    * @return true if the reference exists
    */
-  boolean isReference();
-  
+  boolean isReferenceField();
+
 }

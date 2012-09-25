@@ -777,7 +777,8 @@ public class TranscriptAndExonFinder {
   }
 
   private void populateMapsFromGFFFile(final InputStream is,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
     LOGGER.info("Expression Type: " + expressionType);
 
@@ -808,14 +809,17 @@ public class TranscriptAndExonFinder {
 
         String parentId = null;
 
-        if (e.isAttribute("modeleid"))
-          parentId = e.getAttributeValue("modeleid");
-        else if (e.isAttribute("single"))
-          parentId = e.getAttributeValue("single");
-        else if (e.isAttribute("Parent"))
-          parentId = e.getAttributeValue("Parent");
-        else if (e.isAttribute("PARENT"))
-          parentId = e.getAttributeValue("PARENT");
+        // if (e.isAttribute("modeleid"))
+        // parentId = e.getAttributeValue("modeleid");
+        // else if (e.isAttribute("single"))
+        // parentId = e.getAttributeValue("single");
+        // else if (e.isAttribute("Parent"))
+        // parentId = e.getAttributeValue("Parent");
+        // else if (e.isAttribute("PARENT"))
+        // parentId = e.getAttributeValue("PARENT");
+
+        if (e.isAttribute(attributeId))
+          parentId = e.getAttributeValue(attributeId);
 
         if (chr == null || parentId == null)
           continue;
@@ -997,28 +1001,33 @@ public class TranscriptAndExonFinder {
    * Public constructor used to create the index.
    * @param annotationFile annotation file to use
    * @param expressionType the expression type to filter
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while creating the index
    * @throws BadBioEntryException if an invalid entry of the annotation file is
    *           found
    */
   public TranscriptAndExonFinder(final File annotationFile,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
-    this(FileUtils.createInputStream(annotationFile), expressionType);
+    this(FileUtils.createInputStream(annotationFile), expressionType,
+        attributeId);
   }
 
   /**
    * Public constructor used to create the index.
    * @param is annotation input stream to use
    * @param expressionType the expression type to filter
+   * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while creating the index
    * @throws BadBioEntryException if an invalid entry of the annotation file is
    *           found
    */
   public TranscriptAndExonFinder(final InputStream is,
-      final String expressionType) throws IOException, BadBioEntryException {
+      final String expressionType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
-    populateMapsFromGFFFile(is, expressionType);
+    populateMapsFromGFFFile(is, expressionType, attributeId);
   }
 
   /**

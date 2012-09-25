@@ -34,10 +34,13 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 @LocalOnly
 public class FTPURLDataProtocol extends URLDataProtocol{
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "ftp";
+
   @Override
   public String getName() {
     
-    return "ftp";
+    return PROTOCOL_NAME;
   }
 
 }

@@ -66,6 +66,9 @@ public class S3DataProtocol implements DataProtocol {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "s3";
+
   private AmazonS3 s3;
   private TransferManager tx;
   private boolean multipartUpload;
@@ -364,7 +367,7 @@ public class S3DataProtocol implements DataProtocol {
   @Override
   public String getName() {
 
-    return "s3";
+    return PROTOCOL_NAME;
   }
 
   @Override

@@ -24,11 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
+import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_NONEMPTY;
+import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_STRICT;
+import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.UNION;
+import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
+import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.YES;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,12 +60,12 @@ import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 public class HTSeqUtils {
 
   public static void storeAnnotation(GenomicArray<String> features,
-      final InputStream gffFile, final String featureType,
+      final InputStream gffIs, final String featureType,
       final StrandUsage stranded, final String attributeId,
       final Map<String, Integer> counts) throws IOException, EoulsanException,
       BadBioEntryException {
 
-    final GFFReader gffReader = new GFFReader(gffFile);
+    final GFFReader gffReader = new GFFReader(gffIs);
 
     // Read the annotation file
     for (final GFFEntry gff : gffReader) {
@@ -69,8 +75,7 @@ public class HTSeqUtils {
         final String featureId = gff.getAttributeValue(attributeId);
         if (featureId == null) {
           gffReader.close();
-          // writer.close();
-          // samout.close();
+
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
@@ -79,8 +84,7 @@ public class HTSeqUtils {
         if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
             && '.' == gff.getStrand()) {
           gffReader.close();
-          // writer.close();
-          // samout.close();
+
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
@@ -113,8 +117,7 @@ public class HTSeqUtils {
         final String featureId = gff.getAttributeValue(attributeId);
         if (featureId == null) {
           gffReader.close();
-          // writer.close();
-          // samout.close();
+
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
@@ -123,8 +126,7 @@ public class HTSeqUtils {
         if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
             && '.' == gff.getStrand()) {
           gffReader.close();
-          // writer.close();
-          // samout.close();
+
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
@@ -162,7 +164,7 @@ public class HTSeqUtils {
         || (record.getReadPairedFlag() && record.getFirstOfPairFlag())) {
 
       // the read has to be mapped to the opposite strand as the feature
-      if (stranded == StrandUsage.REVERSE)
+      if (stranded == REVERSE)
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
             record.getAlignmentStart(), record.getReadNegativeStrandFlag()
                 ? '+' : '-'));
@@ -255,11 +257,9 @@ public class HTSeqUtils {
       throws EoulsanException, IOException {
 
     Set<String> fs = null;
-    Map<GenomicInterval, Set<String>> inter =
-        new HashMap<GenomicInterval, Set<String>>();
 
     // Overlap mode "union"
-    if (mode == OverlapMode.UNION) {
+    if (mode == UNION) {
 
       fs = new HashSet<String>();
 
@@ -271,20 +271,17 @@ public class HTSeqUtils {
           throw new EoulsanException("Unknown chromosome: " + chr);
 
         // Get features that overlap the current interval of the read
-        Map<GenomicInterval, Set<String>> intervals =
+        final Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
-          for (Map.Entry<GenomicInterval, Set<String>> i : intervals.entrySet()) {
-            if (i.getKey().getStrand() == iv.getStrand())
-              inter.put(i.getKey(), i.getValue());
-          }
-          intervals = inter;
-        }
+        // Filter intervals if necessary
+        if (stranded == YES || stranded == REVERSE)
+          filterIntervalsStrands(intervals, iv.getStrand());
 
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
           for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
+
             if (e.getValue() != null)
               fs.addAll(e.getValue());
           }
@@ -294,8 +291,7 @@ public class HTSeqUtils {
     }
 
     // Overlap modes : "intersection-nonempty" or "intersection-strict"
-    else if (mode == OverlapMode.INTERSECTION_NONEMPTY
-        || mode == OverlapMode.INTERSECTION_STRICT) {
+    else if (mode == INTERSECTION_NONEMPTY || mode == INTERSECTION_STRICT) {
 
       for (final GenomicInterval iv : ivList) {
 
@@ -305,30 +301,32 @@ public class HTSeqUtils {
           throw new EoulsanException("Unknown chromosome: " + chr);
 
         // Get features that overlap the current interval of the read
-        Map<GenomicInterval, Set<String>> intervals =
+        final Map<GenomicInterval, Set<String>> intervals =
             features.getEntries(chr, iv.getStart(), iv.getEnd());
 
-        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE) {
-          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
-            if (e.getKey().getStrand() == iv.getStrand())
-              inter.put(e.getKey(), e.getValue());
-          }
-          intervals = inter;
+        // Filter intervals if necessary
+        if (stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
+          filterIntervalsStrands(intervals, iv.getStrand());
+
+        // If internal is empty, add an entry with requested iv as key and an
+        // empty set as value (HTSeq compatibility)
+        if (intervals.isEmpty()) {
+          final Set<String> emptySet = Collections.emptySet();
+          intervals.put(iv, emptySet);
         }
 
-        if (intervals == null || intervals.size() == 0) {
-          fs = new HashSet<String>();
-        }
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
           for (Map.Entry<GenomicInterval, Set<String>> i : intervals.entrySet()) {
-            if (i.getValue().size() > 0
-                || mode == OverlapMode.INTERSECTION_STRICT) {
-              if (fs == null) {
-                fs = new HashSet<String>();
-                fs.addAll(i.getValue());
-              } else
-                fs.retainAll(i.getValue());
+
+            final Set<String> fs2 = i.getValue();
+
+            if (fs2.size() > 0 || mode == INTERSECTION_STRICT) {
+              if (fs == null)
+                fs = new HashSet<String>(fs2);
+              else
+                fs.retainAll(fs2);
+
             }
           }
         }
@@ -340,4 +338,28 @@ public class HTSeqUtils {
 
     return fs;
   }
+
+  /**
+   * Filter the output of GenomicArray.getEntries() by keeping only features on
+   * a strand
+   * @param intervals intervals to filter
+   * @param strand strand to keep
+   */
+  private static final void filterIntervalsStrands(
+      Map<GenomicInterval, Set<String>> intervals, final char strand) {
+
+    if (intervals == null)
+      return;
+
+    final Set<GenomicInterval> toRemove = new HashSet<GenomicInterval>();
+
+    for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
+      if (e.getKey().getStrand() != strand)
+        toRemove.add(e.getKey());
+    }
+
+    for (GenomicInterval iv : toRemove)
+      intervals.remove(iv);
+  }
+
 }

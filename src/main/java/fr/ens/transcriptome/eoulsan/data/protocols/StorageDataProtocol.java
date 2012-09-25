@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +48,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   @Override
   public InputStream getData(final DataFile src) throws IOException {
 
-    return internalDataFile(src).rawOpen();
+    return getUnderLyingData(src).rawOpen();
   }
 
   @Override
@@ -62,7 +63,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
     try {
 
-      return internalDataFile(src).exists();
+      return getUnderLyingData(src).exists();
     } catch (IOException e) {
 
       return false;
@@ -72,7 +73,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    return internalDataFile(src).getMetaData();
+    return getUnderLyingData(src).getMetaData();
   }
 
   @Override
@@ -87,7 +88,23 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
     return false;
   }
 
-  private DataFile internalDataFile(final DataFile src) throws IOException {
+  @Override
+  public File getSourceAsFile(DataFile src) {
+
+    try {
+      return getUnderLyingData(src).toFile();
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Get the underlying Data.
+   * @param src source to use
+   * @return a the underlying DataFile
+   * @throws IOException if an error occurs while getting the underlying DataFile
+   */
+  public DataFile getUnderLyingData(final DataFile src) throws IOException {
 
     final String basePath = getBasePath();
 

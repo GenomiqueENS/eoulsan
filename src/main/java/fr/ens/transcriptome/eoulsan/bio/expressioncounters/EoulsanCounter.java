@@ -56,28 +56,26 @@ public class EoulsanCounter extends AbstractExpressionCounter {
   }
 
   @Override
-  protected void internalCount(final File alignmentFile,
-      final DataFile annotationFile, final File expressionFile,
+  protected void internalCount(final DataFile alignmentFile,
+      final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, final Reporter reporter,
       final String counterGroup) throws IOException, BadBioEntryException {
 
     ExpressionPseudoMapReduce epmr = null;
-    // String lastAnnotationKey = null;
-    final String genomicType = getGenomicType();
 
     // Get expression temporary file
     final File expressionTmpFile =
-        new File(alignmentFile.getAbsolutePath() + ".tmp");
+        new File(alignmentFile.toFile().getAbsolutePath() + ".tmp");
 
     // try {
 
     epmr =
-        new ExpressionPseudoMapReduce(annotationFile.open(), genomicType,
-            genomeDescFile.open(), counterGroup);
+        new ExpressionPseudoMapReduce(annotationFile.open(), getGenomicType(),
+            getAttributeId(), genomeDescFile.open(), counterGroup);
 
     if (getTempDirectory() != null)
       epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));
-    epmr.doMap(alignmentFile);
+    epmr.doMap(alignmentFile.open());
     epmr.doReduce(expressionTmpFile);
 
     final FinalExpressionTranscriptsCreator fetc =
@@ -86,7 +84,7 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     fetc.initializeExpressionResults();
     fetc.loadPreResults(expressionTmpFile,
         epmr.getReporter().getCounterValue(counterGroup, "reads used"));
-    fetc.saveFinalResults(expressionFile);
+    fetc.saveFinalResults(expressionFile.toFile());
 
     // Remove expression Temp file
     if (!expressionTmpFile.delete())

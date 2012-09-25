@@ -249,12 +249,18 @@ public final class DesignUtils {
     removeFieldIfExists(design, SampleMetadata.OPERATOR_FIELD);
 
     if (removeReplicateInformation) {
+      removeFieldIfExists(design, SampleMetadata.EXPERIMENT_FIELD);
       removeFieldIfExists(design, SampleMetadata.CONDITION_FIELD);
-      removeFieldIfExists(design, SampleMetadata.REPLICAT_TYPE_FIELD);
+      removeFieldIfExists(design, SampleMetadata.REP_TECH_GROUP_FIELD);
+      removeFieldIfExists(design, SampleMetadata.REFERENCE_FIELD);
     }
 
-    final Map<String, Integer> map = Maps.newHashMap();
-    int count = 0;
+    final Map<String, Integer> mapExperiment = Maps.newHashMap();
+    final Map<String, Integer> mapCondition = Maps.newHashMap();
+    final Map<String, Integer> mapRepTechGroup = Maps.newHashMap();
+    int countExperiment = 0;
+    int countCondition = 0;
+    int countRepTechGroup = 0;
 
     for (Sample s : design.getSamples()) {
 
@@ -262,15 +268,39 @@ public final class DesignUtils {
       if (!newSampleName.equals(s.getName()))
         s.setName(newSampleName);
 
+      // Obfuscate Experiment field
+      if (design.isMetadataField(SampleMetadata.EXPERIMENT_FIELD)) {
+        final String exp = s.getMetadata().getExperiment();
+
+        if (!mapExperiment.containsKey(exp)) {
+          mapExperiment.put(exp, ++countExperiment);
+        }
+
+        s.getMetadata().setExperiment("e" + mapExperiment.get(exp));
+      }
+
+      // Obfuscate Condition field
       if (design.isMetadataField(SampleMetadata.CONDITION_FIELD)) {
         final String cond = s.getMetadata().getCondition();
 
-        if (!map.containsKey(cond)) {
-          map.put(cond, ++count);
+        if (!mapCondition.containsKey(cond)) {
+          mapCondition.put(cond, ++countCondition);
         }
 
-        s.getMetadata().setCondition("c" + map.get(cond));
+        s.getMetadata().setCondition("c" + mapCondition.get(cond));
       }
+
+      // Obfuscate RepTechGroup field
+      if (design.isMetadataField(SampleMetadata.REP_TECH_GROUP_FIELD)) {
+        final String rtg = s.getMetadata().getRepTechGroup();
+
+        if (!mapRepTechGroup.containsKey(rtg)) {
+          mapRepTechGroup.put(rtg, ++countRepTechGroup);
+        }
+
+        s.getMetadata().setRepTechGroup("g" + mapRepTechGroup.get(rtg));
+      }
+
     }
   }
 

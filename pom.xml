@@ -624,8 +624,16 @@
 						                  <version>1.75</version>
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
-						                  <destFileName>sam.jar</destFileName>
+						                  <destFileName>picard.jar</destFileName>
 								</artifactItem>
+								<!--artifactItem>
+						                  <groupId>net.sourceforge.picard</groupId>
+						                  <artifactId>picard</artifactId>
+						                  <version>1.76</version>
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>sam.jar</destFileName>
+								</artifactItem-->
 								<artifactItem>
 						                  <groupId>javax.mail</groupId>
 						                  <artifactId>mail</artifactId>
