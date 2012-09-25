@@ -72,6 +72,12 @@ public final class Globals {
   /** The built number of the application. */
   public static final String APP_BUILD_NUMBER = getBuiltNumber();
 
+  /** The built commit of the application. */
+  public static final String APP_BUILD_COMMIT = getBuiltCommit();
+
+  /** The built host of the application. */
+  public static final String APP_BUILD_HOST = getBuiltHost();
+
   /** The build date of the application. */
   public static final String APP_BUILD_DATE = getBuiltDate();
 
@@ -80,8 +86,9 @@ public final class Globals {
 
   /** The welcome message. */
   public static final String WELCOME_MSG = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " ("
-      + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")";
+      + " version " + Globals.APP_VERSION_STRING + " (" + APP_BUILD_COMMIT
+      + ", " + Globals.APP_BUILD_NUMBER + " build on " + APP_BUILD_HOST + ", "
+      + Globals.APP_BUILD_DATE + ")";
 
   /** The prefix for temporary files. */
   public static final String TEMP_PREFIX = APP_NAME_LOWER_CASE
@@ -138,8 +145,9 @@ public final class Globals {
 
   /** About string, plain text version. */
   public static final String ABOUT_TXT = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " ("
-      + Globals.APP_BUILD_NUMBER + ")" + " is a pipeline for NGS analysis.\n"
+      + " version " + Globals.APP_VERSION_STRING + " (" + APP_BUILD_COMMIT
+      + ", " + Globals.APP_BUILD_NUMBER + ")"
+      + " is a pipeline for NGS analysis.\n"
       + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
       + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
       + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
@@ -196,6 +204,8 @@ public final class Globals {
   private static final String UNKNOWN_BUILD = "UNKNOWN_BUILD";
   private static final String UNKNOWN_DATE = "UNKNOWN_DATE";
   private static final String UNKNOWN_YEAR = "UNKNOWN_YEAR";
+  private static final String UNKNOWN_BUILD_COMMIT = "UNKNOWN_COMMIT";
+  private static final String UNKNOWN_BUILD_HOST = "UNKNOWN_HOST";
 
   //
   // Methods
@@ -221,7 +231,7 @@ public final class Globals {
 
     return builtDate != null ? builtDate : UNKNOWN_DATE;
   }
-  
+
   private static String getBuiltYear() {
 
     final String builtYear = getManifestProperty("Built-Year");
@@ -234,6 +244,20 @@ public final class Globals {
     final String url = getManifestProperty("url");
 
     return url != null ? url : WEBSITE_URL_DEFAULT;
+  }
+
+  private static String getBuiltCommit() {
+
+    final String buildCommit = getManifestProperty("Built-Commit");
+
+    return buildCommit != null ? buildCommit : UNKNOWN_BUILD_COMMIT;
+  }
+
+  private static String getBuiltHost() {
+
+    final String buildHost = getManifestProperty("Built-Host");
+
+    return buildHost != null ? buildHost : UNKNOWN_BUILD_HOST;
   }
 
   private static String getManifestProperty(final String propertyKey) {
