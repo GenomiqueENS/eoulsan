@@ -51,7 +51,7 @@
     <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).</td><td>eoulsanCounter</td></tr>
-		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
+		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>'exon' for eoulsanCounter and 'gene'for htseq-count. </td></tr>
 	</table>
 	<br/>
 	
@@ -63,13 +63,6 @@ If "yes" or "no", the read has to be mapped to the same strand as the feature or
 regardless of whether it is mapped to the same or the opposite strand as the feature.<td></td><td>no</td></tr>
 		<tr><td>overlapmode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
 	</table>
-
-<!-- OLD VERSION
-	<table>
-		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>genomictype</td><td>string</td><td>Genomic elements of the annotation file to count.</td><td>exon</td></tr>
-	</table>
--->
 
        </ul>
       
