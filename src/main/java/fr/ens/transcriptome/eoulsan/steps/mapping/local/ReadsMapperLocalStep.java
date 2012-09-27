@@ -185,6 +185,18 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     }
   }
 
+  /**
+   * map a fastq file in single end mode.
+   * @param context Eoulsan context object
+   * @param s sample to process
+   * @param mapper mapper object
+   * @param inFile fastq input file
+   * @param archiveIndexFile genome index for the mapper in a zip archive
+   * @param indexDir output directory for the uncompressed genome index for the
+   *          mapper
+   * @param reporter Eoulsan reporter object
+   * @throws IOException if an error occurs while the mapping
+   */
   private void mapSingleEnd(final Context context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile,
       final File archiveIndexFile, final File indexDir, final Reporter reporter)
@@ -209,6 +221,19 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
   }
 
+  /**
+   * map two fastq files in paired end mode.
+   * @param context Eoulsan context object
+   * @param s sample to process
+   * @param mapper mapper object
+   * @param inFile1 fastq input file for the first end
+   * @param inFile2 fastq input file for the second end
+   * @param archiveIndexFile genome index for the mapper in a zip archive
+   * @param indexDir output directory for the uncompressed genome index for the
+   *          mapper
+   * @param reporter Eoulsan reporter object
+   * @throws IOException if an error occurs while the mapping
+   */
   private void mapPairedEnd(final Context context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile1, final File inFile2,
       final File archiveIndexFile, final File indexDir, final Reporter reporter)
@@ -232,6 +257,12 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     mapper.map(inFile1, inFile2, archiveIndexFile, indexDir);
   }
 
+  /**
+   * Initialize the mapper to use.
+   * @param mapper mapper object
+   * @param tempDirectory temporary directory
+   * @return the number of threads to use
+   */
   private int initMapperArguments(final SequenceReadsMapper mapper,
       final File tempDirectory) {
 
@@ -256,6 +287,12 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     return mapperThreads;
   }
 
+  /**
+   * Parse the output the mapper (in SAM format).
+   * @param samFile output file from the mapper (in SAM format)
+   * @param reporter Eoulsan reporter for the step
+   * @throws IOException if an error occurs while reading the sAM file
+   */
   private void parseSAMResults(final File samFile, final Reporter reporter)
       throws IOException {
 
@@ -289,7 +326,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     LOGGER.info(entriesParsed
         + " entries parsed in " + getMapperName() + " output file");
-
   }
 
 }
