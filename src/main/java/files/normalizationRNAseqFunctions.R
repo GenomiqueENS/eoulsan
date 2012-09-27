@@ -90,7 +90,8 @@ anaDiff <- function(cds, outpath){
 				# rename columns
 				colnames(result)[3] <- paste("baseMean", cond1, sep="_")
 				colnames(result)[4] <- paste("baseMean", cond2, sep="_")
-				colnames(result)[5] <- paste("FoldChange_", cond2,"-", cond1, sep="")
+				colnames(result)[5] <- paste("FoldChange_", cond2, "-", cond1, sep="")
+				colnames(result)[6] <- paste("log2FoldChange_", cond2, "-", cond1, sep="")
 				# sort results by padj
 				sortedResult <- result[order(result$padj),]
 				# write results into a file
@@ -120,7 +121,7 @@ anaDiff <- function(cds, outpath){
 # 	cds : a countDataSet object
 # 	outpath : path where to save files
 # -----------------------------------------------------------------------------
-anaDiffDESeqCinetic <- function(cds, ref, outpath){
+anaDiffCinetic <- function(cds, ref, outpath){
 	
 	Conds <- levels(conditions(cds))
 	
@@ -133,6 +134,7 @@ anaDiffDESeqCinetic <- function(cds, ref, outpath){
 			colnames(result)[3] <- paste("baseMean", ref, sep="_")
 			colnames(result)[4] <- paste("baseMean", cond, sep="_")
 			colnames(result)[5] <- paste("FoldChange_", cond,"-", ref, sep="")
+			colnames(result)[6] <- paste("log2FoldChange_", cond2, "-", cond1, sep="")
 			# write results into a file
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
@@ -276,9 +278,9 @@ buildCountMatrix <- function(files, sampleLabel, projectPath){
 				quote=""
 		)[,c("Id","Count")]
 		# lowercase exp columns names
-		colnames(exp) <- tolower(colnames(exp))
+		colnames(exp) <- c("id", paste("count", i, sep=""))
 		# merge file data to count matrix by id
-		countMatrix <- merge(countMatrix, exp, by="id", suffixes="") 
+		countMatrix <- merge(countMatrix, exp, by="id", suffixes="_") 
 	}
 	# name rows
 	rownames(countMatrix) <- countMatrix[,1]
@@ -411,8 +413,8 @@ barplotTotalCount <- function(target, outpath = "", out= FALSE){
 	barplot(colSums(target$counts),
 			las=3, 
 			col=bioGroupColors,
-			ylab="total read counts",
-			main = paste(target$projectName, " total counts", sep="") 
+			ylab="total expression counts",
+			main = paste(target$projectName, " total expression counts", sep="") 
 	)
 	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
 	userCoordinates <- par('usr')
@@ -649,7 +651,6 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 #	filesNames : a character vector of files names
 #	repTechGroup : a character vector of technicals replicates groups
 #	condition : a character vector of condition names
-#	exp : a comparison vector
 #
 # Output :
 #	target : a target list
@@ -657,7 +658,7 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 # author : Vivien Deshaies
 # created Feb 9th 2012
 # -----------------------------------------------------------------------------
-buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTechGroup, condition, exp){
+buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTechGroup, condition){
 	# create empty list
 	target <- list()
 	
@@ -666,9 +667,8 @@ buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTe
 			length(sampleLabels) != length(fileNames) ||
 			length(sampleLabels) != length(repTechGroup) ||
 			length(sampleLabels) != length(condition) 
-#			|| length(sampleLabel) != length(exp)
 			){
-		stop("sampleNames, fileNames, condition, repTechGroup and exp vectors must have the same length")
+		stop("sampleNames, fileNames, condition and repTechGroup vectors must have the same length")
 	}
 	
 	target$sampleLabel <- as.character(sampleLabels)
@@ -685,9 +685,6 @@ buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTe
 	
 	# include conditions into the target list
 	target$condition <- condition
-	
-	# include condition to compare to
-	target$exp <- exp
 	
 	return(target)
 }
@@ -773,8 +770,6 @@ sortTarget <- function(target){
 	sortedTarget$repTechGroup <- target$repTechGroup[orderIndex]
 	sortedTarget$condition <- target$condition[orderIndex]
 	
-	sortedTarget$exp <- target$exp # 
-			
 	return(sortedTarget)
 }
 
@@ -818,21 +813,8 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 			col="skyblue",
 			border="slateblue",
 			xla="padj",
-			main = paste(cond1, "-", cond2," padj distribution", sep=""),
+			main = paste(cond1, "-", cond2," adjusted p-value distribution", sep=""),
 	)
-	
-#	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
-#	userCoordinates <- par('usr')
-#	# set plot clipping to device region
-#	par(xpd=NA)
-#	# print legend on the plot
-#	legend(
-#			userCoordinates[2]*1.01,
-#			userCoordinates[4],
-#			title = "Legend",
-#			as.character(unique(target$condition)),
-#			fill = unique(bioGroupColors),
-#	)
 	
 	if (out) { dev.off() }
 	
