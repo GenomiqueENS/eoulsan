@@ -809,15 +809,6 @@ public class TranscriptAndExonFinder {
 
         String parentId = null;
 
-        // if (e.isAttribute("modeleid"))
-        // parentId = e.getAttributeValue("modeleid");
-        // else if (e.isAttribute("single"))
-        // parentId = e.getAttributeValue("single");
-        // else if (e.isAttribute("Parent"))
-        // parentId = e.getAttributeValue("Parent");
-        // else if (e.isAttribute("PARENT"))
-        // parentId = e.getAttributeValue("PARENT");
-
         if (e.isAttribute(attributeId))
           parentId = e.getAttributeValue(attributeId);
 
