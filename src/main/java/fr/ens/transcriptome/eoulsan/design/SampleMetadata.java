@@ -167,8 +167,8 @@ public interface SampleMetadata {
   boolean isReference();
 
   /**
-   * Get Reference
-   * @return the Reference
+   * Get Experiment
+   * @return the Experiment
    */
   String getExperiment();
 
