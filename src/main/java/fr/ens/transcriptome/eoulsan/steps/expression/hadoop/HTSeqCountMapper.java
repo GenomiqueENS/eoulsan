@@ -138,6 +138,9 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
           GenomeDescription.load(PathUtils.createInputStream(new Path(
               genomeDescFile), conf));
 
+      // TODO Remove this once Hadoop HtSeq use features data serialized
+      this.features.addChromosomes(genomeDescription);
+
       // Set the chromosomes sizes in the parser
       this.parser.setGenomeDescription(genomeDescription);
 
@@ -160,7 +163,8 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
   /**
    * 'key': offset of the beginning of the line from the beginning of the
    * alignment file. 'value': the SAM record, if data are in paired-end mode,
-   * 'value' contains the two paired alignments separated by a '£' (TSAM format).
+   * 'value' contains the two paired alignments separated by a '£' (TSAM
+   * format).
    */
   @Override
   public void map(final LongWritable key, final Text value,

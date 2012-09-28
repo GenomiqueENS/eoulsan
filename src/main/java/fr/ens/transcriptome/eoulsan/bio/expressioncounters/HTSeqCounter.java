@@ -37,6 +37,7 @@ import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -63,12 +64,12 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   @Override
   protected void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile GenomeDescFile, Reporter reporter, String counterGroup)
+      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
         getStranded(), getOverlapMode(), getGenomicType(), getAttributeId(),
-        false, 0, null, reporter, counterGroup);
+        false, 0, null, genomeDescFile, reporter, counterGroup);
 
   }
 
@@ -96,11 +97,13 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final DataFile gffFile, final DataFile outFile,
       final StrandUsage stranded, final OverlapMode overlapMode,
       final String featureType, final String attributeId, final boolean quiet,
-      final int minAverageQual, final DataFile samOutFile, Reporter reporter,
-      String counterGroup) throws EoulsanException, IOException,
-      BadBioEntryException {
+      final int minAverageQual, final DataFile samOutFile,
+      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
+      throws EoulsanException, IOException, BadBioEntryException {
 
-    final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomicArray<String> features =
+        new GenomicArray<String>(GenomeDescription.load(genomeDescFile.open()));
+
     final Map<String, Integer> counts = Utils.newHashMap();
 
     final Writer writer = FileUtils.createBufferedWriter(outFile.create());
