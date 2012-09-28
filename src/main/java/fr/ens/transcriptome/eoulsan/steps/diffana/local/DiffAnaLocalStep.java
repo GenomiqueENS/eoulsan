@@ -88,18 +88,15 @@ public class DiffAnaLocalStep extends AbstractStep {
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
       String rServeName = null;
-      if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
-        rServeName =
-            EoulsanRuntime.getRuntime().getSettings().getRServeServername();
+      if (context.getSettings().isRServeServerEnabled())
+        rServeName = context.getSettings().getRServeServername();
 
       final DiffAna ad =
           new DiffAna(design, new File("."), eDF.getType().getPrefix(),
               eDF.getDefaultExtention(), new File("."), rServeName);
-      
-      if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
-        ad.runRserveRnwScript();
-      else
-        ad.runLocalRnwScript();
+
+      // Launch analysis
+      ad.run();
 
       // Write log file
       return new StepResult(context, startTime, log.toString());
