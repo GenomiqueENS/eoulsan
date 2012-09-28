@@ -9,8 +9,7 @@ target <- buildTarget(
 		fileNames,
 		projectPath,
 		repTechGroup,
-		condition,
-		exp
+		condition
 )
 
 # sort target by condition
@@ -26,8 +25,8 @@ target <- sortTarget(target)
 
 <<clusterRaw,fig=TRUE, width=12, height=8>>=
 if(length(target$counts[1,]) >= 3){
-	# compute clustering on unormalized counts
-	repClust(target)
+# compute clustering on unormalized counts
+repClust(target)
 } else {
 	print("no clustering  because there is less than 3 samples")
 }
@@ -80,6 +79,7 @@ print(sizeFactors(countDataSet))
 <<norm>>=
 normTarget <- normalizeTarget(target)
 @
+
 	\item Compute clustering of normTarget biological replicates and plot dendrogram
 <<clusterNorm, fig=TRUE, width=12, height=8>>= 
 if(length(normTarget$counts[1,]) >= 3){
@@ -88,6 +88,7 @@ if(length(normTarget$counts[1,]) >= 3){
 	print("no clustering  because there is less than 3 samples")
 }
 @
+
 	\item Plot boxplot and densityplot of normalized counts
 <<boxplotNorm, fig=TRUE, width=12, height=8>>=
 boxplotCounts(normTarget)

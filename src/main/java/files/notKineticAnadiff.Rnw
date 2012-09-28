@@ -10,4 +10,3 @@ anaDiff(countDataSet, outPath)
 <<sessionInfo>>=
 sessionInfo()
 @
-\end{document}

@@ -1,9 +1,8 @@
 <<diffAna>>=
-anaDiffDESeqCinetic(countDataSet, ref, outPath)
+anaDiffCinetic(countDataSet, ref, outPath)
 @
 
 \section{Session info}
 <<sessionInfo>>=
 sessionInfo()
 @
-\end{document}
