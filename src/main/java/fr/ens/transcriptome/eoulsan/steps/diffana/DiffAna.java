@@ -84,14 +84,20 @@ public class DiffAna {
   private String expressionFilesPrefix;
   private String expressionFilesSuffix;
   private RSConnectionNewImpl rConnection;
+  private boolean rServeEnable;
 
   //
   // Public methods
   //
 
-  public void run() throws EoulsanException {
+  public void runRserveRnwScript() throws EoulsanException {
 
     try {
+      
+      // print lof info
+      LOGGER.info("Differential analysis : Rserve mode");
+      LOGGER.info("Rserve server name : " + this.rConnection.getServerName());
+      
       // create an experiment map
       HashMap<String, List<Sample>> experiments = experimentsSpliter();
       // create an iterator on the map
@@ -101,17 +107,14 @@ public class DiffAna {
         String cle = itr.next();
         List<Sample> experiment = experiments.get(cle);
 
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled())
-          putExpressionFiles(experiment);
+        putExpressionFiles(experiment);
 
         String rScript = writeScript(experiment);
         runRnwScript(rScript);
 
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
-          removeExpressionFiles(experiment);
-          this.rConnection.removeFile(rScript);
-          this.rConnection.getAllFiles(outPath.toString() + "/");
-        }
+        removeExpressionFiles(experiment);
+        this.rConnection.removeFile(rScript);
+        this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
     } catch (REngineException e) {
@@ -121,18 +124,50 @@ public class DiffAna {
       throw new EoulsanException("Error while getting file : " + e.getMessage());
 
     } finally {
+
       try {
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+
+        if (this.rServeEnable) {
           this.rConnection.removeAllFiles();
           this.rConnection.disConnect();
         }
+
       } catch (Exception e) {
         throw new EoulsanException("Error while removing files on server : "
             + e.getMessage());
       }
     }
-
   }
+
+  public void runLocalRnwScript() throws EoulsanException {
+
+    try {
+
+      // print log info
+      LOGGER.info("Differential analysis : local mode");
+
+      // create an experiment map
+      HashMap<String, List<Sample>> experiments = experimentsSpliter();
+      // create an iterator on the map
+      Set<String> cles = experiments.keySet();
+      Iterator<String> itr = cles.iterator();
+      while (itr.hasNext()) {
+        String cle = itr.next();
+        List<Sample> experiment = experiments.get(cle);
+
+        String rScript = writeScript(experiment);
+        runRnwScript(rScript);
+      }
+
+    } catch (REngineException e) {
+      throw new EoulsanException("Error while running differential analysis: "
+          + e.getMessage());
+    }
+  }
+
+  //
+  // Private methods
+  //
 
   /**
    * Write the R script
@@ -303,7 +338,7 @@ public class DiffAna {
       rScript =
           experiment.get(1).getMetadata().getExperiment()
               + "_" + "diffAna" + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+      if (this.rServeEnable) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -405,7 +440,7 @@ public class DiffAna {
   private void runRnwScript(String rnwScript) throws REngineException,
       EoulsanException {
 
-    if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+    if (this.rServeEnable) {
       this.rConnection.executeRnwCode(rnwScript);
 
     } else {
@@ -695,6 +730,8 @@ public class DiffAna {
     this.outPath = outPath;
 
     this.rConnection = new RSConnectionNewImpl(rServerName);
+
+    this.rServeEnable = EoulsanRuntime.getSettings().isRServeServerEnabled();
   }
 
 }
