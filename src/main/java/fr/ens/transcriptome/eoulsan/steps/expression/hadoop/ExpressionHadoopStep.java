@@ -631,81 +631,23 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
-    // // Create configuration object
-    // final Configuration conf = new Configuration(false);
-    //
-    // // Create the list of jobs to run
-    // final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
-    //
-    // try {
-    // final long startTime = System.currentTimeMillis();
-    //
-    // LOGGER.info("Genomic type: " + getGenomicType());
-
-    // ///////////////////////////////////////////
     if (getCounter().getCounterName().equals("eoulsanCounter"))
       return executeJobEoulsanCounter(design, context);
     else if (getCounter().getCounterName().equals("htseq-count"))
       return executeJobHTSeqCounter(design, context);
-    else
-      return null;
-    // ///////////////////////////////////////////
 
-    // final List<Job> jobsPairedEnd = new ArrayList<Job>();
-    // for (Sample s : design.getSamples()) {
-    // if (context.getDataFileCount(READS_FASTQ, s) == 2)
-    // jobsPairedEnd.add(createJobPairedEnd(conf, context, s,
-    // getGenomicType()));
-    // }
-    //
-    // MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
-
-    // for (Sample s : design.getSamples()) {
-    //
-    // final Job jconf = createJob(conf, context, s, getGenomicType());
-    //
-    // jconf.submit();
-    // jobsRunning.put(s, jconf);
-    // }
-    //
-    // // Compute map-reduce part of the expression computation
-    // final JobsResults jobsResults =
-    // new NewAPIJobsResults(jobsRunning.values(),
-    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
-    //
-    // final long mapReduceEndTime = System.currentTimeMillis();
-    // LOGGER.info("Finish the part of the expression computation in "
-    // + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
-    //
-    // // Create the final expression files
-    // createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
-    //
-    // LOGGER.info("Finish the create of the final expression files in "
-    // + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
-    // + " seconds.");
-    //
-    // return jobsResults.getStepResult(context, startTime);
-    //
-    // } catch (IOException e) {
-    //
-    // return new StepResult(context, e, "Error while running job: "
-    // + e.getMessage());
-    // } catch (InterruptedException e) {
-    //
-    // return new StepResult(context, e, "Error while running job: "
-    // + e.getMessage());
-    // } catch (BadBioEntryException e) {
-    //
-    // return new StepResult(context, e, "Invalid annotation entry: "
-    // + e.getEntry());
-    // } catch (ClassNotFoundException e) {
-    // return new StepResult(context, e, "Class not found: " + e.getMessage());
-    // }
-
+    return new StepResult(context, new EoulsanException("Unknown counter: "
+        + getCounter().getCounterName()), "Unknown counter: "
+        + getCounter().getCounterName());
   }
 
-  public StepResult executeJobEoulsanCounter(final Design design,
+  /**
+   * Execute Eoulsan counter as an Hadoop job.
+   * @param design design object
+   * @param context Eoulsan context
+   * @return a StepResult object
+   */
+  private StepResult executeJobEoulsanCounter(final Design design,
       final Context context) {
 
     // Create configuration object
@@ -765,7 +707,13 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     }
   }
 
-  public StepResult executeJobHTSeqCounter(final Design design,
+  /**
+   * Execute HTSeq-count counter as an Hadoop job.
+   * @param design design object
+   * @param context Eoulsan context
+   * @return a StepResult object
+   */
+  private StepResult executeJobHTSeqCounter(final Design design,
       final Context context) {
 
     // Create configuration object
