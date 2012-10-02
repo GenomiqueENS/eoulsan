@@ -55,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
@@ -248,8 +249,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+    final DataFile genomeDescDataFile =
+        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample);
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        genomeDescDataFile.getSource());
 
     // Set the "stranded" parameter
     jobConf.set(HTSeqCountMapper.STRANDED_PARAM, stranded);
@@ -264,8 +267,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     if (!PathUtils.isFile(featuresIndexPath, jobConf))
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
           genomicType, attributeId,
-          StrandUsage.getStrandUsageFromName(stranded), featuresIndexPath,
-          jobConf);
+          StrandUsage.getStrandUsageFromName(stranded), genomeDescDataFile,
+          featuresIndexPath, jobConf);
 
     // Set the path to the features index
     DistributedCache.addCacheFile(featuresIndexPath.toUri(), jobConf);
@@ -467,25 +470,29 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   /**
-   * @param context
-   * @param gffPath
-   * @param featureType
-   * @param stranded
-   * @param featuresIndexPath
-   * @param conf
-   * @return
-   * @throws IOException
+   * @param context Eoulsan context
+   * @param gffPath GFF annotation file path
+   * @param featureType feature type to use
+   * @param stranded strand mode
+   * @param genomeDescDataFile genome description DataFile
+   * @param featuresIndexPath feature index output path
+   * @param conf Hadoop configuration object
+   * @return the feature index output path
+   * @throws IOException if an error occurs while creating the feature index
+   *           file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiants
    */
   private static final Path createFeaturesIndex(final Context context,
       final Path gffPath, final String featureType, final String attributeId,
-      final StrandUsage stranded, final Path featuresIndexPath,
-      final Configuration conf) throws IOException, BadBioEntryException,
-      EoulsanException {
+      final StrandUsage stranded, final DataFile genomeDescDataFile,
+      final Path featuresIndexPath, final Configuration conf)
+      throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomeDescription genomeDescription =
+        GenomeDescription.load(genomeDescDataFile.open());
     final Map<String, Integer> counts = Utils.newHashMap();
 
     final FileSystem fs = gffPath.getFileSystem(conf);
@@ -528,6 +535,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         context.getRuntime().createFileInTempDir(
             StringUtils.basename(gffPath.getName())
                 + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
+
+    // Add all chromosomes even without annotations to the feature object
+    features.addChromosomes(genomeDescription);
 
     // Save the annotation
     features.save(featuresIndexFile);
