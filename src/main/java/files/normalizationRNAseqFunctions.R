@@ -49,10 +49,22 @@ dispersionEstimation <- function(cds1, replicates=FALSE){
 # Input : 
 # 	cds :  a countDataSet with estimated dispersion
 # -----------------------------------------------------------------------------
-plotDispEsts <- function( cds ) {
+plotDispEsts <- function( cds, outpath = "", projectName = "", out = FALSE ) {
+	
+	if (out) {
+		# verify if '/' is not missing at the end of path
+		pathChar <- strsplit(outpath, "")
+		if(!(pathChar[[1]][length(pathChar[[1]])] == "/")
+				){
+			stop("path must finish by '/'")
+		}
+		png(paste(outpath, "anaDiff_", projectName, "dispEstPlot.png", sep=""),
+				width=800, height=800 )
+	}
 	
 	readCount <- counts(cds, normalized = TRUE)
 	
+	# plot dispersion estimation plot
 	plot(
 			rowMeans( readCount ), 
 			fitInfo(cds)$perGeneDispEsts, pch = '.', log="xy",
@@ -63,6 +75,10 @@ plotDispEsts <- function( cds ) {
 	xg <- 10^seq( -.5, 5, length.out=300 )
 	lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
 	legend("bottomright", "fitted dispersion line", lwd=1, col="red")
+	
+	if (out) {
+		dev.off()
+	}
 	
 }
 
@@ -98,7 +114,7 @@ anaDiff <- function(cds, outpath){
 				nameComp <- paste(cond2, cond1, sep="-")
 				write.table(
 					sortedResult, 
-					paste(outpath, target$projectName, "_diffAna_", nameComp, 
+					paste(outpath, "anaDiff_", target$projectName, nameComp, 
 							".tsv", sep=""),
 					sep="\t",row.names=F, quote=F
 				)
@@ -139,7 +155,7 @@ anaDiffCinetic <- function(cds, ref, outpath){
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
 				result, 
-				paste(outpath, target$projectName, "_diffAna_", nameComp, 
+				paste(outpath, "anaDiff_", target$projectName, nameComp, 
 						".tsv", sep=""),
 				sep="\t",row.names=F, quote=F
 			)
@@ -165,7 +181,7 @@ anaDiffCinetic <- function(cds, ref, outpath){
 maPlot <- function(res, compName, outpath = "", pvalThreshold = 0.05, out = FALSE){
 	
 	if (out){
-		png(paste(outpath, target$projectName, "_",
+		png(paste(outpath, "anaDiff_", target$projectName, "_",
 				compName, "_MA-plot", ".png", sep=""),
 			width=700, height=600
 		)
@@ -392,29 +408,30 @@ barplotTotalCount <- function(target, outpath = "", out= FALSE){
 		}
 		
 		# create plot file
-		png(paste(outpath, target$projectName, "barplotTotalCount.png", sep=""),
+		png(paste(outpath, "anaDiff_", target$projectName, "barplotTotalCount.png", sep=""),
 				width=1000, height=600
 		)
-	}
-		# set plot margins
-		par(omd=c(0.01,0.85,0.15,0.95))
+	} else {}
+	# set plot margins
+	par(omd=c(0.01,0.85,0.15,0.95))
 
+	sortedTarget <- sortTarget(target)
 	
 	# create color vector (by condition)
-	coLors <- rainbow(length(unique(target$condition)))
-	test <- lapply(target$condition ,
-			function(x){x == unique(target$condition)}
+	coLors <- rainbow(length(unique(sortedTarget$condition)))
+	test <- lapply(sortedTarget$condition ,
+			function(x){x == unique(sortedTarget$condition)}
 	)
 	bioGroupColors <- c()
 	for (result in test){
 		bioGroupColors <- c(bioGroupColors, coLors[result])
 	}
 	# plot total counts barplot
-	barplot(colSums(target$counts),
+	barplot(colSums(sortedTarget$counts),
 			las=3, 
 			col=bioGroupColors,
 			ylab="total expression counts",
-			main = paste(target$projectName, " total expression counts", sep="") 
+			main = paste(sortedTarget$projectName, " total expression counts", sep="") 
 	)
 	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
 	userCoordinates <- par('usr')
@@ -425,7 +442,7 @@ barplotTotalCount <- function(target, outpath = "", out= FALSE){
 			userCoordinates[2]*1.01,
 			userCoordinates[4],
 			title = "Legend",
-			as.character(unique(target$condition)),
+			as.character(unique(sortedTarget$condition)),
 			fill = unique(bioGroupColors),
 	)
 	if (out){
@@ -456,17 +473,20 @@ boxplotCounts <- function(target, outpath = "", out=FALSE){
 		}
 		
 		# create file
-		png(paste(outpath, target$projectName, "boxplotCount.png", sep=""),
+		png(paste(outpath, "anaDiff_", target$projectName, "boxplotCount.png", sep=""),
 				width=1000, height=600
 		)
 	}
 	
+	# sort target by conditions
+	sortedTarget <- sortTarget(target)
+	
 	# set plot margins
 	par(omd=c(0.01,0.85,0.1,0.99))
 	# create color vector
-	coLors <- rainbow(length(unique(target$condition)))
-	test <- lapply(target$condition ,
-			function(x){x == unique(target$condition)}
+	coLors <- rainbow(length(unique(sortedTarget$condition)))
+	test <- lapply(sortedTarget$condition ,
+			function(x){x == unique(sortedTarget$condition)}
 	)
 	bioGroupColors <- c()
 	for (result in test){
@@ -474,12 +494,12 @@ boxplotCounts <- function(target, outpath = "", out=FALSE){
 	}
 	# plot boxplot(log2(count+1))
 	boxplot(
-			log2(target$counts +1),
+			log2(sortedTarget$counts +1),
 			col=bioGroupColors,
 			# vertical x labels
 			las=3,
 			ylab= "log2(counts+1)",
-			main= paste(target$projectName, "count distribution", sep=" ")
+			main= paste(sortedTarget$projectName, "count distribution", sep=" ")
 	)
 	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
 	userCoordinates <- par('usr')
@@ -490,7 +510,7 @@ boxplotCounts <- function(target, outpath = "", out=FALSE){
 			userCoordinates[2]*1.01,
 			userCoordinates[4],
 			title = "Legend",
-			as.character(unique(target$condition)),
+			as.character(unique(sortedTarget$condition)),
 			fill = unique(bioGroupColors),
 	)
 	if (out) {
@@ -518,24 +538,26 @@ barplotNull <- function(target, outpath = "" , out=FALSE){
 			stop("path must finish by '/'")
 		}
 		# create plot file
-		png(paste(outpath, target$projectName, "barplotNull.png", sep=""),
+		png(paste(outpath, "anaDiff_", target$projectName, "barplotNull.png", sep=""),
 				width=1000, height=600
 		)
 	}
 	
+	sortedTarget <- sortTarget(target)
+	
 	# create null proportion vector
-	N <- apply(target$counts,
+	N <- apply(sortedTarget$counts,
 			# apply on columns
 			2,
 			# return a vector of null count by column
 			function(x){sum(x == 0)}
-	)/nrow(target$counts)
+	)/nrow(sortedTarget$counts)
 	# set plot margins
 	par(omd=c(0.01,0.85,0.15,0.95))
 	# create color vector
-	coLors <- rainbow(length(unique(target$condition)))
-	test <- lapply(target$condition ,
-			function(x){x == unique(target$condition)}
+	coLors <- rainbow(length(unique(sortedTarget$condition)))
+	test <- lapply(sortedTarget$condition ,
+			function(x){x == unique(sortedTarget$condition)}
 	)
 	bioGroupColors <- c()
 	for (result in test){
@@ -544,7 +566,7 @@ barplotNull <- function(target, outpath = "" , out=FALSE){
 	# plot the barplot
 	barplot(N,
 			col = bioGroupColors,
-			main = paste(target$projectName, ", proportion of null counts per Sample",sep=""),
+			main = paste(sortedTarget$projectName, ", proportion of null counts per Sample",sep=""),
 			ylab = "proportion of null count",
 			ylim = c(0,1),
 			las=3
@@ -558,7 +580,7 @@ barplotNull <- function(target, outpath = "" , out=FALSE){
 			userCoordinates[2]*1.01,
 			userCoordinates[4],
 			title = "Legend",
-			as.character(unique(target$condition)),
+			as.character(unique(sortedTarget$condition)),
 			fill = unique(bioGroupColors),
 	)
 	
@@ -593,31 +615,34 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 		}
 		
 		#create plot file
-		png(paste(outpath, target$projectName,"DensityPlot.png", sep=""),
+		png(paste(outpath, "anaDiff_", target$projectName,"DensityPlot.png", sep=""),
 				width=1000, height=600
 		)
 	}
 
+	# sort target by conditions
+	sortedTarget <- sortTarget(target)
+	
 	# set plot margins
 	par(omd=c(0.01,0.85,0.01,0.95))
 
 	# create colors vector
-	coLors <- rainbow(length(unique(target$condition)))
-	test <- lapply(target$condition ,
-			function(x){x == unique(target$condition)}
+	coLors <- rainbow(length(unique(sortedTarget$condition)))
+	test <- lapply(sortedTarget$condition ,
+			function(x){x == unique(sortedTarget$condition)}
 	)
 	bioGroupColors <- c()
 	for (result in test){
 		bioGroupColors <- c(bioGroupColors, coLors[result])
 	}
 	# plot density
-	plot(density(log2(target$counts[,1]+1)), col=bioGroupColors[1],
-			main=paste(target$projectName, "density plot", sep=" ")
+	plot(density(log2(sortedTarget$counts[,1]+1)), col=bioGroupColors[1],
+			main=paste(sortedTarget$projectName, "density plot", sep=" ")
 	)
-	bandWidth <- density(log2(target$counts[,1]+1))$bw
-	for(i in 2:length(target$counts[1,])){
+	bandWidth <- density(log2(sortedTarget$counts[,1]+1))$bw
+	for(i in 2:length(sortedTarget$counts[1,])){
 		par(new=T)
-		plot(density(log2(target$counts[,i]+1), bw=bandWidth),
+		plot(density(log2(sortedTarget$counts[,i]+1), bw=bandWidth),
 				col=bioGroupColors[i], axes=F, main = "", xlab = "",
 				ylab = ""
 		)
@@ -631,7 +656,7 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 			userCoordinates[2]*1.01,
 			userCoordinates[4],
 			title = "Legend",
-			as.character(unique(target$condition)),
+			as.character(unique(sortedTarget$condition)),
 			lty=1,
 			col=unique(bioGroupColors),
 	)
@@ -706,7 +731,7 @@ buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTe
 repClust <- function(target, outpath = "", out= FALSE ){
 
 	if (out) { 
-		png(paste(outpath, target$projectName,"ClusterDendrogram.png", sep=""),
+		png(paste(outpath, "anaDiff_", target$projectName,"ClusterDendrogram.png", sep=""),
 				width=800, height=600
 		)
 	}
@@ -789,7 +814,7 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 		
 		# create plot file
 		png(paste(
-				outpath, target$projectName, "_", cond1, "-", cond2, 
+				outpath, "anaDiff_", target$projectName, "_", cond1, "-", cond2, 
 				"_PvalueDistribution.png", sep=""
 			),
 			width=1000, height=600
@@ -818,4 +843,23 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 	
 	if (out) { dev.off() }
 	
+}
+
+# -----------------------------------------------------------------------------
+# readCountMatrix
+# read a count matrix
+# -----------------------------------------------------------------------------
+
+readCountMatrix <- function(file, directoryPath = ""){
+	
+	matrix <- read.table(paste(directoryPath, file, sep=""),
+			header=T,
+			stringsAsFactors=F,
+			quote="")
+	
+	# rename rows
+	rownames(matrix) <- matrix[,1]
+	matrix <- matrix[,-1]
+	
+	return(matrix)
 }

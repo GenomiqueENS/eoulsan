@@ -11,9 +11,6 @@ target <- buildTarget(
 		repTechGroup,
 		condition
 )
-
-# sort target by condition
-target <- sortTarget(target)
 @
 
 \section{Analysis}
@@ -62,7 +59,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste(projectName,"_rawCountMatrix.txt", sep="")
+		paste("anaDiff_", projectName,"_rawCountMatrix.txt", sep="")
 )
 @
 
@@ -103,7 +100,7 @@ saveCountMatrix(
 		# file path
 		outPath,
 		# file name
-		paste(projectName,"_normalizedCountMatrix.txt", sep="")
+		paste("anaDiff_", projectName,"_normalizedCountMatrix.txt", sep="")
 )
 @
 \end{itemize}

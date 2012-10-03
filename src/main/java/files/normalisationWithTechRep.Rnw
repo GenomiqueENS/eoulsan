@@ -11,9 +11,6 @@ target <- buildTarget(
 		repTechGroup,
 		condition
 )
-
-# sort target by condition
-target <- sortTarget(target)
 @
 
 \section{Analysis}
@@ -63,12 +60,12 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste(projectName,"_rawCountMatrix.txt", sep="")
+		paste("anaDiff_", projectName,"_rawCountMatrix.txt", sep="")
 )
 @
 	\item Pool technical replicates
 <<pool>>=	
-poolCountTarget <- poolTechRep( target )
+poolCountTarget <- poolTechRep(target)
 @
 	\item Plot barplot of pooled counts
 <<barplotTotalCountPool, fig=TRUE, width=12, height=8>>=
@@ -85,7 +82,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste(projectName, "_rawPooledCountMatrix.txt", sep="")
+		paste("anaDiff_", projectName, "_rawPooledCountMatrix.txt", sep="")
 )
 @
 	\item create countDataSet (DESeq object) with pooled matrix and estimate size factor 
@@ -122,7 +119,7 @@ saveCountMatrix(
 		# file path
 		outPath,
 		# file name
-		paste(projectName, "_normalizedPooledCountMatrix.txt", sep="")
+		paste("anaDiff_", projectName, "_normalizedPooledCountMatrix.txt", sep="")
 )
 @
 \end{itemize}

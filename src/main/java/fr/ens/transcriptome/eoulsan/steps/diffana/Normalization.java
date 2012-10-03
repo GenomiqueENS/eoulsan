@@ -64,27 +64,27 @@ import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
 public class Normalization {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  protected static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String NORMALISATION_WHITH_TECHREP =
+  protected static final String NORMALISATION_WHITH_TECHREP =
       "/normalisationWithTechRep.Rnw";
-  private static final String NORMALISATION_WHITHOUT_TECHREP =
+  protected static final String NORMALISATION_WHITHOUT_TECHREP =
       "/normalisationWithoutTechRep.Rnw";
-  private static final String NORMALISATION_FUNCTIONS =
+  protected static final String NORMALISATION_FUNCTIONS =
       "/normalizationRNAseqFunctions.R";
-  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
+  protected static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
       "/dispersionEstimationWithReplicates.Rnw";
-  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
+  protected static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
       "/dispersionEstimationWithoutReplicates.Rnw";
-  private static final String KINETIC_ANADIFF = "/kineticAnadiff.Rnw";
-  private static final String NOT_KINETIC_ANADIFF = "/notKineticAnadiff.Rnw";
+  protected static final String KINETIC_ANADIFF = "/kineticAnadiff.Rnw";
+  protected static final String NOT_KINETIC_ANADIFF = "/notKineticAnadiff.Rnw";
 
-  private Design design;
-  private File expressionFilesDirectory;
-  private File outPath;
-  private String expressionFilesPrefix;
-  private String expressionFilesSuffix;
-  private RSConnectionNewImpl rConnection;
+  protected final Design design;
+  protected final File expressionFilesDirectory;
+  protected final File outPath;
+  protected final String expressionFilesPrefix;
+  protected final String expressionFilesSuffix;
+  protected final RSConnectionNewImpl rConnection;
 
   //
   // Public methods
@@ -92,28 +92,82 @@ public class Normalization {
 
   public void run() throws EoulsanException {
 
+    if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
+      runRserveRnwScript();
+    else
+      runLocalRnwScript();
+  }
+
+  // Getters
+  /**
+   * get Rserve connection
+   * @return rConnection
+   */
+  protected RSConnectionNewImpl getRConnection() {
+    return this.rConnection;
+  }
+
+  /**
+   * get Logger
+   * @return LOGGER
+   */
+  static protected Logger getLogger() {
+    return LOGGER;
+  }
+
+  /**
+   * Test if there is Technical replicates into rRepTechGroup field
+   * @param rRepTechGroup
+   * @return
+   */
+  protected boolean isTechnicalReplicates(List<String> rRepTechGroup) {
+
+    Map<String, String> rtgMap = Maps.newHashMap();
+
+    for (String repTechGroup : rRepTechGroup) {
+
+      if (rtgMap.containsKey(repTechGroup)) {
+        return true;
+      }
+      rtgMap.put(repTechGroup, "");
+    }
+
+    return false;
+  }
+
+  /**
+   * run Rnw script on Rserve server
+   * @throws EoulsanException
+   */
+  protected void runRserveRnwScript() throws EoulsanException {
+
     try {
-      // Create an experiment map
+
+      // print log info
+      getLogger().info("Normalization : Rserve mode");
+      getLogger().info(
+          "Rserve server name : " + getRConnection().getServerName());
+
+      // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
-      // Create an iterator on the map
-      Set<String> keys = experiments.keySet();
-      Iterator<String> itr = keys.iterator();
-
+      // create an iterator on the map
+      Set<String> cles = experiments.keySet();
+      Iterator<String> itr = cles.iterator();
       while (itr.hasNext()) {
-        String key = itr.next();
-        List<Sample> experimentSamplesList = experiments.get(key);
+        String cle = itr.next();
+        List<Sample> experimentSampleList = experiments.get(cle);
 
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled())
-          putExpressionFiles(experimentSamplesList);
+        LOGGER.info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        String rScript = writeScript(experimentSamplesList);
-        runRnwScript(rScript);
+        putExpressionFiles(experimentSampleList);
 
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
-          removeExpressionFiles(experimentSamplesList);
-          this.rConnection.removeFile(rScript);
-          this.rConnection.getAllFiles(outPath.toString() + "/");
-        }
+        String rScript = writeScript(experimentSampleList);
+        runRnwScript(rScript, true);
+
+        removeExpressionFiles(experimentSampleList);
+        this.rConnection.removeFile(rScript);
+        this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
     } catch (REngineException e) {
@@ -123,194 +177,61 @@ public class Normalization {
       throw new EoulsanException("Error while getting file : " + e.getMessage());
 
     } finally {
+
       try {
-        if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
-          this.rConnection.removeAllFiles();
-          this.rConnection.disConnect();
-        }
+
+        this.rConnection.removeAllFiles();
+        this.rConnection.disConnect();
+
       } catch (Exception e) {
         throw new EoulsanException("Error while removing files on server : "
             + e.getMessage());
       }
     }
-
   }
 
   /**
-   * Write the R script
-   * @param experimentSamplesList
-   * @return String rScript
+   * run Rnw script on local mode
    * @throws EoulsanException
    */
-  public String writeScript(final List<Sample> experimentSamplesList)
-      throws EoulsanException {
+  protected void runLocalRnwScript() throws EoulsanException {
 
-    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
-
-    final List<Integer> rSampleIds = Lists.newArrayList();
-    final List<String> rSampleNames = Lists.newArrayList();
-    final List<String> rCondNames = Lists.newArrayList();
-    final List<String> rRepTechGroup = Lists.newArrayList();
-    int i = 0;
-
-    // Get samples ids, conditions names/indexes and repTechGoups
-    for (Sample s : experimentSamplesList) {
-
-      if (!s.getMetadata().isConditionField())
-        throw new EoulsanException("No condition field found in design file.");
-
-      final String condition = s.getMetadata().getCondition().trim();
-
-      if ("".equals(condition))
-        throw new EoulsanException("No value for condition in sample: "
-            + s.getName() + " (" + s.getId() + ")");
-
-      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
-
-      if (!"".equals(repTechGroup)) {
-        rRepTechGroup.add(repTechGroup);
-      }
-
-      final List<Integer> index;
-      if (!conditionsMap.containsKey(condition)) {
-        index = Lists.newArrayList();
-        conditionsMap.put(condition, index);
-      } else {
-        index = conditionsMap.get(condition);
-      }
-      index.add(i);
-
-      rSampleIds.add(s.getId());
-      rSampleNames.add(s.getName());
-      rCondNames.add(condition);
-
-      i++;
-    }
-
-    // Check repTechGroup field coherence
-    Map<String, String> condRepTGMap = Maps.newHashMap();
-    for (i = 0; i < rRepTechGroup.size(); i++) {
-
-      String repTechGroup = rRepTechGroup.get(i);
-      String condition = rCondNames.get(i);
-
-      if (!condRepTGMap.containsKey(repTechGroup))
-        condRepTGMap.put(repTechGroup, condition);
-      else if (!condRepTGMap.get(repTechGroup).equals(condition))
-        throw new EoulsanException(
-            "There is a mistake in RepTechGroup field of design file : "
-                + "two condition have the same repTechGroup value : "
-                + repTechGroup);
-    }
-
-    // Create Rnw script stringbuilder
-    StringBuilder sb = new StringBuilder();
-
-    sb = writeRnwpreamble(sb, experimentSamplesList);
-
-    // Determine if there is technical replicates
-    boolean rep = false;
-    for (int j = 0; j < rSampleIds.size(); j++) {
-      if (!rRepTechGroup.get(j).toLowerCase().equals("na")) {
-        rep = true;
-      } else {
-        /*
-         * Replace "na" values of repTechGroup by unique sample ids to avoid
-         * pooling problem while executing R script
-         */
-        rRepTechGroup.set(j, rSampleIds.get(j).toString());
-      }
-    }
-
-    // Test if there is a reference field
-    if (isReference(experimentSamplesList)) {
-      for (Sample s : experimentSamplesList) {
-        boolean refval = s.getMetadata().isReference();
-        if (refval) {
-          // Add reference to R script
-          sb.append("ref <- "
-              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
-          break;
-        }
-      }
-    }
-
-    // Add normalization part
-    if (rep)
-      writeWithTechnicalReplicate(sb, rSampleIds, rSampleNames, rCondNames,
-          rRepTechGroup, experimentSamplesList.get(0).getMetadata()
-              .getExperiment());
-    else
-      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames,
-          experimentSamplesList.get(0).getMetadata().getExperiment());
-
-    String rScript = null;
     try {
-      rScript =
-          experimentSamplesList.get(0).getMetadata().getExperiment()
-              + "_" + "diffAna" + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
-        this.rConnection.writeStringAsFile(rScript, sb.toString());
-      } else {
-        Writer writer = FileUtils.createFastBufferedWriter(rScript);
-        writer.write(sb.toString());
-        writer.close();
+
+      // print log info
+      LOGGER.info("Normalization : local mode");
+
+      // create an experiment map
+      Map<String, List<Sample>> experiments = experimentsSpliter();
+      // create an iterator on the map
+      Set<String> cles = experiments.keySet();
+      Iterator<String> itr = cles.iterator();
+      while (itr.hasNext()) {
+        String cle = itr.next();
+        List<Sample> experimentSampleList = experiments.get(cle);
+        
+        LOGGER.info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
+
+        String rScript = writeScript(experimentSampleList);
+        runRnwScript(rScript, false);
       }
+
     } catch (REngineException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return rScript;
-
-  }
-
-  /**
-   * Put all expression files needed for the analysis on the R server
-   * @throws REngineException
-   */
-  public void putExpressionFiles(List<Sample> experiment)
-      throws REngineException {
-
-    int i;
-
-    for (Sample s : experiment) {
-      i = s.getId();
-
-      // Put file on rserve server
-      this.rConnection.putFile(new File(expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix),
-          this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+      throw new EoulsanException("Error while running differential analysis: "
+          + e.getMessage());
     }
   }
 
   /**
-   * Remove all expression files from the R server after analysis
-   * @param experiment
-   * @throws REngineException
+   * Write Rnw preamble
+   * @param sb
+   * @param experimentSamplesList
+   * @return a stringbuilder whith Rnw preamble
    */
-  public void removeExpressionFiles(List<Sample> experiment)
-      throws REngineException {
+  protected StringBuilder writeRnwpreamble(List<Sample> experimentSamplesList) {
 
-    int i;
-
-    for (Sample s : experiment) {
-      i = s.getId();
-
-      // Remove file from rserve server
-      this.rConnection.removeFile(expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
-    }
-  }
-
-  /*
-   * Protected methods
-   */
-  
-  protected StringBuilder writeRnwpreamble(StringBuilder sb,
-      List<Sample> experimentSamplesList) {
-
+    StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX stringbuilder
     sb.append("\\documentclass[a4paper,10pt]{article}\n");
     sb.append("\\usepackage[utf8]{inputenc}\n");
@@ -324,7 +245,7 @@ public class Normalization {
     // Add document title
     sb.append("\\title{"
         + experimentSamplesList.get(0).getMetadata().getExperiment()
-        + " analysis}\n\n");
+        + " count data normalization}\n\n");
 
     // Begin document...
     sb.append("\\begin{document}\n");
@@ -364,10 +285,6 @@ public class Normalization {
    */
   protected Map<String, List<Sample>> experimentsSpliter() {
 
-    String exp = this.design.getSample(0).getMetadata().getExperiment();
-
-    LOGGER.info("" + exp);
-
     List<Sample> samples = this.design.getSamples();
     // Create design HashMap
     Map<String, List<Sample>> experimentMap = Maps.newHashMap();
@@ -392,10 +309,10 @@ public class Normalization {
    * @throws REngineException
    * @throws EoulsanException
    */
-  protected void runRnwScript(String rnwScript) throws REngineException,
-      EoulsanException {
+  protected void runRnwScript(String rnwScript, boolean isRserveEnable)
+      throws REngineException, EoulsanException {
 
-    if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+    if (isRserveEnable) {
       this.rConnection.executeRnwCode(rnwScript);
 
     } else {
@@ -453,6 +370,145 @@ public class Normalization {
     return sb.toString();
   }
 
+  /*
+   * Private methods
+   */
+
+  /**
+   * Write the R script
+   * @param experimentSamplesList
+   * @return String rScript
+   * @throws EoulsanException
+   */
+  private String writeScript(final List<Sample> experimentSamplesList)
+      throws EoulsanException {
+
+    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
+
+    final List<Integer> rSampleIds = Lists.newArrayList();
+    final List<String> rSampleNames = Lists.newArrayList();
+    final List<String> rCondNames = Lists.newArrayList();
+    List<String> rRepTechGroup = Lists.newArrayList();
+    int i = 0;
+
+    // Get samples ids, conditions names/indexes and repTechGoups
+    for (Sample s : experimentSamplesList) {
+
+      if (!s.getMetadata().isConditionField())
+        throw new EoulsanException("No condition field found in design file.");
+
+      final String condition = s.getMetadata().getCondition().trim();
+
+      if ("".equals(condition))
+        throw new EoulsanException("No value for condition in sample: "
+            + s.getName() + " (" + s.getId() + ")");
+
+      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
+
+      if (!"".equals(repTechGroup)) {
+        rRepTechGroup.add(repTechGroup);
+      }
+
+      final List<Integer> index;
+      if (!conditionsMap.containsKey(condition)) {
+        index = Lists.newArrayList();
+        conditionsMap.put(condition, index);
+      } else {
+        index = conditionsMap.get(condition);
+      }
+      index.add(i);
+
+      rSampleIds.add(s.getId());
+      rSampleNames.add(s.getName());
+      rCondNames.add(condition);
+
+      i++;
+    }
+
+    checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
+
+    // Create Rnw script stringbuilder with preamble
+    final StringBuilder sb = writeRnwpreamble(experimentSamplesList);
+
+    /*
+     * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
+     * problem while executing R script
+     */
+    rRepTechGroup = replaceRtgNA(rRepTechGroup, rSampleNames);
+
+    // Add normalization part
+    if (isTechnicalReplicates(rRepTechGroup))
+      writeWithTechnicalReplicate(sb, rSampleIds, rSampleNames, rCondNames,
+          rRepTechGroup, experimentSamplesList.get(0).getMetadata()
+              .getExperiment());
+    else
+      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames,
+          experimentSamplesList.get(0).getMetadata().getExperiment());
+
+    // end document
+    sb.append("\\end{document}\n");
+
+    String rScript = null;
+    try {
+      rScript =
+          "normalization_"
+              + experimentSamplesList.get(0).getMetadata().getExperiment()
+              + ".Rnw";
+      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+        this.rConnection.writeStringAsFile(rScript, sb.toString());
+      } else {
+        Writer writer = FileUtils.createFastBufferedWriter(rScript);
+        writer.write(sb.toString());
+        writer.close();
+      }
+    } catch (REngineException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return rScript;
+
+  }
+
+  /**
+   * Put all expression files needed for the analysis on the R server
+   * @throws REngineException
+   */
+  private void putExpressionFiles(List<Sample> experiment)
+      throws REngineException {
+
+    int i;
+
+    for (Sample s : experiment) {
+      i = s.getId();
+
+      // Put file on rserve server
+      this.rConnection.putFile(new File(expressionFilesDirectory
+          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix),
+          this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+    }
+  }
+
+  /**
+   * Remove all expression files from the R server after analysis
+   * @param experiment
+   * @throws REngineException
+   */
+  private void removeExpressionFiles(List<Sample> experiment)
+      throws REngineException {
+
+    int i;
+
+    for (Sample s : experiment) {
+      i = s.getId();
+
+      // Remove file from rserve server
+      this.rConnection.removeFile(expressionFilesDirectory
+          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+    }
+  }
+
   /**
    * Write code with technical replicates.
    * @param sb StringBuilder to use
@@ -462,7 +518,7 @@ public class Normalization {
    * @param rCondNames R conditions names
    * @param rRepTechGroup R technical replicate group
    */
-  protected void writeWithTechnicalReplicate(final StringBuilder sb,
+  private void writeWithTechnicalReplicate(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<String> rCondNames, final List<String> rRepTechGroup,
       final String experimentName) {
@@ -558,7 +614,7 @@ public class Normalization {
    * @param rSampleNames
    * @param rCondNames
    */
-  protected void writeWithoutTechnicalReplicates(final StringBuilder sb,
+  private void writeWithoutTechnicalReplicates(final StringBuilder sb,
       final List<Integer> rSampleIds, final List<String> rSampleNames,
       final List<String> rCondNames, String experimentName) {
 
@@ -613,9 +669,11 @@ public class Normalization {
         first = false;
       else
         sb.append(',');
+
       sb.append('\"');
       sb.append(r);
       sb.append('\"');
+
     }
     sb.append(")\n\n");
 
@@ -638,23 +696,47 @@ public class Normalization {
   }
 
   /**
-   * Test if there is reference in an experiment
-   * @param experiment
-   * @return boolean isRef
+   * Check if there is a problem in the repTechGroup coherence
+   * @param rRepTechGroup
+   * @param rCondNames
+   * @throws EoulsanException
    */
-  protected boolean isReference(List<Sample> experiment) {
+  private void checkRepTechGroupCoherence(List<String> rRepTechGroup,
+      List<String> rCondNames) throws EoulsanException {
+    // Check repTechGroup field coherence
+    Map<String, String> condRepTGMap = Maps.newHashMap();
+    for (int i = 0; i < rRepTechGroup.size(); i++) {
 
-    if (experiment == null
-        || experiment.size() == 0
-        || !experiment.get(0).getMetadata().isReferenceField())
-      return false;
+      String repTechGroup = rRepTechGroup.get(i);
+      String condition = rCondNames.get(i);
 
-    for (Sample s : experiment) {
-      if (s.getMetadata().isReference()) {
-        return true;
+      if (!condRepTGMap.containsKey(repTechGroup))
+        condRepTGMap.put(repTechGroup, condition);
+      else if (!condRepTGMap.get(repTechGroup).equals(condition))
+        throw new EoulsanException(
+            "There is a mistake in RepTechGroup field of design file : "
+                + "two condition have the same repTechGroup value : "
+                + repTechGroup);
+    }
+  }
+
+  /**
+   * Replace na values in RepTechGroup list to avoid pooling error
+   * @param rRepTechGroup
+   * @param rSampleNames
+   * @return
+   */
+  private List<String> replaceRtgNA(List<String> rRepTechGroup,
+      List<String> rSampleNames) {
+
+    for (int j = 0; j < rRepTechGroup.size(); j++) {
+
+      if (!rRepTechGroup.get(j).toLowerCase().equals("na")) {
+      } else {
+        rRepTechGroup.set(j, rSampleNames.get(j));
       }
     }
-    return false;
+    return rRepTechGroup;
   }
 
   /*
