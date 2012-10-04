@@ -27,13 +27,9 @@ package fr.ens.transcriptome.eoulsan.steps.diffana;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 
 import com.google.common.collect.Lists;
@@ -41,7 +37,6 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -54,154 +49,37 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class DiffAna extends Normalization {
 
-  private final static String COUNT_MATRIX_FILE_PREFIX = "anaDiff_";
-  private final static String COUNT_MATRIX_FILE_SUFFIX = "_rawCountMatrix.txt";
+  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
+      "/dispersionEstimationWithReplicates.Rnw";
+  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
+      "/dispersionEstimationWithoutReplicates.Rnw";
+  private static final String ANADIFF_WITH_REFERENCE =
+      "/anadiffWithReference.Rnw";
+  private static final String ANADIFF_WITHOUT_REFERENCE =
+      "/anadiffWithoutReference.Rnw";
+
+  //
+  // Public methods
+  //
+
+  @Override
+  public void run() throws EoulsanException {
+
+    if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled()) {
+      getLogger().info("Differential analysis : Rserve mode");
+      runRserveRnwScript();
+    } else {
+      getLogger().info("Differential analysis : local mode");
+      runLocalRnwScript();
+    }
+  }
 
   //
   // Protected methods
   //
 
   @Override
-  protected void runLocalRnwScript() throws EoulsanException {
-
-    try {
-
-      LOGGER.info("Differential analysis : local mode");
-      // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experimentSampleList = experiments.get(cle);
-
-        LOGGER.info("Experiment : "
-            + experimentSampleList.get(0).getMetadata().getExperiment());
-
-        String rScript = writeScript(experimentSampleList);
-        runRnwScript(rScript, false);
-      }
-
-    } catch (REngineException e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
-    }
-  }
-
-  @Override
-  protected void runRserveRnwScript() throws EoulsanException {
-
-    try {
-
-      // print lof info
-      getLogger().info("Differential analysis : Rserve mode");
-      getLogger().info(
-          "Rserve server name : " + getRConnection().getServerName());
-
-      // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experimentSampleList = experiments.get(cle);
-
-        LOGGER.info("Experiment : "
-            + experimentSampleList.get(0).getMetadata().getExperiment());
-
-        putRawMatrix(experimentSampleList);
-
-        String rScript = writeScript(experimentSampleList);
-        runRnwScript(rScript, true);
-
-        this.rConnection.removeFile(rScript);
-        this.rConnection.getAllFiles(outPath.toString() + "/");
-      }
-
-    } catch (REngineException e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
-    } catch (REXPMismatchException e) {
-      throw new EoulsanException("Error while getting file : " + e.getMessage());
-
-    } finally {
-
-      try {
-
-        this.rConnection.removeAllFiles();
-        this.rConnection.disConnect();
-
-      } catch (Exception e) {
-        throw new EoulsanException("Error while removing files on server : "
-            + e.getMessage());
-      }
-    }
-  }
-
-  @Override
-  protected StringBuilder writeRnwpreamble(List<Sample> experimentSamplesList) {
-
-    StringBuilder sb = new StringBuilder();
-    // Add packages to the LaTeX stringbuilder
-    sb.append("\\documentclass[a4paper,10pt]{article}\n");
-    sb.append("\\usepackage[utf8]{inputenc}\n");
-    sb.append("\\usepackage{lmodern}\n");
-    sb.append("\\usepackage{a4wide}\n");
-    sb.append("\\usepackage{marvosym}\n");
-    sb.append("\\usepackage{graphicx}\n\n");
-    // Set Sweave options
-    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE}\n");
-    sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
-    // Add document title
-    sb.append("\\title{"
-        + experimentSamplesList.get(0).getMetadata().getExperiment()
-        + " differential analysis}\n\n");
-
-    // Begin document...
-    sb.append("\\begin{document}\n");
-    sb.append("\\maketitle\n\n");
-
-    // Add a begin R code chunck mark
-    sb.append("<<functions, echo=FALSE>>=\n");
-
-    // Add the auto generate info
-    sb.append("### Auto generated by ");
-    sb.append(Globals.APP_NAME);
-    sb.append(" ");
-    sb.append(Globals.APP_VERSION_STRING);
-    sb.append(" on ");
-    sb.append(new Date(System.currentTimeMillis()));
-    sb.append(" ###\n\n");
-    // Add function part to string builder
-    try {
-      sb.append(readStaticScript(NORMALISATION_FUNCTIONS));
-    } catch (EoulsanException e) {
-      e.printStackTrace();
-    }
-
-    // Add a end R code chunck mark
-    sb.append("@\n\n");
-
-    // Add initialization part
-    sb.append("\\section{Initialization}\n");
-    sb.append("<<>>=\n");
-
-    return sb;
-  }
-
-  //
-  // Private methods
-  //
-
-  /**
-   * write differential analysis script
-   * @param experimentSamplesList a list of sample
-   * @return String r
-   * @throws EoulsanException
-   */
-  private String writeScript(final List<Sample> experimentSamplesList)
+  protected String writeScript(final List<Sample> experimentSamplesList)
       throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
@@ -246,24 +124,65 @@ public class DiffAna extends Normalization {
       i++;
     }
 
-    // Create Rnw script stringbuilder with preamble
-    final StringBuilder sb = writeRnwpreamble(experimentSamplesList);
+    checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
-    // Add raw count matrix reading part
-    sb.append("matrix <- readCountMatrix(\"");
-    sb.append(COUNT_MATRIX_FILE_PREFIX
-        + experimentSamplesList.get(0).getMetadata().getExperiment()
-        + COUNT_MATRIX_FILE_SUFFIX);
-    sb.append("\")\n");
+    // Create Rnw script stringbuilder with preamble
+    String pdfTitle =
+        escapeUnderScore(experimentSamplesList.get(0).getMetadata()
+            .getExperiment())
+            + " differential analysis";
+    final StringBuilder sb = writeRnwpreamble(experimentSamplesList, pdfTitle);
+
+    /*
+     * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
+     * problem while executing R script
+     */
+    replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add reference if there is one
-    addReferenceField(experimentSamplesList, sb);
+    writeReferenceField(experimentSamplesList, sb);
+
+    // Add sampleNames vector
+    writeSampleName(rSampleNames, sb);
+
+    // Add SampleIds vector
+    writeSampleIds(rSampleIds, sb);
+
+    // Add file names vector
+    writeExpressionFileNames(sb);
+
+    // Add repTechGroupVector
+    writeRepTechGroup(rRepTechGroup, sb);
+
+    // Add condition to R script
+    writeCondition(rCondNames, sb);
+
+    // Add projectPath, outPath and projectName
+    sb.append("# projectPath : path of count files directory\n");
+    sb.append("projectPath <- \"\"\n");
+    sb.append("# outPath path of the outputs\n");
+    sb.append("outPath <- \"./\"\n");
+    sb.append("projectName <- ");
+    sb.append("\""
+        + experimentSamplesList.get(0).getMetadata().getExperiment() + "\""
+        + "\n");
+    sb.append("@\n\n");
+
+    sb.append(readStaticScript(TARGET_CREATION));
+
+    sb.append("\\section{Analysis}\n\n");
+    sb.append("<<beginAnalysis>>=\n");
+    
+    // Add delete unexpressed gene call
+    sb.append("target$counts <- deleteUnexpressedGene(target$counts)\n");
 
     if (isTechnicalReplicates(rRepTechGroup))
-      writeWithTechnicalReplicate(sb, rSampleNames, rCondNames, rRepTechGroup,
-          experimentSamplesList.get(0).getMetadata().getExperiment());
-    else
-      writeWithoutTechnicalReplicates(sb, rCondNames);
+      sb.append("target <- poolTechRep(target)\n\n");
+
+    sb.append("target <- sortTarget(target)\n");
+    sb.append("countDataSet <- normDESeq(target$counts, target$condition)\n");
+
+    sb.append("@\n");
 
     // Add dispersion estimation part
     if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
@@ -273,9 +192,9 @@ public class DiffAna extends Normalization {
     }
 
     if (isReference(experimentSamplesList)) {
-      sb.append(readStaticScript(KINETIC_ANADIFF));
+      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
     } else {
-      sb.append(readStaticScript(NOT_KINETIC_ANADIFF));
+      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
     }
 
     // end document
@@ -304,151 +223,9 @@ public class DiffAna extends Normalization {
     return rScript;
   }
 
-  /**
-   * Write Rnw script body with technical replicates
-   * @param sb StringBuilder to use
-   * @param rSampleIds R samples ids
-   * @param rSampleNames R samples names
-   * @param rCondIndexes R conditions indexes
-   * @param rCondNames R conditions names
-   * @param rRepTechGroup R technical replicate group
-   */
-  private void writeWithTechnicalReplicate(final StringBuilder sb,
-      final List<String> rSampleNames, final List<String> rCondNames,
-      final List<String> rRepTechGroup, final String experimentName) {
-
-    // Add samples names to R script
-    sb.append("# create sample names vector\n");
-    sb.append("sampleNames <- c(");
-    boolean first = true;
-    for (String r : rSampleNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r.toLowerCase());
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add repTechGroup vector
-    sb.append("# create technical replicates groups vector\n");
-    sb.append("repTechGroup <- c(");
-    first = true;
-    for (String r : rRepTechGroup) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add condition to R script
-    sb.append("# create condition vector\n");
-    sb.append("condition <- c(");
-    first = true;
-    for (String r : rCondNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add projectPath, outPath and projectName
-    sb.append("# projectPath : path of count files directory\n");
-    sb.append("projectPath <- \"\"\n");
-    sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experimentName + "\"" + "\n");
-
-    // Add preprocessing part
-    sb.append("target <- list()\n");
-    sb.append("target$counts <- matrix\n");
-    sb.append("target$sampleLabel <- sampleNames\n");
-    sb.append("target$repTechGroup <- repTechGroup\n");
-    sb.append("target$condition <- condition\n");
-    sb.append("target$projectName <- projectName\n");
-    sb.append("\n\n");
-
-    // Pool technical replicates
-    sb.append("target <- poolTechRep( target )\n");
-
-    sb.append("countDataSet <- normDESeq(target$counts, target$condition)\n");
-    sb.append("@\n\n");
-  }
-
-  /**
-   * Write normalization code without replicates
-   * @param sb A StringBuilder
-   * @param rSampleIds
-   * @param rSampleNames
-   * @param rCondNames
-   */
-  private void writeWithoutTechnicalReplicates(final StringBuilder sb,
-      final List<String> rCondNames) {
-
-    // Add condition to R script
-    sb.append("# create condition vector\n");
-    sb.append("condition <- c(");
-    boolean first = true;
-    for (String r : rCondNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-
-    }
-    sb.append(")\n\n");
-
-    // Add projectPath, outPath and projectName
-    sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"./\"\n");
-
-    // create countdataset
-    sb.append("countDataSet <- newCountDataSet(matrix, condition)\n");
-    sb.append("countDataSet <- estimateSizeFactors(countDataSet)\n");
-    sb.append("@\n\n");
-
-  }
-
-  /**
-   * Put the raw count matrix on Rserve server
-   * @param experimentListSample
-   * @throws REngineException
-   */
-  private void putRawMatrix(List<Sample> experimentListSample) {
-
-    try {
-      String matrixFileName =
-          COUNT_MATRIX_FILE_PREFIX
-              + experimentListSample.get(0).getMetadata().getExperiment()
-              + COUNT_MATRIX_FILE_SUFFIX;
-
-      File matrixFile = new File(matrixFileName);
-      
-      rConnection.putFile(matrixFile, matrixFileName);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+  //
+  // Private methods
+  //
 
   /**
    * Determine if there is biological replicates in an experiment
@@ -499,9 +276,8 @@ public class DiffAna extends Normalization {
    * Add the reference to R script if there is one
    * @param experimentSamplesList
    * @param sb
-   * @return
    */
-  private StringBuilder addReferenceField(List<Sample> experimentSamplesList,
+  private void writeReferenceField(List<Sample> experimentSamplesList,
       StringBuilder sb) {
 
     if (experimentSamplesList.get(0).getMetadata().isReferenceField()) {
@@ -516,8 +292,6 @@ public class DiffAna extends Normalization {
         }
       }
     }
-
-    return sb;
   }
 
   /*
@@ -536,6 +310,7 @@ public class DiffAna extends Normalization {
   public DiffAna(Design design, File expressionFilesDirectory,
       String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
       String rServerName) {
+
     super(design, expressionFilesDirectory, expressionFilesPrefix,
         expressionFilesSuffix, outPath, rServerName);
   }
