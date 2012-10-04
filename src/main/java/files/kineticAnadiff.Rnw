@@ -1,8 +1,0 @@
-<<diffAna>>=
-anaDiffCinetic(countDataSet, ref, outPath)
-@
-
-\section{Session info}
-<<sessionInfo>>=
-sessionInfo()
-@

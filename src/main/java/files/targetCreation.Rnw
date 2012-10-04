@@ -1,0 +1,13 @@
+\section{Target creation}
+
+<<targetCreation>>=
+# create target list containing various objects use in the analysis
+target <- buildTarget(
+		sampleNames,
+		projectName,
+		fileNames,
+		projectPath,
+		repTechGroup,
+		condition
+)
+@

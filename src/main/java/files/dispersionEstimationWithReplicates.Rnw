@@ -2,11 +2,6 @@
 
 		\subsubsection{Dispersion estimation}
 		
-<<cdsCreation, echo=FALSE>>=
-	cds <- new countDataSet(matrix, conditions)
-@
-
-	
 <<dispertionEstimation, fig=TRUE>>=
 countDataSet <- dispersionEstimation(countDataSet, replicates = TRUE)
 plotDispEsts(countDataSet)

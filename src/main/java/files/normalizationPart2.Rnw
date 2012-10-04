@@ -1,0 +1,24 @@
+	\item Plot boxplot and densityplot of normalized counts
+<<boxplotNorm, fig=TRUE, width=12, height=8>>=
+boxplotCounts(normTarget)
+@
+<<densityPlotNorm, fig=TRUE, width=12, height=8>>=
+densityplotRNA(normTarget)
+@
+	\item Save normalized matrix
+<<matrixNorm>>=
+saveCountMatrix(
+		normTarget$counts,
+		# file path
+		outPath,
+		# file name
+		paste("anaDiff_", projectName,"_normalizedCountMatrix.txt", sep="")
+)
+@
+\end{itemize}
+
+\section{Session info}
+
+<<sessionInfo>>=
+sessionInfo()
+@

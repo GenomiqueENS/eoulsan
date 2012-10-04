@@ -114,7 +114,7 @@ anaDiff <- function(cds, outpath){
 				nameComp <- paste(cond2, cond1, sep="-")
 				write.table(
 					sortedResult, 
-					paste(outpath, "anaDiff_", target$projectName, nameComp, 
+					paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
 							".tsv", sep=""),
 					sep="\t",row.names=F, quote=F
 				)
@@ -150,12 +150,12 @@ anaDiffCinetic <- function(cds, ref, outpath){
 			colnames(result)[3] <- paste("baseMean", ref, sep="_")
 			colnames(result)[4] <- paste("baseMean", cond, sep="_")
 			colnames(result)[5] <- paste("FoldChange_", cond,"-", ref, sep="")
-			colnames(result)[6] <- paste("log2FoldChange_", cond2, "-", cond1, sep="")
+			colnames(result)[6] <- paste("log2FoldChange_", cond, "-", ref, sep="")
 			# write results into a file
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
 				result, 
-				paste(outpath, "anaDiff_", target$projectName, nameComp, 
+				paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
 						".tsv", sep=""),
 				sep="\t",row.names=F, quote=F
 			)
@@ -766,7 +766,7 @@ repClust <- function(target, outpath = "", out= FALSE ){
 
 normalizeTarget <- function(target){
 	# create countDataSet (DESeq object)
-	countDataSet <- normDESeq(target$counts, 1:length(target$counts[1,]))
+	countDataSet <- normDESeq(target$counts, target$condition)
 	# normalize count
 	normCount <- getNormCount(countDataSet)
 	# create normTarget
