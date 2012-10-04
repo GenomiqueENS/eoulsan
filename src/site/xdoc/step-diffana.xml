@@ -28,6 +28,7 @@
 
   <properties>
     <title>Differential analysis step</title>
+    <author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
 
@@ -53,9 +54,9 @@
     
     <section name="Required R packages installation">
     
-    <p>Eoulsan differential analysis module use R as statistical backend. 
-    DiffAna module was tested with R 2.15. You also need to install 1 R packages:</p>
-    
+    <p>Eoulsan differential analysis module use R with the package DESeq as statistical 
+    backend. Differential analysis module was tested with R 2.15 and DESeq 1.8.3. 
+    You need to install DESeq R packages:</p>
     <ul>
         <li><b>DESeq</b></li>
         <source>
