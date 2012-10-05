@@ -1,13 +1,10 @@
 		\subsubsection{Differential analysis calling}
-	
+
 <<diffAna>>=
-anaDiff(countDataSet, outPath)
+anaDiffCinetic(countDataSet, ref, outPath)
 @
-
-
 
 \section{Session info}
 <<sessionInfo>>=
 sessionInfo()
 @
-\end{document}

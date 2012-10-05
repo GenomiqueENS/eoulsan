@@ -35,17 +35,17 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna;
+import fr.ens.transcriptome.eoulsan.steps.diffana.Normalization;
 
 /**
- * This class define the step of differential analysis in local mode.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class define the step for normalization
+ * @author deshaies
+ *
  */
 @LocalOnly
-public class DiffAnaLocalStep extends AbstractStep {
+public class NormalizationLocalStep extends AbstractStep {
 
-  private static final String STEP_NAME = "diffana";
+  private static final String STEP_NAME = "normalization";
 
   //
   // Step methods
@@ -60,17 +60,13 @@ public class DiffAnaLocalStep extends AbstractStep {
   @Override
   public String getDescription() {
 
-    return "This class compute the differential analysis for the experiment.";
+    return "This class compute normalisation of expression data for "
+        + "differential analysis.";
   }
 
   @Override
   public DataFormat[] getInputFormats() {
     return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TXT};
-  }
-
-  @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TSV};
   }
 
   @Override
@@ -83,24 +79,24 @@ public class DiffAnaLocalStep extends AbstractStep {
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
       String rServeName = null;
-      if (context.getSettings().isRServeServerEnabled())
-        rServeName = context.getSettings().getRServeServername();
+      if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
+        rServeName =
+            EoulsanRuntime.getRuntime().getSettings().getRServeServername();
 
-      final DiffAna ad =
-          new DiffAna(design, new File("."), eDF.getType().getPrefix(),
+      final Normalization norm =
+          new Normalization(design, new File("."), eDF.getType().getPrefix(),
               eDF.getDefaultExtention(), new File("."), rServeName);
 
-      // Launch analysis
-
-      ad.run();
+      norm.run();
 
       // Write log file
       return new StepResult(context, startTime, log.toString());
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e, "Error while analysis data: "
-          + e.getMessage());
+      return new StepResult(context, e,
+          "Error while normalizing expression data: " + e.getMessage());
     }
+
   }
 }

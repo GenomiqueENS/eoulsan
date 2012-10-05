@@ -27,7 +27,7 @@
 <document> 
 
   <properties>
-    <title>Differential analysis step</title>
+    <title>Normalization step</title>
     <author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
   </properties> 
@@ -36,16 +36,17 @@
 
   <body>
   
-    <section name="Differential analysis step">
+    <section name="Normalization step">
 
-      <p>This step allow to perform differential analysis on expression step results.</p>  
+      <p>This step allow to normalization on expression step results.</p>  
 
       <ul>
-         <li><b>Name</b>: diffana</li>
+         <li><b>Name</b>: normalization</li>
          <li><b>Available</b>: Only in local mode</li>
          <li><b>Multithreaded in local mode</b>: No</li>
          <li><b>Input</b>: expression file (e.g. <code>expression_1.tsv</code>)</li>
-         <li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>)</li>
+         <li><b>Output</b>: Control graphics, LaTeX report and count matrices 
+         (raw, pooled and normalized)</li>
 	  <br/>
          <li><b>Optional parameters</b>: none.</li>
        </ul>
@@ -54,18 +55,20 @@
     
     <section name="Required R packages installation">
     
-    <p>Eoulsan differential analysis module use R with the package DESeq as statistical 
-    backend. Differential analysis module was tested with R 2.15 and DESeq 1.8.3. 
-    You need to install DESeq R packages:</p>
+    <p>Eoulsan normalization module use R with DESeq and FactoMineR packages as statistical 
+    backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and FactoMineR_1.20. 
+    You need to install two R packages:</p>
+    
     <ul>
         <li><b>DESeq</b></li>
         <source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("DESeq")    
+&gt; biocLite("DESeq") 
+&gt; install.packages("FactoMineR")   
         </source>
 
-    </ul>    
+    </ul> 
     
     </section>
 

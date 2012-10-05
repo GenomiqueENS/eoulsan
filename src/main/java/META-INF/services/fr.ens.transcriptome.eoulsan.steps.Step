@@ -26,6 +26,9 @@ fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesLocalStep
 fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
 
+# Normalisation step
+fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
+
 # Diffana step
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
 

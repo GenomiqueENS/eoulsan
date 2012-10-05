@@ -1,0 +1,12 @@
+	\item Compute hierarchical clustering on pooled and normalized data and
+	plot dendrogram
+
+<<clusterNorm, fig=TRUE, width=12, height=8>>= 
+	repClust(normTarget)
+@
+
+	\item Raw samples PCA
+
+<<normPCA, fig=TRUE, width=12, height=8>>=
+plotSamplesPCA(normTarget)
+@
