@@ -74,8 +74,8 @@ public class Normalization {
       "/normalisationPart1WithTechRep.Rnw";
   private static final String NORMALIZATION_PART1_WHITHOUT_TECHREP =
       "/normalisationPart1WithoutTechRep.Rnw";
-  private static final String CLUSTERING_RAW = "/clusteringRaw.Rnw";
-  private static final String CLUSTERING_NORM = "/clusteringNorm.Rnw";
+  private static final String CLUSTERING_PCA_RAW = "/clusteringAndPCARaw.Rnw";
+  private static final String CLUSTERING_PCA_NORM = "/clusteringAndPCANorm.Rnw";
   private static final String NORMALIZATION_PART2 = "/normalizationPart2.Rnw";
 
   protected final Design design;
@@ -382,7 +382,7 @@ public class Normalization {
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
      * problem while executing R script
      */
-    rRepTechGroup = replaceRtgNA(rRepTechGroup, rSampleNames);
+    replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add sampleNames vector
     writeSampleName(rSampleNames, sb);
@@ -418,7 +418,7 @@ public class Normalization {
     sb.append("\\begin{itemize}\n\n");
 
     if (experimentSamplesList.size() > 2)
-      sb.append(readStaticScript(CLUSTERING_RAW));
+      sb.append(readStaticScript(CLUSTERING_PCA_RAW));
 
     // Add normalization part
     if (isTechnicalReplicates(rRepTechGroup))
@@ -428,7 +428,7 @@ public class Normalization {
 
     // Add normalise data clustering if it's possible
     if (isEnoughRepTechGroup(rRepTechGroup))
-      sb.append(readStaticScript(CLUSTERING_NORM));
+      sb.append(readStaticScript(CLUSTERING_PCA_NORM));
 
     sb.append(readStaticScript(NORMALIZATION_PART2));
 
@@ -686,7 +686,7 @@ public class Normalization {
    * @param rSampleNames
    * @return
    */
-  protected List<String> replaceRtgNA(List<String> rRepTechGroup,
+  protected void replaceRtgNA(List<String> rRepTechGroup,
       List<String> rSampleNames) {
 
     for (int j = 0; j < rRepTechGroup.size(); j++) {
@@ -695,7 +695,6 @@ public class Normalization {
         rRepTechGroup.set(j, rSampleNames.get(j));
       }
     }
-    return rRepTechGroup;
   }
 
   /*

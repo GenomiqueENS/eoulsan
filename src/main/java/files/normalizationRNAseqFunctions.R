@@ -683,7 +683,8 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 # author : Vivien Deshaies
 # created Feb 9th 2012
 # -----------------------------------------------------------------------------
-buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, repTechGroup, condition){
+buildTarget <- function(sampleLabels, projectName, fileNames, projectPath, 
+		repTechGroup, condition){
 	# create empty list
 	target <- list()
 	
@@ -863,3 +864,77 @@ readCountMatrix <- function(file, directoryPath = ""){
 	
 	return(matrix)
 }
+
+# -----------------------------------------------------------------------------
+# plotSamplesPCA
+# plot a PCA individuals graphic with 
+# -----------------------------------------------------------------------------
+
+plotSamplesPCA <- function(target, oupath="", out=FALSE, label=FALSE){
+	
+	require(FactoMineR)
+	
+	if (out) {
+		# verify if '/' is not missing at the end of path
+		pathChar <- strsplit(outpath, "")
+		if(!(pathChar[[1]][length(pathChar[[1]])] == "/")
+				){
+			stop("path must finish by '/'")
+		}
+		
+		#create plot file
+		png(paste(outpath, "anaDiff_", target$projectName,"SamplePCA.png", sep=""),
+				width=1000, height=600
+		)
+	}
+	
+	# sort target by conditions
+	sortedTarget <- sortTarget(target)
+	
+	# set plot margins
+	par(omd=c(0.01,0.85,0.01,0.95))
+	
+	# create colors vector
+	coLors <- rainbow(length(unique(sortedTarget$condition)))
+	test <- lapply(sortedTarget$condition ,
+			function(x){x == unique(sortedTarget$condition)}
+	)
+	bioGroupColors <- c()
+	for (result in test){
+		bioGroupColors <- c(bioGroupColors, coLors[result])
+	}
+	
+	# perform PCA on transpose count matrix to have sample as individuals
+	pcaCount <- PCA(t(target$counts), graph=FALSE)
+	
+	if (label){
+		# plot individuals graphic
+		plot.PCA(pcaCount, choix="ind", col.ind=bioGroupColors)
+	} else {
+		plot.PCA(pcaCount, choix="ind", label="", 
+				col.ind=bioGroupColors,
+				title = paste(target$projectName, " samples PCA")
+		)
+	}
+		
+	# create a vector of extreme coordinates of plot region (x1, x2, y1, y2)
+	userCoordinates <- par('usr')
+	# set plot clipping to device region
+	par(xpd=NA)
+	# print legend on the plot
+	legend(
+		userCoordinates[2]*1.01,
+		userCoordinates[4],
+		title = "Legend",
+		as.character(unique(sortedTarget$condition)),
+		pch=16,
+		col = unique(bioGroupColors)
+	)
+	
+	if (out) {
+		# close file
+		dev.off()
+	}
+}
+
+

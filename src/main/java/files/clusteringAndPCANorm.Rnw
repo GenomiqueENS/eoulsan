@@ -4,3 +4,9 @@
 <<clusterNorm, fig=TRUE, width=12, height=8>>= 
 	repClust(normTarget)
 @
+
+	\item Raw samples PCA
+
+<<normPCA, fig=TRUE, width=12, height=8>>=
+plotSamplesPCA(normTarget)
+@

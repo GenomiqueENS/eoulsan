@@ -1,3 +1,4 @@
+		
 	\item Plot boxplot and densityplot of normalized counts
 <<boxplotNorm, fig=TRUE, width=12, height=8>>=
 boxplotCounts(normTarget)
