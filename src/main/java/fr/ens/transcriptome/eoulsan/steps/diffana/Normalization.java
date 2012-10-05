@@ -68,7 +68,7 @@ public class Normalization {
 
   protected static final String TARGET_CREATION = "/targetCreation.Rnw";
   protected static final String NORMALIZATION_FUNCTIONS =
-      "/normalizationRNAseqFunctions.R";
+      "/normalization_anaDiff_RNAseq_Functions.R";
 
   private static final String NORMALISATION_PART1_WHITH_TECHREP =
       "/normalisationPart1WithTechRep.Rnw";
