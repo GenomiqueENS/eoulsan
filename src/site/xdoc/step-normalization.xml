@@ -55,16 +55,17 @@
     
     <section name="Required R packages installation">
     
-    <p>Eoulsan normalization module use R with the package DESeq as statistical 
-    backend. Normalization module was tested with R 2.15 and DESeq 1.8.3. 
-    You need to install DESeq R packages:</p>
+    <p>Eoulsan normalization module use R with DESeq and FactoMineR packages as statistical 
+    backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and FactoMineR_1.20. 
+    You need to install two R packages:</p>
     
     <ul>
         <li><b>DESeq</b></li>
         <source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("DESeq")    
+&gt; biocLite("DESeq") 
+&gt; install.packages("FactoMineR")   
         </source>
 
     </ul> 
