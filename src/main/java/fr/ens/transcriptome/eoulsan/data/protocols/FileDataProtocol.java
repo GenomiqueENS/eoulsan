@@ -47,10 +47,13 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 @HadoopCompatible
 public class FileDataProtocol extends AbstractDataProtocol {
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "file";
+
   @Override
   public String getName() {
 
-    return "file";
+    return PROTOCOL_NAME;
   }
 
   @Override

@@ -49,10 +49,13 @@ import fr.ens.transcriptome.eoulsan.io.PathConcatInputStream;
 @HadoopOnly
 public class HDFSPathDataProtocol extends PathDataProtocol {
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "hdfs";
+
   @Override
   public String getName() {
 
-    return "hdfs";
+    return PROTOCOL_NAME;
   }
 
   @Override
@@ -81,7 +84,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
         return new PathConcatInputStream(paths, this.conf);
       }
     }
-    
+
     return fs.open(path);
   }
 

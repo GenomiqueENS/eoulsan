@@ -27,8 +27,8 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_TSAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
@@ -110,13 +111,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param basePath base path
    * @param sample sample of the job
    * @param genomicType genomic type
+   * @param attributeIg GFF attribute Id
    * @throws IOException if an error occurs while creating job
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final Job createJobEoulsanCounter(
       final Configuration parentConf, final Context context,
-      final Sample sample, final String genomicType) throws IOException,
-      BadBioEntryException {
+      final Sample sample, final String genomicType, final String attributeId)
+      throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -151,7 +153,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
       createExonsIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, exonsIndexPath, jobConf);
+          genomicType, attributeId, exonsIndexPath, jobConf);
 
     // Set the path to the exons index
     // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
@@ -165,7 +167,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Job job =
         new Job(jobConf, "Expression computation with Eoulsan counter ("
             + sample.getName() + ", " + inputPath.getName() + ", "
-            + annotationDataFile.getSource() + ", " + genomicType + ")");
+            + annotationDataFile.getSource() + ", " + genomicType + ","
+            + attributeId + ")");
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);
@@ -209,9 +212,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    */
   private static final Job createJobHTSeqCounter(
       final Configuration parentConf, final Context context,
-      final Sample sample, final String genomicType, final String stranded,
-      final String overlapMode) throws IOException, BadBioEntryException,
-      EoulsanException {
+      final Sample sample, final String genomicType, final String attributeId,
+      final String stranded, final String overlapMode) throws IOException,
+      BadBioEntryException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -246,8 +249,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+    final DataFile genomeDescDataFile =
+        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample);
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        genomeDescDataFile.getSource());
 
     // Set the "stranded" parameter
     jobConf.set(HTSeqCountMapper.STRANDED_PARAM, stranded);
@@ -261,7 +266,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf))
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, StrandUsage.getStrandUsageFromName(stranded),
+          genomicType, attributeId,
+          StrandUsage.getStrandUsageFromName(stranded), genomeDescDataFile,
           featuresIndexPath, jobConf);
 
     // Set the path to the features index
@@ -271,8 +277,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Job job =
         new Job(jobConf, "Expression computation with htseq-count ("
             + sample.getName() + ", " + inputPath.getName() + ", "
-            + annotationDataFile.getSource() + ", " + genomicType
-            + ", stranded : " + stranded + ")");
+            + annotationDataFile.getSource() + ", " + genomicType + ", "
+            + attributeId + ", stranded : " + stranded + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);
@@ -433,6 +439,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * Create exon index.
    * @param gffPath gff path
    * @param expressionType expression type
+   * @param attributeId GFF attribute id
    * @param exonsIndexPath output exon index path
    * @param conf configuration object
    * @throws IOException if an error occurs while creating the index
@@ -440,14 +447,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    */
   private static final Path createExonsIndex(final Context context,
       final Path gffPath, final String expressionType,
-      final Path exonsIndexPath, final Configuration conf) throws IOException,
-      BadBioEntryException {
+      final String attributeId, final Path exonsIndexPath,
+      final Configuration conf) throws IOException, BadBioEntryException {
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
 
     final TranscriptAndExonFinder ef =
-        new TranscriptAndExonFinder(is, expressionType);
+        new TranscriptAndExonFinder(is, expressionType, attributeId);
     final File exonIndexFile =
         context.getRuntime().createFileInTempDir(
             StringUtils.basename(gffPath.getName())
@@ -463,32 +470,34 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   /**
-   * @param context
-   * @param gffPath
-   * @param featureType
-   * @param stranded
-   * @param featuresIndexPath
-   * @param conf
-   * @return
-   * @throws IOException
+   * @param context Eoulsan context
+   * @param gffPath GFF annotation file path
+   * @param featureType feature type to use
+   * @param stranded strand mode
+   * @param genomeDescDataFile genome description DataFile
+   * @param featuresIndexPath feature index output path
+   * @param conf Hadoop configuration object
+   * @return the feature index output path
+   * @throws IOException if an error occurs while creating the feature index
+   *           file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiants
    */
   private static final Path createFeaturesIndex(final Context context,
-      final Path gffPath, final String featureType, final StrandUsage stranded,
+      final Path gffPath, final String featureType, final String attributeId,
+      final StrandUsage stranded, final DataFile genomeDescDataFile,
       final Path featuresIndexPath, final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomeDescription genomeDescription =
+        GenomeDescription.load(genomeDescDataFile.open());
     final Map<String, Integer> counts = Utils.newHashMap();
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
     final GFFReader gffReader = new GFFReader(is);
-
-    // !!!!! TO CHANGE... (also in HTSeqCounter)
-    final String attributeId = "ID";
 
     // Read the annotation file
     for (final GFFEntry gff : gffReader) {
@@ -526,6 +535,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         context.getRuntime().createFileInTempDir(
             StringUtils.basename(gffPath.getName())
                 + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
+
+    // Add all chromosomes even without annotations to the feature object
+    features.addChromosomes(genomeDescription);
 
     // Save the annotation
     features.save(featuresIndexFile);
@@ -589,7 +601,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     for (Map.Entry<Sample, Job> e : jobconfs.entrySet()) {
 
       final Sample sample = e.getKey();
-      final Job rj = e.getValue();
+      // final Job rj = e.getValue();
 
       final FileSystem fs =
           new Path(context.getBasePathname()).getFileSystem(conf);
@@ -629,81 +641,23 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
-    // // Create configuration object
-    // final Configuration conf = new Configuration(false);
-    //
-    // // Create the list of jobs to run
-    // final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
-    //
-    // try {
-    // final long startTime = System.currentTimeMillis();
-    //
-    // LOGGER.info("Genomic type: " + getGenomicType());
-
-    // ///////////////////////////////////////////
     if (getCounter().getCounterName().equals("eoulsanCounter"))
       return executeJobEoulsanCounter(design, context);
     else if (getCounter().getCounterName().equals("htseq-count"))
       return executeJobHTSeqCounter(design, context);
-    else
-      return null;
-    // ///////////////////////////////////////////
 
-    // final List<Job> jobsPairedEnd = new ArrayList<Job>();
-    // for (Sample s : design.getSamples()) {
-    // if (context.getDataFileCount(READS_FASTQ, s) == 2)
-    // jobsPairedEnd.add(createJobPairedEnd(conf, context, s,
-    // getGenomicType()));
-    // }
-    //
-    // MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
-
-    // for (Sample s : design.getSamples()) {
-    //
-    // final Job jconf = createJob(conf, context, s, getGenomicType());
-    //
-    // jconf.submit();
-    // jobsRunning.put(s, jconf);
-    // }
-    //
-    // // Compute map-reduce part of the expression computation
-    // final JobsResults jobsResults =
-    // new NewAPIJobsResults(jobsRunning.values(),
-    // CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
-    //
-    // final long mapReduceEndTime = System.currentTimeMillis();
-    // LOGGER.info("Finish the part of the expression computation in "
-    // + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
-    //
-    // // Create the final expression files
-    // createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
-    //
-    // LOGGER.info("Finish the create of the final expression files in "
-    // + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
-    // + " seconds.");
-    //
-    // return jobsResults.getStepResult(context, startTime);
-    //
-    // } catch (IOException e) {
-    //
-    // return new StepResult(context, e, "Error while running job: "
-    // + e.getMessage());
-    // } catch (InterruptedException e) {
-    //
-    // return new StepResult(context, e, "Error while running job: "
-    // + e.getMessage());
-    // } catch (BadBioEntryException e) {
-    //
-    // return new StepResult(context, e, "Invalid annotation entry: "
-    // + e.getEntry());
-    // } catch (ClassNotFoundException e) {
-    // return new StepResult(context, e, "Class not found: " + e.getMessage());
-    // }
-
+    return new StepResult(context, new EoulsanException("Unknown counter: "
+        + getCounter().getCounterName()), "Unknown counter: "
+        + getCounter().getCounterName());
   }
 
-  public StepResult executeJobEoulsanCounter(final Design design,
+  /**
+   * Execute Eoulsan counter as an Hadoop job.
+   * @param design design object
+   * @param context Eoulsan context
+   * @return a StepResult object
+   */
+  private StepResult executeJobEoulsanCounter(final Design design,
       final Context context) {
 
     // Create configuration object
@@ -721,7 +675,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       for (Sample s : design.getSamples()) {
 
         final Job jconf =
-            createJobEoulsanCounter(conf, context, s, getGenomicType());
+            createJobEoulsanCounter(conf, context, s, getGenomicType(),
+                getAttributeId());
 
         jconf.submit();
         jobsRunning.put(s, jconf);
@@ -762,7 +717,13 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     }
   }
 
-  public StepResult executeJobHTSeqCounter(final Design design,
+  /**
+   * Execute HTSeq-count counter as an Hadoop job.
+   * @param design design object
+   * @param context Eoulsan context
+   * @return a StepResult object
+   */
+  private StepResult executeJobHTSeqCounter(final Design design,
       final Context context) {
 
     // Create configuration object
@@ -791,7 +752,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
         final Job jconf =
             createJobHTSeqCounter(conf, context, s, getGenomicType(),
-                getStranded(), getOverlapMode());
+                getAttributeId(), getStranded(), getOverlapMode());
 
         jconf.submit();
         jobsRunning.put(s, jconf);

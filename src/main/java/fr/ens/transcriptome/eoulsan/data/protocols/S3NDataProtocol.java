@@ -34,10 +34,13 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 @LocalOnly
 public class S3NDataProtocol extends S3DataProtocol {
 
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "s3n";
+
   @Override
   public String getName() {
 
-    return "s3n";
+    return PROTOCOL_NAME;
   }
 
   @Override

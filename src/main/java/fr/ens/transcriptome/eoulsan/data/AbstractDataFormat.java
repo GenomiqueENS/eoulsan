@@ -40,6 +40,8 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
  */
 abstract class AbstractDataFormat implements DataFormat {
 
+  private String[] extensions;
+
   @Override
   public String getDescription() {
 
@@ -49,7 +51,10 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public String[] getExtensions() {
 
-    return new String[] {getDefaultExtention()};
+    if (this.extensions == null)
+      this.extensions = new String[] {getDefaultExtention()};
+
+    return this.extensions;
   }
 
   @Override
@@ -121,9 +126,17 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public int hashCode() {
 
+    final String[] extensions = getExtensions();
+    final Integer extensionsHashCode =
+        extensions == null ? null : extensions.hashCode();
+    final Integer generatorHashCode =
+        isGenerator() ? getGenerator().getClass().hashCode() : null;
+    final Integer checkerHashCode =
+        isChecker() ? getChecker().getClass().hashCode() : null;
+
     return Objects.hashCode(getFormatName(), getDescription(), getType(),
-        getContentType(), getDefaultExtention(), getExtensions(),
-        isGenerator(), isChecker(), getGenerator(), getChecker(),
+        getContentType(), getDefaultExtention(), extensionsHashCode,
+        isGenerator(), isChecker(), generatorHashCode, checkerHashCode,
         getMaxFilesCount());
   }
 

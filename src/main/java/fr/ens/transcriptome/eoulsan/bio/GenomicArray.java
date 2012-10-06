@@ -623,17 +623,39 @@ public class GenomicArray<T> {
       return;
 
     final String chromosomeName = interval.getChromosome();
-    final ChromosomeZones<T> chr;
 
     // Create a ChromosomeZones if it does not exist yet
-    if (!this.chromosomes.containsKey(chromosomeName)) {
-      chr = new ChromosomeZones<T>(chromosomeName);
-      this.chromosomes.put(chromosomeName, chr);
-    } else
-      chr = this.chromosomes.get(chromosomeName);
+    if (!this.chromosomes.containsKey(chromosomeName))
+      addChromosome(chromosomeName);
 
     // Add the GenomicInterval to the ChromosomeZones
-    chr.addEntry(interval, value);
+    this.chromosomes.get(chromosomeName).addEntry(interval, value);
+  }
+
+  /**
+   * Add a chromosome.
+   * @param chromosomeName name of the chromosome to add
+   */
+  public void addChromosome(final String chromosomeName) {
+
+    if (containsChromosome(chromosomeName))
+      return;
+
+    this.chromosomes
+        .put(chromosomeName, new ChromosomeZones<T>(chromosomeName));
+  }
+
+  /**
+   * Add chromosomes from the list of sequence in a GenomeDescription object.
+   * @param gd genome description
+   */
+  public void addChromosomes(final GenomeDescription gd) {
+
+    if (gd == null)
+      return;
+
+    for (String chromosomeName : gd.getSequencesNames())
+      addChromosome(chromosomeName);
   }
 
   /**
@@ -819,52 +841,15 @@ public class GenomicArray<T> {
   public GenomicArray() {
   }
 
-  //
-  // @Override
-  // public String toString() {
-  //
-  // return "Transcripts size: "
-  // + (this.transcripts == null ? "null" : this.transcripts.size());
-  // }
-  //
-  // //
-  // // Constructors
-  // //
-  //
-  // /**
-  // * Public constructor used to create the index.
-  // * @param annotationFile annotation file to use
-  // * @param expressionType the expression type to filter
-  // * @throws IOException if an error occurs while creating the index
-  // * @throws BadBioEntryException if an invalid entry of the annotation file
-  // is
-  // * found
-  // */
-  // public TranscriptAndExonFinder(final File annotationFile,
-  // final String expressionType) throws IOException, BadBioEntryException {
-  //
-  // this(FileUtils.createInputStream(annotationFile), expressionType);
-  // }
-  //
-  // /**
-  // * Public constructor used to create the index.
-  // * @param is annotation input stream to use
-  // * @param expressionType the expression type to filter
-  // * @throws IOException if an error occurs while creating the index
-  // * @throws BadBioEntryException if an invalid entry of the annotation file
-  // is
-  // * found
-  // */
-  // public TranscriptAndExonFinder(final InputStream is,
-  // final String expressionType) throws IOException, BadBioEntryException {
-  //
-  // populateMapsFromGFFFile(is, expressionType);
-  // }
-  //
-  // /**
-  // * Public constructor.
-  // */
-  // public TranscriptAndExonFinder() {
-  // }
-
+  
+  /**
+   * Public constructor.
+   * @param gd The genome description.
+   */
+  public GenomicArray(final GenomeDescription gd) {
+    
+    this();
+    addChromosomes(gd);
+  }
+  
 }

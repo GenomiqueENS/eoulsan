@@ -56,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 public class AnnotationChecker implements Checker {
 
   private String genomicType;
+  private String attributeId;
   private boolean stranded = true;
 
   @Override
@@ -72,6 +73,9 @@ public class AnnotationChecker implements Checker {
       if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
           .equals(p.getName()))
         this.genomicType = p.getStringValue();
+      if (AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME
+          .equals(p.getName()))
+        this.attributeId = p.getStringValue();
       else if ("stranded".equals(p.getName()))
         this.stranded =
             "yes".equals(p.getStringValue())
@@ -121,8 +125,8 @@ public class AnnotationChecker implements Checker {
       final GenomeDescription desc =
           getGenomeDescription(annotationFile, design, context, checkInfo);
 
-      validationAnnotation(annotationFile, desc, this.genomicType, "ID",
-          this.stranded);
+      validationAnnotation(annotationFile, desc, this.genomicType,
+          this.attributeId, this.stranded);
 
     } catch (IOException e) {
       throw new EoulsanException(

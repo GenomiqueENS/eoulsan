@@ -32,12 +32,15 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class S3PathDataProtocol extends PathDataProtocol{
+public class S3PathDataProtocol extends PathDataProtocol {
+
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "s3";
 
   @Override
   public String getName() {
-    
-    return "s3";
+
+    return PROTOCOL_NAME;
   }
 
 }
