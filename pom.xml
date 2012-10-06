@@ -244,7 +244,7 @@
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.75</version>
+			<version>1.76</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -363,10 +363,27 @@
 									<format property="YEAR" pattern="yyyy" />
 								</tstamp>
 
+								<!-- execute git describe -->
+								<exec executable="git" failifexecutionfails="false" outputproperty="build.commit">
+									<arg value="describe"/>
+									<arg value="--all"/>
+									<arg value="--long"/>
+								</exec>
+
+								<condition property="build.commit" value="">
+									<not>  
+										<isset property="build.commit"/>
+									</not>
+								</condition>
+							
+								<exec executable="hostname" outputproperty="build.host"/>
+
 								<manifest file="${basedir}/target/generated-resources/MANIFEST.MF">
 									<attribute name="Built-By" value="${user.name}"/>
 									<attribute name="Built-Date" value="${TODAY}"/>  
-									<attribute name="Built-Year" value="${YEAR}"/>  
+									<attribute name="Built-Year" value="${YEAR}"/> 
+									<attribute name="Built-Commit" value="${build.commit}" /> 
+									<attribute name="Built-Host" value="${build.host}" /> 
 
 									<attribute name="Specification-Title" value="${pom.name}"/>   
 									<attribute name="Specification-Version" value="${pom.version}"/>   
@@ -621,10 +638,18 @@
 								<artifactItem>
 						                  <groupId>net.sourceforge.picard</groupId>
 						                  <artifactId>sam</artifactId>
-						                  <version>1.75</version>
+						                  <version>1.76</version>
 						                  <overWrite>true</overWrite>
 						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						                  <destFileName>sam.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+						                  <groupId>net.sourceforge.picard</groupId>
+						                  <artifactId>picard</artifactId>
+						                  <version>1.76</version>
+						                  <overWrite>true</overWrite>
+						                  <outputDirectory>${basedir}/target/dist/lib</outputDirectory>
+						                  <destFileName>picard.jar</destFileName>
 								</artifactItem>
 								<artifactItem>
 						                  <groupId>javax.mail</groupId>

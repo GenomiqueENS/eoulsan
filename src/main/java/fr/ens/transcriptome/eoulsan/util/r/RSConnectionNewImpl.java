@@ -69,12 +69,16 @@ public class RSConnectionNewImpl implements RSConnection {
    * @return Returns the RConnection
    * @throws REngineException
    */
-  protected RConnection getRConnection() throws REngineException {
+  public RConnection getRConnection() throws REngineException {
 
     if (this.rconnection == null)
       connect();
 
     return rconnection;
+  }
+  
+  public String getServerName(){
+    return this.serverName;
   }
 
   //

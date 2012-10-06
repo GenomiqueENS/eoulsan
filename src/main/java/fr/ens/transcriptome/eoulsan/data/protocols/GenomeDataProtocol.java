@@ -25,20 +25,23 @@
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 
 /**
  * This class define a genome protocol.
  * @since 1.1
  * @author Laurent Jourdren
  */
-@LocalOnly
+@HadoopCompatible
 public class GenomeDataProtocol extends StorageDataProtocol {
+
+  /** Protocol name. */
+  public static final String PROTOCOL_NAME = "genome";
 
   @Override
   public String getName() {
 
-    return "genome";
+    return PROTOCOL_NAME;
   }
 
   @Override

@@ -158,9 +158,7 @@ public final class MainCLI {
 
       // Version option
       if (line.hasOption("version")) {
-        Common.showMessageAndExit(Globals.APP_NAME
-            + " version " + Globals.APP_VERSION_STRING + " ("
-            + Globals.APP_BUILD_NUMBER + " on " + Globals.APP_BUILD_DATE + ")");
+        Common.showMessageAndExit(Globals.WELCOME_MSG);
       }
 
       // Licence option
