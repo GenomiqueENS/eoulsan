@@ -24,14 +24,19 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -42,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataType;
@@ -59,17 +65,53 @@ public class NewWorkflow {
   private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
   private List<WorkflowStep> steps;
+  private Set<String> stepsIds = Sets.newHashSet();
 
   private final Command command;
   private final Design design;
   private final Context context;
-  private final boolean hadoopMode;
 
   private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
   //
   // Add steps
   //
+
+  private void addStep(final WorkflowStep ws) throws EoulsanException {
+
+    addStep(-1, ws);
+  }
+
+  private void addStep(final int pos, final WorkflowStep ws)
+      throws EoulsanException {
+
+    if (ws == null)
+      throw new EoulsanException("Cannot add null step");
+
+    final String stepId = ws.getId();
+
+    if (stepId == null)
+      throw new EoulsanException("Cannot add a step with null id");
+
+    if (ws.getType() != GENERATOR_STEP && this.stepsIds.contains(stepId))
+      throw new EoulsanException(
+          "Cannot add step because it already had been added: " + stepId);
+
+    if (ws.getType() == STANDARD_STEP || ws.getType() == GENERATOR_STEP) {
+      for (StepType t : StepType.values()) {
+        if (t.name().equals(stepId))
+          throw new EoulsanException("Cannot add a step with a reserved id: "
+              + stepId);
+      }
+    }
+
+    if (pos == -1)
+      this.steps.add(ws);
+    else
+      this.steps.add(pos, ws);
+
+    this.stepsIds.add(stepId);
+  }
 
   /**
    * Create the list of steps
@@ -89,7 +131,7 @@ public class NewWorkflow {
       LOGGER.info("Create "
           + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
           + ") step.");
-      this.steps.add(new WorkflowStep(design, context, stepId, stepName,
+      addStep(new WorkflowStep(design, context, stepId, stepName,
           stepParameters, skip));
     }
   }
@@ -103,17 +145,19 @@ public class NewWorkflow {
       throws EoulsanException {
 
     if (firstSteps != null)
-      for (Step step : Utils.listWithoutNull(firstSteps))
-        this.steps.add(
-            0,
-            new WorkflowStep(this.design, this.context, step.getName(), step
-                .getName(), EMPTY_PARAMETERS, false));
+      for (Step step : Utils.listWithoutNull(firstSteps)) {
+
+        final String stepId = step.getName();
+        addStep(0,
+            new WorkflowStep(this.design, this.context, stepId, step.getName(),
+                EMPTY_PARAMETERS, false));
+      }
 
     // Add the first step. Generators cannot be added after this step
-    this.steps.add(0, new WorkflowStep(design, context, StepType.FIRST_STEP));
+    addStep(0, new WorkflowStep(design, context, StepType.FIRST_STEP));
 
     // Add the design step
-    this.steps.add(0, new WorkflowStep(design, context, StepType.DESIGN_STEP));
+    addStep(0, new WorkflowStep(design, context, StepType.DESIGN_STEP));
   }
 
   /**
@@ -126,9 +170,22 @@ public class NewWorkflow {
     if (endSteps == null)
       return;
 
-    for (Step step : Utils.listWithoutNull(endSteps))
-      this.steps.add(new WorkflowStep(this.design, this.context,
-          step.getName(), step.getName(), EMPTY_PARAMETERS, false));
+    for (Step step : Utils.listWithoutNull(endSteps)) {
+
+      final String stepId = step.getName();
+
+      addStep(new WorkflowStep(this.design, this.context, stepId,
+          step.getName(), EMPTY_PARAMETERS, false));
+    }
+  }
+
+  private int findFirstStepPos() {
+
+    for (int i = 0; i < this.steps.size(); i++)
+      if (this.steps.get(i).getType() == StepType.FIRST_STEP)
+        return i;
+
+    return -1;
   }
 
   /**
@@ -176,18 +233,19 @@ public class NewWorkflow {
     for (int i = this.steps.size() - 1; i >= 0; i--) {
 
       final WorkflowStep step = this.steps.get(i);
+      System.out.println("In step " + step.getId());
 
       ListMultimap<DataType, DataFormat> lmm =
           step.getInputDataFormatByDataTypes();
 
       for (DataType dt : lmm.keySet()) {
-
+        System.out.println("\tsearch for " + dt.getName());
         boolean found = false;
         List<DataFormat> generatorAvaillables = Lists.newArrayList();
 
         for (DataFormat df : lmm.get(dt)) {
-
-          if (!found)
+          System.out.println("\t\tas dataformat " + df.getFormatName());
+          if (!found) {
             for (int j = i - 1; j >= 0; j--) {
 
               final WorkflowStep stepTested = this.steps.get(j);
@@ -213,6 +271,7 @@ public class NewWorkflow {
               }
 
             }
+          }
 
           // A generator is available for the DataType
           if (df.isGenerator() && !this.generatorAdded.contains(df))
@@ -225,8 +284,14 @@ public class NewWorkflow {
           // Add generator if needed
           if (!generatorAvaillables.isEmpty()) {
 
-            this.steps.add(1, new WorkflowStep(this.design, this.context,
-                generatorAvaillables.get(0)));
+            final WorkflowStep generatorStep =
+                new WorkflowStep(this.design, this.context,
+                    generatorAvaillables.get(0));
+
+            generatorStep.configure();
+            System.out.println("add + " + dt.getName());
+            addStep(1, generatorStep);
+
             searchInputDataFormat();
             return;
           }
@@ -238,6 +303,25 @@ public class NewWorkflow {
       }
     }
 
+    // Remove duplicate generators
+    removeDuplicateGenerators();
+  }
+
+  private void removeDuplicateGenerators() {
+
+    Set<String> generatorNames = Sets.newHashSet();
+    for (WorkflowStep ws : Lists.newArrayList(this.steps)) {
+
+      if (ws.getType() == StepType.GENERATOR_STEP) {
+
+        final String stepId = ws.getId();
+
+        if (generatorNames.contains(stepId))
+          this.steps.remove(ws);
+        else
+          generatorNames.add(stepId);
+      }
+    }
   }
 
   //
@@ -281,12 +365,106 @@ public class NewWorkflow {
   }
 
   //
+  // Check existing files
+  //
+
+  private void checkExistingOutputFiles() throws EoulsanException {
+
+    final Set<DataFile> testedFiles = Sets.newHashSet();
+
+    for (WorkflowStep step : this.steps) {
+
+      if (step.getType() == STANDARD_STEP && !step.isSkip()) {
+
+        // If a terminal step exist don't go further
+        if (step.getStep().isTerminalStep())
+          return;
+
+        for (DataFormat format : step.getOutputDataFormats())
+          for (Sample sample : this.design.getSamples()) {
+
+            DataFile file;
+
+            if (format.getMaxFilesCount() > 1)
+              file = step.getOutputDataFile(format, sample, 0);
+            else
+              file = step.getOutputDataFile(format, sample);
+
+            if (!testedFiles.contains(file) && file.exists())
+              throw new EoulsanException("For sample "
+                  + sample.getId() + ", generated \"" + format.getFormatName()
+                  + "\" already exists (" + file + ").");
+
+            testedFiles.add(file);
+          }
+      }
+    }
+
+  }
+
+  private void checkExistingInputFiles() throws EoulsanException {
+
+    final Map<DataFile, Boolean> testedFiles = Maps.newHashMap();
+    final Set<DataFile> generatedFiles = Sets.newHashSet();
+
+    for (WorkflowStep step : this.steps) {
+
+      if ((step.getType() == STANDARD_STEP || step.getType() == GENERATOR_STEP)
+          && !step.isSkip()) {
+
+        // If a terminal step exist don't go further
+        if (step.getStep().isTerminalStep())
+          return;
+
+        ListMultimap<DataType, DataFormat> lmm =
+            step.getInputDataFormatByDataTypes();
+
+        for (Sample sample : this.design.getSamples()) {
+          for (DataType type : lmm.keys()) {
+
+            boolean found = false;
+            for (DataFormat format : lmm.get(type)) {
+
+              DataFile inFile = step.getInputDataFile(format, sample);
+
+              if (generatedFiles.contains(inFile))
+                found = true;
+              else if (testedFiles.containsKey(inFile))
+                found = testedFiles.get(inFile);
+              else {
+                found = inFile.exists();
+                testedFiles.put(inFile, found);
+              }
+
+              if (found)
+                break;
+            }
+
+            if (!found)
+              throw new EoulsanException("For sample "
+                  + sample.getId() + " in step " + step.getId()
+                  + ", input file for " + type.getName() + " not exists.");
+
+          }
+        }
+
+        // Add generated file of the step
+        for (DataFormat format : step.getOutputDataFormats())
+          for (Sample sample : this.design.getSamples())
+            generatedFiles.add(step.getOutputDataFile(format, sample));
+
+      }
+    }
+
+  }
+
+  //
   // Constructor
   //
 
   public NewWorkflow(final Command command, final List<Step> firstSteps,
-      final List<Step> endSteps, final Design design, final Context context,
-      final boolean hadoopMode) throws EoulsanException {
+      final List<Step> endSteps, final Design design, final Context context)
+      throws EoulsanException {
 
     if (command == null)
       throw new NullPointerException("The command is null.");
@@ -322,8 +500,18 @@ public class NewWorkflow {
     // Search others input format sources
     searchInputDataFormat();
 
-    // TODO check if output files does not exists
-    // TODO check if input files exists
+    // check if output files does not exists
+    checkExistingOutputFiles();
+
+    // check if input files exists
+    checkExistingInputFiles();
+  }
+
+  public void show() {
+
+    for (WorkflowStep ws : this.steps)
+      ws.show();
+
   }
 
 }

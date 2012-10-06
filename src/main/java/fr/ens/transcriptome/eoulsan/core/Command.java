@@ -139,6 +139,18 @@ public class Command {
 
   /**
    * Add a step to the analysis
+   * @param stepName name of the step to add
+   * @param parameters parameters of the step
+   * @throws EoulsanException if an error occurs while adding the step
+   */
+  public void addStep(final String stepName, final Set<Parameter> parameters)
+      throws EoulsanException {
+
+    addStep(stepName, stepName, parameters, false);
+  }
+
+  /**
+   * Add a step to the analysis
    * @param stepId id of the step
    * @param stepName name of the step to add
    * @param parameters parameters of the step

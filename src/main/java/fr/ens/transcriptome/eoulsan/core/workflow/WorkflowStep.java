@@ -97,9 +97,20 @@ public class WorkflowStep {
      */
     public DataFile getDataFile(final Sample sample) {
 
+      return getDataFile(sample, -1);
+    }
+
+    /**
+     * Get the DataFile.
+     * @param sample sample
+     * @param fileIndex file index for multifile data
+     * @return the DataFile for the sample
+     */
+    public DataFile getDataFile(final Sample sample, final int fileIndex) {
+
       Preconditions.checkNotNull(sample, "Sample cannot be null");
 
-      return this.step.getOutputDataFile(this.format, sample);
+      return this.step.getOutputDataFile(this.format, sample, fileIndex);
     }
 
     @Override
@@ -123,6 +134,16 @@ public class WorkflowStep {
       this.step = step;
 
     }
+
+  }
+
+  public void show() {
+
+    System.out.println("Step: " + getId() + "(" + getType() + ")");
+    for (Map.Entry<DataFormat, InputDataFileLocation> e : this.inputFormatLocations
+        .entrySet())
+      System.out.println("\t"
+          + e.getKey().getFormatName() + "\t" + e.getValue().step.getId());
 
   }
 
@@ -224,6 +245,12 @@ public class WorkflowStep {
 
   public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
+    return getOutputDataFile(format, sample, -1);
+  }
+
+  public DataFile getOutputDataFile(final DataFormat format,
+      final Sample sample, final int fileIndex) {
+
     Preconditions.checkNotNull(format, "Format argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
@@ -238,7 +265,7 @@ public class WorkflowStep {
             + this.step.getName());
 
       // Return a file created by a step
-      return newDataFile(this.context, this, format, sample);
+      return newDataFile(this.context, this, format, sample, fileIndex);
 
     case DESIGN_STEP:
 
@@ -378,14 +405,16 @@ public class WorkflowStep {
    * @param wStep step
    * @param format format
    * @param sample sample
+   * @param fileIndex file index for multifile data
    * @return a new Datafile object
    */
   private static final DataFile newDataFile(final Context context,
-      final WorkflowStep wStep, final DataFormat format, final Sample sample) {
+      final WorkflowStep wStep, final DataFormat format, final Sample sample,
+      final int fileIndex) {
 
     // TODO must use wStep.getId() to create file path
     return new DataFile(context.getBasePathname()
-        + '/' + ContextUtils.getNewDataFilename(format, sample));
+        + '/' + ContextUtils.getNewDataFilename(format, sample, fileIndex));
   }
 
   /**
@@ -451,7 +480,7 @@ public class WorkflowStep {
   public WorkflowStep(final Design design, final Context context,
       final StepType type) {
 
-    Preconditions.checkArgument(type == StepType.STANDARD_STEP,
+    Preconditions.checkArgument(type != StepType.STANDARD_STEP,
         "This constructor cannot be used for standard steps");
 
     Preconditions.checkNotNull(design, "Design argument cannot be null");
@@ -468,8 +497,15 @@ public class WorkflowStep {
     this.stepParameters = null;
   }
 
+  /**
+   * Create a Generator Workflow step.
+   * @param design design object
+   * @param context context object
+   * @param format DataFormat
+   * @throws EoulsanException if an error occurs while configuring the generator
+   */
   public WorkflowStep(final Design design, final Context context,
-      final DataFormat format) {
+      final DataFormat format) throws EoulsanException {
 
     Preconditions.checkNotNull(design, "Design argument cannot be null");
     Preconditions.checkNotNull(context, "Context argument cannot be null");
