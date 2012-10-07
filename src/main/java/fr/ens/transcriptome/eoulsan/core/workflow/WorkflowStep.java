@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -89,6 +90,17 @@ public class WorkflowStep {
 
     private final DataFormat format;
     private final WorkflowStep step;
+
+    /**
+     * Count the number for DataFile available for a multifile DataFormat and a
+     * Sample. This method works only for a multifile DataFormat.
+     * @param sample sample
+     * @return the DataFile for the sample
+     */
+    public int getDataFileCount(final Sample sample) {
+
+      return this.step.getOutputDataFileCount(this.format, sample);
+    }
 
     /**
      * Get the DataFile.
@@ -243,6 +255,45 @@ public class WorkflowStep {
   // Input/output datafiles methods
   //
 
+  public int getOutputDataFileCount(final DataFormat format, final Sample sample) {
+
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+
+    if (format.getMaxFilesCount() < 2)
+      throw new EoulsanRuntimeException(
+          "Only multifiles DataFormat are handled by this method.");
+
+    switch (this.type) {
+
+    case STANDARD_STEP:
+
+      int count = 0;
+      boolean found = false;
+
+      do {
+
+        final DataFile file =
+            newDataFile(this.context, this, format, sample, count);
+
+        found = file.exists();
+        if (found)
+          count++;
+      } while (found);
+
+      return count;
+
+    case DESIGN_STEP:
+
+      final DataType type = format.getType();
+      return getgetOutputDataFilenameFromDesign(type, format, sample).size();
+
+    default:
+      return 0;
+    }
+
+  }
+
   public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
     return getOutputDataFile(format, sample, -1);
@@ -270,18 +321,14 @@ public class WorkflowStep {
     case DESIGN_STEP:
 
       final DataType type = format.getType();
-      final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-      final String fieldName =
-          registry.getDesignFieldnameForDataType(design, type);
+      final List<String> fieldValues =
+          getgetOutputDataFilenameFromDesign(type, format, sample);
 
-      if (fieldName == null)
-        throw new EoulsanRuntimeException("The "
-            + format.getFormatName()
-            + " format was not found in the design file for sample "
-            + sample.getId() + " (" + sample.getName() + ")");
+      if (fileIndex >= 0 && fileIndex > fieldValues.size())
+        return null;
 
       final DataFile file =
-          new DataFile(sample.getMetadata().getField(fieldName));
+          new DataFile(fieldValues.get(fileIndex == -1 ? 0 : fileIndex));
 
       if (!isDesignDataFileValidFormat(file, type, format))
         throw new EoulsanRuntimeException("The file "
@@ -295,6 +342,22 @@ public class WorkflowStep {
       return null;
     }
 
+  }
+
+  private List<String> getgetOutputDataFilenameFromDesign(final DataType type,
+      final DataFormat format, final Sample sample) {
+
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+    final String fieldName =
+        registry.getDesignFieldnameForDataType(design, type);
+
+    if (fieldName == null)
+      throw new EoulsanRuntimeException("The "
+          + format.getFormatName()
+          + " format was not found in the design file for sample "
+          + sample.getId() + " (" + sample.getName() + ")");
+
+    return sample.getMetadata().getFieldAsList(fieldName);
   }
 
   /**
