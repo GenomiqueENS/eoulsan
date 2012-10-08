@@ -905,15 +905,16 @@ plotSamplesPCA <- function(target, oupath="", out=FALSE, label=FALSE){
 	}
 	
 	# perform PCA on transpose count matrix to have sample as individuals
-	pcaCount <- PCA(t(target$counts), graph=FALSE)
+	pcaCount <- PCA(t(sortTarget$counts), graph=FALSE)
 	
 	if (label){
 		# plot individuals graphic
-		plot.PCA(pcaCount, choix="ind", col.ind=bioGroupColors)
+		plot.PCA(pcaCount, choix="ind", col.ind=bioGroupColors,
+		title = paste(sortTarget$projectName, " samples PCA"))
 	} else {
 		plot.PCA(pcaCount, choix="ind", label="", 
 				col.ind=bioGroupColors,
-				title = paste(target$projectName, " samples PCA")
+				title = paste(sortTarget$projectName, " samples PCA")
 		)
 	}
 		
