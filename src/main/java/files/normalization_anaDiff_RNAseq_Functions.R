@@ -114,7 +114,7 @@ anaDiff <- function(cds, outpath){
 				nameComp <- paste(cond2, cond1, sep="-")
 				write.table(
 					sortedResult, 
-					paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
+					paste(outpath, "diffana_", target$projectName, "_", nameComp, 
 							".tsv", sep=""),
 					sep="\t",row.names=F, quote=F
 				)
@@ -155,7 +155,7 @@ anaDiffCinetic <- function(cds, ref, outpath){
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
 				result, 
-				paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
+				paste(outpath, "diffana_", target$projectName, "_", nameComp, 
 						".tsv", sep=""),
 				sep="\t",row.names=F, quote=F
 			)
