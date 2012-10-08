@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 import java.io.File;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -92,7 +91,7 @@ public class DiffAnaLocalStep extends AbstractStep {
 
       // Launch analysis
 
-      ad.run();
+      ad.run(context);
 
       // Write log file
       return new StepResult(context, startTime, log.toString());

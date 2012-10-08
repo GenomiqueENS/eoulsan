@@ -48,6 +48,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -93,9 +94,9 @@ public class Normalization {
    * Run normalisation step
    * @throws EoulsanException
    */
-  public void run() throws EoulsanException {
+  public void run(final Context context) throws EoulsanException {
 
-    if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled()) {
+    if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Normalization : Rserve mode");
       runRserveRnwScript();
     } else {

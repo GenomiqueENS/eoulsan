@@ -37,6 +37,7 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -63,9 +64,9 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  public void run() throws EoulsanException {
+  public void run(final Context context) throws EoulsanException {
 
-    if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled()) {
+    if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Differential analysis : Rserve mode");
       runRserveRnwScript();
     } else {

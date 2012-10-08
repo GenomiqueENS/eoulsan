@@ -87,7 +87,7 @@ public class NormalizationLocalStep extends AbstractStep {
           new Normalization(design, new File("."), eDF.getType().getPrefix(),
               eDF.getDefaultExtention(), new File("."), rServeName);
 
-      norm.run();
+      norm.run(context);
 
       // Write log file
       return new StepResult(context, startTime, log.toString());
