@@ -205,7 +205,7 @@ public class DiffAna extends Normalization {
     String rScript = null;
     try {
       rScript =
-          "anaDiff_"
+          "diffana_"
               + experimentSamplesList.get(0).getMetadata().getExperiment()
               + ".Rnw";
       if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {

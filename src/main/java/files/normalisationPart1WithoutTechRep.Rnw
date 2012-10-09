@@ -29,7 +29,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste("anaDiff_", projectName,"_rawCountMatrix.txt", sep="")
+		paste("diffana_", projectName,"_rawCountMatrix.txt", sep="")
 )
 @
 

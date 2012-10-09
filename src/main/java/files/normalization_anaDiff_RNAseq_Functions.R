@@ -58,7 +58,7 @@ plotDispEsts <- function( cds, outpath = "", projectName = "", out = FALSE ) {
 				){
 			stop("path must finish by '/'")
 		}
-		png(paste(outpath, "anaDiff_", projectName, "dispEstPlot.png", sep=""),
+		png(paste(outpath, "diffana_", projectName, "dispEstPlot.png", sep=""),
 				width=800, height=800 )
 	}
 	
@@ -114,7 +114,7 @@ anaDiff <- function(cds, outpath){
 				nameComp <- paste(cond2, cond1, sep="-")
 				write.table(
 					sortedResult, 
-					paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
+					paste(outpath, "diffana_", target$projectName, "_", nameComp, 
 							".tsv", sep=""),
 					sep="\t",row.names=F, quote=F
 				)
@@ -155,7 +155,7 @@ anaDiffCinetic <- function(cds, ref, outpath){
 			nameComp <- paste(cond, ref, sep="-")
 			write.table(
 				result, 
-				paste(outpath, "anaDiff_", target$projectName, "_", nameComp, 
+				paste(outpath, "diffana_", target$projectName, "_", nameComp, 
 						".tsv", sep=""),
 				sep="\t",row.names=F, quote=F
 			)
@@ -181,7 +181,7 @@ anaDiffCinetic <- function(cds, ref, outpath){
 maPlot <- function(res, compName, outpath = "", pvalThreshold = 0.05, out = FALSE){
 	
 	if (out){
-		png(paste(outpath, "anaDiff_", target$projectName, "_",
+		png(paste(outpath, "diffana_", target$projectName, "_",
 				compName, "_MA-plot", ".png", sep=""),
 			width=700, height=600
 		)
@@ -408,7 +408,7 @@ barplotTotalCount <- function(target, outpath = "", out= FALSE){
 		}
 		
 		# create plot file
-		png(paste(outpath, "anaDiff_", target$projectName, "barplotTotalCount.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName, "barplotTotalCount.png", sep=""),
 				width=1000, height=600
 		)
 	} else {}
@@ -473,7 +473,7 @@ boxplotCounts <- function(target, outpath = "", out=FALSE){
 		}
 		
 		# create file
-		png(paste(outpath, "anaDiff_", target$projectName, "boxplotCount.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName, "boxplotCount.png", sep=""),
 				width=1000, height=600
 		)
 	}
@@ -538,7 +538,7 @@ barplotNull <- function(target, outpath = "" , out=FALSE){
 			stop("path must finish by '/'")
 		}
 		# create plot file
-		png(paste(outpath, "anaDiff_", target$projectName, "barplotNull.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName, "barplotNull.png", sep=""),
 				width=1000, height=600
 		)
 	}
@@ -615,7 +615,7 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 		}
 		
 		#create plot file
-		png(paste(outpath, "anaDiff_", target$projectName,"DensityPlot.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName,"DensityPlot.png", sep=""),
 				width=1000, height=600
 		)
 	}
@@ -732,7 +732,7 @@ buildTarget <- function(sampleLabels, projectName, fileNames, projectPath,
 repClust <- function(target, outpath = "", out= FALSE ){
 
 	if (out) { 
-		png(paste(outpath, "anaDiff_", target$projectName,"ClusterDendrogram.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName,"ClusterDendrogram.png", sep=""),
 				width=800, height=600
 		)
 	}
@@ -815,7 +815,7 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 		
 		# create plot file
 		png(paste(
-				outpath, "anaDiff_", target$projectName, "_", cond1, "-", cond2, 
+				outpath, "diffana_", target$projectName, "_", cond1, "-", cond2, 
 				"_PvalueDistribution.png", sep=""
 			),
 			width=1000, height=600
@@ -883,7 +883,7 @@ plotSamplesPCA <- function(target, oupath="", out=FALSE, label=FALSE){
 		}
 		
 		#create plot file
-		png(paste(outpath, "anaDiff_", target$projectName,"SamplePCA.png", sep=""),
+		png(paste(outpath, "diffana_", target$projectName,"SamplePCA.png", sep=""),
 				width=1000, height=600
 		)
 	}
@@ -905,15 +905,16 @@ plotSamplesPCA <- function(target, oupath="", out=FALSE, label=FALSE){
 	}
 	
 	# perform PCA on transpose count matrix to have sample as individuals
-	pcaCount <- PCA(t(target$counts), graph=FALSE)
+	pcaCount <- PCA(t(sortedTarget$counts), graph=FALSE)
 	
 	if (label){
 		# plot individuals graphic
-		plot.PCA(pcaCount, choix="ind", col.ind=bioGroupColors)
+		plot.PCA(pcaCount, choix="ind", col.ind=bioGroupColors,
+		title = paste(sortedTarget$projectName, " samples PCA"))
 	} else {
 		plot.PCA(pcaCount, choix="ind", label="", 
 				col.ind=bioGroupColors,
-				title = paste(target$projectName, " samples PCA")
+				title = paste(sortedTarget$projectName, " samples PCA")
 		)
 	}
 		

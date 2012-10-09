@@ -13,7 +13,7 @@ saveCountMatrix(
 		# file path
 		outPath,
 		# file name
-		paste("anaDiff_", projectName,"_normalizedCountMatrix.txt", sep="")
+		paste("diffana_", projectName,"_normalizedCountMatrix.txt", sep="")
 )
 @
 \end{itemize}
