@@ -8,5 +8,5 @@
 	\item Raw samples PCA
 
 <<normPCA, fig=TRUE, width=12, height=8>>=
-plotSamplesPCA(normTarget)
+plotSamplesPCA(normTarget, label=T)
 @

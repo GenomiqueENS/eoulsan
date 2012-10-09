@@ -805,6 +805,8 @@ sortTarget <- function(target){
 # -----------------------------------------------------------------------------
 
 plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
+	require(MASS)
+	
 	if (out){
 		# verify if '/' is not missing at the end of path
 		pathChar <- strsplit(outpath, "")
@@ -826,21 +828,35 @@ plotPvalueDist <- function(anadiffResult, cond1, cond2, outpath="",out=FALSE){
 	par(omd=c(0.01,0.99,0.1,0.99),mfrow=c(1,2))
 	
 	# plot the p-value distribution
-	hist(anadiffResult$pval,
-			breaks=100,
+	truehist(anadiffResult$pval,
+			## breaks=50,
+			h=0.01,
+			ymax=10,
 			col="skyblue",
 			border="slateblue",
-			xla="p-value",
+			xlab="p-value",
+			ylab ="Frequency (%)",
 			main = paste(cond1, "-", cond2," unajusted p-value distribution", sep=""),
 	)
 	# plot padj distribution
-	hist(anadiffResult$padj,
-			breaks=100,
+	truehist(anadiffResult$padj,
+			## breaks=50,
+			h=0.01,
+			ymax=10,
 			col="skyblue",
 			border="slateblue",
-			xla="padj",
-			main = paste(cond1, "-", cond2," adjusted p-value distribution", sep=""),
+			xlab="padj",
+			ylab ="Frequency (%)",
+			main = paste(cond1, "-", cond2," adjusted p-value distribution", sep="")
 	)
+	
+	# process padj=1 frequency
+	fq <- (length(
+				na.omit(anadiffResult[anadiffResult$padj==1,"padj"])) 
+				/length(na.omit(anadiffResult$padj))
+				)*100
+	
+	legend("topleft", paste("padj=1 frequency : ", round(fq, 2), " %", sep=""))
 	
 	if (out) { dev.off() }
 	
