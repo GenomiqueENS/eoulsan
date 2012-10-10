@@ -17,7 +17,7 @@ saveCountMatrix(
 		# file path
 		outPath,
 		# file name
-		paste("diffana_", projectName,"_normalizedCountMatrix.txt", sep="")
+		paste("diffana_", projectName,"_normalizedCountMatrix.tsv", sep="")
 )
 @
 \end{itemize}

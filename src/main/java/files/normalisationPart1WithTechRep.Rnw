@@ -29,7 +29,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste("diffana_", projectName,"_rawCountMatrix.txt", sep="")
+		paste("diffana_", projectName,"_rawCountMatrix.tsv", sep="")
 )
 @
 	\item Pool technical replicates
@@ -51,7 +51,7 @@ saveCountMatrix(
 		# path of the file (do not omit the last "/")
 		outPath,
 		# file name
-		paste("diffana_", projectName, "_rawPooledCountMatrix.txt", sep="")
+		paste("diffana_", projectName, "_rawPooledCountMatrix.tsv", sep="")
 )
 @
 	\item create countDataSet (DESeq object) with pooled matrix and estimate size factor 
