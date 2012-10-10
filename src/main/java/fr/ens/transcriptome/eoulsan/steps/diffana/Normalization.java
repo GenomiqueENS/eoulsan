@@ -651,13 +651,15 @@ public class Normalization {
       String repTechGroup = rRepTechGroup.get(i);
       String condition = rCondNames.get(i);
 
-      if (!condRepTGMap.containsKey(repTechGroup))
-        condRepTGMap.put(repTechGroup, condition);
-      else if (!condRepTGMap.get(repTechGroup).equals(condition))
-        throw new EoulsanException(
-            "There is a mistake in RepTechGroup field of design file : "
-                + "two condition have the same repTechGroup value : "
-                + repTechGroup);
+      if (!repTechGroup.toLowerCase().equals("na")) {
+        if (!condRepTGMap.containsKey(repTechGroup))
+          condRepTGMap.put(repTechGroup, condition);
+        else if (!condRepTGMap.get(repTechGroup).equals(condition))
+          throw new EoulsanException(
+              "There is a mistake in RepTechGroup field of design file : "
+                  + "two condition have the same repTechGroup value : "
+                  + repTechGroup);
+      }
     }
   }
 

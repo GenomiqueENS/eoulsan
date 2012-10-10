@@ -3,6 +3,10 @@
 <<boxplotNorm, fig=TRUE, width=12, height=8>>=
 boxplotCounts(normTarget)
 @
+% Barplot of total count after normalization
+%<<barplotNorm, fig=TRUE, width=12, height=8>>=
+%barplotTotalCount(normTarget)
+%@
 <<densityPlotNorm, fig=TRUE, width=12, height=8>>=
 densityplotRNA(normTarget)
 @
