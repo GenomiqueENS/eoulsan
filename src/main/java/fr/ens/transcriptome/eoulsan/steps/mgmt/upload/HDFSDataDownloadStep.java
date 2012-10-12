@@ -76,6 +76,11 @@ public class HDFSDataDownloadStep extends AbstractStep {
   public static final String DATAFORMATS_TO_DOWNLOAD_SETTING =
       "dataformat.to.download";
 
+  /**
+   * Key in the settings to use to disable the downloads.
+   */
+  public static final String NO_HDFS_DOWNLOAD = "no.hdfs.download";
+
   /** Step name. */
   public static final String STEP_NAME = "_download";
 
@@ -107,7 +112,15 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, Context context) {
+  public StepResult execute(final Design design, final Context context) {
+
+    // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
+    final String noDownloadValue =
+        context.getSettings().getSetting(NO_HDFS_DOWNLOAD);
+    if (noDownloadValue != null
+        && "true".equals(noDownloadValue.trim().toLowerCase()))
+      return new StepResult(context, System.currentTimeMillis(),
+          "Download step skipped in settings.");
 
     LOGGER.info("Start copying results.");
     LOGGER.info("inpath="
