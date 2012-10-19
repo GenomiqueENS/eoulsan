@@ -59,6 +59,8 @@ public class DiffAna extends Normalization {
   private static final String ANADIFF_WITHOUT_REFERENCE =
       "/anadiffWithoutReference.Rnw";
 
+  private final boolean forceBlindDispersionEstimation;
+
   //
   // Public methods
   //
@@ -173,7 +175,7 @@ public class DiffAna extends Normalization {
 
     sb.append("\\section{Analysis}\n\n");
     sb.append("<<beginAnalysis>>=\n");
-    
+
     // Add delete unexpressed gene call
     sb.append("target$counts <- deleteUnexpressedGene(target$counts)\n");
 
@@ -186,7 +188,8 @@ public class DiffAna extends Normalization {
     sb.append("@\n");
 
     // Add dispersion estimation part
-    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
+    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)
+        && !forceBlindDispersionEstimation) {
       sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
     } else {
       sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
@@ -310,10 +313,12 @@ public class DiffAna extends Normalization {
    */
   public DiffAna(Design design, File expressionFilesDirectory,
       String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
-      String rServerName) {
+      String rServerName, boolean fbde) {
 
     super(design, expressionFilesDirectory, expressionFilesPrefix,
         expressionFilesSuffix, outPath, rServerName);
+
+    this.forceBlindDispersionEstimation = fbde;
   }
 
 }
