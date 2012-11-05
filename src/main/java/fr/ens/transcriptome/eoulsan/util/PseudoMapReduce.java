@@ -336,7 +336,9 @@ public abstract class PseudoMapReduce {
       final String key = line.substring(0, indexFirstTab);
       final String value = line.substring(indexFirstTab + 1);
 
-      if (!key.equals(currentKey)) {
+      if (currentKey == null) {
+        currentKey = key;
+      } else if (!key.equals(currentKey)) {
 
         reduce(currentKey, values.iterator(), results, this.reporter);
 
