@@ -26,12 +26,16 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
@@ -41,6 +45,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -93,7 +100,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
    * file. 'value': the TFQ line (3 fields if data are in single-end mode, 6
-   * fields if data are in paired-end mode). 
+   * fields if data are in paired-end mode).
    */
   @Override
   protected void map(final LongWritable key, final Text value,
@@ -222,9 +229,27 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String getIndexLocalName(final File archiveIndexFile)
       throws IOException {
 
-    return this.mapper.getMapperName()
-        + "-index-" + archiveIndexFile.length() + "-"
-        + archiveIndexFile.lastModified();
+    checkNotNull(archiveIndexFile, "Index Zip file is null");
+
+    final ZipFile zf = new ZipFile(archiveIndexFile);
+    final Enumeration<? extends ZipEntry> entries = zf.entries();
+
+    final HashFunction hf = Hashing.md5();
+    final Hasher hs = hf.newHasher();
+
+    while (entries.hasMoreElements()) {
+
+      final ZipEntry e = entries.nextElement();
+
+      hs.putString(e.getName());
+      hs.putLong(e.getSize());
+      hs.putLong(e.getTime());
+      hs.putLong(e.getCrc());
+    }
+
+    zf.close();
+
+    return this.mapper.getMapperName() + "-index-" + hs.hash().toString();
   }
 
   @Override
