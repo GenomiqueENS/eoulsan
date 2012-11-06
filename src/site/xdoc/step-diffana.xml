@@ -1,75 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-/*
- *                  Eoulsan development code
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public License version 2.1 or
- * later and CeCILL-C. This should be distributed with the code.
- * If you do not have a copy, see:
- *
- *      http://www.gnu.org/licenses/lgpl-2.1.txt
- *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
- *
- * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
- * the individual authors. These should be listed in @author doc
- * comments.
- *
- * For more information on the Eoulsan project and its aims,
- * or to join the Eoulsan Google group, visit the home page
- * at:
- *
- *      http://www.transcriptome.ens.fr/eoulsan
- *
- */
--->
-<document> 
-
-  <properties>
-    <title>Differential analysis step</title>
-    <author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+<!-- /* * Eoulsan development code * * This code may be freely distributed 
+	and modified under the * terms of the GNU Lesser General Public License version 
+	2.1 or * later and CeCILL-C. This should be distributed with the code. * 
+	If you do not have a copy, see: * * http://www.gnu.org/licenses/lgpl-2.1.txt 
+	* http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt * * Copyright 
+	for this code is held jointly by the Genomic platform * of the Institut de 
+	Biologie de l'École Normale Supérieure and * the individual authors. These 
+	should be listed in @author doc * comments. * * For more information on the 
+	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit 
+	the home page * at: * * http://www.transcriptome.ens.fr/eoulsan * */ -->
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
 
 
-  <body>
-  
-    <section name="Differential analysis step">
+	<properties>
+		<title>Differential analysis step</title>
+		<author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
+		<author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+	</properties>
 
-      <p>This step allow to perform differential analysis on expression step results.</p>  
 
-      <ul>
-         <li><b>Name</b>: diffana</li>
-         <li><b>Available</b>: Only in local mode</li>
-         <li><b>Multithreaded in local mode</b>: No</li>
-         <li><b>Input</b>: expression file (e.g. <code>expression_1.tsv</code>)</li>
-         <li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>)</li>
-	  <br/>
-         <li><b>Optional parameters</b>: none.</li>
-       </ul>
-      
-    </section>
-    
-    <section name="Required R packages installation">
-    
-    <p>Eoulsan differential analysis module use R with the package DESeq as statistical 
-    backend. Differential analysis module was tested with R 2.15 and DESeq 1.8.3. 
-    You need to install DESeq R packages:</p>
-    <ul>
-        <li><b>DESeq</b></li>
-        <source>
+
+	<body>
+
+		<section name="Differential analysis step">
+
+			<p>This step allow to perform differential analysis on expression
+				step results.
+			</p>
+
+			<ul>
+				<li>
+					<b>Name</b>
+					: diffana
+				</li>
+				<li>
+					<b>Available</b>
+					: Only in local mode
+				</li>
+				<li>
+					<b>Multithreaded in local mode</b>
+					: No
+				</li>
+				<li>
+					<b>Input</b>
+					: expression file (e.g.
+					<code>expression_1.tsv</code>
+					)
+				</li>
+				<li>
+					<b>Output</b>
+					: differential analysis result file (e.g.
+					<code>diffana_1.txt</code>
+					)
+				</li>
+				<li>
+					<b>Optional parameters</b>
+					: none.
+				</li>
+			</ul>
+
+		</section>
+
+		<section name="Required R packages installation">
+
+			<p>Eoulsan differential analysis module use R with the package DESeq
+				as statistical
+				backend. Differential analysis module was tested with
+				R 2.15 and DESeq
+				1.8.3.
+				You need to install DESeq R packages:
+			</p>
+
+			<source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("DESeq")    
-        </source>
+&gt; biocLite("DESeq")
+			</source>
 
-    </ul>    
-    
-    </section>
+		</section>
+
+		<section name="Interpreting output files">
+
+			<subsection name="Dispersion(variance) estimation">
+
+				<div>
+					Dispersion estimation is a critical step of differential
+					analysis, a wrong estimation will not give reliable
+					differential analysis
+					results.
+					DESeq perform a draft estimation and fit it with a
+					local regression.
+					The following graphs are plotted to control
+					dispersion estimation
+					"quality".
+				</div>
+
+				<h4>Double log graph</h4>
+
+				<img src="images/dipersionEstimation.png" alt="" width="420" />
+
+				<div>
+					Normally the dispersion decrease when count value increase,
+					that is why the black "cloud" (draft estimation values) and
+					the red
+					curve (fitted value) must be decreasing.
+				</div>
+
+				<h4>MA-plot</h4>
+
+				<img src="images/MA-plot-mo_injection-mo_mirna_injection.png"
+					alt="" width="420" />
+
+				<div>
+					The main DESeq assumption is that most of genes are NOT
+					differentially expressed.
+					It is possible to verify this assumption
+					on this graph :
+					most of points must be black and near to 0 on the vertical
+					axis.
+				</div>
+
+				<h4>Raw p-value distribution barplot</h4>
+
+				<img src="images/PvalueDistribution.png" alt=""	width="420" />
+
+				<div>
+					If the differential analysis performed well, raw p-value
+					except ends would be almost uniform.
+				</div>
+
+			</subsection>
+
+			<subsection name="Differential analysis">
+
+				<h4>Differential analysis table</h4>
+
+				<div>Differential analysis table contain 8 column :</div>
+				<ul>
+					<li>id : gene id extract from gff annotation file</li>
+					<li>
+						baseMean : mean of counts on data of the 2 condition
+						compared
+					</li>
+					<li>
+						baseMean_cond1 : mean of count on the first condition
+						data
+					</li>
+					<li>
+						baseMean_cond2 : mean of count on the second condition
+						data
+					</li>
+					<li>
+						FoldChange_cond2-cond1 : fold change
+						baseMean_cond2/baseMean_cond1
+					</li>
+					<li>
+						log2FoldChange\_cond2-cond1 : log2 of fold change
+					</li>
+					<li>
+						pval : raw p-value 
+						(before Bejamini &amp; Hochberg correction)
+					</li>
+					<li>
+						padj : adjusted p-value
+						(after Bejamini &amp; Hochberg correction). 
+						This is the one	to use.
+					</li>
+				</ul>
+
+			</subsection>
 
 
-  </body>
-  
+		</section>
+
+
+	</body>
+
 </document>
