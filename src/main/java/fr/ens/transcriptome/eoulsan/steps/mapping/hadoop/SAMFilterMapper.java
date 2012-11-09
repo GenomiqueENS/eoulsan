@@ -94,16 +94,20 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   /**
    * 'key': offset of the beginning of the line from the beginning of the SAM
    * file if data are in single-end mode or in TSAM file if data are in
-   * paired-end mode. 'value': the SAM or TSAM line. 
+   * paired-end mode. 'value': the SAM or TSAM line.
    */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
+    final String line = value.toString();
+    
+    // Avoid header lines 
+    if (line.length()>0 && line.charAt(0)=='@')
+      return;
+
     context.getCounter(this.counterGroup,
         INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
-    final String line = value.toString();
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
