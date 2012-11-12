@@ -80,8 +80,7 @@ $ sudo R
 
 			<subsection name="Null count proportion barplot">
 			
-				<img src="images/barplotNullCount.png"
-						alt="" height="400" />
+				<img src="images/barplotNullCount-750px.png" align="center" />
 						
 				<div>
 					This barplot represent the null count proportion in all sample. 
@@ -98,12 +97,10 @@ $ sudo R
 				</div>
 				
 				<h4>Raw data (before technical replicates pooling and normalization)</h4>
-				<img src="images/barplotTotalCountRaw.png"
-						alt=""  height="420" />
+				<img src="images/barplotTotalCountRaw-750px.png" align="center" />
 				
 				<h4>After technical replicates pooling</h4>
-				<img src="images/barplotTotalCountPool.png"
-						alt="" height="400" />
+				<img src="images/barplotTotalCountPool-750px.png" align="center" />
 						
 			</subsection>
 					
@@ -116,13 +113,13 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/boxplotRaw.png" alt=""  height="400" />
+				<img src="images/boxplotRaw-750px.png" align="center" />
 				
 				<h4>After technical replicates pooling</h4>
-				<img src="images/boxplotPool.png" alt=""  height="400" />
+				<img src="images/boxplotPool-750px.png" align="center" />
 						
 				<h4>After normalization</h4>
-				<img src="images/boxplotNorm.png" alt=""  height="400" />
+				<img src="images/boxplotNorm-750px.png" align="center" />
 				
 			</subsection>
 			
@@ -137,10 +134,10 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/densityPlotRaw.png" alt=""  height="400" />
+				<img src="images/densityPlotRaw-750px.png" align="center" />
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/densityNorm.png" alt=""  height="400" />
+				<img src="images/densityNorm-750px.png" align="center" />
 				
 			</subsection>
 				
@@ -154,10 +151,10 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/clusterRaw.png" alt=""  height="400" />
+				<img src="images/clusterRaw-750px.png" align="center" />
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/clusterNorm.png" alt=""  height="400" />
+				<img src="images/clusterNorm-750px.png" align="center" />
 				
 			</subsection>
 			
@@ -169,7 +166,7 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/rawPCA.png" alt=""  height="400" />
+				<img src="images/rawPCA-750px.png" align="center" />
 				
 				<div>
 					<strong>Warning : </strong>as we can see on this graph if
@@ -179,7 +176,7 @@ $ sudo R
 				</div>
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/normPCA.png" alt=""  height="400" />
+				<img src="images/normPCA-750px.png" align="center" />
 				
 				<div>
 					On this graph like on the corresponding dendrogram we 
