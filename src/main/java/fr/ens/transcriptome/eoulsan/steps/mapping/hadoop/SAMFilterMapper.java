@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -185,7 +184,8 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
             new Path(context.getConfiguration().get("mapred.output.dir"));
 
         final Path headerPath =
-            new Path(outputPath, SAM_HEADER_FILE_PREFIX + UUID.randomUUID());
+            new Path(outputPath, SAM_HEADER_FILE_PREFIX
+                + context.getTaskAttemptID().toString());
         final Writer writer =
             new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
                 context.getConfiguration()));
