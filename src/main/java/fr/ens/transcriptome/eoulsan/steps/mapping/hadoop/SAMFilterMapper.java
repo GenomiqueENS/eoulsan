@@ -28,21 +28,26 @@ import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class defines a mapper for alignment filtering.
@@ -59,6 +64,8 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".samfilter.mapping.quality.threshold";
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
+
+  static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
 
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private List<String> idFields = newArrayList();
@@ -101,9 +108,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       final Context context) throws IOException, InterruptedException {
 
     final String line = value.toString();
-    
-    // Avoid header lines 
-    if (line.length()>0 && line.charAt(0)=='@')
+
+    // Avoid empty and header lines
+    if (!isValidLineAndSaveSAMHeader(line, context))
       return;
 
     context.getCounter(this.counterGroup,
@@ -155,5 +162,52 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   @Override
   protected void cleanup(Context context) throws IOException,
       InterruptedException {
+  }
+
+  private List<String> headers;
+
+  private final boolean isValidLineAndSaveSAMHeader(final String line,
+      final Context context) throws IOException {
+
+    // Test empty line
+    if (line.length() == 0)
+      return false;
+
+    if (line.charAt(0) != '@') {
+
+      // If headers previously found write it in a file
+      if (this.headers != null) {
+
+        // Save headers
+
+        // TODO change for Hadoop 2.0
+        final Path outputPath =
+            new Path(context.getConfiguration().get("mapred.output.dir"));
+
+        final Path headerPath =
+            new Path(outputPath, SAM_HEADER_FILE_PREFIX + UUID.randomUUID());
+        final Writer writer =
+            new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
+                context.getConfiguration()));
+
+        for (String l : this.headers)
+          writer.write(l + "\n");
+
+        writer.close();
+
+        this.headers = null;
+      }
+
+      // The line is an alignment
+      return true;
+    }
+
+    if (this.headers == null)
+      this.headers = Lists.newArrayList();
+
+    this.headers.add(line);
+
+    // The line is an header
+    return false;
   }
 }
