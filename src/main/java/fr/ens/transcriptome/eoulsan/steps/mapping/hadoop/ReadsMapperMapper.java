@@ -335,12 +335,21 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(resultFile);
 
+    final int taskId = context.getTaskAttemptID().getTaskID().getId();
+
     int entriesParsed = 0;
 
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
+      if ("".equals(trimmedLine))
+        continue;
+
+      // Test if line is an header line
+      final boolean headerLine = trimmedLine.charAt(0) == '@';
+
+      // Only write header lines once (on the first output file)
+      if (headerLine && taskId > 0)
         continue;
 
       final int tabPos = line.indexOf('\t');
@@ -350,11 +359,15 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         outKey.set(line.substring(0, tabPos));
         outValue.set(line.substring(tabPos + 1));
 
-        entriesParsed++;
-
         context.write(outKey, outValue);
-        context.getCounter(this.counterGroup,
-            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+
+        // Increment counters if not header
+        if (!headerLine) {
+
+          entriesParsed++;
+          context.getCounter(this.counterGroup,
+              OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+        }
       }
 
     }
