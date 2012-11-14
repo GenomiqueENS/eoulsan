@@ -207,7 +207,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
   }
 
-  /* private */public void execAln(final String bwaPath, final String args,
+  private void execAln(final String bwaPath, final String args,
       final int threads, final String outputFilename,
       final String indexPathname, final String readsFilename)
       throws IOException {

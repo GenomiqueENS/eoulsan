@@ -24,119 +24,63 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
- * @since 1.0
- * @author Laurent Jourdren
+ * @since 1.0?
+ * @author Sandrine Perrin
  */
-public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
-  private static final String MAPPER_EXECUTABLE = "bowtie";
-  private static final String INDEXER_EXECUTABLE = "bowtie-build";
+public abstract class AbstractBowtieReadsMapper extends AbstractSequenceReadsMapper {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
+  private static final String SYNC = AbstractBowtieReadsMapper.class.getName();
   
-  private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
-  
-  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
-  private static final String MAPPER_NAME = "Bowtie";
+  private File outputFile;
 
-  // private static final String SYNC = BowtieReadsMapper.class.getName();
-
-  @Override
-  public String getMapperName() {
-
-    return MAPPER_NAME;
-  }
-  
-  @Override
-  protected String getExtensionIndexFile(){
-    return EXTENSION_INDEX_FILE;
-  }
-
-  @Override
-  public DataFormat getArchiveFormat() {
-
-    return DataFormats.BOWTIE_INDEX_ZIP;
-  }
-
-  @Override
-  protected String getIndexerExecutable() {
-
-    return INDEXER_EXECUTABLE;
-  }
-  
-  @Override
-  protected String[] getMapperExecutables(){
-    return new String[]{MAPPER_EXECUTABLE};
-  }
-
-  protected static final String getBowtieQualityArgument(final FastqFormat format) {
-
-    switch (format) {
-
-    case FASTQ_SOLEXA:
-      return "--solexa-quals";
-
-    case FASTQ_ILLUMINA:
-    case FASTQ_ILLUMINA_1_5:
-      return "--phred64-quals";
-
-    case FASTQ_SANGER:
-    default:
-      return "--phred33-quals";
-    }
-  }
-
-  @Override
-  public String getDefaultArguments(){
-    return DEFAULT_ARGUMENTS;
-  }
-  
-
-  
-  /*
-     private static final String SYNC = BowtieReadsMapper.class.getName();
  
-   private File outputFile;
+  
+  abstract protected String getExtensionIndexFile();
+  
+  abstract public String getMapperName();
+  
+  abstract public DataFormat getArchiveFormat();
+  
+  abstract protected String[] getMapperExecutables();
 
-     //
-  // Init
-  //
+  abstract protected String getIndexerExecutable(); 
+  
+  abstract public String getDefaultArguments();
 
+  
   @Override
-  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
-
-    super.init(pairedEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
-    setMapperArguments(DEFAULT_ARGUMENTS);
-  }
-
-
-  @Override
-  public void clean() {
+  public boolean isSplitsAllowed() {
+    return true;
   }
 
   @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
-
-    return this.outputFile;
-  }
-
-
-     @Override
   public String getMapperVersion() {
 
     try {
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = install(MAPPER_EXECUTABLE);
+        bowtiePath = install(getMapperExecutables());
       }
 
       final String cmd = bowtiePath + " --version";
@@ -157,23 +101,41 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
       return null;
     }
   }
+
+
+
+  @Override
+  protected String getIndexerCommand(String indexerPathname,
+      String genomePathname) {
+
+    File genomeDir = new File(genomePathname).getParentFile();
+
+    return "cd "
+        + genomeDir.getAbsolutePath() + " && " + indexerPathname + " "
+        + genomePathname + " genome";
+  }
+
   
+  protected String bowtieQualityArgument(){
+    return  BowtieReadsMapper.getBowtieQualityArgument(getFastqFormat());
+  }
+
   
-  
-   
-   @Override
+  @Override
   protected void internalMap(File readsFile1, File readsFile2,
       File archiveIndexDir) throws IOException {
 
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE);
+      bowtiePath = install(getMapperExecutables());
     }
 
-    final String ebwt =
-        new File(getIndexPath(archiveIndexDir, ".rev.1.ebwt",
-            ".rev.1.ebwt".length())).getName();
+    final String extensionIndexFile = getExtensionIndexFile();
+    
+    final String index =
+        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
+            extensionIndexFile.length())).getName();
 
     final File outputFile =
         FileUtils.createTempFile(readsFile1.getParentFile(), getMapperName()
@@ -184,11 +146,11 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     
     cmd.add(bowtiePath);
     cmd.add("-S");
-    cmd.add(getBowtieQualityArgument(getFastqFormat()));
+    cmd.add(bowtieQualityArgument());
     cmd.add(getMapperArguments());
     cmd.add("-p");
     cmd.add(getThreadsNumber() + "");
-    cmd.add(ebwt);
+    cmd.add(index);
     cmd.add("-1");
     cmd.add(readsFile1.getAbsolutePath());
     cmd.add("-2");
@@ -212,7 +174,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
+          + getMapperName() + " execution: " + exitValue);
     }
 
     this.outputFile = outputFile;
@@ -226,12 +188,14 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE);
+      bowtiePath = install(getMapperExecutables());
     }
 
-    final String ebwt =
-        new File(getIndexPath(archiveIndexDir, ".rev.1.ebwt",
-            ".rev.1.ebwt".length())).getName();
+    final String extensionIndexFile = getExtensionIndexFile();
+       
+    final String index =
+        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
+            extensionIndexFile.length())).getName();
 
     final File outputFile =
         FileUtils.createTempFile(readsFile.getParentFile(), getMapperName()
@@ -241,12 +205,12 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     final List<String> cmd = new ArrayList<String>();
     
     cmd.add(bowtiePath);
-    cmd.add(getBowtieQualityArgument(getFastqFormat()));
+    cmd.add(bowtieQualityArgument());
     cmd.add(getMapperArguments());
     cmd.add("-p");
     cmd.add(getThreadsNumber() + "");
-    // cmd.add(ebwt);
-    cmd.add(archiveIndexDir.getAbsolutePath() + "/" + ebwt);
+    cmd.add(index);
+    cmd.add(archiveIndexDir.getAbsolutePath() + "/" + index);
     cmd.add("-q");
     cmd.add(readsFile.getAbsolutePath());
     // cmd.add(">");
@@ -268,31 +232,80 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
+          + getMapperName() + " execution: " + exitValue);
     }
 
     this.outputFile = outputFile;
   }
 
+ 
 
   @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
+  public void clean() {
   }
 
+  @Override
+  public File getSAMFile(final GenomeDescription gd) throws IOException {
+
+    return this.outputFile;
+  }
+  
+
+  //
+  // Init
+  //
+
+  @Override
+  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
+
+    super.init(pairedEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
+    setMapperArguments(getDefaultArguments());
+  }
+
+  
+  /*
+  @Override
+  public String getMapperName() {
+
+    return MAPPER_NAME;
+  }
+
+ private static final String getBowtieQualityArgument(final FastqFormat format) {
+
+    switch (format) {
+
+    case FASTQ_SOLEXA:
+      return "--solexa-quals";
+
+    case FASTQ_ILLUMINA:
+    case FASTQ_ILLUMINA_1_5:
+      return "--phred64-quals";
+
+    case FASTQ_SANGER:
+    default:
+      return "--phred33-quals";
+    }
+  }
+
+
+  @Override
+  protected String getIndexerExecutable() {
+
+    return INDEXER_EXECUTABLE;
+  }
+  
+  
     @Override
-  protected String getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+  public DataFormat getArchiveFormat() {
 
-    File genomeDir = new File(genomePathname).getParentFile();
-
-    return "cd "
-        + genomeDir.getAbsolutePath() + " && " + indexerPathname + " "
-        + genomePathname + " genome";
+    return DataFormats.BOWTIE_INDEX_ZIP;
   }
-   *
-   *
-   */ 
-
+  
+  
+*/
 }
+

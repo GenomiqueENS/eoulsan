@@ -158,6 +158,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
     // Build the command line
     final List<String> cmd = new ArrayList<String>();
+    cmd.add(gsnapPath);
     cmd.add("-A");
     cmd.add("sam");
     cmd.add(getGSNAPQualityArgument(getFastqFormat()));
