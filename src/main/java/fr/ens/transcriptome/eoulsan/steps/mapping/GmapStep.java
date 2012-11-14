@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class define a mapping step using the gmap mapper.
@@ -297,7 +298,7 @@ public class GmapStep extends AbstractStep {
     LOGGER.info(cmd);
 
     // Execute the command line and save the exit value
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = sh(cmd);
 
     // if the exit value is not success (0) throw an exception
     if (exitValue != 0) {
@@ -308,6 +309,44 @@ public class GmapStep extends AbstractStep {
     // Count the number of alignment generated for the sample
     parseSAMResults(outSamFile, reporter);
   }
+
+  /**
+   * old version of sh method present in ProcessUtils class use a shell file for
+   * execute the process
+   * @param cmd
+   * @return existValue
+   * @throws IOException
+   */
+  private static final int sh(final String cmd) throws IOException {
+    return sh(cmd, null);
+  }
+
+  private static final int sh(final String cmd, final File temporaryDirectory)
+      throws IOException {
+
+    final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
+    UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
+    bw.write("#!/bin/sh\n");
+    bw.write(cmd);
+    bw.close();
+    f.setExecutable(true);
+
+    LOGGER.fine("execute script (Thread "
+        + Thread.currentThread().getId() + "): " + cmd);
+
+    final Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
+
+    try {
+      final int result = p.waitFor();
+      if (!f.delete())
+        LOGGER.warning("Can not remove sh script: " + f.getAbsolutePath());
+      return result;
+    } catch (InterruptedException e) {
+      if (!f.delete())
+        LOGGER.warning("Can not remove sh script: " + f.getAbsolutePath());
+      throw new IOException(e.getMessage());
+    }
+  }// end sh
 
   // Uncompress
   private static final void unzipArchiveIndexFile(final File archiveIndexFile,

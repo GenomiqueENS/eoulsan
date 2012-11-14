@@ -90,7 +90,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private String counterGroup = this.getClass().getName();
 
-  private File archiveIndexFile;
+  // private File archiveIndexFile;
 
   private ExecLock lock;
 
@@ -165,9 +165,35 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
             + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
+    // DistributedCache.purgeCache(conf);
+
+    // Download genome reference
+    final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+
+    if (localCacheFiles == null || localCacheFiles.length == 0)
+      throw new IOException("Unable to retrieve genome index");
+
+    if (localCacheFiles.length > 1)
+      throw new IOException("Retrieve more than one file in distributed cache");
+
+    // Get the local genome index zip file
+    File archiveIndexFile = new File(localCacheFiles[0].toString());
+
+    LOGGER.info("Genome index compressed file (from distributed cache): "
+        + archiveIndexFile);
+
+    // Set index directory
+    final File archiveIndexDir =
+        new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
+            + "/" + getIndexLocalName(archiveIndexFile));
+
+    LOGGER
+        .info("Genome index directory where decompressed: " + archiveIndexDir);
+
     // Init mapper
-    mapper.init(pairEnd, fastqFormat, new HadoopReporter(context),
-        this.counterGroup);
+    mapper.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        new HadoopReporter(context), this.counterGroup);
+
     LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set lock
@@ -205,23 +231,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set mapper temporary directory
     mapper.setTempDirectory(tempDir);
-
-    // DistributedCache.purgeCache(conf);
-
-    // Download genome reference
-    final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
-
-    if (localCacheFiles == null || localCacheFiles.length == 0)
-      throw new IOException("Unable to retrieve genome index");
-
-    if (localCacheFiles.length > 1)
-      throw new IOException("Retrieve more than one file in distributed cache");
-
-    // Get the local genome index zip file
-    this.archiveIndexFile = new File(localCacheFiles[0].toString());
-
-    LOGGER.info("Genome index compressed file (from distributed cache): "
-        + archiveIndexFile);
 
     LOGGER.info("End of setup()");
   }
@@ -281,16 +290,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     try {
 
-      // Set index directory
-      final File archiveIndexDir =
-          new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-              + "/" + getIndexLocalName(this.archiveIndexFile));
-
-      LOGGER.info("Genome index directory where decompressed: "
-          + archiveIndexDir);
-
       // Process to mapping
-      mapper.map(this.archiveIndexFile, archiveIndexDir);
+      mapper.map();
 
     } catch (IOException e) {
 

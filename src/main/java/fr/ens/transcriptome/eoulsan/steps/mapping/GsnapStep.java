@@ -29,6 +29,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -49,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class define a mapping step using the gmap mapper.
@@ -286,14 +289,31 @@ public class GsnapStep extends AbstractStep {
     }
 
     // Build the command line
-    final String cmd =
-        gsnapPath
-            + " -A sam " + formatArg + " -t " + mapperThreads + " -D "
-            + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
-            + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+
+    cmd.add(gsnapPath);
+    cmd.add("-A");
+    cmd.add("sam");
+    cmd.add(formatArg);
+    cmd.add("-t");
+    cmd.add(mapperThreads + "");
+    cmd.add("-D");
+    cmd.add(archiveIndexDir.getAbsolutePath());
+    cmd.add("-d");
+    cmd.add("genome");
+    cmd.add(cmdArg);
+    cmd.add(">");
+    cmd.add(outSamFile.getAbsolutePath());
+    cmd.add("2>");
+    cmd.add("/dev/null");
+
+    // Old version : cmd = gsnapPath
+    // + " -A sam " + formatArg + " -t " + mapperThreads + " -D "
+    // + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
+    // + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
 
     // Log the command line to execute
-    LOGGER.info(cmd);
+    LOGGER.info(cmd.toString());
 
     // Execute the command line and save the exit value
     final int exitValue = ProcessUtils.sh(cmd);
@@ -306,7 +326,7 @@ public class GsnapStep extends AbstractStep {
 
     // Count the number of alignment generated for the sample
     parseSAMResults(outSamFile, reporter);
-  }
+  }// end map
 
   // Uncompress
   private static final void unzipArchiveIndexFile(final File archiveIndexFile,

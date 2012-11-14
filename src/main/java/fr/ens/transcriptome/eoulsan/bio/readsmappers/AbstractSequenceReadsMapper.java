@@ -33,6 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -79,6 +81,9 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private File readsFile1;
   private File readsFile2;
+
+  private File archiveIndexFile;
+  private File archiveIndexDir;
 
   private UnSynchronizedBufferedWriter readsWriter1;
   private UnSynchronizedBufferedWriter readsWriter2;
@@ -246,16 +251,22 @@ public abstract class AbstractSequenceReadsMapper implements
     // .getAbsolutePath(), null), EoulsanRuntime.getSettings().isDebug());
 
     // Build the command line
-    final String cmd =
-        getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
-            + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
+    cmd.add(">");
+    cmd.add("/dev/null");
+    cmd.add("2>");
+    cmd.add("/dev/null");
+
+    // cmd = getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()) +
+    // " > /dev/null 2> /dev/null";
 
     // ///////////////////////////////////////////
     // / TO DELETE...
     LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
     // ////////////////////////////////////////////
 
-    LOGGER.fine(cmd);
+    LOGGER.fine(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -532,19 +543,17 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public void map(final File archiveIndexFile, final File archiveIndexDir)
-      throws IOException {
+  public void map() throws IOException {
 
     if (isPairEnd()) {
-      map(this.readsFile1, this.readsFile2, archiveIndexFile, archiveIndexDir);
+      map(this.readsFile1, this.readsFile2);
     } else {
-      map(this.readsFile1, archiveIndexFile, archiveIndexDir);
+      map(this.readsFile1);
     }
   }
 
   @Override
-  public final void map(final File readsFile1, final File readsFile2,
-      final File archiveIndexFile, final File archiveIndexDir)
+  public final void map(final File readsFile1, final File readsFile2)
       throws IOException {
 
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
@@ -552,15 +561,11 @@ public abstract class AbstractSequenceReadsMapper implements
     checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
-    checkNotNull(archiveIndexFile, "archiveIndexFile is null");
-    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
 
     checkExistingStandardFile(readsFile1,
         "readsFile1 not exits or is not a standard file.");
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -570,19 +575,14 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
-  public final void map(final File readsFile, final File archiveIndexFile,
-      final File archiveIndexDir) throws IOException {
+  public final void map(final File readsFile) throws IOException {
 
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
     checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile, "readsFile1 is null");
-    checkNotNull(archiveIndexFile, "archiveIndex is null");
-    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
     checkExistingStandardFile(readsFile,
         "readsFile1 not exits or is not a standard file.");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -627,18 +627,29 @@ public abstract class AbstractSequenceReadsMapper implements
    * Initialize mapper.
    * @param pairEnd true if the mapper is in pair end mode.
    * @param fastqFormat Fastq format
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index for the
    * @param incrementer Objet to use to increment counters
    * @param counterGroup counter name group
    */
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
+    checkNotNull(archiveIndexFile, "archiveIndex is null");
+    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
+    checkExistingStandardFile(archiveIndexFile,
+        "The archive index file not exits or is not a standard file.");
+
     this.pairEnd = pairEnd;
     this.fastqFormat = fastqFormat;
+    this.archiveIndexFile = archiveIndexFile;
+    this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
   }
@@ -654,9 +665,16 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
    */
-  protected int sh(final String cmd) throws IOException {
+  protected int sh(final List<String> cmd) throws IOException {
 
     return ProcessUtils.sh(cmd, getTempDirectory());
+  }
+
+  // TODO method added
+  protected int sh(final List<String> cmd, final File temporaryDirectory)
+      throws IOException {
+
+    return ProcessUtils.sh(cmd, temporaryDirectory);
   }
 
   /**

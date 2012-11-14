@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -140,18 +142,34 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
             .toLowerCase() + "-outputFile-", ".sam");
 
     // Build the command line
-    final String cmd =
-        "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -1 " + readsFile1.getAbsolutePath() + " -2 "
-            + readsFile2.getAbsolutePath() + " > "
-            + outputFile.getAbsolutePath() + " 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(bowtiePath);
+    cmd.add("-S");
+    cmd.add(getBowtieQualityArgument(getFastqFormat()));
+    cmd.add(getMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add(ebwt);
+    cmd.add("-1");
+    cmd.add(readsFile1.getAbsolutePath());
+    cmd.add("-2");
+    cmd.add(readsFile2.getAbsolutePath());
+    cmd.add(">");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("2>");
+    cmd.add("/dev/null");
 
-    LOGGER.info(cmd);
+    // Old version : cmd = "cd "
+    // + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
+    // + getBowtieQualityArgument(getFastqFormat()) + " "
+    // + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
+    // + " -1 " + readsFile1.getAbsolutePath() + " -2 "
+    // + readsFile2.getAbsolutePath() + " > "
+    // + outputFile.getAbsolutePath() + " 2> /dev/null";
 
-    final int exitValue = sh(cmd);
+    LOGGER.info(cmd.toString());
+
+    final int exitValue = sh(cmd, archiveIndexDir);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -181,17 +199,32 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
             .toLowerCase() + "-outputFile-", ".sam");
 
     // Build the command line
-    final String cmd =
-        "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -q " + readsFile.getAbsolutePath() + " > "
-            + outputFile.getAbsolutePath() + " 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(bowtiePath);
+    cmd.add(getBowtieQualityArgument(getFastqFormat()));
+    cmd.add(getMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    // cmd.add(ebwt);
+    cmd.add(archiveIndexDir.getAbsolutePath() + "/" + ebwt);
+    cmd.add("-q");
+    cmd.add(readsFile.getAbsolutePath());
+    // cmd.add(">");
+    cmd.add("-S");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("2>");
+    cmd.add("/dev/null");
 
-    LOGGER.info(cmd);
+    // Old version : cmd = "cd "
+    // + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
+    // + getBowtieQualityArgument(getFastqFormat()) + " "
+    // + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
+    // + " -q " + readsFile.getAbsolutePath() + " > "
+    // + outputFile.getAbsolutePath() + " 2> /dev/null";
 
-    final int exitValue = sh(cmd);
+    LOGGER.info(cmd.toString());
+
+    final int exitValue = sh(cmd, archiveIndexDir);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -233,10 +266,13 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairedEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

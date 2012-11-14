@@ -34,6 +34,7 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -134,7 +135,7 @@ public final class ProcessUtils {
    * @return the exit error of the program
    * @throws IOException
    */
-  public static int sh(final String cmd) throws IOException {
+  public static int sh(final List<String> cmd) throws IOException {
 
     return sh(cmd, null);
   }
@@ -146,7 +147,38 @@ public final class ProcessUtils {
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
    */
-  public static int sh(final String cmd, final File temporaryDirectory)
+  public static int sh(final List<String> cmd, final File temporaryDirectory)
+      throws IOException {
+
+    ProcessBuilder pb;
+    Process p = null;
+    int exitValue = Integer.MAX_VALUE;
+    
+    try {
+      pb = new ProcessBuilder(cmd);
+
+      if (!(temporaryDirectory == null))
+        pb.directory(temporaryDirectory);
+
+        pb.redirectErrorStream();
+
+      logger.fine("execute script (Thread "
+          + Thread.currentThread().getId() + "): " + cmd.toString());
+
+      // TODO
+      System.out.println("cmd bowtie " + cmd.toString().replace(',', ' '));
+      
+      p = pb.start();
+
+      exitValue = p.waitFor();
+    } catch (InterruptedException e) {
+      logger.warning("Process interrupted : "+e.getMessage());
+    }
+    return exitValue;
+  }
+
+  // TODO to remove
+  public static int sh_OLD(final String cmd, final File temporaryDirectory)
       throws IOException {
 
     final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
@@ -179,7 +211,7 @@ public final class ProcessUtils {
    * @return the exit error of the program
    * @throws IOException
    */
-  public static ProcessResult shWithOutputs(final String cmd)
+  private static ProcessResult shWithOutputs(final String cmd)
       throws IOException {
 
     return shWithOutputs(cmd, null);
@@ -192,7 +224,7 @@ public final class ProcessUtils {
    * @return the exit error of the program
    * @throws IOException
    */
-  public static ProcessResult shWithOutputs(final String cmd,
+  private static ProcessResult shWithOutputs(final String cmd,
       final File temporaryDirectory) throws IOException {
 
     final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);

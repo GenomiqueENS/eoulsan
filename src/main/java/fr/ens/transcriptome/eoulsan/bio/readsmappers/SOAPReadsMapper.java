@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -120,8 +122,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected void internalMap(final File readsFile, final File archiveIndexDir)
-      throws IOException {
+  /* protected */public void internalMap(final File readsFile,
+      final File archiveIndexDir) throws IOException {
 
     final String soapPath;
 
@@ -137,17 +139,35 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
             ".unmap");
 
     // Build the command line
-    final String cmd =
-        soapPath
-            + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-            + readsFile.getAbsolutePath()
-            + " -D "
-            // + ambFile.substring(0, ambFile.length() - 4)
-            + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-            + outputFile.getAbsolutePath() + " -u "
-            + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd);
+    cmd.add(soapPath);
+    cmd.add(getMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-a");
+    cmd.add(readsFile.getAbsolutePath());
+    cmd.add("-D");
+    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+    cmd.add("-o");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("-u");
+    cmd.add(unmapFile.getAbsolutePath());
+    cmd.add(">");
+    cmd.add("/dev/null");
+    cmd.add("2>");
+    cmd.add("/dev/null");
+
+    // Old version : cmd = soapPath
+    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
+    // + readsFile.getAbsolutePath()
+    // + " -D "
+    // // + ambFile.substring(0, ambFile.length() - 4)
+    // + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
+    // + outputFile.getAbsolutePath() + " -u "
+    // + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -178,20 +198,42 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
             ".unpaired");
 
     // Build the command line
-    final String cmd =
-        soapPath
-            + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-            + readsFile1.getAbsolutePath()
-            + " -b "
-            + readsFile2.getAbsolutePath()
-            + " -D "
-            // + ambFile.substring(0, ambFile.length() - 4)
-            + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-            + outputFile.getAbsolutePath() + " -u "
-            + unmapFile.getAbsolutePath() + " -2 "
-            + unpairedFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd);
+    cmd.add(soapPath);
+    cmd.add(getMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-a");
+    cmd.add(readsFile1.getAbsolutePath());
+    cmd.add("-b");
+    cmd.add(readsFile2.getAbsolutePath());
+    cmd.add("-D");
+    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+    cmd.add("-o");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("-u");
+    cmd.add(unmapFile.getAbsolutePath());
+    cmd.add("-2");
+    cmd.add(unpairedFile.getAbsolutePath());
+    cmd.add(">");
+    cmd.add("/dev/null");
+    cmd.add("2>");
+    cmd.add("/dev/null");
+
+    // Old version : cmd = soapPath
+    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
+    // + readsFile1.getAbsolutePath()
+    // + " -b "
+    // + readsFile2.getAbsolutePath()
+    // + " -D "
+    // // + ambFile.substring(0, ambFile.length() - 4)
+    // + "getIndexPath(archiveIndexDir, \".index.amb\", 4)" + " -o "
+    // + "outputFile.getAbsolutePath()" + " -u "
+    // + "unmapFile.getAbsolutePath()" + " -2 "
+    // + "unpairedFile.getAbsolutePath()" + " > /dev/null 2> /dev/null";
+
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -228,9 +270,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 
