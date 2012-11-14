@@ -167,10 +167,14 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
   public void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
+    final String line = value.toString();
+
+    // Discard SAM headers
+    if (line.length() > 0 && line.charAt(0) == '@')
+      return;
+
     context.getCounter(this.counterGroup,
         TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
-    final String line = value.toString();
 
     List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
 
