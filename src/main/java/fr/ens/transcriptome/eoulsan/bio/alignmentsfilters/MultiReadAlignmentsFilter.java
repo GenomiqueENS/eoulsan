@@ -49,7 +49,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
     boolean pairedEnd = false;
     
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
     
     if (records.get(0).getReadPairedFlag())

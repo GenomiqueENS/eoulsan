@@ -88,7 +88,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
   @Override
   public void filterReadAlignments(List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     List<SAMRecord> recordsToKeep = new ArrayList<SAMRecord>();
