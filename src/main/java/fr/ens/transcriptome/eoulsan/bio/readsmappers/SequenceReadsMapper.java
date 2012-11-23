@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -161,6 +162,8 @@ public interface SequenceReadsMapper {
 
   String getMapperArguments();
 
+  List<String> getListMapperArguments();
+  
   /**
    * Set the mapper additional arguments.
    * @param arguments the additional mapper arguments
@@ -191,6 +194,8 @@ public interface SequenceReadsMapper {
   // void map(File archiveIndexFile, File archiveIndexDir) throws IOException;
   void map() throws IOException;
 
+  
+  
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
@@ -213,6 +218,18 @@ public interface SequenceReadsMapper {
   // @param archiveIndexFile genome index for the mapper as a ZIP file
   // @param archiveIndexDir uncompressed directory for the genome index for the
   void map(File readsFile1, File readsFile2) throws IOException;
+
+  
+  //TODO : new method, make javadoc
+  /**
+   * 
+   * @param readsFile
+   * @param parser
+   * @throws IOException
+   */
+  void map(File readsFile, SAMParserLine parserLine) throws IOException;
+  
+  void map(File readsFile1, File readsFile2, SAMParserLine parserLine) throws IOException;
 
   /**
    * Get the output of the mapper as an SAM file.

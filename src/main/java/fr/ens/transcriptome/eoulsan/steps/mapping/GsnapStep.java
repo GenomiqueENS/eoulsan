@@ -250,6 +250,7 @@ public class GsnapStep extends AbstractStep {
     map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
 
+  
   private void map(final Context context, final String cmdArg,
       final FastqFormat format, final File archiveIndexFile,
       final File outSamFile, final Reporter reporter) throws IOException {
@@ -301,11 +302,12 @@ public class GsnapStep extends AbstractStep {
     cmd.add(archiveIndexDir.getAbsolutePath());
     cmd.add("-d");
     cmd.add("genome");
-    cmd.add(cmdArg);
+    if (cmdArg != null && cmdArg != "")
+    	cmd.add(cmdArg);
+    
     cmd.add(">");
     cmd.add(outSamFile.getAbsolutePath());
-    cmd.add("2>");
-    cmd.add("/dev/null");
+    
 
     // Old version : cmd = gsnapPath
     // + " -A sam " + formatArg + " -t " + mapperThreads + " -D "

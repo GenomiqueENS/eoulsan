@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -51,662 +53,741 @@ import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class abstract implements a generic Mapper.
+ * 
  * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public abstract class AbstractSequenceReadsMapper implements
-    SequenceReadsMapper {
+public abstract class AbstractSequenceReadsMapper
+		implements
+			SequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+	/** Logger */
+	private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String SYNC = AbstractSequenceReadsMapper.class
-      .getName();
+	private static final String SYNC = AbstractSequenceReadsMapper.class
+			.getName();
 
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
+	@Override
+	public boolean isIndexGeneratorOnly() {
+		return false;
+	}
 
-  protected abstract String getIndexerExecutable();
+	protected abstract String getIndexerExecutable();
 
-  protected String[] getIndexerExecutables() {
+	protected String[] getIndexerExecutables() {
 
-    return new String[] {getIndexerExecutable()};
-  }
+		return new String[]{getIndexerExecutable()};
+	}
 
-  protected abstract String getIndexerCommand(final String indexerPathname,
-      final String genomePathname);
+	protected abstract String getIndexerCommand(final String indexerPathname,
+			final String genomePathname);
 
-  private File readsFile1;
-  private File readsFile2;
+	private File readsFile1;
+	private File readsFile2;
 
-  private File archiveIndexFile;
-  private File archiveIndexDir;
+	private File archiveIndexFile;
+	private File archiveIndexDir;
 
-  private UnSynchronizedBufferedWriter readsWriter1;
-  private UnSynchronizedBufferedWriter readsWriter2;
+	private UnSynchronizedBufferedWriter readsWriter1;
+	private UnSynchronizedBufferedWriter readsWriter2;
 
-  private boolean noReadWritten = true;
-  private boolean pairEnd = false;
-  private FastqFormat fastqFormat;
+	private boolean noReadWritten = true;
+	private boolean pairEnd = false;
+	private FastqFormat fastqFormat;
 
-  private int threadsNumber;
-  private String mapperArguments;
-  private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+	private int threadsNumber;
+	private String mapperArguments;
+	private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
-  private int entriesWritten;
+	private int entriesWritten;
 
-  private ReporterIncrementer incrementer;
-  private String counterGroup;
+	private ReporterIncrementer incrementer;
+	private String counterGroup;
 
-  //
-  // Getters
-  //
+	//
+	// Getters
+	//
 
-  @Override
-  public int getThreadsNumber() {
+	@Override
+	public int getThreadsNumber() {
 
-    return this.threadsNumber;
-  }
+		return this.threadsNumber;
+	}
 
-  @Override
-  public String getMapperArguments() {
+	@Override
+	public String getMapperArguments() {
 
-    return this.mapperArguments;
-  }
+		return this.mapperArguments;
+	}
 
-  /**
-   * Test if the mapper is in pair end mode.
-   * @return true if the mapper is in pair end mode
-   */
-  public boolean isPairEnd() {
+	@Override
+	public List<String> getListMapperArguments() {
+		if (getMapperArguments() == "")
+			return null;
 
-    return this.pairEnd;
-  }
+		String[] tabMapperArguments = getMapperArguments().trim().split(" ");
+		return Lists.newArrayList(tabMapperArguments);
+	}
 
-  /**
-   * Get Fastq format.
-   * @return the fastq format
-   */
-  public FastqFormat getFastqFormat() {
+	/**
+	 * Test if the mapper is in pair end mode.
+	 * 
+	 * @return true if the mapper is in pair end mode
+	 */
+	public boolean isPairEnd() {
 
-    return this.fastqFormat;
-  }
+		return this.pairEnd;
+	}
 
-  @Override
-  public File getTempDirectory() {
+	/**
+	 * Get Fastq format.
+	 * 
+	 * @return the fastq format
+	 */
+	public FastqFormat getFastqFormat() {
 
-    return this.tempDir;
-  }
+		return this.fastqFormat;
+	}
 
-  /**
-   * Convenient method to directly get the absolute path for the temporary
-   * directory.
-   * @return the absolute path to the tempory directory as a string
-   */
-  protected String getTempDirectoryPath() {
+	@Override
+	public File getTempDirectory() {
 
-    return getTempDirectory().getAbsolutePath();
-  }
+		return this.tempDir;
+	}
 
-  //
-  // Setters
-  //
+	/**
+	 * Convenient method to directly get the absolute path for the temporary
+	 * directory.
+	 * 
+	 * @return the absolute path to the tempory directory as a string
+	 */
+	protected String getTempDirectoryPath() {
 
-  @Override
-  public void setThreadsNumber(final int threadsNumber) {
+		return getTempDirectory().getAbsolutePath();
+	}
 
-    this.threadsNumber = threadsNumber;
-  }
+	//
+	// Setters
+	//
 
-  @Override
-  public void setMapperArguments(final String arguments) {
+	@Override
+	public void setThreadsNumber(final int threadsNumber) {
 
-    if (arguments == null) {
-      this.mapperArguments = "";
-    } else {
+		this.threadsNumber = threadsNumber;
+	}
 
-      this.mapperArguments = arguments;
-    }
-  }
+	@Override
+	public void setMapperArguments(final String arguments) {
 
-  @Override
-  public void setTempDirectory(final File tempDirectory) {
+		if (arguments == null) {
+			this.mapperArguments = "";
+		} else {
 
-    this.tempDir = tempDirectory;
-  }
+			this.mapperArguments = arguments;
+		}
+	}
 
-  //
-  // Index creation
-  //
+	@Override
+	public void setTempDirectory(final File tempDirectory) {
 
-  private static File uncompressGenomeIfNecessary(final File genomeFile,
-      final File outputDir) throws FileNotFoundException, IOException {
+		this.tempDir = tempDirectory;
+	}
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByFilename(genomeFile.getName());
+	//
+	// Index creation
+	//
 
-    if (ct == CompressionType.NONE)
-      return genomeFile;
+	private static File uncompressGenomeIfNecessary(final File genomeFile,
+			final File outputDir) throws FileNotFoundException, IOException {
 
-    // Define the output filename
-    final File uncompressFile =
-        new File(outputDir,
-            StringUtils.filenameWithoutCompressionExtension(genomeFile
-                .getName()));
+		final CompressionType ct = CompressionType
+				.getCompressionTypeByFilename(genomeFile.getName());
 
-    LOGGER.fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
+		if (ct == CompressionType.NONE)
+			return genomeFile;
 
-    // Create input stream
-    final InputStream in =
-        ct.createInputStream(FileUtils.createInputStream(genomeFile));
+		// Define the output filename
+		final File uncompressFile = new File(outputDir,
+				StringUtils.filenameWithoutCompressionExtension(genomeFile
+						.getName()));
 
-    // Create output stream
-    final OutputStream out = FileUtils.createOutputStream(uncompressFile);
+		LOGGER.fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
 
-    // Uncompress
-    FileUtils.copy(in, out);
+		// Create input stream
+		final InputStream in = ct.createInputStream(FileUtils
+				.createInputStream(genomeFile));
 
-    // Return the uncompress file
-    return uncompressFile;
-  }
+		// Create output stream
+		final OutputStream out = FileUtils.createOutputStream(uncompressFile);
 
-  private void makeIndex(final File genomeFile, final File outputDir)
-      throws IOException {
+		// Uncompress
+		FileUtils.copy(in, out);
 
-    checkNotNull(genomeFile, "genome file is null");
-    checkNotNull(outputDir, "output directory is null");
+		// Return the uncompress file
+		return uncompressFile;
+	}
 
-    final File unCompressGenomeFile =
-        uncompressGenomeIfNecessary(genomeFile, outputDir);
+	private void makeIndex(final File genomeFile, final File outputDir)
+			throws IOException {
 
-    LOGGER.fine("Start computing "
-        + getMapperName() + " index for " + unCompressGenomeFile);
-    final long startTime = System.currentTimeMillis();
+		checkNotNull(genomeFile, "genome file is null");
+		checkNotNull(outputDir, "output directory is null");
 
-    final String indexerPath;
+		final File unCompressGenomeFile = uncompressGenomeIfNecessary(
+				genomeFile, outputDir);
 
-    synchronized (SYNC) {
-      indexerPath = install(getIndexerExecutables());
-    }
+		LOGGER.fine("Start computing " + getMapperName() + " index for "
+				+ unCompressGenomeFile);
+		final long startTime = System.currentTimeMillis();
 
-    if (!outputDir.exists() && !outputDir.mkdir()) {
-      throw new IOException("Unable to create directory for genome index");
-    }
+		final String indexerPath;
 
-    final File tmpGenomeFile =
-        new File(outputDir, unCompressGenomeFile.getName());
+		synchronized (SYNC) {
+			indexerPath = install(getIndexerExecutables());
+		}
 
-    // Create temporary symbolic link for genome
-    if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
-      if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile))
-        throw new IOException("Unable to create the symbolic link in "
-            + tmpGenomeFile + " directory for " + unCompressGenomeFile);
-    }
+		if (!outputDir.exists() && !outputDir.mkdir()) {
+			throw new IOException("Unable to create directory for genome index");
+		}
 
-    // Compute the index
-    // ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile
-    // .getAbsolutePath(), null), EoulsanRuntime.getSettings().isDebug());
+		final File tmpGenomeFile = new File(outputDir,
+				unCompressGenomeFile.getName());
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
-    cmd.add(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
-    cmd.add(">");
-    cmd.add("/dev/null");
-    cmd.add("2>");
-    cmd.add("/dev/null");
+		// Create temporary symbolic link for genome
+		if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
+			if (!FileUtils.createSymbolicLink(unCompressGenomeFile,
+					tmpGenomeFile))
+				throw new IOException("Unable to create the symbolic link in "
+						+ tmpGenomeFile + " directory for "
+						+ unCompressGenomeFile);
+		}
 
-    // cmd = getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()) +
-    // " > /dev/null 2> /dev/null";
+		// Compute the index
+		// ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile
+		// .getAbsolutePath(), null), EoulsanRuntime.getSettings().isDebug());
 
-    // ///////////////////////////////////////////
-    // / TO DELETE...
-    LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
-    // ////////////////////////////////////////////
+		// Build the command line
+		final List<String> cmd = new ArrayList<String>();
+		cmd.add(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
+		cmd.add(">");
+		cmd.add("/dev/null");
+		cmd.add("2>");
+		cmd.add("/dev/null");
 
-    LOGGER.fine(cmd.toString());
+		// cmd = getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
+		// +
+		// " > /dev/null 2> /dev/null";
 
-    final int exitValue = sh(cmd);
+		// ///////////////////////////////////////////
+		// / TO DELETE...
+		LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
+		// ////////////////////////////////////////////
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for index creation execution: "
-          + exitValue);
-    }
+		LOGGER.fine(cmd.toString());
 
-    // Remove symbolic link
-    if (!tmpGenomeFile.delete()) {
-      LOGGER.warning("Cannot remove symbolic link while after creating "
-          + getMapperName() + " index");
-    }
+		final int exitValue = sh(cmd);
 
-    final long endTime = System.currentTimeMillis();
+		if (exitValue != 0) {
+			throw new IOException(
+					"Bad error result for index creation execution: "
+							+ exitValue);
+		}
 
-    LOGGER.fine("Create the "
-        + getMapperName() + " index in "
-        + StringUtils.toTimeHumanReadable(endTime - startTime));
+		// Remove symbolic link
+		if (!tmpGenomeFile.delete()) {
+			LOGGER.warning("Cannot remove symbolic link while after creating "
+					+ getMapperName() + " index");
+		}
 
-  }
+		final long endTime = System.currentTimeMillis();
 
-  @Override
-  public void makeArchiveIndex(final File genomeFile,
-      final File archiveOutputFile) throws IOException {
+		LOGGER.fine("Create the " + getMapperName() + " index in "
+				+ StringUtils.toTimeHumanReadable(endTime - startTime));
 
-    LOGGER.fine("Start index computation");
+	}
 
-    final String indexTmpDirPrefix =
-        Globals.APP_NAME_LOWER_CASE
-            + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
+	@Override
+	public void makeArchiveIndex(final File genomeFile,
+			final File archiveOutputFile) throws IOException {
 
-    LOGGER.fine("Want to create a temporary directory with prefix: "
-        + indexTmpDirPrefix + " in " + getTempDirectory());
+		LOGGER.fine("Start index computation");
 
-    final File indexTmpDir =
-        File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
+		final String indexTmpDirPrefix = Globals.APP_NAME_LOWER_CASE + "-"
+				+ getMapperName().toLowerCase() + "-genomeindexdir-";
 
-    if (!(indexTmpDir.delete())) {
-      throw new IOException("Could not delete temp file ("
-          + indexTmpDir.getAbsolutePath() + ")");
-    }
+		LOGGER.fine("Want to create a temporary directory with prefix: "
+				+ indexTmpDirPrefix + " in " + getTempDirectory());
 
-    if (!indexTmpDir.mkdir()) {
-      throw new IOException("Unable to create directory for genome index");
-    }
+		final File indexTmpDir = File.createTempFile(indexTmpDirPrefix, "",
+				getTempDirectory());
 
-    makeIndex(genomeFile, indexTmpDir);
+		if (!(indexTmpDir.delete())) {
+			throw new IOException("Could not delete temp file ("
+					+ indexTmpDir.getAbsolutePath() + ")");
+		}
 
-    // Zip index files
-    FileUtils.createZip(indexTmpDir, archiveOutputFile);
+		if (!indexTmpDir.mkdir()) {
+			throw new IOException("Unable to create directory for genome index");
+		}
 
-    // Remove temporary directory
-    FileUtils.removeDirectory(indexTmpDir);
+		makeIndex(genomeFile, indexTmpDir);
 
-    LOGGER.fine("End index computation");
-  }
+		// Zip index files
+		FileUtils.createZip(indexTmpDir, archiveOutputFile);
 
-  /**
-   * Create the soap index in a zip archive.
-   * @param is InputStream to use for the genome file
-   * @throws IOException if an error occurs while creating the index
-   */
-  @Override
-  public void makeArchiveIndex(final InputStream is,
-      final File archiveOutputFile) throws IOException {
+		// Remove temporary directory
+		FileUtils.removeDirectory(indexTmpDir);
 
-    checkNotNull(is, "Input steam is null");
-    checkNotNull(archiveOutputFile, "Archive output file is null");
+		LOGGER.fine("End index computation");
+	}
 
-    LOGGER.fine("Copy genome to local disk before computating index");
+	/**
+	 * Create the soap index in a zip archive.
+	 * 
+	 * @param is
+	 *            InputStream to use for the genome file
+	 * @throws IOException
+	 *             if an error occurs while creating the index
+	 */
+	@Override
+	public void makeArchiveIndex(final InputStream is,
+			final File archiveOutputFile) throws IOException {
 
-    final File genomeTmpFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
-            getTempDirectory());
-    FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
+		checkNotNull(is, "Input steam is null");
+		checkNotNull(archiveOutputFile, "Archive output file is null");
 
-    makeArchiveIndex(genomeTmpFile, archiveOutputFile);
+		LOGGER.fine("Copy genome to local disk before computating index");
 
-    if (!genomeTmpFile.delete()) {
-      LOGGER.warning("Cannot delete temporary index zip file");
-    }
+		final File genomeTmpFile = File.createTempFile(
+				Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
+				getTempDirectory());
+		FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
-  }
+		makeArchiveIndex(genomeTmpFile, archiveOutputFile);
 
-  protected String getIndexPath(final File archiveIndexDir,
-      final String extension, final int extensionLength) throws IOException {
+		if (!genomeTmpFile.delete()) {
+			LOGGER.warning("Cannot delete temporary index zip file");
+		}
 
-    final File[] indexFiles =
-        FileUtils.listFilesByExtension(archiveIndexDir, extension);
+	}
 
-    if (indexFiles == null || indexFiles.length != 1) {
-      throw new IOException("Unable to get index file for " + getMapperName());
-    }
+	protected String getIndexPath(final File archiveIndexDir,
+			final String extension, final int extensionLength)
+			throws IOException {
 
-    // Get the path to the index
-    final String bwtFile = indexFiles[0].getAbsolutePath();
+		final File[] indexFiles = FileUtils.listFilesByExtension(
+				archiveIndexDir, extension);
 
-    return bwtFile.substring(0, bwtFile.length() - extensionLength);
-  }
+		if (indexFiles == null || indexFiles.length != 1) {
+			throw new IOException("Unable to get index file for "
+					+ getMapperName());
+		}
 
-  private void unzipArchiveIndexFile(final File archiveIndexFile,
-      final File archiveIndexDir) throws IOException {
+		// Get the path to the index
+		final String bwtFile = indexFiles[0].getAbsolutePath();
 
-    if (!archiveIndexFile.exists())
-      throw new IOException("No index for the mapper found: "
-          + archiveIndexFile);
+		return bwtFile.substring(0, bwtFile.length() - extensionLength);
+	}
 
-    // Uncompress archive if necessary
-    if (!archiveIndexDir.exists()) {
+	private void unzipArchiveIndexFile(final File archiveIndexFile,
+			final File archiveIndexDir) throws IOException {
 
-      if (!archiveIndexDir.mkdir())
-        throw new IOException("Can't create directory for "
-            + getMapperName() + " index: " + archiveIndexDir);
+		if (!archiveIndexFile.exists())
+			throw new IOException("No index for the mapper found: "
+					+ archiveIndexFile);
 
-      LOGGER.fine("Unzip archiveIndexFile "
-          + archiveIndexFile + " in " + archiveIndexDir);
-      FileUtils.unzip(archiveIndexFile, archiveIndexDir);
-    }
+		// Uncompress archive if necessary
+		if (!archiveIndexDir.exists()) {
 
-    FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
-        + " index directory");
+			if (!archiveIndexDir.mkdir())
+				throw new IOException("Can't create directory for "
+						+ getMapperName() + " index: " + archiveIndexDir);
 
-  }
+			LOGGER.fine("Unzip archiveIndexFile " + archiveIndexFile + " in "
+					+ archiveIndexDir);
+			FileUtils.unzip(archiveIndexFile, archiveIndexDir);
+		}
 
-  //
-  // Entries
-  //
+		FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
+				+ " index directory");
 
-  @Override
-  public void closeInput() throws IOException {
+	}
 
-    checkState(!this.noReadWritten,
-        "Can not close writer that has not been created.");
-    checkState(this.readsWriter1 != null,
-        "Can not close writer that has not been created.");
+	//
+	// Entries
+	//
 
-    if (this.readsWriter1 != null)
-      this.readsWriter1.close();
+	@Override
+	public void closeInput() throws IOException {
 
-    if (isPairEnd()) {
+		checkState(!this.noReadWritten,
+				"Can not close writer that has not been created.");
+		checkState(this.readsWriter1 != null,
+				"Can not close writer that has not been created.");
 
-      checkState(this.readsWriter2 != null,
-          "Can not close writer that has not been created.");
+		if (this.readsWriter1 != null)
+			this.readsWriter1.close();
 
-      if (this.readsWriter2 != null)
-        this.readsWriter2.close();
-    }
+		if (isPairEnd()) {
 
-    LOGGER.fine("Write " + entriesWritten + " reads for mapping");
-  }
+			checkState(this.readsWriter2 != null,
+					"Can not close writer that has not been created.");
 
-  private void checkWritePairEnd() throws IOException {
+			if (this.readsWriter2 != null)
+				this.readsWriter2.close();
+		}
 
-    checkState(isPairEnd(), "Can not write paired-end read in single-end mode.");
+		LOGGER.fine("Write " + entriesWritten + " reads for mapping");
+	}
 
-    if (noReadWritten) {
+	private void checkWritePairEnd() throws IOException {
 
-      this.readsFile1 =
-          FileUtils.createTempFile(getTempDirectory(),
-              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
-      this.readsFile2 =
-          FileUtils.createTempFile(getTempDirectory(),
-              Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
+		checkState(isPairEnd(),
+				"Can not write paired-end read in single-end mode.");
 
-      LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
-      LOGGER.fine("Temporary reads/2 file: " + this.readsFile1);
+		if (noReadWritten) {
 
-      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
-      this.readsWriter2 = FileUtils.createFastBufferedWriter(this.readsFile2);
+			this.readsFile1 = FileUtils.createTempFile(getTempDirectory(),
+					Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
+			this.readsFile2 = FileUtils.createTempFile(getTempDirectory(),
+					Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
 
-      this.noReadWritten = false;
-    }
-  }
+			LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
+			LOGGER.fine("Temporary reads/2 file: " + this.readsFile1);
 
-  private void checkWriteSingleEnd() throws IOException {
+			this.readsWriter1 = FileUtils
+					.createFastBufferedWriter(this.readsFile1);
+			this.readsWriter2 = FileUtils
+					.createFastBufferedWriter(this.readsFile2);
 
-    checkState(!isPairEnd(),
-        "Can not write single-end read in paired-end mode.");
+			this.noReadWritten = false;
+		}
+	}
 
-    if (noReadWritten) {
+	private void checkWriteSingleEnd() throws IOException {
 
-      this.readsFile1 =
-          EoulsanRuntime.getRuntime().createTempFile(
-              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
+		checkState(!isPairEnd(),
+				"Can not write single-end read in paired-end mode.");
 
-      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
+		if (noReadWritten) {
 
-      LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
+			this.readsFile1 = EoulsanRuntime.getRuntime().createTempFile(
+					Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
 
-      this.noReadWritten = false;
-    }
+			this.readsWriter1 = FileUtils
+					.createFastBufferedWriter(this.readsFile1);
 
-  }
+			LOGGER.fine("Temporary reads/1 file: " + this.readsFile1);
 
-  @Override
-  public void writeInputEntry(final ReadSequence read1, final ReadSequence read2)
-      throws IOException {
+			this.noReadWritten = false;
+		}
 
-    checkWritePairEnd();
+	}
 
-    if (read1 == null && read2 == null) {
-      return;
-    }
+	@Override
+	public void writeInputEntry(final ReadSequence read1,
+			final ReadSequence read2) throws IOException {
 
-    if (read1 == null || read2 == null) {
+		checkWritePairEnd();
 
-      throw new IllegalStateException(
-          "One of the two read of the pair-end is null");
-    }
+		if (read1 == null && read2 == null) {
+			return;
+		}
 
-    this.readsWriter1.write(read1.toFastQ());
-    this.readsWriter2.write(read2.toFastQ());
+		if (read1 == null || read2 == null) {
 
-    entriesWritten++;
-    inputReadsIncr();
-  }
+			throw new IllegalStateException(
+					"One of the two read of the pair-end is null");
+		}
 
-  @Override
-  public void writeInputEntry(ReadSequence read) throws IOException {
+		this.readsWriter1.write(read1.toFastQ());
+		this.readsWriter2.write(read2.toFastQ());
 
-    checkWriteSingleEnd();
+		entriesWritten++;
+		inputReadsIncr();
+	}
 
-    if (read == null) {
-      return;
-    }
+	@Override
+	public void writeInputEntry(ReadSequence read) throws IOException {
 
-    this.readsWriter1.write(read.toFastQ());
-    entriesWritten++;
-    inputReadsIncr();
-  }
+		checkWriteSingleEnd();
 
-  @Override
-  public void writeInputEntry(final String sequenceName, final String sequence,
-      final String quality) throws IOException {
+		if (read == null) {
+			return;
+		}
 
-    checkWriteSingleEnd();
+		this.readsWriter1.write(read.toFastQ());
+		entriesWritten++;
+		inputReadsIncr();
+	}
 
-    if (sequenceName == null || sequence == null || quality == null) {
-      return;
-    }
+	@Override
+	public void writeInputEntry(final String sequenceName,
+			final String sequence, final String quality) throws IOException {
 
-    this.readsWriter1.write(ReadSequence.toFastQ(sequenceName, sequence,
-        quality));
-    entriesWritten++;
-    inputReadsIncr();
-  }
+		checkWriteSingleEnd();
 
-  @Override
-  public void writeInputEntry(final String sequenceName1,
-      final String sequence1, final String quality1,
-      final String sequenceName2, final String sequence2, final String quality2)
-      throws IOException {
+		if (sequenceName == null || sequence == null || quality == null) {
+			return;
+		}
 
-    checkWritePairEnd();
+		this.readsWriter1.write(ReadSequence.toFastQ(sequenceName, sequence,
+				quality));
+		entriesWritten++;
+		inputReadsIncr();
+	}
 
-    if (sequenceName1 == null
-        || sequence1 == null || quality1 == null || sequenceName2 == null
-        || sequence2 == null || quality2 == null) {
-      return;
-    }
+	@Override
+	public void writeInputEntry(final String sequenceName1,
+			final String sequence1, final String quality1,
+			final String sequenceName2, final String sequence2,
+			final String quality2) throws IOException {
 
-    this.readsWriter1.write(ReadSequence.toFastQ(sequenceName1, sequence1,
-        quality1));
-    this.readsWriter2.write(ReadSequence.toFastQ(sequenceName2, sequence2,
-        quality2));
+		checkWritePairEnd();
 
-    entriesWritten++;
-    inputReadsIncr();
-  }
+		if (sequenceName1 == null || sequence1 == null || quality1 == null
+				|| sequenceName2 == null || sequence2 == null
+				|| quality2 == null) {
+			return;
+		}
 
-  //
-  // Mapping
-  //
+		this.readsWriter1.write(ReadSequence.toFastQ(sequenceName1, sequence1,
+				quality1));
+		this.readsWriter2.write(ReadSequence.toFastQ(sequenceName2, sequence2,
+				quality2));
 
-  @Override
-  public void map() throws IOException {
+		entriesWritten++;
+		inputReadsIncr();
+	}
 
-    if (isPairEnd()) {
-      map(this.readsFile1, this.readsFile2);
-    } else {
-      map(this.readsFile1);
-    }
-  }
+	//
+	// Mapping
+	//
 
-  @Override
-  public final void map(final File readsFile1, final File readsFile2)
-      throws IOException {
+	@Override
+	public void map() throws IOException {
 
-    LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
+		if (isPairEnd()) {
+			map(this.readsFile1, this.readsFile2);
+		} else {
+			map(this.readsFile1);
+		}
+	}
 
-    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
-    checkNotNull(readsFile1, "readsFile1 is null");
-    checkNotNull(readsFile2, "readsFile2 is null");
+	@Override
+	public final void map(final File readsFile1, final File readsFile2)
+			throws IOException {
 
-    checkExistingStandardFile(readsFile1,
-        "readsFile1 not exits or is not a standard file.");
-    checkExistingStandardFile(readsFile2,
-        "readsFile2 not exits or is not a standard file.");
+		LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
 
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+		checkState(isPairEnd(),
+				"Cannot map a single reads file in pair-end mode.");
+		checkNotNull(readsFile1, "readsFile1 is null");
+		checkNotNull(readsFile2, "readsFile2 is null");
 
-    // Process to mapping
-    internalMap(readsFile1, readsFile2, archiveIndexDir);
-  }
+		checkExistingStandardFile(readsFile1,
+				"readsFile1 not exits or is not a standard file.");
+		checkExistingStandardFile(readsFile2,
+				"readsFile2 not exits or is not a standard file.");
 
-  @Override
-  public final void map(final File readsFile) throws IOException {
+		// Unzip archive index if necessary
+		unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
-    LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
+		// Process to mapping
+		internalMap(readsFile1, readsFile2, archiveIndexDir);
+	}
 
-    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
-    checkNotNull(readsFile, "readsFile1 is null");
-    checkExistingStandardFile(readsFile,
-        "readsFile1 not exits or is not a standard file.");
+	@Override
+	public final void map(final File readsFile) throws IOException {
 
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+		LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
-    // Process to mapping
-    internalMap(readsFile, archiveIndexDir);
-  }
+		checkState(!isPairEnd(),
+				"Cannot map a single reads file in pair-end mode.");
+		checkNotNull(readsFile, "readsFile1 is null");
+		checkExistingStandardFile(readsFile,
+				"readsFile1 not exits or is not a standard file.");
 
-  protected abstract void internalMap(final File readsFile1,
-      final File readsFile2, final File archiveIndex) throws IOException;
+		// Unzip archive index if necessary
+		unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
-  protected abstract void internalMap(final File readsFile,
-      final File archiveIndex) throws IOException;
+		// Process to mapping
+		internalMap(readsFile, archiveIndexDir);
+	}
 
-  protected void deleteFile(final File file) {
+	// TODO new method
+	@Override
+	public final void map(File readsFile, SAMParserLine parserLine)
+			throws IOException {
+		LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
-    if (file != null && file.exists()) {
+		checkState(!isPairEnd(),
+				"Cannot map a single reads file in pair-end mode.");
+		checkNotNull(readsFile, "readsFile1 is null");
+		checkExistingStandardFile(readsFile,
+				"readsFile1 not exits or is not a standard file.");
 
-      if (!file.delete()) {
+		// Unzip archive index if necessary
+		unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
-        LOGGER
-            .warning("Cannot delete file while cleaning mapper temporary file: "
-                + file);
-      }
-    }
-  }
+		// Process to mapping
+		internalMap(readsFile, archiveIndexDir, parserLine);
+	}
+	
+	@Override
+	public final void map(File readsFile1, File readsFile2,
+			SAMParserLine parserLine) throws IOException {
 
-  //
-  // Incrementors
-  //
+	}
 
-  private void inputReadsIncr() {
+	protected abstract void internalMap(final File readsFile1,
+			final File readsFile2, final File archiveIndex) throws IOException;
 
-    this.incrementer.incrCounter(this.counterGroup, "mapper input reads", 1);
-  }
+	protected abstract void internalMap(final File readsFile,
+			final File archiveIndex) throws IOException;
+	
+	//TODO new method
+	protected abstract void internalMap(final File readsFile1,
+			final File readsFile2, final File archiveIndex, final SAMParserLine parserLine) throws IOException;
 
-  //
-  // Init
-  //
+	protected abstract void internalMap(final File readsFile,
+			final File archiveIndex, final SAMParserLine parserLine) throws IOException;
 
-  /**
-   * Initialize mapper.
-   * @param pairEnd true if the mapper is in pair end mode.
-   * @param fastqFormat Fastq format
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   * @param incrementer Objet to use to increment counters
-   * @param counterGroup counter name group
-   */
-  @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+	protected void deleteFile(final File file) {
 
-    checkNotNull(incrementer, "incrementer is null");
-    checkNotNull(counterGroup, "counterGroup is null");
+		if (file != null && file.exists()) {
 
-    checkNotNull(archiveIndexFile, "archiveIndex is null");
-    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
+			if (!file.delete()) {
 
-    this.pairEnd = pairEnd;
-    this.fastqFormat = fastqFormat;
-    this.archiveIndexFile = archiveIndexFile;
-    this.archiveIndexDir = archiveIndexDir;
-    this.incrementer = incrementer;
-    this.counterGroup = counterGroup;
-  }
+				LOGGER.warning("Cannot delete file while cleaning mapper temporary file: "
+						+ file);
+			}
+		}
+	}
 
-  //
-  // Utilities methods
-  //
+	//
+	// Incrementors
+	//
 
-  /**
-   * Execute a command. This method automatically use the temporary directory to
-   * create the shell script to execute.
-   * @param cmd command to execute
-   * @return the exit error of the program
-   * @throws IOException if an error occurs while executing the command
-   */
-  protected int sh(final List<String> cmd) throws IOException {
+	private void inputReadsIncr() {
 
-    return ProcessUtils.sh(cmd, getTempDirectory());
-  }
+		this.incrementer
+				.incrCounter(this.counterGroup, "mapper input reads", 1);
+	}
 
-  // TODO method added
-  protected int sh(final List<String> cmd, final File temporaryDirectory)
-      throws IOException {
+	//
+	// Init
+	//
 
-    return ProcessUtils.sh(cmd, temporaryDirectory);
-  }
+	/**
+	 * Initialize mapper.
+	 * 
+	 * @param pairEnd
+	 *            true if the mapper is in pair end mode.
+	 * @param fastqFormat
+	 *            Fastq format
+	 * @param archiveIndexFile
+	 *            genome index for the mapper as a ZIP file
+	 * @param archiveIndexDir
+	 *            uncompressed directory for the genome index for the
+	 * @param incrementer
+	 *            Objet to use to increment counters
+	 * @param counterGroup
+	 *            counter name group
+	 */
+	@Override
+	public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+			final File archiveIndexFile, final File archiveIndexDir,
+			final ReporterIncrementer incrementer, final String counterGroup)
+			throws IOException {
 
-  /**
-   * Install a list of binaries bundled in the jar in a temporary directory.
-   * This method automatically use the temporary directory defined in the object
-   * for the path where to install the binary.
-   * @param binaryFilenames programs to install * @return a string with the path
-   *          of the last installed binary
-   * @throws IOException if an error occurs while installing binary
-   */
-  protected String install(final String... binaryFilenames) throws IOException {
+		checkNotNull(incrementer, "incrementer is null");
+		checkNotNull(counterGroup, "counterGroup is null");
 
-    String result = null;
+		checkNotNull(archiveIndexFile, "archiveIndex is null");
+		checkNotNull(archiveIndexDir, "archiveIndexDir is null");
+		checkExistingStandardFile(archiveIndexFile,
+				"The archive index file not exits or is not a standard file.");
 
-    if (binaryFilenames != null)
-      for (String binaryFilename : binaryFilenames)
-        result = install(binaryFilename);
+		this.pairEnd = pairEnd;
+		this.fastqFormat = fastqFormat;
+		this.archiveIndexFile = archiveIndexFile;
+		this.archiveIndexDir = archiveIndexDir;
+		this.incrementer = incrementer;
+		this.counterGroup = counterGroup;
+	}
 
-    return result;
-  }
+	//
+	// Utilities methods
+	//
 
-  /**
-   * Install a binary bundled in the jar in a temporary directory. This method
-   * automatically use the temporary directory defined in the object for the
-   * path where to install the binary.
-   * @param binaryFilename program to install
-   * @return a string with the path of the installed binary
-   * @throws IOException if an error occurs while installing binary
-   */
-  protected String install(final String binaryFilename) throws IOException {
+	/**
+	 * Execute a command. This method automatically use the temporary directory
+	 * to create the shell script to execute.
+	 * 
+	 * @param cmd
+	 *            command to execute
+	 * @return the exit error of the program
+	 * @throws IOException
+	 *             if an error occurs while executing the command
+	 */
+	protected int sh(final List<String> cmd) throws IOException {
 
-    return BinariesInstaller.install(binaryFilename, getTempDirectoryPath());
-  }
+		return ProcessUtils.sh(cmd, getTempDirectory());
+	}
+
+	// TODO method added
+	protected int sh(final List<String> cmd, final File temporaryDirectory)
+			throws IOException {
+
+		return ProcessUtils.sh(cmd, temporaryDirectory);
+	}
+
+	protected int sh(final List<String> cmd, final File temporaryDirectory, SAMParserLine parserLine)
+			throws IOException {
+
+		return ProcessUtils.sh(cmd, temporaryDirectory, parserLine);
+	}
+	
+	/**
+	 * Install a list of binaries bundled in the jar in a temporary directory.
+	 * This method automatically use the temporary directory defined in the
+	 * object for the path where to install the binary.
+	 * 
+	 * @param binaryFilenames
+	 *            programs to install
+	 * @return a string with the path of the last installed binary
+	 * @throws IOException
+	 *             if an error occurs while installing binary
+	 */
+	protected String install(final String... binaryFilenames)
+			throws IOException {
+
+		String result = null;
+
+		if (binaryFilenames != null)
+			for (String binaryFilename : binaryFilenames)
+				result = install(binaryFilename);
+
+		return result;
+	}
+
+	/**
+	 * Install a binary bundled in the jar in a temporary directory. This method
+	 * automatically use the temporary directory defined in the object for the
+	 * path where to install the binary.
+	 * 
+	 * @param binaryFilename
+	 *            program to install
+	 * @return a string with the path of the installed binary
+	 * @throws IOException
+	 *             if an error occurs while installing binary
+	 */
+	protected String install(final String binaryFilename) throws IOException {
+
+		return BinariesInstaller
+				.install(binaryFilename, getTempDirectoryPath());
+	}
 
 }

@@ -41,242 +41,245 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the SOAP2 mapper.
+ * 
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+	/** Logger */
+	private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String MAPPER_EXECUTABLE = "soap";
-  private static final String INDEXER_EXECUTABLE = "2bwt-builder";
+	private static final String MAPPER_EXECUTABLE = "soap";
+	private static final String INDEXER_EXECUTABLE = "2bwt-builder";
 
-  public static final String DEFAULT_ARGUMENTS = "-r 2 -l 28";
+	public static final String DEFAULT_ARGUMENTS = "-r 2 -l 28";
 
-  private static final String SYNC = SOAPReadsMapper.class.getName();
+	private static final String SYNC = SOAPReadsMapper.class.getName();
 
-  private File outputFile;
-  private File unmapFile;
-  private File unpairedFile;
+	private File outputFile;
+	private File unmapFile;
+	private File unpairedFile;
 
-  @Override
-  public String getMapperName() {
+	@Override
+	public String getMapperName() {
 
-    return "SOAP";
-  }
+		return "SOAP";
+	}
 
-  @Override
-  public boolean isSplitsAllowed() {
+	@Override
+	public boolean isSplitsAllowed() {
 
-    return true;
-  }
+		return true;
+	}
 
-  @Override
-  public String getMapperVersion() {
+	@Override
+	public String getMapperVersion() {
 
-    try {
-      final String execPath;
+		try {
+			final String execPath;
 
-      synchronized (SYNC) {
-        execPath = install(MAPPER_EXECUTABLE);
-      }
+			synchronized (SYNC) {
+				execPath = install(MAPPER_EXECUTABLE);
+			}
 
-      final String cmd = execPath;
+			final String cmd = execPath;
 
-      final String s = ProcessUtils.execToString(cmd, true, false);
-      final String[] lines = s.split("\n");
+			final String s = ProcessUtils.execToString(cmd, true, false);
+			final String[] lines = s.split("\n");
 
-      for (int i = 0; i < lines.length; i++)
-        if (lines[i].startsWith("Version:")) {
+			for (int i = 0; i < lines.length; i++)
+				if (lines[i].startsWith("Version:")) {
 
-          final String[] tokens = lines[i].split(":");
-          if (tokens.length > 1)
-            return tokens[1].trim();
-        }
+					final String[] tokens = lines[i].split(":");
+					if (tokens.length > 1)
+						return tokens[1].trim();
+				}
 
-      return null;
+			return null;
 
-    } catch (IOException e) {
-      return null;
-    }
-  }
+		} catch (IOException e) {
+			return null;
+		}
+	}
 
-  @Override
-  public DataFormat getArchiveFormat() {
+	@Override
+	public DataFormat getArchiveFormat() {
 
-    return DataFormats.SOAP_INDEX_ZIP;
-  }
+		return DataFormats.SOAP_INDEX_ZIP;
+	}
 
-  @Override
-  protected String getIndexerExecutable() {
+	@Override
+	protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
-  }
+		return INDEXER_EXECUTABLE;
+	}
 
-  @Override
-  protected String getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+	@Override
+	protected String getIndexerCommand(String indexerPathname,
+			String genomePathname) {
 
-    return indexerPathname + " " + genomePathname;
-  }
+		return indexerPathname + " " + genomePathname;
+	}
 
-  @Override
-  /* protected */public void internalMap(final File readsFile,
-      final File archiveIndexDir) throws IOException {
+	@Override
+	protected void internalMap(final File readsFile, final File archiveIndexDir)
+			throws IOException {
 
-    final String soapPath;
+		final String soapPath;
 
-    synchronized (SYNC) {
-      soapPath = install(MAPPER_EXECUTABLE);
-    }
+		synchronized (SYNC) {
+			soapPath = install(MAPPER_EXECUTABLE);
+		}
 
-    this.outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".soap");
-    this.unmapFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".unmap");
+		this.outputFile = FileUtils.createTempFile(readsFile.getParentFile(),
+				"soap-outputFile-", ".soap");
+		this.unmapFile = FileUtils.createTempFile(readsFile.getParentFile(),
+				"soap-outputFile-", ".unmap");
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+		// Build the command line
+		final List<String> cmd = new ArrayList<String>();
 
-    cmd.add(soapPath);
-    cmd.add(getMapperArguments());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-a");
-    cmd.add(readsFile.getAbsolutePath());
-    cmd.add("-D");
-    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
-    cmd.add("-o");
-    cmd.add(outputFile.getAbsolutePath());
-    cmd.add("-u");
-    cmd.add(unmapFile.getAbsolutePath());
-    cmd.add(">");
-    cmd.add("/dev/null");
-    cmd.add("2>");
-    cmd.add("/dev/null");
+		cmd.add(soapPath);
+		if (getListMapperArguments() != null)
+			cmd.addAll(getListMapperArguments());
+		cmd.add("-p");
+		cmd.add(getThreadsNumber() + "");
+		cmd.add("-a");
+		cmd.add(readsFile.getAbsolutePath());
+		cmd.add("-D");
+		cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+		cmd.add("-o");
+		cmd.add(outputFile.getAbsolutePath());
+		cmd.add("-u");
+		cmd.add(unmapFile.getAbsolutePath());
 
-    // Old version : cmd = soapPath
-    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-    // + readsFile.getAbsolutePath()
-    // + " -D "
-    // // + ambFile.substring(0, ambFile.length() - 4)
-    // + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-    // + outputFile.getAbsolutePath() + " -u "
-    // + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+		// Old version : cmd = soapPath
+		// + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
+		// + readsFile.getAbsolutePath()
+		// + " -D "
+		// // + ambFile.substring(0, ambFile.length() - 4)
+		// + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
+		// + outputFile.getAbsolutePath() + " -u "
+		// + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
 
-    LOGGER.info(cmd.toString());
+		LOGGER.info(cmd.toString());
 
-    final int exitValue = sh(cmd);
+		final int exitValue = sh(cmd);
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for SOAP execution: " + exitValue);
-    }
+		if (exitValue != 0) {
+			throw new IOException("Bad error result for SOAP execution: "
+					+ exitValue);
+		}
 
-  }
+	}
 
-  @Override
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir) throws IOException {
+	@Override
+	protected void internalMap(File readsFile1, File readsFile2,
+			File archiveIndexDir) throws IOException {
 
-    final String soapPath;
+		final String soapPath;
 
-    synchronized (SYNC) {
-      soapPath = install(MAPPER_EXECUTABLE);
-    }
+		synchronized (SYNC) {
+			soapPath = install(MAPPER_EXECUTABLE);
+		}
 
-    this.outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".soap");
-    this.unmapFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unmap");
-    this.unpairedFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unpaired");
+		this.outputFile = FileUtils.createTempFile(readsFile1.getParentFile(),
+				"soap-output-", ".soap");
+		this.unmapFile = FileUtils.createTempFile(readsFile1.getParentFile(),
+				"soap-output-", ".unmap");
+		this.unpairedFile = FileUtils.createTempFile(
+				readsFile1.getParentFile(), "soap-output-", ".unpaired");
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+		// Build the command line
+		final List<String> cmd = new ArrayList<String>();
 
-    cmd.add(soapPath);
-    cmd.add(getMapperArguments());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-a");
-    cmd.add(readsFile1.getAbsolutePath());
-    cmd.add("-b");
-    cmd.add(readsFile2.getAbsolutePath());
-    cmd.add("-D");
-    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
-    cmd.add("-o");
-    cmd.add(outputFile.getAbsolutePath());
-    cmd.add("-u");
-    cmd.add(unmapFile.getAbsolutePath());
-    cmd.add("-2");
-    cmd.add(unpairedFile.getAbsolutePath());
-    cmd.add(">");
-    cmd.add("/dev/null");
-    cmd.add("2>");
-    cmd.add("/dev/null");
+		cmd.add(soapPath);
+		if (getListMapperArguments() != null)
+			cmd.addAll(getListMapperArguments());
+		cmd.add("-p");
+		cmd.add(getThreadsNumber() + "");
+		cmd.add("-a");
+		cmd.add(readsFile1.getAbsolutePath());
+		cmd.add("-b");
+		cmd.add(readsFile2.getAbsolutePath());
+		cmd.add("-D");
+		cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+		cmd.add("-o");
+		cmd.add(outputFile.getAbsolutePath());
+		cmd.add("-u");
+		cmd.add(unmapFile.getAbsolutePath());
+		cmd.add("-2");
+		cmd.add(unpairedFile.getAbsolutePath());
 
-    // Old version : cmd = soapPath
-    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-    // + readsFile1.getAbsolutePath()
-    // + " -b "
-    // + readsFile2.getAbsolutePath()
-    // + " -D "
-    // // + ambFile.substring(0, ambFile.length() - 4)
-    // + "getIndexPath(archiveIndexDir, \".index.amb\", 4)" + " -o "
-    // + "outputFile.getAbsolutePath()" + " -u "
-    // + "unmapFile.getAbsolutePath()" + " -2 "
-    // + "unpairedFile.getAbsolutePath()" + " > /dev/null 2> /dev/null";
+		// Old version : cmd = soapPath
+		// + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
+		// + readsFile1.getAbsolutePath()
+		// + " -b "
+		// + readsFile2.getAbsolutePath()
+		// + " -D "
+		// // + ambFile.substring(0, ambFile.length() - 4)
+		// + "getIndexPath(archiveIndexDir, \".index.amb\", 4)" + " -o "
+		// + "outputFile.getAbsolutePath()" + " -u "
+		// + "unmapFile.getAbsolutePath()" + " -2 "
+		// + "unpairedFile.getAbsolutePath()" + " > /dev/null 2> /dev/null";
 
-    LOGGER.info(cmd.toString());
+		LOGGER.info(cmd.toString());
 
-    final int exitValue = sh(cmd);
+		final int exitValue = sh(cmd);
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for SOAP execution: " + exitValue);
-    }
+		if (exitValue != 0) {
+			throw new IOException("Bad error result for SOAP execution: "
+					+ exitValue);
+		}
 
-  }
+	}
 
-  @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
+	@Override
+	protected void internalMap(final File readsFile1, final File readsFile2,
+			final File archiveIndex, final SAMParserLine parserLine)
+			throws IOException {
+		new UnsupportedOperationException();
+	}
+	@Override
+	protected void internalMap(final File readsFile, final File archiveIndex,
+			final SAMParserLine parserLine) throws IOException {
+		new UnsupportedOperationException();
+	}
 
-    final File resultFile =
-        FileUtils.createTempFile(this.outputFile.getParentFile(),
-            "soap-output-", ".sam");
+	@Override
+	public File getSAMFile(final GenomeDescription gd) throws IOException {
 
-    final SOAP2SAM convert =
-        new SOAP2SAM(this.outputFile, this.unmapFile, gd, resultFile);
-    convert.convert(isPairEnd());
+		final File resultFile = FileUtils.createTempFile(
+				this.outputFile.getParentFile(), "soap-output-", ".sam");
 
-    return resultFile;
-  }
+		final SOAP2SAM convert = new SOAP2SAM(this.outputFile, this.unmapFile,
+				gd, resultFile);
+		convert.convert(isPairEnd());
 
-  @Override
-  public void clean() {
+		return resultFile;
+	}
 
-    deleteFile(this.outputFile);
-    deleteFile(this.unmapFile);
-  }
+	@Override
+	public void clean() {
 
-  //
-  // Init
-  //
+		deleteFile(this.outputFile);
+		deleteFile(this.unmapFile);
+	}
 
-  @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+	//
+	// Init
+	//
 
-    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
-    setMapperArguments(DEFAULT_ARGUMENTS);
-  }
+	@Override
+	public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+			final File archiveIndexFile, final File archiveIndexDir,
+			final ReporterIncrementer incrementer, final String counterGroup)
+			throws IOException {
+
+		super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+				incrementer, counterGroup);
+		setMapperArguments(DEFAULT_ARGUMENTS);
+	}
 
 }

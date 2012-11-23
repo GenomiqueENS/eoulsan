@@ -38,7 +38,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
-import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class define a wrapper on the GSNAP mapper.
@@ -168,13 +167,14 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(archiveIndexDir.getAbsolutePath());
     cmd.add("-d");
     cmd.add("genome");
-    cmd.add(getMapperArguments());
+    if (getListMapperArguments() != null)
+    	cmd.addAll(getListMapperArguments());
     cmd.add(readsFile1.getAbsolutePath());
     cmd.add(readsFile2.getAbsolutePath());
+    
     cmd.add(">");
     cmd.add(outputFile.getAbsolutePath());
-    cmd.add("2>");
-    cmd.add("/dev/null");
+    
 
     // Old version : cmd = gsnapPath
     // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
@@ -222,12 +222,13 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(archiveIndexDir.getAbsolutePath());
     cmd.add("-d");
     cmd.add("genome");
-    cmd.add(getMapperArguments());
+    if (getListMapperArguments() != null)
+    	cmd.addAll(getListMapperArguments());
     cmd.add(readsFile.getAbsolutePath());
+    
     cmd.add(">");
     cmd.add(outputFile.getAbsolutePath());
-    cmd.add("2>");
-    cmd.add("/dev/null");
+    
 
     // Old version : cmd = gsnapPath
     // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
@@ -248,6 +249,18 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     this.outputFile = outputFile;
 
   }
+
+	@Override
+	protected void internalMap(final File readsFile1, final File readsFile2,
+			final File archiveIndex, final SAMParserLine parserLine)
+			throws IOException {
+		new UnsupportedOperationException();
+	}
+	@Override
+	protected void internalMap(final File readsFile, final File archiveIndex,
+			final SAMParserLine parserLine) throws IOException {
+		new UnsupportedOperationException();
+	}
 
   private static final String getGSNAPQualityArgument(final FastqFormat format)
       throws IOException {

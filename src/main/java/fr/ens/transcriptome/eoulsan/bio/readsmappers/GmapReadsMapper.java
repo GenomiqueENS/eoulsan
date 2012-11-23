@@ -38,137 +38,149 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * This class define a mapper for Gmap. <b>Warning:</b> This is a fake mapper
  * that can be only use to create index for gmap/gsnap as gmap does not read
  * fastq file and not generate SAM files.
+ * 
  * @since 1.1
  * @author Laurent Jourdren
  */
 public class GmapReadsMapper extends AbstractSequenceReadsMapper {
 
-  private static final String MAPPER_EXECUTABLE = "gmap";
-  private static final String[] INDEXER_EXECUTABLES = new String[] {
-      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
+	private static final String MAPPER_EXECUTABLE = "gmap";
+	private static final String[] INDEXER_EXECUTABLES = new String[]{
+			"fa_coords", "gmap_process", "gmapindex", "gmap_build"};
 
-  public static final String DEFAULT_ARGUMENTS = "";
+	public static final String DEFAULT_ARGUMENTS = "";
 
-  private static final String SYNC = GmapReadsMapper.class.getName();
-  private static final String MAPPER_NAME = "Gmap";
+	private static final String SYNC = GmapReadsMapper.class.getName();
+	private static final String MAPPER_NAME = "Gmap";
 
-  @Override
-  public String getMapperName() {
+	@Override
+	public String getMapperName() {
 
-    return MAPPER_NAME;
-  }
+		return MAPPER_NAME;
+	}
 
-  @Override
-  public boolean isSplitsAllowed() {
+	@Override
+	public boolean isSplitsAllowed() {
 
-    return false;
-  }
+		return false;
+	}
 
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return true;
-  }
+	@Override
+	public boolean isIndexGeneratorOnly() {
+		return true;
+	}
 
-  @Override
-  public String getMapperVersion() {
+	@Override
+	public String getMapperVersion() {
 
-    try {
-      final String gmapPath;
+		try {
+			final String gmapPath;
 
-      synchronized (SYNC) {
-        gmapPath = install(MAPPER_EXECUTABLE);
-      }
+			synchronized (SYNC) {
+				gmapPath = install(MAPPER_EXECUTABLE);
+			}
 
-      final String cmd = gmapPath + " --version";
+			final String cmd = gmapPath + " --version";
 
-      final String s = ProcessUtils.execToString(cmd);
-      final String[] lines = s.split("\n");
-      if (lines.length == 0)
-        return null;
+			final String s = ProcessUtils.execToString(cmd);
+			final String[] lines = s.split("\n");
+			if (lines.length == 0)
+				return null;
 
-      final String[] tokens1 = lines[0].split(" version ");
-      if (tokens1.length > 1) {
-        final String[] tokens2 = tokens1[1].trim().split(" called ");
-        if (tokens2.length > 1)
-          return tokens2[0];
-      }
+			final String[] tokens1 = lines[0].split(" version ");
+			if (tokens1.length > 1) {
+				final String[] tokens2 = tokens1[1].trim().split(" called ");
+				if (tokens2.length > 1)
+					return tokens2[0];
+			}
 
-      return null;
+			return null;
 
-    } catch (IOException e) {
+		} catch (IOException e) {
 
-      return null;
-    }
-  }
+			return null;
+		}
+	}
 
-  @Override
-  public DataFormat getArchiveFormat() {
+	@Override
+	public DataFormat getArchiveFormat() {
 
-    return DataFormats.GMAP_INDEX_ZIP;
-  }
+		return DataFormats.GMAP_INDEX_ZIP;
+	}
 
-  @Override
-  protected String getIndexerExecutable() {
+	@Override
+	protected String getIndexerExecutable() {
 
-    return null;
-  }
+		return null;
+	}
 
-  @Override
-  protected String[] getIndexerExecutables() {
+	@Override
+	protected String[] getIndexerExecutables() {
 
-    return INDEXER_EXECUTABLES.clone();
-  }
+		return INDEXER_EXECUTABLES.clone();
+	}
 
-  @Override
-  protected String getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+	@Override
+	protected String getIndexerCommand(String indexerPathname,
+			String genomePathname) {
 
-    final String binariesDirectory =
-        new File(indexerPathname).getParentFile().getAbsolutePath();
-    final String genomeDirectory =
-        new File(genomePathname).getParentFile().getAbsolutePath();
+		final String binariesDirectory = new File(indexerPathname)
+				.getParentFile().getAbsolutePath();
+		final String genomeDirectory = new File(genomePathname).getParentFile()
+				.getAbsolutePath();
 
-    return indexerPathname
-        + " -B " + binariesDirectory + " -D " + genomeDirectory + " -d genome "
-        + genomePathname;
-  }
+		return indexerPathname + " -B " + binariesDirectory + " -D "
+				+ genomeDirectory + " -d genome " + genomePathname;
+	}
 
-  @Override
-  public File getSAMFile(GenomeDescription gd) throws IOException {
+	@Override
+	public File getSAMFile(GenomeDescription gd) throws IOException {
 
-    return null;
-  }
+		return null;
+	}
 
-  @Override
-  public void clean() {
-    // Do nothing
-  }
+	@Override
+	public void clean() {
+		// Do nothing
+	}
 
-  @Override
-  protected void internalMap(File readsFile1, File readsFile2, File archiveIndex)
-      throws IOException {
-    // Do Nothing
-  }
+	@Override
+	protected void internalMap(File readsFile1, File readsFile2,
+			File archiveIndex) throws IOException {
+		// Do Nothing
+	}
 
-  @Override
-  protected void internalMap(File readsFile, File archiveIndex)
-      throws IOException {
-    // Do Nothing
-  }
+	@Override
+	protected void internalMap(File readsFile, File archiveIndex)
+			throws IOException {
+		// Do Nothing
+	}
 
-  //
-  // Init
-  //
+	@Override
+	protected void internalMap(final File readsFile1, final File readsFile2,
+			final File archiveIndex, final SAMParserLine parserLine)
+			throws IOException {
+		new UnsupportedOperationException();
+	}
+	@Override
+	protected void internalMap(final File readsFile, final File archiveIndex,
+			final SAMParserLine parserLine) throws IOException {
+		new UnsupportedOperationException();
+	}
 
-  @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+	//
+	// Init
+	//
 
-    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
-    setMapperArguments(DEFAULT_ARGUMENTS);
-  }
+	@Override
+	public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+			final File archiveIndexFile, final File archiveIndexDir,
+			final ReporterIncrementer incrementer, final String counterGroup)
+			throws IOException {
+
+		super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+				incrementer, counterGroup);
+		setMapperArguments(DEFAULT_ARGUMENTS);
+	}
 
 }
