@@ -57,6 +57,7 @@ public class SAMParser {
   // Read string must contain only these characters
   private static final Pattern VALID_BASES = Pattern
       .compile("^[acgtnACGTN.=]+$");
+  private static final Pattern SPLIT_LINE = Pattern.compile("\t");
 
   private SAMFileReader.ValidationStringency validationStringency =
       SAMFileReader.ValidationStringency.DEFAULT_STRINGENCY;
@@ -343,6 +344,45 @@ public class SAMParser {
           new SAMSequenceRecord(sequenceName,
               (int) genomeDescription.getSequenceLength(sequenceName));
       sequences.add(sequenceRecord);
+    }
+
+    this.mFileHeader
+        .setSequenceDictionary(new SAMSequenceDictionary(sequences));
+  }
+
+  // TODO
+  /**
+   * Create genome description for SAM tool from headlines of SAM contain a list
+   * of String selected only the head line @SQ and fields @SN for name sequence
+   * and @LN for length
+   * @param genomeDescription
+   */
+  public void setGenomeDescription(final List<String> genomeDescription) {
+    if (genomeDescription == null) {
+      return;
+    }
+
+    final List<SAMSequenceRecord> sequences =
+        new ArrayList<SAMSequenceRecord>();
+
+    for (String headlineSAM : genomeDescription) {
+
+      if ("@SQ".equals(headlineSAM.substring(0, 3))) {
+
+        final String[] tokens = SPLIT_LINE.split(headlineSAM);
+
+        final String sequenceName = tokens[1].substring(3);
+        final int sequenceLength = Integer.parseInt(tokens[2].substring(3));
+
+        final SAMSequenceRecord sequenceRecord =
+            new SAMSequenceRecord(sequenceName, sequenceLength);
+
+        // remove double of sequenceName present in headline SAM file
+        if (!sequences.contains(sequenceRecord)) {
+          sequences.add(sequenceRecord);
+        }
+      }
+
     }
 
     this.mFileHeader
