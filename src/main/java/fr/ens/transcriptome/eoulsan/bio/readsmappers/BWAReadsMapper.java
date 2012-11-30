@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -237,10 +238,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 		cmd.add(outputFilename);
 		cmd.add(indexPathname);
 		cmd.add(readsFilename);
-		// cmd.add(">");
-		// cmd.add("/dev/null");
-		// cmd.add("2>");
-		// cmd.add("/dev/null");
 
 		// Old version cmd : bwaPath
 		// + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads

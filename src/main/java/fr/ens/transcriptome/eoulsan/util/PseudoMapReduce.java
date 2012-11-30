@@ -228,11 +228,9 @@ public abstract class PseudoMapReduce {
 				.createTempFile("map-", ".txt", this.tmpDir);
 		listMapOutputFile.add(outputFile);
 
-		System.out.println("name map output file : "+outputFile.getAbsolutePath());
-		
 		return outputFile;
 	}
-	
+
 	/**
 	 * Execute the map phase with an Inputstream as input Create a list of file
 	 * : one for each index file used
@@ -485,9 +483,9 @@ public abstract class PseudoMapReduce {
 
 		br.close();
 		bw.close();
-		//if (!this.sortOutputFile.delete())
-			LOGGER.warning("Can not delete sort output file: "
-					+ this.sortOutputFile.getAbsolutePath());
+		// if (!this.sortOutputFile.delete())
+		LOGGER.warning("Can not delete sort output file: "
+				+ this.sortOutputFile.getAbsolutePath());
 	}
 
 }
