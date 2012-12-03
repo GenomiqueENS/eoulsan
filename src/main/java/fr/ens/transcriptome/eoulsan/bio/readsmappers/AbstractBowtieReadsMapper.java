@@ -104,14 +104,23 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
 
-    File genomeDir = new File(genomePathname).getParentFile();
+    List<String> cmd = new ArrayList<String>();
 
-    return "cd "
-        + genomeDir.getAbsolutePath() + " && " + indexerPathname + " "
-        + genomePathname + " genome";
+    cmd.add(indexerPathname);
+    cmd.add(genomePathname);
+    cmd.add("genome");
+
+    return cmd;
+  }
+
+  // TODO to remove
+  protected String getIndexerCommand_OLD(String indexerPathname,
+      String genomePathname) {
+    File genomeDir = new File(genomePathname).getParentFile();
+    return indexerPathname + " " + genomePathname + " genome";
   }
 
   protected String bowtieQualityArgument() {
@@ -271,7 +280,7 @@ public abstract class AbstractBowtieReadsMapper extends
           + getMapperName() + " execution: " + exitValue);
     }
   }
-  
+
   @Override
   protected void internalMap(File readsFile1, File readsFile2,
       File archiveIndexDir, SAMParserLine parserLine) throws IOException {

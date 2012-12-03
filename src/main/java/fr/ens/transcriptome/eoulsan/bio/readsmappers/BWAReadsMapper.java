@@ -46,307 +46,332 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the BWA mapper.
- * 
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
-	/** Logger */
-	private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-	private static final String MAPPER_EXECUTABLE = "bwa";
-	private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
+  private static final String MAPPER_EXECUTABLE = "bwa";
+  private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
-	private static final int MIN_BWTSW_ALGO_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
-	public static final String DEFAULT_ARGUMENTS = "-l 28";
+  private static final int MIN_BWTSW_ALGO_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
+  public static final String DEFAULT_ARGUMENTS = "-l 28";
 
-	private static final String SYNC = BWAReadsMapper.class.getName();
-	private static final String MAPPER_NAME = "BWA";
-	private static final String PREFIX_FILES = "bwa";
-	private static final String SUFFIX_OUTPUT = ".sai";
+  private static final String SYNC = BWAReadsMapper.class.getName();
+  private static final String MAPPER_NAME = "BWA";
+  private static final String PREFIX_FILES = "bwa";
+  private static final String SUFFIX_OUTPUT = ".sai";
 
-	private File archiveIndex;
-	private File outputFile;
-	private File readsFile;
+  private File archiveIndex;
+  private File outputFile;
+  private File readsFile;
 
-	private File outputFile1;
-	private File readsFile1;
-	private File outputFile2;
-	private File readsFile2;
+  private File outputFile1;
+  private File readsFile1;
+  private File outputFile2;
+  private File readsFile2;
 
-	@Override
-	public String getMapperName() {
+  @Override
+  public String getMapperName() {
 
-		return MAPPER_NAME;
-	}
+    return MAPPER_NAME;
+  }
 
-	@Override
-	public boolean isSplitsAllowed() {
+  @Override
+  public boolean isSplitsAllowed() {
 
-		return true;
-	}
+    return true;
+  }
 
-	@Override
-	public String getMapperVersion() {
+  @Override
+  public String getMapperVersion() {
 
-		try {
-			final String execPath;
+    try {
+      final String execPath;
 
-			synchronized (SYNC) {
-				execPath = BinariesInstaller.install(MAPPER_EXECUTABLE,
-						getTempDirectoryPath());
-			}
+      synchronized (SYNC) {
+        execPath =
+            BinariesInstaller
+                .install(MAPPER_EXECUTABLE, getTempDirectoryPath());
+      }
 
-			final String cmd = execPath;
+      final String cmd = execPath;
 
-			final String s = ProcessUtils.execToString(cmd, true, false);
-			final String[] lines = s.split("\n");
+      final String s = ProcessUtils.execToString(cmd, true, false);
+      final String[] lines = s.split("\n");
 
-			for (int i = 0; i < lines.length; i++)
-				if (lines[i].startsWith("Version:")) {
+      for (int i = 0; i < lines.length; i++)
+        if (lines[i].startsWith("Version:")) {
 
-					final String[] tokens = lines[i].split(":");
-					if (tokens.length > 1)
-						return tokens[1].trim();
-				}
+          final String[] tokens = lines[i].split(":");
+          if (tokens.length > 1)
+            return tokens[1].trim();
+        }
 
-			return null;
+      return null;
 
-		} catch (IOException e) {
+    } catch (IOException e) {
 
-			return null;
-		}
-	}
+      return null;
+    }
+  }
 
-	@Override
-	protected String getIndexerCommand(String indexerPathname,
-			String genomePathname) {
+  @Override
+  protected List<String> getIndexerCommand(String indexerPathname,
+      String genomePathname) {
 
-		final File genomeFile = new File(genomePathname);
+    final File genomeFile = new File(genomePathname);
+    List<String> cmd = new ArrayList<String>();
+    if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
+      cmd.add(indexerPathname);
+      cmd.add("index");
+      cmd.add("-a");
+      cmd.add("bwtsw");
+      cmd.add(genomePathname);
 
-		if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
-			return indexerPathname + " index -a bwtsw " + genomePathname;
-		}
+      return cmd;
+    }
 
-		return indexerPathname + " index " + genomePathname;
-	}
+    cmd.add(indexerPathname);
+    cmd.add("index");
+    cmd.add(genomePathname);
 
-	@Override
-	protected String getIndexerExecutable() {
+    return cmd;
+  }
 
-		return INDEXER_EXECUTABLE;
-	}
+  // TODO to remove
+  protected String getIndexerCommand_OLD(String indexerPathname,
+      String genomePathname) {
 
-	@Override
-	public DataFormat getArchiveFormat() {
+    final File genomeFile = new File(genomePathname);
+    if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
+      return indexerPathname + " index -a bwtsw " + genomePathname;
+    }
+    return indexerPathname + " index " + genomePathname;
+  }
 
-		return DataFormats.BWA_INDEX_ZIP;
-	}
+  @Override
+  protected String getIndexerExecutable() {
 
-	@Override
-	protected void internalMap(final File readsFile, final File archiveIndex)
-			throws IOException {
+    return INDEXER_EXECUTABLE;
+  }
 
-		this.archiveIndex = archiveIndex;
-		this.readsFile = readsFile;
+  @Override
+  public DataFormat getArchiveFormat() {
 
-		final String bwaPath;
+    return DataFormats.BWA_INDEX_ZIP;
+  }
 
-		synchronized (SYNC) {
-			bwaPath = install(MAPPER_EXECUTABLE);
-		}
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex)
+      throws IOException {
 
-		this.outputFile = FileUtils.createTempFile(readsFile.getParentFile(),
-				PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
+    this.archiveIndex = archiveIndex;
+    this.readsFile = readsFile;
 
-		execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-				outputFile.getAbsolutePath(), getIndexPath(archiveIndex),
-				readsFile.getAbsolutePath());
+    final String bwaPath;
 
-	}
+    synchronized (SYNC) {
+      bwaPath = install(MAPPER_EXECUTABLE);
+    }
 
-	private String getIndexPath(final File archiveIndexDir) throws IOException {
+    this.outputFile =
+        FileUtils.createTempFile(readsFile.getParentFile(), PREFIX_FILES
+            + "-output-", SUFFIX_OUTPUT);
 
-		return getIndexPath(archiveIndexDir, ".bwt", 4);
-	}
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile.getAbsolutePath(), getIndexPath(archiveIndex),
+        readsFile.getAbsolutePath());
 
-	@Override
-	protected void internalMap(final File readsFile1, final File readsFile2,
-			final File archiveIndexDir) throws IOException {
+  }
 
-		this.archiveIndex = archiveIndexDir;
-		this.readsFile1 = readsFile1;
-		this.readsFile2 = readsFile2;
+  private String getIndexPath(final File archiveIndexDir) throws IOException {
 
-		final String bwaPath;
+    return getIndexPath(archiveIndexDir, ".bwt", 4);
+  }
 
-		synchronized (SYNC) {
-			bwaPath = install("bwa");
-		}
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndexDir) throws IOException {
 
-		LOGGER.fine("first pair member alignement");
+    this.archiveIndex = archiveIndexDir;
+    this.readsFile1 = readsFile1;
+    this.readsFile2 = readsFile2;
 
-		this.outputFile1 = FileUtils.createTempFile(readsFile1.getParentFile(),
-				PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
+    final String bwaPath;
 
-		execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-				outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
-				readsFile1.getAbsolutePath());
+    synchronized (SYNC) {
+      bwaPath = install("bwa");
+    }
 
-		LOGGER.fine("first second member alignement");
+    LOGGER.fine("first pair member alignement");
 
-		this.outputFile2 = FileUtils.createTempFile(readsFile2.getParentFile(),
-				PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
+    this.outputFile1 =
+        FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
+            + "-output-", SUFFIX_OUTPUT);
 
-		execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-				outputFile2.getAbsolutePath(), getIndexPath(archiveIndexDir),
-				readsFile2.getAbsolutePath());
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
+        readsFile1.getAbsolutePath());
 
-	}
+    LOGGER.fine("first second member alignement");
 
-	@Override
-	protected void internalMap(final File readsFile1, final File readsFile2,
-			final File archiveIndex, final SAMParserLine parserLine)
-			throws IOException {
-		new UnsupportedOperationException();
-	}
-
-	@Override
-	protected void internalMap(final File readsFile, final File archiveIndex,
-			final SAMParserLine parserLine) throws IOException {
-		new UnsupportedOperationException();
-	}
-
-	private void execAln(final String bwaPath, final String args,
-			final int threads, final String outputFilename,
-			final String indexPathname, final String readsFilename)
-			throws IOException {
+    this.outputFile2 =
+        FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
+            + "-output-", SUFFIX_OUTPUT);
 
-		final boolean illuminaFastq = getFastqFormat() == FASTQ_ILLUMINA
-				|| getFastqFormat() == FASTQ_ILLUMINA_1_5;
+    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
+        outputFile2.getAbsolutePath(), getIndexPath(archiveIndexDir),
+        readsFile2.getAbsolutePath());
 
-		final List<String> cmd = new ArrayList<String>();
-		cmd.add(bwaPath);
-		cmd.add("aln");
-		if (illuminaFastq)
-			cmd.add("-I");
-		cmd.add(args);
-		cmd.add("-t");
-		cmd.add(threads + "");
-		cmd.add("-f");
-		cmd.add(outputFilename);
-		cmd.add(indexPathname);
-		cmd.add(readsFilename);
+  }
 
-		// Old version cmd : bwaPath
-		// + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads
-		// + " -f " + outputFilename + " " + " " + indexPathname + " "
-		// + readsFilename + " > /dev/null 2> /dev/null";
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
 
-		LOGGER.info(cmd.toString());
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
+  }
 
-		final int exitValue = sh(cmd);
+  private void execAln(final String bwaPath, final String args,
+      final int threads, final String outputFilename,
+      final String indexPathname, final String readsFilename)
+      throws IOException {
 
-		if (exitValue != 0) {
-			throw new IOException("Bad error result for " + MAPPER_NAME
-					+ " execution: " + exitValue);
-		}
+    final boolean illuminaFastq =
+        getFastqFormat() == FASTQ_ILLUMINA
+            || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
-	}
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(bwaPath);
+    cmd.add("aln");
+    if (illuminaFastq)
+      cmd.add("-I");
+    cmd.add(args);
+    cmd.add("-t");
+    cmd.add(threads + "");
+    cmd.add("-f");
+    cmd.add(outputFilename);
+    cmd.add(indexPathname);
+    cmd.add(readsFilename);
 
-	@Override
-	public File getSAMFile(final GenomeDescription gd) throws IOException {
+    // Old version cmd : bwaPath
+    // + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads
+    // + " -f " + outputFilename + " " + " " + indexPathname + " "
+    // + readsFilename + " > /dev/null 2> /dev/null";
 
-		final String bwaPath;
+    LOGGER.info(cmd.toString());
 
-		synchronized (SYNC) {
-			bwaPath = install("bwa");
-		}
+    final int exitValue = sh(cmd);
 
-		final List<String> cmd = new ArrayList<String>();
-		final File resultFile;
+    if (exitValue != 0) {
+      throw new IOException("Bad error result for "
+          + MAPPER_NAME + " execution: " + exitValue);
+    }
 
-		if (isPairEnd()) {
+  }
 
-			resultFile = FileUtils.createTempFile(
-					this.outputFile1.getParentFile(),
-					PREFIX_FILES + "-output-", ".sam");
+  @Override
+  public File getSAMFile(final GenomeDescription gd) throws IOException {
 
-			cmd.add(bwaPath);
-			cmd.add("sampe");
-			cmd.add("-P");
-			cmd.add("-f");
-			cmd.add(resultFile.getAbsolutePath());
-			cmd.add(getIndexPath(archiveIndex));
-			cmd.add(outputFile1.getAbsolutePath());
-			cmd.add(outputFile2.getAbsolutePath());
-			cmd.add(readsFile1.getAbsolutePath());
-			cmd.add(readsFile2.getAbsolutePath());
+    final String bwaPath;
 
-			// Old version cmd = bwaPath
-			// + " sampe -P -f " + resultFile.getAbsolutePath() + " "
-			// + getIndexPath(archiveIndex) + " "
-			// + outputFile1.getAbsolutePath() + " "
-			// + outputFile2.getAbsolutePath() + " "
-			// + readsFile1.getAbsolutePath() + " "
-			// + readsFile2.getAbsolutePath() + " > /dev/null 2> /dev/null";
+    synchronized (SYNC) {
+      bwaPath = install("bwa");
+    }
 
-		} else {
+    final List<String> cmd = new ArrayList<String>();
+    final File resultFile;
 
-			resultFile = FileUtils.createTempFile(
-					this.outputFile.getParentFile(), PREFIX_FILES + "-output-",
-					".sam");
+    if (isPairEnd()) {
 
-			// Build the command line
-			cmd.add(bwaPath);
-			cmd.add("sampe");
-			cmd.add("-f");
-			cmd.add(resultFile.getAbsolutePath());
-			cmd.add(getIndexPath(archiveIndex));
-			cmd.add(outputFile.getAbsolutePath());
-			cmd.add(readsFile.getAbsolutePath());
+      resultFile =
+          FileUtils.createTempFile(this.outputFile1.getParentFile(),
+              PREFIX_FILES + "-output-", ".sam");
 
-			// Old Version cmd = bwaPath
-			// + " samse -f " + resultFile.getAbsolutePath() + " "
-			// + getIndexPath(archiveIndex) + " " + outputFile.getAbsolutePath()
-			// + " " + readsFile.getAbsolutePath() +
-			// " > /dev/null 2> /dev/null";
+      cmd.add(bwaPath);
+      cmd.add("sampe");
+      cmd.add("-P");
+      cmd.add("-f");
+      cmd.add(resultFile.getAbsolutePath());
+      cmd.add(getIndexPath(archiveIndex));
+      cmd.add(outputFile1.getAbsolutePath());
+      cmd.add(outputFile2.getAbsolutePath());
+      cmd.add(readsFile1.getAbsolutePath());
+      cmd.add(readsFile2.getAbsolutePath());
 
-		}
+      // Old version cmd = bwaPath
+      // + " sampe -P -f " + resultFile.getAbsolutePath() + " "
+      // + getIndexPath(archiveIndex) + " "
+      // + outputFile1.getAbsolutePath() + " "
+      // + outputFile2.getAbsolutePath() + " "
+      // + readsFile1.getAbsolutePath() + " "
+      // + readsFile2.getAbsolutePath() + " > /dev/null 2> /dev/null";
 
-		System.out.println("cmd: " + cmd);
-		LOGGER.info(cmd.toString());
+    } else {
 
-		final int exitValue = sh(cmd);
+      resultFile =
+          FileUtils.createTempFile(this.outputFile.getParentFile(),
+              PREFIX_FILES + "-output-", ".sam");
 
-		if (exitValue != 0) {
-			throw new IOException("Bad error result for " + MAPPER_NAME
-					+ " execution: " + exitValue);
-		}
+      // Build the command line
+      cmd.add(bwaPath);
+      cmd.add("sampe");
+      cmd.add("-f");
+      cmd.add(resultFile.getAbsolutePath());
+      cmd.add(getIndexPath(archiveIndex));
+      cmd.add(outputFile.getAbsolutePath());
+      cmd.add(readsFile.getAbsolutePath());
 
-		return resultFile;
-	}
+      // Old Version cmd = bwaPath
+      // + " samse -f " + resultFile.getAbsolutePath() + " "
+      // + getIndexPath(archiveIndex) + " " + outputFile.getAbsolutePath()
+      // + " " + readsFile.getAbsolutePath() +
+      // " > /dev/null 2> /dev/null";
 
-	@Override
-	public void clean() {
+    }
 
-		deleteFile(this.outputFile);
-	}
+    System.out.println("cmd: " + cmd);
+    LOGGER.info(cmd.toString());
 
-	//
-	// Init
-	//
+    final int exitValue = sh(cmd);
 
-	@Override
-	public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-			final File archiveIndexFile, final File archiveIndexDir,
-			final ReporterIncrementer incrementer, final String counterGroup)
-			throws IOException {
+    if (exitValue != 0) {
+      throw new IOException("Bad error result for "
+          + MAPPER_NAME + " execution: " + exitValue);
+    }
 
-		super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-				incrementer, counterGroup);
-		setMapperArguments(DEFAULT_ARGUMENTS);
-	}
+    return resultFile;
+  }
+
+  @Override
+  public void clean() {
+
+    deleteFile(this.outputFile);
+  }
+
+  //
+  // Init
+  //
+
+  @Override
+  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
+
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
+    setMapperArguments(DEFAULT_ARGUMENTS);
+  }
 
 }

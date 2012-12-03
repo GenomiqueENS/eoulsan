@@ -129,7 +129,28 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected List<String> getIndexerCommand(String indexerPathname,
+      String genomePathname) {
+    List<String> cmd = new ArrayList<String>();
+    final String binariesDirectory =
+        new File(indexerPathname).getParentFile().getAbsolutePath();
+    final String genomeDirectory =
+        new File(genomePathname).getParentFile().getAbsolutePath();
+
+    cmd.add(indexerPathname);
+    cmd.add("-B");
+    cmd.add(binariesDirectory);
+    cmd.add("-D");
+    cmd.add(genomeDirectory);
+    cmd.add("-d");
+    cmd.add("genome");
+    cmd.add(genomePathname);
+
+    return cmd;
+  }
+
+  // TODO to remove
+  protected String getIndexerCommand_OLD(String indexerPathname,
       String genomePathname) {
 
     final String binariesDirectory =
@@ -169,13 +190,12 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("-d");
     cmd.add("genome");
     if (getListMapperArguments() != null)
-    	cmd.addAll(getListMapperArguments());
+      cmd.addAll(getListMapperArguments());
     cmd.add(readsFile1.getAbsolutePath());
     cmd.add(readsFile2.getAbsolutePath());
-    
+
     cmd.add(">");
     cmd.add(outputFile.getAbsolutePath());
-    
 
     // Old version : cmd = gsnapPath
     // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
@@ -224,12 +244,11 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("-d");
     cmd.add("genome");
     if (getListMapperArguments() != null)
-    	cmd.addAll(getListMapperArguments());
+      cmd.addAll(getListMapperArguments());
     cmd.add(readsFile.getAbsolutePath());
-    
+
     cmd.add(">");
     cmd.add(outputFile.getAbsolutePath());
-    
 
     // Old version : cmd = gsnapPath
     // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
@@ -251,17 +270,18 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
   }
 
-	@Override
-	protected void internalMap(final File readsFile1, final File readsFile2,
-			final File archiveIndex, final SAMParserLine parserLine)
-			throws IOException {
-		new UnsupportedOperationException();
-	}
-	@Override
-	protected void internalMap(final File readsFile, final File archiveIndex,
-			final SAMParserLine parserLine) throws IOException {
-		new UnsupportedOperationException();
-	}
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
+
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
+  }
 
   private static final String getGSNAPQualityArgument(final FastqFormat format)
       throws IOException {
