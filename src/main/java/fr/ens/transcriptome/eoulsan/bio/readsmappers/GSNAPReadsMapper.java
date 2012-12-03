@@ -47,8 +47,8 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String MAPPER_EXECUTABLE = "gsnap_2012-07-12";
-  private static final String INDEXER_EXECUTABLE = "gmap_build_2012-07-12";
+  private static final String MAPPER_EXECUTABLE = "gsnap";
+  private static final String INDEXER_EXECUTABLE = "gmap_build";
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
