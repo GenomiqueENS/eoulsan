@@ -24,12 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,12 +40,10 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -75,27 +72,6 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
-    final GenomeDescription genomeDescription;
-
-    // Load genome description object
-    try {
-
-      if (design.getSampleCount() > 0)
-        genomeDescription =
-            GenomeDescription.load(context.getInputDataFile(
-                DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
-      else
-        genomeDescription = null;
-
-    } catch (FileNotFoundException e) {
-
-      return new StepResult(context, e, "File not found: " + e.getMessage());
-    } catch (IOException e) {
-
-      return new StepResult(context, e, "error while filtering: "
-          + e.getMessage());
-    }
-
     // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design,
         getLocalThreads(), new ProcessSample() {
@@ -112,16 +88,11 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
             try {
 
-              // Create parser object
-              final SAMParser parser = new SAMParser();
-              parser.setGenomeDescription(genomeDescription);
-
               // Get the read filter
               final ReadAlignmentsFilter filter =
                   getAlignmentsFilter(reporter, COUNTER_GROUP);
 
-              resultString =
-                  filterSample(context, sample, reporter, parser, filter);
+              resultString = filterSample(context, sample, reporter, filter);
 
             } catch (IOException e) {
               throwException(e, "Error while filtering: " + e.getMessage());
@@ -141,14 +112,13 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @param context Eoulsan context
    * @param sample sample to process
    * @param reporter reporter to use
-   * @param parser SAM parser to use
    * @param filter alignments filter to use
    * @param pairedEnd true if data are in paired-end mode
    * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
   private static String filterSample(final Context context,
-      final Sample sample, final Reporter reporter, final SAMParser parser,
+      final Sample sample, final Reporter reporter,
       final ReadAlignmentsFilter filter) throws IOException {
 
     // Get the source
