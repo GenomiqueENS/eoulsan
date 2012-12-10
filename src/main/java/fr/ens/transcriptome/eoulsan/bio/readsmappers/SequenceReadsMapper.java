@@ -221,15 +221,21 @@ public interface SequenceReadsMapper {
   void map(File readsFile1, File readsFile2) throws IOException;
 
   
-  //TODO : new method, make javadoc
   /**
-   * 
-   * @param readsFile
-   * @param parser
+   * mode single-end : method used only by bowtie mapper
+   * @param readsFile fastq input file with reads
+   * @param parser SAMParserLine which parses the outputstream without create a file
    * @throws IOException
    */
   void map(File readsFile, SAMParserLine parserLine) throws IOException;
   
+  /**
+   * mode pair-end : method used only by bowtie mapper
+   * @param readsFile1 fastq input file with reads
+   * @param readsFile2 fastq input file with reads
+   * @param parser SAMParserLine which parses the outputstream without create a file
+   * @throws IOException
+   */
   void map(File readsFile1, File readsFile2, SAMParserLine parserLine) throws IOException;
 
   /**

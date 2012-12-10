@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +50,10 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils.ProcessThreadErrOutput;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils.ProcessThreadErrOutput;
 
 /**
  * This class abstract implements a generic Mapper.
@@ -79,12 +78,11 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract String getIndexerExecutable();
 
   protected String[] getIndexerExecutables() {
-
     return new String[] {getIndexerExecutable()};
   }
 
-  protected abstract List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname);
+  protected abstract List<String> getIndexerCommand(
+      final String indexerPathname, final String genomePathname);
 
   private File readsFile1;
   private File readsFile2;
@@ -262,21 +260,12 @@ public abstract class AbstractSequenceReadsMapper implements
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
     }
 
-    // Compute the index
-    // ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile
-    // .getAbsolutePath(), null), EoulsanRuntime.getSettings().isDebug());
-
-    // Build the command line
+    // Build the command line and compute the index
     final List<String> cmd = new ArrayList<String>();
     cmd.addAll(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
-//    cmd.add(">");
-//    cmd.add("/dev/null");
-//    cmd.add("2>");
-//    cmd.add("/dev/null");
 
-    // cmd = getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
-    // +
-    // " > /dev/null 2> /dev/null";
+    // TODO print to remove
+    System.out.println("cmd index : " + cmd.toString().replaceAll(", ", " "));
 
     // ///////////////////////////////////////////
     // / TO DELETE...
@@ -608,7 +597,12 @@ public abstract class AbstractSequenceReadsMapper implements
     internalMap(readsFile, archiveIndexDir);
   }
 
-  // TODO new method
+  @Override
+  /**
+   * mode single-end
+   * method used only by bowtie mapper, the outputstream of bowtie is got back
+   * by SAMParserLine which parses the stream without create a file
+   */
   public final void map(File readsFile, SAMParserLine parserLine)
       throws IOException {
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
@@ -624,8 +618,13 @@ public abstract class AbstractSequenceReadsMapper implements
     // Process to mapping
     internalMap(readsFile, archiveIndexDir, parserLine);
   }
-  
+
   @Override
+  /**
+   * mode pair-end
+   * method used only by bowtie mapper, the outputstream of bowtie is got back
+   * by SAMParserLine which parses the stream without create a file
+   */
   public final void map(File readsFile1, File readsFile2,
       SAMParserLine parserLine) throws IOException {
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
@@ -646,14 +645,12 @@ public abstract class AbstractSequenceReadsMapper implements
     internalMap(readsFile1, readsFile2, archiveIndexDir, parserLine);
   }
 
-  
   protected abstract void internalMap(final File readsFile1,
       final File readsFile2, final File archiveIndex) throws IOException;
 
   protected abstract void internalMap(final File readsFile,
       final File archiveIndex) throws IOException;
 
-  // TODO new method
   protected abstract void internalMap(final File readsFile1,
       final File readsFile2, final File archiveIndex,
       final SAMParserLine parserLine) throws IOException;
@@ -735,18 +732,27 @@ public abstract class AbstractSequenceReadsMapper implements
     return ProcessUtils.sh(cmd, getTempDirectory());
   }
 
-  // TODO method added
   protected int sh(final List<String> cmd, final File temporaryDirectory)
       throws IOException {
 
     return ProcessUtils.sh(cmd, temporaryDirectory);
   }
 
+  /**
+   * create a processBuilder for execute command and include a thread for get
+   * output stream which redirect to parserLine and a second thread for get
+   * error stream
+   * @param cmd line command
+   * @param temporaryDirectory
+   * @param parserLine SAMParserLine which retrieve output stream
+   * @return integer exit value for the process
+   * @throws IOException
+   */
   protected int sh(final List<String> cmd, final File temporaryDirectory,
       final SAMParserLine parserLine) throws IOException {
 
     ProcessBuilder pb;
-    final Process p ;
+    final Process p;
     int exitValue = Integer.MAX_VALUE;
 
     try {
@@ -755,16 +761,12 @@ public abstract class AbstractSequenceReadsMapper implements
       if (!(temporaryDirectory == null))
         pb.directory(temporaryDirectory);
 
-      LOGGER.fine("execute script (Thread "
+      LOGGER.fine("execute command (Thread "
           + Thread.currentThread().getId() + "): " + cmd.toString());
-
-      // TODO
-      // System.out.println("cmd bowtie " + cmd.toString().replace(',', ' '));
 
       p = pb.start();
 
-      // TODO : write in outputfile
-
+      // a thread for get output stream and redirect him to parserLine
       final Thread tout = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -778,7 +780,6 @@ public abstract class AbstractSequenceReadsMapper implements
               String line = "";
 
               while ((line = buff.readLine()) != null) {
-                // System.out.println("p.getInputStream de bowtie : "+line);
                 parserLine.parseLine(line);
               }// while
 
@@ -790,14 +791,15 @@ public abstract class AbstractSequenceReadsMapper implements
         }
       });
       tout.start();
-      
+
+      // thread for get error stream, not save
       final Thread terr =
           new Thread(new ProcessThreadErrOutput(p.getErrorStream()));
       terr.start();
 
       tout.join();
       terr.join();
-      
+
       exitValue = p.waitFor();
 
     } catch (InterruptedException e) {

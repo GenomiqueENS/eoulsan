@@ -127,9 +127,6 @@ public abstract class AbstractBowtieReadsMapper extends
     return BowtieReadsMapper.getBowtieQualityArgument(getFastqFormat());
   }
 
-  /**
-	 * 
-	 */
   @Override
   protected void internalMap(File readsFile1, File readsFile2,
       File archiveIndexDir) throws IOException {
@@ -217,14 +214,7 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add(outputFile.getAbsolutePath());
 
     // TODO to remove
-    System.out.println("cmd bowtie : " + cmd);
-
-    // Old version : cmd = "cd "
-    // + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-    // + getBowtieQualityArgument(getFastqFormat()) + " "
-    // + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-    // + " -q " + readsFile.getAbsolutePath() + " > "
-    // + outputFile.getAbsolutePath() + " 2> /dev/null";
+    // System.out.println("cmd bowtie : " + cmd);
 
     LOGGER.info(cmd.toString());
 
@@ -238,7 +228,13 @@ public abstract class AbstractBowtieReadsMapper extends
     this.outputFile = outputFile;
   }
 
-  // TODO new methods
+  /**
+   * create the line command for execute single-end mapping
+   * @param readsFile fastq file
+   * @param archiveIndexDir index file used for mapping
+   * @param parserLine SAMParserLine which get back a output stream of bowtie
+   * @throw error IO in reading with readsFile
+   */
   protected void internalMap(File readsFile, File archiveIndexDir,
       SAMParserLine parserLine) throws IOException {
 
@@ -269,7 +265,7 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("-S");
 
     // TODO to remove
-    // System.out.println("cmd bowtie : " + cmd);
+    System.out.println("cmd bowtie : " + cmd);
 
     LOGGER.info(cmd.toString());
 
@@ -282,6 +278,14 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
+  /**
+   * create the line command for execute pair-end mapping
+   * @param readsFile1 fastq file
+   * @param readsFile2 fastq file
+   * @param archiveIndexDir index file used for mapping
+   * @param parserLine SAMParserLine which get back a output stream of bowtie
+   * @throw error IO in reading with readsFile1 or readsFile2 
+   */
   protected void internalMap(File readsFile1, File readsFile2,
       File archiveIndexDir, SAMParserLine parserLine) throws IOException {
 
