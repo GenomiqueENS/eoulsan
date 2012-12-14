@@ -30,8 +30,12 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMSequenceDictionary;
+import net.sf.samtools.SAMSequenceRecord;
 
 import org.junit.Test;
 
@@ -101,7 +105,7 @@ public class SAMUtilsTest {
   }
 
   @Test
-  public void createSAMFileHeaderFromGenomeDescriptionTest() {
+  public void newSAMFileHeader() {
 
     final GenomeDescription desc = new GenomeDescription();
 
@@ -109,17 +113,62 @@ public class SAMUtilsTest {
     desc.addSequence("chr2", 181748087);
     desc.addSequence("chr3", 159599783);
 
-    final SAMFileHeader header =
-        SAMUtils.createSAMFileHeaderFromGenomeDescription(desc);
-    
+    final SAMFileHeader header = SAMUtils.newSAMFileHeader(desc);
+
     assertEquals(3, header.getSequenceDictionary().size());
-    
+
     assertNotSame(197195431, header.getSequence("chr1").getSequenceLength());
     assertEquals(197195432, header.getSequence("chr1").getSequenceLength());
     assertNotSame(197195433, header.getSequence("chr1").getSequenceLength());
-    
+
     assertEquals(181748087, header.getSequence("chr2").getSequenceLength());
     assertEquals(159599783, header.getSequence("chr3").getSequenceLength());
+  }
+
+  @Test
+  public void newSAMSequenceDictionaryTest() {
+
+    final GenomeDescription desc = new GenomeDescription();
+
+    desc.addSequence("chr1", 197195432);
+    desc.addSequence("chr2", 181748087);
+    desc.addSequence("chr3", 159599783);
+
+    final SAMSequenceDictionary dict = SAMUtils.newSAMSequenceDictionary(desc);
+
+    assertEquals(3, dict.size());
+
+    assertNotSame(197195431, dict.getSequence("chr1").getSequenceLength());
+    assertEquals(197195432, dict.getSequence("chr1").getSequenceLength());
+    assertNotSame(197195433, dict.getSequence("chr1").getSequenceLength());
+
+    assertEquals(181748087, dict.getSequence("chr2").getSequenceLength());
+    assertEquals(159599783, dict.getSequence("chr3").getSequenceLength());
+  }
+
+  @Test
+  public void createGenomeDescriptionFromSAMTest() {
+
+    final SAMFileHeader header = new SAMFileHeader();
+    GenomeDescription desc = SAMUtils.createGenomeDescriptionFromSAM(header);
+
+    assertEquals(0, desc.getSequenceCount());
+
+    final List<SAMSequenceRecord> sequences =
+        new ArrayList<SAMSequenceRecord>();
+
+    sequences.add(new SAMSequenceRecord("chr1", 197195432));
+    sequences.add(new SAMSequenceRecord("chr2", 181748087));
+    sequences.add(new SAMSequenceRecord("chr3", 159599783));
+
+    header.setSequenceDictionary(new SAMSequenceDictionary(sequences));
+
+    desc = SAMUtils.createGenomeDescriptionFromSAM(header);
+
+    assertEquals(3, desc.getSequenceCount());
+    assertEquals(197195432, desc.getSequenceLength("chr1"));
+    assertEquals(181748087, desc.getSequenceLength("chr2"));
+    assertEquals(159599783, desc.getSequenceLength("chr3"));
   }
 
 }

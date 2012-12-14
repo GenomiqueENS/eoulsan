@@ -35,6 +35,7 @@ import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceDictionary;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
@@ -176,18 +177,54 @@ public class SAMUtils {
   }
 
   /**
-   * Convert a GenomeDesciption object to a SAMFileHeader object.
-   * @param genomeDescription genomeDescription object to convert
-   * @return a new SAMFileHeader with chromosomes name and size from the
-   *         GenomeDescription object
+   * Create a GenomeDescription object from a SAMFileHeader object.
+   * @param header SAM header object
+   * @return a new GenomeDescription object with the name and chromsomomes
+   *         length defined in the SAM header
    */
-  public static SAMFileHeader createSAMFileHeaderFromGenomeDescription(
+  public static GenomeDescription createGenomeDescriptionFromSAM(
+      final SAMFileHeader header) {
+
+    if (header == null)
+      return null;
+
+    final GenomeDescription desc = new GenomeDescription();
+
+    if (header.getSequenceDictionary() == null)
+      return desc;
+
+    for (SAMSequenceRecord seq : header.getSequenceDictionary().getSequences())
+      desc.addSequence(seq.getSequenceName(), seq.getSequenceLength());
+
+    return desc;
+  }
+
+  /**
+   * Create a GenomeDescription object from a SAMFileHeader object.
+   * @param header SAM header object
+   * @return a new GenomeDescription object with the name and chromsomomes
+   *         length defined in the SAM header
+   */
+  public static GenomeDescription createGenomeDescriptionFromSAM(
+      final SAMRecord samRecord) {
+
+    if (samRecord == null)
+      return null;
+
+    return createGenomeDescriptionFromSAM(samRecord.getHeader());
+  }
+
+  /**
+   * Convert a GenomeDesciption object to a SAMSequenceDictionary object.
+   * @param genomeDescription genomeDescription object to convert
+   * @return a new SAMSequenceDictionary object with chromosomes name and size
+   *         from the GenomeDescription object
+   */
+  public static SAMSequenceDictionary newSAMSequenceDictionary(
       final GenomeDescription genomeDescription) {
 
     if (genomeDescription == null)
       throw new NullPointerException("The genome description is null.");
-
-    final SAMFileHeader header = new SAMFileHeader();
 
     final List<SAMSequenceRecord> sequences =
         new ArrayList<SAMSequenceRecord>();
@@ -200,7 +237,21 @@ public class SAMUtils {
       sequences.add(sequenceRecord);
     }
 
-    header.setSequenceDictionary(new SAMSequenceDictionary(sequences));
+    return new SAMSequenceDictionary(sequences);
+  }
+
+  /**
+   * Convert a GenomeDesciption object to a SAMFileHeader object.
+   * @param genomeDescription genomeDescription object to convert
+   * @return a new SAMFileHeader object with chromosomes name and size from the
+   *         GenomeDescription object
+   */
+  public static SAMFileHeader newSAMFileHeader(
+      final GenomeDescription genomeDescription) {
+
+    final SAMFileHeader header = new SAMFileHeader();
+
+    header.setSequenceDictionary(newSAMSequenceDictionary(genomeDescription));
 
     return header;
   }
