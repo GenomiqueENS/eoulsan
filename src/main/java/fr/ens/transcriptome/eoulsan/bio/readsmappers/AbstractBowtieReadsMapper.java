@@ -243,7 +243,7 @@ public abstract class AbstractBowtieReadsMapper extends
     synchronized (SYNC) {
       bowtiePath = install(getMapperExecutables());
     }
-
+    
     final String extensionIndexFile = getExtensionIndexFile();
 
     final String index =
@@ -289,6 +289,46 @@ public abstract class AbstractBowtieReadsMapper extends
   protected void internalMap(File readsFile1, File readsFile2,
       File archiveIndexDir, SAMParserLine parserLine) throws IOException {
 
+    final String bowtiePath;
+
+    synchronized (SYNC) {
+      bowtiePath = install(getMapperExecutables());
+    }
+    
+    final String extensionIndexFile = getExtensionIndexFile();
+
+    final String index =
+        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
+            extensionIndexFile.length())).getName();
+
+    // Build the command line
+    final List<String> cmd = new ArrayList<String>();
+    
+    cmd.add(bowtiePath);
+    if (getListMapperArguments() != null)
+      cmd.addAll(getListMapperArguments());
+    cmd.add(bowtieQualityArgument());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add(index);
+    cmd.add("-q");
+    cmd.add("-1");
+    cmd.add(readsFile1.getAbsolutePath());
+    cmd.add("-2");
+    cmd.add(readsFile2.getAbsolutePath());
+    cmd.add("-S");
+
+    // TODO to remove
+    System.out.println("cmd bowtie : " + cmd.toString().replace(',', ' '));
+    
+    LOGGER.info(cmd.toString());
+
+    final int exitValue = sh(cmd, archiveIndexDir, parserLine);
+
+    if (exitValue != 0) {
+      throw new IOException("Bad error result for "
+          + getMapperName() + " execution: " + exitValue);
+    }
   }
 
   @Override
