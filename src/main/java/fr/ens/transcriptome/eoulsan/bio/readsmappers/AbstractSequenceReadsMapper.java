@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -45,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -98,7 +99,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private FastqFormat fastqFormat;
 
   private int threadsNumber;
-  private String mapperArguments;
+  private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private int entriesWritten;
@@ -124,8 +125,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public List<String> getListMapperArguments() {
-    if (getMapperArguments() == "")
-      return null;
+    if (getMapperArguments() == null)
+      return Collections.emptyList();
 
     String[] tabMapperArguments = getMapperArguments().trim().split(" ");
     return Lists.newArrayList(tabMapperArguments);
@@ -264,14 +265,6 @@ public abstract class AbstractSequenceReadsMapper implements
     final List<String> cmd = new ArrayList<String>();
     cmd.addAll(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
 
-    // TODO print to remove
-    System.out.println("cmd index : " + cmd.toString().replaceAll(", ", " "));
-
-    // ///////////////////////////////////////////
-    // / TO DELETE...
-    LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
-    // ////////////////////////////////////////////
-
     LOGGER.fine(cmd.toString());
 
     final int exitValue = sh(cmd, tmpGenomeFile.getParentFile());
@@ -307,7 +300,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Want to create a temporary directory with prefix: "
         + indexTmpDirPrefix + " in " + getTempDirectory());
-
+    System.out.println("makeArchiveIndex  tempo directory with prefix: "+ indexTmpDirPrefix + " in " + getTempDirectory());
+    
     final File indexTmpDir =
         File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
 
@@ -597,12 +591,12 @@ public abstract class AbstractSequenceReadsMapper implements
     internalMap(readsFile, archiveIndexDir);
   }
 
-  @Override
   /**
-   * mode single-end
+   * Mode single-end
    * method used only by bowtie mapper, the outputstream of bowtie is got back
    * by SAMParserLine which parses the stream without create a file
    */
+  @Override
   public final void map(File readsFile, SAMParserLine parserLine)
       throws IOException {
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
@@ -619,12 +613,12 @@ public abstract class AbstractSequenceReadsMapper implements
     internalMap(readsFile, archiveIndexDir, parserLine);
   }
 
-  @Override
   /**
-   * mode pair-end
+   * Mode pair-end
    * method used only by bowtie mapper, the outputstream of bowtie is got back
    * by SAMParserLine which parses the stream without create a file
    */
+  @Override
   public final void map(File readsFile1, File readsFile2,
       SAMParserLine parserLine) throws IOException {
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
@@ -746,7 +740,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @param temporaryDirectory
    * @param parserLine SAMParserLine which retrieve output stream
    * @return integer exit value for the process
-   * @throws IOException
+   * @throws IOException if an error occurs while executing the command
    */
   protected int sh(final List<String> cmd, final File temporaryDirectory,
       final SAMParserLine parserLine) throws IOException {

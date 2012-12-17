@@ -29,8 +29,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
- * This class define a wrapper on the Bowtie mapper.
- * Includes only specific methods of bowtie
+ * This class define a wrapper on the Bowtie mapper. Includes only specific
+ * methods of bowtie
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -38,22 +38,20 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   private static final String MAPPER_EXECUTABLE = "bowtie";
   private static final String INDEXER_EXECUTABLE = "bowtie-build";
-  
+
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
-  
+
   public static final String DEFAULT_ARGUMENTS = "--best -k 2";
   private static final String MAPPER_NAME = "Bowtie";
-
-  // private static final String SYNC = BowtieReadsMapper.class.getName();
 
   @Override
   public String getMapperName() {
 
     return MAPPER_NAME;
   }
-  
+
   @Override
-  protected String getExtensionIndexFile(){
+  protected String getExtensionIndexFile() {
     return EXTENSION_INDEX_FILE;
   }
 
@@ -68,13 +66,14 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
     return INDEXER_EXECUTABLE;
   }
-  
+
   @Override
-  protected String[] getMapperExecutables(){
-    return new String[]{MAPPER_EXECUTABLE};
+  protected String[] getMapperExecutables() {
+    return new String[] {MAPPER_EXECUTABLE};
   }
 
-  protected static final String getBowtieQualityArgument(final FastqFormat format) {
+  protected static final String getBowtieQualityArgument(
+      final FastqFormat format) {
 
     switch (format) {
 
@@ -92,7 +91,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  public String getDefaultArguments(){
+  public String getDefaultArguments() {
     return DEFAULT_ARGUMENTS;
   }
 

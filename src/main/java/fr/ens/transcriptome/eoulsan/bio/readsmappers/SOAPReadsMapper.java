@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -124,12 +124,6 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     return cmd;
   }
 
-  // TODO to remove
-  protected String getIndexerCommand_OLD(String indexerPathname,
-      String genomePathname) {
-    return indexerPathname + " " + genomePathname;
-  }
-
   @Override
   protected void internalMap(final File readsFile, final File archiveIndexDir)
       throws IOException {
@@ -163,15 +157,6 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(outputFile.getAbsolutePath());
     cmd.add("-u");
     cmd.add(unmapFile.getAbsolutePath());
-
-    // Old version : cmd = soapPath
-    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-    // + readsFile.getAbsolutePath()
-    // + " -D "
-    // // + ambFile.substring(0, ambFile.length() - 4)
-    // + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-    // + outputFile.getAbsolutePath() + " -u "
-    // + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
 
     LOGGER.info(cmd.toString());
 
@@ -223,18 +208,6 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(unmapFile.getAbsolutePath());
     cmd.add("-2");
     cmd.add(unpairedFile.getAbsolutePath());
-
-    // Old version : cmd = soapPath
-    // + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-    // + readsFile1.getAbsolutePath()
-    // + " -b "
-    // + readsFile2.getAbsolutePath()
-    // + " -D "
-    // // + ambFile.substring(0, ambFile.length() - 4)
-    // + "getIndexPath(archiveIndexDir, \".index.amb\", 4)" + " -o "
-    // + "outputFile.getAbsolutePath()" + " -u "
-    // + "unmapFile.getAbsolutePath()" + " -2 "
-    // + "unpairedFile.getAbsolutePath()" + " > /dev/null 2> /dev/null";
 
     LOGGER.info(cmd.toString());
 

@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -140,17 +140,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(genomePathname);
 
     return cmd;
-  }
-
-  // TODO to remove
-  protected String getIndexerCommand_OLD(String indexerPathname,
-      String genomePathname) {
-
-    final File genomeFile = new File(genomePathname);
-    if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
-      return indexerPathname + " index -a bwtsw " + genomePathname;
-    }
-    return indexerPathname + " index " + genomePathname;
   }
 
   @Override
@@ -264,11 +253,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(indexPathname);
     cmd.add(readsFilename);
 
-    // Old version cmd : bwaPath
-    // + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads
-    // + " -f " + outputFilename + " " + " " + indexPathname + " "
-    // + readsFilename + " > /dev/null 2> /dev/null";
-
     LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
@@ -309,14 +293,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       cmd.add(readsFile1.getAbsolutePath());
       cmd.add(readsFile2.getAbsolutePath());
 
-      // Old version cmd = bwaPath
-      // + " sampe -P -f " + resultFile.getAbsolutePath() + " "
-      // + getIndexPath(archiveIndex) + " "
-      // + outputFile1.getAbsolutePath() + " "
-      // + outputFile2.getAbsolutePath() + " "
-      // + readsFile1.getAbsolutePath() + " "
-      // + readsFile2.getAbsolutePath() + " > /dev/null 2> /dev/null";
-
     } else {
 
       resultFile =
@@ -331,12 +307,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       cmd.add(getIndexPath(archiveIndex));
       cmd.add(outputFile.getAbsolutePath());
       cmd.add(readsFile.getAbsolutePath());
-
-      // Old Version cmd = bwaPath
-      // + " samse -f " + resultFile.getAbsolutePath() + " "
-      // + getIndexPath(archiveIndex) + " " + outputFile.getAbsolutePath()
-      // + " " + readsFile.getAbsolutePath() +
-      // " > /dev/null 2> /dev/null";
 
     }
 

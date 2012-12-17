@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -41,10 +41,9 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
- * @since 1.0?
+ * @since 1.3
  * @author Laurent Jourdren
  */
-
 public abstract class AbstractBowtieReadsMapper extends
     AbstractSequenceReadsMapper {
 
@@ -54,8 +53,6 @@ public abstract class AbstractBowtieReadsMapper extends
   private static final String SYNC = AbstractBowtieReadsMapper.class.getName();
 
   private File outputFile;
-
-  // protected InputStream SAMoutputStream;
 
   abstract protected String getExtensionIndexFile();
 
@@ -114,13 +111,6 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("genome");
 
     return cmd;
-  }
-
-  // TODO to remove
-  protected String getIndexerCommand_OLD(String indexerPathname,
-      String genomePathname) {
-    File genomeDir = new File(genomePathname).getParentFile();
-    return indexerPathname + " " + genomePathname + " genome";
   }
 
   protected String bowtieQualityArgument() {
@@ -213,9 +203,6 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("-S");
     cmd.add(outputFile.getAbsolutePath());
 
-    // TODO to remove
-    // System.out.println("cmd bowtie : " + cmd);
-
     LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir);
@@ -243,7 +230,7 @@ public abstract class AbstractBowtieReadsMapper extends
     synchronized (SYNC) {
       bowtiePath = install(getMapperExecutables());
     }
-    
+
     final String extensionIndexFile = getExtensionIndexFile();
 
     final String index =
@@ -294,7 +281,7 @@ public abstract class AbstractBowtieReadsMapper extends
     synchronized (SYNC) {
       bowtiePath = install(getMapperExecutables());
     }
-    
+
     final String extensionIndexFile = getExtensionIndexFile();
 
     final String index =
@@ -303,7 +290,7 @@ public abstract class AbstractBowtieReadsMapper extends
 
     // Build the command line
     final List<String> cmd = new ArrayList<String>();
-    
+
     cmd.add(bowtiePath);
     if (getListMapperArguments() != null)
       cmd.addAll(getListMapperArguments());
@@ -320,7 +307,7 @@ public abstract class AbstractBowtieReadsMapper extends
 
     // TODO to remove
     System.out.println("cmd bowtie : " + cmd.toString().replace(',', ' '));
-    
+
     LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir, parserLine);
@@ -357,4 +344,4 @@ public abstract class AbstractBowtieReadsMapper extends
 
   }
 
-} // class
+}

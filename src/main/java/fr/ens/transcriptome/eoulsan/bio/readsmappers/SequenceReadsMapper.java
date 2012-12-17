@@ -32,7 +32,7 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -191,8 +191,6 @@ public interface SequenceReadsMapper {
    * Map reads that has been written using writeInputEntry() methods.
    * @throws IOException if an error occurs while mapping the reads
    */
-  // Old version, two files move in method init()
-  // void map(File archiveIndexFile, File archiveIndexDir) throws IOException;
   void map() throws IOException;
 
   
@@ -202,9 +200,6 @@ public interface SequenceReadsMapper {
    * @param readsFile fastq input file mapper
    * @throws IOException if an error occurs while mapping the reads
    */
-  // Old version, two last files move in method init()
-  // void map(File readsFile, File archiveIndexFile, File archiveIndexDir)
-  // throws IOException;
   void map(File readsFile) throws IOException;
 
   /**
@@ -213,11 +208,6 @@ public interface SequenceReadsMapper {
    * @param readsFile2 fastq input file with reads of the first end mapper
    * @throws IOException if an error occurs while mapping the reads
    */
-  // Old version, two last files move in method init()
-  // void map(File readsFile1, File readsFile2, File archiveIndexFile,
-  // File archiveIndexDir) throws IOException;
-  // @param archiveIndexFile genome index for the mapper as a ZIP file
-  // @param archiveIndexDir uncompressed directory for the genome index for the
   void map(File readsFile1, File readsFile2) throws IOException;
 
   
@@ -266,7 +256,6 @@ public interface SequenceReadsMapper {
    *          files
    * @param counterGroup the group for the reporter
    */
-  // New version : add archiveIndexFile, archiveIndexDir, before present in method map()
   void init(boolean pairEnd, FastqFormat fastqFormat, File archiveIndexFile,
       File archiveIndexDir, ReporterIncrementer incrementer, String counterGroup) throws IOException ;
 

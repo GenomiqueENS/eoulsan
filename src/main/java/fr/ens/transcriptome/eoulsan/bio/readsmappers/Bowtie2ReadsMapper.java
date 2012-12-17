@@ -29,25 +29,22 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
- * This class define a wrapper on the Bowtie mapper.
- *  Includes only specific methods of bowtie2
- * @since 1.0
+ * This class define a wrapper on the Bowtie mapper. Includes only specific
+ * methods of bowtie2
+ * @since 1.2
  * @author Laurent Jourdren
  */
 public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
-
 
   private static final String MAPPER_EXECUTABLE = "bowtie2";
   private static final String MAPPER_EXECUTABLE_BIN = "bowtie2-align";
   private static final String INDEXER_EXECUTABLE = "bowtie2-build";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.bt2";
-  
+
   public static final String DEFAULT_ARGUMENTS = "";
 
- // private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie2";
-
 
   @Override
   public String getMapperName() {
@@ -56,7 +53,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected String getExtensionIndexFile(){
+  protected String getExtensionIndexFile() {
     return EXTENSION_INDEX_FILE;
   }
 
@@ -70,25 +67,27 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   protected String getIndexerExecutable() {
     return INDEXER_EXECUTABLE;
   }
-  
+
   @Override
-  protected String[] getMapperExecutables(){
-    return new String[]{MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN};
+  protected String[] getMapperExecutables() {
+    return new String[] {MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN};
   }
 
-
   @Override
-  public String getDefaultArguments(){
+  public String getDefaultArguments() {
     return DEFAULT_ARGUMENTS;
   }
-  
-  protected static final String getBowtieQualityArgument(final FastqFormat format) {
+
+  protected static final String getBowtieQualityArgument(
+      final FastqFormat format) throws Exception {
 
     switch (format) {
 
     case FASTQ_SOLEXA:
       // TODO BOWTIE do not support solexa quality scores
-      return "--solexa-quals";
+      // return "--solexa-quals";
+      throw new Exception("Format "
+          + format.getName() + " not available with bowtie2");
 
     case FASTQ_ILLUMINA:
     case FASTQ_ILLUMINA_1_5:
