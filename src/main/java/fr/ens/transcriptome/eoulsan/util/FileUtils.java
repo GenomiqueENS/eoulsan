@@ -658,6 +658,29 @@ public class FileUtils {
   }
 
   /**
+   * Copy bytes from an InputStream to an OutputStream without closing the
+   * outputStream.
+   * @param input the InputStream to read from
+   * @param output the OutputStream to write to
+   * @return the number of bytes copied
+   * @throws IOException In case of an I/O problem
+   */
+  public static long append(InputStream input, OutputStream output)
+      throws IOException {
+    byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+    long count = 0;
+    int n = 0;
+    while (-1 != (n = input.read(buffer))) {
+      output.write(buffer, 0, n);
+      count += n;
+    }
+
+    input.close();
+
+    return count;
+  }
+
+  /**
    * Copy a file.
    * @param srcFile File to copy
    * @param destFile Destination file
