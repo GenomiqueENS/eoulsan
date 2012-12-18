@@ -38,8 +38,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
@@ -53,6 +54,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Exon;
@@ -77,7 +79,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
 
-  private final SAMParser parser = new SAMParser();
+  private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
 
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
@@ -195,7 +197,8 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
               genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
-      this.parser.setGenomeDescription(genomeDescription);
+      this.parser.getFileHeader().setSequenceDictionary(
+          SAMUtils.newSAMSequenceDictionary(genomeDescription));
 
     } catch (IOException e) {
       logger.severe("Error while loading annotation data in Mapper: "

@@ -31,13 +31,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 
 /**
  * This class is a JUnit test class to test the class
@@ -174,8 +175,7 @@ public class ReadAlignmentsFilterBufferTest {
     // desc.addSequence("chr15", 103494974);
     desc.addSequence("chr16", 98319150);
 
-    SAMParser parser = new SAMParser();
-    parser.setGenomeDescription(desc);
+    SAMLineParser parser = new SAMLineParser(SAMUtils.newSAMFileHeader(desc));
 
     samRecordSE1 = parser.parseLine(recordSE1);
     samRecordSE2 = parser.parseLine(recordSE2);

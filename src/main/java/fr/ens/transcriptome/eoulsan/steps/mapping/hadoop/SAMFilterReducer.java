@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import net.sf.samtools.SAMComparator;
-import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
@@ -56,6 +57,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -76,7 +78,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
       Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
 
-  private final SAMParser parser = new SAMParser();
+  private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
   private String counterGroup;
   private MultiReadAlignmentsFilter filter;
 
@@ -114,7 +116,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
         GenomeDescription.load(new DataFile(genomeDescFile).open());
 
     // Set the chromosomes sizes in the parser
-    this.parser.setGenomeDescription(genomeDescription);
+    this.parser.getFileHeader().setSequenceDictionary(
+        SAMUtils.newSAMSequenceDictionary(genomeDescription));
 
     // Set the filters
     try {

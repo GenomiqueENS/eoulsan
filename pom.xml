@@ -273,7 +273,7 @@
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.76</version>
+			<version>1.83</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
