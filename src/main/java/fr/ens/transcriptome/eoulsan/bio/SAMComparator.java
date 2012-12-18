@@ -36,7 +36,13 @@ import net.sf.samtools.SAMRecord;
 public class SAMComparator implements Comparator<SAMRecord> {
 
   @Override
-  public int compare(SAMRecord r0, SAMRecord r1) {
+  public int compare(final SAMRecord r0, final SAMRecord r1) {
+
+    if (r0 == null)
+      throw new NullPointerException("r0 argument is null in SAMComparator");
+
+    if (r1 == null)
+      throw new NullPointerException("r1 argument is null in SAMComparator");
 
     int comp;
 
