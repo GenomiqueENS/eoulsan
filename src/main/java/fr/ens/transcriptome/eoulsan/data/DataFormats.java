@@ -67,8 +67,8 @@ public class DataFormats {
       .getDataFormatFromName("bowtie2_index_zip");
 
   /** Gmap index data format. */
-  public static final DataFormat GMAP_INDEX_ZIP = registry
-      .getDataFormatFromName("gmap_index_zip");
+  public static final DataFormat GSNAP_INDEX_ZIP = registry
+      .getDataFormatFromName("gsnap_index_zip");
 
   /** Filtered SAM data format. */
   public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = registry
