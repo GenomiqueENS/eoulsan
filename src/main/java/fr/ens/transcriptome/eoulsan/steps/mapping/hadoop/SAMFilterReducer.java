@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
@@ -57,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
+import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
 import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;

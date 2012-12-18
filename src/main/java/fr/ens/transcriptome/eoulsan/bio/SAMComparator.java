@@ -22,9 +22,11 @@
  *
  */
 
-package net.sf.samtools;
+package fr.ens.transcriptome.eoulsan.bio;
 
 import java.util.Comparator;
+
+import net.sf.samtools.SAMRecord;
 
 /**
  * This class is a Comparator for SAM records.
