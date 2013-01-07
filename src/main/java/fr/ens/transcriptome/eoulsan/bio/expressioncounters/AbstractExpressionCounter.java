@@ -51,6 +51,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private String attributeId;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
+  private boolean noAmbiguousCases;
   private Reporter reporter;
   private String counterGroup;
   private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
@@ -82,6 +83,11 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public String getAttributeId() {
     return this.attributeId;
+  }
+  
+  @Override
+  public boolean isRemoveAmbiguousCases() {
+    return this.noAmbiguousCases;
   }
 
   //
@@ -118,6 +124,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
       this.overlapMode = mode;
   }
 
+  @Override
+  public void setRemoveAmbiguousCases(boolean noAmbigousCases) {
+    
+    this.noAmbiguousCases = noAmbigousCases;
+  }
+  
   @Override
   public void setTempDirectory(final String tempDirectory) {
 

@@ -149,6 +149,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     if (getOverlapMode() != null)
       counter.setOverlapMode(getOverlapMode());
 
+    counter.setRemoveAmbiguousCases(isRemoveAmbiguousCases());
+
     // Set counter temporary directory
     counter.setTempDirectory(tempDirectory);
 

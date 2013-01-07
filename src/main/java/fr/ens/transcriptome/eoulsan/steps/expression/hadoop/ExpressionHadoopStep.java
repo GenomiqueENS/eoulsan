@@ -206,6 +206,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param basePath base path
    * @param sample sample of the job
    * @param genomicType genomic type
+   * @param attributeId attributeId
+   * @param stranded stranded mode
+   * @param overlapMode overlap mode
+   * @param removeAmbiguousCases true to remove ambiguous cases
    * @throws IOException if an error occurs while creating job
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    * @throws EoulsanException
@@ -213,8 +217,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   private static final Job createJobHTSeqCounter(
       final Configuration parentConf, final Context context,
       final Sample sample, final String genomicType, final String attributeId,
-      final String stranded, final String overlapMode) throws IOException,
-      BadBioEntryException, EoulsanException {
+      final String stranded, final String overlapMode,
+      final boolean removeAmbiguousCases) throws IOException, BadBioEntryException,
+      EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -259,6 +264,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set the "overlap mode" parameter
     jobConf.set(HTSeqCountMapper.OVERLAPMODE_PARAM, overlapMode);
+
+    // Set the "remove ambiguous cases" parameter
+    jobConf.setBoolean(HTSeqCountMapper.REMOVE_AMBIGUOUS_CASES, removeAmbiguousCases);
 
     final Path featuresIndexPath =
         new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
@@ -752,7 +760,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
         final Job jconf =
             createJobHTSeqCounter(conf, context, s, getGenomicType(),
-                getAttributeId(), getStranded(), getOverlapMode());
+                getAttributeId(), getStranded(), getOverlapMode(), isRemoveAmbiguousCases());
 
         jconf.submit();
         jobsRunning.put(s, jconf);

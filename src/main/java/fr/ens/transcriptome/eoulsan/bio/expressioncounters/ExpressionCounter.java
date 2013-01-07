@@ -61,6 +61,12 @@ public interface ExpressionCounter {
   OverlapMode getOverlapMode();
 
   /**
+   * Test if ambiguous cases must be removed.
+   * @return true if ambiguous cases must be removed
+   */
+  boolean isRemoveAmbiguousCases();
+
+  /**
    * Get the genomic type on which to count expression.
    * @return a string with the genomic type name
    */
@@ -105,6 +111,12 @@ public interface ExpressionCounter {
    * @param mode the OverlapMode object
    */
   void setOverlapMode(OverlapMode mode);
+
+  /**
+   * Set if ambiguous cases musr be removed.
+   * @param removeAmbigousCases true if ambiguous cases must be removed
+   */
+  void setRemoveAmbiguousCases(boolean removeAmbigousCases);
 
   /**
    * Set the genomic type on which to count expression.

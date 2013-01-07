@@ -65,6 +65,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private ExpressionCounter counter;
   private String stranded = "no";
   private String overlapmode = "union";
+  private boolean removeAmbiguousCases = true;
 
   //
   // Getters
@@ -94,12 +95,28 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     return this.counter.getCounterName();
   }
 
+  /**
+   * Get the stranded mode
+   * @return the stranded mode as a String
+   */
   protected String getStranded() {
     return this.stranded;
   }
 
+  /**
+   * Get the overlap mode
+   * @return the overlap mode as a String
+   */
   protected String getOverlapMode() {
     return this.overlapmode;
+  }
+
+  /**
+   * Get the ambiguous case mode
+   * @return the ambiguous case mode
+   */
+  protected boolean isRemoveAmbiguousCases() {
+    return this.removeAmbiguousCases;
   }
 
   /**
@@ -164,6 +181,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         this.stranded = p.getStringValue();
       else if ("overlapmode".equals(p.getName()))
         this.overlapmode = p.getStringValue();
+      else if ("removeambiguouscases".equals(p.getName()))
+        this.removeAmbiguousCases = p.getBooleanValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
