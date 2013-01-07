@@ -6,7 +6,7 @@ soap_index_zip.xml
 bwa_index_zip.xml
 bowtie_index_zip.xml
 bowtie2_index_zip.xml
-gmap_index_zip.xml
+gsnap_index_zip.xml
 filtered_mapper_results_sam.xml
 filtered_mapper_results_bam.xml
 filtered_mapper_results_index_bai.xml
