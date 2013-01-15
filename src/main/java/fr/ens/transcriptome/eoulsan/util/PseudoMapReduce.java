@@ -317,30 +317,6 @@ public abstract class PseudoMapReduce {
   }
 
   /**
-   * TODO save or remove ??
-   */
-  private boolean sort_OLD() throws IOException {
-
-    this.sortOutputFile = File.createTempFile("sort-", ".txt", this.tmpDir);
-
-    final String cmd =
-        "sort"
-            + (this.tmpDir != null ? " -T "
-                + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath()) : "")
-            + " -o "
-            + StringUtils.bashEscaping(this.sortOutputFile.getAbsolutePath())
-            + " "
-            + StringUtils.bashEscaping(this.mapOutputFile.getAbsolutePath());
-
-    final boolean result = ProcessUtils.system(cmd) == 0;
-    if (!this.mapOutputFile.delete())
-      LOGGER.warning("Can not delete map output file: "
-          + this.mapOutputFile.getAbsolutePath());
-
-    return result;
-  }
-
-  /**
    * Sort several files in sortOutputFile
    * @return true if success sort
    * @throws IOException
