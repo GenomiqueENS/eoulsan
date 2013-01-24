@@ -132,7 +132,7 @@ public class LocalExecutor extends Executor {
     if (!tempDir.canWrite())
       throw new EoulsanRuntimeException(
           "Temporary directory cannot be written: " + tempDir);
-    
+
     if (!tempDir.canExecute())
       throw new EoulsanRuntimeException(
           "Temporary directory is not executable: " + tempDir);
@@ -194,6 +194,7 @@ public class LocalExecutor extends Executor {
     // Set job environment
     context.setJobEnvironment("Local Mode on "
         + new LinuxCpuInfo().getModelName() + ", "
+        + Runtime.getRuntime().availableProcessors() + " CPU(s)/thread(s), "
         + new LinuxMemInfo().getMemTotal());
   }
 
