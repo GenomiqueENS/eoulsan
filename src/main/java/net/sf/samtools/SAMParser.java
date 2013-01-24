@@ -25,8 +25,11 @@
 package net.sf.samtools;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -358,12 +361,17 @@ public class SAMParser {
    * @param genomeDescription
    */
   public void setGenomeDescription(final List<String> genomeDescription) {
+
     if (genomeDescription == null) {
       return;
     }
 
-    final List<SAMSequenceRecord> sequences =
-        new ArrayList<SAMSequenceRecord>();
+    final int collectionCapacity = genomeDescription.size();
+
+    final List<SAMSequenceRecord> sequencesList =
+        new ArrayList<SAMSequenceRecord>(collectionCapacity);
+    final Set<SAMSequenceRecord> sequencesSet =
+        new HashSet<SAMSequenceRecord>(collectionCapacity);
 
     for (String headlineSAM : genomeDescription) {
 
@@ -378,15 +386,16 @@ public class SAMParser {
             new SAMSequenceRecord(sequenceName, sequenceLength);
 
         // remove double of sequenceName present in headline SAM file
-        if (!sequences.contains(sequenceRecord)) {
-          sequences.add(sequenceRecord);
+        if (!sequencesSet.contains(sequenceRecord)) {
+          sequencesSet.add(sequenceRecord);
+          sequencesList.add(sequenceRecord);
         }
       }
 
     }
 
-    this.mFileHeader
-        .setSequenceDictionary(new SAMSequenceDictionary(sequences));
+    this.mFileHeader.setSequenceDictionary(new SAMSequenceDictionary(
+        sequencesList));
   }
 
   /**
