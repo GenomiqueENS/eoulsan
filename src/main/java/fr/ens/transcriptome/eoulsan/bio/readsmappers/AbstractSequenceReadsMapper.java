@@ -250,11 +250,6 @@ public abstract class AbstractSequenceReadsMapper implements
         getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
             + " > /dev/null 2> /dev/null";
 
-    // ///////////////////////////////////////////
-    // / TO DELETE...
-    LOGGER.info("!!!!!!!!!!!!! cmd : " + cmd);
-    // ////////////////////////////////////////////
-
     LOGGER.fine(cmd);
 
     final int exitValue = sh(cmd);
