@@ -79,12 +79,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   public String getGenomicType() {
     return this.genomicType;
   }
-  
+
   @Override
   public String getAttributeId() {
     return this.attributeId;
   }
-  
+
   @Override
   public boolean isRemoveAmbiguousCases() {
     return this.noAmbiguousCases;
@@ -95,24 +95,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void setStranded(final String stranded) {
-
-    setStranded(StrandUsage.getStrandUsageFromName(stranded));
-  }
-
-  @Override
   public void setStranded(final StrandUsage stranded) {
 
     if (stranded == null)
       this.stranded = StrandUsage.NO;
     else
       this.stranded = stranded;
-  }
-
-  @Override
-  public void setOverlapMode(final String mode) {
-
-    setOverlapMode(OverlapMode.getOverlapModeFromName(mode));
   }
 
   @Override
@@ -126,10 +114,10 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public void setRemoveAmbiguousCases(boolean noAmbigousCases) {
-    
+
     this.noAmbiguousCases = noAmbigousCases;
   }
-  
+
   @Override
   public void setTempDirectory(final String tempDirectory) {
 
@@ -141,7 +129,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
     this.genomicType = genomicType;
   }
-  
+
   @Override
   public void setAttributeId(final String attributeId) {
 
@@ -153,9 +141,10 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public final void count(final DataFile alignmentFile, final DataFile annotationFile,
-      final DataFile expressionFile, final DataFile genomeDescFile) throws IOException,
-      EoulsanException, BadBioEntryException {
+  public final void count(final DataFile alignmentFile,
+      final DataFile annotationFile, final DataFile expressionFile,
+      final DataFile genomeDescFile) throws IOException, EoulsanException,
+      BadBioEntryException {
 
     LOGGER.fine("Counting with " + getCounterName());
 
@@ -191,8 +180,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void init(final String genomicType, String attributeId, final Reporter reporter,
-      final String counterGroup) {
+  public void init(final String genomicType, String attributeId,
+      final Reporter reporter, final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");
     checkNotNull(counterGroup, "counterGroup is null");

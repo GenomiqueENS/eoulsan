@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -217,9 +218,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   private static final Job createJobHTSeqCounter(
       final Configuration parentConf, final Context context,
       final Sample sample, final String genomicType, final String attributeId,
-      final String stranded, final String overlapMode,
-      final boolean removeAmbiguousCases) throws IOException, BadBioEntryException,
-      EoulsanException {
+      final StrandUsage stranded, final OverlapMode overlapMode,
+      final boolean removeAmbiguousCases) throws IOException,
+      BadBioEntryException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -260,13 +261,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         genomeDescDataFile.getSource());
 
     // Set the "stranded" parameter
-    jobConf.set(HTSeqCountMapper.STRANDED_PARAM, stranded);
+    jobConf.set(HTSeqCountMapper.STRANDED_PARAM, stranded.getName());
 
     // Set the "overlap mode" parameter
-    jobConf.set(HTSeqCountMapper.OVERLAPMODE_PARAM, overlapMode);
+    jobConf.set(HTSeqCountMapper.OVERLAPMODE_PARAM, overlapMode.getName());
 
     // Set the "remove ambiguous cases" parameter
-    jobConf.setBoolean(HTSeqCountMapper.REMOVE_AMBIGUOUS_CASES, removeAmbiguousCases);
+    jobConf.setBoolean(HTSeqCountMapper.REMOVE_AMBIGUOUS_CASES,
+        removeAmbiguousCases);
 
     final Path featuresIndexPath =
         new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
@@ -274,8 +276,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf))
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, attributeId,
-          StrandUsage.getStrandUsageFromName(stranded), genomeDescDataFile,
+          genomicType, attributeId, stranded, genomeDescDataFile,
           featuresIndexPath, jobConf);
 
     // Set the path to the features index
@@ -760,7 +761,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
         final Job jconf =
             createJobHTSeqCounter(conf, context, s, getGenomicType(),
-                getAttributeId(), getStranded(), getOverlapMode(), isRemoveAmbiguousCases());
+                getAttributeId(), getStranded(), getOverlapMode(),
+                isRemoveAmbiguousCases());
 
         jconf.submit();
         jobsRunning.put(s, jconf);

@@ -90,21 +90,9 @@ public interface ExpressionCounter {
 
   /**
    * Set the strand usage for the ExpressionCounter.
-   * @param stranded a string with the strand usage name
-   */
-  void setStranded(String stranded);
-
-  /**
-   * Set the strand usage for the ExpressionCounter.
    * @param stranded the StrandUsage object
    */
   void setStranded(StrandUsage stranded);
-
-  /**
-   * Set the overlap mode for the ExpressionCounter.
-   * @param mode a string with the overlap mdoe name
-   */
-  void setOverlapMode(String mode);
 
   /**
    * Set the overlap mode for the ExpressionCounter.
