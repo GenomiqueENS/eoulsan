@@ -157,7 +157,7 @@ public final class XMLDataType extends AbstractDataType {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof DataType))
+    if (!(o instanceof DataType))
       return false;
 
     if (!(o instanceof XMLDataType))

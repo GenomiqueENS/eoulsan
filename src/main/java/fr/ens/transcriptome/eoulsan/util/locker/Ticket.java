@@ -92,7 +92,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof Ticket))
+    if (!(o instanceof Ticket))
       return false;
 
     final Ticket t = (Ticket) o;

@@ -126,7 +126,7 @@ public class SampleImpl implements Sample {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof SampleImpl))
+    if (!(o instanceof SampleImpl))
       return false;
 
     final SampleImpl that = (SampleImpl) o;

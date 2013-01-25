@@ -81,6 +81,8 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".expression.stranded.parameter";
   static final String OVERLAPMODE_PARAM = Globals.PARAMETER_PREFIX
       + ".expression.overlapmode.parameter";
+  static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
+      + ".expression.no.ambiguous.cases";
 
   private GenomicArray<String> features = new GenomicArray<String>();
   private Map<String, Integer> counts = Utils.newHashMap();
@@ -88,6 +90,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String counterGroup;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
+  private boolean removeAmbiguousCases;
 
   private final SAMParser parser = new SAMParser();
 
@@ -148,6 +151,9 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
       // Get the "overlap mode" parameter
       this.overlapMode =
           OverlapMode.getOverlapModeFromName(conf.get(OVERLAPMODE_PARAM));
+
+      // Get the "no ambiguous cases" parameter
+      this.removeAmbiguousCases = conf.getBoolean(REMOVE_AMBIGUOUS_CASES, true);
 
     } catch (IOException e) {
       LOGGER.severe("Error while loading annotation data in Mapper: "
@@ -283,17 +289,32 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
         break;
 
       case 1:
-        final String id = fs.iterator().next();
-        this.outKey.set(id);
+        final String id1 = fs.iterator().next();
+        this.outKey.set(id1);
         this.outValue.set("1");
         context.write(this.outKey, this.outValue);
         break;
 
       default:
-        context.getCounter(this.counterGroup,
-            AMBIGUOUS_ALIGNMENTS_COUNTER.counterName()).increment(1);
-        context.getCounter(this.counterGroup,
-            ELIMINATED_READS_COUNTER.counterName()).increment(1);
+
+        if (this.removeAmbiguousCases) {
+
+          // Ambiguous case will be removed
+
+          context.getCounter(this.counterGroup,
+              AMBIGUOUS_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          context.getCounter(this.counterGroup,
+              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+        } else {
+
+          // Ambiguous case will be used in the count
+
+          for (String id2 : fs) {
+            this.outKey.set(id2);
+            this.outValue.set("1");
+            context.write(this.outKey, this.outValue);
+          }
+        }
         break;
       }
 

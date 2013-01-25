@@ -32,6 +32,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -63,8 +65,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private String tmpDir;
 
   private ExpressionCounter counter;
-  private String stranded = "no";
-  private String overlapmode = "union";
+  private StrandUsage stranded = StrandUsage.NO;
+  private OverlapMode overlapmode = OverlapMode.UNION;
+  private boolean removeAmbiguousCases = true;
 
   //
   // Getters
@@ -94,12 +97,28 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     return this.counter.getCounterName();
   }
 
-  protected String getStranded() {
+  /**
+   * Get the stranded mode
+   * @return the stranded mode as a String
+   */
+  protected StrandUsage getStranded() {
     return this.stranded;
   }
 
-  protected String getOverlapMode() {
+  /**
+   * Get the overlap mode
+   * @return the overlap mode as a String
+   */
+  protected OverlapMode getOverlapMode() {
     return this.overlapmode;
+  }
+
+  /**
+   * Get the ambiguous case mode
+   * @return the ambiguous case mode
+   */
+  protected boolean isRemoveAmbiguousCases() {
+    return this.removeAmbiguousCases;
   }
 
   /**
@@ -160,10 +179,25 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         this.attributeId = p.getStringValue();
       else if ("counter".equals(p.getName()))
         counterName = p.getStringValue();
-      else if ("stranded".equals(p.getName()))
-        this.stranded = p.getStringValue();
-      else if ("overlapmode".equals(p.getName()))
-        this.overlapmode = p.getStringValue();
+      else if ("stranded".equals(p.getName())) {
+
+        this.stranded = StrandUsage.getStrandUsageFromName(p.getStringValue());
+
+        if (this.overlapmode == null)
+          throw new EoulsanException("Unknown strand mode in "
+              + getName() + " step: " + p.getStringValue());
+
+      } else if ("overlapmode".equals(p.getName())) {
+
+        this.overlapmode =
+            OverlapMode.getOverlapModeFromName(p.getStringValue());
+
+        if (this.overlapmode == null)
+          throw new EoulsanException("Unknown overlap mode in "
+              + getName() + " step: " + p.getStringValue());
+
+      } else if ("removeambiguouscases".equals(p.getName()))
+        this.removeAmbiguousCases = p.getBooleanValue();
       else
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -798,6 +800,19 @@ public final class Settings {
   private void init() {
 
     LOGGER.info(Globals.WELCOME_MSG);
+
+    final Main main = Main.getInstance();
+
+    // Show show command line information
+    if (main != null) {
+      LOGGER
+          .info(Globals.APP_NAME
+              + " command line arguments: "
+              + StringUtils.join(main.getArgs(), " "));
+      LOGGER.fine(Globals.APP_NAME
+          + " command line arguments: " + Arrays.toString(main.getArgs()));
+    }
+
     LOGGER.info("System temp directory: "
         + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));

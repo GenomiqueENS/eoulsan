@@ -517,7 +517,7 @@ public class Sequence {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof Sequence))
+    if (!(o instanceof Sequence))
       return false;
 
     final Sequence that = (Sequence) o;

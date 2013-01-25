@@ -170,10 +170,10 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof Zone<?>))
+      if (!(o instanceof Zone<?>))
         return false;
 
-      final Zone<T> that = (Zone<T>) o;
+      final Zone<?> that = (Zone<?>) o;
 
       if (!(Utils.equal(this.valueCount, that.valueCount)
           && Utils.equal(this.start, that.start)
@@ -480,10 +480,10 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+      if (!(o instanceof ChromosomeStrandedZones<?>))
         return false;
 
-      final ChromosomeStrandedZones<T> that = (ChromosomeStrandedZones<T>) o;
+      final ChromosomeStrandedZones<?> that = (ChromosomeStrandedZones<?>) o;
 
       return Utils.equal(this.chromosomeName, that.chromosomeName)
           && Utils.equal(this.length, that.length)
@@ -575,10 +575,10 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ChromosomeZones<?>))
+      if (!(o instanceof ChromosomeZones<?>))
         return false;
 
-      final ChromosomeZones<T> that = (ChromosomeZones<T>) o;
+      final ChromosomeZones<?> that = (ChromosomeZones<?>) o;
 
       return Utils.equal(this.minus, that.minus)
           && Utils.equal(this.plus, that.plus);
@@ -810,10 +810,10 @@ public class GenomicArray<T> {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof GenomicArray))
+    if (!(o instanceof GenomicArray))
       return false;
 
-    final GenomicArray<T> that = (GenomicArray<T>) o;
+    final GenomicArray<?> that = (GenomicArray<?>) o;
 
     return Utils.equal(this.chromosomes, that.chromosomes);
   }
@@ -826,7 +826,7 @@ public class GenomicArray<T> {
 
   @Override
   public String toString() {
-    // TODO Auto-generated method stub
+
     return this.getClass().getSimpleName()
         + "{chromosmes=" + this.chromosomes + "}";
   }
@@ -841,15 +841,14 @@ public class GenomicArray<T> {
   public GenomicArray() {
   }
 
-  
   /**
    * Public constructor.
    * @param gd The genome description.
    */
   public GenomicArray(final GenomeDescription gd) {
-    
+
     this();
     addChromosomes(gd);
   }
-  
+
 }
