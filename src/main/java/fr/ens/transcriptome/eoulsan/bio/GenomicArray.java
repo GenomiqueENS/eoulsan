@@ -170,7 +170,7 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof Zone<?>))
+      if (!(o instanceof Zone<?>))
         return false;
 
       final Zone<?> that = (Zone<?>) o;
@@ -480,7 +480,7 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ChromosomeStrandedZones<?>))
+      if (!(o instanceof ChromosomeStrandedZones<?>))
         return false;
 
       final ChromosomeStrandedZones<?> that = (ChromosomeStrandedZones<?>) o;
@@ -575,7 +575,7 @@ public class GenomicArray<T> {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ChromosomeZones<?>))
+      if (!(o instanceof ChromosomeZones<?>))
         return false;
 
       final ChromosomeZones<?> that = (ChromosomeZones<?>) o;
@@ -810,7 +810,7 @@ public class GenomicArray<T> {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof GenomicArray))
+    if (!(o instanceof GenomicArray))
       return false;
 
     final GenomicArray<?> that = (GenomicArray<?>) o;

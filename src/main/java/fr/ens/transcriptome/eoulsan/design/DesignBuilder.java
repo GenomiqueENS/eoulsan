@@ -202,7 +202,7 @@ public class DesignBuilder {
       if (obj == this)
         return true;
 
-      if (obj == null || !(obj instanceof FastqEntry))
+      if (!(obj instanceof FastqEntry))
         return false;
 
       final FastqEntry that = (FastqEntry) obj;

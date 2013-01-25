@@ -451,7 +451,7 @@ public final class ReadSequence extends Sequence {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof ReadSequence) || !super.equals(o))
+    if (!(o instanceof ReadSequence) || !super.equals(o))
       return false;
 
     final ReadSequence that = (ReadSequence) o;
