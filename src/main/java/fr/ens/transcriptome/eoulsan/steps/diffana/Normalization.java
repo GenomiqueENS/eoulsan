@@ -173,7 +173,6 @@ public class Normalization {
         runRnwScript(rScript, true);
 
         removeExpressionFiles(experimentSampleList);
-        this.rConnection.removeFile(rScript);
         this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
