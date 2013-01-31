@@ -70,7 +70,7 @@
 				backend. Differential analysis module was tested with
 				R 2.15 and DESeq
 				1.8.3.
-				You need to install DESeq R packages:
+				You need to install DESeq R packages on your computer or Rserve server:
 			</p>
 
 			<source>

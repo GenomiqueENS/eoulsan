@@ -64,7 +64,7 @@
 				packages as statistical
 				backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and
 				FactoMineR_1.20.
-				You need to install two R packages:
+				You need to install two R packages on your computer or Rserve server:
 			</p>
 
 			<source>
@@ -171,7 +171,7 @@ $ sudo R
 				<div>
 					<strong>Warning : </strong>as we can see on this graph if
 					some of the samples have a number of total count very 
-					higher than, the first dimension of the PCA is the count 
+					higher than the others. The first dimension of the PCA is the count 
 					number and the graph isn't really informative in this case.
 				</div>
 				
@@ -180,13 +180,13 @@ $ sudo R
 				
 				<div>
 					On this graph like on the corresponding dendrogram we 
-					can see that samples of MO_injection and WT_injection are 
+					can see that samples of <i>MO_injection</i> and <i>WT_injection</i> are 
 					grouped together which is not waiting. Actually, in this 
-					experiment injection was performed at 2 different type and 
-					these two condition are control condition of 2 strain, 
+					experiment injection was performed at 2 different times and 
+					these two conditions are control conditions of 2 strains, 
 					so these graph shows that there is an "injection 
 					time effect" stronger than the difference between the 
-					2 strain. 
+					2 strains. 
 				</div>
 				
 			</subsection>
