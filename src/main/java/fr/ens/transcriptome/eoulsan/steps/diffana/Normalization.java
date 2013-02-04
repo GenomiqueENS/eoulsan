@@ -173,7 +173,6 @@ public class Normalization {
         runRnwScript(rScript, true);
 
         removeExpressionFiles(experimentSampleList);
-        this.rConnection.removeFile(rScript);
         this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
@@ -277,8 +276,6 @@ public class Normalization {
         ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
             System.currentTimeMillis());
 
-        if (!new File(rnwScript).delete())
-          getLogger().warning("Unable to remove R script: " + rnwScript);
 
       } catch (IOException e) {
 
