@@ -374,7 +374,7 @@ public class Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " normalisation";
-    final StringBuilder sb = writeRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb = generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -383,19 +383,19 @@ public class Normalization {
     replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add sampleNames vector
-    writeSampleName(rSampleNames, sb);
+    generateSampleNamePart(rSampleNames, sb);
 
     // Add SampleIds vector
-    writeSampleIds(rSampleIds, sb);
+    generateSampleIdsPart(rSampleIds, sb);
 
     // Add file names vector
-    writeExpressionFileNames(sb);
+    generateExpressionFileNamesPart(sb);
 
     // Add repTechGroupVector
-    writeRepTechGroup(rRepTechGroup, sb);
+    generateRepTechGroupPart(rRepTechGroup, sb);
 
     // Add condition to R script
-    writeCondition(rCondNames, sb);
+    generateConditionPart(rCondNames, sb);
 
     // Add projectPath, outPath and projectName
     sb.append("# projectPath : path of count files directory\n");
@@ -462,7 +462,7 @@ public class Normalization {
    * @param experimentSamplesList
    * @return a stringbuilder whith Rnw preamble
    */
-  protected StringBuilder writeRnwpreamble(List<Sample> experimentSamplesList,
+  protected StringBuilder generateRnwpreamble(List<Sample> experimentSamplesList,
       String title) {
 
     StringBuilder sb = new StringBuilder();
@@ -516,7 +516,7 @@ public class Normalization {
    * @param rSampleNames
    * @param sb
    */
-  protected void writeSampleName(final List<String> rSampleNames,
+  protected void generateSampleNamePart(final List<String> rSampleNames,
       final StringBuilder sb) {
 
     // Add samples names to R script
@@ -542,7 +542,7 @@ public class Normalization {
    * @param rSampleIds
    * @param sb
    */
-  protected void writeSampleIds(final List<Integer> rSampleIds,
+  protected void generateSampleIdsPart(final List<Integer> rSampleIds,
       final StringBuilder sb) {
 
     // Put sample ids into R vector
@@ -561,7 +561,7 @@ public class Normalization {
    * Add expression file name vector to R script
    * @param sb
    */
-  protected void writeExpressionFileNames(StringBuilder sb) {
+  protected void generateExpressionFileNamesPart(StringBuilder sb) {
 
     // Add file names vector
     sb.append("#create file names vector\n");
@@ -576,7 +576,7 @@ public class Normalization {
    * @param rRepTechGroup
    * @param sb
    */
-  protected void writeRepTechGroup(List<String> rRepTechGroup, StringBuilder sb) {
+  protected void generateRepTechGroupPart(List<String> rRepTechGroup, StringBuilder sb) {
 
     if (isTechnicalReplicates(rRepTechGroup)) {
 
@@ -613,7 +613,7 @@ public class Normalization {
    * @param rCondNames
    * @param sb
    */
-  protected void writeCondition(List<String> rCondNames, StringBuilder sb) {
+  protected void generateConditionPart(List<String> rCondNames, StringBuilder sb) {
 
     sb.append("# create condition vector\n");
     sb.append("condition <- c(");

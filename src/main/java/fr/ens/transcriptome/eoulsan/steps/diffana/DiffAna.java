@@ -134,7 +134,7 @@ public class DiffAna extends Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " differential analysis";
-    final StringBuilder sb = writeRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb = generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -146,19 +146,19 @@ public class DiffAna extends Normalization {
     writeReferenceField(experimentSamplesList, sb);
 
     // Add sampleNames vector
-    writeSampleName(rSampleNames, sb);
+    generateSampleNamePart(rSampleNames, sb);
 
     // Add SampleIds vector
-    writeSampleIds(rSampleIds, sb);
+    generateSampleIdsPart(rSampleIds, sb);
 
     // Add file names vector
-    writeExpressionFileNames(sb);
+    generateExpressionFileNamesPart(sb);
 
     // Add repTechGroupVector
-    writeRepTechGroup(rRepTechGroup, sb);
+    generateRepTechGroupPart(rRepTechGroup, sb);
 
     // Add condition to R script
-    writeCondition(rCondNames, sb);
+    generateConditionPart(rCondNames, sb);
 
     // Add projectPath, outPath and projectName
     sb.append("# projectPath : path of count files directory\n");
