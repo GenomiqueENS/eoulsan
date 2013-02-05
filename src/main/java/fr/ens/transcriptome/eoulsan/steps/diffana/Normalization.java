@@ -221,7 +221,7 @@ public class Normalization {
         runRnwScript(rScript, false);
       }
 
-    } catch (REngineException e) {
+    } catch (Exception e) {
       throw new EoulsanException("Error while running differential analysis: "
           + e.getMessage());
     }
@@ -641,6 +641,7 @@ public class Normalization {
    */
   protected void checkRepTechGroupCoherence(List<String> rRepTechGroup,
       List<String> rCondNames) throws EoulsanException {
+    
     // Check repTechGroup field coherence
     Map<String, String> condRepTGMap = Maps.newHashMap();
     for (int i = 0; i < rRepTechGroup.size(); i++) {
