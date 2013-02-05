@@ -667,17 +667,9 @@ public class Normalization {
    */
   protected String escapeUnderScore(final String s) {
 
-    StringBuilder sb = new StringBuilder();
-    String[] splittedString = s.split("");
+    String s2 = s.replace("_", "\\_");
 
-    for (String c : splittedString) {
-
-      if (c.equals("_"))
-        sb.append("\\_");
-      else
-        sb.append(c);
-    }
-    return sb.toString();
+    return s2;
   }
 
   /**
