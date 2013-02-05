@@ -169,7 +169,7 @@ public class Normalization {
 
         putExpressionFiles(experimentSampleList);
 
-        String rScript = writeScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList);
         runRnwScript(rScript, true);
 
         removeExpressionFiles(experimentSampleList);
@@ -217,7 +217,7 @@ public class Normalization {
             "Experiment : "
                 + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        String rScript = writeScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList);
         runRnwScript(rScript, false);
       }
 
@@ -317,12 +317,12 @@ public class Normalization {
   }
 
   /**
-   * Write the R script
+   * Generate the R script
    * @param experimentSamplesList
    * @return String rScript
    * @throws EoulsanException
    */
-  protected String writeScript(final List<Sample> experimentSamplesList)
+  protected String generateScript(final List<Sample> experimentSamplesList)
       throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();

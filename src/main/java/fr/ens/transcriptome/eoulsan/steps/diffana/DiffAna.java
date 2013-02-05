@@ -82,7 +82,7 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String writeScript(final List<Sample> experimentSamplesList)
+  protected String generateScript(final List<Sample> experimentSamplesList)
       throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
