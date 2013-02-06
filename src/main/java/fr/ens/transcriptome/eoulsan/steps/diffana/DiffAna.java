@@ -62,6 +62,95 @@ public class DiffAna extends Normalization {
   private final boolean forceBlindDispersionEstimation;
 
   //
+  // enums
+  //
+  /**
+   * Dispersion estimation method enum for DESeq differential analysis
+   */
+  public enum DispersionMethod {
+
+    POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
+
+    private String method;
+
+    /**
+     * Get the dispersion estimation method
+     * @return a string with the dispersion estimation method
+     */
+    public String getMethod() {
+
+      return this.method;
+    }
+
+    /**
+     * Constructor
+     * @param method dispersion estimation method
+     */
+    DispersionMethod(String method) {
+
+      this.method = method;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation sharingMode enum for DESeq differential analysis
+   */
+  public enum DispersionSharingMode {
+
+    FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
+
+    private String sharingMode;
+
+    /**
+     * Get the dispersion estimation sharingMode
+     * @return a string with the dispersion estimation sharingMode
+     */
+    public String getSharingMode() {
+
+      return this.sharingMode;
+    }
+
+    /**
+     * Constructor
+     * @param sharingMode dispersion estimation sharingMode
+     */
+    DispersionSharingMode(String sharingMode) {
+
+      this.sharingMode = sharingMode;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation fitType enum for DESeq differential analysis
+   */
+  public enum DispersionFitType {
+
+    PARAMETRIC("parametric"), LOCAL("local");
+
+    private String fitType;
+
+    /**
+     * Get the dispersion estimation fitType
+     * @return a string with the dispersion estimation fitType
+     */
+    public String getFitType() {
+
+      return this.fitType;
+    }
+
+    /**
+     * Constructor
+     * @param fitType dispersion estimation fitType
+     */
+    DispersionFitType(String fitType) {
+
+      this.fitType = fitType;
+    }
+  }
+
+  //
   // Public methods
   //
 
@@ -134,7 +223,8 @@ public class DiffAna extends Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " differential analysis";
-    final StringBuilder sb = generateRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb =
+        generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
