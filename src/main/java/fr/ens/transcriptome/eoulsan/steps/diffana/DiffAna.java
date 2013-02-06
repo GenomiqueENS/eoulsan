@@ -59,7 +59,10 @@ public class DiffAna extends Normalization {
   private static final String ANADIFF_WITHOUT_REFERENCE =
       "/anadiffWithoutReference.Rnw";
 
-  private final boolean forceBlindDispersionEstimation;
+  // dispersion estimation parameters
+  private static DispersionMethod dispEstMethod;
+  private static DispersionFitType dispEstFitType;
+  private static DispersionSharingMode dispEstSharingMode;
 
   //
   // enums
@@ -67,19 +70,42 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation method enum for DESeq differential analysis
    */
-  public enum DispersionMethod {
+  public static enum DispersionMethod {
 
     POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
 
-    private String method;
+    private String name;
 
     /**
      * Get the dispersion estimation method
      * @return a string with the dispersion estimation method
      */
-    public String getMethod() {
+    public String getName() {
 
-      return this.method;
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation method form its name
+     * @param name dispersion estimation method name
+     * @return a DispersionMethod or null if no DispersionMethod found for the
+     *         name
+     */
+    public static DispersionMethod getDispEstMethodFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionMethod dem : DispersionMethod.values()) {
+
+        if (dem.getName().toLowerCase().equals(lowerName)) {
+
+        }
+      }
+
+      return null;
     }
 
     /**
@@ -88,7 +114,7 @@ public class DiffAna extends Normalization {
      */
     DispersionMethod(String method) {
 
-      this.method = method;
+      this.name = method;
     }
 
   }
@@ -96,28 +122,52 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation sharingMode enum for DESeq differential analysis
    */
-  public enum DispersionSharingMode {
+  public static enum DispersionSharingMode {
 
     FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
 
-    private String sharingMode;
+    private String name;
 
     /**
-     * Get the dispersion estimation sharingMode
-     * @return a string with the dispersion estimation sharingMode
+     * Get the dispersion estimation sharingMode name
+     * @return a string with the dispersion estimation sharingMode name
      */
-    public String getSharingMode() {
+    public String getName() {
 
-      return this.sharingMode;
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation sharing mode form its name
+     * @param name dispersion estimation sharing mode name
+     * @return a DispersionSharingMode or null if no DispersionSharingMode found
+     *         for the name
+     */
+    public static DispersionSharingMode getDispEstSharingModeFromName(
+        final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionMethod desm : DispersionMethod.values()) {
+
+        if (desm.getName().toLowerCase().equals(lowerName)) {
+
+        }
+      }
+
+      return null;
     }
 
     /**
      * Constructor
-     * @param sharingMode dispersion estimation sharingMode
+     * @param name dispersion estimation sharingMode name
      */
-    DispersionSharingMode(String sharingMode) {
+    DispersionSharingMode(String name) {
 
-      this.sharingMode = sharingMode;
+      this.name = name;
     }
 
   }
@@ -125,28 +175,51 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation fitType enum for DESeq differential analysis
    */
-  public enum DispersionFitType {
+  public static enum DispersionFitType {
 
     PARAMETRIC("parametric"), LOCAL("local");
 
-    private String fitType;
+    private String name;
 
     /**
-     * Get the dispersion estimation fitType
-     * @return a string with the dispersion estimation fitType
+     * Get the dispersion estimation fitType name
+     * @return a string with the dispersion estimation fitType name
      */
-    public String getFitType() {
+    public String getName() {
 
-      return this.fitType;
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation fit type form its name
+     * @param name dispersion estimation fit type name
+     * @return a DispersionFitType or null if no DispersionFitType found for the
+     *         name
+     */
+    public static DispersionFitType getDispEstMethodFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionFitType deft : DispersionFitType.values()) {
+
+        if (deft.getName().toLowerCase().equals(lowerName)) {
+
+        }
+      }
+
+      return null;
     }
 
     /**
      * Constructor
-     * @param fitType dispersion estimation fitType
+     * @param name dispersion estimation fitType name
      */
-    DispersionFitType(String fitType) {
+    DispersionFitType(String name) {
 
-      this.fitType = fitType;
+      this.name = name;
     }
   }
 
@@ -278,8 +351,7 @@ public class DiffAna extends Normalization {
     sb.append("@\n");
 
     // Add dispersion estimation part
-    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)
-        && !forceBlindDispersionEstimation) {
+    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
       sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
     } else {
       sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
@@ -400,15 +472,27 @@ public class DiffAna extends Normalization {
    * @param expressionFilesSuffix
    * @param outPath
    * @param rServerName
+   * @throws EoulsanException
    */
   public DiffAna(Design design, File expressionFilesDirectory,
       String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
-      String rServerName, boolean fbde) {
+      DispersionMethod dispEstMethod, DispersionSharingMode dispEstSharingMode,
+      DispersionFitType dispEstFitType, String rServerName, boolean rServeEnable)
+      throws EoulsanException {
 
     super(design, expressionFilesDirectory, expressionFilesPrefix,
-        expressionFilesSuffix, outPath, rServerName);
+        expressionFilesSuffix, outPath, rServerName, rServeEnable);
 
-    this.forceBlindDispersionEstimation = fbde;
+    if (dispEstMethod == null
+        || dispEstFitType == null || dispEstSharingMode == null) {
+      throw new NullPointerException(
+          "dispersion estimation fit type or method or sharing mode is null");
+    } else {
+      this.dispEstMethod = dispEstMethod;
+      this.dispEstFitType = dispEstFitType;
+      this.dispEstSharingMode = dispEstSharingMode;
+    }
+
   }
 
 }

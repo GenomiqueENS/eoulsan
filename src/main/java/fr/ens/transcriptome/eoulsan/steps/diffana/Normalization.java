@@ -84,7 +84,7 @@ public class Normalization {
   protected final File outPath;
   protected final String expressionFilesPrefix;
   protected final String expressionFilesSuffix;
-  protected final RSConnectionNewImpl rConnection;
+  protected RSConnectionNewImpl rConnection = null;
 
   //
   // Public methods
@@ -276,7 +276,6 @@ public class Normalization {
         ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
             System.currentTimeMillis());
 
-
       } catch (IOException e) {
 
         throw new EoulsanException(
@@ -374,7 +373,8 @@ public class Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " normalisation";
-    final StringBuilder sb = generateRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb =
+        generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -462,8 +462,8 @@ public class Normalization {
    * @param experimentSamplesList
    * @return a stringbuilder whith Rnw preamble
    */
-  protected StringBuilder generateRnwpreamble(List<Sample> experimentSamplesList,
-      String title) {
+  protected StringBuilder generateRnwpreamble(
+      List<Sample> experimentSamplesList, String title) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX stringbuilder
@@ -576,7 +576,8 @@ public class Normalization {
    * @param rRepTechGroup
    * @param sb
    */
-  protected void generateRepTechGroupPart(List<String> rRepTechGroup, StringBuilder sb) {
+  protected void generateRepTechGroupPart(List<String> rRepTechGroup,
+      StringBuilder sb) {
 
     if (isTechnicalReplicates(rRepTechGroup)) {
 
@@ -641,7 +642,7 @@ public class Normalization {
    */
   protected void checkRepTechGroupCoherence(List<String> rRepTechGroup,
       List<String> rCondNames) throws EoulsanException {
-    
+
     // Check repTechGroup field coherence
     Map<String, String> condRepTGMap = Maps.newHashMap();
     for (int i = 0; i < rRepTechGroup.size(); i++) {
@@ -763,11 +764,12 @@ public class Normalization {
    * @param expressionFilesSuffix
    * @param outPath
    * @param rServerName
+   * @throws EoulsanException 
    */
   public Normalization(final Design design,
       final File expressionFilesDirectory, final String expressionFilesPrefix,
       final String expressionFilesSuffix, final File outPath,
-      final String rServerName) {
+      final String rServerName, final boolean rServeEnable) throws EoulsanException {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -794,7 +796,14 @@ public class Normalization {
 
     this.outPath = outPath;
 
-    this.rConnection = new RSConnectionNewImpl(rServerName);
+    if (rServeEnable == true) {
+      
+      if (rServerName != null) {
+        this.rConnection = new RSConnectionNewImpl(rServerName);
+      } else {
+        throw new EoulsanException("Missing Rserve server name");
+      }
+    }
   }
 
 }
