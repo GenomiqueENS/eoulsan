@@ -46,7 +46,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -98,10 +97,10 @@ public class Normalization {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Normalization : Rserve mode");
-      runRserveRnwScript();
+      runRserveRnwScript(context);
     } else {
       getLogger().info("Normalization : local mode");
-      runLocalRnwScript();
+      runLocalRnwScript(context);
     }
   }
 
@@ -146,7 +145,8 @@ public class Normalization {
    * run Rnw script on Rserve server
    * @throws EoulsanException
    */
-  protected void runRserveRnwScript() throws EoulsanException {
+  protected void runRserveRnwScript(final Context context)
+      throws EoulsanException {
 
     try {
 
@@ -169,10 +169,14 @@ public class Normalization {
 
         putExpressionFiles(experimentSampleList);
 
-        String rScript = generateScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, true);
 
         removeExpressionFiles(experimentSampleList);
+
+        if (!(context.getSettings().isSaveRscripts()))
+          this.rConnection.removeFile(rScript);
+
         this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
@@ -200,7 +204,8 @@ public class Normalization {
    * run Rnw script on local mode
    * @throws EoulsanException
    */
-  protected void runLocalRnwScript() throws EoulsanException {
+  protected void runLocalRnwScript(final Context context)
+      throws EoulsanException {
 
     try {
 
@@ -217,8 +222,13 @@ public class Normalization {
             "Experiment : "
                 + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        String rScript = generateScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);
+
+        // Remove R script if keep.rscript parameter is false
+        if (!context.getSettings().isSaveRscripts()) {
+          new File(rScript).delete();
+        }
       }
 
     } catch (Exception e) {
@@ -321,8 +331,8 @@ public class Normalization {
    * @return String rScript
    * @throws EoulsanException
    */
-  protected String generateScript(final List<Sample> experimentSamplesList)
-      throws EoulsanException {
+  protected String generateScript(final List<Sample> experimentSamplesList,
+      final Context context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 
@@ -439,7 +449,7 @@ public class Normalization {
           "normalization_"
               + experimentSamplesList.get(0).getMetadata().getExperiment()
               + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+      if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -764,12 +774,13 @@ public class Normalization {
    * @param expressionFilesSuffix
    * @param outPath
    * @param rServerName
-   * @throws EoulsanException 
+   * @throws EoulsanException
    */
   public Normalization(final Design design,
       final File expressionFilesDirectory, final String expressionFilesPrefix,
       final String expressionFilesSuffix, final File outPath,
-      final String rServerName, final boolean rServeEnable) throws EoulsanException {
+      final String rServerName, final boolean rServeEnable)
+      throws EoulsanException {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -797,7 +808,7 @@ public class Normalization {
     this.outPath = outPath;
 
     if (rServeEnable == true) {
-      
+
       if (rServerName != null) {
         this.rConnection = new RSConnectionNewImpl(rServerName);
       } else {

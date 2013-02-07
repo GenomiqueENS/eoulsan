@@ -36,7 +36,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -50,19 +49,17 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class DiffAna extends Normalization {
 
-  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
-      "/dispersionEstimationWithReplicates.Rnw";
-  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
-      "/dispersionEstimationWithoutReplicates.Rnw";
+  private static final String DISPERSION_ESTIMATION =
+      "/dispersionEstimation.Rnw";
   private static final String ANADIFF_WITH_REFERENCE =
       "/anadiffWithReference.Rnw";
   private static final String ANADIFF_WITHOUT_REFERENCE =
       "/anadiffWithoutReference.Rnw";
 
   // dispersion estimation parameters
-  private static DispersionMethod dispEstMethod;
-  private static DispersionFitType dispEstFitType;
-  private static DispersionSharingMode dispEstSharingMode;
+  private DispersionMethod dispEstMethod;
+  private DispersionFitType dispEstFitType;
+  private DispersionSharingMode dispEstSharingMode;
 
   //
   // enums
@@ -101,7 +98,7 @@ public class DiffAna extends Normalization {
       for (DispersionMethod dem : DispersionMethod.values()) {
 
         if (dem.getName().toLowerCase().equals(lowerName)) {
-
+          return dem;
         }
       }
 
@@ -151,10 +148,10 @@ public class DiffAna extends Normalization {
 
       final String lowerName = name.trim().toLowerCase();
 
-      for (DispersionMethod desm : DispersionMethod.values()) {
+      for (DispersionSharingMode desm : DispersionSharingMode.values()) {
 
         if (desm.getName().toLowerCase().equals(lowerName)) {
-
+          return desm;
         }
       }
 
@@ -196,7 +193,7 @@ public class DiffAna extends Normalization {
      * @return a DispersionFitType or null if no DispersionFitType found for the
      *         name
      */
-    public static DispersionFitType getDispEstMethodFromName(final String name) {
+    public static DispersionFitType getDispEstFitTypeFromName(final String name) {
 
       if (name == null)
         return null;
@@ -206,7 +203,7 @@ public class DiffAna extends Normalization {
       for (DispersionFitType deft : DispersionFitType.values()) {
 
         if (deft.getName().toLowerCase().equals(lowerName)) {
-
+          return deft;
         }
       }
 
@@ -232,10 +229,10 @@ public class DiffAna extends Normalization {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Differential analysis : Rserve mode");
-      runRserveRnwScript();
+      runRserveRnwScript(context);
     } else {
       getLogger().info("Differential analysis : local mode");
-      runLocalRnwScript();
+      runLocalRnwScript(context);
     }
   }
 
@@ -244,7 +241,7 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String generateScript(final List<Sample> experimentSamplesList)
+  protected String generateScript(final List<Sample> experimentSamplesList, final Context context)
       throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
@@ -350,18 +347,43 @@ public class DiffAna extends Normalization {
 
     sb.append("@\n");
 
-    // Add dispersion estimation part
-    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
-    } else {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
+    // generate dispersion estimation part
+    String dispersionEstimation = readStaticScript(DISPERSION_ESTIMATION);
+    if (!isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
+
+      if (!(this.dispEstMethod == DispersionMethod.BLIND)
+          || !(this.dispEstSharingMode == DispersionSharingMode.FIT_ONLY)) {
+        throw new EoulsanException(
+            "There is no replicates in this experiment, you have to use "
+                + "disp_est_method=blind and disp_est_sharingMode=fit-only in "
+                + "diffana parameters");
+      }
     }
 
-    if (isReference(experimentSamplesList)) {
-      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
-    } else {
-      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
-    }
+    dispersionEstimation =
+        dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${SHARINGMODE}",
+            this.dispEstSharingMode.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${FITTYPE}",
+            this.dispEstFitType.getName());
+
+    // Remove dispersion plot if method is per condition (there is no fitted
+    // dispersion)
+    if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION))
+      dispersionEstimation =
+          dispersionEstimation.replace("plotDispEsts(countDataSet)", "");
+
+    // Add dispersion estimation part to stringbuilder
+    sb.append(dispersionEstimation);
+
+    // check if there is a reference
+//    if (isReference(experimentSamplesList)) {
+//      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
+//    } else {
+//      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
+//    }
 
     // end document
     sb.append("\\end{document}");
@@ -372,8 +394,8 @@ public class DiffAna extends Normalization {
       rScript =
           "diffana_"
               + experimentSamplesList.get(0).getMetadata().getExperiment()
-              + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+              + "_" + System.currentTimeMillis() + ".Rnw";
+      if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);

@@ -53,11 +53,11 @@ import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionSharingMode;
 public class DiffAnaLocalStep extends AbstractStep {
 
   private static final String DISP_EST_METHOD_PARAMETER_NAME =
-      "disp_est_method";
+      "disp.est.method";
   private static final String DISP_EST_FIT_TYPE_PARAMETER_NAME =
-      "disp_est_fitType";
+      "disp.est.fit.type";
   private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME =
-      "disp_est_sharingMode";
+      "disp.est.sharing.mode";
 
   private static final String STEP_NAME = "diffana";
 
@@ -138,30 +138,34 @@ public class DiffAnaLocalStep extends AbstractStep {
 
       if (DISP_EST_METHOD_PARAMETER_NAME.equals(p.getName())) {
         this.dispEstMethod =
-            DispersionMethod.getDispEstMethodFromName(p.getName());
-
+            DispersionMethod.getDispEstMethodFromName(p.getStringValue());
         if (this.dispEstMethod == null) {
-          throw new EoulsanException("Unknown dispersion estimation method in"
-              + getName() + " step:" + p.getStringValue());
+          throw new EoulsanException("Unknown dispersion estimation method in "
+              + getName() + " step: " + p.getStringValue());
         }
       } else if (DISP_EST_FIT_TYPE_PARAMETER_NAME.equals(p.getName())) {
         this.dispEstFitType =
-            DispersionFitType.getDispEstMethodFromName(p.getName());
-
+            DispersionFitType.getDispEstFitTypeFromName(p.getStringValue());
         if (this.dispEstFitType == null) {
-          throw new EoulsanException("Unknown dispersion estimation fitType in"
-              + getName() + " step:" + p.getStringValue());
+          throw new EoulsanException(
+              "Unknown dispersion estimation fitType in "
+                  + getName() + " step: " + p.getStringValue());
         }
       } else if (DISP_EST_SHARING_MODE_PARAMETER_NAME.equals(p.getName())) {
         this.dispEstSharingMode =
-            DispersionSharingMode.getDispEstSharingModeFromName(p.getName());
+            DispersionSharingMode.getDispEstSharingModeFromName(p
+                .getStringValue());
 
         if (this.dispEstSharingMode == null) {
           throw new EoulsanException(
-              "Unknown dispersion estimation sharing mode in"
-                  + getName() + " step:" + p.getStringValue());
+              "Unknown dispersion estimation sharing mode in "
+                  + getName() + " step: " + p.getStringValue());
         }
+      } else {
+        throw new EoulsanException("Unkown parameter for step "
+            + getName() + " : " + p.getName());
       }
+
     }
 
     // Log Step parameters
@@ -175,5 +179,4 @@ public class DiffAnaLocalStep extends AbstractStep {
         + getName() + ", dispersion estimation fit type="
         + this.dispEstFitType.getName());
   }
-
 }
