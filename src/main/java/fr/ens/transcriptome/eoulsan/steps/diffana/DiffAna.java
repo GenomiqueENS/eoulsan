@@ -379,11 +379,11 @@ public class DiffAna extends Normalization {
     sb.append(dispersionEstimation);
 
     // check if there is a reference
-//    if (isReference(experimentSamplesList)) {
-//      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
-//    } else {
-//      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
-//    }
+    if (isReference(experimentSamplesList)) {
+      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
+    } else {
+      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
+    }
 
     // end document
     sb.append("\\end{document}");
