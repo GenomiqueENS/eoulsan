@@ -55,15 +55,33 @@ public class MultiReadAlignmentsFilterBuilder {
    * Add a parameter to the builder
    * @param key key of the parameter
    * @param value value of the parameter
+   * @return true if the parameter has been successfully added
    * @throws EoulsanException if the filter reference in the key does not exist
    *           or if an error occurs while setting the parameter in the
    *           dedicated filter
    */
-  public void addParameter(final String key, final String value)
+  public boolean addParameter(final String key, final String value)
       throws EoulsanException {
 
+    return addParameter(key, value, false);
+  }
+
+  /**
+   * Add a parameter to the builder
+   * @param key key of the parameter
+   * @param value value of the parameter
+   * @param noExceptionIfFilterNotExists do not thrown an exception if the
+   *          filter does not exists.
+   * @return true if the parameter has been successfully added
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public boolean addParameter(final String key, final String value,
+      final boolean noExceptionIfFilterNotExists) throws EoulsanException {
+
     if (key == null || value == null)
-      return;
+      return false;
 
     // Get first dot position
     final String keyTrimmed = key.trim();
@@ -91,9 +109,14 @@ public class MultiReadAlignmentsFilterBuilder {
           ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(
               filterName);
 
-      if (filter == null)
+      if (filter == null) {
+
+        if (noExceptionIfFilterNotExists)
+          return false;
+
         throw new EoulsanException("Unable to find "
             + filterName + " alignments filter.");
+      }
 
       this.mapFilters.put(filterName, filter);
       this.listFilter.add(filter);
@@ -112,6 +135,7 @@ public class MultiReadAlignmentsFilterBuilder {
       LOGGER.info("Set alignments filter \""
           + filterName + "\" with no parameter");
 
+    return true;
   }
 
   /**
