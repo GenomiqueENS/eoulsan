@@ -128,10 +128,10 @@
         </step>
 
         <!-- Normalization -->
-        <step skip="false">
+        <!--step skip="false">
                 <name>normalization</name>
                 <parameters/>
-        </step>
+        </step-->
 
         <!-- Anadiff -->
         <!--step skip="false">
