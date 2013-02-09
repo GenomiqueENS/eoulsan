@@ -31,7 +31,9 @@
                         </parameter>
                         <parameter>
                                 <name>mapperarguments</name>
-                                <value>--best -k 2</value>
+				WARNING: If enable this step, DON'T
+				FORGET to add double '-' before the bowtie best argument 
+                                <value>best -k 2</value>
                         </parameter>                        
                 </parameters>
         </step-->
