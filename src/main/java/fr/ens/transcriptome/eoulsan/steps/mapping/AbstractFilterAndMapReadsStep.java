@@ -174,12 +174,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
 
-      else if ("mapperArguments".equals(p.getName())
+      else if ("mapperarguments".equals(p.getName())
           || "mapper.arguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
       else if ("hadoop.threads".equals(p.getName()))
         this.hadoopThreads = p.getIntValue();
 
+      // TODO mrfb/mrafb.addParameter must return false if the filter is not found
+      // TODO Remove the list of allowed filter reads parameters
       // read filters parameters
       else if ("paircheck".equals(p.getName())
           || "pairend.accept.pairend".equals(p.getName())
