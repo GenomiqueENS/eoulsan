@@ -25,11 +25,12 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -120,11 +121,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set SAM filter parameters
-    for (Map.Entry<String, String> e : getAlignmentsFilterParameters()
-        .entrySet())
-      jobConf.set(
-          SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
+    addParametersToJobConf(getAlignmentsFilterParameters(),
+        MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // timeout
     jobConf.set("mapred.task.timeout", "" + 30 * 60 * 1000);

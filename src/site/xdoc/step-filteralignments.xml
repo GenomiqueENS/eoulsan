@@ -50,17 +50,16 @@
 	<br/>
         <li><b>Optional parameters</b>:</li>
 	<table>
-		<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-		
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
         <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
 		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>	
-		<tr><td>mappingquality.threshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td></tr>
-		<tr><td>removeunmapped</td><td>boolean</td><td>If true, remove unmapped reads.</td></tr>
-		<tr><td>removemultimatches</td><td>boolean</td><td>If true, remove all alignments of a multi-matches read.</td></tr>
-		<tr><td>keeponematch</td><td>boolean</td><td>If true, keep only the first alignment of a multi-matches read.</td></tr>
-		<tr><td>keepnumbermatch</td><td>int</td><td>Keep the given number of the first alignments for a read.</td></tr>
-		<tr><td>distancefromreference</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td></tr>
-		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation step, that is multiple alignments and those that contain a splice event.</td></tr>
+		<tr><td>mappingquality.threshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td><td></td></tr>
+		<tr><td>removeunmapped</td><td>boolean</td><td>If true, remove unmapped reads.</td><td></td></tr>
+		<tr><td>removemultimatches</td><td>boolean</td><td>If true, remove all alignments of a multi-matches read.</td><td></td></tr>
+		<tr><td>keeponematch</td><td>boolean</td><td>If true, keep only the first alignment of a multi-matches read.</td><td></td></tr>
+		<tr><td>keepnumbermatch</td><td>int</td><td>Keep the given number of the first alignments for a read.</td><td></td></tr>
+		<tr><td>distancefromreference</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td><td></td></tr>
+		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation step, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
 	</table>
 	
 	<br/> 

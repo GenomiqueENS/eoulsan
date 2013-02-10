@@ -287,7 +287,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         new Job(jobConf, "Expression computation with htseq-count ("
             + sample.getName() + ", " + inputPath.getName() + ", "
             + annotationDataFile.getSource() + ", " + genomicType + ", "
-            + attributeId + ", stranded : " + stranded + ")");
+            + attributeId + ", stranded: " + stranded
+            + ", removeAmbiguousCases: " + removeAmbiguousCases + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);

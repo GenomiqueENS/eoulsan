@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 import java.io.File;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -40,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.steps.diffana.Normalization;
 /**
  * This class define the step for normalization
  * @author deshaies
- *
  */
 @LocalOnly
 public class NormalizationLocalStep extends AbstractStep {
@@ -79,13 +77,15 @@ public class NormalizationLocalStep extends AbstractStep {
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
 
       String rServeName = null;
-      if (EoulsanRuntime.getRuntime().getSettings().isRServeServerEnabled())
+      boolean rServeEnable = context.getSettings().isRServeServerEnabled();
+      if (rServeEnable)
         rServeName =
-            EoulsanRuntime.getRuntime().getSettings().getRServeServername();
+            context.getSettings().getRServeServername();
 
       final Normalization norm =
           new Normalization(design, new File("."), eDF.getType().getPrefix(),
-              eDF.getDefaultExtention(), new File("."), rServeName);
+              eDF.getDefaultExtention(), new File("."), rServeName,
+              rServeEnable);
 
       norm.run(context);
 

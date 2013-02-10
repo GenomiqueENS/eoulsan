@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterMapper.SAM_HEADER_FILE_PREFIX;
 
 import java.io.BufferedReader;
@@ -34,7 +35,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMParser;
@@ -115,13 +115,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       final MultiReadAlignmentsFilterBuilder mrafb =
           new MultiReadAlignmentsFilterBuilder();
 
-      for (Map.Entry<String, String> e : conf) {
-
-        if (e.getKey().startsWith(MAP_FILTER_PARAMETER_KEY_PREFIX))
-          mrafb.addParameter(
-              e.getKey().substring(MAP_FILTER_PARAMETER_KEY_PREFIX.length()),
-              e.getValue());
-      }
+      // Add the parameters from the job configuration to the builder
+      mrafb.addParameters(jobConfToParameters(conf,
+          MAP_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
           mrafb.getAlignmentsFilter(new HadoopReporter(context),

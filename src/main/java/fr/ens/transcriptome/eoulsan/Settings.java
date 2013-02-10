@@ -79,6 +79,9 @@ public final class Settings {
   private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
       + "rserve.servername";
 
+  private static final String SAVE_RSCRIPTS_KEY = MAIN_PREFIX_KEY
+      + "save.r.scripts";
+
   private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY
       + "design.obfuscate";
   private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
@@ -189,6 +192,15 @@ public final class Settings {
 
     return Boolean
         .parseBoolean(this.properties.getProperty(RSERVE_ENABLED_KEY));
+  }
+
+  /**
+   * Test if save.r.script is true
+   * @return boolean with keep Rscripts values
+   */
+  public boolean isSaveRscripts() {
+    
+    return Boolean.parseBoolean(this.properties.getProperty(SAVE_RSCRIPTS_KEY));
   }
 
   /**
@@ -506,6 +518,14 @@ public final class Settings {
     this.properties.setProperty(RSERVE_ENABLED_KEY, Boolean.toString(enable));
   }
 
+  /**
+   * Set if save Rscripts is true
+   * @param krs boolean
+   */
+  public void setSaveRscript(final boolean krs) {
+    
+    this.properties.setProperty(SAVE_RSCRIPTS_KEY, Boolean.toString(krs));
+  }
   /**
    * Set the RServe server name.
    * @param serverName The name of the RServe to use

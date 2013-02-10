@@ -64,7 +64,7 @@
 				packages as statistical
 				backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and
 				FactoMineR_1.20.
-				You need to install two R packages:
+				You need to install two R packages on your computer or Rserve server:
 			</p>
 
 			<source>
@@ -80,7 +80,8 @@ $ sudo R
 
 			<subsection name="Null count proportion barplot">
 			
-				<img src="images/barplotNullCount-750px.png" align="center" />
+				<img src="images/barplotNullCount-750px.png" align="middle" 
+						alt="Null count proportion barplot" />
 						
 				<div>
 					This barplot represent the null count proportion in all sample. 
@@ -97,10 +98,12 @@ $ sudo R
 				</div>
 				
 				<h4>Raw data (before technical replicates pooling and normalization)</h4>
-				<img src="images/barplotTotalCountRaw-750px.png" align="center" />
+				<img src="images/barplotTotalCountRaw-750px.png" align="middle"
+						alt="Raw total count barplot" />
 				
 				<h4>After technical replicates pooling</h4>
-				<img src="images/barplotTotalCountPool-750px.png" align="center" />
+				<img src="images/barplotTotalCountPool-750px.png" align="middle" 
+						alt="Pooled total count barplot" />
 						
 			</subsection>
 					
@@ -113,13 +116,16 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/boxplotRaw-750px.png" align="center" />
+				<img src="images/boxplotRaw-750px.png" align="middle"
+						alt="Raw boxplot" />
 				
 				<h4>After technical replicates pooling</h4>
-				<img src="images/boxplotPool-750px.png" align="center" />
+				<img src="images/boxplotPool-750px.png" align="middle"
+						alt="Pooled boxplot" />
 						
 				<h4>After normalization</h4>
-				<img src="images/boxplotNorm-750px.png" align="center" />
+				<img src="images/boxplotNorm-750px.png" align="middle"
+						alt="Normalized boxplot" />
 				
 			</subsection>
 			
@@ -134,10 +140,12 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/densityPlotRaw-750px.png" align="center" />
+				<img src="images/densityPlotRaw-750px.png" align="middle"
+						alt="Raw density plot" />
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/densityNorm-750px.png" align="center" />
+				<img src="images/densityNorm-750px.png" align="middle"
+						alt="Normalized density plot" />
 				
 			</subsection>
 				
@@ -151,10 +159,12 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/clusterRaw-750px.png" align="center" />
+				<img src="images/clusterRaw-750px.png" align="middle"
+						alt="Raw cluster dendrogram" />
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/clusterNorm-750px.png" align="center" />
+				<img src="images/clusterNorm-750px.png" align="middle"
+						alt="Normalized cluster dendrogram" />
 				
 			</subsection>
 			
@@ -166,27 +176,29 @@ $ sudo R
 				</div>
 				
 				<h4>On raw data</h4>
-				<img src="images/rawPCA-750px.png" align="center" />
+				<img src="images/rawPCA-750px.png" align="middle"
+						alt="Raw PCA plot" />
 				
 				<div>
 					<strong>Warning : </strong>as we can see on this graph if
 					some of the samples have a number of total count very 
-					higher than, the first dimension of the PCA is the count 
+					higher than the others. The first dimension of the PCA is the count 
 					number and the graph isn't really informative in this case.
 				</div>
 				
 				<h4>After technical replicate and normalization</h4>
-				<img src="images/normPCA-750px.png" align="center" />
+				<img src="images/normPCA-750px.png" align="middle"
+						alt="Normalized PCA plot" />
 				
 				<div>
 					On this graph like on the corresponding dendrogram we 
-					can see that samples of MO_injection and WT_injection are 
+					can see that samples of <i>MO_injection</i> and <i>WT_injection</i> are 
 					grouped together which is not waiting. Actually, in this 
-					experiment injection was performed at 2 different type and 
-					these two condition are control condition of 2 strain, 
+					experiment injection was performed at 2 different times and 
+					these two conditions are control conditions of 2 strains, 
 					so these graph shows that there is an "injection 
 					time effect" stronger than the difference between the 
-					2 strain. 
+					2 strains. 
 				</div>
 				
 			</subsection>

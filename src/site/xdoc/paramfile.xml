@@ -57,7 +57,7 @@
 		<li>System environment variables (e.g. <code>${PATH}</code>, <code>${PWD}</code>)</li>
 		<li><a href="#constantssection">user defined constants</a></li>
 	</ul> 
-	<p>User can also insert in parameter values the output of a shell command with expression between "<b>`</b>"</p>
+	<p>User can also insert in parameter values the output of a shell command with expression between "<b>`</b>":</p>
 	<source>
 	 &lt;value&gt;`cat /proc/cpuinfo | grep processor | wc -l`&lt;/value&gt;
 	 &lt;value&gt;`pwd`/tmp&lt;/value&gt;
@@ -103,8 +103,12 @@
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapper&lt;/name&gt;
-                                &lt;value&gt;bowtie&lt;/value&gt;
+                                &lt;value&gt;bowtie&lt;/name&gt;
                         &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;mapperarguments&lt;/name&gt;
+                                &lt;value&gt;--best -k 2&lt;/value&gt;
+                        &lt;/parameter&gt;                          
                 &lt;/parameters&gt;
         &lt;/step&gt;
 
@@ -113,8 +117,12 @@
                 &lt;name&gt;filtersam&lt;/name&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;mappingqualitythreshold&lt;/name&gt;
-                                &lt;value&gt;0&lt;/value&gt;
+                                &lt;name&gt;removeunmapped&lt;/name&gt;
+                                &lt;value&gt;&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;removemultimatches&lt;/name&gt;
+                                &lt;value&gt;&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
         &lt;/step&gt; 
@@ -135,9 +143,29 @@
                 &lt;name&gt;expression&lt;/name&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;genomictype&lt;/name&gt;
-                                &lt;value&gt;exon&lt;/value&gt;
+                                &lt;name&gt;counter&lt;/name&gt;
+                                &lt;value&gt;htseq-count&lt;/value&gt;
                         &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;genomictype&lt;/name&gt;
+                                &lt;value&gt;gene&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;attributeid&lt;/name&gt;
+                                &lt;value&gt;ID&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;stranded&lt;/name&gt;
+                                &lt;value&gt;no&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;overlapmode&lt;/name&gt;
+                                &lt;value&gt;union&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;removeambiguouscases&lt;/name&gt;
+                                &lt;value&gt;true&lt;/value&gt;
+                        &lt;/parameter&gt;                  
                 &lt;/parameters&gt;
         &lt;/step&gt;
 

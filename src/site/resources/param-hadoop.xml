@@ -11,11 +11,11 @@
                 <name>filterreads</name>
                 <parameters>
                         <parameter>
-                                <name>lengthThreshold</name>
+                                <name>trim.length.threshold</name>
                                 <value>11</value>
                         </parameter>
                         <parameter>
-                                <name>qualityThreshold</name>
+                                <name>quality.threshold</name>
                                 <value>12</value>
                         </parameter>
                 </parameters>
@@ -27,8 +27,14 @@
                 <parameters>
                         <parameter>
                                 <name>mapper</name>
-                                <value>soap</value>
+                                <value>bowtie</value>
                         </parameter>
+                        <parameter>
+                                <name>mapperarguments</name>
+				WARNING: If enable this step, DON'T
+				FORGET to add double '-' before the bowtie best argument 
+                                <value>best -k 2</value>
+                        </parameter>                        
                 </parameters>
         </step-->
 
@@ -37,8 +43,12 @@
                 <name>filtersam</name>
                 <parameters>
                         <parameter>
-                                <name>mappingqualitythreshold</name>
-                                <value>0</value>
+                                <name>removeunmapped</name>
+                                <value></value>
+                        </parameter>
+                        <parameter>
+                                <name>removemultimatches</name>
+                                <value></value>
                         </parameter>
                 </parameters>
         </step--> 
@@ -60,9 +70,17 @@
 				<value>bowtie</value>
 			</parameter>
 			<parameter>
-				<name>mappingqualitythreshold</name>
-				<value>0</value>
-			</parameter>
+                <name>mapperarguments</name>
+                <value>--best -k 2</value>
+            </parameter>
+			<parameter>
+                <name>removeunmapped</name>
+                <value></value>
+            </parameter>
+            <parameter>
+                <name>removemultimatches</name>
+                <value></value>
+            </parameter>
 		</parameters>
 	</step>
 
@@ -83,11 +101,37 @@
                 <name>expression</name>
                 <parameters>
                         <parameter>
-                                <name>genomictype</name>
-                                <value>exon</value>
+                                <name>counter</name>
+                                <value>htseq-count</value>
                         </parameter>
+                        <parameter>
+                                <name>genomictype</name>
+                                <value>gene</value>
+                        </parameter>
+                        <parameter>
+                                <name>attributeid</name>
+                                <value>ID</value>
+                        </parameter>
+                        <parameter>
+                                <name>stranded</name>
+                                <value>no</value>
+                        </parameter>
+                        <parameter>
+                                <name>overlapmode</name>
+                                <value>union</value>
+                        </parameter>
+                        <parameter>
+                                <name>removeambiguouscases</name>
+                                <value>false</value>
+                        </parameter>                
                 </parameters>
         </step>
+
+        <!-- Normalization -->
+        <!--step skip="false">
+                <name>normalization</name>
+                <parameters/>
+        </step-->
 
         <!-- Anadiff -->
         <!--step skip="false">

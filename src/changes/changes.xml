@@ -383,6 +383,21 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="update">
                 Generated SAM files in Hadoop mode now contains SAM headers.
             </action>
+            <action dev="jourdren" type="add">
+                Differential analysis and normalization steps can be executed on an Rserve server.
+            </action>
+            <action dev="jourdren" type="update">
+                Update the differential analysis and normalization steps with a new version of DESeq.
+            </action>
+            <action dev="jourdren" type="add">
+                New mappers for mapping step: Bowtie2 and gsmap.
+            </action>
+            <action dev="jourdren" type="update">
+                Remove gsnap and gmap standalone step.
+            </action>
+            <action dev="jourdren" type="add">
+                Add a constant section in the parameter file.
+            </action>
          </release>
 
 	</body>

@@ -71,8 +71,6 @@
 				<item name="Create mapper index" href="/step-createmapperindex.html" />
 				<item name="Filter reads" href="/step-filterreads.html" />
 				<item name="Map reads" href="/step-mapreads.html" />
-				<item name="Map reads with gsnap" href="/step-gsnap.html" />
-				<item name="Map reads with gmap" href="/step-gmap.html" />
 				<item name="Filter alignments" href="/step-filteralignments.html" />
 				<item name="Filter and map" href="step-filterandmap.html" />
 				<item name="Filter samples" href="/step-filtersamples.html" />

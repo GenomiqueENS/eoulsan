@@ -48,6 +48,14 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
+  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME = "removeambiguouscases";
+
+  private static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
+
+  private static final String STRANDED_PARAMETER_NAME = "stranded";
+
+  private static final String COUNTER_PARAMETER_NAME = "counter";
+
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
@@ -177,17 +185,17 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         this.genomicType = p.getStringValue();
       else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName()))
         this.attributeId = p.getStringValue();
-      else if ("counter".equals(p.getName()))
+      else if (COUNTER_PARAMETER_NAME.equals(p.getName()))
         counterName = p.getStringValue();
-      else if ("stranded".equals(p.getName())) {
+      else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
 
         this.stranded = StrandUsage.getStrandUsageFromName(p.getStringValue());
 
-        if (this.overlapmode == null)
+        if (this.stranded == null)
           throw new EoulsanException("Unknown strand mode in "
               + getName() + " step: " + p.getStringValue());
 
-      } else if ("overlapmode".equals(p.getName())) {
+      } else if (OVERLAPMODE_PARAMETER_NAME.equals(p.getName())) {
 
         this.overlapmode =
             OverlapMode.getOverlapModeFromName(p.getStringValue());
@@ -196,7 +204,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
           throw new EoulsanException("Unknown overlap mode in "
               + getName() + " step: " + p.getStringValue());
 
-      } else if ("removeambiguouscases".equals(p.getName()))
+      } else if (REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName()))
         this.removeAmbiguousCases = p.getBooleanValue();
       else
         throw new EoulsanException("Unknown parameter for "

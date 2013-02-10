@@ -28,11 +28,11 @@ import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
 import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtilsNewAPI.parseKeyValue;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
@@ -118,14 +118,9 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     try {
       final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
-      for (Map.Entry<String, String> e : conf) {
-
-        if (e.getKey().startsWith(READ_FILTER_PARAMETER_KEY_PREFIX)) {
-          mrfb.addParameter(
-              e.getKey().substring(READ_FILTER_PARAMETER_KEY_PREFIX.length()),
-              e.getValue());
-        }
-      }
+      // Add the parameters from the job configuration to the builder
+      mrfb.addParameters(jobConfToParameters(conf,
+          READ_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
           mrfb.getReadFilter(new HadoopReporter(context), this.counterGroup);
@@ -143,7 +138,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
-   * file. 'value': the TFQ line. 
+   * file. 'value': the TFQ line.
    */
   @Override
   protected void map(final LongWritable key, final Text value,
