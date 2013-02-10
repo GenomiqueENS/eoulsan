@@ -53,7 +53,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class HTSeqCounter extends AbstractExpressionCounter {
 
-  private static final String COUNTER_NAME = "htseq-count";
+  /** Counter name. */
+  public static final String COUNTER_NAME = "htseq-count";
 
   @Override
   public String getCounterName() {
