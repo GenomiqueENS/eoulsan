@@ -55,9 +55,7 @@ public class MultiReadFilterBuilder {
    * Add a parameter to the builder
    * @param key key of the parameter
    * @param value value of the parameter
-   * @param noExceptionIfFilterNotExists do not thrown an exception if the
-   *          filter does not exists.
-   * @return true if the parameter has been successilly added
+   * @return true if the parameter has been successfully added
    * @throws EoulsanException if the filter reference in the key does not exist
    *           or if an error occurs while setting the parameter in the
    *           dedicated filter
@@ -136,6 +134,23 @@ public class MultiReadFilterBuilder {
     }
 
     return true;
+  }
+
+  /**
+   * Add parameters to the builder.
+   * @param parameters parameters to add
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public void addParameters(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    if (parameters == null)
+      return;
+
+    for (Map.Entry<String, String> e : parameters.entrySet())
+      addParameter(e.getKey(), e.getValue());
   }
 
   /**

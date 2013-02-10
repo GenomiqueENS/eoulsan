@@ -141,6 +141,23 @@ public class MultiReadAlignmentsFilterBuilder {
   }
 
   /**
+   * Add parameters to the builder.
+   * @param parameters parameters to add
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public void addParameters(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    if (parameters == null)
+      return;
+
+    for (Map.Entry<String, String> e : parameters.entrySet())
+      addParameter(e.getKey(), e.getValue());
+  }
+
+  /**
    * Create the final MultiAlignmentsFilter.
    * @return a new MultiAlignmentsFilter object
    * @throws EoulsanException if an error occurs while initialize one of the
