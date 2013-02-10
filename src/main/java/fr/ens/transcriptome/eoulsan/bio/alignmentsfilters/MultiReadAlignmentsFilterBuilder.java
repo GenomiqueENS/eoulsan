@@ -131,9 +131,11 @@ public class MultiReadAlignmentsFilterBuilder {
           .info("Set alignments filter \""
               + filterName + "\" with parameter: " + filterKey + "="
               + valueTrimmed);
-    } else
+    } else {
+      this.mapParameters.put(filterName, "");
       LOGGER.info("Set alignments filter \""
           + filterName + "\" with no parameter");
+    }
 
     return true;
   }

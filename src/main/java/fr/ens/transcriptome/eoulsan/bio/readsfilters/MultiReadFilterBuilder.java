@@ -130,8 +130,10 @@ public class MultiReadFilterBuilder {
           .info("Set read filter \""
               + filterName + "\" with parameter: " + filterKey + "="
               + valueTrimmed);
-    } else
+    } else {
+      this.mapParameters.put(filterName, "");
       LOGGER.info("Set read filter \"" + filterName + "\" with no parameter");
+    }
 
     return true;
   }
