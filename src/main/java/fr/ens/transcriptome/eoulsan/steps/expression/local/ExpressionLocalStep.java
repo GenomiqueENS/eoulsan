@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -94,11 +95,24 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         count(context, counter, annotationFile, alignmentFile, expressionFile,
             genomeDescFile, reporter);
 
-        log.append(reporter.countersValuesToString(
-            COUNTER_GROUP,
-            "Expression computation ("
-                + s.getName() + ", " + alignmentFile.getName() + ", "
-                + annotationFile.getName() + ", " + genomicType + ")"));
+        final String htSeqArgsLog =
+            ", "
+                + getAttributeId() + ", stranded: " + getStranded()
+                + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
+
+        log.append(reporter.countersValuesToString(COUNTER_GROUP,
+            "Expression computation with "
+                + counter.getCounterName() + " ("
+                + s.getName()
+                + ", "
+                + alignmentFile.getName()
+                + ", "
+                + annotationFile.getName()
+                + ", "
+                + genomicType
+                // If counter is HTSeq-count add additional parameters to log
+                + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
+                    ? htSeqArgsLog : "") + ")"));
 
       }
 
