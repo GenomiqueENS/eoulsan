@@ -62,7 +62,8 @@ public class HadoopMappingUtils {
     }
 
     // Set the key with the list of parameters keys as a string
-    jobConf.set(prefix, Joiner.on(',').join(parameters.keySet()));
+    jobConf.set(prefix + PARAM_KEYS_LIST_SUFFIX,
+        Joiner.on(',').join(parameters.keySet()));
   }
 
   /**
