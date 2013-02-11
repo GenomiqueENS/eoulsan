@@ -40,7 +40,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends
 
   public static final String FILTER_NAME = "removeunmapped";
 
-  private final List<SAMRecord> result = new ArrayList<SAMRecord>();
+  private final List<SAMRecord> recordsToRemove = new ArrayList<SAMRecord>();
 
   @Override
   public String getName() {
@@ -57,7 +57,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     // single-end mode
@@ -66,7 +66,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends
 
         // storage in 'result' of records that do not pass the filter
         if (r.getReadUnmappedFlag())
-          this.result.add(r);
+          this.recordsToRemove.add(r);
     }
 
     // paired-end mode
@@ -79,14 +79,14 @@ public class RemoveUnmappedReadAlignmentsFilter extends
             || records.get(counterRecord + 1).getReadUnmappedFlag()) {
 
           // records are stored 2 by 2 because of the paired-end mode
-          this.result.add(records.get(counterRecord));
-          this.result.add(records.get(counterRecord + 1));
+          this.recordsToRemove.add(records.get(counterRecord));
+          this.recordsToRemove.add(records.get(counterRecord + 1));
         }
       }
     }
 
     // all records that do not pass the filter are removed
-    records.removeAll(result);
-    result.clear();
+    records.removeAll(this.recordsToRemove);
+    this.recordsToRemove.clear();
   }
 }
