@@ -47,7 +47,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String COUNTER_NAME = "eoulsanCounter";
+  /** Counter name. */
+  public static final String COUNTER_NAME = "eoulsanCounter";
 
   @Override
   public String getCounterName() {

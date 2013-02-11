@@ -162,8 +162,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    // NEW VERSION...
-
     String mapperName = null;
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
     final MultiReadAlignmentsFilterBuilder mrafb =
@@ -180,27 +178,19 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       else if ("hadoop.threads".equals(p.getName()))
         this.hadoopThreads = p.getIntValue();
 
-      // TODO mrfb/mrafb.addParameter must return false if the filter is not found
-      // TODO Remove the list of allowed filter reads parameters
-      // read filters parameters
-      else if ("paircheck".equals(p.getName())
-          || "pairend.accept.pairend".equals(p.getName())
-          || "pairend.accept.accept.singlend".equals(p.getName())
-          || "illuminaid".equals(p.getName())
-          || "quality.threshold".equals(p.getName())
-          || "qualityThreshold".equals(p.getName())
-          || "trim.length.threshold".equals(p.getName())
-          || "lengthThreshold".equals(p.getName())) {
-        mrfb.addParameter(
-            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
-      }
-
-      // read alignments filters parameters
       else {
+
+        // Add read filters parameters
+        if (!(mrfb.addParameter(
+            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue(), true) ||
+        // Add read alignments filters parameters
         mrafb.addParameter(
             AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
+            p.getStringValue(), true))) {
+
+          throw new EoulsanException("Unknown parameter: " + p.getName());
+        }
       }
 
     }
