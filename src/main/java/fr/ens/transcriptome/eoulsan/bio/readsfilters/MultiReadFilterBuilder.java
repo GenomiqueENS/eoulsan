@@ -198,4 +198,27 @@ public class MultiReadFilterBuilder {
     return Collections.unmodifiableMap(this.mapParameters);
   }
 
+  //
+  // Constructors
+  //
+
+  /**
+   * Public constructor.
+   */
+  public MultiReadFilterBuilder() {
+  }
+
+  /**
+   * Public constructor.
+   * @param parameters parameters to add to the builder
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public MultiReadFilterBuilder(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    addParameters(parameters);
+  }
+
 }
