@@ -29,10 +29,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 
@@ -391,104 +389,6 @@ public class ReadAlignmentsFilterBufferTest {
     recordsVerif.add(samRecordPE9);
     recordsVerif.add(samRecordPE10);
     assertEquals(recordsVerif, rafb.getFilteredAlignments());
-  }
-
-  @Test
-  public void testBugUnmapped() {
-
-    final GenomeDescription desc = new GenomeDescription();
-    desc.addSequence("chr1", 197195432);
-    desc.addSequence("chr10", 197195432);
-    desc.addSequence("chr15", 197195432);
-    SAMParser parser = new SAMParser();
-    parser.setGenomeDescription(desc);
-
-    final List<SAMRecord> inRecords = new ArrayList<SAMRecord>();
-    final List<SAMRecord> outRecords = new ArrayList<SAMRecord>();
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10026:3670#0/1\t0\tchr1\t141320516\t255\t76M\t*\t0\t0\t"
-                + "GTTTGAGGATACCAGCGACGATGAACAGGAGAGTGGGGATGGGTCAGACAATTTGCATCAAGAAAGTTCTGAGAAG\t"
-                + "EFFFFFGGFGEGGEGGGGGGGGGGGGEGGFFFFEEEEECEGGGEEGFGGGBFGGGGGFGGGGFDGGGGDGGFFBGF\t"
-                + "XA:i:0\tMD:Z:76\tNM:i:0"));
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10026:3932#0/1\t16\tchr10\t83771960\t255\t76M\t*\t0\t0\t"
-                + "TCAAGTTGGCAGGAACATCATTCATGGCAGTGATTCAGTGGAGAGTGCTGAGAAAGAGACCCATCTGTGGTTTAAG\t"
-                + "DGGGFFFGGGGGGGEFGFGEGFGGGGGFGGGGGFGGGGGGFGGGGGGGGGGFGGGGEEE:EGGGGGGGGGGGGGGG\t"
-                + "XA:i:2\tMD:Z:59T6A9\tNM:i:2"));
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10026:13739#0/1\t4\t*\t0\t0\t*\t*\t0\t0\t"
-                + "CCGGGCACATCATCGTCGTTCATGTAGCTGTCCATGGACTTCCTCTGTCTCCCTTGGGTACACGTCTTGCACATCT\t"
-                + "GGGFFGGGGGGGGGGGGGGGGGGGFGEGGGGGFEGGGGGGGGGGGGGEGGGGGGGEG=DGGGDEEGGGDBEGFFED\t"
-                + "XM:i:0"));
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10026:5342#0/1\t16\tchr15\t25734062\t255\t76M\t*\t0\t0\t"
-                + "GACAAAGGCTACACGACCCTTCAGGACGAAGCCATCAAGATATTCAATTCTCTCCAACAACTGGAGTCCATGTCCG\t"
-                + "EGDGGFGGGDGGGFGEGGG=GGGFGGGGGGGGGGFGGGEGEGFFGGEFFFFFFFFFGGFGGGGDGGGEGFGGEGGG\t"
-                + "XA:i:0\tMD:Z:76\tNM:i:0"));
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10026:13739#0/1\t4\t*\t0\t0\t*\t*\t0\t0\t"
-                + "CCGGGCACATCATCGTCGTTCATGTAGCTGTCCATGGACTTCCTCTGTCTCCCTTGGGTACACGTCTTGCACATCT\t"
-                + "GGGFFGGGGGGGGGGGGGGGGGGGFGEGGGGGFEGGGGGGGGGGGGGEGGGGGGGEG=DGGGDEEGGGDBEGFFED\t"
-                + "XM:i:0"));
-
-    inRecords
-        .add(parser
-            .parseLine("HWI-EAS285_0001_\"\":1:1:10027:4805#0/1\t16\tchr15\t40501879\t255\t76M\t*\t0\t0\t"
-                + "AATCTTTCTACAATATGTGTTGCCACCATTAGAAAGGTGCTGGCTGATGGATTCCTGATGATTGGGATTGATGGCG\t"
-                + "GBEF=DDGCEGGGFGFGDFDGDCDADECEBEBGGGGDGGGDGEGGFDGGDGG?GGGAGEGGFGFFGGGDGGDFGFD\t"
-                + "XA:i:1\tMD:Z:75T0\tNM:i:1"));
-
-    final ReadAlignmentsFilterBuffer rafb =
-        new ReadAlignmentsFilterBuffer(new RemoveUnmappedReadAlignmentsFilter());
-
-    final List<SAMRecord> records = new ArrayList<SAMRecord>();
-
-    for (SAMRecord samRecord : inRecords) {
-
-      // storage and filtering of all the alignments of a read in the list
-      // "records"
-      if (!rafb.addAlignment(samRecord)) {
-
-        records.clear();
-        records.addAll(rafb.getFilteredAlignments());
-
-        // sort alignments of the current read
-        Collections.sort(records, new SAMComparator());
-
-        // writing records
-        for (SAMRecord r : records) {
-          outRecords.add(r);
-
-        }
-
-        rafb.addAlignment(samRecord);
-      }
-
-    }
-
-    // treatment of the last record
-    records.clear();
-    records.addAll(rafb.getFilteredAlignments());
-
-    // sort alignments of the last read
-    Collections.sort(records, new SAMComparator());
-
-    // writing records
-    for (SAMRecord r : records) {
-      outRecords.add(r);
-    }
-
-    assertEquals(4, outRecords.size());
   }
 
   /**
