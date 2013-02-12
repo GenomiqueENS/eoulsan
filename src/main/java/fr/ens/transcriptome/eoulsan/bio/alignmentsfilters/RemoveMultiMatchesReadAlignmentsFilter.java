@@ -70,4 +70,11 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
         records.clear();
     }
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
+  }
+
 }

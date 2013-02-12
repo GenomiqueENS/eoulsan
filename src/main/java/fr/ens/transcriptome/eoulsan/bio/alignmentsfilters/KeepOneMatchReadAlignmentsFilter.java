@@ -37,7 +37,7 @@ import net.sf.samtools.SAMRecord;
  */
 public class KeepOneMatchReadAlignmentsFilter extends
     AbstractReadAlignmentsFilter {
-  
+
   public static final String FILTER_NAME = "keeponematch";
 
   @Override
@@ -52,27 +52,27 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
-    
+
     final SAMRecord first, second;
-    
+
     if (records == null)
       return;
-    
+
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
       if (records.size() < 2)
         return;
-      
+
       first = records.get(0);
       records.clear();
       records.add(first);
     }
-    
+
     // paired-end mode
     else {
       if (records.size() < 4)
         return;
-      
+
       first = records.get(0);
       second = records.get(1);
       records.clear();
@@ -80,4 +80,11 @@ public class KeepOneMatchReadAlignmentsFilter extends
       records.add(second);
     }
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
+  }
+
 }

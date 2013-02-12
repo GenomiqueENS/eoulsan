@@ -89,4 +89,11 @@ public class RemoveUnmappedReadAlignmentsFilter extends
     records.removeAll(this.recordsToRemove);
     this.recordsToRemove.clear();
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
+  }
+
 }
