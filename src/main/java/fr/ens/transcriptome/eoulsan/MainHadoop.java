@@ -24,13 +24,21 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Handler;
+import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.util.VersionInfo;
+
+import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
+import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * Main class in Hadoop mode.
@@ -39,12 +47,22 @@ import org.apache.hadoop.fs.Path;
  */
 public final class MainHadoop extends Main {
 
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
   private static final String LAUNCH_MODE_NAME = "hadoop";
+
+  private static final String ROOT_PATH = "/";
+  private static final String VAR_PATH = "/var";
+  private static final String TMP_PATH = "/tmp";
+
+  private Configuration conf;
 
   @Override
   protected void initializeRuntime(final Settings settings) {
 
-    HadoopEoulsanRuntime.newEoulsanRuntime(settings);
+    this.conf =
+        HadoopEoulsanRuntime.newEoulsanRuntime(settings).getConfiguration();
   }
 
   @Override
@@ -56,14 +74,110 @@ public final class MainHadoop extends Main {
   @Override
   protected Handler getLogHandler(final String logFile) throws IOException {
 
-    final Configuration conf =
-        ((HadoopEoulsanRuntime) EoulsanRuntime.getRuntime()).getConfiguration();
-
     final Path loggerPath = new Path(logFile);
-
-    final FileSystem loggerFs = loggerPath.getFileSystem(conf);
+    final FileSystem loggerFs = loggerPath.getFileSystem(this.conf);
 
     return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
+  }
+
+  @Override
+  protected void sysInfoLog() {
+
+    try {
+
+      parseCpuinfo();
+      parseMeminfo();
+
+      df(new File(ROOT_PATH), conf);
+      df(new File(TMP_PATH), conf);
+      df(new File(VAR_PATH), conf);
+
+      // Log the usage of the hadoop temporary directory partition
+      final String hadoopTmp = conf.get("hadoop.tmp.dir");
+      if (hadoopTmp != null)
+        df(new File(hadoopTmp), conf);
+
+      // Log the usage of the Java temporary directory partition
+      final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory())
+        df(tmpDir, conf);
+
+      // Log Hadoop information
+      HadoopInfo();
+
+    } catch (IOException e) {
+      LOGGER
+          .severe("Error while getting system information: " + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Parse information from /etc/cpuinfo
+   * @throws IOException if an error occurs while parsing information
+   */
+  private static final void parseCpuinfo() throws IOException {
+
+    final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
+
+    final String modelName = cpuinfo.getModelName();
+    final String processor = cpuinfo.getProcessor();
+    final String cpuMHz = cpuinfo.getCPUMHz();
+    final String bogomips = cpuinfo.getBogoMips();
+    final String cores = cpuinfo.getCores();
+
+    LOGGER.info("SYSINFO CPU model name: "
+        + (modelName == null ? "NA" : modelName));
+    LOGGER.info("SYSINFO CPU count: "
+        + (processor == null ? "NA" : ""
+            + (Integer.parseInt(processor.trim()) + 1)));
+    LOGGER.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    LOGGER.info("SYSINFO CPU clock: "
+        + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    LOGGER.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+  }
+
+  /**
+   * Parse information from /etc/meminfo
+   * @throws IOException if an error occurs while parsing information
+   */
+  private static final void parseMeminfo() throws IOException {
+
+    final LinuxMemInfo meminfo = new LinuxMemInfo();
+    final String memTotal = meminfo.getMemTotal();
+
+    LOGGER.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+  }
+
+  /**
+   * Log disk free information.
+   * @param f file
+   * @param conf Hadoop configuration
+   * @throws IOException if an error occurs
+   */
+  private static final void df(final File f, final Configuration conf)
+      throws IOException {
+
+    DF df = new DF(f, conf);
+
+    LOGGER.info("SYSINFO "
+        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
+        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
+        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
+        + " available, " + df.getPercentUsed() + "% used");
+
+  }
+
+  /**
+   * Log some Hadoop information.
+   */
+  private static final void HadoopInfo() {
+
+    LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
+    LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
+    LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
+    LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
+    LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
 
   //
