@@ -158,6 +158,10 @@ public abstract class Executor {
     // Get execution context
     final SimpleContext context = getContext();
 
+    // Add executor info
+    context.addCommandInfo(this.command);
+    context.logInfo();
+
     // Check base path
     if (context.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
@@ -165,12 +169,11 @@ public abstract class Executor {
     // Load design
     LOGGER.info("Read design file");
     final Design design = loadDesign();
+    LOGGER.info("Found "
+        + design.getSampleCount() + " sample(s) in design file");
 
     // Check design
     checkDesign(design);
-
-    // Add executor info
-    context.addCommandInfo(command);
 
     // Create the workflow
     final Workflow workflow =

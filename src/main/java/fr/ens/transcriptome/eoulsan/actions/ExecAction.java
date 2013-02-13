@@ -184,7 +184,7 @@ public class ExecAction extends AbstractAction {
       desc = jobDescription.trim();
     }
 
-    LOGGER.info("Parameter file: " + paramFile);
+    LOGGER.info("Worflow parameter file: " + paramFile);
     LOGGER.info("Design file: " + designFile);
 
     try {

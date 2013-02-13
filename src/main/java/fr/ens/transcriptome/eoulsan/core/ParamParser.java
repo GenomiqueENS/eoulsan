@@ -111,7 +111,7 @@ public class ParamParser {
     if (command == null)
       throw new NullPointerException("The command is null");
 
-    LOGGER.info("Start parsing the parameter file");
+    LOGGER.info("Start parsing the workflow parameter file");
 
     final Document doc;
 
@@ -229,7 +229,8 @@ public class ParamParser {
       }
     }
 
-    LOGGER.info("End of parsing of parameter file");
+    LOGGER.info("End of parsing of workflow parameter file");
+    LOGGER.info("Found " + command.getStepNames().size() + " step(s) in workflow parameter file");
 
     return command;
   }
