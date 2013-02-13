@@ -35,7 +35,6 @@ import java.util.ServiceLoader;
 public class ReadFilterService {
 
   private static ReadFilterService service;
-  private final ServiceLoader<ReadFilter> loader;
 
   //
   // Static method
@@ -71,7 +70,8 @@ public class ReadFilterService {
 
     final String actionNameLower = readFilterName.toLowerCase();
 
-    final Iterator<ReadFilter> it = this.loader.iterator();
+    final Iterator<ReadFilter> it =
+        ServiceLoader.load(ReadFilter.class).iterator();
 
     while (it.hasNext()) {
 
@@ -93,8 +93,6 @@ public class ReadFilterService {
    * Private constructor.
    */
   private ReadFilterService() {
-
-    loader = ServiceLoader.load(ReadFilter.class);
   }
 
 }

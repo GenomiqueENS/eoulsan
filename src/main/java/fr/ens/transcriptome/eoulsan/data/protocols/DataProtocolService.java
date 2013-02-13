@@ -53,8 +53,8 @@ public class DataProtocolService {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static DataProtocolService service;
-  private final ServiceLoader<DataProtocol> loader;
 
+  final Set<Class<? extends Annotation>> autorisedAnnotations;
   private Map<String, DataProtocol> protocols =
       new HashMap<String, DataProtocol>();
 
@@ -178,7 +178,9 @@ public class DataProtocolService {
 
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
-    final Iterator<DataProtocol> it = this.loader.iterator();
+    final Iterator<DataProtocol> it =
+        ServiceLoader.load(DataProtocol.class,
+            new ServiceClassLoader(autorisedAnnotations)).iterator();
 
     while (it.hasNext()) {
 
@@ -205,19 +207,13 @@ public class DataProtocolService {
   @SuppressWarnings("unchecked")
   private DataProtocolService() {
 
-    final Set<Class<? extends Annotation>> autorisedAnnotations;
-
     if (EoulsanRuntime.getRuntime().isHadoopMode()) {
-      autorisedAnnotations =
+      this.autorisedAnnotations =
           Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
     } else {
-      autorisedAnnotations =
+      this.autorisedAnnotations =
           Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
     }
-
-    loader =
-        ServiceLoader.load(DataProtocol.class, new ServiceClassLoader(
-            autorisedAnnotations));
 
     final DataProtocol defaultProtocol = new FileDataProtocol();
     this.defaultProtocolName = defaultProtocol.getName();
