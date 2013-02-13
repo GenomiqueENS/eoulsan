@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -38,6 +39,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
@@ -55,6 +59,8 @@ public abstract class Main {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static Main main;
+
+  private final String launchModeName;
 
   private String[] args;
   private Action action;
@@ -142,6 +148,15 @@ public abstract class Main {
   }
 
   /**
+   * Get the launch mode of the application.
+   * @return the launch mode of the application
+   */
+  public String getLaunchMode() {
+
+    return this.launchModeName;
+  }
+
+  /**
    * Show command line help.
    * @param options Options of the software
    */
@@ -202,9 +217,7 @@ public abstract class Main {
    * Parse the options of the command line
    * @param args command line arguments
    */
-  private void parseCommandLine(final String args[]) {
-
-    this.args = args;
+  private void parseCommandLine() {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -375,6 +388,35 @@ public abstract class Main {
     return sb.toString();
   }
 
+  private void startupLog() {
+
+    // Welcome message
+    LOGGER.info("Welcome to " + Globals.WELCOME_MSG);
+    LOGGER.info("Start in " + this.launchModeName + " mode");
+
+    // Show versions
+    LOGGER.info(Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
+    LOGGER.info(Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
+    LOGGER.info(Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
+
+    // Startup script
+    LOGGER.info(Globals.APP_NAME
+        + " Startup script: "
+        + (getLaunchScriptPath() == null
+            ? "(no startup script)" : getLaunchScriptPath()));
+
+    // Command line arguments
+    final List<String> args = Lists.newArrayList();
+    for (String a : getArgs())
+      if (a.indexOf(' ') != -1)
+        args.add("\"" + a + "\"");
+      else
+        args.add(a);
+
+    LOGGER.info(Globals.APP_NAME
+        + " Command line arguments: " + Joiner.on(' ').join(args));
+  }
+
   //
   // Abstract methods
   //
@@ -399,9 +441,12 @@ public abstract class Main {
    * Constructor.
    * @param args command line arguments
    */
-  Main(final String[] args) {
+  Main(final String modeName, final String[] args) {
 
-    parseCommandLine(args);
+    this.launchModeName = modeName;
+    this.args = args;
+    startupLog();
+    parseCommandLine();
   }
 
   //
@@ -449,8 +494,12 @@ public abstract class Main {
 
     }
 
+    LOGGER.info("Start " + action.getName() + " action");
+
     // Run action
     action.action(main.getActionArgs());
+
+    LOGGER.info("End of " + action.getName() + " action");
   }
 
 }

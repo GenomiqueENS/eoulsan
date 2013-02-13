@@ -34,6 +34,8 @@ import org.apache.commons.cli.Options;
  */
 public final class MainCLI extends Main {
 
+  private static final String LAUNCH_MODE_NAME = "local";
+
   /**
    * Create options for command line
    * @return an Options object
@@ -88,7 +90,7 @@ public final class MainCLI extends Main {
    */
   protected MainCLI(final String[] args) {
 
-    super(args);
+    super(LAUNCH_MODE_NAME, args);
   }
 
 }

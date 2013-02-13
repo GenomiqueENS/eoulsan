@@ -31,6 +31,8 @@ package fr.ens.transcriptome.eoulsan;
  */
 public final class MainHadoop extends Main {
 
+  private static final String LAUNCH_MODE_NAME = "hadoop";
+
   @Override
   protected void initializeRuntime(final Settings settings) {
 
@@ -53,7 +55,7 @@ public final class MainHadoop extends Main {
    */
   protected MainHadoop(final String[] args) {
 
-    super(args);
+    super(LAUNCH_MODE_NAME, args);
   }
 
 }
