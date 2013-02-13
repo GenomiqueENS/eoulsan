@@ -24,6 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.IOException;
+import java.util.logging.Handler;
+import java.util.logging.StreamHandler;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
 /**
  * Main class in Hadoop mode.
  * @since 1.0
@@ -43,6 +51,19 @@ public final class MainHadoop extends Main {
   protected String getHelpEoulsanCommand() {
 
     return "hadoop jar " + Globals.APP_NAME_LOWER_CASE + ".jar";
+  }
+
+  @Override
+  protected Handler getLogHandler(final String logFile) throws IOException {
+
+    final Configuration conf =
+        ((HadoopEoulsanRuntime) EoulsanRuntime.getRuntime()).getConfiguration();
+
+    final Path loggerPath = new Path(logFile);
+
+    final FileSystem loggerFs = loggerPath.getFileSystem(conf);
+
+    return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
   }
 
   //

@@ -24,6 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
@@ -78,6 +82,12 @@ public final class MainCLI extends Main {
   protected String getHelpEoulsanCommand() {
 
     return Globals.APP_NAME_LOWER_CASE;
+  }
+
+  @Override
+  protected Handler getLogHandler(final String logFile) throws IOException {
+
+    return new FileHandler(logFile);
   }
 
   //

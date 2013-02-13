@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -361,6 +360,22 @@ public abstract class Main {
     LOGGER.info(Globals.APP_NAME
         + " Command line arguments: " + Joiner.on(' ').join(args));
 
+    // Log file
+    LOGGER
+        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
+
+    // Log level
+    LOGGER.info("Log level: " + LOGGER.getLevel());
+
+    // Log system information
+    sysInfoLog();
+  }
+
+  /**
+   * Log system information.
+   */
+  protected void sysInfoLog() {
+
     // Host
     LOGGER.info("Host: " + SystemUtils.getHostName());
 
@@ -374,13 +389,6 @@ public abstract class Main {
     LOGGER.info("Java vendor: " + System.getProperty("java.vendor"));
     LOGGER.info("Java vm name: " + System.getProperty("java.vm.name"));
     LOGGER.info("Java version: " + System.getProperty("java.version"));
-
-    // Log file
-    LOGGER
-        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
-
-    // Log level
-    LOGGER.info("Log level: " + LOGGER.getLevel());
   }
 
   /**
@@ -423,7 +431,7 @@ public abstract class Main {
     if (this.logFile != null) {
       try {
 
-        final Handler fh = new FileHandler(this.logFile);
+        final Handler fh = getLogHandler(this.logFile);
         fh.setFormatter(Globals.LOG_FORMATTER);
         LOGGER.setLevel(Globals.LOG_LEVEL);
         LOGGER.setUseParentHandlers(false);
@@ -488,6 +496,15 @@ public abstract class Main {
    * @return a String with the command used to launch Eoulsan
    */
   protected abstract String getHelpEoulsanCommand();
+
+  /**
+   * Get the Handler to create the log file.
+   * @param logFile the path to the log file
+   * @return a new Handler object
+   * @throws IOException if an exception occurs while creating the handler
+   */
+  protected abstract Handler getLogHandler(final String logFile)
+      throws IOException;
 
   //
   // Constructor
