@@ -111,6 +111,8 @@ public class ParamParser {
     if (command == null)
       throw new NullPointerException("The command is null");
 
+    LOGGER.info("Start parsing the parameter file");
+
     final Document doc;
 
     //
@@ -226,6 +228,8 @@ public class ParamParser {
 
       }
     }
+
+    LOGGER.info("End of parsing of parameter file");
 
     return command;
   }
