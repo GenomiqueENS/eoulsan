@@ -188,7 +188,6 @@ public final class SimpleContext implements Context {
    */
   public void setBasePathname(final String basePath) {
 
-    logger.info("Base path: " + basePath);
     this.basePathname = basePath;
   }
 
@@ -198,7 +197,6 @@ public final class SimpleContext implements Context {
    */
   public void setLogPathname(final String logPath) {
 
-    logger.info("Log path: " + logPath);
     this.logPathname = logPath;
   }
 
@@ -208,7 +206,6 @@ public final class SimpleContext implements Context {
    */
   public void setOutputPathname(final String outputPath) {
 
-    logger.info("Output path: " + outputPath);
     this.outputPathname = outputPath;
   }
 
@@ -218,7 +215,6 @@ public final class SimpleContext implements Context {
    */
   public void setDesignPathname(final String designPathname) {
 
-    logger.info("Design path: " + designPathname);
     this.designPathname = designPathname;
   }
 
@@ -228,7 +224,6 @@ public final class SimpleContext implements Context {
    */
   public void setParameterPathname(final String paramPathname) {
 
-    logger.info("Parameter path: " + paramPathname);
     this.paramPathname = paramPathname;
   }
 
@@ -238,7 +233,6 @@ public final class SimpleContext implements Context {
    */
   public void setJarPathname(final String jarPathname) {
 
-    logger.info("Jar path: " + jarPathname);
     this.jarPathname = jarPathname;
   }
 
@@ -248,7 +242,6 @@ public final class SimpleContext implements Context {
    */
   void setCommandName(final String commandName) {
 
-    logger.info("Command name: " + commandName);
     this.commandName = commandName;
   }
 
@@ -258,7 +251,6 @@ public final class SimpleContext implements Context {
    */
   void setCommandDescription(final String commandDescription) {
 
-    logger.info("Command description: " + commandDescription);
     this.commandDescription = commandDescription;
   }
 
@@ -268,7 +260,6 @@ public final class SimpleContext implements Context {
    */
   void setCommandAuthor(final String commandAuthor) {
 
-    logger.info("Command author: " + commandAuthor);
     this.commandAuthor = commandAuthor;
   }
 
@@ -301,7 +292,6 @@ public final class SimpleContext implements Context {
    */
   void setJobDescription(final String jobDescription) {
 
-    logger.info("Job description: " + jobDescription);
     this.jobDescription = jobDescription;
   }
 
@@ -311,7 +301,6 @@ public final class SimpleContext implements Context {
    */
   void setJobEnvironment(final String jobEnvironment) {
 
-    logger.info("Job environmnent: " + jobEnvironment);
     this.jobEnvironment = jobEnvironment;
   }
 
@@ -382,21 +371,21 @@ public final class SimpleContext implements Context {
   @Override
   public void logInfo() {
 
-    logger.info("EXECINFO Design path: " + this.getDesignPathname());
-    logger.info("EXECINFO Parameter path: " + this.getParameterPathname());
+    logger.info("Design file path: " + this.getDesignPathname());
+    logger.info("Workflow parameter file path: " + this.getParameterPathname());
 
-    logger.info("EXECINFO Author: " + this.getCommandAuthor());
-    logger.info("EXECINFO Description: " + this.getCommandDescription());
-    logger.info("EXECINFO Command name: " + this.getCommandName());
+    logger.info("Workflow Author: " + this.getCommandAuthor());
+    logger.info("Workflow Description: " + this.getCommandDescription());
+    logger.info("Job Command name: " + this.getCommandName());
 
-    logger.info("EXECINFO Job Id: " + this.getJobId());
-    logger.info("EXECINFO Job UUID: " + this.getJobUUID());
-    logger.info("EXECINFO Job Description: " + this.getJobDescription());
-    logger.info("EXECINFO Job Environment: " + this.getJobEnvironment());
+    logger.info("Job Id: " + this.getJobId());
+    logger.info("Job UUID: " + this.getJobUUID());
+    logger.info("Job Description: " + this.getJobDescription());
+    logger.info("Job Environment: " + this.getJobEnvironment());
 
-    logger.info("EXECINFO Base path: " + this.getBasePathname());
-    logger.info("EXECINFO Output path: " + this.getOutputPathname());
-    logger.info("EXECINFO Log path: " + this.getLogPathname());
+    logger.info("Job Base path: " + this.getBasePathname());
+    logger.info("Job Output path: " + this.getOutputPathname());
+    logger.info("Job Log path: " + this.getLogPathname());
   }
 
   @Override
