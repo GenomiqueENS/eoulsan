@@ -196,7 +196,6 @@ public class EMRExecAction extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    LOGGER.info(Globals.WELCOME_MSG + " Local mode.");
     LOGGER.info("Parameter file: " + paramFile);
     LOGGER.info("Design file: " + designFile);
 
