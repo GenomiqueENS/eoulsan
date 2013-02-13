@@ -74,4 +74,5 @@ $JAVA_CMD \
 		-cp $COMMON_LIBS:$LOCAL_LIBS:$PLUGINS:$PLUGINS_LIBS \
 		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \
 		-Deoulsan.launch.mode=local \
+		-Deoulsan.launch.script.path=$0 \
 		fr.ens.transcriptome.eoulsan.Main "$@"

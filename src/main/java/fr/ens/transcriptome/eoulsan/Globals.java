@@ -104,7 +104,7 @@ public final class Globals {
   /** Bypass platform checking. */
   public static final boolean BYPASS_PLATFORM_CHECKING = false;
 
-  /** Platforms where Eoulsan is available. */
+  /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
           "linux\tamd64", "linux\tx86_64"})));
@@ -172,10 +172,15 @@ public final class Globals {
    * repack for hadoop mode.
    */
   public static final String LIBS_TO_HADOOP_REPACK_PROPERTY =
-      "eoulsan.hadoop.libs";
+      APP_NAME_LOWER_CASE + ".hadoop.libs";
 
   /** Launch mode property. */
-  public static final String LAUNCH_MODE_PROPERTY = "eoulsan.launch.mode";
+  public static final String LAUNCH_MODE_PROPERTY = APP_NAME_LOWER_CASE
+      + ".launch.mode";
+
+  /** Launch script path. */
+  public static final String LAUNCH_SCRIPT_PATH = APP_NAME_LOWER_CASE
+      + ".launch.script.path";
 
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;

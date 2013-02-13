@@ -61,7 +61,7 @@ public abstract class Main {
   private String[] actionArgs;
 
   private String logLevel;
-  private String log;
+  private String logFile;
   private String conf;
 
   //
@@ -119,7 +119,7 @@ public abstract class Main {
    */
   public String getLogFileArgument() {
 
-    return log;
+    return logFile;
   }
 
   /**
@@ -129,6 +129,16 @@ public abstract class Main {
   public String getConfigurationFileArgument() {
 
     return conf;
+  }
+
+  /**
+   * Get the path to the launch script.
+   * @return the path to the launch script or null if no launch script has been
+   *         used
+   */
+  public String getLaunchScriptPath() {
+
+    return System.getProperty(Globals.LAUNCH_SCRIPT_PATH);
   }
 
   /**
@@ -231,8 +241,8 @@ public abstract class Main {
 
         argsOptions += 2;
         try {
-          this.log = line.getOptionValue("log");
-          final Handler fh = new FileHandler(this.log);
+          this.logFile = line.getOptionValue("log");
+          final Handler fh = new FileHandler(this.logFile);
           fh.setFormatter(Globals.LOG_FORMATTER);
           LOGGER.setLevel(Globals.LOG_LEVEL);
           LOGGER.setUseParentHandlers(false);
