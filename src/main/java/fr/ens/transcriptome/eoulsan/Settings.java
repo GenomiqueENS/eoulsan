@@ -113,6 +113,10 @@ public final class Settings {
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
 
+  private static final Set<String> OBFUSCATED_KEYS = Utils
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+
   //
   // Getters
   //
@@ -674,6 +678,18 @@ public final class Settings {
    */
   public void setSetting(final String settingName, final String settingValue) {
 
+    setSetting(settingName, settingValue, true);
+  }
+
+  /**
+   * Set a setting value.
+   * @param settingName name of the setting to set
+   * @param settingValue value of the setting to set
+   * @param logChange if true the change will be logged
+   */
+  public void setSetting(final String settingName, final String settingValue,
+      final boolean logChange) {
+
     if (settingName == null || settingValue == null) {
       return;
     }
@@ -685,16 +701,18 @@ public final class Settings {
     }
 
     if ("main.accesskey".equals(key)) {
-      setSetting(AWS_ACCESS_KEY, settingValue);
+      setSetting(AWS_ACCESS_KEY, settingValue, logChange);
       return;
     }
 
     if ("main.awssecretkey".equals(key)) {
-      setSetting(AWS_SECRET_KEY, settingValue);
+      setSetting(AWS_SECRET_KEY, settingValue, logChange);
       return;
     }
 
     this.properties.setProperty(key, settingValue);
+    if (logChange)
+      logSetting(key);
   }
 
   //
@@ -828,20 +846,20 @@ public final class Settings {
    */
   public void logSettings() {
 
-    for (Object key : properties.keySet()) {
+    for (Object key : properties.keySet())
+      logSetting((String) key);
+  }
 
-      final String sKey = (String) key;
-      final String sValue = properties.getProperty(sKey);
+  /**
+   * Log a setting value.
+   * @param key key to log
+   */
+  private void logSetting(final String key) {
 
-      if (sKey.equals(AWS_ACCESS_KEY)
-          || sKey.endsWith((AWS_SECRET_KEY))
-          || sKey.equals(HADOOP_AWS_ACCESS_KEY)
-          || sKey.endsWith((HADOOP_AWS_SECRET_KEY)))
-        LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
-      else
-        LOGGER.info("Setting: " + sKey + "=" + sValue);
-    }
-
+    if (OBFUSCATED_KEYS.contains(key))
+      LOGGER.info("Setting: " + key + "=xxxx value not shown xxxx");
+    else
+      LOGGER.info("Setting: " + key + "=" + properties.getProperty(key));
   }
 
   //

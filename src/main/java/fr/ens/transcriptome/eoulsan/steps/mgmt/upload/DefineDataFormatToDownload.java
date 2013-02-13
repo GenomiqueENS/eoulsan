@@ -144,7 +144,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
     // Save the list of the DataFormat to download in the settings
     final Settings settings = context.getRuntime().getSettings();
 
-    settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats);
+    settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats, false);
 
     return new StepResult(context, startTime, "Formats to download: " + formats);
   }
