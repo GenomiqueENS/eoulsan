@@ -36,7 +36,6 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class is the executor for running all the steps of an analysis.
@@ -164,6 +163,7 @@ public abstract class Executor {
       throw new EoulsanException("The base path is null");
 
     // Load design
+    LOGGER.info("Read design file");
     final Design design = loadDesign();
 
     // Check design
@@ -195,14 +195,7 @@ public abstract class Executor {
     // Check workflow
     workflow.check();
 
-    LOGGER.info("Date: " + new Date(System.currentTimeMillis()));
-    LOGGER.info("Host: " + SystemUtils.getHostName());
-    LOGGER.info("Operating system name: " + System.getProperty("os.name"));
-    LOGGER.info("Operating system arch: " + System.getProperty("os.arch"));
-    LOGGER
-        .info("Operating system version: " + System.getProperty("os.version"));
-    LOGGER.info("Java version: " + System.getProperty("java.version"));
-    LOGGER.info("Log level: " + LOGGER.getLevel());
+    LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
 
     final long startTime = System.currentTimeMillis();
 
