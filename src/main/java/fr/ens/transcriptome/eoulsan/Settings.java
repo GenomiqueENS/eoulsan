@@ -833,7 +833,9 @@ public final class Settings {
       final String sKey = (String) key;
       final String sValue = properties.getProperty(sKey);
 
-      if (sKey.equals(HADOOP_AWS_ACCESS_KEY)
+      if (sKey.equals(AWS_ACCESS_KEY)
+          || sKey.endsWith((AWS_SECRET_KEY))
+          || sKey.equals(HADOOP_AWS_ACCESS_KEY)
           || sKey.endsWith((HADOOP_AWS_SECRET_KEY)))
         LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
       else
