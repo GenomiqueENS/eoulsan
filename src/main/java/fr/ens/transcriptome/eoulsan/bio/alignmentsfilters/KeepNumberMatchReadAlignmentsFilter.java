@@ -114,6 +114,13 @@ public class KeepNumberMatchReadAlignmentsFilter extends
       records.clear();
       records.addAll(recordsToKeep);
     }
-
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{name=" + getName() + ", numberMatch=" + this.numberMatch + "}";
+  }
+
 }

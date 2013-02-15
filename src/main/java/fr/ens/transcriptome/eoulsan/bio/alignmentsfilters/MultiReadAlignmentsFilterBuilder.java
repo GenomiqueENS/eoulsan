@@ -206,4 +206,27 @@ public class MultiReadAlignmentsFilterBuilder {
     return Collections.unmodifiableMap(this.mapParameters);
   }
 
+  //
+  // Constructors
+  //
+
+  /**
+   * Public constructor.
+   */
+  public MultiReadAlignmentsFilterBuilder() {
+  }
+
+  /**
+   * Public constructor.
+   * @param parameters parameters to add to the builder
+   * @throws EoulsanException EoulsanException if the filter reference in the
+   *           key does not exist or if an error occurs while setting the
+   *           parameter in the dedicated filter
+   */
+  public MultiReadAlignmentsFilterBuilder(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    addParameters(parameters);
+  }
+
 }

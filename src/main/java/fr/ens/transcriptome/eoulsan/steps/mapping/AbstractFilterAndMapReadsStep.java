@@ -61,8 +61,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
   private boolean pairEnd;
 
-  private MultiReadFilterBuilder readFilterBuilder;
-  private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
+  private Map<String, String> readsFiltersParameters;
+  private Map<String, String> alignmentsFiltersParameters;
   private SequenceReadsMapper mapper;
   private String mapperArguments;
   private int hadoopThreads = -1;
@@ -199,8 +199,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     mrfb.getReadFilter();
     mrafb.getAlignmentsFilter();
 
-    this.readFilterBuilder = mrfb;
-    this.readAlignmentsFilterBuilder = mrafb;
+    this.readsFiltersParameters = mrfb.getParameters();
+    this.alignmentsFiltersParameters = mrafb.getParameters();
 
     if (mapperName == null)
       throw new EoulsanException("No mapper set.");
@@ -230,7 +230,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected Map<String, String> getReadFilterParameters() {
 
-    return this.readFilterBuilder.getParameters();
+    return this.readsFiltersParameters;
   }
 
   /**
@@ -239,7 +239,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected Map<String, String> getAlignmentsFilterParameters() {
 
-    return this.readAlignmentsFilterBuilder.getParameters();
+    return this.alignmentsFiltersParameters;
   }
 
 }

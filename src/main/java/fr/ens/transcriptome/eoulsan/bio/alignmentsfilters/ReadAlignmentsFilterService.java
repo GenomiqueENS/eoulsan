@@ -35,7 +35,6 @@ import java.util.ServiceLoader;
 public class ReadAlignmentsFilterService {
 
   private static ReadAlignmentsFilterService service;
-  private final ServiceLoader<ReadAlignmentsFilter> loader;
 
   //
   // Static method
@@ -72,7 +71,8 @@ public class ReadAlignmentsFilterService {
 
     final String actionNameLower = alignmentsFilterName.toLowerCase();
 
-    final Iterator<ReadAlignmentsFilter> it = this.loader.iterator();
+    final Iterator<ReadAlignmentsFilter> it =
+        ServiceLoader.load(ReadAlignmentsFilter.class).iterator();
 
     while (it.hasNext()) {
 
@@ -94,8 +94,6 @@ public class ReadAlignmentsFilterService {
    * Private constructor.
    */
   private ReadAlignmentsFilterService() {
-
-    loader = ServiceLoader.load(ReadAlignmentsFilter.class);
   }
 
 }

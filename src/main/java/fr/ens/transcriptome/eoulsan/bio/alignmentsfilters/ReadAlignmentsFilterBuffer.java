@@ -59,7 +59,7 @@ public class ReadAlignmentsFilterBuffer {
       return false;
     }
 
-    final String name = alignment.getReadName().split(" ")[0];
+    final String name = parseAlignmentName(alignment);
 
     // The previous list of alignments has been already treated
     if (this.currentName == null) {
@@ -102,6 +102,22 @@ public class ReadAlignmentsFilterBuffer {
     this.currentName = null;
 
     return results;
+  }
+
+  /**
+   * Parse alignment name.
+   * @param alignment the alignment
+   * @return the name of the sequence in the alignment
+   */
+  private static String parseAlignmentName(final SAMRecord alignment) {
+
+    final String alignmentName = alignment.getReadName();
+    final int spaceIndex = alignmentName.indexOf(' ');
+
+    if (spaceIndex == -1)
+      return alignmentName;
+
+    return alignmentName.substring(0, spaceIndex);
   }
 
   //

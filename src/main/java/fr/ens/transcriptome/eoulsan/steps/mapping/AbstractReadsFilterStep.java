@@ -50,14 +50,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   protected static final String COUNTER_GROUP = "reads_filtering";
 
-  /** filter reads length threshold. */
-  public static final int LENGTH_THRESHOLD = 15;
-
-  /** filter reads quality threshold. */
-  public static final double QUALITY_THRESHOLD = 15;
-
-  private MultiReadFilterBuilder readFilterBuilder;
-
+  private Map<String, String> readsFiltersParameters;
   private int localThreads;
   private int maxLocalThreads;
 
@@ -107,7 +100,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     // Force parameter checking
     mrfb.getReadFilter();
 
-    this.readFilterBuilder = mrfb;
+    this.readsFiltersParameters = mrfb.getParameters();
   }
 
   /**
@@ -139,7 +132,10 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   protected ReadFilter getReadFilter(final ReporterIncrementer incrementer,
       final String counterGroup) throws EoulsanException {
 
-    return this.readFilterBuilder.getReadFilter(incrementer, counterGroup);
+    // As filters are not thread safe, create a new MultiReadFilterBuilder
+    // with a new instance of each filter
+    return new MultiReadFilterBuilder(this.readsFiltersParameters)
+        .getReadFilter(incrementer, counterGroup);
   }
 
   /**
@@ -148,7 +144,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    */
   protected Map<String, String> getReadFilterParameters() {
 
-    return this.readFilterBuilder.getParameters();
+    return this.readsFiltersParameters;
   }
 
   /**

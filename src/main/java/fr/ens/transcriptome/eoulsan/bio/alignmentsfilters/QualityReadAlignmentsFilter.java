@@ -122,4 +122,12 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
           + getName() + " alignments filter.");
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{name=" + getName() + ", qualityThreshold=" + this.qualityThreshold
+        + "}";
+  }
+
 }
