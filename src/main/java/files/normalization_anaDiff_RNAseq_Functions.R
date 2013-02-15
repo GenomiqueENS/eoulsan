@@ -49,124 +49,125 @@ dispersionEstimation <- function(cds1, replicates=FALSE){
 # Input : 
 # 	cds :  a countDataSet with estimated dispersion
 # -----------------------------------------------------------------------------
-plotDispEsts <- function( cds, outpath = "", projectName = "", out = FALSE ) {
+plotDispEsts <- function(cds, fitInfo, cond = "") {                             
 	
-	if (out) {
-		# verify if '/' is not missing at the end of path
-		pathChar <- strsplit(outpath, "")
-		if(!(pathChar[[1]][length(pathChar[[1]])] == "/")
-				){
-			stop("path must finish by '/'")
-		}
-		png(paste(outpath, "diffana_", projectName, "dispEstPlot.png", sep=""),
-				width=800, height=800 )
-	}
-	
-	readCount <- counts(cds, normalized = TRUE)
-	
-	# plot dispersion estimation plot
-	plot(
-			rowMeans( readCount ), 
-			fitInfo(cds)$perGeneDispEsts, pch = '.', log="xy",
-			main = "Dispersion estimation scatter plot",
-			xlab="log gene counts mean",
-			ylab="log dispersion"
-	)
-	xg <- 10^seq( -.5, 5, length.out=300 )
-	lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
-	legend("bottomright", "fitted dispersion line", lwd=1, col="red")
-	
-	if (out) {
-		dev.off()
-	}
-	
-}
+	readCount <- counts(cds, normalized = TRUE)                                 
+	plot(                                                                       
+			rowMeans( readCount ),                                                  
+			fitInfo$perGeneDispEsts, pch = '.', log="xy",                           
+			main = paste("Dispersion estimation scatter plot ", cond, sep=""),      
+			xlab = "log gene counts mean",                                          
+			ylab = "log dispersion"                                                 
+	)                                                                           
+	xg <- 10^seq( -.5, 5, length.out=300 )                                      
+	lines( xg, fitInfo$dispFun( xg ), col="red" )                               
+	legend("bottomright", "fitted dispersion line", lwd=1, col="red")           
+}  
 
-# -----------------------------------------------------------------------------
-# anaDiffDESeq
-# Perform differential analysis
-#
-# Input :
-# 	cds : a countDataSet object
-# 	outpath : path where to save files
-# -----------------------------------------------------------------------------
-anaDiff <- function(cds, outpath){
-	
-	cond <- levels(conditions(cds))
-	condj <- cond
-	
-	for(cond1 in cond){
-		if (length(condj) > 1){
-			condj <- condj[-1]
-			for(j in 1:length(condj)){
-				cond2 <- condj[j]
-				
-				# compute differential analysis
-				result <- nbinomTest(cds, cond1, cond2)
-				# rename columns
-				colnames(result)[3] <- paste("baseMean", cond1, sep="_")
-				colnames(result)[4] <- paste("baseMean", cond2, sep="_")
-				colnames(result)[5] <- paste("FoldChange_", cond2, "-", cond1, sep="")
-				colnames(result)[6] <- paste("log2FoldChange_", cond2, "-", cond1, sep="")
-				# sort results by padj
-				sortedResult <- result[order(result$padj),]
-				# write results into a file
-				nameComp <- paste(cond2, cond1, sep="-")
-				write.table(
-					sortedResult, 
-					paste(outpath, "diffana_", target$projectName, "_", nameComp, 
-							".tsv", sep=""),
-					sep="\t",row.names=F, quote=F
-				)
-				
-				# plot MA-plot of the differential analysis
-				maPlot(result, nameComp, outpath, out = TRUE)
-				# plot pvalue distribution
-				plotPvalueDist(result, cond2, cond1, outpath, out = TRUE)
-			}
-		}
-	}	
-	
-}
 
-# -----------------------------------------------------------------------------
-# anaDiffDESeqCinetic
-# Perform differential analysis
-#
-# Input :
-# 	cds : a countDataSet object
-# 	outpath : path where to save files
-# -----------------------------------------------------------------------------
-anaDiffCinetic <- function(cds, ref, outpath){
+# ----------------------------------------------------------------------------- 
+# anaDiff                                                                       
+# perform diffrential analysis                                                  
+# ----------------------------------------------------------------------------- 
+anaDiff <- function(cds, cond1, cond2, method, projectName, outpath = "./"){    
 	
-	Conds <- levels(conditions(cds))
+	# compute differential analysis                                             
+	result <- nbinomTest(cds, cond1, cond2)                                     
+	# rename columns                                                            
+	colnames(result)[3] <- paste("baseMean", cond1, sep="_")                    
+	colnames(result)[4] <- paste("baseMean", cond2, sep="_")                    
+	colnames(result)[5] <- paste("FoldChange_", cond2, "-", cond1, sep="")      
+	colnames(result)[6] <- paste("log2FoldChange_", cond2, "-", cond1, sep="")  
 	
-	for (cond in Conds) {
-		if(cond != ref){
+	if (method == "per-condition"){                                             
+		
+		fiCond1 <- fitInfo(cds, name = cond1)                                   
+		fiCond2 <- fitInfo(cds, name = cond2)
+	# add empirical dispersion column for each condition                    
+	result[paste("empiricalDispEst", cond1, sep="_")] <- fiCond1$perGeneDispEsts
+	result[paste("empiricalDispEst", cond2, sep="_")] <- fiCond2$perGeneDispEsts
+	
+	# add fitted dispersion column for each condition                       
+	resLen <- length(result$id)                                             
+	fitDispCond1 <- ""                                                      
+	fitDispCond2 <- ""                                                      
+	for (i in 1:resLen) {                                                   
+		
+		id <- result$id[i]                                                  
+		fitDispCond1[i] <- fiCond1$fittedDispEsts[id]                       
+		fitDispCond2[i] <- fiCond2$fittedDispEsts[id]                       
+	}                                                                       
+	result[paste("fittedDispEst", cond1, sep="_")] <- fitDispCond1          
+	result[paste("fittedDispEst", cond2, sep="_")] <- fitDispCond2          
+	
+	} else {                                                                    
+		
+		fitInfo <- fitInfo(cds)                                                 
+		# add dispersion to matrix                                              
+		result$empiricalDispEst <- fitInfo$perGeneDispEsts                      
+		result$fittedDispEst <- fitInfo$fittedDispEsts                          
+	}                                                                           
+	
+	# sort results by padj                                                      
+	sortedResult <- result[order(result$padj),]                                 
+	# write results into a file                                                 
+	nameComp <- paste(cond2, cond1, sep="-")                                    
+	write.table(                                                                
+			sortedResult,                                                           
+			paste(outpath, "diffana_", projectName, "_", nameComp,                  
+					".tsv", sep=""),                                                
+			sep="\t",row.names=F, quote=F                                           
+	)                                                                           
+	
+	# plot MA-plot of the differential analysis                                 
+	maPlot(result, nameComp, outpath, out = TRUE)                               
+	# plot pvalue distribution                                                  
+	plotPvalueDist(result, cond2, cond1, outpath, out = TRUE)                   
+} 
+
+# ----------------------------------------------------------------------------- 
+# anaDiff_allComparison                                                         
+# perform all possible comparison                                               
+# ----------------------------------------------------------------------------- 
+anaDiff_allComparison <- function(cds, method, projectName, outpath = "./"){    
+	
+	cond <- levels(conditions(cds))                                             
+	condj <- cond                                                               
+	
+	for(cond1 in cond){ if (length(condj) > 1){                                 
+			condj <- condj[-1]                                                  
+			for(j in 1:length(condj)){                                          
+				cond2 <- condj[j]                                               
+				
+				# perform differential analysis                                 
+				anaDiff(cds, cond1, cond2, method, projectName, outpath)        
+			}                                                                   
+		}                                                                       
+	}                                                                           
+	
+}                                                                               
+
+# ----------------------------------------------------------------------------- 
+# anaDiffDESeqCinetic                                                           
+# Perform differential analysis                                                 
+#                                                                               
+# Input :                                                                       
+#   cds : a countDataSet object                                                 
+#   outpath : path where to save files                                          
+# ----------------------------------------------------------------------------- 
+anaDiff_Cinetic <- function(cds, ref, method, projectName, outpath = "./"){     
+	
+	Conds <- levels(conditions(cds))                                            
+	
+	for (cond in Conds) {                                                       
+		if(cond != ref){                                                        
 			
-			# compute differential analysis
-			result <- nbinomTest(cds, ref, cond)
-			# rename columns
-			colnames(result)[3] <- paste("baseMean", ref, sep="_")
-			colnames(result)[4] <- paste("baseMean", cond, sep="_")
-			colnames(result)[5] <- paste("FoldChange_", cond,"-", ref, sep="")
-			colnames(result)[6] <- paste("log2FoldChange_", cond, "-", ref, sep="")
-			# write results into a file
-			nameComp <- paste(cond, ref, sep="-")
-			write.table(
-				result, 
-				paste(outpath, "diffana_", target$projectName, "_", nameComp, 
-						".tsv", sep=""),
-				sep="\t",row.names=F, quote=F
-			)
+			# perform differential analysis                                     
+			anaDiff(cds, ref, cond, method, projectName, outpath)               
 			
-			# plot MA-plot of the differential analysis
-			maPlot(result, nameComp, outpath, out = TRUE)
-			# plot pvalue distribution
-			plotPvalueDist(result, cond, ref, outpath, out = TRUE)
-		}else{}
-	}
-}
+		}else{}                                                                 
+	}                                                                           
+} 
 
 # -----------------------------------------------------------------------------
 # maPlot
