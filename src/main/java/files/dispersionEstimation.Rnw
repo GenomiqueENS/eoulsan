@@ -2,12 +2,10 @@
 
 		\subsubsection{Dispersion estimation}
 	
-<<dispertionEstimation, fig=TRUE>>=
+<<dispertionEstimation>>=
 countDataSet <- estimateDispersions(countDataSet, 
 	sharingMode = "${SHARINGMODE}",
 	fitType = "${FITTYPE}",
 	method = "${METHOD}"
 )
-
-plotDispEsts(countDataSet)
 @

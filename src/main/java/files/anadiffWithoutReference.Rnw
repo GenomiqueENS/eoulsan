@@ -1,7 +1,7 @@
 		\subsubsection{Differential analysis calling}
 	
 <<diffAna>>=
-anaDiff(countDataSet, outPath)
+anaDiff_allComparison(countDataSet, "${METHOD}", target$projectName, outPath)
 @
 
 \section{Session info}

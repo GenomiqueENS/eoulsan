@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.diffana;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -241,8 +242,8 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String generateScript(final List<Sample> experimentSamplesList, final Context context)
-      throws EoulsanException {
+  protected String generateScript(final List<Sample> experimentSamplesList,
+      final Context context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 
@@ -369,21 +370,42 @@ public class DiffAna extends Normalization {
         dispersionEstimation.replace("${FITTYPE}",
             this.dispEstFitType.getName());
 
-    // Remove dispersion plot if method is per condition (there is no fitted
-    // dispersion)
-    if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION))
-      dispersionEstimation =
-          dispersionEstimation.replace("plotDispEsts(countDataSet)", "");
-
     // Add dispersion estimation part to stringbuilder
     sb.append(dispersionEstimation);
 
+    // Add plot dispersion
+    if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION)) {
+
+      List<String> passedConditionName = new ArrayList<String>();
+      for (String cond : rCondNames) {
+
+        if (passedConditionName.indexOf(cond) == -1) {
+          sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
+          sb.append("fitInfo <- fitInfo(countDataSet, name = \""
+              + cond + "\")\n");
+          sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
+          sb.append("@\n");
+          
+          passedConditionName.add(cond);
+        } else {}
+      }
+    } else {
+
+      sb.append("<<dispersionPlot, fig=TRUE>>=\n");
+      sb.append("fitInfo <- fitInfo(countDataSet)\n");
+      sb.append("plotDispEsts(countDataSet, fitInfo)\n");
+      sb.append("@\n");
+    }
+
+    String anadiffPart = "";
     // check if there is a reference
     if (isReference(experimentSamplesList)) {
-      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
+      anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
     } else {
-      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
+      anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
     }
+    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    sb.append(anadiffPart);
 
     // end document
     sb.append("\\end{document}");
