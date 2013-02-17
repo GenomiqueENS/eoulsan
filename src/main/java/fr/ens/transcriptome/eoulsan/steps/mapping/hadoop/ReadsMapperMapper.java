@@ -191,7 +191,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     mapper.setThreadsNumber(mapperThreads);
     LOGGER.info("Use "
-        + this.mapper.getMapperName() + " with " + mapperThreads
+        + this.mapper.getMapperName() + " version "
+        + this.mapper.getMapperVersion() + " with " + mapperThreads
         + " threads option");
 
     // Create temporary directory if not exists
