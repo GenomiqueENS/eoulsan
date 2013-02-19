@@ -497,6 +497,37 @@ class Workflow implements WorkflowDescription {
   }
 
   /**
+   * Log the global parameter with obfuscated values if needed.
+   * @param globalParameters globalParameters
+   */
+  private void logGlobalsParameters(Set<Parameter> globalParameters) {
+
+    final Set<String> keysToObfuscate =
+        context.getSettings().getSettingsKeyToObfuscated();
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append('[');
+
+    for (Parameter p : globalParameters) {
+
+      if (sb.length() > 1)
+        sb.append(", ");
+
+      sb.append(p.getName());
+      sb.append('=');
+
+      if (keysToObfuscate.contains(p.getValue()))
+        sb.append("xxxx value not shown xxxx");
+      else
+        sb.append(p.getStringValue());
+    }
+
+    sb.append(']');
+
+    LOGGER.info("Init all steps with global parameters: " + sb.toString());
+  }
+
+  /**
    * Initialize the steps of the Workflow
    * @throws EoulsanException if an error occurs while creating the step
    */
@@ -509,7 +540,7 @@ class Workflow implements WorkflowDescription {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Add globals parameters to Settings
-    LOGGER.info("Init all steps with global parameters: " + globalParameters);
+    logGlobalsParameters(globalParameters);
     for (Parameter p : globalParameters)
       settings.setSetting(p.getName(), p.getStringValue());
 
