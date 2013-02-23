@@ -348,7 +348,7 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
-         <release version="1.2" description="Eoulsan 1.2" date="TBD">
+         <release version="1.2" description="Eoulsan 1.2 release" date="2013-02-23">
             <action dev="wallon" type="add">
                 Add the paired-end mode in the alignments filtering step.
             </action>
