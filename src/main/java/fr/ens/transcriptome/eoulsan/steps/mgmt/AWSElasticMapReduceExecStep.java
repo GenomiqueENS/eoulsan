@@ -97,7 +97,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   private String logPathname = null;
 
   /** Maximal number of map tasks in a tasktracker. */
-  private int taskTrackerMaxMapTasks = 2;
+  private int taskTrackerMaxMapTasks = 0;
 
   /** EC2 Key pair name to use. */
   private String ec2KeyName = null;
