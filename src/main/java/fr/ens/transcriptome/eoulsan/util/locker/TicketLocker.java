@@ -106,26 +106,6 @@ public class TicketLocker implements Locker {
     }
 
     /**
-     * Get the stub of TicketScheduler.
-     * @return a TicketScheduler object
-     */
-    private final TicketScheduler getStub() {
-
-      try {
-        Registry registry = LocateRegistry.getRegistry(port);
-        return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX
-            + lockerName);
-
-      }
-
-      catch (IOException e) {
-        return null;
-      } catch (NotBoundException e) {
-        return null;
-      }
-    }
-
-    /**
      * Private constructor.
      * @param ticket the ticket to wait
      */
@@ -134,6 +114,25 @@ public class TicketLocker implements Locker {
       this.ticket = ticket;
     }
 
+  }
+
+  /**
+   * Get the stub of TicketScheduler.
+   * @return a TicketScheduler object
+   */
+  private final TicketScheduler getStub() {
+
+    try {
+      Registry registry = LocateRegistry.getRegistry(port);
+      return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX + lockerName);
+
+    }
+
+    catch (IOException e) {
+      return null;
+    } catch (NotBoundException e) {
+      return null;
+    }
   }
 
   //
@@ -210,4 +209,29 @@ public class TicketLocker implements Locker {
     this.port = port;
   }
 
+  //
+  // Main method : list current tickets
+  //
+
+  /**
+   * Main method.
+   * @param args command line arguments
+   * @throws RemoteException if an error occurs while inspecting tickets
+   */
+  public static final void main(String[] args) throws RemoteException {
+
+    if (args.length < 2) {
+
+      System.err.println("List current lock tickets\nSyntax: java "
+          + TicketLocker.class.getName() + " locker_name server_port");
+      return;
+    }
+
+    TicketLocker locker = new TicketLocker(args[0], Integer.parseInt(args[1]));
+
+    for (Ticket t : locker.getStub().getTickets(null)) {
+      System.out.println(t);
+    }
+
+  }
 }

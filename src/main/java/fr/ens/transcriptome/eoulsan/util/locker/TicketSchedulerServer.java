@@ -58,7 +58,7 @@ public class TicketSchedulerServer implements TicketScheduler {
   public Set<Ticket> getTickets(final Ticket ticket) {
 
     if (ticket == null)
-      return null;
+      return new HashSet<Ticket>(tickets.values());
 
     synchronized (this.tickets) {
 
