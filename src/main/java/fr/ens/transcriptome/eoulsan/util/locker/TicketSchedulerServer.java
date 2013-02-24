@@ -44,6 +44,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class TicketSchedulerServer implements TicketScheduler {
 
+  private static TicketSchedulerServer serverInstance;
+
   private Ticket currentActive;
   private final Map<Ticket, Ticket> tickets = new HashMap<Ticket, Ticket>();
   private final Set<Ticket> toRemove = new HashSet<Ticket>();
@@ -155,7 +157,7 @@ public class TicketSchedulerServer implements TicketScheduler {
   // Constructor
   //
 
-  public TicketSchedulerServer(final Set<Ticket> tickets) {
+  private TicketSchedulerServer(final Set<Ticket> tickets) {
 
     if (tickets != null) {
       for (Ticket t : tickets)
@@ -172,11 +174,18 @@ public class TicketSchedulerServer implements TicketScheduler {
   public static void newServer(final Set<Ticket> tickets,
       final String lockerName, final int port) {
 
+    // If the server already exists do nothing
+    if (serverInstance != null)
+      return;
+
     try {
 
+      // Using a static variable prevent the server object to be eligible to the
+      // Garbage Collector
+      serverInstance = new TicketSchedulerServer(tickets);
+
       final TicketScheduler stub =
-          (TicketScheduler) UnicastRemoteObject.exportObject(
-              new TicketSchedulerServer(tickets), 0);
+          (TicketScheduler) UnicastRemoteObject.exportObject(serverInstance, 0);
 
       // Bind the remote object's stub in the registry
       Registry registry = LocateRegistry.getRegistry(port);
