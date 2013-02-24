@@ -383,10 +383,10 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="update">
                 Generated SAM files in Hadoop mode now contains SAM headers.
             </action>
-            <action dev="jourdren" type="add">
+            <action dev="deshaies" type="add">
                 Differential analysis and normalization steps can be executed on an Rserve server.
             </action>
-            <action dev="jourdren" type="update">
+            <action dev="deshaies" type="update">
                 Update the differential analysis and normalization steps with a new version of DESeq.
             </action>
             <action dev="jourdren" type="add">
@@ -397,6 +397,14 @@ of reads that reject each filter like in local mode.
             </action>
             <action dev="jourdren" type="add">
                 Add a constant section in the parameter file.
+            </action>
+         </release>
+
+         <release version="1.2.1" description="Eoulsan 1.2.1 release" date="TBD">
+            <action dev="jourdren" type="update">
+                Add new configuration options for launching AWS EMR clusters 
+                (enabling debugging mode, EC2 key pair key to enable ssh connection to remote cluster
+                and setting the maximal number of mapper tasks in a task tracker).
             </action>
          </release>
 
