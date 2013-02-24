@@ -406,6 +406,10 @@ of reads that reject each filter like in local mode.
                 (enabling debugging mode, EC2 key pair key to enable ssh connection to remote cluster
                 and setting the maximal number of mapper tasks in a task tracker).
             </action>
+            <action dev="jourdren" type="update">
+                Enable a new locker for the reads mapping step in Hadoop mode that avoid to limit
+                the number of maximal mapper tasks of a tasktracker to 2.
+            </action>
          </release>
 
 	</body>

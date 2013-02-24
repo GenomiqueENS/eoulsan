@@ -60,7 +60,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
-import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
+import fr.ens.transcriptome.eoulsan.util.locker.Locker;
+import fr.ens.transcriptome.eoulsan.util.locker.TicketLocker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -92,7 +93,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private File archiveIndexFile;
 
-  private ExecLock lock;
+  private Locker lock;
 
   private SequenceReadsMapper mapper;
   private List<String> fields = newArrayList();
@@ -171,7 +172,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set lock
-    this.lock = new ExecLock(this.mapper.getMapperName().toLowerCase());
+    this.lock =
+        new TicketLocker(this.mapper.getMapperName().toLowerCase(), 9999,
+            context.getTaskAttemptID().toString());
 
     // Get Mapper arguments
     final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
@@ -263,23 +266,21 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
+    // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
     lock.lock();
-    ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
-        .toLowerCase());
-
-    LOGGER
-        .info("Wait "
-            + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                - waitStartTime) + " before running "
-            + this.mapper.getMapperName());
-
-    // Close the data file
-    this.mapper.closeInput();
-
-    context.setStatus("Run " + this.mapper.getMapperName());
-
     try {
+      ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
+          .toLowerCase());
+
+      LOGGER.info("Wait "
+          + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+              - waitStartTime) + " before running "
+          + this.mapper.getMapperName());
+
+      // Close the data file
+      this.mapper.closeInput();
+
+      context.setStatus("Run " + this.mapper.getMapperName());
 
       // Set index directory
       final File archiveIndexDir =
@@ -306,8 +307,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
-
-    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
     if (!samOutputFile.delete())
