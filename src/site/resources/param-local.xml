@@ -30,8 +30,8 @@
                                 <value>bowtie</value>
                         </parameter>
                         <parameter>
-                                <name>mapperarguments</name>
-                                <value>--best -k 2</value>
+                                <name>mapper.arguments</name>
+                                <value>-k 2 --best</value>
                         </parameter>                          
                 </parameters>
         </step>
@@ -93,12 +93,30 @@
                 </parameters>
         </step>
 
-        <!-- Anadiff -->
+        <!-- Normalization -->
         <step skip="false">
-                <name>diffana</name>
+                <name>normalization</name>
                 <parameters/>
         </step>
 
+        <!-- Diffana -->
+        <step skip="false">
+                <name>diffana</name>
+                
+                <parameters>
+                        <parameter>
+                                <name>disp.est.method</name>
+                                <value>pooled</value>
+                        </parameter>
+                        <parameter>                        
+                                <name>disp.est.sharing.mode</name>
+                                <value>maximum</value>
+                        </parameter>                                 
+                                <name>disp.est.fit.type</name>
+                                <value>local</value>
+                        </parameter>
+            <parameters/>
+        </step>
 
     </steps>
 

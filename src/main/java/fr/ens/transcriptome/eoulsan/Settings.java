@@ -115,6 +115,10 @@ public final class Settings {
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
 
+  private static final Set<String> OBFUSCATED_KEYS = Utils
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+
   //
   // Getters
   //
@@ -199,7 +203,7 @@ public final class Settings {
    * @return boolean with keep Rscripts values
    */
   public boolean isSaveRscripts() {
-    
+
     return Boolean.parseBoolean(this.properties.getProperty(SAVE_RSCRIPTS_KEY));
   }
 
@@ -523,9 +527,10 @@ public final class Settings {
    * @param krs boolean
    */
   public void setSaveRscript(final boolean krs) {
-    
+
     this.properties.setProperty(SAVE_RSCRIPTS_KEY, Boolean.toString(krs));
   }
+
   /**
    * Set the RServe server name.
    * @param serverName The name of the RServe to use
@@ -661,7 +666,7 @@ public final class Settings {
 
   /**
    * Set the SMTP server host.
-   * @return the name of the SMTP server host
+   * @param smtpHost the name of the SMTP server host
    */
   public void setSMTPHost(final String smtpHost) {
 
@@ -848,13 +853,21 @@ public final class Settings {
       final String sKey = (String) key;
       final String sValue = properties.getProperty(sKey);
 
-      if (sKey.equals(HADOOP_AWS_ACCESS_KEY)
-          || sKey.endsWith((HADOOP_AWS_SECRET_KEY)))
+      if (OBFUSCATED_KEYS.contains(sKey))
         LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
       else
         LOGGER.info("Setting: " + sKey + "=" + sValue);
     }
 
+  }
+
+  /**
+   * Get a set with the names of the settings to obfuscate.
+   * @return a set of strings with the name of the settings to obfuscate
+   */
+  public Set<String> getSettingsKeyToObfuscated() {
+
+    return OBFUSCATED_KEYS;
   }
 
   //

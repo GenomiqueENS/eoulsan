@@ -52,6 +52,9 @@
            Eoulsan use the AWS Java SDK library to transfer data to Amazon S3 and 
            launch Amazon Elastic MapReduce jobs.</p>
 
+
+    <p>Eoulsan has been successfully tested with m1.xlarge instances and Hadoop 0.20, 0.20.205 and 1.03.</p>
+
     </section>
 
     <section name="Configure Eoulsan to work with Amazon Elastic MapReduce">

@@ -45,6 +45,7 @@ import com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest;
 import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
 import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
+import com.amazonaws.services.elasticmapreduce.util.StepFactory;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
@@ -93,6 +94,15 @@ public class AWSElasticMapReduceJob {
   /** AWS secret key. */
   private String AWSSecretKey;
 
+  /** Maximal number of map tasks in a tasktracker. */
+  private int taskTrackerMaxMapTasks;
+
+  /** EC2 Key pair name to use. */
+  private String ec2KeyName;
+
+  /** Enable debugging. */
+  private boolean enableDebugging;
+
   private RunJobFlowRequest runFlowRequest;
   private RunJobFlowResult runFlowResult;
   private AmazonElasticMapReduce elasticMapReduceClient;
@@ -106,7 +116,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the hadoopVersion
    */
   public String getHadoopVersion() {
-    return hadoopVersion;
+    return this.hadoopVersion;
   }
 
   /**
@@ -114,7 +124,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the nInstances
    */
   public int getInstancesNumber() {
-    return nInstances;
+    return this.nInstances;
   }
 
   /**
@@ -122,7 +132,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the instanceType of the master
    */
   public String getMasterInstanceType() {
-    return masterInstanceType;
+    return this.masterInstanceType;
   }
 
   /**
@@ -130,7 +140,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the instanceType
    */
   public String getSlavesInstanceType() {
-    return slavesInstanceType;
+    return this.slavesInstanceType;
   }
 
   /**
@@ -138,7 +148,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the endpoint
    */
   public String getEndpoint() {
-    return endpoint;
+    return this.endpoint;
   }
 
   /**
@@ -146,7 +156,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the logPathname
    */
   public String getLogPathname() {
-    return logPathname;
+    return this.logPathname;
   }
 
   /**
@@ -154,7 +164,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the jar location
    */
   public String getJarLocation() {
-    return jarLocation;
+    return this.jarLocation;
   }
 
   /**
@@ -162,7 +172,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the jar arguments
    */
   public String[] getJarArguments() {
-    return jarArguments == null ? null : jarArguments.clone();
+    return this.jarArguments == null ? null : this.jarArguments.clone();
   }
 
   /**
@@ -170,7 +180,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns the job flow name
    */
   public String getJobFlowName() {
-    return jobFlowName;
+    return this.jobFlowName;
   }
 
   /**
@@ -178,7 +188,7 @@ public class AWSElasticMapReduceJob {
    * @return Returns AWS access key
    */
   public String getAWSAccessKey() {
-    return AWSAccessKey;
+    return this.AWSAccessKey;
   }
 
   /**
@@ -186,7 +196,31 @@ public class AWSElasticMapReduceJob {
    * @return Returns AWS secret key
    */
   public String getAWSSecretKey() {
-    return AWSSecretKey;
+    return this.AWSSecretKey;
+  }
+
+  /**
+   * Get the number of maximal mapper tasks to use in a task tracker.
+   * @return the number of maximal mapper tasks to use in a task tracker
+   */
+  public int getTaskTrackerMaxMapTasks() {
+    return this.taskTrackerMaxMapTasks;
+  }
+
+  /**
+   * Return the EC2 Key pair name to use.
+   * @return EC2 Key pair name to use
+   */
+  public String getEC2KeyName() {
+    return this.ec2KeyName;
+  }
+
+  /**
+   * Test if debugging is enabled.
+   * @return true if debugging is enabled
+   */
+  public boolean isDebuggingEnabled() {
+    return this.enableDebugging;
   }
 
   //
@@ -281,6 +315,31 @@ public class AWSElasticMapReduceJob {
     this.AWSSecretKey = AWSSecretKey;
   }
 
+  /**
+   * Set the number of maximal mapper tasks to use in a task tracker.
+   * @param taskTrackerMaxMapTasks the number of maximal mapper tasks to use in
+   *          a task tracker
+   */
+  void setTaskTrackerMaxMapTasks(final int taskTrackerMaxMapTasks) {
+    this.taskTrackerMaxMapTasks = taskTrackerMaxMapTasks;
+  }
+
+  /**
+   * Set the EC2 Key pair name to use.
+   * @param ec2KeyName EC2 Key pair name to use
+   */
+  void setEC2KeyName(final String ec2KeyName) {
+    this.ec2KeyName = ec2KeyName;
+  }
+
+  /**
+   * Set if debugging must be enabled.
+   * @param enableDebugging true if debugging is enabled
+   */
+  public void setDebugging(final boolean enableDebugging) {
+    this.enableDebugging = enableDebugging;
+  }
+
   //
   // Other methods
   //
@@ -327,21 +386,42 @@ public class AWSElasticMapReduceJob {
         new ScriptBootstrapActionConfig()
             .withPath(
                 "s3n://eu-west-1.elasticmapreduce/bootstrap-actions/configure-hadoop")
-            .withArgs("--site-key-value",
-                "mapred.tasktracker.map.tasks.maximum=2");
+            .withArgs(
+                "--site-key-value",
+                "mapred.tasktracker.map.tasks.maximum="
+                    + this.taskTrackerMaxMapTasks);
 
     final BootstrapActionConfig bootstrapActions =
         new BootstrapActionConfig().withName("Configure hadoop")
             .withScriptBootstrapAction(scriptBootstrapAction);
 
+    // Enable debugging
+    StepFactory stepFactory = new StepFactory();
+    StepConfig enableDebugging =
+        new StepConfig().withName("Enable Debugging")
+            .withActionOnFailure("TERMINATE_JOB_FLOW")
+            .withHadoopJarStep(stepFactory.newEnableDebuggingStep());
+
     // Run flow
-    this.runFlowRequest =
-        new RunJobFlowRequest().withName(this.jobFlowName)
-            .withInstances(instances).withSteps(stepConfig)
-            .withBootstrapActions(bootstrapActions);
+    this.runFlowRequest = new RunJobFlowRequest().withName(this.jobFlowName);
+
+    // Enable or not debugging
+    if (this.enableDebugging)
+      this.runFlowRequest.withInstances(instances).withSteps(enableDebugging,
+          stepConfig);
+    else
+      this.runFlowRequest.withInstances(instances).withSteps(stepConfig);
+
+    // Limit the number of task in a task tracker
+    if (this.taskTrackerMaxMapTasks > 0)
+      runFlowRequest.withBootstrapActions(bootstrapActions);
 
     if (this.logPathname != null && !"".equals(this.logPathname))
       this.runFlowRequest.withLogUri(this.logPathname);
+
+    // Set EC2 Key name
+    if (this.ec2KeyName != null)
+      this.runFlowRequest.getInstances().setEc2KeyName("emr-lolo-01");
   }
 
   /**
@@ -392,7 +472,8 @@ public class AWSElasticMapReduceJob {
 
         try {
           final DescribeJobFlowsResult jobFlowsResult =
-              this.elasticMapReduceClient.describeJobFlows(describeJobFlowsRequest);
+              this.elasticMapReduceClient
+                  .describeJobFlows(describeJobFlowsRequest);
           final JobFlowDetail detail = jobFlowsResult.getJobFlows().get(0);
           final JobFlowExecutionStatusDetail executionStatusDetail =
               detail.getExecutionStatusDetail();
@@ -424,8 +505,8 @@ public class AWSElasticMapReduceJob {
       return state;
 
     } catch (InterruptedException e) {
-      LOGGER
-          .warning("Error while waiting AWS Elastic MapReduce Job: " + e.getMessage());
+      LOGGER.warning("Error while waiting AWS Elastic MapReduce Job: "
+          + e.getMessage());
     }
 
     return null;

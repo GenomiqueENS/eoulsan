@@ -1,16 +1,19 @@
 #! /usr/bin/perl
-# $Id: gmap_build.pl.in 66820 2012-06-19 17:19:15Z twu $
+# $Id: gmap_build.pl.in 69408 2012-07-20 21:22:20Z twu $
 
 use warnings;	
 
-$gmapdb = "/usr/local/share";
-$package_version = "2012-07-12";
+$gmapdb = "/home/jourdren/home-net/eoulsan-mapper-compilation/gmap-build/share";
+$package_version = "2012-07-20";
 
 use File::Copy;	
 use Getopt::Long;
 
+Getopt::Long::Configure(qw(no_auto_abbrev no_ignore_case_always));
+
+
 # Default values
-$bindir = "/usr/local/bin";
+$bindir = "/home/jourdren/home-net/eoulsan-mapper-compilation/gmap-build/bin";
 $builddir = ".";
 $sampling = 3;
 $sleeptime = 2;
@@ -19,24 +22,17 @@ GetOptions(
     'B=s' => \$bindir,		# binary directory
     'T=s' => \$builddir,	# temporary build directory
 
-    'D=s' => \$destdir,		# destination directory, short flag
-    'dir=s' => \$destdir,	# destination directory, long flag
-    'd=s' => \$dbname,		# genome name, short flag
-    'db=s' => \$dbname,		# genome name, long flag
+    'D|dir=s' => \$destdir,	# destination directory
+    'd|db=s' => \$dbname,	# genome name
 
-    'M=s' => \$mdfile,		# NCBI MD file, short flag
-    'mdfile=s' => \$mdfile,	# NCBI MD file, long flag
+    'M|mdfile=s' => \$mdfile,	# NCBI MD file
 
-    'k=s' => \$kmersize, # k-mer size for genomic index (allowed: 16 or less)
-    'kmer=s' => \$kmersize, # k-mer size for genomic index (allowed: 16 or less)
-    'b=s' => \$basesize,		# offsetscomp basesize, short flag
-    'basesize=s' => \$basesize,	# offsetscomp basesize, long flag
+    'k|kmer=s' => \$kmersize, # k-mer size for genomic index (allowed: 16 or less)
+    'b|basesize=s' => \$basesize, # offsetscomp basesize
     'q=s' => \$sampling,	   # sampling interval for genome (default: 3)
 
-    's=s' => \$sorting,	   # Sorting
-    'sort=s' => \$sorting, # Sorting
-    'g' => \$gunzipp,	   # gunzip files
-    'gunzip' => \$gunzipp,
+    's|sort=s' => \$sorting,	# Sorting
+    'g|gunzip' => \$gunzipp,	# gunzip files
     'w=s' => \$sleeptime # waits (sleeps) this many seconds between steps.  Useful if there is a delay in the filesystem.
     );
 
@@ -62,7 +58,7 @@ if (!defined($dbname)) {
   die "Must specify genome database name with -d flag.";
 } elsif ($dbname =~ /(\S+)\/(\S+)/) {
   $dbname = $2;
-  if (defined($destdir)) {
+  if (defined($destdir) && $destdir =~ /\S/) {
     $destdir = $destdir . "/" . $1;
   } else {
     $destdir = $1;
@@ -71,7 +67,7 @@ if (!defined($dbname)) {
 
 $dbname =~ s/\/$//;	# In case user gives -d argument with trailing slash
 
-if (!defined($destdir)) {
+if (!defined($destdir) || $destdir !~ /\S/) {
     $destdir = $gmapdb;
 }
 

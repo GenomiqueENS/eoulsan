@@ -169,9 +169,28 @@
                 &lt;/parameters&gt;
         &lt;/step&gt;
 
-        &lt;!-- Anadiff --&gt;
+        &lt;!-- Normalization --&gt;
         &lt;step skip="false"&gt;
-                &lt;name&gt;anadiff&lt;/name&gt;
+                &lt;name&gt;normalization&lt;/name&gt;
+                &lt;parameters/&gt;
+        &lt;/step&gt;
+
+        &lt;!-- Diffana --&gt;
+        &lt;step skip="false"&gt;
+                &lt;name&gt;diffana&lt;/name&gt;
+                
+                &lt;parameters&gt;
+                        &lt;parameter&gt;
+                                &lt;name&gt;disp.est.method&lt;/name&gt;
+                                &lt;value&gt;pooled&lt;/value&gt;
+                        &lt;/parameter&gt;
+                        &lt;parameter&gt;                        
+                                &lt;name&gt;disp.est.sharing.mode&lt;/name&gt;
+                                &lt;value&gt;maximum&lt;/value&gt;
+                        &lt;/parameter&gt;                                 
+                                &lt;name>disp.est.fit.type&lt;/name&gt;
+                                &lt;value>local&lt;/value&gt;
+                        &lt;/parameter&gt;
                 &lt;parameters/&gt;
         &lt;/step&gt;
 
@@ -181,7 +200,7 @@
     &lt;globals&gt;
         &lt;parameter&gt;
 	        &lt;name&gt;main.tmp.dir&lt;/name&gt;
-	        &lt;value&gt;/home/jourdren/tmp&lt;/value&gt;
+	        &lt;value&gt;/tmp&lt;/value&gt;
         &lt;/parameter&gt;
     &lt;/globals&gt;
 

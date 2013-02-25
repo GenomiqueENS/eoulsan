@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 #
-# Copyright 2011, Ben Langmead <blangmea@jhsph.edu>
+# Copyright 2011, Ben Langmead <langmea@cs.jhu.edu>
 #
 # This file is part of Bowtie 2.
 #
@@ -31,33 +31,39 @@
 use strict;
 use warnings;
 use Getopt::Long;
-use FindBin qw($Bin);
+use File::Spec;
 use POSIX;
 
-(-x "$Bin/bowtie2-align") ||
-	die "Error: Expected bowtie2 to be in same directory with bowtie2-align:\n$Bin";
+my ($vol,$script_path,$prog) 
+                = File::Spec->splitpath(File::Spec->rel2abs( __FILE__ ));
+my $os_is_nix   = ($^O eq "linux") || ($^O eq "darwin");
+my $align_bin   = $os_is_nix ? 'bowtie2-align' : 'bowtie2-align.exe'; 
+my $build_bin   = $os_is_nix ? 'bowtie2-build' : 'bowtie2-build.exe';               
+my $align_prog  = File::Spec->catpath($vol,$script_path,$align_bin);
+my $build_prog  = File::Spec->catpath($vol,$script_path,$build_bin);
+my %signo       = ();
+my @signame     = ();
 
-# Return a version of the argument string where all percent escapes are
-# expanded into the unescaped character.
-sub unescape($) {
-	my $s = shift;
-	my $ret = "";
-	for(my $i = 0; $i < length($s); $i++) {
-		my $c = substr($s, $i, 1);
-		if($c eq "%" && $i < length($s)-2) {
-			$c = chr(hex(substr($s, $i+1, 2)));
-			$i += 2;
-		}
-		$ret .= $c;
+
+{
+	# Get signal info
+	use Config;
+	my $i = 0;
+	for my $name (split(' ', $Config{sig_name})) {
+		$signo{$name} = $i;
+		$signame[$i] = $name;
+		$i++;
 	}
-	return $ret;
 }
+
+(-x "$align_prog") ||
+	die "Error: Expected bowtie2 to be in same directory with bowtie2-align:\n$script_path";
 
 # Get description of arguments from Bowtie 2 so that we can distinguish Bowtie
 # 2 args from wrapper args
 sub getBt2Desc($) {
 	my $d = shift;
-	my $cmd = "$Bin/bowtie2-align --wrapper basic-0 --arg-desc";
+	my $cmd = "$align_prog --wrapper basic-0 --arg-desc";
 	open(my $fh, "$cmd |") || die "Failed to run command '$cmd'";
 	while(readline $fh) {
 		chomp;
@@ -113,8 +119,8 @@ for(my $i = 0; $i < scalar(@bt2_args); $i++) {
 	next unless defined($bt2_args[$i]);
 	my $arg = $bt2_args[$i];
 	my @args = split(/=/, $arg);
-	if(scalar(@args > 2)) {
-		$args[1] = join("=", $args[1..$#args]);
+	if(scalar(@args) > 2) {
+		$args[1] = join("=", @args[1..$#args]);
 	}
 	$arg = $args[0];
 	if($arg eq "-U" || $arg eq "--unpaired") {
@@ -178,7 +184,9 @@ for(my $i = 0; $i < scalar(@bt2_args); $i++) {
 # If the user asked us to redirect some reads to files, or to suppress
 # unaligned reads, then we need to capture the output from Bowtie 2 and pass it
 # through this wrapper.
+my $passthru = 0;
 if(scalar(keys %read_fns) > 0 || $no_unal) {
+	$passthru = 1;
 	push @bt2_args, "--passthrough";
 	$cap_out = "-";
 	for(my $i = 0; $i < scalar(@bt2_args); $i++) {
@@ -267,13 +275,14 @@ if(wrapInput(\@unps, \@mate1s, \@mate2s)) {
 		my $m1fn = "$temp_dir/$$.inpipe1";
 		push @to_delete, $m1fn;
 		push @bt2_args, "-1 $m1fn";
+		# Create named pipe 1 for writing
+		if(!$no_pipes) {
+			mkfifo($m1fn, 0700) || die "Error: mkfifo($m1fn) failed.";
+		}
 		my $pid = 0;
 		$pid = fork() unless $no_pipes;
 		if($pid == 0) {
 			# Open named pipe 1 for writing
-			if(!$no_pipes) {
-				mkfifo($m1fn, 0700) || die "Error: mkfifo($m1fn) failed.";
-			}
 			open(my $ofh, ">$m1fn") || die "Can't open '$m1fn' for writing";
 			for my $ifn (@mate1s) { cat_file($ifn, $ofh); }
 			close($ofh);
@@ -283,13 +292,14 @@ if(wrapInput(\@unps, \@mate1s, \@mate2s)) {
 		my $m2fn = "$temp_dir/$$.inpipe2";
 		push @to_delete, $m2fn;
 		push @bt2_args, "-2 $m2fn";
+		# Create named pipe 2 for writing
+		if(!$no_pipes) {
+			mkfifo($m2fn, 0700) || die "Error: mkfifo($m2fn) failed.";
+		}
 		$pid = 0;
 		$pid = fork() unless $no_pipes;
 		if($pid == 0) {
 			# Open named pipe 2 for writing
-			if(!$no_pipes) {
-				mkfifo($m2fn, 0700) || die "Error: mkfifo($m2fn) failed.";
-			}
 			open(my $ofh, ">$m2fn") || die "Can't open '$m2fn' for writing";
 			for my $ifn (@mate2s) { cat_file($ifn, $ofh); }
 			close($ofh);
@@ -304,13 +314,14 @@ if(wrapInput(\@unps, \@mate1s, \@mate2s)) {
 		my $ufn = "$temp_dir/$$.unp";
 		push @to_delete, $ufn;
 		push @bt2_args, "-U $ufn";
+		# Create named pipe 2 for writing
+		if(!$no_pipes) {
+			mkfifo($ufn, 0700) || die "Error: mkfifo($ufn) failed.";
+		}
 		my $pid = 0;
 		$pid = fork() unless $no_pipes;
 		if($pid == 0) {
 			# Open named pipe 2 for writing
-			if(!$no_pipes) {
-				mkfifo($ufn, 0700) || die "Error: mkfifo($ufn) failed.";
-			}
 			open(my $ofh, ">$ufn") || die "Can't open '$ufn' for writing";
 			for my $ifn (@unps) { cat_file($ifn, $ofh); }
 			close($ofh);
@@ -335,7 +346,7 @@ if(defined($ref_str)) {
 	print {$ofh} ">1\n$ref_str\n";
 	close($ofh);
 	push @to_delete, $ofn;
-	system("$Bin/bowtie2-build $ofn $ofn") == 0 ||
+	system("$build_bin $ofn $ofn") == 0 ||
 		die "Error: bowtie2-build returned non-0 exit level";
 	push @bt2_args, ("--index", "$ofn");
 	push @to_delete, ("$ofn.1.bt2", "$ofn.2.bt2", "$ofn.3.bt2", "$ofn.4.bt2",
@@ -350,7 +361,7 @@ if($verbose) {
 my $debug_str = ($debug ? "-debug" : "");
 
 # Construct command invoking bowtie2-align
-my $cmd = "$Bin/bowtie2-align$debug_str --wrapper basic-0 ".join(" ", @bt2_args);
+my $cmd = "$align_prog$debug_str --wrapper basic-0 ".join(" ", @bt2_args);
 
 # Possibly add read input on an anonymous pipe
 $cmd = "$readpipe $cmd" if defined($readpipe);
@@ -401,7 +412,6 @@ if(defined($cap_out)) {
 			}
 		}
 	}
-	my $passthru = scalar(keys %read_fns) > 0;
 	while(<BT>) {
 		chomp;
 		my $filt = 0;
@@ -410,45 +420,45 @@ if(defined($cap_out)) {
 			my $tab1_i = index($_, "\t") + 1;
 			my $tab2_i = index($_, "\t", $tab1_i);
 			my $fl = substr($_, $tab1_i, $tab2_i - $tab1_i);
-			my @ts = split(/\t/, $_);
 			my $unal = ($fl & 4) != 0;
-			if($passthru) {
-				# Parse the passthrough output
-				my $xrii = index($_, "XR:Z:");
-				$xrii > -1 || die;
-				my $xri = $xrii + 5; # skip over XR:Z:
-				my $xrf = index($_, "\t", $xri);
-				$xrf = length($_) if $xrf == -1;
-				my $read = substr($_, $xri, $xrf - $xri);
-				my $mate1 = (($fl &  64) != 0);
-				my $mate2 = (($fl & 128) != 0);
-				my $unp = !$mate1 && !$mate2;
-				my $pair = !$unp;
-				if((defined($read_fhs{un}) || defined($read_fhs{al})) && $unp) {
-					if($unal) {
-						# Failed to align
-						print {$read_fhs{un}} unescape($read) if defined($read_fhs{un});
-					} else {
-						# Aligned
-						print {$read_fhs{al}} unescape($read) if defined($read_fhs{al});
-					}
-				}
-				if((defined($read_fhs{"un-conc"}) || defined($read_fhs{"al-conc"})) && $pair) {
-					my $conc  = (($fl &   2) != 0);
-					if     ($conc && $mate1) {
-						print {$read_fhs{"al-conc"}{1}} unescape($read) if defined($read_fhs{"al-conc"});
-					} elsif($conc && $mate2) {
-						print {$read_fhs{"al-conc"}{2}} unescape($read) if defined($read_fhs{"al-conc"});
-					} elsif(!$conc && $mate1) {
-						print {$read_fhs{"un-conc"}{1}} unescape($read) if defined($read_fhs{"un-conc"});
-					} elsif(!$conc && $mate2) {
-						print {$read_fhs{"un-conc"}{2}} unescape($read) if defined($read_fhs{"un-conc"});
-					}
-				}
-				# Remove the passthrough string
-				substr($_, $xrii - 1) = "";
-			}
 			$filt = 1 if $no_unal && $unal;
+			if($passthru) {
+				if($filt) {
+					# Next line is read with some whitespace escaped, which we
+					# ignore b/c the record is filtered out by --no-unal
+					my $l = <BT>;
+				} else {
+					my $mate1 = (($fl &  64) != 0);
+					my $mate2 = (($fl & 128) != 0);
+					my $unp = !$mate1 && !$mate2;
+					my $pair = !$unp;
+					# Next line is read with some whitespace escaped
+					my $l = <BT>;
+					chomp($l);
+					$l =~ s/%(..)/chr(hex($1))/eg;
+					if((defined($read_fhs{un}) || defined($read_fhs{al})) && $unp) {
+						if($unal) {
+							# Failed to align
+							print {$read_fhs{un}} $l if defined($read_fhs{un});
+						} else {
+							# Aligned
+							print {$read_fhs{al}} $l if defined($read_fhs{al});
+						}
+					}
+					if((defined($read_fhs{"un-conc"}) || defined($read_fhs{"al-conc"})) && $pair) {
+						my $conc  = (($fl &   2) != 0);
+						if     ($conc && $mate1) {
+							print {$read_fhs{"al-conc"}{1}} $l if defined($read_fhs{"al-conc"});
+						} elsif($conc && $mate2) {
+							print {$read_fhs{"al-conc"}{2}} $l if defined($read_fhs{"al-conc"});
+						} elsif(!$conc && $mate1) {
+							print {$read_fhs{"un-conc"}{1}} $l if defined($read_fhs{"un-conc"});
+						} elsif(!$conc && $mate2) {
+							print {$read_fhs{"un-conc"}{2}} $l if defined($read_fhs{"un-conc"});
+						}
+					}
+				}
+			}
 		}
 		print {$ofh} "$_\n" if !$filt;
 	}
@@ -460,4 +470,18 @@ if(defined($cap_out)) {
 	$ret = system($cmd);
 }
 if(!$keep) { for(@to_delete) { unlink($_); } }
-exit $ret >> 8;
+
+if ($ret == -1) {
+    print STDERR "Failed to execute bowtie2-align: $!\n";
+	exit 1;
+} elsif ($ret & 127) {
+	my $signm = "(unknown)";
+	$signm = $signame[$ret & 127] if defined($signame[$ret & 127]);
+	my $ad = "";
+	$ad = "(core dumped)" if (($ret & 128) != 0);
+    printf STDERR "bowtie2-align died with signal %d (%s) $ad\n", ($ret & 127), $signm;
+	exit 1;
+} elsif($ret != 0) {
+	printf STDERR "bowtie2-align exited with value %d\n", ($ret >> 8);
+}
+exit ($ret >> 8);
