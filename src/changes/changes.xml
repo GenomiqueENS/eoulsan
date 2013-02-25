@@ -410,6 +410,9 @@ of reads that reject each filter like in local mode.
                 Enable a new locker for the reads mapping step in Hadoop mode that avoid to limit
                 the number of maximal mapper tasks of a tasktracker to 2.
             </action>
+            <action dev="jourdren" type="update">
+                The default Hadoop version in AWS Elastic MapReduce mode is now 1.0.3.
+            </action>
          </release>
 
 	</body>

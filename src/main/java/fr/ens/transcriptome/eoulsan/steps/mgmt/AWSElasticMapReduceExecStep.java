@@ -82,7 +82,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   private String awsSecretKey;
 
   /** Version of hadoop to use with AWS Elastic MapReduce. */
-  private String hadoopVersion = "0.20";
+  private String hadoopVersion = "1.0.3";
 
   /** Number of instance to use with AWS Elastic MapReduce. */
   private int nInstances = -1;
