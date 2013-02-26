@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMParser;
@@ -47,13 +48,15 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
@@ -65,6 +68,9 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
   static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
@@ -72,7 +78,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   private final SAMParser parser = new SAMParser();
   private String counterGroup;
-  private ReadAlignmentsFilter filter;
+  private MultiReadAlignmentsFilter filter;
 
   private Text outKey = new Text();
   private Text outValue = new Text();
@@ -122,6 +128,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       this.filter =
           mrafb.getAlignmentsFilter(new HadoopReporter(context),
               this.counterGroup);
+      LOGGER.info("Read alignments filters to apply: "
+          + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());

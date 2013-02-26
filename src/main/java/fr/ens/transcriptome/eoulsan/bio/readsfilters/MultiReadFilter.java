@@ -117,10 +117,25 @@ public class MultiReadFilter implements ReadFilter {
   public void init() {
   }
 
+  /**
+   * Get the name of the filters.
+   * @return a list with the names of the filters
+   */
+  public List<String> getFilterNames() {
+
+    final List<String> result = newArrayList();
+    for (ReadFilter f : this.list)
+      result.add(f.getName());
+
+    return result;
+  }
+
   @Override
   public String toString() {
 
-    return this.getClass().getSimpleName() + "{list=" + this.list + "}";
+    return this.getClass().getSimpleName()
+        + "{incrementer=" + this.incrementer + ",counterGroup="
+        + this.counterGroup + " , list=" + this.list + "}";
   }
 
   //

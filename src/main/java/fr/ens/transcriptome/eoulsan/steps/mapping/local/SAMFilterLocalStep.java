@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
+
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
@@ -44,6 +46,7 @@ import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -89,8 +92,10 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
             try {
 
               // Get the read filter
-              final ReadAlignmentsFilter filter =
+              final MultiReadAlignmentsFilter filter =
                   getAlignmentsFilter(reporter, COUNTER_GROUP);
+              LOGGER.info("Read alignments filters to apply: "
+                  + Joiner.on(", ").join(filter.getFilterNames()));
 
               resultString = filterSample(context, sample, reporter, filter);
 
