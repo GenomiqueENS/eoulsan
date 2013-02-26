@@ -170,7 +170,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TXT};
+    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TSV};
   }
 
   @Override

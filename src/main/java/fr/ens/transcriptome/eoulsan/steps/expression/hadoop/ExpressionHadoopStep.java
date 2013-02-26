@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_TSAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -197,7 +197,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TSV,
             sample).getSourceWithoutExtension()
             + ".tmp"));
 
@@ -316,7 +316,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TSV,
             sample).getSourceWithoutExtension()
             + ".tmp"));
 
@@ -588,14 +588,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TSV, sample));
 
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
       fetc.loadPreResults(
           new DataFile(context
-              .getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
+              .getOutputDataFile(EXPRESSION_RESULTS_TSV, sample)
               .getSourceWithoutExtension()
               + ".tmp").open(), readsUsed);
 
@@ -626,7 +626,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TSV, sample));
 
       fefc.initializeExpressionResults();
 

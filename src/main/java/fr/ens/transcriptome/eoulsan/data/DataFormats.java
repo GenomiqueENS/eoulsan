@@ -102,7 +102,7 @@ public class DataFormats {
       .getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
-  public static final DataFormat EXPRESSION_RESULTS_TXT = registry
+  public static final DataFormat EXPRESSION_RESULTS_TSV = registry
       .getDataFormatFromName("expression_results_tsv");
 
   /** Annotation data format. */
