@@ -638,7 +638,7 @@ densityplotRNA <- function(target, outpath = "", out=FALSE){
 	}
 	# plot density
 	plot(density(log2(sortedTarget$counts[,1]+1)), col=bioGroupColors[1],
-			main=paste(sortedTarget$projectName, "density plot", sep=" ")
+			main=paste(sortedTarget$projectName, "log2(count+1) density plot", sep=" ")
 	)
 	bandWidth <- density(log2(sortedTarget$counts[,1]+1))$bw
 	for(i in 2:length(sortedTarget$counts[1,])){
