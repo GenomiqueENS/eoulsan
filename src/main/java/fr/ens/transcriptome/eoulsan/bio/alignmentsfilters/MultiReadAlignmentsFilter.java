@@ -115,6 +115,27 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   public void init() {
   }
 
+  /**
+   * Get the name of the filters.
+   * @return a list with the names of the filters
+   */
+  public List<String> getFilterNames() {
+
+    final List<String> result = newArrayList();
+    for (ReadAlignmentsFilter f : this.list)
+      result.add(f.getName());
+
+    return result;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{incrementer=" + this.incrementer + ",counterGroup="
+        + this.counterGroup + " , list=" + this.list + "}";
+  }
+
   //
   // Constructors
   //
@@ -147,18 +168,6 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
     this(null, null, filters);
   }
-
-  @Override
-  public String toString() {
-
-    return this.getClass().getSimpleName()
-        + "{incrementer=" + this.incrementer + ",counterGroup="
-        + this.counterGroup + " , list=" + this.list + "}";
-  }
-
-  //
-  // Constructor
-  //
 
   /**
    * Public constructor.

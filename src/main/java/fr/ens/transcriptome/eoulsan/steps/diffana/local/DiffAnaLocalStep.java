@@ -88,7 +88,7 @@ public class DiffAnaLocalStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TXT};
+    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TSV};
   }
 
   @Override
@@ -103,7 +103,7 @@ public class DiffAnaLocalStep extends AbstractStep {
       final long startTime = System.currentTimeMillis();
       final StringBuilder log = new StringBuilder();
 
-      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TXT;
+      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
 
       String rServeName = null;
       final boolean rServeEnable =

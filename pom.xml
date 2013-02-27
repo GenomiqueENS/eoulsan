@@ -528,15 +528,10 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>integrate-archives-site</id>
-						<phase>install</phase>
+						<id>replace-variables-site</id>
+						<phase>site</phase>
 						<configuration>
-							<tasks unless="distrib.package.compression.skip">
-
-								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
-
-								<mkdir dir="${basedir}/target/site" />
-
+							<tasks>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.url}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
@@ -572,6 +567,22 @@
 									<include name="**/*.rss"/>
 									<replacetoken>@@@DATE@@@</replacetoken>
 								</replace>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>integrate-archives-site</id>
+						<phase>install</phase>
+						<configuration>
+							<tasks unless="distrib.package.compression.skip">
+
+								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
+
+								<mkdir dir="${basedir}/target/site" />
+
 								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.gz"
 									todir="${basedir}/target/site"/>
 								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.gz"

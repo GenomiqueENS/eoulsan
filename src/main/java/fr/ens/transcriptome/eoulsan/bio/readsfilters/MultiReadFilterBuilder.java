@@ -159,7 +159,7 @@ public class MultiReadFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public ReadFilter getReadFilter() throws EoulsanException {
+  public MultiReadFilter getReadFilter() throws EoulsanException {
 
     for (ReadFilter f : this.listFilter)
       f.init();
@@ -177,7 +177,7 @@ public class MultiReadFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public ReadFilter getReadFilter(final ReporterIncrementer incrementer,
+  public MultiReadFilter getReadFilter(final ReporterIncrementer incrementer,
       final String counterGroup) throws EoulsanException {
 
     for (ReadFilter f : this.listFilter)

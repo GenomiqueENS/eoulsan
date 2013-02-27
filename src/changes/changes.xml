@@ -413,6 +413,12 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="update">
                 The default Hadoop version in AWS Elastic MapReduce mode is now 1.0.3.
             </action>
+            <action dev="jourdren" type="fix" issue="22">
+                The order of the reads filters in parameter file is not the order the filter apply on the reads.
+            </action>
+            <action dev="jourdren" type="update">
+                In createdesign command, rename some command line option. Warning: -s is now for the path to the samplesheet and -l is for creating symbolic links.
+            </action>
          </release>
 
 	</body>

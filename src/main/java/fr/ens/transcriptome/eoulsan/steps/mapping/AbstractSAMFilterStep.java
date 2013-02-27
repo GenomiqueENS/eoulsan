@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -131,7 +131,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected ReadAlignmentsFilter getAlignmentsFilter(
+  protected MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 

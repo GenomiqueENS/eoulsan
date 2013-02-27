@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -204,7 +205,7 @@ public class Utils {
    */
   public static <K, V> Map<K, V> newLinkedHashMap() {
 
-    return new HashMap<K, V>();
+    return new LinkedHashMap<K, V>();
   }
 
   /**

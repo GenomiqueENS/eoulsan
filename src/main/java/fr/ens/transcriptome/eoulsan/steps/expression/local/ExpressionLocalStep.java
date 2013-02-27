@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 
 import java.io.FileNotFoundException;
@@ -89,7 +89,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
         // Get final expression file
         final DataFile expressionFile =
-            context.getOutputDataFile(EXPRESSION_RESULTS_TXT, s);
+            context.getOutputDataFile(EXPRESSION_RESULTS_TSV, s);
 
         // Expression counting
         count(context, counter, annotationFile, alignmentFile, expressionFile,

@@ -421,7 +421,7 @@ public class AWSElasticMapReduceJob {
 
     // Set EC2 Key name
     if (this.ec2KeyName != null)
-      this.runFlowRequest.getInstances().setEc2KeyName("emr-lolo-01");
+      this.runFlowRequest.getInstances().setEc2KeyName(this.ec2KeyName);
   }
 
   /**
