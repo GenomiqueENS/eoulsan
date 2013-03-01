@@ -421,5 +421,11 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
+         <release version="1.2.2" description="Eoulsan 1.2.2 release" date="2013-03-01">
+            <action dev="jourdren" type="fix">
+                Fix malformed sample parameter file param-local.xml
+            </action>
+         </release>
+
 	</body>
 </document>
