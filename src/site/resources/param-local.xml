@@ -112,10 +112,11 @@
                                 <name>disp.est.sharing.mode</name>
                                 <value>maximum</value>
                         </parameter>                                 
+                        <parameter>                                 
                                 <name>disp.est.fit.type</name>
                                 <value>local</value>
                         </parameter>
-            <parameters/>
+                </parameters>
         </step>
 
     </steps>
