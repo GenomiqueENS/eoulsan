@@ -6,7 +6,7 @@
 	<groupId>fr.ens.transcriptome</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>1.2.2</version>
+	<version>1.2.3-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
