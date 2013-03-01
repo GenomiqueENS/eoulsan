@@ -400,7 +400,7 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
-         <release version="1.2.1" description="Eoulsan 1.2.1 release" date="TBD">
+         <release version="1.2.1" description="Eoulsan 1.2.1 release" date="2013-03-01">
             <action dev="jourdren" type="update">
                 Add new configuration options for launching AWS EMR clusters 
                 (enabling debugging mode, EC2 key pair key to enable ssh connection to remote cluster
