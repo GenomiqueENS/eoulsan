@@ -27,7 +27,7 @@
 		<section name="Differential analysis step">
 
 			<p>This step allow to perform differential analysis on expression
-				step results.
+				step results. This step is based on the <a href="http://bioconductor.org/packages/2.10/bioc/html/DESeq.html">DESeq package</a> of <a href="http://bioconductor.org/">Bioconductor</a>.
 			</p>
 
 			<ul>
@@ -116,9 +116,11 @@
 							empirical dispersion value as if all samples were 
 							replicates of a single condition. This can be done 
 							even if there are no biological replicates. 
-							This method can lead to loss of power; see the 
-							vignette for details. The single estimated dispersion 
-							condition is called "blind" and used for all samples.
+							This method can lead to loss of power; see the <a 
+							href="http://bioconductor.org/packages/2.10/bioc/vignettes/DESeq/inst/doc/DESeq.pdf"
+                                                        >DESeq vignette</a> for details. The single estimated dispersion 
+							condition is called "blind" and used for all samples. 
+							<u>If no replicate is available use this parameter</u>.
 							</li>
 						</ul>
 						</li>
@@ -139,6 +141,7 @@
 							few replicates, and when you are not too concerned 
 							about false positives from dispersion outliers, 
 							i.e. genes with an unusually high variability.
+							<u>If no replicate is available use this parameter</u>.
 							</li>
 							<li>
 							<b>maximum</b> : take the maximum of the two values.
@@ -184,9 +187,9 @@
 				as statistical
 				backend. Differential analysis module was tested with
 				R 2.15 and DESeq
-				1.8.3.
+				1.8.3 (Bioconductor 2.10).
 				You need to install DESeq R packages on your
-				computer or Rserve server:
+				computer or on a Rserve server:
 			</p>
 
 			<source>
