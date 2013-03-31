@@ -24,18 +24,18 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import com.google.common.collect.Lists;
+
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve an Action
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ActionService {
+public class ActionService extends ServiceNameLoader<Action> {
 
   private static ActionService service;
 
@@ -57,35 +57,24 @@ public class ActionService {
   }
 
   //
-  // Instance methods
+  // Protected methods
   //
 
-  /**
-   * Get an Action.
-   * @param actionName name of the mapper to get
-   * @return an Action
-   */
-  public Action getAction(final String actionName) {
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    if (actionName == null) {
-      return null;
-    }
-
-    final String actionNameLower = actionName.toLowerCase();
-
-    final Iterator<Action> it = ServiceLoader.load(Action.class).iterator();
-
-    while (it.hasNext()) {
-
-      final Action action = it.next();
-
-      if (actionNameLower.equals(action.getName().toLowerCase())) {
-        return action;
-      }
-    }
-
-    return null;
+    return true;
   }
+
+  @Override
+  protected String getMethodName() {
+
+    return "getName";
+  }
+
+  //
+  // Instance methods
+  //
 
   /**
    * Get the list of actions available.
@@ -94,11 +83,9 @@ public class ActionService {
   public List<Action> getActions() {
 
     final List<Action> result = Lists.newArrayList();
-    final Iterator<Action> it = ServiceLoader.load(Action.class).iterator();
 
-    while (it.hasNext()) {
-      result.add(it.next());
-    }
+    for (String actionName : service.getServiceClasses().keySet())
+      result.add(newService(actionName));
 
     return result;
   }
@@ -110,7 +97,9 @@ public class ActionService {
   /**
    * Private constructor.
    */
-  private ActionService() {
+  protected ActionService() {
+
+    super(Action.class);
   }
 
 }
