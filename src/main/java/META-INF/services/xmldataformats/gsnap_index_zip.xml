@@ -1,7 +1,7 @@
 <dataformat>
-  <name>gmap_index_zip</name>
+  <name>gsnap_index_zip</name>
   <description>gsnap index zipped format</description>
-  <type>gmap_index</type>
+  <type>gsnap_index</type>
   <content-type>application/zip</content-type>
   <generator mapperName="gsnap" >fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
   <extensions>

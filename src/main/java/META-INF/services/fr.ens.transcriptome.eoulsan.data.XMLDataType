@@ -10,7 +10,7 @@ filtered_mapper_results.xml
 filtered_reads.xml
 genome_desc.xml
 genome.xml
-gmap_index.xml
+gsnap_index.xml
 mapper_results_index.xml
 mapper_results.xml
 reads.xml
