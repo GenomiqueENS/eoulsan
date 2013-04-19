@@ -1,7 +1,7 @@
 		\subsubsection{Differential analysis calling}
 
 <<diffAna>>=
-anaDiffCinetic(countDataSet, ref, outPath)
+anaDiff_Cinetic(countDataSet, ref, "${METHOD}", target$projectName, outPath)
 @
 
 \section{Session info}

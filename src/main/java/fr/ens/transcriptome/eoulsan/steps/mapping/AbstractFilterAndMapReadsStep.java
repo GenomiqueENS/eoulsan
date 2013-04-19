@@ -61,8 +61,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
   private boolean pairEnd;
 
-  private MultiReadFilterBuilder readFilterBuilder;
-  private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
+  private Map<String, String> readsFiltersParameters;
+  private Map<String, String> alignmentsFiltersParameters;
   private SequenceReadsMapper mapper;
   private String mapperArguments;
   private int hadoopThreads = -1;
@@ -162,8 +162,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    // NEW VERSION...
-
     String mapperName = null;
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
     final MultiReadAlignmentsFilterBuilder mrafb =
@@ -174,31 +172,25 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       if ("mapper".equals(p.getName()))
         mapperName = p.getStringValue();
 
-      else if ("mapperArguments".equals(p.getName())
+      else if ("mapperarguments".equals(p.getName())
           || "mapper.arguments".equals(p.getName()))
         this.mapperArguments = p.getStringValue();
       else if ("hadoop.threads".equals(p.getName()))
         this.hadoopThreads = p.getIntValue();
 
-      // read filters parameters
-      else if ("paircheck".equals(p.getName())
-          || "pairend.accept.pairend".equals(p.getName())
-          || "pairend.accept.accept.singlend".equals(p.getName())
-          || "illuminaid".equals(p.getName())
-          || "quality.threshold".equals(p.getName())
-          || "qualityThreshold".equals(p.getName())
-          || "trim.length.threshold".equals(p.getName())
-          || "lengthThreshold".equals(p.getName())) {
-        mrfb.addParameter(
-            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
-      }
-
-      // read alignments filters parameters
       else {
+
+        // Add read filters parameters
+        if (!(mrfb.addParameter(
+            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue(), true) ||
+        // Add read alignments filters parameters
         mrafb.addParameter(
             AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
+            p.getStringValue(), true))) {
+
+          throw new EoulsanException("Unknown parameter: " + p.getName());
+        }
       }
 
     }
@@ -207,8 +199,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     mrfb.getReadFilter();
     mrafb.getAlignmentsFilter();
 
-    this.readFilterBuilder = mrfb;
-    this.readAlignmentsFilterBuilder = mrafb;
+    this.readsFiltersParameters = mrfb.getParameters();
+    this.alignmentsFiltersParameters = mrafb.getParameters();
 
     if (mapperName == null)
       throw new EoulsanException("No mapper set.");
@@ -238,7 +230,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected Map<String, String> getReadFilterParameters() {
 
-    return this.readFilterBuilder.getParameters();
+    return this.readsFiltersParameters;
   }
 
   /**
@@ -247,7 +239,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected Map<String, String> getAlignmentsFilterParameters() {
 
-    return this.readAlignmentsFilterBuilder.getParameters();
+    return this.alignmentsFiltersParameters;
   }
 
 }

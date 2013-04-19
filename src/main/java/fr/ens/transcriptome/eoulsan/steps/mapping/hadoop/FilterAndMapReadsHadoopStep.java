@@ -26,11 +26,12 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -148,10 +149,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       inputDataFile =
           context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ},
               sample);
-    
-//    final DataFile inputDataFile =
-//        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
-//            READS_TFQ}, sample);
+
+    // final DataFile inputDataFile =
+    // context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
+    // READS_TFQ}, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -177,12 +178,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         + sample.getMetadata().getFastqFormat());
 
     // Set read filters parameters
-    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
-
-      jobConf.set(
-          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
+    addParametersToJobConf(getReadFilterParameters(),
+        READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // Set pair end mode
     // jobConf.set(ReadsMapperMapper.PAIR_END_KEY, "" + isPairend());
@@ -200,7 +197,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
-    
+
     // Set pair end or single end mode
     if (context.getDataFileCount(READS_FASTQ, sample) == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
@@ -209,8 +206,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the number of threads for the mapper
     if (getMapperHadoopThreads() < 0) {
-      jobConf
-          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
+          + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
@@ -226,18 +223,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Alignment filtering
     //
 
-    // Set counter group
-    // jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
-    // Integer.toString(getMappingQualityThreshold()));
-
     // Set read alignments filters parameters
-    for (Map.Entry<String, String> e : getAlignmentsFilterParameters()
-        .entrySet()) {
-
-      jobConf.set(
-          SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
+    addParametersToJobConf(getAlignmentsFilterParameters(),
+        SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
@@ -298,7 +286,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final Context context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
-    
+
     // get input file count for the sample
     final int inFileCount =
         context.getDataFileCount(DataFormats.READS_FASTQ, sample);

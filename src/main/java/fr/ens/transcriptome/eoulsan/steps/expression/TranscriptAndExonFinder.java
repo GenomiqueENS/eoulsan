@@ -229,7 +229,7 @@ public class TranscriptAndExonFinder {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof Transcript))
+      if (!(o instanceof Transcript))
         return false;
 
       final Transcript t = (Transcript) o;
@@ -415,7 +415,7 @@ public class TranscriptAndExonFinder {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof Exon))
+      if (!(o instanceof Exon))
         return false;
 
       final Exon that = (Exon) o;

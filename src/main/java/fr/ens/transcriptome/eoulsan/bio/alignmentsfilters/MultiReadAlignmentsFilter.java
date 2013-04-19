@@ -43,15 +43,15 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   private final List<ReadAlignmentsFilter> list = newArrayList();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
-  
+
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
     boolean pairedEnd = false;
-    
+
     if (records == null || records.isEmpty())
       return;
-    
+
     if (records.get(0).getReadPairedFlag())
       pairedEnd = true;
 
@@ -63,14 +63,14 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
       final int sizeAfter = records.size();
       final int diff = sizeBefore - sizeAfter;
 
-      if (diff > 0 && incrementer != null)
-        
+      if (diff > 0 && this.incrementer != null)
+
         // paired-end mode
         if (pairedEnd)
           this.incrementer.incrCounter(counterGroup, "alignments rejected by "
-              + af.getName() + " filter", diff/2);
+              + af.getName() + " filter", diff / 2);
 
-      // single-end mode
+        // single-end mode
         else
           this.incrementer.incrCounter(counterGroup, "alignments rejected by "
               + af.getName() + " filter", diff);
@@ -113,6 +113,27 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
   @Override
   public void init() {
+  }
+
+  /**
+   * Get the name of the filters.
+   * @return a list with the names of the filters
+   */
+  public List<String> getFilterNames() {
+
+    final List<String> result = newArrayList();
+    for (ReadAlignmentsFilter f : this.list)
+      result.add(f.getName());
+
+    return result;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{incrementer=" + this.incrementer + ",counterGroup="
+        + this.counterGroup + " , list=" + this.list + "}";
   }
 
   //

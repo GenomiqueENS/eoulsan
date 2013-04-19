@@ -1,0 +1,6 @@
+<datatype>
+  <name>gsnap_index</name>
+  <description>gsnap index type</description>
+  <prefix>gsnap_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+</datatype>

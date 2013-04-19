@@ -67,8 +67,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   // Parameters keys
-  static final String GENOME_DESC_PATH_KEY =
-      Globals.PARAMETER_PREFIX + ".expression.genome.desc.file";
+  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
+      + ".expression.genome.desc.file";
 
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -93,6 +93,10 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
       final Context context) throws IOException, InterruptedException {
 
     final String line = value.toString();
+
+    // Discard SAM headers
+    if (line.length() > 0 && line.charAt(0) == '@')
+      return;
 
     final SAMRecord samRecord;
 

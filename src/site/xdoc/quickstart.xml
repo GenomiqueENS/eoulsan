@@ -156,7 +156,9 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 $ eoulsan.sh exec param-local.xml design.txt
 </source>
 
-            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R and related packages (See <a href="./step-diffana.html">differential analysis step</a> for more information).</p>
+            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R 
+            (or use an RServe server) and related packages (See <a href="./step-diffana.html">differential analysis step</a> 
+            for more information).</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>

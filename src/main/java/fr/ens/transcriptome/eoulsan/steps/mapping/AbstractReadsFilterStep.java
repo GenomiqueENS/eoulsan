@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -50,14 +50,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   protected static final String COUNTER_GROUP = "reads_filtering";
 
-  /** filter reads length threshold. */
-  public static final int LENGTH_THRESHOLD = 15;
-
-  /** filter reads quality threshold. */
-  public static final double QUALITY_THRESHOLD = 15;
-
-  private MultiReadFilterBuilder readFilterBuilder;
-
+  private Map<String, String> readsFiltersParameters;
   private int localThreads;
   private int maxLocalThreads;
 
@@ -107,7 +100,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     // Force parameter checking
     mrfb.getReadFilter();
 
-    this.readFilterBuilder = mrfb;
+    this.readsFiltersParameters = mrfb.getParameters();
   }
 
   /**
@@ -136,10 +129,14 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected ReadFilter getReadFilter(final ReporterIncrementer incrementer,
-      final String counterGroup) throws EoulsanException {
+  protected MultiReadFilter getReadFilter(
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws EoulsanException {
 
-    return this.readFilterBuilder.getReadFilter(incrementer, counterGroup);
+    // As filters are not thread safe, create a new MultiReadFilterBuilder
+    // with a new instance of each filter
+    return new MultiReadFilterBuilder(this.readsFiltersParameters)
+        .getReadFilter(incrementer, counterGroup);
   }
 
   /**
@@ -148,7 +145,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    */
   protected Map<String, String> getReadFilterParameters() {
 
-    return this.readFilterBuilder.getParameters();
+    return this.readsFiltersParameters;
   }
 
   /**

@@ -60,7 +60,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
-import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
+import fr.ens.transcriptome.eoulsan.util.locker.Locker;
+import fr.ens.transcriptome.eoulsan.util.locker.TicketLocker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -92,7 +93,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   // private File archiveIndexFile;
 
-  private ExecLock lock;
+  private Locker lock;
 
   private SequenceReadsMapper mapper;
   private List<String> fields = newArrayList();
@@ -197,7 +198,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set lock
-    this.lock = new ExecLock(this.mapper.getMapperName().toLowerCase());
+    this.lock =
+        new TicketLocker(this.mapper.getMapperName().toLowerCase(), 9999,
+            context.getTaskAttemptID().toString());
 
     // Get Mapper arguments
     final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
@@ -272,23 +275,21 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
+    // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
     lock.lock();
-    ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
-        .toLowerCase());
-
-    LOGGER
-        .info("Wait "
-            + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                - waitStartTime) + " before running "
-            + this.mapper.getMapperName());
-
-    // Close the data file
-    this.mapper.closeInput();
-
-    context.setStatus("Run " + this.mapper.getMapperName());
-
     try {
+      ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
+          .toLowerCase());
+
+      LOGGER.info("Wait "
+          + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+              - waitStartTime) + " before running "
+          + this.mapper.getMapperName());
+
+      // Close the data file
+      this.mapper.closeInput();
+
+      context.setStatus("Run " + this.mapper.getMapperName());
 
       // Process to mapping
       mapper.map();
@@ -307,8 +308,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
-
-    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
     if (!samOutputFile.delete())
@@ -336,12 +335,21 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(resultFile);
 
+    final int taskId = context.getTaskAttemptID().getTaskID().getId();
+
     int entriesParsed = 0;
 
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
+      if ("".equals(trimmedLine))
+        continue;
+
+      // Test if line is an header line
+      final boolean headerLine = trimmedLine.charAt(0) == '@';
+
+      // Only write header lines once (on the first output file)
+      if (headerLine && taskId > 0)
         continue;
 
       final int tabPos = line.indexOf('\t');
@@ -351,11 +359,15 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         outKey.set(line.substring(0, tabPos));
         outValue.set(line.substring(tabPos + 1));
 
-        entriesParsed++;
-
         context.write(outKey, outValue);
-        context.getCounter(this.counterGroup,
-            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+
+        // Increment counters if not header
+        if (!headerLine) {
+
+          entriesParsed++;
+          context.getCounter(this.counterGroup,
+              OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+        }
       }
 
     }

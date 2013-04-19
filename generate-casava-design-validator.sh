@@ -2,6 +2,7 @@
 
 GWT_PATH=~/Téléchargements/gwt-2.4.0
 PROJECT_NAME=DesignValidator
+GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
 
 BASEDIR=`dirname $0`
 if [ ! -d $BASEDIR/target ]; then
@@ -276,7 +277,7 @@ public class $PROJECT_NAME implements EntryPoint {
 }
 EOF
 
-cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
+cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 <!doctype html>
 <!-- The DOCTYPE declaration above will set the     -->
 <!-- browser's rendering engine into                -->
@@ -323,6 +324,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
       </div>
     </noscript>
 
+<h4 align="right">__VERSION__</h4>
 <h1>Casava design validator</h1>
 
     <table align="center">
@@ -357,6 +359,14 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
   </body>
 </html>
 EOF
+
+if [ -z $GIT_REVISION ]; then
+	GIT_REVISION=""
+else
+	GIT_REVISION="Revision $GIT_REVISION"
+fi
+sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > $PROJECT_NAME/war/$PROJECT_NAME.html 
+rm $PROJECT_NAME/war/$PROJECT_NAME.html.tmp
 
 # Compile
 

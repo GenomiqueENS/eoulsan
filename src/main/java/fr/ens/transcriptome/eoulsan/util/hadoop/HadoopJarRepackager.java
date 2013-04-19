@@ -83,9 +83,10 @@ public final class HadoopJarRepackager {
   public static void repack(final File destJarFile) throws IOException {
 
     final HadoopJarRepackager hjr =
-        new HadoopJarRepackager(System
-            .getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY),
-            Globals.APP_NAME_LOWER_CASE + ".jar");
+        new HadoopJarRepackager(
+            System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY),
+            Globals.APP_NAME_LOWER_CASE
+                + '-' + Globals.APP_VERSION_STRING + ".jar");
 
     hjr.doIt(destJarFile);
   }
@@ -113,8 +114,9 @@ public final class HadoopJarRepackager {
         + Globals.APP_VERSION_STRING
         + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER : "")
         + "-"
-        + Integer.toHexString(System.getProperty(
-            Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim().hashCode()) + ".jar";
+        + Integer.toHexString(System
+            .getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim()
+            .hashCode()) + ".jar";
   }
 
   //

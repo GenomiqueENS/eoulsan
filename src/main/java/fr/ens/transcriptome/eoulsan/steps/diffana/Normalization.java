@@ -46,7 +46,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -84,7 +83,7 @@ public class Normalization {
   protected final File outPath;
   protected final String expressionFilesPrefix;
   protected final String expressionFilesSuffix;
-  protected final RSConnectionNewImpl rConnection;
+  protected RSConnectionNewImpl rConnection = null;
 
   //
   // Public methods
@@ -98,10 +97,10 @@ public class Normalization {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Normalization : Rserve mode");
-      runRserveRnwScript();
+      runRserveRnwScript(context);
     } else {
       getLogger().info("Normalization : local mode");
-      runLocalRnwScript();
+      runLocalRnwScript(context);
     }
   }
 
@@ -146,7 +145,8 @@ public class Normalization {
    * run Rnw script on Rserve server
    * @throws EoulsanException
    */
-  protected void runRserveRnwScript() throws EoulsanException {
+  protected void runRserveRnwScript(final Context context)
+      throws EoulsanException {
 
     try {
 
@@ -169,11 +169,14 @@ public class Normalization {
 
         putExpressionFiles(experimentSampleList);
 
-        String rScript = writeScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, true);
 
         removeExpressionFiles(experimentSampleList);
-        this.rConnection.removeFile(rScript);
+
+        if (!context.getSettings().isSaveRscripts())
+          this.rConnection.removeFile(rScript);
+
         this.rConnection.getAllFiles(outPath.toString() + "/");
       }
 
@@ -201,7 +204,8 @@ public class Normalization {
    * run Rnw script on local mode
    * @throws EoulsanException
    */
-  protected void runLocalRnwScript() throws EoulsanException {
+  protected void runLocalRnwScript(final Context context)
+      throws EoulsanException {
 
     try {
 
@@ -218,11 +222,16 @@ public class Normalization {
             "Experiment : "
                 + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        String rScript = writeScript(experimentSampleList);
+        String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);
+
+        // Remove R script if keep.rscript parameter is false
+        if (!context.getSettings().isSaveRscripts()) {
+          new File(rScript).delete();
+        }
       }
 
-    } catch (REngineException e) {
+    } catch (Exception e) {
       throw new EoulsanException("Error while running differential analysis: "
           + e.getMessage());
     }
@@ -277,9 +286,6 @@ public class Normalization {
         ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
             System.currentTimeMillis());
 
-        if (!new File(rnwScript).delete())
-          getLogger().warning("Unable to remove R script: " + rnwScript);
-
       } catch (IOException e) {
 
         throw new EoulsanException(
@@ -320,13 +326,13 @@ public class Normalization {
   }
 
   /**
-   * Write the R script
+   * Generate the R script
    * @param experimentSamplesList
    * @return String rScript
    * @throws EoulsanException
    */
-  protected String writeScript(final List<Sample> experimentSamplesList)
-      throws EoulsanException {
+  protected String generateScript(final List<Sample> experimentSamplesList,
+      final Context context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 
@@ -377,7 +383,8 @@ public class Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " normalisation";
-    final StringBuilder sb = writeRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb =
+        generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -386,19 +393,19 @@ public class Normalization {
     replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add sampleNames vector
-    writeSampleName(rSampleNames, sb);
+    generateSampleNamePart(rSampleNames, sb);
 
     // Add SampleIds vector
-    writeSampleIds(rSampleIds, sb);
+    generateSampleIdsPart(rSampleIds, sb);
 
     // Add file names vector
-    writeExpressionFileNames(sb);
+    generateExpressionFileNamesPart(sb);
 
     // Add repTechGroupVector
-    writeRepTechGroup(rRepTechGroup, sb);
+    generateRepTechGroupPart(rRepTechGroup, sb);
 
     // Add condition to R script
-    writeCondition(rCondNames, sb);
+    generateConditionPart(rCondNames, sb);
 
     // Add projectPath, outPath and projectName
     sb.append("# projectPath : path of count files directory\n");
@@ -442,7 +449,7 @@ public class Normalization {
           "normalization_"
               + experimentSamplesList.get(0).getMetadata().getExperiment()
               + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+      if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -465,8 +472,8 @@ public class Normalization {
    * @param experimentSamplesList
    * @return a stringbuilder whith Rnw preamble
    */
-  protected StringBuilder writeRnwpreamble(List<Sample> experimentSamplesList,
-      String title) {
+  protected StringBuilder generateRnwpreamble(
+      List<Sample> experimentSamplesList, String title) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX stringbuilder
@@ -519,7 +526,7 @@ public class Normalization {
    * @param rSampleNames
    * @param sb
    */
-  protected void writeSampleName(final List<String> rSampleNames,
+  protected void generateSampleNamePart(final List<String> rSampleNames,
       final StringBuilder sb) {
 
     // Add samples names to R script
@@ -545,7 +552,7 @@ public class Normalization {
    * @param rSampleIds
    * @param sb
    */
-  protected void writeSampleIds(final List<Integer> rSampleIds,
+  protected void generateSampleIdsPart(final List<Integer> rSampleIds,
       final StringBuilder sb) {
 
     // Put sample ids into R vector
@@ -564,7 +571,7 @@ public class Normalization {
    * Add expression file name vector to R script
    * @param sb
    */
-  protected void writeExpressionFileNames(StringBuilder sb) {
+  protected void generateExpressionFileNamesPart(StringBuilder sb) {
 
     // Add file names vector
     sb.append("#create file names vector\n");
@@ -579,7 +586,8 @@ public class Normalization {
    * @param rRepTechGroup
    * @param sb
    */
-  protected void writeRepTechGroup(List<String> rRepTechGroup, StringBuilder sb) {
+  protected void generateRepTechGroupPart(List<String> rRepTechGroup,
+      StringBuilder sb) {
 
     if (isTechnicalReplicates(rRepTechGroup)) {
 
@@ -616,7 +624,7 @@ public class Normalization {
    * @param rCondNames
    * @param sb
    */
-  protected void writeCondition(List<String> rCondNames, StringBuilder sb) {
+  protected void generateConditionPart(List<String> rCondNames, StringBuilder sb) {
 
     sb.append("# create condition vector\n");
     sb.append("condition <- c(");
@@ -644,6 +652,7 @@ public class Normalization {
    */
   protected void checkRepTechGroupCoherence(List<String> rRepTechGroup,
       List<String> rCondNames) throws EoulsanException {
+
     // Check repTechGroup field coherence
     Map<String, String> condRepTGMap = Maps.newHashMap();
     for (int i = 0; i < rRepTechGroup.size(); i++) {
@@ -670,17 +679,9 @@ public class Normalization {
    */
   protected String escapeUnderScore(final String s) {
 
-    StringBuilder sb = new StringBuilder();
-    String[] splittedString = s.split("");
+    String s2 = s.replace("_", "\\_");
 
-    for (String c : splittedString) {
-
-      if (c.equals("_"))
-        sb.append("\\_");
-      else
-        sb.append(c);
-    }
-    return sb.toString();
+    return s2;
   }
 
   /**
@@ -773,11 +774,13 @@ public class Normalization {
    * @param expressionFilesSuffix
    * @param outPath
    * @param rServerName
+   * @throws EoulsanException
    */
   public Normalization(final Design design,
       final File expressionFilesDirectory, final String expressionFilesPrefix,
       final String expressionFilesSuffix, final File outPath,
-      final String rServerName) {
+      final String rServerName, final boolean rServeEnable)
+      throws EoulsanException {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -804,7 +807,14 @@ public class Normalization {
 
     this.outPath = outPath;
 
-    this.rConnection = new RSConnectionNewImpl(rServerName);
+    if (rServeEnable == true) {
+
+      if (rServerName != null) {
+        this.rConnection = new RSConnectionNewImpl(rServerName);
+      } else {
+        throw new EoulsanException("Missing Rserve server name");
+      }
+    }
   }
 
 }

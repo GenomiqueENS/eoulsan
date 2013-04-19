@@ -68,4 +68,11 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
         records.removeAll(records);
     }
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
+  }
+
 }

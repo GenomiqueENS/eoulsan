@@ -37,7 +37,9 @@
   
     <section name="Expression step">
 
-      <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.</p>  
+      <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.
+      Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the 
+      implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>  
 
       <ul>
          <li><b>Name</b>: expression.</li>
@@ -59,10 +61,11 @@
 		<li><b>Optional parameters of HTSeq-count</b>:</li>
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>stranded</td><td>string</td>If "reverse", the read has to be mapped to the opposite strand as the feature. 
+		<tr><td>stranded</td><td>string</td><td>If "reverse", the read has to be mapped to the opposite strand as the feature. 
 If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature 
-regardless of whether it is mapped to the same or the opposite strand as the feature.<td></td><td>no</td></tr>
+regardless of whether it is mapped to the same or the opposite strand as the feature.</td><td>no</td></tr>
 		<tr><td>overlapmode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
+		<tr><td>removeambiguouscases</td><td>string</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
 	</table>
 
        </ul>

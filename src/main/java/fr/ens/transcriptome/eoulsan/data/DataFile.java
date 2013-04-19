@@ -408,7 +408,7 @@ public class DataFile {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof DataFile))
+    if (!(o instanceof DataFile))
       return false;
 
     final DataFile df = (DataFile) o;

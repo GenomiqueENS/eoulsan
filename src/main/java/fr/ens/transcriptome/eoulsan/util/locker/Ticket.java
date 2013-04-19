@@ -26,7 +26,10 @@ package fr.ens.transcriptome.eoulsan.util.locker;
 
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * This class define a ticket for the TicketLocker.
@@ -35,14 +38,16 @@ import java.util.Arrays;
  */
 public final class Ticket implements Comparable<Ticket>, Serializable {
 
-  static final long serialVersionUID = 2737693612431974762L;
+  private static final long serialVersionUID = -7934169474677708526L;
 
-  private static final long initTime = System.currentTimeMillis();
+  private final static DateFormat DATE_FORMAT = new SimpleDateFormat(
+      "HH:mm:ss.SSS");
 
   private final int pid;
   private final long threadId;
   private final long creationTime;
   private final long nanoCreationTime;
+  private final String description;
   private long lastActiveTime;
   private boolean working;
 
@@ -60,6 +65,10 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
 
   public long getCreationTime() {
     return this.creationTime;
+  }
+
+  public String getDescription() {
+    return this.description;
   }
 
   public long getLastActiveTime() {
@@ -92,7 +101,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof Ticket))
+    if (!(o instanceof Ticket))
       return false;
 
     final Ticket t = (Ticket) o;
@@ -138,8 +147,15 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public String toString() {
 
-    return (this.creationTime - initTime)
-        + " [" + this.pid + '.' + this.threadId + "]";
+    return DATE_FORMAT.format(new Date(this.creationTime))
+        + " "
+        + DATE_FORMAT.format(new Date(this.lastActiveTime))
+        + " "
+        + DATE_FORMAT.format(new Date(System.currentTimeMillis()
+            - this.creationTime)) + " "
+        + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid + '.'
+        + this.threadId + " "
+        + (this.description != null ? this.description : "") + "]";
   }
 
   //
@@ -164,24 +180,30 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   //
 
   public Ticket() {
+    this((String) null);
+  }
+
+  public Ticket(final String description) {
     this(getCurrentPid(), Thread.currentThread().getId(), System
-        .currentTimeMillis(), System.nanoTime(), -1, false);
+        .currentTimeMillis(), System.nanoTime(), description, -1, false);
   }
 
   public Ticket(final Ticket ticket) {
 
     this(ticket.pid, ticket.threadId, ticket.creationTime,
-        ticket.nanoCreationTime, ticket.lastActiveTime, ticket.working);
+        ticket.nanoCreationTime, ticket.description, ticket.lastActiveTime,
+        ticket.working);
   }
 
   public Ticket(final int pid, final long threadId, final long creationTime,
-      final long nanoCreationTime, final long lastActiveTime,
-      final boolean working) {
+      final long nanoCreationTime, final String description,
+      final long lastActiveTime, final boolean working) {
 
     this.pid = pid;
     this.threadId = threadId;
     this.creationTime = creationTime;
     this.nanoCreationTime = nanoCreationTime;
+    this.description = description;
     this.lastActiveTime =
         lastActiveTime == -1 ? this.creationTime : lastActiveTime;
     this.working = working;

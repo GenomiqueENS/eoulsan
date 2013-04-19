@@ -40,10 +40,10 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withHadoopVersion(final String hadoopVersion) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
-    result.setHadoopVersion(hadoopVersion);
+    this.result.setHadoopVersion(hadoopVersion);
 
     return this;
   }
@@ -54,10 +54,10 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withInstancesNumber(final int nInstances) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
-    result.setInstancesNumber(nInstances);
+    this.result.setInstancesNumber(nInstances);
 
     return this;
   }
@@ -69,10 +69,10 @@ public class AWSElasticMapReduceBuilder {
   public AWSElasticMapReduceBuilder withSlavesInstanceType(
       final String instanceType) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
-    result.setSlavesInstanceType(instanceType);
+    this.result.setSlavesInstanceType(instanceType);
 
     return this;
   }
@@ -84,10 +84,10 @@ public class AWSElasticMapReduceBuilder {
   public AWSElasticMapReduceBuilder withMasterInstanceType(
       final String instanceType) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
-    result.setMasterInstanceType(instanceType);
+    this.result.setMasterInstanceType(instanceType);
 
     return this;
   }
@@ -98,10 +98,10 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withEndpoint(final String endpoint) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
-    result.setEndpoint(endpoint);
+    this.result.setEndpoint(endpoint);
 
     return this;
   }
@@ -112,7 +112,7 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withLogPathname(final String logPathname) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setLogPathname(logPathname);
@@ -126,7 +126,7 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJarLocation(final String jarLocation) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setJarLocation(jarLocation);
@@ -140,7 +140,7 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJarArguments(final String[] jarArguments) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setJarArguments(jarArguments);
@@ -154,7 +154,7 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJobFlowName(final String jobFlowName) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setJobFlowName(jobFlowName);
@@ -168,7 +168,7 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setAWSAccessKey(AWSAccessKey);
@@ -182,10 +182,55 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
 
-    if (created)
+    if (this.created)
       throw new IllegalStateException();
 
     this.result.setAWSSecretKey(AWSSecretKey);
+
+    return this;
+  }
+
+  /**
+   * Set the number of maximal mapper tasks to use in a task tracker.
+   * @param taskTrackerMaxMapTasks the number of maximal mapper tasks to use in
+   *          a task tracker
+   */
+  public AWSElasticMapReduceBuilder withTaskTrackerMaxMapTasks(
+      final int taskTrackerMaxMapTasks) {
+
+    if (this.created)
+      throw new IllegalStateException();
+
+    this.result.setTaskTrackerMaxMapTasks(taskTrackerMaxMapTasks);
+
+    return this;
+  }
+
+  /**
+   * Set the EC2 Key pair name to use.
+   * @param ec2KeyName EC2 Key pair name to use
+   */
+  public AWSElasticMapReduceBuilder withEC2KeyName(final String ec2KeyName) {
+
+    if (this.created)
+      throw new IllegalStateException();
+
+    this.result.setEC2KeyName(ec2KeyName);
+
+    return this;
+  }
+
+  /**
+   * Set if debugging must be enabled.
+   * @param enableDebugging true if debugging is enabled
+   */
+  public AWSElasticMapReduceBuilder withDebugging(
+      final boolean enableDebugging) {
+
+    if (this.created)
+      throw new IllegalStateException();
+
+    this.result.setDebugging(enableDebugging);
 
     return this;
   }

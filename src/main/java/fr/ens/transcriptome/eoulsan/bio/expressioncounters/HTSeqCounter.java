@@ -53,7 +53,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class HTSeqCounter extends AbstractExpressionCounter {
 
-  private static final String COUNTER_NAME = "htseq-count";
+  /** Counter name. */
+  public static final String COUNTER_NAME = "htseq-count";
 
   @Override
   public String getCounterName() {
@@ -68,8 +69,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
-        getStranded(), getOverlapMode(), getGenomicType(), getAttributeId(),
-        false, 0, null, genomeDescFile, reporter, counterGroup);
+        getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
+        getGenomicType(), getAttributeId(), false, 0, null, genomeDescFile,
+        reporter, counterGroup);
 
   }
 
@@ -80,6 +82,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @param outFile output file.
    * @param stranded strand to consider.
    * @param overlapMode overlap mode to consider.
+   * @param removeAmbiguousCases if true : ambiguous cases will be removed.
    * @param featureType annotation feature type to consider.
    * @param attributeId annotation attribute id to consider.
    * @param quiet if true : suppress progress report and warnings.
@@ -96,10 +99,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   private static void countReadsInFeatures(final DataFile samFile,
       final DataFile gffFile, final DataFile outFile,
       final StrandUsage stranded, final OverlapMode overlapMode,
-      final String featureType, final String attributeId, final boolean quiet,
-      final int minAverageQual, final DataFile samOutFile,
-      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+      final boolean removeAmbiguousCases, final String featureType,
+      final String attributeId, final boolean quiet, final int minAverageQual,
+      final DataFile samOutFile, final DataFile genomeDescFile,
+      Reporter reporter, String counterGroup) throws EoulsanException,
+      IOException, BadBioEntryException {
 
     final GenomicArray<String> features =
         new GenomicArray<String>(GenomeDescription.load(genomeDescFile.open()));
@@ -241,12 +245,18 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         break;
 
       case 1:
-        final String id = fs.iterator().next();
-        counts.put(id, counts.get(id) + 1);
+        final String id1 = fs.iterator().next();
+        counts.put(id1, counts.get(id1) + 1);
         break;
 
       default:
-        ambiguous++;
+
+        if (removeAmbiguousCases) {
+          ambiguous++;
+        } else {
+          for (String id2 : fs)
+            counts.put(id2, counts.get(id2) + 1);
+        }
         break;
       }
 

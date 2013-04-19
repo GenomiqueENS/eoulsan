@@ -50,8 +50,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String MAPPER_EXECUTABLE = "gsnap_2012-07-12";
-  private static final String INDEXER_EXECUTABLE = "gmap_build_2012-07-12";
+  private static final String MAPPER_EXECUTABLE = "gsnap";
+  private static final String[] INDEXER_EXECUTABLES = new String[] {
+      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -119,13 +120,19 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.GMAP_INDEX_ZIP;
+    return DataFormats.GSNAP_INDEX_ZIP;
   }
 
   @Override
   protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
+    return null;
+  }
+
+  @Override
+  protected String[] getIndexerExecutables() {
+
+    return INDEXER_EXECUTABLES.clone();
   }
 
   @Override

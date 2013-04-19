@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.diffana;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -50,14 +50,176 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class DiffAna extends Normalization {
 
-  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
-      "/dispersionEstimationWithReplicates.Rnw";
-  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
-      "/dispersionEstimationWithoutReplicates.Rnw";
+  private static final String DISPERSION_ESTIMATION =
+      "/dispersionEstimation.Rnw";
   private static final String ANADIFF_WITH_REFERENCE =
       "/anadiffWithReference.Rnw";
   private static final String ANADIFF_WITHOUT_REFERENCE =
       "/anadiffWithoutReference.Rnw";
+
+  // dispersion estimation parameters
+  private DispersionMethod dispEstMethod;
+  private DispersionFitType dispEstFitType;
+  private DispersionSharingMode dispEstSharingMode;
+
+  //
+  // enums
+  //
+  /**
+   * Dispersion estimation method enum for DESeq differential analysis
+   */
+  public static enum DispersionMethod {
+
+    POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation method
+     * @return a string with the dispersion estimation method
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation method form its name
+     * @param name dispersion estimation method name
+     * @return a DispersionMethod or null if no DispersionMethod found for the
+     *         name
+     */
+    public static DispersionMethod getDispEstMethodFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionMethod dem : DispersionMethod.values()) {
+
+        if (dem.getName().toLowerCase().equals(lowerName)) {
+          return dem;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param method dispersion estimation method
+     */
+    DispersionMethod(String method) {
+
+      this.name = method;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation sharingMode enum for DESeq differential analysis
+   */
+  public static enum DispersionSharingMode {
+
+    FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation sharingMode name
+     * @return a string with the dispersion estimation sharingMode name
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation sharing mode form its name
+     * @param name dispersion estimation sharing mode name
+     * @return a DispersionSharingMode or null if no DispersionSharingMode found
+     *         for the name
+     */
+    public static DispersionSharingMode getDispEstSharingModeFromName(
+        final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionSharingMode desm : DispersionSharingMode.values()) {
+
+        if (desm.getName().toLowerCase().equals(lowerName)) {
+          return desm;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param name dispersion estimation sharingMode name
+     */
+    DispersionSharingMode(String name) {
+
+      this.name = name;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation fitType enum for DESeq differential analysis
+   */
+  public static enum DispersionFitType {
+
+    PARAMETRIC("parametric"), LOCAL("local");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation fitType name
+     * @return a string with the dispersion estimation fitType name
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation fit type form its name
+     * @param name dispersion estimation fit type name
+     * @return a DispersionFitType or null if no DispersionFitType found for the
+     *         name
+     */
+    public static DispersionFitType getDispEstFitTypeFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionFitType deft : DispersionFitType.values()) {
+
+        if (deft.getName().toLowerCase().equals(lowerName)) {
+          return deft;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param name dispersion estimation fitType name
+     */
+    DispersionFitType(String name) {
+
+      this.name = name;
+    }
+  }
 
   //
   // Public methods
@@ -68,10 +230,10 @@ public class DiffAna extends Normalization {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Differential analysis : Rserve mode");
-      runRserveRnwScript();
+      runRserveRnwScript(context);
     } else {
       getLogger().info("Differential analysis : local mode");
-      runLocalRnwScript();
+      runLocalRnwScript(context);
     }
   }
 
@@ -80,8 +242,8 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String writeScript(final List<Sample> experimentSamplesList)
-      throws EoulsanException {
+  protected String generateScript(final List<Sample> experimentSamplesList,
+      final Context context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 
@@ -132,7 +294,8 @@ public class DiffAna extends Normalization {
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
             + " differential analysis";
-    final StringBuilder sb = writeRnwpreamble(experimentSamplesList, pdfTitle);
+    final StringBuilder sb =
+        generateRnwpreamble(experimentSamplesList, pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -144,19 +307,19 @@ public class DiffAna extends Normalization {
     writeReferenceField(experimentSamplesList, sb);
 
     // Add sampleNames vector
-    writeSampleName(rSampleNames, sb);
+    generateSampleNamePart(rSampleNames, sb);
 
     // Add SampleIds vector
-    writeSampleIds(rSampleIds, sb);
+    generateSampleIdsPart(rSampleIds, sb);
 
     // Add file names vector
-    writeExpressionFileNames(sb);
+    generateExpressionFileNamesPart(sb);
 
     // Add repTechGroupVector
-    writeRepTechGroup(rRepTechGroup, sb);
+    generateRepTechGroupPart(rRepTechGroup, sb);
 
     // Add condition to R script
-    writeCondition(rCondNames, sb);
+    generateConditionPart(rCondNames, sb);
 
     // Add projectPath, outPath and projectName
     sb.append("# projectPath : path of count files directory\n");
@@ -173,7 +336,7 @@ public class DiffAna extends Normalization {
 
     sb.append("\\section{Analysis}\n\n");
     sb.append("<<beginAnalysis>>=\n");
-    
+
     // Add delete unexpressed gene call
     sb.append("target$counts <- deleteUnexpressedGene(target$counts)\n");
 
@@ -185,18 +348,64 @@ public class DiffAna extends Normalization {
 
     sb.append("@\n");
 
-    // Add dispersion estimation part
-    if (isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
-    } else {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
+    // generate dispersion estimation part
+    String dispersionEstimation = readStaticScript(DISPERSION_ESTIMATION);
+    if (!isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
+
+      if (!(this.dispEstMethod == DispersionMethod.BLIND)
+          || !(this.dispEstSharingMode == DispersionSharingMode.FIT_ONLY)) {
+        throw new EoulsanException(
+            "There is no replicates in this experiment, you have to use "
+                + "disp_est_method=blind and disp_est_sharingMode=fit-only in "
+                + "diffana parameters");
+      }
     }
 
-    if (isReference(experimentSamplesList)) {
-      sb.append(readStaticScript(ANADIFF_WITH_REFERENCE));
+    dispersionEstimation =
+        dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${SHARINGMODE}",
+            this.dispEstSharingMode.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${FITTYPE}",
+            this.dispEstFitType.getName());
+
+    // Add dispersion estimation part to stringbuilder
+    sb.append(dispersionEstimation);
+
+    // Add plot dispersion
+    if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION)) {
+
+      List<String> passedConditionName = new ArrayList<String>();
+      for (String cond : rCondNames) {
+
+        if (passedConditionName.indexOf(cond) == -1) {
+          sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
+          sb.append("fitInfo <- fitInfo(countDataSet, name = \""
+              + cond + "\")\n");
+          sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
+          sb.append("@\n");
+          
+          passedConditionName.add(cond);
+        } else {}
+      }
     } else {
-      sb.append(readStaticScript(ANADIFF_WITHOUT_REFERENCE));
+
+      sb.append("<<dispersionPlot, fig=TRUE>>=\n");
+      sb.append("fitInfo <- fitInfo(countDataSet)\n");
+      sb.append("plotDispEsts(countDataSet, fitInfo)\n");
+      sb.append("@\n");
     }
+
+    String anadiffPart = "";
+    // check if there is a reference
+    if (isReference(experimentSamplesList)) {
+      anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
+    } else {
+      anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
+    }
+    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    sb.append(anadiffPart);
 
     // end document
     sb.append("\\end{document}");
@@ -207,8 +416,8 @@ public class DiffAna extends Normalization {
       rScript =
           "diffana_"
               + experimentSamplesList.get(0).getMetadata().getExperiment()
-              + ".Rnw";
-      if (EoulsanRuntime.getSettings().isRServeServerEnabled()) {
+              + "_" + System.currentTimeMillis() + ".Rnw";
+      if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -307,13 +516,27 @@ public class DiffAna extends Normalization {
    * @param expressionFilesSuffix
    * @param outPath
    * @param rServerName
+   * @throws EoulsanException
    */
   public DiffAna(Design design, File expressionFilesDirectory,
       String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
-      String rServerName) {
+      DispersionMethod dispEstMethod, DispersionSharingMode dispEstSharingMode,
+      DispersionFitType dispEstFitType, String rServerName, boolean rServeEnable)
+      throws EoulsanException {
 
     super(design, expressionFilesDirectory, expressionFilesPrefix,
-        expressionFilesSuffix, outPath, rServerName);
+        expressionFilesSuffix, outPath, rServerName, rServeEnable);
+
+    if (dispEstMethod == null
+        || dispEstFitType == null || dispEstSharingMode == null) {
+      throw new NullPointerException(
+          "dispersion estimation fit type or method or sharing mode is null");
+    } else {
+      this.dispEstMethod = dispEstMethod;
+      this.dispEstFitType = dispEstFitType;
+      this.dispEstSharingMode = dispEstSharingMode;
+    }
+
   }
 
 }

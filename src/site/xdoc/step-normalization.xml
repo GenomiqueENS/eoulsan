@@ -1,78 +1,220 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-/*
- *                  Eoulsan development code
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public License version 2.1 or
- * later and CeCILL-C. This should be distributed with the code.
- * If you do not have a copy, see:
- *
- *      http://www.gnu.org/licenses/lgpl-2.1.txt
- *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
- *
- * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
- * the individual authors. These should be listed in @author doc
- * comments.
- *
- * For more information on the Eoulsan project and its aims,
- * or to join the Eoulsan Google group, visit the home page
- * at:
- *
- *      http://www.transcriptome.ens.fr/eoulsan
- *
- */
--->
-<document> 
+<!-- /* * Eoulsan development code * * This code may be freely distributed 
+	and modified under the * terms of the GNU Lesser General Public License version 
+	2.1 or * later and CeCILL-C. This should be distributed with the code. * 
+	If you do not have a copy, see: * * http://www.gnu.org/licenses/lgpl-2.1.txt 
+	* http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt * * Copyright 
+	for this code is held jointly by the Genomic platform * of the Institut de 
+	Biologie de l'École Normale Supérieure and * the individual authors. These 
+	should be listed in @author doc * comments. * * For more information on the 
+	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit 
+	the home page * at: * * http://www.transcriptome.ens.fr/eoulsan * */ -->
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
-  <properties>
-    <title>Normalization step</title>
-    <author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+	<properties>
+		<title>Normalization step</title>
+		<author email="vivien.deshaies@gmail.com">Vivien Deshaies</author>
+		<author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+	</properties>
 
 
 
-  <body>
-  
-    <section name="Normalization step">
+	<body>
 
-      <p>This step allow to normalization on expression step results.</p>  
+		<section name="Normalization step">
 
-      <ul>
-         <li><b>Name</b>: normalization</li>
-         <li><b>Available</b>: Only in local mode</li>
-         <li><b>Multithreaded in local mode</b>: No</li>
-         <li><b>Input</b>: expression file (e.g. <code>expression_1.tsv</code>)</li>
-         <li><b>Output</b>: Control graphics, LaTeX report and count matrices 
-         (raw, pooled and normalized)</li>
-	  <br/>
-         <li><b>Optional parameters</b>: none.</li>
-       </ul>
-      
-    </section>
-    
-    <section name="Required R packages installation">
-    
-    <p>Eoulsan normalization module use R with DESeq and FactoMineR packages as statistical 
-    backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and FactoMineR_1.20. 
-    You need to install two R packages:</p>
-    
-    <ul>
-        <li><b>DESeq</b></li>
-        <source>
+			<p>This step allow to normalization on expression step results.</p>
+
+			<ul>
+				<li>
+					<b>Name</b>
+					: normalization
+				</li>
+				<li>
+					<b>Available</b>
+					: Only in local mode
+				</li>
+				<li>
+					<b>Multithreaded in local mode</b>
+					: No
+				</li>
+				<li>
+					<b>Input</b>
+					: expression file (e.g.
+					<code>expression_1.tsv</code>
+					)
+				</li>
+				<li>
+					<b>Output</b>
+					: Control graphics, LaTeX report and count matrices
+					(raw, pooled and normalized)
+				</li>
+				<li>
+					<b>Optional parameters</b>
+					: none.
+				</li>
+			</ul>
+
+		</section>
+
+		<section name="Required R packages installation">
+
+			<p>Eoulsan normalization module use R with DESeq and FactoMineR
+				packages as statistical
+				backend. Normalization module was tested with R 2.15, DESeq 1.8.3 and
+				FactoMineR_1.20.
+				You need to install two R packages on your computer or Rserve server:
+			</p>
+
+			<source>
 $ sudo R
 &gt; source("http://bioconductor.org/biocLite.R")
-&gt; biocLite("DESeq") 
-&gt; install.packages("FactoMineR")   
-        </source>
+&gt; biocLite("DESeq")
+&gt; install.packages("FactoMineR")
+			</source>
 
-    </ul> 
-    
-    </section>
+		</section>
+
+		<section name="Interpreting output files">
+
+			<subsection name="Null count proportion barplot">
+			
+				<img src="images/barplotNullCount-750px.png" align="middle" 
+						alt="Null count proportion barplot" />
+						
+				<div>
+					This barplot represent the null count proportion in all sample. 
+					This gives a first idea of expression differences.
+				</div>
+				
+			</subsection>
+			
+			<subsection name="Total count barplot">
+			
+				<div>
+					This graph represent the total counts for each sample. 
+					It also give a first idea of expression differences.
+				</div>
+				
+				<h4>Raw data (before technical replicates pooling and normalization)</h4>
+				<img src="images/barplotTotalCountRaw-750px.png" align="middle"
+						alt="Raw total count barplot" />
+				
+				<h4>After technical replicates pooling</h4>
+				<img src="images/barplotTotalCountPool-750px.png" align="middle" 
+						alt="Pooled total count barplot" />
+						
+			</subsection>
+					
+			<subsection name="log2(counts + 1) distribution boxplot">
+			
+				<div>
+					This type of graph is useful to see if normalization was 
+					performed well. When all boxes are aligned or at least the 
+					median, the normalization worked well.
+				</div>
+				
+				<h4>On raw data</h4>
+				<img src="images/boxplotRaw-750px.png" align="middle"
+						alt="Raw boxplot" />
+				
+				<h4>After technical replicates pooling</h4>
+				<img src="images/boxplotPool-750px.png" align="middle"
+						alt="Pooled boxplot" />
+						
+				<h4>After normalization</h4>
+				<img src="images/boxplotNorm-750px.png" align="middle"
+						alt="Normalized boxplot" />
+				
+			</subsection>
+			
+			<subsection name="log2(counts + 1) distribution density">
+				
+				<div>
+					This graph show the distribution profiles of each sample.
+					It is useful to verify that technical replicates count 
+					distributions are close enough to pool them and to see
+					if normalization have corrected well distribution 
+					differences.
+				</div>
+				
+				<h4>On raw data</h4>
+				<img src="images/densityPlotRaw-750px.png" align="middle"
+						alt="Raw density plot" />
+				
+				<h4>After technical replicate and normalization</h4>
+				<img src="images/densityNorm-750px.png" align="middle"
+						alt="Normalized density plot" />
+				
+			</subsection>
+				
+			<subsection name="Clustering dendrogram">
+			
+				<div>
+					This graph is plotted with hclust R function with the
+					ward method and the	distance used is 1-(correlation/2).
+					It it useful to see if replicates are grouped 
+					together.
+				</div>
+				
+				<h4>On raw data</h4>
+				<img src="images/clusterRaw-750px.png" align="middle"
+						alt="Raw cluster dendrogram" />
+				
+				<h4>After technical replicate and normalization</h4>
+				<img src="images/clusterNorm-750px.png" align="middle"
+						alt="Normalized cluster dendrogram" />
+				
+			</subsection>
+			
+			<subsection name="PCA scatter plot">
+			
+				<div>
+					This graph have the same goal than the cluster dendrogram
+					but it is more easy do read.
+				</div>
+				
+				<h4>On raw data</h4>
+				<img src="images/rawPCA-750px.png" align="middle"
+						alt="Raw PCA plot" />
+				
+				<div>
+					<strong>Warning : </strong>as we can see on this graph if
+					some of the samples have a number of total count very 
+					higher than the others. The first dimension of the PCA is the count 
+					number and the graph isn't really informative in this case.
+				</div>
+				
+				<h4>After technical replicate and normalization</h4>
+				<img src="images/normPCA-750px.png" align="middle"
+						alt="Normalized PCA plot" />
+				
+				<div>
+					On this graph like on the corresponding dendrogram we 
+					can see that samples of <i>MO_injection</i> and <i>WT_injection</i> are 
+					grouped together which is not waiting. Actually, in this 
+					experiment injection was performed at 2 different times and 
+					these two conditions are control conditions of 2 strains, 
+					so these graph shows that there is an "injection 
+					time effect" stronger than the difference between the 
+					2 strains. 
+				</div>
+				
+			</subsection>
+			
+			<subsection name="Count matrix">
+			
+				<div>
+					This module also provide a raw count matrix and a normalized 
+					count matrix which can be use for other analysis.
+				</div>
+					 
+			</subsection>
+				
+		</section>
 
 
-  </body>
-  
+	</body>
+
 </document>

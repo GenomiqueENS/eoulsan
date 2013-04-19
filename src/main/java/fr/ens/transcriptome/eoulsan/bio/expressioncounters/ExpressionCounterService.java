@@ -28,14 +28,13 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
- * This class define a service to retrieve an ExpressionCounter. 
+ * This class define a service to retrieve an ExpressionCounter.
  * @since 1.2
  * @author Claire Wallon
  */
 public class ExpressionCounterService {
-  
+
   private static ExpressionCounterService service;
-  private final ServiceLoader<ExpressionCounter> loader;
 
   //
   // Static method
@@ -71,7 +70,8 @@ public class ExpressionCounterService {
 
     final String counterNameLower = counterName.toLowerCase();
 
-    final Iterator<ExpressionCounter> it = this.loader.iterator();
+    final Iterator<ExpressionCounter> it =
+        ServiceLoader.load(ExpressionCounter.class).iterator();
 
     while (it.hasNext()) {
 
@@ -93,8 +93,6 @@ public class ExpressionCounterService {
    * Private constructor.
    */
   private ExpressionCounterService() {
-
-    loader = ServiceLoader.load(ExpressionCounter.class);
   }
-  
+
 }

@@ -35,7 +35,6 @@ import java.util.ServiceLoader;
 public class SequenceReadsMapperService {
 
   private static SequenceReadsMapperService service;
-  private final ServiceLoader<SequenceReadsMapper> loader;
 
   //
   // Static method
@@ -71,7 +70,8 @@ public class SequenceReadsMapperService {
 
     final String mapperNameLower = mapperName.toLowerCase();
 
-    final Iterator<SequenceReadsMapper> it = this.loader.iterator();
+    final Iterator<SequenceReadsMapper> it =
+        ServiceLoader.load(SequenceReadsMapper.class).iterator();
 
     while (it.hasNext()) {
 
@@ -93,8 +93,6 @@ public class SequenceReadsMapperService {
    * Private constructor.
    */
   private SequenceReadsMapperService() {
-
-    loader = ServiceLoader.load(SequenceReadsMapper.class);
   }
 
 }

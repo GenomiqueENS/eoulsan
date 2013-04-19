@@ -76,8 +76,8 @@ public class CreateDesignAction extends AbstractAction {
     String filename = "design.txt";
     int argsOptions = 0;
     boolean pairEndMode = false;
-    String casavaDesignPath = null;
-    String casavaProject = null;
+    String sampleSheetPath = null;
+    String samplesProjectName = null;
     boolean symnlinks = false;
 
     try {
@@ -104,16 +104,16 @@ public class CreateDesignAction extends AbstractAction {
       }
 
       // Casava design option
-      if (line.hasOption("c")) {
+      if (line.hasOption("s")) {
 
-        casavaDesignPath = line.getOptionValue("c").trim();
+        sampleSheetPath = line.getOptionValue("s").trim();
         argsOptions += 2;
       }
 
       // Casava project option
       if (line.hasOption("n")) {
 
-        casavaProject = line.getOptionValue("n").trim();
+        samplesProjectName = line.getOptionValue("n").trim();
         argsOptions += 2;
       }
 
@@ -140,8 +140,8 @@ public class CreateDesignAction extends AbstractAction {
       final DesignBuilder db = new DesignBuilder();
 
       // Add all the files of a Casava design if Casava design path is defined
-      if (casavaDesignPath != null)
-        db.addCasavaDesignProject(new File(casavaDesignPath), casavaProject);
+      if (sampleSheetPath != null)
+        db.addCasavaDesignProject(new File(sampleSheetPath), samplesProjectName);
 
       // Add files in the command line
       db.addFiles(newArgs);
@@ -195,28 +195,28 @@ public class CreateDesignAction extends AbstractAction {
     final Options options = new Options();
 
     // Pair end mode
-    options.addOption("p", "pair-end", false, "Pair-end mode");
+    options.addOption("p", "paired-end", false, "Paired-end mode");
 
     // Help option
-    options.addOption("h", "help", false, "display this help");
+    options.addOption("h", "help", false, "Display this help");
 
     // Casava design path option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("casava design file").withLongOpt("casava-design")
-        .create('c'));
+        .withDescription("Illumina samplesheet file")
+        .withLongOpt("samplesheet").create('s'));
 
     // Casava project option
     options.addOption(OptionBuilder.withArgName("name").hasArg()
-        .withDescription("casava project name").withLongOpt("casava-project")
+        .withDescription("Illumina project name").withLongOpt("project-name")
         .create('n'));
 
     // Create symbolic links
-    options.addOption("s", "symlinks", false,
+    options.addOption("l", "symlinks", false,
         "Create symbolic links in design file directory");
 
     // Output option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("output file").withLongOpt("output").create('o'));
+        .withDescription("Output file").withLongOpt("output").create('o'));
 
     return options;
   }

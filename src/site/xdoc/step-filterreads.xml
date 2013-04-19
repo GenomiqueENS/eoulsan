@@ -40,7 +40,13 @@
       <p>This step allow to filter input reads. Currently, this step can trim polyN read tails, remove reads with a short length
 and discard reads with bad base quality mean. Eoulsan provides a plugin system for reads filters.
 To enable a filter, a parameter for this filter must be set. If the filter takes no option, add a parameter with the name 
-of the filter as the key and an empty string for the value.</p>  
+of the filter as the key and an empty string for the value.</p>
+
+      <p>The filters order that will be applied on the reads is the same order of the filters parameters in the parameters file.
+         So the count of the filtered reads by each filter in the log will be different according to the filter parameters order in the parameter file.</p>  
+
+      <p><b>Warning:</b> Some filters can modify the output reads (e.g. the trim filter remove the polyN tails of the reads). So a filter like the quality 
+filter will not produce the same output if declared before or after the trim filter.</p> 
 
       <ul>
  	<li><b>Internal name</b>: filterreads</li> 
@@ -52,27 +58,28 @@ of the filter as the key and an empty string for the value.</p>
 	<br/> 
         <li><b>Optional parameters</b>:</li>
 	<table>
-		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
 
-		<tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
-		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
-		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td></tr>
-		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td></tr>
-		<tr><td>pairend.accept.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td></tr>
-		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td></tr>
-		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td></tr>
-		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads</td><td>Not set</td></tr>
-		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td></tr>
-		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td></tr>
-		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td></tr>
-		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td></tr>
+		<tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td><td>N/A</td></tr>
+		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td><td>N/A</td></tr>
+		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
+		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairend.accept.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td><td>No</td></tr>
+		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td><td>No</td></tr>
+		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads.</td><td>Not set</td><td>Yes</td></tr>
+		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
 	</table>
 			
 	<br/> 
         <li><b>Compatibility parameters with Eoulsan 1.0.x</b>:</li>
 	<table>
-		<tr><td>lengthThreshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>15</td></tr>
-		<tr><td>qualityThreshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>15.0</td></tr>
+	    <tr><th>Parameter</th><th>Type</th><th>New parameter</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
+		<tr><td>lengthThreshold</td><td>integer</td><td>trim.length.threshold</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not Set</td><td>Yes</td></tr>
+		<tr><td>qualityThreshold</td><td>float</td><td>quality.threshold</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not Set</td><td>No</td></tr>
 		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
 	</table>
       </ul>

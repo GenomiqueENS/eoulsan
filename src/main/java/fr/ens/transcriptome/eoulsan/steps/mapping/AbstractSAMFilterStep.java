@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
@@ -53,28 +53,9 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   protected static final String COUNTER_GROUP = "sam_filtering";
 
-  private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
-
+  private Map<String, String> alignmentsFiltersParameters;
   private int localThreads;
   private int maxLocalThreads;
-
-  // private int mappingQualityThreshold = -1;
-
-  //
-  // Getters
-  //
-
-  /**
-   * Get the mapping quality threshold.
-   * @return the quality mapping threshold !!!!!!!!!!!! Problem for the class
-   *         SAMFilterHadoopStep.java : mappingQualityThreshold is no longer
-   *         used here (getMappingQualityThreshold() called in this class) (cf.
-   *         comments in configure())
-   */
-  // protected int getMappingQualityThreshold() {
-  //
-  // return this.mappingQualityThreshold;
-  // }
 
   //
   // Step methods
@@ -123,7 +104,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     // Force parameter checking
     mrafb.getAlignmentsFilter();
 
-    this.readAlignmentsFilterBuilder = mrafb;
+    this.alignmentsFiltersParameters = mrafb.getParameters();
   }
 
   /**
@@ -150,11 +131,15 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected ReadAlignmentsFilter getAlignmentsFilter(
+  protected MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
-    return this.readAlignmentsFilterBuilder.getAlignmentsFilter(incrementer,
+    // As filters are not thread safe, create a new
+    // MultiReadAlignmentsFilterBuilder
+    // with a new instance of each filter
+    return new MultiReadAlignmentsFilterBuilder(
+        this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
         counterGroup);
   }
 
@@ -164,7 +149,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    */
   protected Map<String, String> getAlignmentsFilterParameters() {
 
-    return this.readAlignmentsFilterBuilder.getParameters();
+    return this.alignmentsFiltersParameters;
   }
 
   /**

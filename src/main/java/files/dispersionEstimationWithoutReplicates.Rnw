@@ -1,8 +1,0 @@
-	\subsection{Differential analysis}
-
-		\subsubsection{Dispersion estimation}
-	
-<<dispertionEstimation, fig=TRUE>>=
-countDataSet <- dispersionEstimation(countDataSet)
-plotDispEsts(countDataSet)
-@

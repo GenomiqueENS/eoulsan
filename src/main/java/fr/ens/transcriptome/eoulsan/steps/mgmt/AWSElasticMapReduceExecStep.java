@@ -69,9 +69,20 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   private static final String MAPREDUCE_ENDPOINT_KEY = "aws.mapreduce.endpoint";
   private static final String LOG_PATH_KEY = "aws.mapreduce.log.path";
   private static final String WAIT_JOB_KEY = "aws.mapreduce.wait.job";
+  private static final String TASK_TRACKER_MAPPER_MAX_TASKS_KEY =
+      "aws.mapreduce.task.tracker.mapper.max.tasks";
+  private static final String EC2_KEY_NAME_KEY = "aws.ec2.key.name";
+  private static final String ENABLE_DEBUGGING_KEY =
+      "aws.mapreduce.enable.debugging";
+
+  /** AWS access key. */
+  private String awsAccessKey;
+
+  /** AWS secret key. */
+  private String awsSecretKey;
 
   /** Version of hadoop to use with AWS Elastic MapReduce. */
-  private String hadoopVersion = "0.20";
+  private String hadoopVersion = "1.0.3";
 
   /** Number of instance to use with AWS Elastic MapReduce. */
   private int nInstances = -1;
@@ -85,6 +96,15 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   /** Log path to use with AWS Elastic MapReduce. */
   private String logPathname = null;
 
+  /** Maximal number of map tasks in a tasktracker. */
+  private int taskTrackerMaxMapTasks = 0;
+
+  /** EC2 Key pair name to use. */
+  private String ec2KeyName = null;
+
+  /** Enable debugging. */
+  private boolean enableDebugging = false;
+
   /** Wait the end of AWS Elastic MapReduce Job. */
   private boolean waitJob = false;
 
@@ -92,6 +112,14 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
 
     final Settings settings = EoulsanRuntime.getSettings();
+
+    this.awsAccessKey = settings.getAWSAccessKey();
+    if (this.awsAccessKey == null)
+      throw new EoulsanException("The AWS access key is not set.");
+
+    this.awsSecretKey = settings.getAWSSecretKey();
+    if (this.awsSecretKey == null)
+      throw new EoulsanException("The AWS secret key is not set.");
 
     if (settings.isSetting(HADOOP_VERSION_KEY))
       this.hadoopVersion = settings.getSetting(HADOOP_VERSION_KEY).trim();
@@ -114,14 +142,22 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     if (this.nInstances == -1)
       throw new EoulsanException("The number of instance is not set.");
 
+    if (settings.isSetting(TASK_TRACKER_MAPPER_MAX_TASKS_KEY))
+      this.taskTrackerMaxMapTasks =
+          settings.getIntSetting(TASK_TRACKER_MAPPER_MAX_TASKS_KEY);
+
+    if (settings.isSetting(EC2_KEY_NAME_KEY))
+      this.ec2KeyName = settings.getSetting(EC2_KEY_NAME_KEY);
+
+    if (settings.isSetting(ENABLE_DEBUGGING_KEY))
+      this.enableDebugging = settings.getBooleanSetting(ENABLE_DEBUGGING_KEY);
+
   }
 
   @Override
   public StepResult execute(final Design design, final Context context) {
 
     final long startTime = System.currentTimeMillis();
-
-    final Settings settings = EoulsanRuntime.getSettings();
 
     // Envrionment argument
     final StringBuilder sb = new StringBuilder();
@@ -166,8 +202,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withJobFlowName(context.getJobDescription());
 
     // Set the credentials
-    builder.withAWSAccessKey(settings.getAWSAccessKey()).withAWSSecretKey(
-        settings.getAWSSecretKey());
+    builder.withAWSAccessKey(this.awsAccessKey).withAWSSecretKey(
+        this.awsSecretKey);
 
     // Set end point
     builder.withEndpoint(this.endpoint);
@@ -187,6 +223,16 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     // Set log path
     if (this.logPathname != null)
       builder.withLogPathname(this.logPathname);
+
+    // Set the maximal number of map task in a tasktracker
+    builder.withTaskTrackerMaxMapTasks(this.taskTrackerMaxMapTasks);
+
+    // Set the EC2 key pair key name
+    if (this.ec2KeyName != null)
+      builder.withEC2KeyName(this.ec2KeyName);
+
+    // Enable debugging
+    builder.withDebugging(this.enableDebugging);
 
     // Create job
     final AWSElasticMapReduceJob job = builder.create();
