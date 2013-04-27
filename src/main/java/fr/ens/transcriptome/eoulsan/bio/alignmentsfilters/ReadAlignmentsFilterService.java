@@ -24,15 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a AlignentsFilter.
  * @since 1.1
  * @author Laurent Jourdren
  */
-public class ReadAlignmentsFilterService {
+public class ReadAlignmentsFilterService extends
+    ServiceNameLoader<ReadAlignmentsFilter> {
 
   private static ReadAlignmentsFilterService service;
 
@@ -54,37 +54,24 @@ public class ReadAlignmentsFilterService {
   }
 
   //
-  // Instance methods
+  // Protected methods
   //
 
-  /**
-   * Get a alignmentsFilter object.
-   * @param alignmentsFilterName name of the filter to get
-   * @return an Action
-   */
-  public ReadAlignmentsFilter getAlignmentsFilter(
-      final String alignmentsFilterName) {
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    if (alignmentsFilterName == null) {
-      return null;
-    }
-
-    final String actionNameLower = alignmentsFilterName.toLowerCase();
-
-    final Iterator<ReadAlignmentsFilter> it =
-        ServiceLoader.load(ReadAlignmentsFilter.class).iterator();
-
-    while (it.hasNext()) {
-
-      final ReadAlignmentsFilter filter = it.next();
-
-      if (actionNameLower.equals(filter.getName().toLowerCase())) {
-        return filter;
-      }
-    }
-
-    return null;
+    return true;
   }
+
+  @Override
+  protected String getMethodName() {
+
+    return "getName";
+  }
+
+  //
+  // Instance methods
+  //
 
   //
   // Constructor
@@ -94,6 +81,7 @@ public class ReadAlignmentsFilterService {
    * Private constructor.
    */
   private ReadAlignmentsFilterService() {
+    super(ReadAlignmentsFilter.class);
   }
 
 }
