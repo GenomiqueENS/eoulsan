@@ -90,7 +90,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
         final String mapperName = p.getStringValue();
 
         this.mapper =
-            SequenceReadsMapperService.getInstance().getMapper(mapperName);
+            SequenceReadsMapperService.getInstance().newService(mapperName);
 
         if (this.mapper == null)
           throw new EoulsanException(

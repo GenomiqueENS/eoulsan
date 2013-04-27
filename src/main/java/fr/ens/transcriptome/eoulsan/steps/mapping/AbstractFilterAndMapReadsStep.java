@@ -206,7 +206,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       throw new EoulsanException("No mapper set.");
 
     this.mapper =
-        SequenceReadsMapperService.getInstance().getMapper(mapperName);
+        SequenceReadsMapperService.getInstance().newService(mapperName);
 
     if (this.mapper == null)
       throw new EoulsanException("Unknown mapper: " + mapperName);
