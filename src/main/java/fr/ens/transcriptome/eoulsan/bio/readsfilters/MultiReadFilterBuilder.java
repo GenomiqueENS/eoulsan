@@ -105,7 +105,7 @@ public class MultiReadFilterBuilder {
     if (mapFilters.containsKey(filterName))
       filter = mapFilters.get(filterName);
     else {
-      filter = ReadFilterService.getInstance().getReadFilter(filterName);
+      filter = ReadFilterService.getInstance().newService(filterName);
 
       if (filter == null) {
 
