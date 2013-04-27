@@ -24,15 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve an ExpressionCounter.
  * @since 1.2
  * @author Claire Wallon
  */
-public class ExpressionCounterService {
+public class ExpressionCounterService extends
+    ServiceNameLoader<ExpressionCounter> {
 
   private static ExpressionCounterService service;
 
@@ -54,35 +54,19 @@ public class ExpressionCounterService {
   }
 
   //
-  // Instance methods
+  // Protected methods
   //
 
-  /**
-   * Get ExpressionCounter.
-   * @param counterName name of the counter to get
-   * @return an ExpressionCounter
-   */
-  public ExpressionCounter getCounter(final String counterName) {
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    if (counterName == null) {
-      return null;
-    }
+    return true;
+  }
 
-    final String counterNameLower = counterName.toLowerCase();
+  @Override
+  protected String getMethodName() {
 
-    final Iterator<ExpressionCounter> it =
-        ServiceLoader.load(ExpressionCounter.class).iterator();
-
-    while (it.hasNext()) {
-
-      final ExpressionCounter counter = it.next();
-
-      if (counterNameLower.equals(counter.getCounterName().toLowerCase())) {
-        return counter;
-      }
-    }
-
-    return null;
+    return "getName";
   }
 
   //
@@ -93,6 +77,8 @@ public class ExpressionCounterService {
    * Private constructor.
    */
   private ExpressionCounterService() {
+
+    super(ExpressionCounter.class);
   }
 
 }

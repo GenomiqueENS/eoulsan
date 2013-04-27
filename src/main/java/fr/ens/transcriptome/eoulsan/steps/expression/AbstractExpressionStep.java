@@ -48,7 +48,8 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
-  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME = "removeambiguouscases";
+  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+      "removeambiguouscases";
 
   private static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
 
@@ -224,7 +225,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
       counterName = "eoulsanCounter";
 
     this.counter =
-        ExpressionCounterService.getInstance().getCounter(counterName);
+        ExpressionCounterService.getInstance().newService(counterName);
 
     if (this.counter == null) {
       throw new EoulsanException("Unknown counter: " + counterName);
