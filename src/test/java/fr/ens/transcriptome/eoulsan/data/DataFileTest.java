@@ -268,33 +268,33 @@ public class DataFileTest {
 
     DataProtocolService registry = DataProtocolService.getInstance();
 
-    assertTrue(registry.isProtocol("file"));
-    assertTrue(registry.isProtocol("http"));
-    assertTrue(registry.isProtocol("ftp"));
+    assertTrue(registry.isService("file"));
+    assertTrue(registry.isService("http"));
+    assertTrue(registry.isService("ftp"));
 
     String filename = "toto.txt";
     DataFile df = new DataFile(filename);
-    assertEquals(registry.getProtocol("file"), df.getProtocol());
+    assertEquals(registry.newService("file"), df.getProtocol());
 
     filename = "/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(registry.getProtocol("file"), df.getProtocol());
+    assertEquals(registry.newService("file"), df.getProtocol());
 
     filename = "file:///home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(registry.getProtocol("file"), df.getProtocol());
+    assertEquals(registry.newService("file"), df.getProtocol());
 
     filename = "file:/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(registry.getProtocol("file"), df.getProtocol());
+    assertEquals(registry.newService("file"), df.getProtocol());
 
     filename = "http://www.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(registry.getProtocol("http"), df.getProtocol());
+    assertEquals(registry.newService("http"), df.getProtocol());
 
     filename = "http:/www.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(registry.getProtocol("http"), df.getProtocol());
+    assertEquals(registry.newService("http"), df.getProtocol());
 
     try {
       new DataFile("toto://www.toto.com/home/toto/toto.txt").getProtocol();

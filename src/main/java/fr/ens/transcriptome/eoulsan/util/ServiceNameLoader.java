@@ -226,6 +226,7 @@ public abstract class ServiceNameLoader<S> {
 
     if (serviceName == null)
       return null;
+
     final String serviceNameLower = serviceName.toLowerCase().trim();
 
     if (this.classNames.containsKey(serviceNameLower)) {
@@ -258,6 +259,21 @@ public abstract class ServiceNameLoader<S> {
   public Map<String, String> getServiceClasses() {
 
     return Collections.unmodifiableMap(this.classNames);
+  }
+
+  /**
+   * Test if a service exists.
+   * @param serviceName name of the service
+   * @return true if service exists
+   */
+  public boolean isService(final String serviceName) {
+
+    if (serviceName == null)
+      return false;
+
+    final String serviceNameLower = serviceName.toLowerCase().trim();
+
+    return this.classNames.containsKey(serviceNameLower);
   }
 
   //

@@ -24,102 +24,26 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
-import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.AnnotationUtils;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a DataProtocol.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class DataProtocolService {
-
-  /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
 
   private static DataProtocolService service;
 
-  final Set<Class<? extends Annotation>> autorisedAnnotations;
-  private Map<String, DataProtocol> protocols =
-      new HashMap<String, DataProtocol>();
-
-  private String defaultProtocolName;
-
-  /**
-   * This class loader allow to reject Steps without correct annotation to
-   * prevent instantiation of classes that use Hadoop API.
-   * @author Laurent Jourdren
-   */
-  private final static class ServiceClassLoader extends ClassLoader {
-
-    /** The set if the authorized annotations. */
-    private final Set<Class<? extends Annotation>> authorizedAnnotations;
-
-    @Override
-    public Class<?> loadClass(final String arg0) throws ClassNotFoundException {
-
-      final Class<?> result = super.loadClass(arg0);
-
-      if (result == null) {
-        return null;
-      }
-
-      if (testClass(result)) {
-        return result;
-      }
-
-      return null;
-    }
-
-    /**
-     * Test if a class has correct annotation
-     * @param clazz the class to test
-     * @return true if the class has correct annotation
-     */
-    private boolean testClass(Class<?> clazz) {
-
-      for (Class<? extends Annotation> annot : authorizedAnnotations) {
-        if (clazz.getAnnotation(annot) != null) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    /**
-     * Constructor.
-     * @param authorizedAnnotations set with authorized annotation
-     */
-    public ServiceClassLoader(
-        Set<Class<? extends Annotation>> autorisedAnnotations) {
-
-      super(ServiceClassLoader.class.getClassLoader());
-
-      if (autorisedAnnotations == null) {
-        throw new NullPointerException("The autorized annotation is null.");
-      }
-
-      this.authorizedAnnotations =
-          new HashSet<Class<? extends Annotation>>(autorisedAnnotations);
-    }
-
-  }
+  private final boolean hadoopMode;
+  private final FileDataProtocol defaultProtocol = new FileDataProtocol();
+  private final String defaultProtocolName = defaultProtocol.getName();
 
   //
   // Static method
@@ -148,53 +72,63 @@ public class DataProtocolService {
    */
   public FileDataProtocol getDefaultProtocol() {
 
-    return (FileDataProtocol) getProtocol(this.defaultProtocolName);
+    return defaultProtocol;
   }
 
-  /**
-   * Get DataProtocol.
-   * @param protocolName name of the protocol to get
-   * @return a DataProtocol
-   */
-  public DataProtocol getProtocol(final String protocolName) {
+  @Override
+  public DataProtocol newService(String serviceName) {
 
-    return this.protocols.get(protocolName);
+    if (serviceName == null)
+      return null;
+
+    final String lower = serviceName.trim().toLowerCase();
+
+    if (lower.equals(this.defaultProtocolName))
+      return this.defaultProtocol;
+
+    return super.newService(serviceName);
   }
 
-  /**
-   * Test if a protocol exists.
-   * @param protocolName name of the protocol to test
-   * @return true if the protocol exists
-   */
-  public boolean isProtocol(final String protocolName) {
+  @Override
+  public Map<String, String> getServiceClasses() {
 
-    return this.protocols.containsKey(protocolName);
+    final Map<String, String> result =
+        new HashMap<String, String>(super.getServiceClasses());
+
+    result.put(this.defaultProtocolName, this.defaultProtocol.getClass()
+        .getName());
+
+    return Collections.unmodifiableMap(result);
   }
 
-  /**
-   * Reload the protocols.
-   */
-  public void reload() {
+  @Override
+  public boolean isService(String serviceName) {
 
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
+    if (serviceName == null)
+      return false;
 
-    final Iterator<DataProtocol> it =
-        ServiceLoader.load(DataProtocol.class,
-            new ServiceClassLoader(autorisedAnnotations)).iterator();
+    final String lower = serviceName.trim().toLowerCase();
 
-    while (it.hasNext()) {
+    if (lower.equals(this.defaultProtocolName))
+      return true;
 
-      try {
-        final DataProtocol protocol = it.next();
+    return super.isService(serviceName);
+  }
 
-        if (!this.defaultProtocolName.equals(protocol.getName()))
-          this.protocols.put(protocol.getName(), protocol);
+  //
+  // Protected methods
+  //
 
-      } catch (ServiceConfigurationError e) {
-        LOGGER.fine("Class for DataProtocol cannot be load in "
-            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
-      }
-    }
+  @Override
+  protected boolean accept(final Class<?> clazz) {
+
+    return AnnotationUtils.accept(clazz, this.hadoopMode);
+  }
+
+  @Override
+  protected String getMethodName() {
+
+    return "getName";
   }
 
   //
@@ -204,22 +138,10 @@ public class DataProtocolService {
   /**
    * Private protocol.
    */
-  @SuppressWarnings("unchecked")
   private DataProtocolService() {
 
-    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
-      this.autorisedAnnotations =
-          Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
-    } else {
-      this.autorisedAnnotations =
-          Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
-    }
-
-    final DataProtocol defaultProtocol = new FileDataProtocol();
-    this.defaultProtocolName = defaultProtocol.getName();
-    this.protocols.put(this.defaultProtocolName, defaultProtocol);
-
-    reload();
+    super(DataProtocol.class);
+    this.hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
   }
 
 }
