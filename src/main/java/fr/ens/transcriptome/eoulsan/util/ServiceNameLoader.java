@@ -24,12 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,11 +86,12 @@ public abstract class ServiceNameLoader<S> {
     }
 
     try {
-      for (URL url : Collections.list(this.loader.getResources(PREFIX
-          + this.service.getName()))) {
 
-        parseFile(url);
+      for (ServiceListLoader.Entry e : ServiceListLoader
+          .loadEntries(this.service.getName())) {
+        processClassName(e.getUrl().toString(), e.getLineNumber(), e.getValue());
       }
+
     } catch (IOException e) {
       throw new ServiceConfigurationError(service.getName()
           + ": " + e.getMessage());
@@ -105,100 +103,76 @@ public abstract class ServiceNameLoader<S> {
    * Parse a SPI file.
    * @param url URL of the file
    */
-  private void parseFile(final URL url) {
+  private void processClassName(final String url, final int lineNumber,
+      final String className) {
 
-    try {
-      final BufferedReader br =
-          new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
-
-      String line;
-      int count = 0;
-
-      while ((line = br.readLine()) != null) {
-
-        count++;
-        line = line.trim();
-
-        // Remove comment lines and empty lines
-        if (line.length() == 0 || line.startsWith("#")) {
-          continue;
-        }
-
-        final String className = line;
-
-        // Check if the class name is valid
-        if (!checkClassName(className)) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ":" + count + ": Invalid Java class name");
-        }
-
-        final Class<?> clazz;
-
-        // Check if the class exists
-        try {
-          clazz = Class.forName(className, true, this.loader);
-
-        } catch (ClassNotFoundException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Class not found: " + className);
-        }
-
-        // Filter classes
-        if (!accept(clazz))
-          continue;
-
-        // Check type
-        final S obj;
-        try {
-          obj = service.cast(clazz.newInstance());
-        } catch (InstantiationException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Class cannot be instancied: " + className);
-        } catch (IllegalAccessException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Class cannot be instancied: " + className);
-        }
-
-        final Method m;
-        try {
-          m = obj.getClass().getMethod(getMethodName());
-        } catch (SecurityException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Method " + getMethodName()
-              + "() cannot be instancied in class: " + className);
-        } catch (NoSuchMethodException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Method " + getMethodName()
-              + "() cannot be instancied in class: " + className);
-        }
-
-        final String name;
-        try {
-          name = (String) m.invoke(obj);
-        } catch (IllegalArgumentException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Method " + getMethodName()
-              + "() cannot be invoked in class: " + className);
-        } catch (IllegalAccessException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Method " + getMethodName()
-              + "() cannot be invoked in class: " + className);
-        } catch (InvocationTargetException e) {
-          throw new ServiceConfigurationError(service.getName()
-              + ": " + url + ": Method " + getMethodName()
-              + "() cannot be invoked in class: " + className);
-        }
-
-        if (!this.classNames.containsKey(name)
-            && !this.classNames.containsValue(className))
-          this.classNames.put(name, className);
-      }
-
-      br.close();
-    } catch (IOException e) {
+    // Check if the class name is valid
+    if (!checkClassName(className)) {
       throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": " + e.getMessage());
+          + ": " + url + ":" + lineNumber + ": Invalid Java class name");
     }
+
+    final Class<?> clazz;
+
+    // Check if the class exists
+    try {
+      clazz = Class.forName(className, true, this.loader);
+
+    } catch (ClassNotFoundException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Class not found: " + className);
+    }
+
+    // Filter classes
+    if (!accept(clazz))
+      return;
+
+    // Check type
+    final S obj;
+    try {
+      obj = service.cast(clazz.newInstance());
+    } catch (InstantiationException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Class cannot be instancied: " + className);
+    } catch (IllegalAccessException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Class cannot be instancied: " + className);
+    }
+
+    final Method m;
+    try {
+      m = obj.getClass().getMethod(getMethodName());
+    } catch (SecurityException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName()
+          + "() cannot be instancied in class: " + className);
+    } catch (NoSuchMethodException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName()
+          + "() cannot be instancied in class: " + className);
+    }
+
+    final String name;
+    try {
+      name = (String) m.invoke(obj);
+    } catch (IllegalArgumentException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName()
+          + "() cannot be invoked in class: " + className);
+    } catch (IllegalAccessException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName()
+          + "() cannot be invoked in class: " + className);
+    } catch (InvocationTargetException e) {
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName()
+          + "() cannot be invoked in class: " + className);
+    }
+
+    if (!this.classNames.containsKey(name)
+        && !this.classNames.containsValue(className))
+      this.classNames.put(name, className);
+
   }
 
   /**
