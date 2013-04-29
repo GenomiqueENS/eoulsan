@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
@@ -50,6 +51,7 @@ public abstract class ServiceNameLoader<S> {
   private final ClassLoader loader;
   private final Map<String, String> classNames =
       new LinkedHashMap<String, String>();
+  private final Map<String, S> cache = new HashMap<String, S>();
 
   /**
    * This method allow to filter class that can be returned by
@@ -66,11 +68,21 @@ public abstract class ServiceNameLoader<S> {
   protected abstract String getMethodName();
 
   /**
+   * Test if results of new instance.
+   * @return true if results must be cached
+   */
+  protected boolean isCache() {
+
+    return false;
+  }
+
+  /**
    * Reload the list of the available class services.
    */
   public void reload() {
 
-    classNames.clear();
+    this.classNames.clear();
+    this.cache.clear();
 
     if (getMethodName() == null) {
       throw new InvalidParameterException("getMethod() cannot return null");
@@ -131,6 +143,10 @@ public abstract class ServiceNameLoader<S> {
               + ": " + url + ": Class not found: " + className);
         }
 
+        // Filter classes
+        if (!accept(clazz))
+          continue;
+
         // Check type
         final S obj;
         try {
@@ -142,10 +158,6 @@ public abstract class ServiceNameLoader<S> {
           throw new ServiceConfigurationError(service.getName()
               + ": " + url + ": Class cannot be instancied: " + className);
         }
-
-        // Filter classes
-        if (!accept(clazz))
-          continue;
 
         final Method m;
         try {
@@ -229,13 +241,24 @@ public abstract class ServiceNameLoader<S> {
 
     final String serviceNameLower = serviceName.toLowerCase().trim();
 
+    // Test if service is already in cache
+    if (this.cache.containsKey(serviceNameLower))
+      return this.cache.get(serviceNameLower);
+
     if (this.classNames.containsKey(serviceNameLower)) {
 
       try {
         final Class<?> clazz =
             Class.forName(this.classNames.get(serviceNameLower), true,
                 this.loader);
-        return service.cast(clazz.newInstance());
+
+        final S result = service.cast(clazz.newInstance());
+
+        // Fill cache is needed
+        if (isCache())
+          this.cache.put(serviceNameLower, result);
+
+        return result;
       } catch (InstantiationException e) {
         throw new ServiceConfigurationError(service.getName()
             + ": " + serviceNameLower + " cannot be instancied");

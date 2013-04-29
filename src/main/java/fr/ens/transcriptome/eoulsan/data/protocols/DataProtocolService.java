@@ -66,6 +66,12 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   // Instance methods
   //
 
+  @Override
+  protected boolean isCache() {
+
+    return true;
+  }
+
   /**
    * Get the default protocol.
    * @return the default DataProtocol
