@@ -77,6 +77,20 @@ public class ServiceListLoader {
       return value;
     }
 
+    @Override
+    public String toString() {
+
+      return this.getClass().getSimpleName()
+          + "{url=" + this.url + ", lineNumber=" + this.lineNumber + ", value="
+          + this.value;
+    }
+
+    /**
+     * Private consctructor.
+     * @param url URL
+     * @param lineNumber line number
+     * @param value value
+     */
     private Entry(final URL url, final int lineNumber, final String value) {
 
       this.url = url;
