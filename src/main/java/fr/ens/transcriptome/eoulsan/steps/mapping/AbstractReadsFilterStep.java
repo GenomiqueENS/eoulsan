@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -129,8 +129,9 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected ReadFilter getReadFilter(final ReporterIncrementer incrementer,
-      final String counterGroup) throws EoulsanException {
+  protected MultiReadFilter getReadFilter(
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws EoulsanException {
 
     // As filters are not thread safe, create a new MultiReadFilterBuilder
     // with a new instance of each filter

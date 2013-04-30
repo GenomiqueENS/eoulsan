@@ -1,4 +1,28 @@
 /*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
+/*
  * The MIT License
  *
  * Copyright (c) 2009 The Broad Institute
@@ -25,8 +49,11 @@
 package net.sf.samtools;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -57,6 +84,7 @@ public class SAMParser {
   // Read string must contain only these characters
   private static final Pattern VALID_BASES = Pattern
       .compile("^[acgtnACGTN.=]+$");
+  private static final Pattern SPLIT_LINE = Pattern.compile("\t");
 
   private SAMFileReader.ValidationStringency validationStringency =
       SAMFileReader.ValidationStringency.DEFAULT_STRINGENCY;
@@ -347,6 +375,51 @@ public class SAMParser {
 
     this.mFileHeader
         .setSequenceDictionary(new SAMSequenceDictionary(sequences));
+  }
+
+  // TODO
+  /**
+   * Create genome description for SAM tool from headlines of SAM contain a list
+   * of String selected only the head line @SQ and fields @SN for name sequence
+   * and @LN for length
+   * @param genomeDescription
+   */
+  public void setGenomeDescription(final List<String> genomeDescription) {
+
+    if (genomeDescription == null) {
+      return;
+    }
+
+    final int collectionCapacity = genomeDescription.size();
+
+    final List<SAMSequenceRecord> sequencesList =
+        new ArrayList<SAMSequenceRecord>(collectionCapacity);
+    final Set<SAMSequenceRecord> sequencesSet =
+        new HashSet<SAMSequenceRecord>(collectionCapacity);
+
+    for (String headlineSAM : genomeDescription) {
+
+      if ("@SQ".equals(headlineSAM.substring(0, 3))) {
+
+        final String[] tokens = SPLIT_LINE.split(headlineSAM);
+
+        final String sequenceName = tokens[1].substring(3);
+        final int sequenceLength = Integer.parseInt(tokens[2].substring(3));
+
+        final SAMSequenceRecord sequenceRecord =
+            new SAMSequenceRecord(sequenceName, sequenceLength);
+
+        // remove double of sequenceName present in headline SAM file
+        if (!sequencesSet.contains(sequenceRecord)) {
+          sequencesSet.add(sequenceRecord);
+          sequencesList.add(sequenceRecord);
+        }
+      }
+
+    }
+
+    this.mFileHeader.setSequenceDictionary(new SAMSequenceDictionary(
+        sequencesList));
   }
 
   /**

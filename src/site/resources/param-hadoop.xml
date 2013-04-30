@@ -70,8 +70,8 @@
 				<value>bowtie</value>
 			</parameter>
 			<parameter>
-                <name>mapperarguments</name>
-                <value>--best -k 2</value>
+                <name>mapper.arguments</name>
+                <value>-k 2 --best</value>
             </parameter>
 			<parameter>
                 <name>removeunmapped</name>
@@ -133,10 +133,23 @@
                 <parameters/>
         </step-->
 
-        <!-- Anadiff -->
+        <!-- Diffana -->
         <!--step skip="false">
-                <name>anadiff</name>
-                <parameters/>
+                <name>diffana</name>
+                
+                <parameters>
+                        <parameter>
+                                <name>disp.est.method</name>
+                                <value>pooled</value>
+                        </parameter>
+                        <parameter>                        
+                                <name>disp.est.sharing.mode</name>
+                                <value>maximum</value>
+                        </parameter>                                 
+                                <name>disp.est.fit.type</name>
+                                <value>local</value>
+                        </parameter>
+            <parameters/>
         </step-->
 
 
@@ -158,7 +171,7 @@
         </parameter>
 	<parameter>
 	        <name>aws.mapreduce.hadoop.version</name>
-	        <value>0.20</value>
+	        <value>1.0.3</value>
         </parameter>	
 	<parameter>
 	        <name>aws.mapreduce.instances.type</name>

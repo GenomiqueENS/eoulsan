@@ -40,6 +40,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -48,8 +49,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 
@@ -72,7 +73,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
   private List<String> fields = newArrayList();
-  private ReadFilter filter;
+  private MultiReadFilter filter;
   private String counterGroup;
 
   private final ReadSequence read1 = new ReadSequence();
@@ -124,6 +125,9 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       this.filter =
           mrfb.getReadFilter(new HadoopReporter(context), this.counterGroup);
+
+      LOGGER.info("Reads filters to apply: "
+          + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());

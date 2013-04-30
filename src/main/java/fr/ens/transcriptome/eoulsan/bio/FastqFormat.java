@@ -93,7 +93,6 @@ public enum FastqFormat {
   public Set<String> getAlias() {
 
     if (this.alias == null) {
-
       return EMPTY_SET;
     }
 

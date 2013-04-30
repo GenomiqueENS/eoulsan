@@ -174,7 +174,7 @@ public class Normalization {
 
         removeExpressionFiles(experimentSampleList);
 
-        if (!(context.getSettings().isSaveRscripts()))
+        if (!context.getSettings().isSaveRscripts())
           this.rConnection.removeFile(rScript);
 
         this.rConnection.getAllFiles(outPath.toString() + "/");

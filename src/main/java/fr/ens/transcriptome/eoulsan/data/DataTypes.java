@@ -55,7 +55,7 @@ public class DataTypes {
 
   /** Gmap index data type. */
   public static final DataType GMAP_INDEX = registry
-      .getDataTypeFromName("gmap_index");
+      .getDataTypeFromName("gsnap_index");
 
   /** Filtered Mapper results. */
   public static final DataType FILTERED_MAPPER_RESULTS = registry

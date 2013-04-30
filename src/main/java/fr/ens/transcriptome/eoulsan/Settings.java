@@ -862,6 +862,15 @@ public final class Settings {
       LOGGER.info("Setting: " + key + "=" + properties.getProperty(key));
   }
 
+  /**
+   * Get a set with the names of the settings to obfuscate.
+   * @return a set of strings with the name of the settings to obfuscate
+   */
+  public Set<String> getSettingsKeyToObfuscated() {
+
+    return OBFUSCATED_KEYS;
+  }
+
   //
   // Constructor
   //

@@ -55,7 +55,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
     final SAMRecord first, second;
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     // single-end mode

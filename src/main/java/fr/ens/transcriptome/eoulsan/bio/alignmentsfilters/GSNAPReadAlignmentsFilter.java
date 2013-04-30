@@ -53,7 +53,7 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     // single-end mode

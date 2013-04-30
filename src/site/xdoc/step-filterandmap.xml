@@ -48,21 +48,12 @@
 	<li><b>Output</b>: filtered alignment file in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
 
 	<br/>
-        <li><b>Optional parameters</b>:</li>
-	<table>
-		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
-		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not set</td></tr>
-		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not set</td></tr>
-		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters.</td><td>Not set</td></tr>
-	    <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory</td></tr>
-        <tr><td>mapperArguments</td><td>string</td><td>Mapper additional command line arguments</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap).</td></tr>
-        <tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255].</td><td>0</td></tr>
-	</table>
-      </ul>
-
-      <p>For the list of the available built-in mappers and default arguments, see the <a href="./step-mapreads.html">Map reads step page</a>.</p>
-      
+    <li><b>Optional parameters</b>: This step use all the optional parameters of the <a href="./step-filterreads.html">filterreads step</a>, 
+                                    <a href="./step-mapreads.html">mapreads step</a>
+                                    and <a href="./step-filteralignments.html">filtersam step</a>. 
+                                    For more information, see the documentation of this steps.</li>
+	
+	</ul>
     </section>
 
 

@@ -29,11 +29,14 @@ import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
@@ -117,16 +120,26 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
-
+    List<String> cmd = new ArrayList<String>();
     if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
-      return indexerPathname + " index -a bwtsw " + genomePathname;
+      cmd.add(indexerPathname);
+      cmd.add("index");
+      cmd.add("-a");
+      cmd.add("bwtsw");
+      cmd.add(genomePathname);
+
+      return cmd;
     }
 
-    return indexerPathname + " index " + genomePathname;
+    cmd.add(indexerPathname);
+    cmd.add("index");
+    cmd.add(genomePathname);
+
+    return cmd;
   }
 
   @Override
@@ -205,6 +218,19 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
   }
 
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
+
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
+  }
+
   private void execAln(final String bwaPath, final String args,
       final int threads, final String outputFilename,
       final String indexPathname, final String readsFilename)
@@ -214,13 +240,20 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         getFastqFormat() == FASTQ_ILLUMINA
             || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
-    final String cmd =
-        bwaPath
-            + " aln " + (illuminaFastq ? " -I " : "") + args + " -t " + threads
-            + " -f " + outputFilename + " " + " " + indexPathname + " "
-            + readsFilename + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(bwaPath);
+    cmd.add("aln");
+    if (illuminaFastq)
+      cmd.add("-I");
+    cmd.add(args);
+    cmd.add("-t");
+    cmd.add(threads + "");
+    cmd.add("-f");
+    cmd.add(outputFilename);
+    cmd.add(indexPathname);
+    cmd.add(readsFilename);
 
-    LOGGER.info(cmd);
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -240,7 +273,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    final String cmd;
+    final List<String> cmd = new ArrayList<String>();
     final File resultFile;
 
     if (isPairEnd()) {
@@ -249,14 +282,16 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           FileUtils.createTempFile(this.outputFile1.getParentFile(),
               PREFIX_FILES + "-output-", ".sam");
 
-      cmd =
-          bwaPath
-              + " sampe -P -f " + resultFile.getAbsolutePath() + " "
-              + getIndexPath(archiveIndex) + " "
-              + outputFile1.getAbsolutePath() + " "
-              + outputFile2.getAbsolutePath() + " "
-              + readsFile1.getAbsolutePath() + " "
-              + readsFile2.getAbsolutePath() + " > /dev/null 2> /dev/null";
+      cmd.add(bwaPath);
+      cmd.add("sampe");
+      cmd.add("-P");
+      cmd.add("-f");
+      cmd.add(resultFile.getAbsolutePath());
+      cmd.add(getIndexPath(archiveIndex));
+      cmd.add(outputFile1.getAbsolutePath());
+      cmd.add(outputFile2.getAbsolutePath());
+      cmd.add(readsFile1.getAbsolutePath());
+      cmd.add(readsFile2.getAbsolutePath());
 
     } else {
 
@@ -265,15 +300,18 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
               PREFIX_FILES + "-output-", ".sam");
 
       // Build the command line
-      cmd =
-          bwaPath
-              + " samse -f " + resultFile.getAbsolutePath() + " "
-              + getIndexPath(archiveIndex) + " " + outputFile.getAbsolutePath()
-              + " " + readsFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+      cmd.add(bwaPath);
+      cmd.add("sampe");
+      cmd.add("-f");
+      cmd.add(resultFile.getAbsolutePath());
+      cmd.add(getIndexPath(archiveIndex));
+      cmd.add(outputFile.getAbsolutePath());
+      cmd.add(readsFile.getAbsolutePath());
+
     }
 
     System.out.println("cmd: " + cmd);
-    LOGGER.info(cmd);
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -297,9 +335,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

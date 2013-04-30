@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -59,6 +61,8 @@ public abstract class PseudoMapReduce {
 
   private File tmpDir;
   private File mapOutputFile;
+  private List<File> listMapOutputFile = new ArrayList<File>();
+
   private File sortOutputFile;
   private Reporter reporter = new Reporter();
 
@@ -133,7 +137,6 @@ public abstract class PseudoMapReduce {
 
         @Override
         public void remove() {
-
           throw new UnsupportedOperationException();
         }
 
@@ -202,11 +205,59 @@ public abstract class PseudoMapReduce {
     doMap(FileUtils.createInputStream(inputFile));
   }
 
+  protected File getMapOutputTempFile() throws IOException {
+
+    final File outputFile = File.createTempFile("map-", ".txt", this.tmpDir);
+    listMapOutputFile.add(outputFile);
+
+    return outputFile;
+  }
+
   /**
-   * Execute the map phase with an Inputstream as input.
+   * Execute the map phase with an Inputstream as input Create a list of file :
+   * one for each index file used
    * @param is input stream for the mapper
    */
   public void doMap(final InputStream is) throws IOException {
+
+    if (is == null)
+      throw new NullPointerException("The input stream is null.");
+
+    this.reporter.clear();
+
+    final BufferedReader br =
+        new BufferedReader(new InputStreamReader(is, CHARSET));
+    final UnSynchronizedBufferedWriter bw =
+        FileUtils.createFastBufferedWriter(getMapOutputTempFile());
+
+    final List<String> results = new ArrayList<String>();
+    String line;
+
+    final StringBuilder sb = new StringBuilder();
+
+    while ((line = br.readLine()) != null) {
+
+      map(line, results, this.reporter);
+
+      for (String r : results) {
+        sb.setLength(0);
+        sb.append(r);
+        sb.append('\n');
+        bw.write(sb.toString());
+      }
+
+      results.clear();
+    }
+
+    br.close();
+    bw.close();
+  }
+
+  /**
+   * TODO save or remove ?? Execute the map phase with an Inputstream as input.
+   * @param is input stream for the mapper
+   */
+  public void doMap_OLD(final InputStream is) throws IOException {
 
     if (is == null)
       throw new NullPointerException("The input stream is null.");
@@ -265,9 +316,20 @@ public abstract class PseudoMapReduce {
     return this.tmpDir;
   }
 
+  /**
+   * Sort several files in sortOutputFile
+   * @return true if success sort
+   * @throws IOException
+   */
   private boolean sort() throws IOException {
 
     this.sortOutputFile = File.createTempFile("sort-", ".txt", this.tmpDir);
+
+    String listFile = "";
+    for (File mapOutputFile : listMapOutputFile) {
+      listFile +=
+          StringUtils.bashEscaping(mapOutputFile.getAbsolutePath()) + " ";
+    }
 
     final String cmd =
         "sort"
@@ -275,14 +337,14 @@ public abstract class PseudoMapReduce {
                 + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath()) : "")
             + " -o "
             + StringUtils.bashEscaping(this.sortOutputFile.getAbsolutePath())
-            + " "
-            + StringUtils.bashEscaping(this.mapOutputFile.getAbsolutePath());
+            + " " + listFile;
 
     final boolean result = ProcessUtils.system(cmd) == 0;
-    if (!this.mapOutputFile.delete())
-      LOGGER.warning("Can not delete map output file: "
-          + this.mapOutputFile.getAbsolutePath());
-
+    for (File mapOutputFile : listMapOutputFile) {
+      if (!mapOutputFile.delete())
+        LOGGER.warning("Can not delete map output file: "
+            + mapOutputFile.getAbsolutePath());
+    }
     return result;
   }
 
@@ -336,7 +398,9 @@ public abstract class PseudoMapReduce {
       final String key = line.substring(0, indexFirstTab);
       final String value = line.substring(indexFirstTab + 1);
 
-      if (!key.equals(currentKey)) {
+      if (currentKey == null) {
+        currentKey = key;
+      } else if (!key.equals(currentKey)) {
 
         reduce(currentKey, values.iterator(), results, this.reporter);
 
@@ -363,8 +427,8 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete())
-      LOGGER.warning("Can not delete sort output file: "
-          + this.sortOutputFile.getAbsolutePath());
+    LOGGER.warning("Can not delete sort output file: "
+        + this.sortOutputFile.getAbsolutePath());
   }
 
 }

@@ -28,21 +28,30 @@ import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardF
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
+
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils.ProcessThreadErrOutput;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
@@ -70,15 +79,17 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract String getIndexerExecutable();
 
   protected String[] getIndexerExecutables() {
-
     return new String[] {getIndexerExecutable()};
   }
 
-  protected abstract String getIndexerCommand(final String indexerPathname,
-      final String genomePathname);
+  protected abstract List<String> getIndexerCommand(
+      final String indexerPathname, final String genomePathname);
 
   private File readsFile1;
   private File readsFile2;
+
+  private File archiveIndexFile;
+  private File archiveIndexDir;
 
   private UnSynchronizedBufferedWriter readsWriter1;
   private UnSynchronizedBufferedWriter readsWriter2;
@@ -88,7 +99,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private FastqFormat fastqFormat;
 
   private int threadsNumber;
-  private String mapperArguments;
+  private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private int entriesWritten;
@@ -110,6 +121,15 @@ public abstract class AbstractSequenceReadsMapper implements
   public String getMapperArguments() {
 
     return this.mapperArguments;
+  }
+
+  @Override
+  public List<String> getListMapperArguments() {
+    if (getMapperArguments() == null)
+      return Collections.emptyList();
+
+    String[] tabMapperArguments = getMapperArguments().trim().split(" ");
+    return Lists.newArrayList(tabMapperArguments);
   }
 
   /**
@@ -241,18 +261,13 @@ public abstract class AbstractSequenceReadsMapper implements
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
     }
 
-    // Compute the index
-    // ProcessUtils.exec(getIndexerCommand(indexerPath, tmpGenomeFile
-    // .getAbsolutePath(), null), EoulsanRuntime.getSettings().isDebug());
+    // Build the command line and compute the index
+    final List<String> cmd = new ArrayList<String>();
+    cmd.addAll(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
 
-    // Build the command line
-    final String cmd =
-        getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath())
-            + " > /dev/null 2> /dev/null";
+    LOGGER.fine(cmd.toString());
 
-    LOGGER.fine(cmd);
-
-    final int exitValue = sh(cmd);
+    final int exitValue = sh(cmd, tmpGenomeFile.getParentFile());
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for index creation execution: "
@@ -284,6 +299,8 @@ public abstract class AbstractSequenceReadsMapper implements
             + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
 
     LOGGER.fine("Want to create a temporary directory with prefix: "
+        + indexTmpDirPrefix + " in " + getTempDirectory());
+    System.out.println("makeArchiveIndex  tempo directory with prefix: "
         + indexTmpDirPrefix + " in " + getTempDirectory());
 
     final File indexTmpDir =
@@ -527,19 +544,17 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public void map(final File archiveIndexFile, final File archiveIndexDir)
-      throws IOException {
+  public void map() throws IOException {
 
     if (isPairEnd()) {
-      map(this.readsFile1, this.readsFile2, archiveIndexFile, archiveIndexDir);
+      map(this.readsFile1, this.readsFile2);
     } else {
-      map(this.readsFile1, archiveIndexFile, archiveIndexDir);
+      map(this.readsFile1);
     }
   }
 
   @Override
-  public final void map(final File readsFile1, final File readsFile2,
-      final File archiveIndexFile, final File archiveIndexDir)
+  public final void map(final File readsFile1, final File readsFile2)
       throws IOException {
 
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
@@ -547,15 +562,11 @@ public abstract class AbstractSequenceReadsMapper implements
     checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
-    checkNotNull(archiveIndexFile, "archiveIndexFile is null");
-    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
 
     checkExistingStandardFile(readsFile1,
         "readsFile1 not exits or is not a standard file.");
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -565,19 +576,14 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
-  public final void map(final File readsFile, final File archiveIndexFile,
-      final File archiveIndexDir) throws IOException {
+  public final void map(final File readsFile) throws IOException {
 
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
     checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile, "readsFile1 is null");
-    checkNotNull(archiveIndexFile, "archiveIndex is null");
-    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
     checkExistingStandardFile(readsFile,
         "readsFile1 not exits or is not a standard file.");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -586,11 +592,66 @@ public abstract class AbstractSequenceReadsMapper implements
     internalMap(readsFile, archiveIndexDir);
   }
 
+  /**
+   * Mode single-end method used only by bowtie mapper, the outputstream of
+   * bowtie is got back by SAMParserLine which parses the stream without create
+   * a file
+   */
+  @Override
+  public final void map(File readsFile, SAMParserLine parserLine)
+      throws IOException {
+    LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
+
+    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
+    checkNotNull(readsFile, "readsFile1 is null");
+    checkExistingStandardFile(readsFile,
+        "readsFile1 not exits or is not a standard file.");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+
+    // Process to mapping
+    internalMap(readsFile, archiveIndexDir, parserLine);
+  }
+
+  /**
+   * Mode pair-end method used only by bowtie mapper, the outputstream of bowtie
+   * is got back by SAMParserLine which parses the stream without create a file
+   */
+  @Override
+  public final void map(File readsFile1, File readsFile2,
+      SAMParserLine parserLine) throws IOException {
+    LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
+
+    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
+    checkNotNull(readsFile1, "readsFile1 is null");
+    checkNotNull(readsFile2, "readsFile2 is null");
+
+    checkExistingStandardFile(readsFile1,
+        "readsFile1 not exits or is not a standard file.");
+    checkExistingStandardFile(readsFile2,
+        "readsFile2 not exits or is not a standard file.");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+
+    // Process to mapping
+    internalMap(readsFile1, readsFile2, archiveIndexDir, parserLine);
+  }
+
   protected abstract void internalMap(final File readsFile1,
       final File readsFile2, final File archiveIndex) throws IOException;
 
   protected abstract void internalMap(final File readsFile,
       final File archiveIndex) throws IOException;
+
+  protected abstract void internalMap(final File readsFile1,
+      final File readsFile2, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException;
+
+  protected abstract void internalMap(final File readsFile,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException;
 
   protected void deleteFile(final File file) {
 
@@ -622,18 +683,29 @@ public abstract class AbstractSequenceReadsMapper implements
    * Initialize mapper.
    * @param pairEnd true if the mapper is in pair end mode.
    * @param fastqFormat Fastq format
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index for the
    * @param incrementer Objet to use to increment counters
    * @param counterGroup counter name group
    */
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
+    checkNotNull(archiveIndexFile, "archiveIndex is null");
+    checkNotNull(archiveIndexDir, "archiveIndexDir is null");
+    checkExistingStandardFile(archiveIndexFile,
+        "The archive index file not exits or is not a standard file.");
+
     this.pairEnd = pairEnd;
     this.fastqFormat = fastqFormat;
+    this.archiveIndexFile = archiveIndexFile;
+    this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
   }
@@ -649,17 +721,93 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
    */
-  protected int sh(final String cmd) throws IOException {
+  protected int sh(final List<String> cmd) throws IOException {
 
     return ProcessUtils.sh(cmd, getTempDirectory());
+  }
+
+  protected int sh(final List<String> cmd, final File temporaryDirectory)
+      throws IOException {
+
+    return ProcessUtils.sh(cmd, temporaryDirectory);
+  }
+
+  /**
+   * create a processBuilder for execute command and include a thread for get
+   * output stream which redirect to parserLine and a second thread for get
+   * error stream
+   * @param cmd line command
+   * @param temporaryDirectory
+   * @param parserLine SAMParserLine which retrieve output stream
+   * @return integer exit value for the process
+   * @throws IOException if an error occurs while executing the command
+   */
+  protected int sh(final List<String> cmd, final File temporaryDirectory,
+      final SAMParserLine parserLine) throws IOException {
+
+    ProcessBuilder pb;
+    final Process p;
+    int exitValue = Integer.MAX_VALUE;
+
+    try {
+      pb = new ProcessBuilder(cmd);
+
+      if (!(temporaryDirectory == null))
+        pb.directory(temporaryDirectory);
+
+      LOGGER.fine("execute command (Thread "
+          + Thread.currentThread().getId() + "): " + cmd.toString());
+
+      p = pb.start();
+
+      // a thread for get output stream and redirect him to parserLine
+      final Thread tout = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+          if (parserLine != null) {
+            try {
+
+              InputStream is = p.getInputStream();
+              BufferedReader buff =
+                  new BufferedReader(new InputStreamReader(is));
+              String line = "";
+
+              while ((line = buff.readLine()) != null) {
+                parserLine.parseLine(line);
+              }// while
+
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+
+          }
+        }
+      });
+      tout.start();
+
+      // thread for get error stream, not save
+      final Thread terr =
+          new Thread(new ProcessThreadErrOutput(p.getErrorStream()));
+      terr.start();
+
+      tout.join();
+      terr.join();
+
+      exitValue = p.waitFor();
+
+    } catch (InterruptedException e) {
+      LOGGER.warning("Process interrupted : " + e.getMessage());
+    }
+    return exitValue;
   }
 
   /**
    * Install a list of binaries bundled in the jar in a temporary directory.
    * This method automatically use the temporary directory defined in the object
    * for the path where to install the binary.
-   * @param binaryFilenames programs to install * @return a string with the path
-   *          of the last installed binary
+   * @param binaryFilenames programs to install
+   * @return a string with the path of the last installed binary
    * @throws IOException if an error occurs while installing binary
    */
   protected String install(final String... binaryFilenames) throws IOException {

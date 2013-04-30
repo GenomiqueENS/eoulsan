@@ -26,11 +26,14 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -113,10 +116,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-
-    return indexerPathname + " " + genomePathname;
+    List<String> cmd = new ArrayList<String>();
+    cmd.add(indexerPathname);
+    cmd.add(genomePathname);
+    return cmd;
   }
 
   @Override
@@ -137,17 +142,23 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
             ".unmap");
 
     // Build the command line
-    final String cmd =
-        soapPath
-            + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-            + readsFile.getAbsolutePath()
-            + " -D "
-            // + ambFile.substring(0, ambFile.length() - 4)
-            + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-            + outputFile.getAbsolutePath() + " -u "
-            + unmapFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd);
+    cmd.add(soapPath);
+    if (getListMapperArguments() != null)
+      cmd.addAll(getListMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-a");
+    cmd.add(readsFile.getAbsolutePath());
+    cmd.add("-D");
+    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+    cmd.add("-o");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("-u");
+    cmd.add(unmapFile.getAbsolutePath());
+
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -178,20 +189,27 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
             ".unpaired");
 
     // Build the command line
-    final String cmd =
-        soapPath
-            + " " + getMapperArguments() + " -p " + getThreadsNumber() + " -a "
-            + readsFile1.getAbsolutePath()
-            + " -b "
-            + readsFile2.getAbsolutePath()
-            + " -D "
-            // + ambFile.substring(0, ambFile.length() - 4)
-            + getIndexPath(archiveIndexDir, ".index.amb", 4) + " -o "
-            + outputFile.getAbsolutePath() + " -u "
-            + unmapFile.getAbsolutePath() + " -2 "
-            + unpairedFile.getAbsolutePath() + " > /dev/null 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd);
+    cmd.add(soapPath);
+    if (getListMapperArguments() != null)
+      cmd.addAll(getListMapperArguments());
+    cmd.add("-p");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-a");
+    cmd.add(readsFile1.getAbsolutePath());
+    cmd.add("-b");
+    cmd.add(readsFile2.getAbsolutePath());
+    cmd.add("-D");
+    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
+    cmd.add("-o");
+    cmd.add(outputFile.getAbsolutePath());
+    cmd.add("-u");
+    cmd.add(unmapFile.getAbsolutePath());
+    cmd.add("-2");
+    cmd.add(unpairedFile.getAbsolutePath());
+
+    LOGGER.info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -199,6 +217,19 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       throw new IOException("Bad error result for SOAP execution: " + exitValue);
     }
 
+  }
+
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
+
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
   }
 
   @Override
@@ -228,9 +259,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

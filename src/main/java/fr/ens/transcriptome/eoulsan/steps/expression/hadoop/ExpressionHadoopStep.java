@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_TSAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -58,6 +58,8 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.EoulsanCounter;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
@@ -195,7 +197,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TSV,
             sample).getSourceWithoutExtension()
             + ".tmp"));
 
@@ -314,7 +316,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
+        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TSV,
             sample).getSourceWithoutExtension()
             + ".tmp"));
 
@@ -586,14 +588,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TSV, sample));
 
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
       fetc.loadPreResults(
           new DataFile(context
-              .getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
+              .getOutputDataFile(EXPRESSION_RESULTS_TSV, sample)
               .getSourceWithoutExtension()
               + ".tmp").open(), readsUsed);
 
@@ -624,14 +626,13 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TSV, sample));
 
       fefc.initializeExpressionResults();
 
       // Load map-reduce results
-      fefc.loadPreResults(new DataFile(context.getOutputDataFile(
-          EXPRESSION_RESULTS_TXT, sample).getSourceWithoutExtension()
-          + ".tmp").open());
+      fefc.loadPreResults(new DataFile(e.getValue().getConfiguration()
+          .get("mapred.output.dir")).open());
 
       fefc.saveFinalResults(fs.create(resultPath));
     }
@@ -651,9 +652,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   @Override
   public StepResult execute(final Design design, final Context context) {
 
-    if (getCounter().getCounterName().equals("eoulsanCounter"))
+    if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME))
       return executeJobEoulsanCounter(design, context);
-    else if (getCounter().getCounterName().equals("htseq-count"))
+    else if (getCounter().getCounterName().equals(HTSeqCounter.COUNTER_NAME))
       return executeJobHTSeqCounter(design, context);
 
     return new StepResult(context, new EoulsanException("Unknown counter: "
@@ -698,7 +699,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
-      LOGGER.info("Finish the part of the expression computation in "
+      LOGGER.info("Finish the first part of the expression computation in "
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
       // Create the final expression files
@@ -754,8 +755,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           jobsPairedEnd.add(createJobPairedEnd(conf, context, s));
       }
 
-      MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-          CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+      if (jobsPairedEnd.size() > 0)
+        MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
+            CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
       // Create the list of jobs to run
       for (Sample s : design.getSamples()) {
@@ -775,7 +777,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
               CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
-      LOGGER.info("Finish the part of the expression computation in "
+      LOGGER.info("Finish the first part of the expression computation in "
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
       // Create the final expression files

@@ -24,38 +24,25 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
- * This class define a wrapper on the Bowtie mapper.
+ * This class define a wrapper on the Bowtie mapper. Includes only specific
+ * methods of bowtie
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   private static final String MAPPER_EXECUTABLE = "bowtie";
   private static final String INDEXER_EXECUTABLE = "bowtie-build";
 
+  private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
+
   public static final String DEFAULT_ARGUMENTS = "--best -k 2";
-
-  private static final String SYNC = BowtieReadsMapper.class.getName();
   private static final String MAPPER_NAME = "Bowtie";
-
-  private File outputFile;
 
   @Override
   public String getMapperName() {
@@ -64,38 +51,8 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
-  }
-
-  @Override
-  public String getMapperVersion() {
-
-    try {
-      final String bowtiePath;
-
-      synchronized (SYNC) {
-        bowtiePath = install(MAPPER_EXECUTABLE);
-      }
-
-      final String cmd = bowtiePath + " --version";
-
-      final String s = ProcessUtils.execToString(cmd);
-      final String[] lines = s.split("\n");
-      if (lines.length == 0)
-        return null;
-
-      final String[] tokens = lines[0].split(" version ");
-      if (tokens.length > 1)
-        return tokens[1].trim();
-
-      return null;
-
-    } catch (IOException e) {
-
-      return null;
-    }
+  protected String getExtensionIndexFile() {
+    return EXTENSION_INDEX_FILE;
   }
 
   @Override
@@ -105,103 +62,18 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
-      String genomePathname) {
-
-    File genomeDir = new File(genomePathname).getParentFile();
-
-    return "cd "
-        + genomeDir.getAbsolutePath() + " && " + indexerPathname + " "
-        + genomePathname + " genome";
-  }
-
-  @Override
   protected String getIndexerExecutable() {
 
     return INDEXER_EXECUTABLE;
   }
 
   @Override
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir) throws IOException {
-
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE);
-    }
-
-    final String ebwt =
-        new File(getIndexPath(archiveIndexDir, ".rev.1.ebwt",
-            ".rev.1.ebwt".length())).getName();
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
-
-    // Build the command line
-    final String cmd =
-        "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -1 " + readsFile1.getAbsolutePath() + " -2 "
-            + readsFile2.getAbsolutePath() + " > "
-            + outputFile.getAbsolutePath() + " 2> /dev/null";
-
-    LOGGER.info(cmd);
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
-    }
-
-    this.outputFile = outputFile;
-
+  protected String[] getMapperExecutables() {
+    return new String[] {MAPPER_EXECUTABLE};
   }
 
-  @Override
-  protected void internalMap(File readsFile, File archiveIndexDir)
-      throws IOException {
-
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(MAPPER_EXECUTABLE);
-    }
-
-    final String ebwt =
-        new File(getIndexPath(archiveIndexDir, ".rev.1.ebwt",
-            ".rev.1.ebwt".length())).getName();
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
-
-    // Build the command line
-    final String cmd =
-        "cd "
-            + archiveIndexDir.getAbsolutePath() + " && " + bowtiePath + " -S "
-            + getBowtieQualityArgument(getFastqFormat()) + " "
-            + getMapperArguments() + " -p " + getThreadsNumber() + " " + ebwt
-            + " -q " + readsFile.getAbsolutePath() + " > "
-            + outputFile.getAbsolutePath() + " 2> /dev/null";
-
-    LOGGER.info(cmd);
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
-    }
-
-    this.outputFile = outputFile;
-  }
-
-  private static final String getBowtieQualityArgument(final FastqFormat format) {
+  protected static final String getBowtieQualityArgument(
+      final FastqFormat format) {
 
     switch (format) {
 
@@ -219,25 +91,8 @@ public class BowtieReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public void clean() {
-  }
-
-  @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
-
-    return this.outputFile;
-  }
-
-  //
-  // Init
-  //
-
-  @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
-
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
-    setMapperArguments(DEFAULT_ARGUMENTS);
+  public String getDefaultArguments() {
+    return DEFAULT_ARGUMENTS;
   }
 
 }
