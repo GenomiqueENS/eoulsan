@@ -354,11 +354,10 @@
 		</testResources>
 		<pluginManagement>
 			<plugins>
-				<plugin>
+				<!--plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>cobertura-maven-plugin</artifactId>
-					<!--version>2.4</version-->
-		 	       </plugin>
+		 	       </plugin-->
 			</plugins>
 		</pluginManagement>
 
@@ -650,13 +649,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<!--version>2.4</version-->
+				<version>2.0-beta-7</version>
 				<configuration>
 					<templateFile>${basedir}/src/site/site.vm</templateFile>
 					<outputEncoding>iso-8859-1</outputEncoding>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>2.5.1</version>
@@ -673,7 +672,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin-->
 		</plugins>
 		<extensions>
 			<extension>
@@ -692,18 +691,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
+				<version>2.0-beta-7</version>
 				<configuration>
 					<outputEncoding>utf-8</outputEncoding>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>2.9.1</version-->
 				<!--configuration>
 					<configLocation>checkstyle.xml</configLocation>
-				</configuration-->
-			</plugin>
+				</configuration>
+			</plugin-->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 					<configuration>
@@ -715,6 +715,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>changes-maven-plugin</artifactId>
+				<version>2.0-beta-1</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -723,7 +724,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jxr-maven-plugin</artifactId>
 			</plugin>
@@ -731,7 +732,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12.2</version>
-			</plugin>
+			</plugin-->
 			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clover-plugin</artifactId>
@@ -740,7 +741,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-docck-plugin</artifactId>
 			</plugin-->
-			<plugin>
+			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>2.5.2</version>
@@ -749,7 +750,7 @@
 					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 					<xmlOutput>true</xmlOutput>
 				</configuration>
-			</plugin>
+			</plugin-->
 
 			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -770,7 +771,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 			</plugin-->
-			<plugin>
+			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>2.7.1</version>
@@ -780,7 +781,7 @@
 					<minimumTokens>100</minimumTokens>
 					<targetJdk>1.6</targetJdk>
 				</configuration>
-			</plugin>
+			</plugin-->
 			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javancss-maven-plugin</artifactId>
