@@ -74,6 +74,15 @@ public abstract class ServiceNameLoader<S> {
   }
 
   /**
+   * Test if service name must be case sensible.
+   * @return true if service name must be case sensible
+   */
+  protected boolean isServiceNameCaseSensible() {
+
+    return false;
+  }
+
+  /**
    * Reload the list of the available class services.
    */
   public void reload() {
@@ -89,6 +98,7 @@ public abstract class ServiceNameLoader<S> {
 
       for (ServiceListLoader.Entry e : ServiceListLoader
           .loadEntries(this.service.getName())) {
+        System.out.println(e);
         processClassName(e.getUrl().toString(), e.getLineNumber(), e.getValue());
       }
 
@@ -169,10 +179,16 @@ public abstract class ServiceNameLoader<S> {
           + "() cannot be invoked in class: " + className);
     }
 
-    if (!this.classNames.containsKey(name)
-        && !this.classNames.containsValue(className))
-      this.classNames.put(name, className);
+    if (name == null)
+      throw new ServiceConfigurationError(service.getName()
+          + ": " + url + ": Method " + getMethodName() + "() returns null");
 
+    final String serviceName =
+        isServiceNameCaseSensible() ? name : name.toLowerCase();
+
+    if (!this.classNames.containsKey(serviceName)
+        && !this.classNames.containsValue(className))
+      this.classNames.put(serviceName, className);
   }
 
   /**
@@ -213,7 +229,9 @@ public abstract class ServiceNameLoader<S> {
     if (serviceName == null)
       return null;
 
-    final String serviceNameLower = serviceName.toLowerCase().trim();
+    final String serviceNameLower =
+        isServiceNameCaseSensible() ? serviceName.trim() : serviceName
+            .toLowerCase().trim();
 
     // Test if service is already in cache
     if (this.cache.containsKey(serviceNameLower))
