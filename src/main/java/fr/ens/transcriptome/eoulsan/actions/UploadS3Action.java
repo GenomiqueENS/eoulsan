@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -192,6 +193,10 @@ public class UploadS3Action extends AbstractAction {
       if (!designFile.exists())
         throw new FileNotFoundException(designFile.toString());
 
+      // Create execution context
+      final SimpleContext context =
+          new SimpleContext(designFile, paramFile, jobDescription);
+
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
       pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designFile.getPath());
@@ -206,8 +211,7 @@ public class UploadS3Action extends AbstractAction {
       pp.parse(c);
 
       // Execute
-      final Executor e =
-          new LocalExecutor(c, designFile, paramFile, jobDescription);
+      final Executor e = new LocalExecutor(c, designFile, paramFile, context);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
           (Step) new TerminalStep()), null, true);
 

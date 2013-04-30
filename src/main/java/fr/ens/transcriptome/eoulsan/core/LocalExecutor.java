@@ -36,8 +36,6 @@ import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
-import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 
 /**
  * This class define an executor for local mode.
@@ -46,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
  */
 public class LocalExecutor extends Executor {
 
-  private SimpleContext context = new SimpleContext();
+  private final SimpleContext context;
   private final File designFile;
 
   @Override
@@ -147,10 +145,10 @@ public class LocalExecutor extends Executor {
    * @param command command to execute
    * @param designFile the path to the design file
    * @param paramFile the path to the parameter file
-   * @param jobDescription the job description. can be null
+   * @param context execution context
    */
   public LocalExecutor(final Command command, final File designFile,
-      final File paramFile, final String jobDescription) {
+      final File paramFile, final SimpleContext context) {
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -161,41 +159,7 @@ public class LocalExecutor extends Executor {
       throw new NullPointerException("The design file is null");
 
     this.designFile = designFile;
-
-    final SimpleContext context = getContext();
-
-    // Set the base path
-    context.setBasePathname(designFile.getAbsoluteFile().getParentFile()
-        .getAbsolutePath());
-
-    // Set the design path
-    context.setDesignPathname(designFile.getAbsolutePath());
-
-    // Set the parameter path
-    context.setParameterPathname(paramFile.getAbsolutePath());
-
-    final File logDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + context.getJobId());
-
-    final File outputDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + context.getJobId());
-
-    // Set the output path
-    context.setOutputPathname(outputDir.getAbsolutePath());
-
-    // Set the log path
-    context.setLogPathname(logDir.getAbsolutePath());
-
-    // Set the job description
-    context.setJobDescription(jobDescription);
-
-    // Set job environment
-    context.setJobEnvironment("Local Mode on "
-        + new LinuxCpuInfo().getModelName() + ", "
-        + Runtime.getRuntime().availableProcessors() + " CPU(s)/thread(s), "
-        + new LinuxMemInfo().getMemTotal());
+    this.context = context;
   }
 
 }

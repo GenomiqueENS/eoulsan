@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public final class SimpleContext implements Context {
+public class SimpleContext implements Context {
 
   /** Logger. */
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -74,8 +75,8 @@ public final class SimpleContext implements Context {
   private String paramPathname;
   private String jarPathname;
   private final String jobUUID = UUID.randomUUID().toString();
-  private String jobDescription = "";
-  private String jobEnvironment = "";
+  private final String jobDescription;
+  private final String jobEnvironment;
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
@@ -284,24 +285,6 @@ public final class SimpleContext implements Context {
   void setWorkflow(final WorkflowDescription workflow) {
 
     this.workflow = workflow;
-  }
-
-  /**
-   * Set job description.
-   * @param jobDescription job description
-   */
-  void setJobDescription(final String jobDescription) {
-
-    this.jobDescription = jobDescription;
-  }
-
-  /**
-   * Set job environment.
-   * @param jobEnvironment job environment
-   */
-  void setJobEnvironment(final String jobEnvironment) {
-
-    this.jobEnvironment = jobEnvironment;
   }
 
   /**
@@ -799,24 +782,69 @@ public final class SimpleContext implements Context {
   }
 
   //
-  // Constructor
+  // Constructors
   //
-
-  /**
-   * Public constructor.
-   */
-  public SimpleContext() {
-
-    this(System.currentTimeMillis());
-  }
 
   /**
    * Public constructor.
    * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
    */
-  public SimpleContext(final long millisSinceEpoch) {
+  public SimpleContext(final long millisSinceEpoch,
+      final String jobDescription, final String jobEnvironment) {
+
     createExecutionName(millisSinceEpoch);
     this.host = SystemUtils.getHostName();
+    this.jobDescription = jobDescription == null ? "" : jobDescription;
+    this.jobEnvironment = jobEnvironment == null ? "" : jobEnvironment;
+  }
+
+  /**
+   * Constructor for a standard local job.
+   * @param designFile design file
+   * @param paramFile parameter file
+   * @param jobDescription job description
+   */
+  public SimpleContext(final File designFile, final File paramFile,
+      final String jobDescription) {
+
+    this(designFile, paramFile, jobDescription, null);
+  }
+
+  /**
+   * Constructor for a standard local job.
+   * @param designFile design file
+   * @param paramFile parameter file
+   * @param jobDescription job description
+   * @param jobEnvironment job environment
+   */
+  public SimpleContext(final File designFile, final File paramFile,
+      final String jobDescription, final String jobEnvironment) {
+
+    this(System.currentTimeMillis(), jobDescription, jobEnvironment);
+
+    // Set the base path
+    setBasePathname(designFile.getAbsoluteFile().getParentFile()
+        .getAbsolutePath());
+
+    // Set the design path
+    setDesignPathname(designFile.getAbsolutePath());
+
+    // Set the parameter path
+    setParameterPathname(paramFile.getAbsolutePath());
+
+    final File logDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + getJobId());
+
+    final File outputDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + getJobId());
+
+    // Set the output path
+    setOutputPathname(outputDir.getAbsolutePath());
+
+    // Set the log path
+    setLogPathname(logDir.getAbsolutePath());
   }
 
 }

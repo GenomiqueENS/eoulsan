@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -85,6 +86,38 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
+
+  private static class HadoopSimpleContext extends SimpleContext {
+
+    public HadoopSimpleContext(final Path designPath, final Path paramPath,
+        final String jobDescription, final String jobEnvironment,
+        final long millisSinceEpoch) {
+
+      super(millisSinceEpoch, jobDescription, jobEnvironment);
+
+      // Set base pathname
+      setBasePathname(designPath.getParent().toString());
+
+      final Path logPath =
+          new Path(designPath.getParent().toString() + "/" + getJobId());
+
+      final Path outputPath =
+          new Path(designPath.getParent().toString() + "/" + getJobId());
+
+      // Set log pathname
+      setLogPathname(logPath.toString());
+
+      // Set output pathname
+      setOutputPathname(outputPath.toString());
+
+      // Set design file pathname
+      setDesignPathname(designPath.toString());
+
+      // Set parameter file pathname
+      setParameterPathname(paramPath.toString());
+    }
+
+  }
 
   @Override
   public String getName() {
@@ -311,6 +344,11 @@ public class ExecJarHadoopAction extends AbstractAction {
       if (!designFs.exists(designPath))
         throw new FileNotFoundException(designPath.toString());
 
+      // Create execution context
+      final SimpleContext context =
+          new HadoopSimpleContext(designPath, paramPath, desc, env,
+              millisSinceEpoch);
+
       // Read design file
       final Design design =
           DesignUtils.readAndCheckDesign(designFs.open(designPath));
@@ -339,8 +377,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create executor
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env,
-              millisSinceEpoch);
+          new HadoopExecutor(conf, c, design, designPath, paramPath, context);
 
       // Create upload step
       final Step uploadStep =

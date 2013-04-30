@@ -51,7 +51,10 @@ import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
+import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
+import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 
 /**
  * This class define the Local exec Action.
@@ -197,6 +200,19 @@ public class ExecAction extends AbstractAction {
       if (!designFile.exists())
         throw new FileNotFoundException(designFile.toString());
 
+      // Create execution context
+
+      // Set job environment
+      final String env =
+          "Local Mode on "
+              + new LinuxCpuInfo().getModelName() + ", "
+              + Runtime.getRuntime().availableProcessors()
+              + " CPU(s)/thread(s), " + new LinuxMemInfo().getMemTotal();
+
+      // Create execution context
+      final SimpleContext context =
+          new SimpleContext(designFile, paramFile, desc, env);
+
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
       pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designFile.getPath());
@@ -210,7 +226,7 @@ public class ExecAction extends AbstractAction {
       pp.parse(c);
 
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
+      final Executor e = new LocalExecutor(c, designFile, paramFile, context);
       e.execute();
 
     } catch (FileNotFoundException e) {
