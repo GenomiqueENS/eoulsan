@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,6 +70,8 @@ public abstract class Main {
   private String logLevel;
   private String logFile;
   private String conf;
+
+  private final BufferedHandler handler = new BufferedHandler();
 
   //
   // Getters
@@ -423,37 +426,72 @@ public abstract class Main {
    */
   private void initApplicationLogger() {
 
-    // Set default log level
-    LOGGER.setLevel(Globals.LOG_LEVEL);
-    LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
+    // Disable parent Handler
+    LOGGER.setUseParentHandlers(false);
 
-    // Set the log file
-    if (this.logFile != null) {
-      try {
+    // Set log level to all before setting the real log level with
+    // BufferedHandler
+    LOGGER.setLevel(Level.ALL);
 
-        final Handler fh = getLogHandler(this.logFile);
-        fh.setFormatter(Globals.LOG_FORMATTER);
-        LOGGER.setLevel(Globals.LOG_LEVEL);
-        LOGGER.setUseParentHandlers(false);
+    // Add Buffered handler as unique Handler
+    LOGGER.addHandler(this.handler);
 
-        LOGGER.addHandler(fh);
-      } catch (IOException e) {
-        Common.errorExit(e, "Error while creating log file: " + e.getMessage());
-      }
-    }
+    // Set the formatter
+    this.handler.setFormatter(Globals.LOG_FORMATTER);
 
     // Set the log level
     if (this.logLevel != null) {
       try {
-        LOGGER.setLevel(Level.parse(this.logLevel.toUpperCase()));
+        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase()));
       } catch (IllegalArgumentException e) {
         Common
             .showErrorMessageAndExit("Unknown log level ("
                 + this.logLevel
                 + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
       }
+    } else
+      this.handler.setLevel(Globals.LOG_LEVEL);
+
+    // Set the log file in arguments
+    if (this.logFile != null) {
+      try {
+        this.handler.addHandler(getLogHandler(this.logFile));
+      } catch (IOException e) {
+        Common.errorExit(e, "Error while creating log file: " + e.getMessage());
+      }
+    } else {
+
+      final ConsoleHandler ch = new ConsoleHandler();
+      this.handler.addHandler(ch);
     }
 
+  }
+
+  /**
+   * Create a new log file and flush log.
+   * @param logFilename log file name
+   * @throws EoulsanException if an error occurs while creating log file
+   */
+  public void createLogFileAndFlushLog(final String logFilename)
+      throws EoulsanException {
+
+    try {
+      Handler h = getLogHandler(logFilename);
+      this.handler.addHandler(h);
+    } catch (IOException e) {
+
+      throw new EoulsanException(e.getMessage());
+    }
+
+    flushLog();
+  }
+
+  /**
+   * Flush log.
+   */
+  public void flushLog() {
+
+    this.handler.flush();
   }
 
   /**
@@ -596,6 +634,9 @@ public abstract class Main {
     action.action(main.getActionArgs());
 
     LOGGER.info("End of " + action.getName() + " action");
+
+    // Flush logs
+    main.flushLog();
   }
 
 }

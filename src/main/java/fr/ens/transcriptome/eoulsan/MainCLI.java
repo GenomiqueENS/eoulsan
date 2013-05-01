@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -86,6 +87,17 @@ public final class MainCLI extends Main {
 
   @Override
   protected Handler getLogHandler(final String logFile) throws IOException {
+
+    if (logFile == null)
+      throw new NullPointerException("The log file is null");
+
+    final File parentFile = new File(logFile).getParentFile();
+
+    // Create parent directory if necessary
+    if (parentFile != null && !parentFile.exists())
+      if (!parentFile.mkdirs())
+        throw new IOException("Unable to create directory "
+            + parentFile + " for log file:" + logFile);
 
     return new FileHandler(logFile);
   }

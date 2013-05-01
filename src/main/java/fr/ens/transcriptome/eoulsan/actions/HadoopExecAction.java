@@ -179,6 +179,9 @@ public class HadoopExecAction extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(hdfsPath, "hdfsPath is null");
 
+    // Write log entries
+    Main.getInstance().flushLog();
+
     try {
 
       File repackagedJarFile = HadoopJarRepackager.repack();

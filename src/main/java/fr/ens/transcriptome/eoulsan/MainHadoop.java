@@ -77,6 +77,10 @@ public final class MainHadoop extends Main {
     final Path loggerPath = new Path(logFile);
     final FileSystem loggerFs = loggerPath.getFileSystem(this.conf);
 
+    // Create parent directory if necessary
+    if (!loggerFs.exists(loggerPath.getParent()))
+      loggerFs.mkdirs(loggerPath.getParent());
+
     return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
   }
 

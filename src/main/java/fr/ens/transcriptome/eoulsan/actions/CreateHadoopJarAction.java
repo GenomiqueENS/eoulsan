@@ -35,6 +35,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
@@ -59,7 +60,7 @@ public class CreateHadoopJarAction extends AbstractAction {
 
     return true;
   }
-  
+
   @Override
   public void action(final String[] arguments) {
 
@@ -79,13 +80,16 @@ public class CreateHadoopJarAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {
       help(options);
     }
+
+    // Write log entries
+    Main.getInstance().flushLog();
 
     try {
 

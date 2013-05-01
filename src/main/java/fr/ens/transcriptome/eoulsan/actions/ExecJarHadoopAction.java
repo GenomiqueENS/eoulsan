@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
@@ -369,6 +370,10 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Add download Step
       c.addStep(HDFSDataDownloadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
+
+      // Create the log File
+      Main.getInstance().createLogFileAndFlushLog(
+          context.getLogPathname() + File.separator + "eoulsan.log");
 
       // Create executor
       final Executor e =

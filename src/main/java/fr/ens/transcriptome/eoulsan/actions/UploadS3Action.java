@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
@@ -204,6 +205,10 @@ public class UploadS3Action extends AbstractAction {
       c.addStep(ExecInfoLogStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       pp.parse(c);
+
+      // Create the log File
+      Main.getInstance().createLogFileAndFlushLog(
+          context.getLogPathname() + File.separator + "eoulsan.log");
 
       // Execute
       final Executor e = new LocalExecutor(c, designFile, paramFile, context);

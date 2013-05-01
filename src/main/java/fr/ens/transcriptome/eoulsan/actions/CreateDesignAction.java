@@ -37,6 +37,7 @@ import org.apache.commons.cli.ParseException;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -128,6 +129,9 @@ public class CreateDesignAction extends AbstractAction {
       Common.errorExit(e,
           "Error while parsing parameter file: " + e.getMessage());
     }
+
+    // Write log entries
+    Main.getInstance().flushLog();
 
     Design design = null;
     final File designFile = new File(filename);
