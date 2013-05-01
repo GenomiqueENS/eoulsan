@@ -378,7 +378,7 @@ public class DataFile {
     if (protocolPrefixInSource == null)
       this.protocol = registery.getDefaultProtocol();
     else
-      this.protocol = registery.getProtocol(protocolPrefixInSource);
+      this.protocol = registery.newService(protocolPrefixInSource);
 
     if (this.protocol == null) {
       logger.severe("Unknown protocol: \""

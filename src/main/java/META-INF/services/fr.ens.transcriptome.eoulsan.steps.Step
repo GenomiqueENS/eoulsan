@@ -1,6 +1,3 @@
-# Pretreatment steps (paired-end data)
-fr.ens.transcriptome.eoulsan.steps.pretreatment.hadoop.PreTreatmentHadoopStep
-
 # Filter reads steps
 fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsFilterLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
@@ -31,7 +28,6 @@ fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
 
 # Management steps
-fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataUploadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep

@@ -153,7 +153,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set the mapper
     this.mapper =
-        SequenceReadsMapperService.getInstance().getMapper(mapperName);
+        SequenceReadsMapperService.getInstance().newService(mapperName);
 
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

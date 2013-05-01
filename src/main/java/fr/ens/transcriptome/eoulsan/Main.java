@@ -509,7 +509,7 @@ public abstract class Main {
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
     // Search action
-    this.action = ActionService.getInstance().getAction(actionName);
+    this.action = ActionService.getInstance().newService(actionName);
 
     // Action not found ?
     if (this.action == null || hadoopMode != action.isHadoopJarMode()) {

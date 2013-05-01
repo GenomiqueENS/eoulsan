@@ -24,97 +24,30 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.ServiceConfigurationError;
-import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.AnnotationUtils;
 import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class allow to get a Step object.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class StepService {
+public class StepService extends ServiceNameLoader<Step> {
 
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
   private static StepService service;
-  final Set<Class<? extends Annotation>> autorisedAnnotations;
 
-  /**
-   * This class loader allow to reject Steps without correct annotation to
-   * prevent instantiation of classes that use Hadoop API.
-   * @author Laurent Jourdren
-   */
-  private final static class ServiceClassLoader extends ClassLoader {
-
-    /** The set if the authorized annotations. */
-    private final Set<Class<? extends Annotation>> authorizedAnnotations;
-
-    @Override
-    public Class<?> loadClass(final String arg0) throws ClassNotFoundException {
-
-      final Class<?> result = super.loadClass(arg0);
-
-      if (result == null) {
-        return null;
-      }
-
-      if (testClass(result)) {
-        return result;
-      }
-
-      return null;
-    }
-
-    /**
-     * Test if a class has correct annotation
-     * @param clazz the class to test
-     * @return true if the class has correct annotation
-     */
-    private boolean testClass(Class<?> clazz) {
-
-      for (Class<? extends Annotation> annot : authorizedAnnotations) {
-        if (clazz.getAnnotation(annot) != null) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    /**
-     * Constructor.
-     * @param authorizedAnnotations set with authorized annotation
-     */
-    public ServiceClassLoader(
-        Set<Class<? extends Annotation>> autorisedAnnotations) {
-
-      super(ServiceClassLoader.class.getClassLoader());
-
-      if (autorisedAnnotations == null) {
-        throw new NullPointerException("The autorized annotation is null.");
-      }
-
-      this.authorizedAnnotations =
-          new HashSet<Class<? extends Annotation>>(autorisedAnnotations);
-    }
-
-  }
+  //
+  // Static method
+  //
 
   /**
    * Retrieve the singleton static instance of StepService.
@@ -130,41 +63,20 @@ public class StepService {
     return service;
   }
 
-  /**
-   * Get a Step object from its name.
-   * @param stepName name of the step to retrieve
-   */
-  public Step getStep(final String stepName) {
+  //
+  // Protected methods
+  //
 
-    if (stepName == null) {
-      return null;
-    }
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    final String stepNameLower = stepName.toLowerCase().trim();
+    return AnnotationUtils.accept(clazz, this.hadoopMode);
+  }
 
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
+  @Override
+  protected String getMethodName() {
 
-    final Iterator<Step> it =
-        ServiceLoader.load(Step.class,
-            new ServiceClassLoader(this.autorisedAnnotations)).iterator();
-
-    while (it.hasNext()) {
-
-      try {
-        final Step step = it.next();
-
-        if (step.getName().equals(stepNameLower)) {
-
-          return step;
-        }
-      } catch (ServiceConfigurationError e) {
-        LOGGER.fine("Class for step cannot be load in "
-            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
-      }
-
-    }
-
-    return null;
+    return "getName";
   }
 
   //
@@ -175,41 +87,15 @@ public class StepService {
    * Private constructor.
    * @param hadoopMode true if this service must return hadoopCompatible Steps
    */
-  @SuppressWarnings("unchecked")
+
   private StepService(final boolean hadoopMode) {
 
-    if (hadoopMode) {
-      this.autorisedAnnotations =
-          Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
-    } else {
-      this.autorisedAnnotations =
-          Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
-    }
+    super(Step.class);
 
-    // Log available steps
-    final Iterator<Step> it =
-        ServiceLoader.load(Step.class,
-            new ServiceClassLoader(this.autorisedAnnotations)).iterator();
+    for (String stepName : getServiceClasses().keySet()) {
 
-    while (it.hasNext()) {
-
-      try {
-        final Step step = it.next();
-
-        final String stepName = step.getName();
-
-        if (stepName == null || !stepName.toLowerCase().trim().equals(stepName)) {
-          throw new EoulsanRuntimeException("Invalid name of step: "
-              + stepName + " (Uppercase and spaces are forbidden).");
-        }
-
-        LOGGER.config("found step: "
-            + stepName + " (" + step.getClass().getName() + ")");
-
-      } catch (ServiceConfigurationError e) {
-        LOGGER.fine("Class for step cannot be load in "
-            + (hadoopMode ? "hadoop" : "local") + " mode: " + e.getMessage());
-      }
+      LOGGER.config("found step: " + stepName + " (" + stepName + ")");
     }
   }
+
 }

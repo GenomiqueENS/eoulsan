@@ -69,6 +69,29 @@ public class DataTypeRegistry {
     if (dt == null || types.contains(dt))
       return;
 
+    check(dt);
+
+    this.types.add(dt);
+    this.mapTypes.put(dt.getName(), dt);
+    this.prefixes.add(dt.getPrefix());
+  }
+
+  /**
+   * Register DataTypes.
+   * @param array Array with DataTypes to register
+   * @throws EoulsanException if the DataType is not valid
+   */
+  public void register(final DataType[] array) throws EoulsanException {
+
+    if (array == null)
+      return;
+
+    for (DataType dt : array)
+      register(dt);
+  }
+
+  private void check(final DataType dt) throws EoulsanException {
+
     if (dt.getName() == null)
       throw new EoulsanException("The DataType "
           + dt.getClass().getName() + " as no name.");
@@ -99,25 +122,6 @@ public class DataTypeRegistry {
     if (this.prefixes.contains(prefix))
       throw new EoulsanException("The prefix of DataType \""
           + dt.getName() + "\" is already registered.");
-
-    this.types.add(dt);
-    this.mapTypes.put(dt.getName(), dt);
-    this.prefixes.add(prefix);
-
-  }
-
-  /**
-   * Register DataTypes.
-   * @param array Array with DataTypes to register
-   * @throws EoulsanException if the DataType is not valid
-   */
-  public void register(final DataType[] array) throws EoulsanException {
-
-    if (array == null)
-      return;
-
-    for (DataType dt : array)
-      register(dt);
   }
 
   /**
@@ -141,6 +145,61 @@ public class DataTypeRegistry {
   public Set<DataType> getAllTypes() {
 
     return Collections.unmodifiableSet(this.types);
+  }
+
+  /**
+   * Register all type defines by classes.
+   */
+  private void registerAllClassServices() {
+
+    final Iterator<DataType> it = ServiceLoader.load(DataType.class).iterator();
+
+    for (final DataType dt : Utils.newIterable(it)) {
+
+      try {
+
+        LOGGER.fine("try to register type: " + dt);
+        register(dt);
+
+      } catch (EoulsanException e) {
+        LOGGER.warning("Cannot register "
+            + dt.getName() + ": " + e.getMessage());
+      }
+    }
+
+  }
+
+  /**
+   * Register all type defines by XML files.
+   */
+  private void registerAllXMLServices() {
+
+    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+    try {
+      for (String filename : ServiceListLoader
+          .load(XMLDataType.class.getName())) {
+
+        final String resource = RESOURCE_PREFIX + filename;
+        register(new XMLDataType(loader.getResourceAsStream(resource)));
+
+      }
+    } catch (EoulsanException e) {
+      LOGGER.severe("Cannot register XML data type: " + e.getMessage());
+    } catch (IOException e) {
+      LOGGER.severe("Unable to load the list of XML data type files: "
+          + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Reload the list of the available data types.
+   */
+  public void reload() {
+
+    registerAllClassServices();
+    registerAllXMLServices();
   }
 
   //
@@ -168,37 +227,7 @@ public class DataTypeRegistry {
    */
   private DataTypeRegistry() {
 
-    final Iterator<DataType> it = ServiceLoader.load(DataType.class).iterator();
-
-    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-    for (final DataType dt : Utils.newIterable(it)) {
-
-      try {
-
-        LOGGER.fine("try to register type: " + dt);
-        register(dt);
-
-      } catch (EoulsanException e) {
-        LOGGER.warning("Cannot register "
-            + dt.getName() + ": " + e.getMessage());
-      }
-    }
-
-    try {
-      for (String filename : ServiceListLoader
-          .load(XMLDataType.class.getName())) {
-
-        final String resource = RESOURCE_PREFIX + filename;
-        register(new XMLDataType(loader.getResourceAsStream(resource)));
-
-      }
-    } catch (EoulsanException e) {
-      LOGGER.severe("Cannot register XML data type: " + e.getMessage());
-    } catch (IOException e) {
-      LOGGER.severe("Unable to load the list of XML data type files: "
-          + e.getMessage());
-    }
+    reload();
   }
 
 }

@@ -105,9 +105,7 @@ public class MultiReadAlignmentsFilterBuilder {
     if (mapFilters.containsKey(filterName))
       filter = mapFilters.get(filterName);
     else {
-      filter =
-          ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(
-              filterName);
+      filter = ReadAlignmentsFilterService.getInstance().newService(filterName);
 
       if (filter == null) {
 

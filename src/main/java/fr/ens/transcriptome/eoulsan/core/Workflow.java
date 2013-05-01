@@ -117,7 +117,7 @@ class Workflow implements WorkflowDescription {
    */
   private Step getStep(String stepName) {
 
-    return StepService.getInstance(this.hadoopMode).getStep(stepName);
+    return StepService.getInstance(this.hadoopMode).newService(stepName);
   }
 
   //
