@@ -25,9 +25,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.DESIGN_FILE_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.OUTPUT_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.PARAMETERS_FILE_PATH_CONSTANT_NAME;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -366,9 +363,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Parse param file
       final ParamParser pp =
           new ParamParser(PathUtils.createInputStream(paramPath, conf));
-      pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designPathname);
-      pp.addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME, paramPathname);
-      pp.addConstant(OUTPUT_PATH_CONSTANT_NAME, destPathname);
+      pp.addConstants(context);
 
       pp.parse(c);
 
