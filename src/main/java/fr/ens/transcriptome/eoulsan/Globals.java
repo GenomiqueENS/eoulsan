@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -34,8 +34,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -50,8 +51,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public final class Globals {
 
-  private static Properties manifestProperties;
-  private static final String MANIFEST_PROPERTIES_FILE = "/manifest.txt";
+  private static Attributes manifestAttributes;
+  private static final String MANIFEST_FILE = "/META-INF/MANIFEST.MF";
 
   /** The name of the application. */
   public static final String APP_NAME = "Eoulsan";
@@ -273,27 +274,30 @@ public final class Globals {
 
     readManifest();
 
-    return manifestProperties.getProperty(propertyKey);
+    return manifestAttributes.getValue(propertyKey);
   }
 
   private static synchronized void readManifest() {
 
-    if (manifestProperties != null) {
+    if (manifestAttributes != null) {
       return;
     }
 
     try {
-      manifestProperties = new Properties();
 
-      final InputStream is =
-          Globals.class.getResourceAsStream(MANIFEST_PROPERTIES_FILE);
-
-      if (is == null) {
+      Class<?> clazz = Globals.class;
+      String className = clazz.getSimpleName() + ".class";
+      String classPath = clazz.getResource(className).toString();
+      if (!classPath.startsWith("jar")) {
+        // Class not from JAR
         return;
       }
+      String manifestPath =
+          classPath.substring(0, classPath.lastIndexOf("!") + 1)
+              + MANIFEST_FILE;
+      Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+      manifestAttributes = manifest.getMainAttributes();
 
-      manifestProperties.load(is);
-      is.close();
     } catch (IOException e) {
     }
   }
