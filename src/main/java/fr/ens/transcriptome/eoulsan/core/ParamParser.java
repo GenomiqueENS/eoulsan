@@ -85,6 +85,12 @@ public class ParamParser {
       "parameters.file.path";
   /** Output path constant name. */
   public static final String OUTPUT_PATH_CONSTANT_NAME = "output.path";
+  /** Job id constant name. */
+  public static final String JOB_ID_CONSTANT_NAME = "job.id";
+  /** Job UUID constant name. */
+  public static final String JOB_UUID_CONSTANT_NAME = "job.uuid";
+  /** Logs path constant name. */
+  public static final String LOGS_PATH_CONSTANT_NAME = "logs.path";
 
   /** Version of the format of the parameter file. */
   private static final String FORMAT_VERSION = "1.0";
@@ -349,6 +355,9 @@ public class ParamParser {
     addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME,
         context.getParameterPathname());
     addConstant(OUTPUT_PATH_CONSTANT_NAME, context.getOutputPathname());
+    addConstant(JOB_ID_CONSTANT_NAME, context.getJobId());
+    addConstant(JOB_UUID_CONSTANT_NAME, context.getJobUUID());
+    addConstant(LOGS_PATH_CONSTANT_NAME, context.getLogPathname());
   }
 
   /**
