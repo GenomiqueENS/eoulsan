@@ -98,7 +98,7 @@ public abstract class ServiceNameLoader<S> {
 
       for (ServiceListLoader.Entry e : ServiceListLoader
           .loadEntries(this.service.getName())) {
-        System.out.println(e);
+
         processClassName(e.getUrl().toString(), e.getLineNumber(), e.getValue());
       }
 
