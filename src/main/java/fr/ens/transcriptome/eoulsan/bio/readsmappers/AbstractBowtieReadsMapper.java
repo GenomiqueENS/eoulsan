@@ -26,16 +26,13 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -47,24 +44,15 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public abstract class AbstractBowtieReadsMapper extends
     AbstractSequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   private static final String SYNC = AbstractBowtieReadsMapper.class.getName();
 
-  private File outputFile;
-
   abstract protected String getExtensionIndexFile();
-
-  abstract public String getMapperName();
-
-  abstract public DataFormat getArchiveFormat();
 
   abstract protected String[] getMapperExecutables();
 
   abstract protected String getIndexerExecutable();
 
-  abstract public String getDefaultArguments();
+  abstract protected String getDefaultArguments();
 
   @Override
   public boolean isSplitsAllowed() {
@@ -117,59 +105,13 @@ public abstract class AbstractBowtieReadsMapper extends
     return BowtieReadsMapper.getBowtieQualityArgument(getFastqFormat());
   }
 
-  @Override
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir) throws IOException {
-
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
-    }
-
-    final String extensionIndexFile = getExtensionIndexFile();
-
-    final String index =
-        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-            extensionIndexFile.length())).getName();
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
-
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
-
-    cmd.add(bowtiePath);
-    cmd.add(bowtieQualityArgument());
-
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add(index);
-    cmd.add("-1");
-    cmd.add(readsFile1.getAbsolutePath());
-    cmd.add("-2");
-    cmd.add(readsFile2.getAbsolutePath());
-    cmd.add("-S");
-    cmd.add(outputFile.getAbsolutePath());
-
-    LOGGER.info(cmd.toString());
-
-    final int exitValue = sh(cmd, archiveIndexDir);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + getMapperName() + " execution: " + exitValue);
-    }
-
-    this.outputFile = outputFile;
-
-  }
+  //
+  // Map in file mode
+  //
 
   @Override
-  protected void internalMap(File readsFile, File archiveIndexDir)
+  protected InputStream internalMapSE(final File readsFile,
+      final File archiveIndexDir, final GenomeDescription genomeDescription)
       throws IOException {
 
     final String bowtiePath;
@@ -184,46 +126,44 @@ public abstract class AbstractBowtieReadsMapper extends
         new File(getIndexPath(archiveIndexDir, extensionIndexFile,
             extensionIndexFile.length())).getName();
 
-    final File outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
+    final MapperProcess mapperProcess =
+        new MapperProcess(getMapperName(), true, false, false) {
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+          @Override
+          protected List<List<String>> createCommandLines() {
 
-    cmd.add(bowtiePath);
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add(bowtieQualityArgument());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add(index);
-    cmd.add("-q");
-    cmd.add(readsFile.getAbsolutePath());
-    cmd.add("-S");
-    cmd.add(outputFile.getAbsolutePath());
+            // Build the command line
+            final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd.toString());
+            cmd.add(bowtiePath);
+            if (getListMapperArguments() != null)
+              cmd.addAll(getListMapperArguments());
+            cmd.add(bowtieQualityArgument());
+            cmd.add("-p");
+            cmd.add(getThreadsNumber() + "");
+            cmd.add(index);
+            cmd.add("-q");
+            cmd.add(readsFile.getAbsolutePath());
+            cmd.add("-S");
 
-    final int exitValue = sh(cmd, archiveIndexDir);
+            return Collections.singletonList(cmd);
+          }
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + getMapperName() + " execution: " + exitValue);
-    }
+          @Override
+          protected File executionDirectory() {
 
-    this.outputFile = outputFile;
+            return archiveIndexDir;
+          }
+
+        };
+
+    return mapperProcess.getStout();
   }
 
-  /**
-   * create the line command for execute single-end mapping
-   * @param readsFile fastq file
-   * @param archiveIndexDir index file used for mapping
-   * @param parserLine SAMParserLine which get back a output stream of bowtie
-   * @throw error IO in reading with readsFile
-   */
-  protected void internalMap(File readsFile, File archiveIndexDir,
-      SAMParserLine parserLine) throws IOException {
+  @Override
+  protected InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
 
     final String bowtiePath;
 
@@ -237,44 +177,50 @@ public abstract class AbstractBowtieReadsMapper extends
         new File(getIndexPath(archiveIndexDir, extensionIndexFile,
             extensionIndexFile.length())).getName();
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+    final MapperProcess mapperProcess =
+        new MapperProcess(getMapperName(), true, false, false) {
 
-    cmd.add(bowtiePath);
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add(bowtieQualityArgument());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add(index);
-    cmd.add("-q");
-    cmd.add(readsFile.getAbsolutePath());
-    cmd.add("-S");
+          @Override
+          protected List<List<String>> createCommandLines() {
+            // Build the command line
+            final List<String> cmd = new ArrayList<String>();
 
-    // TODO to remove
-    System.out.println("cmd bowtie : " + cmd);
+            cmd.add(bowtiePath);
+            cmd.add(bowtieQualityArgument());
 
-    LOGGER.info(cmd.toString());
+            if (getListMapperArguments() != null)
+              cmd.addAll(getListMapperArguments());
+            cmd.add("-p");
+            cmd.add(getThreadsNumber() + "");
+            cmd.add(index);
+            cmd.add("-1");
+            cmd.add(readsFile1.getAbsolutePath());
+            cmd.add("-2");
+            cmd.add(readsFile2.getAbsolutePath());
+            cmd.add("-S");
 
-    final int exitValue = sh(cmd, archiveIndexDir, parserLine);
+            return Collections.singletonList(cmd);
+          }
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + getMapperName() + " execution: " + exitValue);
-    }
+          @Override
+          protected File executionDirectory() {
+
+            return archiveIndexDir;
+          }
+
+        };
+
+    return mapperProcess.getStout();
+
   }
 
+  //
+  // Map in streaming mode
+  //
+
   @Override
-  /**
-   * create the line command for execute pair-end mapping
-   * @param readsFile1 fastq file
-   * @param readsFile2 fastq file
-   * @param archiveIndexDir index file used for mapping
-   * @param parserLine SAMParserLine which get back a output stream of bowtie
-   * @throw error IO in reading with readsFile1 or readsFile2 
-   */
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir, SAMParserLine parserLine) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
 
     final String bowtiePath;
 
@@ -288,44 +234,84 @@ public abstract class AbstractBowtieReadsMapper extends
         new File(getIndexPath(archiveIndexDir, extensionIndexFile,
             extensionIndexFile.length())).getName();
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+    return new MapperProcess(getMapperName(), false, true, false) {
 
-    cmd.add(bowtiePath);
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add(bowtieQualityArgument());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add(index);
-    cmd.add("-q");
-    cmd.add("-1");
-    cmd.add(readsFile1.getAbsolutePath());
-    cmd.add("-2");
-    cmd.add(readsFile2.getAbsolutePath());
-    cmd.add("-S");
+      @Override
+      protected List<List<String>> createCommandLines() {
 
-    // TODO to remove
-    System.out.println("cmd bowtie : " + cmd.toString().replace(',', ' '));
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
 
-    LOGGER.info(cmd.toString());
+        cmd.add(bowtiePath);
+        if (getListMapperArguments() != null)
+          cmd.addAll(getListMapperArguments());
+        cmd.add(bowtieQualityArgument());
+        cmd.add("-p");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add(index);
+        cmd.add("-q");
+        cmd.add("-S");
+        cmd.add("-");
 
-    final int exitValue = sh(cmd, archiveIndexDir, parserLine);
+        return Collections.singletonList(cmd);
+      }
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + getMapperName() + " execution: " + exitValue);
+      @Override
+      protected File executionDirectory() {
+
+        return archiveIndexDir;
+      }
+
+    };
+  }
+
+  @Override
+  protected MapperProcess internalMapPE(final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
+
+    final String bowtiePath;
+
+    synchronized (SYNC) {
+      bowtiePath = install(getMapperExecutables());
     }
-  }
 
-  @Override
-  public void clean() {
-  }
+    final String extensionIndexFile = getExtensionIndexFile();
 
-  @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
+    final String index =
+        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
+            extensionIndexFile.length())).getName();
 
-    return this.outputFile;
+    return new MapperProcess(getMapperName(), false, true, true) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+
+        cmd.add(bowtiePath);
+        cmd.add(bowtieQualityArgument());
+
+        if (getListMapperArguments() != null)
+          cmd.addAll(getListMapperArguments());
+        cmd.add("-p");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add(index);
+        cmd.add(("-r"));
+        cmd.add("-12");
+        cmd.add("-S");
+        cmd.add("-");
+
+        return Collections.singletonList(cmd);
+      }
+
+      @Override
+      protected File executionDirectory() {
+
+        return archiveIndexDir;
+      }
+
+    };
+
   }
 
   //
@@ -341,7 +327,6 @@ public abstract class AbstractBowtieReadsMapper extends
     super.init(pairedEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
         incrementer, counterGroup);
     setMapperArguments(getDefaultArguments());
-
   }
 
 }

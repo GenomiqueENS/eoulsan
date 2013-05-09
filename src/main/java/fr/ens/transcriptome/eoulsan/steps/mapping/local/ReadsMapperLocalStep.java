@@ -34,8 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.google.common.io.Files;
-
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -105,6 +103,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final int inFileCount =
             context.getDataFileCount(DataFormats.READS_FASTQ, s);
 
+        // define final output SAM file
+        final File samFile =
+            context.getOutputDataFile(MAPPER_RESULTS_SAM, s).toFile();
+
         if (inFileCount < 1)
           throw new IOException("No reads file found.");
 
@@ -123,7 +125,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Single read mapping
           mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
-              reporter);
+              genomeDescription, samFile, reporter);
 
           logMsg =
               "Mapping reads in "
@@ -133,7 +135,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         }
 
         // Paired end mode
-        if (inFileCount == 2) {
+        else if (inFileCount == 2) {
 
           // Get the source
           final File inFile1 =
@@ -144,34 +146,21 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Single read mapping
           mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,
-              indexDir, reporter);
+              indexDir, genomeDescription, samFile, reporter);
 
           logMsg =
               "Mapping reads in "
                   + s.getMetadata().getFastqFormat() + " with "
                   + mapper.getMapperName() + " (" + s.getName() + ", "
                   + inFile1.getName() + "," + inFile2.getName() + ")";
-        }
-
-        final File samOutputFile = mapper.getSAMFile(genomeDescription);
+        } else
+          throw new IllegalStateException();
 
         // Parse SAM output file to get information for reporter object
-        parseSAMResults(samOutputFile, reporter);
-
-        // Clean mapper temporary files
-        mapper.clean();
-
-        // define final output SAM file
-        final File outFile =
-            context.getOutputDataFile(MAPPER_RESULTS_SAM, s).toFile();
-
-        // Rename the output SAM file to its final name
-        Files.move(samOutputFile, outFile);
+        parseSAMResults(samFile, reporter);
 
         // Add counters for this sample to log file
-
         log.append(reporter.countersValuesToString(COUNTER_GROUP, logMsg));
-
       }
       return new StepResult(context, startTime, log.toString());
 
@@ -195,12 +184,15 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param indexDir output directory for the uncompressed genome index for the
    *          mapper
    * @param reporter Eoulsan reporter object
+   * @param genomedescription genome description
+   * @param samFile output SAM file
    * @throws IOException if an error occurs while the mapping
    */
   private void mapSingleEnd(final Context context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile,
-      final File archiveIndexFile, final File indexDir, final Reporter reporter)
-      throws IOException {
+      final File archiveIndexFile, final File indexDir,
+      final GenomeDescription genomedescription, final File samFile,
+      final Reporter reporter) throws IOException {
 
     // Init mapper
     mapper.init(false, s.getMetadata().getFastqFormat(), archiveIndexFile,
@@ -217,8 +209,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " threads option");
 
     // Process to mapping
-    mapper.map(inFile);
-
+    mapper.mapSE(inFile, genomedescription, samFile);
   }
 
   /**
@@ -232,12 +223,15 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param indexDir output directory for the uncompressed genome index for the
    *          mapper
    * @param reporter Eoulsan reporter object
+   * @param genomedescription genome description
+   * @param samFile output SAM file
    * @throws IOException if an error occurs while the mapping
    */
   private void mapPairedEnd(final Context context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile1, final File inFile2,
-      final File archiveIndexFile, final File indexDir, final Reporter reporter)
-      throws IOException {
+      final File archiveIndexFile, final File indexDir,
+      final GenomeDescription genomeDescription, final File samFile,
+      final Reporter reporter) throws IOException {
 
     // Init mapper
     mapper.init(true, s.getMetadata().getFastqFormat(), archiveIndexFile,
@@ -254,7 +248,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " with " + mapperThreads + " threads option");
 
     // Process to mapping
-    mapper.map(inFile1, inFile2);
+    mapper.mapPE(inFile1, inFile2, genomeDescription, samFile);
   }
 
   /**
