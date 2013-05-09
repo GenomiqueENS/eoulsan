@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -96,6 +97,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private Locker lock;
 
   private SequenceReadsMapper mapper;
+  private MapperProcess process;
   private List<String> fields = newArrayList();
 
   /**
@@ -120,12 +122,12 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     if (fieldsSize == 3) {
 
       // Single end
-      mapper.writeInputEntry(fields.get(0), fields.get(1), fields.get(2));
+      process.writeEntry(fields.get(0), fields.get(1), fields.get(2));
 
     } else if (fieldsSize == 6) {
 
       // Pair end
-      mapper.writeInputEntry(fields.get(0), fields.get(1), fields.get(2),
+      process.writeEntry(fields.get(0), fields.get(1), fields.get(2),
           fields.get(3), fields.get(4), fields.get(5));
     }
 
@@ -194,6 +196,12 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Init mapper
     mapper.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
         new HadoopReporter(context), this.counterGroup);
+
+    // TODO Handle genome description
+    if (pairEnd)
+      this.process = this.mapper.mapPE(null);
+    else
+      this.process = this.mapper.mapSE(null);
 
     LOGGER.info("Fastq format: " + fastqFormat);
 
@@ -276,6 +284,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     ProcessUtils.waitRandom(5000);
     // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
+    // TODO where is the temporary directory
+    File samOutputFile = FileUtils.createTempFile("output", ".sam");
     lock.lock();
     try {
       ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
@@ -287,12 +297,13 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
           + this.mapper.getMapperName());
 
       // Close the data file
-      this.mapper.closeInput();
+      this.process.closeEntriesWriter();
 
       context.setStatus("Run " + this.mapper.getMapperName());
 
       // Process to mapping
-      mapper.map();
+      this.process.toFile(samOutputFile);
+      this.process.waitFor();
 
     } catch (IOException e) {
 
@@ -306,7 +317,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Parse result file
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
-    final File samOutputFile = this.mapper.getSAMFile(null);
+
     parseSAMResults(samOutputFile, context);
 
     // Remove temporary files
@@ -316,9 +327,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
           + samOutputFile.getAbsolutePath());
 
     LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
-
-    // Clean mapper input files
-    this.mapper.clean();
 
     LOGGER.info("End of close() of the mapper.");
   }

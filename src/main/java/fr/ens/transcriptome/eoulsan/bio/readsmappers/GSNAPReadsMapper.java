@@ -26,17 +26,15 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -47,9 +45,6 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   private static final String MAPPER_EXECUTABLE = "gsnap";
   private static final String[] INDEXER_EXECUTABLES = new String[] {
       "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
@@ -58,8 +53,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
   private static final String SYNC = GSNAPReadsMapper.class.getName();
   private static final String MAPPER_NAME = "GSNAP";
-
-  private File outputFile;
 
   @Override
   public String getMapperName() {
@@ -107,17 +100,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public File getSAMFile(GenomeDescription gd) throws IOException {
-
-    return this.outputFile;
-  }
-
-  @Override
-  public void clean() {
-
-  }
-
-  @Override
   public DataFormat getArchiveFormat() {
 
     return DataFormats.GSNAP_INDEX_ZIP;
@@ -156,76 +138,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     return cmd;
   }
 
-  // TODO to remove
-  protected String getIndexerCommand_OLD(String indexerPathname,
-      String genomePathname) {
-
-    final String binariesDirectory =
-        new File(indexerPathname).getParentFile().getAbsolutePath();
-    final String genomeDirectory =
-        new File(genomePathname).getParentFile().getAbsolutePath();
-
-    return indexerPathname
-        + " -B " + binariesDirectory + " -D " + genomeDirectory + " -d genome "
-        + genomePathname;
-  }
-
   @Override
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir) throws IOException {
-
-    final String gsnapPath;
-
-    synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
-
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
-    cmd.add(gsnapPath);
-    cmd.add("-A");
-    cmd.add("sam");
-    cmd.add(getGSNAPQualityArgument(getFastqFormat()));
-    cmd.add("-t");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-D");
-    cmd.add(archiveIndexDir.getAbsolutePath());
-    cmd.add("-d");
-    cmd.add("genome");
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add(readsFile1.getAbsolutePath());
-    cmd.add(readsFile2.getAbsolutePath());
-
-    cmd.add(">");
-    cmd.add(outputFile.getAbsolutePath());
-
-    // Old version : cmd = gsnapPath
-    // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
-    // + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
-    // + " -d genome " + getMapperArguments() + " "
-    // + readsFile1.getAbsolutePath() + " " + readsFile2.getAbsolutePath()
-    // + " > " + outputFile.getAbsolutePath() + " 2> /dev/null";
-
-    LOGGER.info(cmd.toString());
-
-    final int exitValue = ProcessUtils.sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
-    }
-
-    this.outputFile = outputFile;
-
-  }
-
-  @Override
-  protected void internalMap(File readsFile, File archiveIndexDir)
+  protected InputStream internalMapSE(final File readsFile,
+      final File archiveIndexDir, final GenomeDescription genomeDescription)
       throws IOException {
 
     final String gsnapPath;
@@ -234,60 +149,130 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       gsnapPath = install(MAPPER_EXECUTABLE);
     }
 
-    final File outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), getMapperName()
-            .toLowerCase() + "-outputFile-", ".sam");
+    final MapperProcess mapperProcess =
+        createMapperProcessSE(gsnapPath,
+            getGSNAPQualityArgument(getFastqFormat()),
+            archiveIndexDir.getAbsolutePath(), readsFile, true);
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
-    cmd.add(gsnapPath);
-    cmd.add("-A");
-    cmd.add("sam");
-    cmd.add(getGSNAPQualityArgument(getFastqFormat()));
-    cmd.add("-t");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-D");
-    cmd.add(archiveIndexDir.getAbsolutePath());
-    cmd.add("-d");
-    cmd.add("genome");
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add(readsFile.getAbsolutePath());
+    return mapperProcess.getStout();
+  }
 
-    cmd.add(">");
-    cmd.add(outputFile.getAbsolutePath());
+  @Override
+  protected InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
 
-    // Old version : cmd = gsnapPath
-    // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
-    // + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
-    // + " -d genome " + getMapperArguments() + " "
-    // + readsFile.getAbsolutePath() + " > "
-    // + outputFile.getAbsolutePath() + " 2> /dev/null";
+    final String gsnapPath;
 
-    LOGGER.info(cmd.toString());
-
-    final int exitValue = ProcessUtils.sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
+    synchronized (SYNC) {
+      gsnapPath = install(MAPPER_EXECUTABLE);
     }
 
-    this.outputFile = outputFile;
+    final MapperProcess mapperProcess =
+        createMapperProcessPE(gsnapPath,
+            getGSNAPQualityArgument(getFastqFormat()),
+            archiveIndexDir.getAbsolutePath(), readsFile1, readsFile2, true);
 
+    return mapperProcess.getStout();
   }
 
   @Override
-  protected void internalMap(final File readsFile1, final File readsFile2,
-      final File archiveIndex, final SAMParserLine parserLine)
+  protected MapperProcess internalMapSE(final File archiveIndexDir,
+      final GenomeDescription gd) throws IOException {
+    final String gsnapPath;
+
+    synchronized (SYNC) {
+      gsnapPath = install(MAPPER_EXECUTABLE);
+    }
+
+    return createMapperProcessSE(gsnapPath,
+        getGSNAPQualityArgument(getFastqFormat()),
+        archiveIndexDir.getAbsolutePath(), null, false);
+  }
+
+  @Override
+  protected MapperProcess internalMapPE(final File archiveIndexDir,
+      final GenomeDescription gd) throws IOException {
+    final String gsnapPath;
+
+    synchronized (SYNC) {
+      gsnapPath = install(MAPPER_EXECUTABLE);
+    }
+
+    return createMapperProcessPE(gsnapPath,
+        getGSNAPQualityArgument(getFastqFormat()),
+        archiveIndexDir.getAbsolutePath(), null, null, false);
+  }
+
+  private MapperProcess createMapperProcessSE(final String gsnapPath,
+      final String fastqFormat, final String archivePath, final File readsPath,
+      final boolean fileMode) throws IOException {
+
+    return new MapperProcess(getMapperName(), fileMode, false, false) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+        cmd.add(gsnapPath);
+        cmd.add("-A");
+        cmd.add("sam");
+        cmd.add(fastqFormat);
+        cmd.add("-t");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add("-D");
+        cmd.add(archivePath);
+        cmd.add("-d");
+        cmd.add("genome");
+        cmd.addAll(getListMapperArguments());
+        if (fileMode)
+          cmd.add(readsPath.getAbsolutePath());
+        else
+          cmd.add(getTmpInputFile1().getAbsolutePath());
+
+        return Collections.singletonList(cmd);
+      }
+
+    };
+  }
+
+  private MapperProcess createMapperProcessPE(final String gsnapPath,
+      final String fastqFormat, final String archivePath,
+      final File reads1File, final File reads2File, final boolean fileMode)
       throws IOException {
-    new UnsupportedOperationException();
-  }
 
-  @Override
-  protected void internalMap(final File readsFile, final File archiveIndex,
-      final SAMParserLine parserLine) throws IOException {
-    new UnsupportedOperationException();
+    return new MapperProcess(getMapperName(), fileMode, false, true) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+        cmd.add(gsnapPath);
+        cmd.add("-A");
+        cmd.add("sam");
+        cmd.add(fastqFormat);
+        cmd.add("-t");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add("-D");
+        cmd.add(archivePath);
+        cmd.add("-d");
+        cmd.add("genome");
+        if (getListMapperArguments() != null)
+          cmd.addAll(getListMapperArguments());
+        if (fileMode) {
+          cmd.add(reads1File.getAbsolutePath());
+          cmd.add(reads2File.getAbsolutePath());
+        } else {
+          cmd.add(getTmpInputFile1().getAbsolutePath());
+          cmd.add(getTmpInputFile2().getAbsolutePath());
+        }
+
+        return Collections.singletonList(cmd);
+      }
+
+    };
   }
 
   private static final String getGSNAPQualityArgument(final FastqFormat format)

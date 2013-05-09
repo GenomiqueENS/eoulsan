@@ -25,15 +25,18 @@
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -47,19 +50,12 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
   private static final String MAPPER_EXECUTABLE = "soap";
   private static final String INDEXER_EXECUTABLE = "2bwt-builder";
 
   public static final String DEFAULT_ARGUMENTS = "-r 2 -l 28";
 
   private static final String SYNC = SOAPReadsMapper.class.getName();
-
-  private File outputFile;
-  private File unmapFile;
-  private File unpairedFile;
 
   @Override
   public String getMapperName() {
@@ -125,7 +121,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected void internalMap(final File readsFile, final File archiveIndexDir)
+  protected InputStream internalMapSE(final File readsFile,
+      final File archiveIndexDir, final GenomeDescription genomeDescription)
       throws IOException {
 
     final String soapPath;
@@ -134,43 +131,22 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       soapPath = install(MAPPER_EXECUTABLE);
     }
 
-    this.outputFile =
+    final File outputFile =
         FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
             ".soap");
-    this.unmapFile =
+    final File unmapFile =
         FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
             ".unmap");
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
-
-    cmd.add(soapPath);
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-a");
-    cmd.add(readsFile.getAbsolutePath());
-    cmd.add("-D");
-    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
-    cmd.add("-o");
-    cmd.add(outputFile.getAbsolutePath());
-    cmd.add("-u");
-    cmd.add(unmapFile.getAbsolutePath());
-
-    LOGGER.info(cmd.toString());
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for SOAP execution: " + exitValue);
-    }
-
+    return createMapperProcessSE(soapPath,
+        getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile, outputFile,
+        unmapFile, genomeDescription, true).getStout();
   }
 
   @Override
-  protected void internalMap(File readsFile1, File readsFile2,
-      File archiveIndexDir) throws IOException {
+  protected InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
 
     final String soapPath;
 
@@ -178,79 +154,220 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       soapPath = install(MAPPER_EXECUTABLE);
     }
 
-    this.outputFile =
+    final File outputFile =
         FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
             ".soap");
-    this.unmapFile =
+    final File unmapFile =
         FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
             ".unmap");
-    this.unpairedFile =
+    final File unpairedFile =
         FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
             ".unpaired");
 
-    // Build the command line
-    final List<String> cmd = new ArrayList<String>();
+    return createMapperProcessPE(soapPath,
+        getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile1, readsFile2,
+        outputFile, unmapFile, unpairedFile, genomeDescription, true)
+        .getStout();
+  }
 
-    cmd.add(soapPath);
-    if (getListMapperArguments() != null)
-      cmd.addAll(getListMapperArguments());
-    cmd.add("-p");
-    cmd.add(getThreadsNumber() + "");
-    cmd.add("-a");
-    cmd.add(readsFile1.getAbsolutePath());
-    cmd.add("-b");
-    cmd.add(readsFile2.getAbsolutePath());
-    cmd.add("-D");
-    cmd.add(getIndexPath(archiveIndexDir, ".index.amb", 4));
-    cmd.add("-o");
-    cmd.add(outputFile.getAbsolutePath());
-    cmd.add("-u");
-    cmd.add(unmapFile.getAbsolutePath());
-    cmd.add("-2");
-    cmd.add(unpairedFile.getAbsolutePath());
+  @Override
+  protected MapperProcess internalMapSE(File archiveIndex,
+      GenomeDescription genomeDescription) throws IOException {
+    final String soapPath;
 
-    LOGGER.info(cmd.toString());
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for SOAP execution: " + exitValue);
+    synchronized (SYNC) {
+      soapPath = install(MAPPER_EXECUTABLE);
     }
 
+    // Get temp dir from Eoulsan Runtime
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
+    final File outputFile =
+        FileUtils.createTempFile(tmpDir, "soap-outputFile-", ".soap");
+    final File unmapFile =
+        FileUtils.createTempFile(tmpDir, "soap-outputFile-", ".unmap");
+
+    return createMapperProcessSE(soapPath,
+        getIndexPath(archiveIndex, ".index.amb", 4), null, outputFile,
+        unmapFile, genomeDescription, false);
   }
 
   @Override
-  protected void internalMap(final File readsFile1, final File readsFile2,
-      final File archiveIndex, final SAMParserLine parserLine)
+  protected MapperProcess internalMapPE(File archiveIndex,
+      GenomeDescription genomeDescription) throws IOException {
+    final String soapPath;
+
+    synchronized (SYNC) {
+      soapPath = install(MAPPER_EXECUTABLE);
+    }
+
+    // Get temp dir from Eoulsan Runtime
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
+    final File outputFile =
+        FileUtils.createTempFile(tmpDir, "soap-output-", ".soap");
+    final File unmapFile =
+        FileUtils.createTempFile(tmpDir, "soap-output-", ".unmap");
+    final File unpairedFile =
+        FileUtils.createTempFile(tmpDir, "soap-output-", ".unpaired");
+
+    return createMapperProcessPE(soapPath,
+        getIndexPath(archiveIndex, ".index.amb", 4), null, null, outputFile,
+        unmapFile, unpairedFile, genomeDescription, true);
+  }
+
+  private MapperProcess createMapperProcessSE(final String soapPath,
+      final String archivePath, final File readsFile, final File outputFile,
+      final File unmapFile, final GenomeDescription genomeDescription,
+      final boolean fileMode) throws IOException {
+
+    return new MapperProcess(getMapperName(), fileMode, false, false) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+
+        cmd.add(soapPath);
+        if (getListMapperArguments() != null)
+          cmd.addAll(getListMapperArguments());
+        cmd.add("-p");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add("-a");
+        if (fileMode)
+          cmd.add(readsFile.getAbsolutePath());
+        else
+          cmd.add(getTmpInputFile1().getAbsolutePath());
+        cmd.add("-D");
+        cmd.add(archivePath);
+        cmd.add("-o");
+        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("-u");
+        cmd.add(unmapFile.getAbsolutePath());
+
+        return Collections.singletonList(cmd);
+      }
+
+      @Override
+      protected InputStream createCustomInputStream(InputStream stdout)
+          throws FileNotFoundException {
+
+        return new SequenceInputStream(convertSOAP2SAM(stdout,
+            genomeDescription, isPairedEnd()),
+            convertFasta2SAM(new FileInputStream(unmapFile)));
+      }
+
+      @Override
+      protected void clean() {
+
+        outputFile.delete();
+        unmapFile.delete();
+      }
+
+    };
+
+  }
+
+  private MapperProcess createMapperProcessPE(final String soapPath,
+      final String archivePath, final File readsFile1, final File readsFile2,
+      final File outputFile, final File unmapFile, final File unpairedFile,
+      final GenomeDescription genomeDescription, final boolean fileMode)
       throws IOException {
-    new UnsupportedOperationException();
+
+    return new MapperProcess(getMapperName(), true, false, true) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+
+        cmd.add(soapPath);
+        if (getListMapperArguments() != null)
+          cmd.addAll(getListMapperArguments());
+        cmd.add("-p");
+        cmd.add(getThreadsNumber() + "");
+        cmd.add("-a");
+        cmd.add(readsFile1.getAbsolutePath());
+        cmd.add("-b");
+        cmd.add(readsFile2.getAbsolutePath());
+        cmd.add("-D");
+        cmd.add(archivePath);
+        cmd.add("-o");
+        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("-u");
+        cmd.add(unmapFile.getAbsolutePath());
+        cmd.add("-2");
+        cmd.add(unpairedFile.getAbsolutePath());
+
+        return Collections.singletonList(cmd);
+      }
+
+      @Override
+      protected InputStream createCustomInputStream(InputStream stdout)
+          throws FileNotFoundException {
+
+        return new SequenceInputStream(convertSOAP2SAM(stdout,
+            genomeDescription, isPairedEnd()),
+            convertFasta2SAM(new FileInputStream(unmapFile)));
+      }
+
+      @Override
+      protected void clean() {
+
+        outputFile.delete();
+        unmapFile.delete();
+      }
+
+    };
+
   }
 
-  @Override
-  protected void internalMap(final File readsFile, final File archiveIndex,
-      final SAMParserLine parserLine) throws IOException {
-    new UnsupportedOperationException();
+  private final static InputStream convertSOAP2SAM(final InputStream in,
+      final GenomeDescription gd, final boolean pairedEnd) {
+
+    final SOAP2SAM s2s = new SOAP2SAM(gd);
+
+    return new MapperResult2SAMInputStream(in) {
+
+      @Override
+      protected List<String> transform(String s) {
+
+        if (s == null)
+          return s2s.last();
+        return s2s.c(s, pairedEnd);
+      }
+
+    };
   }
 
-  @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
+  private final static InputStream convertFasta2SAM(final InputStream in) {
 
-    final File resultFile =
-        FileUtils.createTempFile(this.outputFile.getParentFile(),
-            "soap-output-", ".sam");
+    return new MapperResult2SAMInputStream(in) {
 
-    final SOAP2SAM convert =
-        new SOAP2SAM(this.outputFile, this.unmapFile, gd, resultFile);
-    convert.convert(isPairEnd());
+      private String id;
 
-    return resultFile;
-  }
+      @Override
+      protected List<String> transform(String s) {
 
-  @Override
-  public void clean() {
+        if (s == null || s.trim().length() == 0)
+          return null;
 
-    deleteFile(this.outputFile);
-    deleteFile(this.unmapFile);
+        if (id == null) {
+          id = s.substring(1).trim();
+          return null;
+        }
+
+        final List<String> result =
+            Collections.singletonList(id
+                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t\n");
+        this.id = null;
+
+        return result;
+      }
+    };
+
   }
 
   //
