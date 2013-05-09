@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -283,10 +284,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
-    // TODO where is the temporary directory
-    File samOutputFile = FileUtils.createTempFile("output", ".sam");
     lock.lock();
+
     try {
       ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
           .toLowerCase());
@@ -302,7 +301,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       context.setStatus("Run " + this.mapper.getMapperName());
 
       // Process to mapping
-      this.process.toFile(samOutputFile);
+      parseSAMResults(this.process.getStout(), context);
       this.process.waitFor();
 
     } catch (IOException e) {
@@ -315,23 +314,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       lock.unlock();
     }
 
-    // Parse result file
-    context.setStatus("Parse " + this.mapper.getMapperName() + " results");
-
-    parseSAMResults(samOutputFile, context);
-
-    // Remove temporary files
-    if (!samOutputFile.delete())
-      LOGGER.warning("Can not delete "
-          + this.mapper.getMapperName() + " output file: "
-          + samOutputFile.getAbsolutePath());
-
-    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
-
     LOGGER.info("End of close() of the mapper.");
   }
 
-  private final void parseSAMResults(final File resultFile,
+  private final void parseSAMResults(final InputStream resultFileInputStream,
       final Context context) throws IOException, InterruptedException {
 
     String line;
@@ -341,7 +327,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Parse SAM result file
     final BufferedReader readerResults =
-        FileUtils.createBufferedReader(resultFile);
+        FileUtils.createBufferedReader(resultFileInputStream);
 
     final int taskId = context.getTaskAttemptID().getTaskID().getId();
 
