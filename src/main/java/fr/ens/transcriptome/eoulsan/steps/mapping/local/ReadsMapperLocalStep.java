@@ -31,8 +31,16 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.logging.Logger;
+
+import com.google.common.base.Charsets;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
@@ -156,9 +164,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         } else
           throw new IllegalStateException();
 
-        // Parse SAM output file to get information for reporter object
-        parseSAMResults(samFile, reporter);
-
         // Add counters for this sample to log file
         log.append(reporter.countersValuesToString(COUNTER_GROUP, logMsg));
       }
@@ -209,7 +214,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " threads option");
 
     // Process to mapping
-    mapper.mapSE(inFile, genomedescription, samFile);
+    parseSAMResults(mapper.mapSE(inFile, genomedescription), samFile, reporter);
   }
 
   /**
@@ -248,7 +253,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " with " + mapperThreads + " threads option");
 
     // Process to mapping
-    mapper.mapPE(inFile1, inFile2, genomeDescription, samFile);
+    parseSAMResults(mapper.mapPE(inFile1, inFile2, genomeDescription), samFile,
+        reporter);
   }
 
   /**
@@ -283,22 +289,30 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
   /**
    * Parse the output the mapper (in SAM format).
-   * @param samFile output file from the mapper (in SAM format)
+   * @param samFileInputStream SAM input stream
+   * @param samFile output file to be written
    * @param reporter Eoulsan reporter for the step
    * @throws IOException if an error occurs while reading the sAM file
    */
-  private void parseSAMResults(final File samFile, final Reporter reporter)
-      throws IOException {
+  private void parseSAMResults(final InputStream samFileInputStream,
+      final File samFile, final Reporter reporter) throws IOException {
 
     String line;
 
     // Parse SAM result file
     final BufferedReader readerResults =
-        FileUtils.createBufferedReader(samFile);
+        FileUtils.createBufferedReader(samFileInputStream);
+
+    final Writer writer =
+        new OutputStreamWriter(new FileOutputStream(samFile),
+            Charsets.ISO_8859_1);
 
     int entriesParsed = 0;
 
     while ((line = readerResults.readLine()) != null) {
+
+      writer.write(line);
+      writer.write('\n');
 
       final String trimmedLine = line.trim();
       if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
@@ -317,6 +331,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     }
 
     readerResults.close();
+    writer.close();
 
     LOGGER.info(entriesParsed
         + " entries parsed in " + getMapperName() + " output file");
