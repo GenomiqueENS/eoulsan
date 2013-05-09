@@ -50,6 +50,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -67,7 +68,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class DataFileDistCp {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset
@@ -282,7 +283,7 @@ public class DataFileDistCp {
     try {
       if (!job.isSuccessful())
         throw new IOException("Unable to copy files using DataFileDistCp.");
-      
+
       // FIXME Remove once using Hadoop 2.0
       if (false)
         throw new InterruptedException();

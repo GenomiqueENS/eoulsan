@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
@@ -58,7 +58,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private static final String COUNTER_PARAMETER_NAME = "counter";
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";

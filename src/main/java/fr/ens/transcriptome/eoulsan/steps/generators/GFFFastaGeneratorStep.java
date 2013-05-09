@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 public class GFFFastaGeneratorStep extends AbstractStep {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public String getName() {

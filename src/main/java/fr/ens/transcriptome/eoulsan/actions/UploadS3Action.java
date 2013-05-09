@@ -43,6 +43,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
@@ -67,7 +68,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class UploadS3Action extends AbstractAction {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
@@ -178,8 +179,8 @@ public class UploadS3Action extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    logger.info("Parameter file: " + paramFile);
-    logger.info("Design file: " + designFile);
+    LOGGER.info("Parameter file: " + paramFile);
+    LOGGER.info("Design file: " + designFile);
 
     try {
 

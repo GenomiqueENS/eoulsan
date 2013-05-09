@@ -46,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public final class Settings {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAIN_PREFIX_KEY = "main.";
   private final Properties properties = new Properties();

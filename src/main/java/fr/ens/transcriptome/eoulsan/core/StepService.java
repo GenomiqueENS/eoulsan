@@ -26,8 +26,8 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.AnnotationUtils;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 public class StepService extends ServiceNameLoader<Step> {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
   private static StepService service;

@@ -51,6 +51,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -69,7 +70,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";

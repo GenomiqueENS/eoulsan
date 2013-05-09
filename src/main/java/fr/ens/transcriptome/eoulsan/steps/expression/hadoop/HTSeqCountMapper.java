@@ -55,6 +55,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -74,7 +75,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX

@@ -51,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public final class Common {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /**
    * Write log data.

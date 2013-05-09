@@ -41,9 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.common.base.Objects;
-
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**
  * This class implements a pseudo map-reduce framework.
@@ -53,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public abstract class PseudoMapReduce {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset.forName(System
@@ -427,8 +425,8 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete())
-    LOGGER.warning("Can not delete sort output file: "
-        + this.sortOutputFile.getAbsolutePath());
+      LOGGER.warning("Can not delete sort output file: "
+          + this.sortOutputFile.getAbsolutePath());
   }
 
 }

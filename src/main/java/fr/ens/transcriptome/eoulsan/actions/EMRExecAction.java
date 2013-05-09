@@ -44,6 +44,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
@@ -69,7 +70,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class EMRExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Action name. */
   static final String ACTION_NAME = "emrexec";

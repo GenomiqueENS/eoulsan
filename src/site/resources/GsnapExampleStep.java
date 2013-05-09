@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class GsnapExampleStep extends AbstractStep {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String COUNTER_GROUP = "reads_mapping";
   private String mapperArguments = "-N 1";

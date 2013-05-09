@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -49,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class DataTypeRegistry {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldatatypes/";
 

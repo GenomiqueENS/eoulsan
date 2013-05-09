@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -39,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public class AWSExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public boolean isHidden() {

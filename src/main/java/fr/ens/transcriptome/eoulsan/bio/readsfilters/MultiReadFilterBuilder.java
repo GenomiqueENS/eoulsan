@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class MultiReadFilterBuilder {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final Map<String, ReadFilter> mapFilters = newHashMap();
   private final List<ReadFilter> listFilter = Utils.newArrayList();

@@ -38,7 +38,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
@@ -155,7 +155,7 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
 
-      logger.info("Genome index compressed file (from distributed cache): "
+      LOGGER.info("Genome index compressed file (from distributed cache): "
           + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0].toString());
@@ -163,7 +163,7 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
     } catch (IOException e) {
 
-      logger.severe("Error while loading annotation data in Reducer: "
+      LOGGER.severe("Error while loading annotation data in Reducer: "
           + e.getMessage());
     }
 

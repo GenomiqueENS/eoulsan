@@ -42,6 +42,7 @@ import org.apache.commons.cli.ParseException;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -55,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 public class HadoopExecAction extends AbstractAction {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public String getName() {
