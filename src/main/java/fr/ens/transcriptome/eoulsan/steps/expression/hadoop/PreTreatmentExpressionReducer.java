@@ -56,7 +56,7 @@ public class PreTreatmentExpressionReducer extends
     Reducer<Text, Text, Text, Text> {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String counterGroup;
   private Text outKey = new Text();

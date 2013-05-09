@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String counterGroup;
 

@@ -67,7 +67,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class UploadS3Action extends AbstractAction {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
@@ -178,8 +178,8 @@ public class UploadS3Action extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    logger.info("Parameter file: " + paramFile);
-    logger.info("Design file: " + designFile);
+    LOGGER.info("Parameter file: " + paramFile);
+    LOGGER.info("Design file: " + designFile);
 
     try {
 

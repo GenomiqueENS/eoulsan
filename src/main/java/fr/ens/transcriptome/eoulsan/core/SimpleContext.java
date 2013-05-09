@@ -64,7 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class SimpleContext implements Context {
 
   /** Logger. */
-  protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String basePathname;
   private String logPathname;
@@ -354,21 +354,21 @@ public class SimpleContext implements Context {
   @Override
   public void logInfo() {
 
-    logger.info("Design file path: " + this.getDesignPathname());
-    logger.info("Workflow parameter file path: " + this.getParameterPathname());
+    LOGGER.info("Design file path: " + this.getDesignPathname());
+    LOGGER.info("Workflow parameter file path: " + this.getParameterPathname());
 
-    logger.info("Workflow Author: " + this.getCommandAuthor());
-    logger.info("Workflow Description: " + this.getCommandDescription());
-    logger.info("Job Command name: " + this.getCommandName());
+    LOGGER.info("Workflow Author: " + this.getCommandAuthor());
+    LOGGER.info("Workflow Description: " + this.getCommandDescription());
+    LOGGER.info("Job Command name: " + this.getCommandName());
 
-    logger.info("Job Id: " + this.getJobId());
-    logger.info("Job UUID: " + this.getJobUUID());
-    logger.info("Job Description: " + this.getJobDescription());
-    logger.info("Job Environment: " + this.getJobEnvironment());
+    LOGGER.info("Job Id: " + this.getJobId());
+    LOGGER.info("Job UUID: " + this.getJobUUID());
+    LOGGER.info("Job Description: " + this.getJobDescription());
+    LOGGER.info("Job Environment: " + this.getJobEnvironment());
 
-    logger.info("Job Base path: " + this.getBasePathname());
-    logger.info("Job Output path: " + this.getOutputPathname());
-    logger.info("Job Log path: " + this.getLogPathname());
+    LOGGER.info("Job Base path: " + this.getBasePathname());
+    LOGGER.info("Job Output path: " + this.getOutputPathname());
+    LOGGER.info("Job Log path: " + this.getLogPathname());
   }
 
   @Override
@@ -386,7 +386,7 @@ public class SimpleContext implements Context {
   @Override
   public Logger getLogger() {
 
-    return logger;
+    return LOGGER;
   }
 
   private void checkInputDataFormat(final DataFormat df) {
@@ -611,7 +611,7 @@ public class SimpleContext implements Context {
     try {
       md = file.getMetaData();
     } catch (IOException e) {
-      logger.warning("Error while getting metadata for file "
+      LOGGER.warning("Error while getting metadata for file "
           + file + ": " + e.getMessage());
       md = null;
     }

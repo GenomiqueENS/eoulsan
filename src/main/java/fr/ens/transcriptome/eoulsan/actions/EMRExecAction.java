@@ -69,7 +69,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class EMRExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /** Action name. */
   static final String ACTION_NAME = "emrexec";

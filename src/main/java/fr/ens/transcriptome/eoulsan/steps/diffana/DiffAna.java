@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.rosuda.REngine.REngineException;
 
@@ -37,6 +38,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -49,6 +51,9 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Vivien Deshaies
  */
 public class DiffAna extends Normalization {
+
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String DISPERSION_ESTIMATION =
       "/dispersionEstimation.Rnw";
@@ -229,10 +234,10 @@ public class DiffAna extends Normalization {
   public void run(final Context context) throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Differential analysis : Rserve mode");
+      LOGGER.info("Differential analysis : Rserve mode");
       runRserveRnwScript(context);
     } else {
-      getLogger().info("Differential analysis : local mode");
+      LOGGER.info("Differential analysis : local mode");
       runLocalRnwScript(context);
     }
   }
@@ -385,9 +390,10 @@ public class DiffAna extends Normalization {
               + cond + "\")\n");
           sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
           sb.append("@\n");
-          
+
           passedConditionName.add(cond);
-        } else {}
+        } else {
+        }
       }
     } else {
 
@@ -404,7 +410,8 @@ public class DiffAna extends Normalization {
     } else {
       anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
     }
-    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    anadiffPart =
+        anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
     sb.append(anadiffPart);
 
     // end document

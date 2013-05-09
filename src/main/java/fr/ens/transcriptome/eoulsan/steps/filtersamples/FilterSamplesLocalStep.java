@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   //
   // Step methods
@@ -100,13 +100,13 @@ public class FilterSamplesLocalStep extends AbstractFilterSamplesStep {
         final long oneLocus = soapAlignementWithOneLocus.get(sample);
 
         final double ratio = (double) oneLocus / (double) inputReads;
-        logger.info("Check Reads with only one match: "
+        LOGGER.info("Check Reads with only one match: "
             + sample + " " + oneLocus + "/" + inputReads + "=" + ratio
             + " threshold=" + threshold);
 
         if (ratio < threshold) {
           design.removeSample(sample);
-          logger.info("Remove sample: " + sample);
+          LOGGER.info("Remove sample: " + sample);
           sb.append("Remove sample: " + sample + "\n");
           removedSampleCount++;
         }

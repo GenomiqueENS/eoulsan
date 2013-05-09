@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * Treats keys as offset in file and value as line.
  */
 public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
-  private static final Logger LOG = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private CompressionCodecFactory compressionCodecs = null;
   private long start;
@@ -138,7 +138,7 @@ public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
       }
 
       // line too long. try again
-      LOG.info("Skipped line of size " + newSize + " at pos " + (pos - newSize));
+      LOGGER.info("Skipped line of size " + newSize + " at pos " + (pos - newSize));
     }
     if (newSize == 0) {
       key = null;

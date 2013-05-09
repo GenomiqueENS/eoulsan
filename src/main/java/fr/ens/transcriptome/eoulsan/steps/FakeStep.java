@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 public class FakeStep extends AbstractStep {
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public String getName() {
@@ -54,14 +54,14 @@ public class FakeStep extends AbstractStep {
   public void configure(Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters)
-      logger.info("s: " + p.getName() + "\t" + p.getStringValue());
+      LOGGER.info("s: " + p.getName() + "\t" + p.getStringValue());
 
   }
 
   @Override
   public StepResult execute(final Design design, final Context context) {
 
-    logger.info("execute design: " + design);
+    LOGGER.info("execute design: " + design);
 
     return new StepResult(context, true, null);
   }

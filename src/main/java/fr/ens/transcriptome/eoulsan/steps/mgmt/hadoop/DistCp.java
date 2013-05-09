@@ -107,7 +107,7 @@ public class DistCp implements Tool {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  public static final Logger LOG = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String NAME = "distcp";
 
@@ -599,7 +599,7 @@ public class DistCp implements Tool {
         final String sfailure =
             "FAIL " + relativedst + " : " + StringUtils.stringifyException(e);
         out.collect(null, new Text(sfailure));
-        LOG.info(sfailure);
+        LOGGER.info(sfailure);
         try {
           for (int i = 0; i < 3; ++i) {
             try {
@@ -608,7 +608,7 @@ public class DistCp implements Tool {
                 break;
             } catch (Throwable ex) {
               // ignore, we are just cleaning up
-              LOG.fine("Ignoring cleanup exception: " + ex.getMessage());
+              LOGGER.fine("Ignoring cleanup exception: " + ex.getMessage());
             }
             // update status, so we don't get timed out
             updateStatus(reporter);
@@ -690,8 +690,8 @@ public class DistCp implements Tool {
    */
   static void copy(final Configuration conf, final Arguments args)
       throws IOException {
-    LOG.info("srcPaths=" + args.srcs);
-    LOG.info("destPath=" + args.dst);
+    LOGGER.info("srcPaths=" + args.srcs);
+    LOGGER.info("destPath=" + args.dst);
     checkSrcPath(conf, args.srcs);
 
     JobConf job = createJobConf(conf);
@@ -1018,7 +1018,7 @@ public class DistCp implements Tool {
       Path tmp = new Path(dir);
       boolean success = tmp.getFileSystem(conf).delete(tmp, true);
       if (!success) {
-        LOG.warning("Could not fully delete " + tmp);
+        LOGGER.warning("Could not fully delete " + tmp);
       }
     }
   }
@@ -1213,7 +1213,7 @@ public class DistCp implements Tool {
     try {
       dststatus = dstfs.getFileStatus(args.dst);
     } catch (FileNotFoundException fnfe) {
-      LOG.info(args.dst + " does not exist.");
+      LOGGER.info(args.dst + " does not exist.");
     }
 
     // create dest path dir if copying > 1 file
@@ -1240,7 +1240,7 @@ public class DistCp implements Tool {
     // up by fullyDelete() later.
     tmpDir.getFileSystem(conf).mkdirs(tmpDir);
 
-    LOG.info("srcCount=" + srcCount);
+    LOGGER.info("srcCount=" + srcCount);
     jobConf.setInt(SRC_COUNT_LABEL, srcCount);
     jobConf.setLong(TOTAL_SIZE_LABEL, byteCount);
     setMapCount(byteCount, jobConf);
@@ -1427,7 +1427,7 @@ public class DistCp implements Tool {
       try {
         io.close();
       } catch (IOException ioe) {
-        LOG.warning(StringUtils.stringifyException(ioe));
+        LOGGER.warning(StringUtils.stringifyException(ioe));
         return false;
       }
     }

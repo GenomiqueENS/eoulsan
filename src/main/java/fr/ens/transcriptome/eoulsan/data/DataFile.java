@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class DataFile {
 
   /** Logger. */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /** The separator char ('/'). */
   public static final char separatorChar = '/';
@@ -381,7 +381,7 @@ public class DataFile {
       this.protocol = registery.getProtocol(protocolPrefixInSource);
 
     if (this.protocol == null) {
-      logger.severe("Unknown protocol: \""
+      LOGGER.severe("Unknown protocol: \""
           + protocolPrefixInSource + "\", can't set protocol for DataFile.");
       this.unknownProtocolName = protocolPrefixInSource;
     }

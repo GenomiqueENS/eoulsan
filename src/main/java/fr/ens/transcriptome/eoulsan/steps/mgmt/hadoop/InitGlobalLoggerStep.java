@@ -60,7 +60,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class InitGlobalLoggerStep extends AbstractStep {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /** Step name. */
   public static final String STEP_NAME = "_init_global_logger";
@@ -110,15 +110,15 @@ public class InitGlobalLoggerStep extends AbstractStep {
     try {
 
       final FileSystem loggerFs = loggerPath.getFileSystem(conf);
-      logger.addHandler(new StreamHandler(loggerFs.create(loggerPath),
+      LOGGER.addHandler(new StreamHandler(loggerFs.create(loggerPath),
           Globals.LOG_FORMATTER));
-      logger.setLevel(Globals.LOG_LEVEL);
+      LOGGER.setLevel(Globals.LOG_LEVEL);
 
-      logger.info(Globals.WELCOME_MSG + " Hadoop mode.");
+      LOGGER.info(Globals.WELCOME_MSG + " Hadoop mode.");
       context.logInfo();
 
     } catch (IOException e) {
-      logger.severe("Unable to configure global logger: " + loggerPath);
+      LOGGER.severe("Unable to configure global logger: " + loggerPath);
     }
 
     HadoopInfo();
@@ -128,7 +128,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
         copyCpuinfoAndMeminfo(context, conf);
       sysInfo(conf);
     } catch (IOException e) {
-      logger
+      LOGGER
           .severe("Error while getting system information: " + e.getMessage());
 
       e.printStackTrace();
@@ -146,7 +146,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
     // Test if file exists
     if (!file.exists()) {
-      logger.severe("Can't copy " + file + " to log directory");
+      LOGGER.severe("Can't copy " + file + " to log directory");
       return;
     }
 
@@ -195,15 +195,15 @@ public class InitGlobalLoggerStep extends AbstractStep {
     final String bogomips = cpuinfo.getBogoMips();
     final String cores = cpuinfo.getCores();
 
-    logger.info("SYSINFO CPU model name: "
+    LOGGER.info("SYSINFO CPU model name: "
         + (modelName == null ? "NA" : modelName));
-    logger.info("SYSINFO CPU count: "
+    LOGGER.info("SYSINFO CPU count: "
         + (processor == null ? "NA" : ""
             + (Integer.parseInt(processor.trim()) + 1)));
-    logger.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
-    logger.info("SYSINFO CPU clock: "
+    LOGGER.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    LOGGER.info("SYSINFO CPU clock: "
         + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
-    logger.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+    LOGGER.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
   private static final void parseMeminfo() throws IOException {
@@ -211,7 +211,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
 
-    logger.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+    LOGGER.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
   private static final void df(final File f, final Configuration conf)
@@ -219,7 +219,7 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
     DF df = new DF(f, conf);
 
-    logger.info("SYSINFO "
+    LOGGER.info("SYSINFO "
         + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
         + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
         + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
@@ -229,10 +229,10 @@ public class InitGlobalLoggerStep extends AbstractStep {
 
   private static final void HadoopInfo() {
 
-    logger.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
-    logger.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
-    logger.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
-    logger.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
-    logger.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
+    LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
+    LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
+    LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
+    LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
+    LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
 }

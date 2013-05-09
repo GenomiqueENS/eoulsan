@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public class AWSExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   @Override
   public boolean isHidden() {

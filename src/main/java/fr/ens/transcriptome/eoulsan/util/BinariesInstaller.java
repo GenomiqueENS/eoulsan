@@ -41,14 +41,14 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class BinariesInstaller {
 
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
   private static final int BUFFER_SIZE = 32 * 1024;
 
   private static void install(final String inputPath, final String file,
       final String outputPath) throws FileNotFoundException, IOException {
 
     if (new File(outputPath, file).isFile()) {
-      logger.fine(file + " is allready installed.");
+      LOGGER.fine(file + " is allready installed.");
       return;
     }
 
@@ -115,7 +115,7 @@ public class BinariesInstaller {
     final String os = System.getProperty("os.name").toLowerCase();
     final String arch = System.getProperty("os.arch").toLowerCase();
 
-    logger.fine("Try to install \""
+    LOGGER.fine("Try to install \""
         + binaryFilename + "\" for " + os + " (" + arch + ")");
 
     String osArchKey = os + "\t" + arch;
@@ -144,14 +144,14 @@ public class BinariesInstaller {
 
     // Test if the file is allready installed
     if (new File(outputPath, binaryFilename).isFile()) {
-      logger.info(binaryFilename + " is allready installed.");
+      LOGGER.info(binaryFilename + " is allready installed.");
       return outputPath + "/" + binaryFilename;
     }
 
     // install the file
     install(inputPath, binaryFilename, outputPath);
 
-    logger.fine("Successful installation of "
+    LOGGER.fine("Successful installation of "
         + binaryFilename + " in " + outputPath);
     return outputPath + "/" + binaryFilename;
   }

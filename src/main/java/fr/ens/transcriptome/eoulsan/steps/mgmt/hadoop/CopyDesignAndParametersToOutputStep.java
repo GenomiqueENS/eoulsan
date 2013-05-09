@@ -55,7 +55,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class CopyDesignAndParametersToOutputStep extends AbstractStep {
 
   /** Logger. */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /** Step name. */
   public static final String STEP_NAME = "_copy_design_params_to_output";
@@ -113,9 +113,9 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
             .write(design);
       }
     } catch (IOException e) {
-      logger.severe("Unable to copy design file to output path.");
+      LOGGER.severe("Unable to copy design file to output path.");
     } catch (EoulsanIOException e) {
-      logger.severe("Unable to copy design file to output path.");
+      LOGGER.severe("Unable to copy design file to output path.");
     }
 
     // Copy parameter file
@@ -123,7 +123,7 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
       if (!PathUtils.exists(outputParamPath, conf))
         PathUtils.copy(designPath, outputParamPath, conf);
     } catch (IOException e) {
-      logger.severe("Unable to copy design file to output path.");
+      LOGGER.severe("Unable to copy design file to output path.");
     }
 
     return new StepResult(context, true, "");
