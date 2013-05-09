@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**
  * Utility class for launching external process.
@@ -51,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public final class ProcessUtils {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset.forName(System

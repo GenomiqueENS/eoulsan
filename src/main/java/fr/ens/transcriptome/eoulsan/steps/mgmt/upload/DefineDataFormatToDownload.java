@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 public class DefineDataFormatToDownload extends AbstractStep {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   protected static final String STEP_NAME = "defineformatstodownload";
 

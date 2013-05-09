@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;

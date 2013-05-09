@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
 

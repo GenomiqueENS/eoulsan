@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -64,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class SimpleContext implements Context {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String basePathname;
   private String logPathname;

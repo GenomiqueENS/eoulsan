@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 import com.google.common.io.Files;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public DataFormat[] getInputFormats() {

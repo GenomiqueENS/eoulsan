@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -52,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String INDEX_FILENAME = "genomes_index_storage.txt";
 

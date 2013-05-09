@@ -51,6 +51,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -71,7 +72,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".expression.genome.desc.file";
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
 

@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public final class MainHadoop extends Main {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String LAUNCH_MODE_NAME = "hadoop";
 

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 
@@ -41,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class BinariesInstaller {
 
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
   private static final int BUFFER_SIZE = 32 * 1024;
 
   private static void install(final String inputPath, final String file,

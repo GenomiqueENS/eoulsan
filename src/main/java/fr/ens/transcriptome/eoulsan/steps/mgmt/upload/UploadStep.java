@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.SimpleContext;
@@ -63,7 +63,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 public abstract class UploadStep extends AbstractStep {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private DataFile dest;
 
@@ -280,7 +280,8 @@ public abstract class UploadStep extends AbstractStep {
                 DataFile file = context.getOtherDataFile(df, sample, i);
                 exists = file.exists();
                 if (exists) {
-                  final DataFile inFile = context.getOtherDataFile(df, sample, i);
+                  final DataFile inFile =
+                      context.getOtherDataFile(df, sample, i);
                   final DataFile outFile =
                       getUploadedDataFile(inFile, sample, df, i);
                   result.put(inFile, outFile);
@@ -340,7 +341,7 @@ public abstract class UploadStep extends AbstractStep {
         if (nValues == 1) {
           final DataFile inFile = new DataFile(oldValues.get(0));
           // final DataFormat format = inFile.getDataFormat();
-          
+
           DataFormat format =
               registry.getDataFormatFromExtension(
                   registry.getDataTypeForDesignField(field),

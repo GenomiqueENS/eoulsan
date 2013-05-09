@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaLineParser;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -57,7 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class GenomeDescription {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String PREFIX = "genome.";
   private static final String NAME_PREFIX = PREFIX + "name";

@@ -46,7 +46,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.steps.Step;
@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 public final class XMLDataFormat extends AbstractDataFormat {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String DEFAULT_CONTENT_TYPE = "text/plain";
   private static final int DEFAULT_MAX_FILES_COUNT = 1;
