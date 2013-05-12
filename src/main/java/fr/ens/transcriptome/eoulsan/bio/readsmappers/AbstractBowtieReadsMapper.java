@@ -44,7 +44,8 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public abstract class AbstractBowtieReadsMapper extends
     AbstractSequenceReadsMapper {
 
-  private static final String SYNC = AbstractBowtieReadsMapper.class.getName();
+  protected static final String SYNC = AbstractBowtieReadsMapper.class
+      .getName();
 
   abstract protected String getExtensionIndexFile();
 
@@ -120,11 +121,8 @@ public abstract class AbstractBowtieReadsMapper extends
       bowtiePath = install(getMapperExecutables());
     }
 
-    final String extensionIndexFile = getExtensionIndexFile();
-
-    final String index =
-        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-            extensionIndexFile.length())).getName();
+    // Get index argument
+    final String index = getIndexArgument(archiveIndexDir);
 
     final MapperProcess mapperProcess =
         new MapperProcess(getMapperName(), true, false, false) {
@@ -135,28 +133,8 @@ public abstract class AbstractBowtieReadsMapper extends
             // Build the command line
             final List<String> cmd = new ArrayList<String>();
 
-            // Bowtie Executable path
-            cmd.add(bowtiePath);
-
-            // User options
-            if (getListMapperArguments() != null)
-              cmd.addAll(getListMapperArguments());
-
-            // Set the number of threads
-            cmd.add("-p");
-            cmd.add(getThreadsNumber() + "");
-
-            // Input in FASTQ format
-            cmd.add("-q");
-
-            // Set the quality format
-            cmd.add(bowtieQualityArgument());
-
-            // Output in SAM format
-            cmd.add("-S");
-
-            // Genome index name
-            cmd.add(index);
+            // Add common arguments
+            cmd.addAll(createCommonArgs(bowtiePath, index));
 
             // Input FASTQ file
             cmd.add(readsFile.getAbsolutePath());
@@ -186,11 +164,8 @@ public abstract class AbstractBowtieReadsMapper extends
       bowtiePath = install(getMapperExecutables());
     }
 
-    final String extensionIndexFile = getExtensionIndexFile();
-
-    final String index =
-        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-            extensionIndexFile.length())).getName();
+    // Get index argument
+    final String index = getIndexArgument(archiveIndexDir);
 
     final MapperProcess mapperProcess =
         new MapperProcess(getMapperName(), true, false, false) {
@@ -200,28 +175,8 @@ public abstract class AbstractBowtieReadsMapper extends
             // Build the command line
             final List<String> cmd = new ArrayList<String>();
 
-            // Bowtie Executable path
-            cmd.add(bowtiePath);
-
-            // Set user options
-            if (getListMapperArguments() != null)
-              cmd.addAll(getListMapperArguments());
-
-            // Set the number of threads
-            cmd.add("-p");
-            cmd.add(getThreadsNumber() + "");
-
-            // Input in FASTQ format
-            cmd.add("-q");
-
-            // Set the quality format
-            cmd.add(bowtieQualityArgument());
-
-            // Output in SAM format
-            cmd.add("-S");
-
-            // Genome index name
-            cmd.add(index);
+            // Add common arguments
+            cmd.addAll(createCommonArgs(bowtiePath, index));
 
             // First end input FASTQ file
             cmd.add("-1");
@@ -260,11 +215,8 @@ public abstract class AbstractBowtieReadsMapper extends
       bowtiePath = install(getMapperExecutables());
     }
 
-    final String extensionIndexFile = getExtensionIndexFile();
-
-    final String index =
-        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-            extensionIndexFile.length())).getName();
+    // Get index argument
+    final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
     return new MapperProcess(getMapperName(), false, false, false) {
@@ -275,28 +227,9 @@ public abstract class AbstractBowtieReadsMapper extends
         // Build the command line
         final List<String> cmd = new ArrayList<String>();
 
-        // Bowtie Executable path
-        cmd.add(bowtiePath);
-
-        // Set user options
-        if (getListMapperArguments() != null)
-          cmd.addAll(getListMapperArguments());
-
-        // Set the number of threads
-        cmd.add("-p");
-        cmd.add(getThreadsNumber() + "");
-
-        // Input in FASTQ format
-        cmd.add("-q");
-
-        // Set the quality format
-        cmd.add(bowtieQualityArgument());
-
-        // Output in SAM format
-        cmd.add("-S");
-
-        // Genome index name
-        cmd.add(index);
+        // TODO enable memory mapped in streaming mode
+        // Add common arguments
+        cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
 
         // TODO Enable this in streaming mode
         // Input from stdin
@@ -328,11 +261,8 @@ public abstract class AbstractBowtieReadsMapper extends
       bowtiePath = install(getMapperExecutables());
     }
 
-    final String extensionIndexFile = getExtensionIndexFile();
-
-    final String index =
-        new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-            extensionIndexFile.length())).getName();
+    // Get index argument
+    final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
     return new MapperProcess(getMapperName(), false, false, true) {
@@ -353,33 +283,9 @@ public abstract class AbstractBowtieReadsMapper extends
         // Build the command line
         final List<String> cmd = new ArrayList<String>();
 
-        // Bowtie Executable path
-        cmd.add(bowtiePath);
-
-        // Set the user options
-        if (getListMapperArguments() != null)
-          cmd.addAll(getListMapperArguments());
-
-        // Set the number of threads to use
-        cmd.add("-p");
-        cmd.add(getThreadsNumber() + "");
-
-        // TODO Remove this when streaming mode will be enabled
-        // Input in FASTQ format
-        cmd.add(("-q"));
-
-        // Set the quality format
-        cmd.add(bowtieQualityArgument());
-
-        // TODO enable this in streaming mode
-        // Input in Crossbow format
-        // cmd.add(("-r"));
-
-        // Output in SAM format
-        cmd.add("-S");
-
-        // Genome index name
-        cmd.add(index);
+        // TODO enable memory mapped in streaming mode
+        // Add common arguments
+        cmd.addAll(createCommonArgs(bowtiePath, index, true, false));
 
         // TODO enable this in streaming mode
         // Read input from stdin (streaming mode)
@@ -408,6 +314,31 @@ public abstract class AbstractBowtieReadsMapper extends
     };
 
   }
+
+  /**
+   * Get the index argument for bowtie from the archive index directory path
+   * @param archiveIndexDir archive index directory
+   * @return the Bowtie index argument
+   * @throws IOException if an error occurs when getting directory path
+   */
+  private String getIndexArgument(final File archiveIndexDir)
+      throws IOException {
+
+    final String extensionIndexFile = getExtensionIndexFile();
+
+    return new File(getIndexPath(archiveIndexDir, extensionIndexFile,
+        extensionIndexFile.length())).getName();
+  }
+
+  protected List<String> createCommonArgs(final String bowtiePath,
+      final String index) {
+
+    return createCommonArgs(bowtiePath, index, false, false);
+  }
+
+  protected abstract List<String> createCommonArgs(final String bowtiePath,
+      final String index, final boolean inputCrossbowFormat,
+      final boolean memoryMappedIndex);
 
   //
   // Init
