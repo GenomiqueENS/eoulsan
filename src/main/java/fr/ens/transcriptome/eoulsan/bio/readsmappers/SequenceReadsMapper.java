@@ -105,8 +105,16 @@ public interface SequenceReadsMapper {
    */
   void setThreadsNumber(int threadsNumber);
 
+  /**
+   * Get the user options for the mapper.
+   * @return the user options as a String
+   */
   String getMapperArguments();
 
+  /**
+   * Get the user options for the mapper.
+   * @return the user options as a list
+   */
   List<String> getListMapperArguments();
 
   /**
@@ -126,6 +134,18 @@ public interface SequenceReadsMapper {
    * @param tempDirectory the temporary directory to use
    */
   void setTempDirectory(File tempDirectory);
+
+  /**
+   * Set the FASTQ format.
+   * @param format the FASTQ format to use
+   */
+  void setFastqFormat(FastqFormat format);
+
+  /**
+   * Get the FASTQ format currently used.
+   * @return the FASTQ format
+   */
+  FastqFormat getFastqFormat();
 
   //
   // Mapping methods
@@ -191,18 +211,15 @@ public interface SequenceReadsMapper {
   //
 
   /**
-   * Initialize the mapper.
-   * @param pairedEnd true if the paired end mode must be enable
-   * @param fastqFormat the format of the fastq files
+   * Initialize the mapper before the mapping.
    * @param archiveIndexFile genome index for the mapper as a ZIP file
    * @param archiveIndexDir uncompressed directory for the genome index for the
    * @param incrementer the incrementer to report the processing of the fastq
    *          files
    * @param counterGroup the group for the reporter
    */
-  void init(boolean pairedEnd, FastqFormat fastqFormat, File archiveIndexFile,
-      File archiveIndexDir, ReporterIncrementer incrementer, String counterGroup)
-      throws IOException;
+  void init(File archiveIndexFile, File archiveIndexDir,
+      ReporterIncrementer incrementer, String counterGroup) throws IOException;
 
   /**
    * Get the DataFormat for genome index for the mapper.

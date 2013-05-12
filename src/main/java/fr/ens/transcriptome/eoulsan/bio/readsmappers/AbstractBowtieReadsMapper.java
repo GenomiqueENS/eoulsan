@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -345,13 +344,11 @@ public abstract class AbstractBowtieReadsMapper extends
   //
 
   @Override
-  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(pairedEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(getDefaultArguments());
   }
 

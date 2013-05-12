@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -84,8 +83,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private File archiveIndexFile;
   private File archiveIndexDir;
 
-  private boolean pairedEnd = false;
-  private FastqFormat fastqFormat;
+  private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
   private int threadsNumber;
   private String mapperArguments = null;
@@ -120,18 +118,10 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   /**
-   * Test if the mapper is in pair end mode.
-   * @return true if the mapper is in pair end mode
-   */
-  public boolean isPairEnd() {
-
-    return this.pairedEnd;
-  }
-
-  /**
    * Get Fastq format.
    * @return the fastq format
    */
+  @Override
   public FastqFormat getFastqFormat() {
 
     return this.fastqFormat;
@@ -178,6 +168,15 @@ public abstract class AbstractSequenceReadsMapper implements
   public void setTempDirectory(final File tempDirectory) {
 
     this.tempDir = tempDirectory;
+  }
+
+  @Override
+  public void setFastqFormat(final FastqFormat format) {
+
+    if (format == null)
+      throw new NullPointerException("The FASTQ format is null");
+
+    this.fastqFormat = format;
   }
 
   //
@@ -398,7 +397,6 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
 
-    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
 
@@ -427,7 +425,6 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
 
-    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile, "readsFile1 is null");
     checkExistingStandardFile(readsFile,
         "readsFile1 not exits or is not a standard file.");
@@ -456,8 +453,6 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Mapping with " + getMapperName() + " in pair-end mode");
 
-    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
-
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
@@ -475,8 +470,6 @@ public abstract class AbstractSequenceReadsMapper implements
       throws IOException {
 
     LOGGER.fine("Mapping with " + getMapperName() + " in single-end mode");
-
-    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -500,18 +493,8 @@ public abstract class AbstractSequenceReadsMapper implements
   // Init
   //
 
-  /**
-   * Initialize mapper.
-   * @param pairEnd true if the mapper is in pair end mode.
-   * @param fastqFormat Fastq format
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   * @param incrementer Objet to use to increment counters
-   * @param counterGroup counter name group
-   */
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
@@ -523,8 +506,6 @@ public abstract class AbstractSequenceReadsMapper implements
     checkExistingStandardFile(archiveIndexFile,
         "The archive index file not exits or is not a standard file.");
 
-    this.pairedEnd = pairEnd;
-    this.fastqFormat = fastqFormat;
     this.archiveIndexFile = archiveIndexFile;
     this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;

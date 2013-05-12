@@ -32,18 +32,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 import com.google.common.base.Charsets;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -82,8 +81,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     try {
       final long startTime = System.currentTimeMillis();
       final StringBuilder log = new StringBuilder();
-
-      final SequenceReadsMapper mapper = getMapper();
 
       // Load genome description object
       final GenomeDescription genomeDescription;
@@ -124,6 +121,11 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         String logMsg = "";
 
+        // Initialize the mapper
+        final SequenceReadsMapper mapper =
+            initMapper(context, s.getMetadata().getFastqFormat(),
+                archiveIndexFile, indexDir, reporter);
+
         // Single end mode
         if (inFileCount == 1) {
 
@@ -131,9 +133,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
           final File inFile =
               context.getInputDataFile(FILTERED_READS_FASTQ, s, 0).toFile();
 
+          LOGGER.info("Map file: "
+              + inFile + ", Fastq format: " + s.getMetadata().getFastqFormat()
+              + ", use " + mapper.getMapperName() + " with "
+              + mapper.getThreadsNumber() + " threads option");
+
           // Single read mapping
-          mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
-              genomeDescription, samFile, reporter);
+          parseSAMResults(mapper.mapSE(inFile, genomeDescription), samFile,
+              reporter);
 
           logMsg =
               "Mapping reads in "
@@ -152,9 +159,15 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
           final File inFile2 =
               context.getInputDataFile(FILTERED_READS_FASTQ, s, 1).toFile();
 
+          LOGGER.info("Map files: "
+              + inFile1 + "," + inFile2 + ", Fastq format: "
+              + s.getMetadata().getFastqFormat() + ", use "
+              + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
+              + " threads option");
+
           // Single read mapping
-          mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,
-              indexDir, genomeDescription, samFile, reporter);
+          parseSAMResults(mapper.mapPE(inFile1, inFile2, genomeDescription),
+              samFile, reporter);
 
           logMsg =
               "Mapping reads in "
@@ -180,91 +193,25 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   }
 
   /**
-   * map a fastq file in single end mode.
-   * @param context Eoulsan context object
-   * @param s sample to process
-   * @param mapper mapper object
-   * @param inFile fastq input file
-   * @param archiveIndexFile genome index for the mapper in a zip archive
-   * @param indexDir output directory for the uncompressed genome index for the
-   *          mapper
-   * @param reporter Eoulsan reporter object
-   * @param genomedescription genome description
-   * @param samFile output SAM file
-   * @throws IOException if an error occurs while the mapping
-   */
-  private void mapSingleEnd(final Context context, final Sample s,
-      final SequenceReadsMapper mapper, final File inFile,
-      final File archiveIndexFile, final File indexDir,
-      final GenomeDescription genomedescription, final File samFile,
-      final Reporter reporter) throws IOException {
-
-    // Init mapper
-    mapper.init(false, s.getMetadata().getFastqFormat(), archiveIndexFile,
-        indexDir, reporter, COUNTER_GROUP);
-
-    // Set mapper arguments
-    final int mapperThreads =
-        initMapperArguments(mapper, context.getSettings()
-            .getTempDirectoryFile());
-
-    LOGGER.info("Map file: "
-        + inFile + ", Fastq format: " + s.getMetadata().getFastqFormat()
-        + ", use " + mapper.getMapperName() + " with " + mapperThreads
-        + " threads option");
-
-    // Process to mapping
-    parseSAMResults(mapper.mapSE(inFile, genomedescription), samFile, reporter);
-  }
-
-  /**
-   * map two fastq files in paired end mode.
-   * @param context Eoulsan context object
-   * @param s sample to process
-   * @param mapper mapper object
-   * @param inFile1 fastq input file for the first end
-   * @param inFile2 fastq input file for the second end
-   * @param archiveIndexFile genome index for the mapper in a zip archive
-   * @param indexDir output directory for the uncompressed genome index for the
-   *          mapper
-   * @param reporter Eoulsan reporter object
-   * @param genomedescription genome description
-   * @param samFile output SAM file
-   * @throws IOException if an error occurs while the mapping
-   */
-  private void mapPairedEnd(final Context context, final Sample s,
-      final SequenceReadsMapper mapper, final File inFile1, final File inFile2,
-      final File archiveIndexFile, final File indexDir,
-      final GenomeDescription genomeDescription, final File samFile,
-      final Reporter reporter) throws IOException {
-
-    // Init mapper
-    mapper.init(true, s.getMetadata().getFastqFormat(), archiveIndexFile,
-        indexDir, reporter, COUNTER_GROUP);
-
-    // Set mapper arguments
-    final int mapperThreads =
-        initMapperArguments(mapper, context.getSettings()
-            .getTempDirectoryFile());
-
-    LOGGER.info("Map files: "
-        + inFile1 + "," + inFile2 + ", Fastq format: "
-        + s.getMetadata().getFastqFormat() + ", use " + mapper.getMapperName()
-        + " with " + mapperThreads + " threads option");
-
-    // Process to mapping
-    parseSAMResults(mapper.mapPE(inFile1, inFile2, genomeDescription), samFile,
-        reporter);
-  }
-
-  /**
    * Initialize the mapper to use.
-   * @param mapper mapper object
-   * @param tempDirectory temporary directory
-   * @return the number of threads to use
+   * @param context Eoulsan context
+   * @param format FASTQ format
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param reporter reporter
+   * @throws IOException
    */
-  private int initMapperArguments(final SequenceReadsMapper mapper,
-      final File tempDirectory) {
+  private SequenceReadsMapper initMapper(final Context context,
+      final FastqFormat format, final File archiveIndexFile,
+      final File indexDir, Reporter reporter) throws IOException {
+
+    final SequenceReadsMapper mapper = getMapper();
+
+    // Init mapper
+    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
+
+    // Set FASTQ format
+    mapper.setFastqFormat(format);
 
     if (getMapperArguments() != null) {
       mapper.setMapperArguments(getMapperArguments());
@@ -282,9 +229,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     mapper.setThreadsNumber(mapperThreads);
 
     // Set mapper temporary directory
-    mapper.setTempDirectory(tempDirectory);
+    mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
-    return mapperThreads;
+    return mapper;
   }
 
   /**
