@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -382,13 +381,11 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

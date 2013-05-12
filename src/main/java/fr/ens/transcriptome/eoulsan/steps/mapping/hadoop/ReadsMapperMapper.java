@@ -199,8 +199,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         .info("Genome index directory where decompressed: " + archiveIndexDir);
 
     // Init mapper
-    mapper.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        new HadoopReporter(context), this.counterGroup);
+    mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(context),
+        this.counterGroup);
+
+    // Set FASTQ format
+    mapper.setFastqFormat(fastqFormat);
 
     // TODO Handle genome description
     if (pairEnd)
