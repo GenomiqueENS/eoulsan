@@ -43,6 +43,11 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define an abstract class that is returned by a mapper.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public abstract class MapperProcess {
 
   /** Logger */
@@ -241,6 +246,11 @@ public abstract class MapperProcess {
   protected void clean() {
   }
 
+  protected File getTemporaryDirectory() {
+
+    return new File(System.getProperty("java.io.tmpdir", "/tmp"));
+  }
+
   //
   // Getters
   //
@@ -437,7 +447,7 @@ public abstract class MapperProcess {
             new OutputStreamWrapper(new FileOutputStream(this.tmpInFile1));
       }
 
-      final File tmpDir = new File("/tmp");
+      final File tmpDir = getTemporaryDirectory();
       this.tmpInFile1 =
           FileUtils.createTempFile(tmpDir, "mapper-inputfile1-", ".fq");
       this.tmpInFile2 =
