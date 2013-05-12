@@ -124,7 +124,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     final MapperProcess mapperProcess =
-        new MapperProcess(getMapperName(), true, false, false) {
+        new MapperProcess(this, true, false, false) {
 
           @Override
           protected List<List<String>> createCommandLines() {
@@ -167,7 +167,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     final MapperProcess mapperProcess =
-        new MapperProcess(getMapperName(), true, false, false) {
+        new MapperProcess(this, true, false, false) {
 
           @Override
           protected List<List<String>> createCommandLines() {
@@ -218,7 +218,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
-    return new MapperProcess(getMapperName(), false, false, false) {
+    return new MapperProcess(this, false, false, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -264,7 +264,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
-    return new MapperProcess(getMapperName(), false, false, true) {
+    return new MapperProcess(this, false, false, true) {
 
       @Override
       public void writeEntry(final String name1, final String sequence1,

@@ -57,25 +57,26 @@ public class MapperProcessDemo {
     sw.start();
 
     // Use file
-    final MapperProcess mp1 = new MapperProcess("bowtie", true, false, false) {
+    final MapperProcess mp1 =
+        new MapperProcess(new BowtieReadsMapper(), true, false, false) {
 
-      @Override
-      protected List<List<String>> createCommandLines() {
+          @Override
+          protected List<List<String>> createCommandLines() {
 
-        final List<String> cmd = new ArrayList<String>();
+            final List<String> cmd = new ArrayList<String>();
 
-        cmd.add(EXEC_PATH);
-        cmd.add("--phred64-quals");
-        cmd.add("-p");
-        cmd.add("" + THREAD_NUMBER);
-        cmd.add(INDEX_PATH);
-        cmd.add("-q");
-        cmd.add(f.getAbsolutePath());
-        cmd.add("-S");
+            cmd.add(EXEC_PATH);
+            cmd.add("--phred64-quals");
+            cmd.add("-p");
+            cmd.add("" + THREAD_NUMBER);
+            cmd.add(INDEX_PATH);
+            cmd.add("-q");
+            cmd.add(f.getAbsolutePath());
+            cmd.add("-S");
 
-        return Collections.singletonList(cmd);
-      }
-    };
+            return Collections.singletonList(cmd);
+          }
+        };
 
     FileUtils.copy(mp1.getStout(), new FileOutputStream(
         "/home/jourdren/toto1.sam"));
@@ -88,24 +89,25 @@ public class MapperProcessDemo {
     sw.start();
 
     // stdin
-    final MapperProcess mp2 = new MapperProcess("bowtie", false, true, false) {
+    final MapperProcess mp2 =
+        new MapperProcess(new BowtieReadsMapper(), false, true, false) {
 
-      @Override
-      protected List<List<String>> createCommandLines() {
+          @Override
+          protected List<List<String>> createCommandLines() {
 
-        final List<String> cmd = new ArrayList<String>();
+            final List<String> cmd = new ArrayList<String>();
 
-        cmd.add(EXEC_PATH);
-        cmd.add("--phred64-quals");
-        cmd.add("-p");
-        cmd.add("" + THREAD_NUMBER);
-        cmd.add(INDEX_PATH);
-        cmd.add("-q");
-        cmd.add("-");
-        cmd.add("-S");
-        return Collections.singletonList(cmd);
-      }
-    };
+            cmd.add(EXEC_PATH);
+            cmd.add("--phred64-quals");
+            cmd.add("-p");
+            cmd.add("" + THREAD_NUMBER);
+            cmd.add(INDEX_PATH);
+            cmd.add("-q");
+            cmd.add("-");
+            cmd.add("-S");
+            return Collections.singletonList(cmd);
+          }
+        };
 
     mp2.toFile(new File("/home/jourdren/toto2.sam"));
     FileUtils.copy(new FileInputStream(f), mp2.getStdin());
@@ -118,24 +120,25 @@ public class MapperProcessDemo {
     sw.start();
 
     // tmp input file
-    final MapperProcess mp3 = new MapperProcess("bowtie", false, false, false) {
+    final MapperProcess mp3 =
+        new MapperProcess(new BowtieReadsMapper(), false, false, false) {
 
-      @Override
-      protected List<List<String>> createCommandLines() {
+          @Override
+          protected List<List<String>> createCommandLines() {
 
-        final List<String> cmd = new ArrayList<String>();
+            final List<String> cmd = new ArrayList<String>();
 
-        cmd.add(EXEC_PATH);
-        cmd.add("--phred64-quals");
-        cmd.add("-p");
-        cmd.add("" + THREAD_NUMBER);
-        cmd.add(INDEX_PATH);
-        cmd.add("-q");
-        cmd.add(getTmpInputFile1().getAbsolutePath());
-        cmd.add("-S");
-        return Collections.singletonList(cmd);
-      }
-    };
+            cmd.add(EXEC_PATH);
+            cmd.add("--phred64-quals");
+            cmd.add("-p");
+            cmd.add("" + THREAD_NUMBER);
+            cmd.add(INDEX_PATH);
+            cmd.add("-q");
+            cmd.add(getTmpInputFile1().getAbsolutePath());
+            cmd.add("-S");
+            return Collections.singletonList(cmd);
+          }
+        };
 
     FileUtils.copy(new FileInputStream(f), mp3.getStdin());
     mp3.toFile(new File("/home/jourdren/toto3.sam"));
