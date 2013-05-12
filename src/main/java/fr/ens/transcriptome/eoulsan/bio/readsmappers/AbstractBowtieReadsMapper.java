@@ -135,16 +135,31 @@ public abstract class AbstractBowtieReadsMapper extends
             // Build the command line
             final List<String> cmd = new ArrayList<String>();
 
+            // Bowtie Executable path
             cmd.add(bowtiePath);
+
+            // User options
             if (getListMapperArguments() != null)
               cmd.addAll(getListMapperArguments());
-            cmd.add(bowtieQualityArgument());
+
+            // Set the number of threads
             cmd.add("-p");
             cmd.add(getThreadsNumber() + "");
-            cmd.add(index);
+
+            // Input in FASTQ format
             cmd.add("-q");
-            cmd.add(readsFile.getAbsolutePath());
+
+            // Set the quality format
+            cmd.add(bowtieQualityArgument());
+
+            // Output in SAM format
             cmd.add("-S");
+
+            // Genome index name
+            cmd.add(index);
+
+            // Input FASTQ file
+            cmd.add(readsFile.getAbsolutePath());
 
             return Collections.singletonList(cmd);
           }
@@ -185,19 +200,36 @@ public abstract class AbstractBowtieReadsMapper extends
             // Build the command line
             final List<String> cmd = new ArrayList<String>();
 
+            // Bowtie Executable path
             cmd.add(bowtiePath);
-            cmd.add(bowtieQualityArgument());
 
+            // Set user options
             if (getListMapperArguments() != null)
               cmd.addAll(getListMapperArguments());
+
+            // Set the number of threads
             cmd.add("-p");
             cmd.add(getThreadsNumber() + "");
+
+            // Input in FASTQ format
+            cmd.add("-q");
+
+            // Set the quality format
+            cmd.add(bowtieQualityArgument());
+
+            // Output in SAM format
+            cmd.add("-S");
+
+            // Genome index name
             cmd.add(index);
+
+            // First end input FASTQ file
             cmd.add("-1");
             cmd.add(readsFile1.getAbsolutePath());
+
+            // Second end input FASTQ file
             cmd.add("-2");
             cmd.add(readsFile2.getAbsolutePath());
-            cmd.add("-S");
 
             return Collections.singletonList(cmd);
           }
@@ -234,7 +266,8 @@ public abstract class AbstractBowtieReadsMapper extends
         new File(getIndexPath(archiveIndexDir, extensionIndexFile,
             extensionIndexFile.length())).getName();
 
-    return new MapperProcess(getMapperName(), false, true, false) {
+    // TODO Warning streaming mode not currently enabled
+    return new MapperProcess(getMapperName(), false, false, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -242,16 +275,36 @@ public abstract class AbstractBowtieReadsMapper extends
         // Build the command line
         final List<String> cmd = new ArrayList<String>();
 
+        // Bowtie Executable path
         cmd.add(bowtiePath);
+
+        // Set user options
         if (getListMapperArguments() != null)
           cmd.addAll(getListMapperArguments());
-        cmd.add(bowtieQualityArgument());
+
+        // Set the number of threads
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
-        cmd.add(index);
+
+        // Input in FASTQ format
         cmd.add("-q");
+
+        // Set the quality format
+        cmd.add(bowtieQualityArgument());
+
+        // Output in SAM format
         cmd.add("-S");
-        cmd.add("-");
+
+        // Genome index name
+        cmd.add(index);
+
+        // TODO Enable this in streaming mode
+        // Input from stdin
+        // cmd.add("-");
+
+        // TODO Remove this when streaming mode will be enabled
+        // Input from temporary FASTQ file
+        cmd.add(getTmpInputFile1().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
@@ -281,25 +334,67 @@ public abstract class AbstractBowtieReadsMapper extends
         new File(getIndexPath(archiveIndexDir, extensionIndexFile,
             extensionIndexFile.length())).getName();
 
-    return new MapperProcess(getMapperName(), false, true, true) {
+    // TODO Warning streaming mode not currently enabled
+    return new MapperProcess(getMapperName(), false, false, true) {
+
+      @Override
+      public void writeEntry(final String name1, final String sequence1,
+          final String quality1, final String name2, final String sequence2,
+          final String quality2) throws IOException {
+
+        // TODO Write reads in Crossbow format when streaming mode will be
+        // enabled
+        super
+            .writeEntry(name1, sequence1, quality1, name2, sequence2, quality2);
+      }
 
       @Override
       protected List<List<String>> createCommandLines() {
         // Build the command line
         final List<String> cmd = new ArrayList<String>();
 
+        // Bowtie Executable path
         cmd.add(bowtiePath);
-        cmd.add(bowtieQualityArgument());
 
+        // Set the user options
         if (getListMapperArguments() != null)
           cmd.addAll(getListMapperArguments());
+
+        // Set the number of threads to use
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
-        cmd.add(index);
-        cmd.add(("-r"));
-        cmd.add("-12");
+
+        // TODO Remove this when streaming mode will be enabled
+        // Input in FASTQ format
+        cmd.add(("-q"));
+
+        // Set the quality format
+        cmd.add(bowtieQualityArgument());
+
+        // TODO enable this in streaming mode
+        // Input in Crossbow format
+        // cmd.add(("-r"));
+
+        // Output in SAM format
         cmd.add("-S");
-        cmd.add("-");
+
+        // Genome index name
+        cmd.add(index);
+
+        // TODO enable this in streaming mode
+        // Read input from stdin (streaming mode)
+        // cmd.add("-12");
+        // cmd.add("-");
+
+        // TODO Remove this when streaming mode will be enabled
+        // First end input FASTQ file
+        cmd.add("-1");
+        cmd.add(getTmpInputFile1().getAbsolutePath());
+
+        // TODO Remove this when streaming mode will be enabled
+        // Second end input FASTQ file
+        cmd.add("-2");
+        cmd.add(getTmpInputFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
