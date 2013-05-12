@@ -213,7 +213,7 @@ public interface SequenceReadsMapper {
   /**
    * Initialize the mapper before the mapping.
    * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
+   * @param archiveIndexDir uncompressed directory for the genome index
    * @param incrementer the incrementer to report the processing of the fastq
    *          files
    * @param counterGroup the group for the reporter

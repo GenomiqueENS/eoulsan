@@ -265,7 +265,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String indexPath, final File readsFile, final File tmpFile,
       final boolean fileMode) throws IOException {
 
-    return new MapperProcess(getMapperName(), fileMode, false, false) {
+    return new MapperProcess(this, fileMode, false, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -321,7 +321,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final File tmpFile1, final File tmpFile2, final boolean fileMode)
       throws IOException {
 
-    return new MapperProcess(getMapperName(), fileMode, false, true) {
+    return new MapperProcess(this, fileMode, false, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {

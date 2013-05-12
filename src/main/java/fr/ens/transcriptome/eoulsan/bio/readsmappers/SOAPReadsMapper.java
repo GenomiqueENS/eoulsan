@@ -227,7 +227,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final File unmapFile, final GenomeDescription genomeDescription,
       final boolean fileMode) throws IOException {
 
-    return new MapperProcess(getMapperName(), fileMode, false, false) {
+    return new MapperProcess(this, fileMode, false, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -281,7 +281,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final GenomeDescription genomeDescription, final boolean fileMode)
       throws IOException {
 
-    return new MapperProcess(getMapperName(), true, false, true) {
+    return new MapperProcess(this, true, false, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {

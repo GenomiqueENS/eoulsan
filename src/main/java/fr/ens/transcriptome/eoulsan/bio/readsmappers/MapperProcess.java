@@ -246,11 +246,6 @@ public abstract class MapperProcess {
   protected void clean() {
   }
 
-  protected File getTemporaryDirectory() {
-
-    return new File(System.getProperty("java.io.tmpdir", "/tmp"));
-  }
-
   //
   // Getters
   //
@@ -421,11 +416,12 @@ public abstract class MapperProcess {
   // Constructor
   //
 
-  protected MapperProcess(final String mapperName, final boolean useFile,
-      final boolean useStdin, final boolean pairedEnd) throws IOException {
+  protected MapperProcess(final SequenceReadsMapper mapper,
+      final boolean useFile, final boolean useStdin, final boolean pairedEnd)
+      throws IOException {
 
     try {
-      this.mapperName = mapperName;
+      this.mapperName = mapper.getMapperName();
       this.inputFileMode = useFile;
       this.inputStdinMode = useStdin;
       this.pairedEnd = pairedEnd;
@@ -447,7 +443,7 @@ public abstract class MapperProcess {
             new OutputStreamWrapper(new FileOutputStream(this.tmpInFile1));
       }
 
-      final File tmpDir = getTemporaryDirectory();
+      final File tmpDir = mapper.getTempDirectory();
       this.tmpInFile1 =
           FileUtils.createTempFile(tmpDir, "mapper-inputfile1-", ".fq");
       this.tmpInFile2 =

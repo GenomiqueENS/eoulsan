@@ -215,7 +215,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final String fastqFormat, final String archivePath, final File readsPath,
       final boolean fileMode) throws IOException {
 
-    return new MapperProcess(getMapperName(), fileMode, false, false) {
+    return new MapperProcess(this, fileMode, false, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -249,7 +249,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final File reads1File, final File reads2File, final boolean fileMode)
       throws IOException {
 
-    return new MapperProcess(getMapperName(), fileMode, false, true) {
+    return new MapperProcess(this, fileMode, false, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {
