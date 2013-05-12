@@ -70,12 +70,15 @@ public class UploadS3Action extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "s3upload";
+
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
 
   @Override
   public String getName() {
-    return "s3upload";
+    return ACTION_NAME;
   }
 
   @Override
@@ -135,7 +138,7 @@ public class UploadS3Action extends AbstractAction {
    * Create options for command line
    * @return an Options object
    */
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -150,12 +153,12 @@ public class UploadS3Action extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName()
+        + ".sh " + ACTION_NAME
         + " [options] param.xml design.txt s3://mybucket/test", options);
 
     Common.exit(0);
@@ -172,7 +175,7 @@ public class UploadS3Action extends AbstractAction {
    * @param s3Path path of data on S3 file system
    * @param jobDescription job description
    */
-  private void run(final File paramFile, final File designFile,
+  private static final void run(final File paramFile, final File designFile,
       final DataFile s3Path, final String jobDescription) {
 
     checkNotNull(paramFile, "paramFile is null");

@@ -66,6 +66,9 @@ public class ExecAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "exec";
+
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
 
@@ -75,7 +78,7 @@ public class ExecAction extends AbstractAction {
 
   @Override
   public String getName() {
-    return "exec";
+    return ACTION_NAME;
   }
 
   @Override
@@ -134,7 +137,7 @@ public class ExecAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -153,12 +156,12 @@ public class ExecAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName() + " [options] param.xml design.txt", options);
+        + ".sh " + ACTION_NAME + " [options] param.xml design.txt", options);
 
     Common.exit(0);
   }
@@ -173,7 +176,7 @@ public class ExecAction extends AbstractAction {
    * @param designFile design file
    * @param jobDescription job description
    */
-  private void run(final File paramFile, final File designFile,
+  private static final void run(final File paramFile, final File designFile,
       final String jobDescription) {
 
     checkNotNull(paramFile, "paramFile is null");

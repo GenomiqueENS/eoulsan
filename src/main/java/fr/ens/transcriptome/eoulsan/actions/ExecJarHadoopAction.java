@@ -210,7 +210,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param url input URL
    * @return converted URL
    */
-  private String convertS3URL(final String url) {
+  private static final String convertS3URL(final String url) {
 
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
@@ -224,7 +224,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private static Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -256,13 +256,13 @@ public class ExecJarHadoopAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("hadoop -jar "
-        + Globals.APP_NAME_LOWER_CASE
-        + ".jar  [options] param.xml design.txt hdfs://server/path", options);
+        + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
+        + "param.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }
@@ -281,7 +281,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param millisSinceEpoch milliseconds since epoch
    * @param uploadOnly true if execution must end after upload
    */
-  private static void run(final String paramPathname,
+  private static final void run(final String paramPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
       final boolean uploadOnly, final long millisSinceEpoch) {

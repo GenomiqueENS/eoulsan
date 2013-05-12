@@ -58,9 +58,12 @@ public class HadoopExecAction extends AbstractAction {
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "hadoopexec";
+
   @Override
   public String getName() {
-    return "hadoopexec";
+    return ACTION_NAME;
   }
 
   @Override
@@ -127,7 +130,7 @@ public class HadoopExecAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -149,12 +152,12 @@ public class HadoopExecAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName()
+        + ".sh " + ACTION_NAME
         + " [options] param.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
@@ -172,7 +175,7 @@ public class HadoopExecAction extends AbstractAction {
    * @param jobDescription job description
    * @param uploadOnly true if execution must end after upload
    */
-  private void run(final File paramFile, final File designFile,
+  private static final void run(final File paramFile, final File designFile,
       final String hdfsPath, final String jobDescription,
       final boolean uploadOnly) {
 

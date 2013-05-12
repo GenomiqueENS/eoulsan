@@ -42,6 +42,9 @@ public class AWSExecAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "awsexec";
+
   @Override
   public boolean isHidden() {
 
@@ -51,7 +54,7 @@ public class AWSExecAction extends AbstractAction {
   @Override
   public String getName() {
 
-    return "awsexec";
+    return ACTION_NAME;
   }
 
   @Override
