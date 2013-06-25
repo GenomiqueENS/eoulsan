@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -76,6 +78,405 @@ public class GFFEntryTest {
       assertEquals(s, e.toString());
     }
 
+  }
+
+  @Test
+  public void testMinimalEntry() {
+
+    GFFEntry e = new GFFEntry();
+    e.setSeqId("theId");
+    e.setSource("thesource");
+    e.setType("thetype");
+
+    e.setStart(1);
+    e.setEnd(1000);
+
+    assertTrue(e.isValidPhase());
+    assertTrue(e.isValidStartAndEnd());
+    assertTrue(e.isValidStrand());
+    assertTrue(e.isValidEntry());
+  }
+
+  @Test
+  public void testGetId() {
+
+    GFFEntry e = new GFFEntry();
+    e.setId(9999);
+    assertEquals(9999, e.getId());
+  }
+
+  @Test
+  public void testGetSeqId() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals("ctg123", e.getSeqId());
+  }
+
+  @Test
+  public void testGetSource() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\tGenbank\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals("Genbank", e.getSource());
+  }
+
+  @Test
+  public void testGetType() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals("gene", e.getType());
+  }
+
+  @Test
+  public void testGetStart() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(1000, e.getStart());
+  }
+
+  @Test
+  public void testGetEnd() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(9000, e.getEnd());
+  }
+
+  @Test
+  public void testGetScore() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(Double.NaN, e.getScore(), 0.0);
+  }
+
+  @Test
+  public void testGetStrand() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals('+', e.getStrand());
+  }
+
+  @Test
+  public void testGetPhase() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(-1, e.getPhase());
+
+    e.setType("CDS");
+
+    e.setPhase(-2);
+    assertEquals(-1, e.getPhase());
+
+    e.setPhase(-1);
+    assertEquals(-1, e.getPhase());
+
+    e.setPhase(0);
+    assertEquals(0, e.getPhase());
+
+    e.setPhase(1);
+    assertEquals(1, e.getPhase());
+
+    e.setPhase(2);
+    assertEquals(2, e.getPhase());
+
+    e.setPhase(3);
+    assertEquals(-1, e.getPhase());
+  }
+
+  @Test
+  public void testGetMetadataKeyNames() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(0, e.getMetadataKeyNames().size());
+
+    e.addMetaDataEntry("key1", "val1");
+    assertEquals(1, e.getMetadataKeyNames().size());
+
+    assertFalse(e.getMetadataKeyNames().contains("key0"));
+    assertTrue(e.getMetadataKeyNames().contains("key1"));
+
+    e.addMetaDataEntry("key2", "val2");
+    assertEquals(2, e.getMetadataKeyNames().size());
+
+    assertFalse(e.getMetadataKeyNames().contains("key0"));
+    assertTrue(e.getMetadataKeyNames().contains("key1"));
+    assertTrue(e.getMetadataKeyNames().contains("key2"));
+  }
+
+  @Test
+  public void testGetAttributesNames() {
+
+    GFFEntry e = new GFFEntry();
+
+    assertEquals(0, e.getAttributesNames().size());
+
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(2, e.getAttributesNames().size());
+
+    assertFalse(e.getAttributesNames().contains("key0"));
+    assertTrue(e.getAttributesNames().contains("ID"));
+    assertTrue(e.getAttributesNames().contains("Name"));
+  }
+
+  @Test
+  public void testIsMetaDataEntry() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertFalse(e.isMetaDataEntry("key0"));
+    assertEquals(0, e.getMetadataKeyNames().size());
+
+    e.addMetaDataEntry("key1", "val1");
+    assertFalse(e.isMetaDataEntry("key0"));
+    assertTrue(e.isMetaDataEntry("key1"));
+
+    e.addMetaDataEntry("key2", "val2");
+    assertFalse(e.isMetaDataEntry("key0"));
+    assertTrue(e.isMetaDataEntry("key1"));
+    assertTrue(e.isMetaDataEntry("key2"));
+  }
+
+  @Test
+  public void testIsAttribute() {
+
+    GFFEntry e = new GFFEntry();
+
+    assertFalse(e.isAttribute("key0"));
+    assertFalse(e.isAttribute("ID"));
+    assertFalse(e.isAttribute("Name"));
+
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(2, e.getAttributesNames().size());
+
+    assertFalse(e.isAttribute("key0"));
+    assertTrue(e.isAttribute("ID"));
+    assertTrue(e.isAttribute("Name"));
+    assertFalse(e.isAttribute("id"));
+    assertFalse(e.isAttribute("name"));
+  }
+
+  @Test
+  public void testGetMetadataEntryValues() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    e.addMetaDataEntry("key1", "val1");
+    assertEquals(1, e.getMetadataEntryValues("key1").size());
+    assertEquals("val1", e.getMetadataEntryValues("key1").get(0));
+
+    e.addMetaDataEntry("key2", "val2");
+    assertEquals(1, e.getMetadataEntryValues("key1").size());
+    assertEquals("val1", e.getMetadataEntryValues("key1").get(0));
+    assertEquals(1, e.getMetadataEntryValues("key2").size());
+    assertEquals("val2", e.getMetadataEntryValues("key2").get(0));
+  }
+
+  @Test
+  public void testGetAttributeValue() {
+
+    GFFEntry e = new GFFEntry();
+
+    try {
+      e.parse("ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals("gene00001", e.getAttributeValue("ID"));
+    assertEquals("EDEN", e.getAttributeValue("Name"));
+
+  }
+
+  @Test
+  public void testSetId() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals(0, e.getId());
+    e.setId(8888);
+    assertEquals(8888, e.getId());
+  }
+
+  @Test
+  public void testSetSeqId() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals("", e.getSeqId());
+    e.setSeqId("myseqid");
+    assertEquals("myseqid", e.getSeqId());
+    e.setSeqId(" ");
+    assertEquals("", e.getSeqId());
+    e.setSeqId(null);
+    assertEquals("", e.getSeqId());
+  }
+
+  @Test
+  public void testSetSource() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals("", e.getSource());
+    e.setSource("mysource");
+    assertEquals("mysource", e.getSource());
+    e.setSource(" ");
+    assertEquals("", e.getSource());
+    e.setSource(null);
+    assertEquals("", e.getSource());
+  }
+
+  @Test
+  public void testSetType() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals("", e.getType());
+    e.setType("mytype");
+    assertEquals("mytype", e.getType());
+    e.setType(" ");
+    assertEquals("", e.getType());
+    e.setType(null);
+    assertEquals("", e.getType());
+  }
+
+  @Test
+  public void testSetStart() {
+    GFFEntry e = new GFFEntry();
+    assertEquals(-1, e.getStart());
+    e.setStart(0);
+    assertEquals(-1, e.getStart());
+    e.setStart(1);
+    assertEquals(1, e.getStart());
+    e.setStart(10);
+    assertEquals(10, e.getStart());
+  }
+
+  @Test
+  public void testSetEnd() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals(-1, e.getEnd());
+    e.setEnd(0);
+    assertEquals(-1, e.getEnd());
+    e.setEnd(1);
+    assertEquals(1, e.getEnd());
+    e.setEnd(10);
+    assertEquals(10, e.getEnd());
+  }
+
+  @Test
+  public void testSetScore() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals(Double.NaN, e.getScore(), 0.0);
+    e.setScore(0.0);
+    assertEquals(0.0, e.getScore(), 0.0);
+    e.setScore(1);
+    assertEquals(1.0, e.getScore(), 0.0);
+    e.setScore(10);
+    assertEquals(10.0, e.getScore(), 0.0);
+  }
+
+  @Test
+  public void testSetStrand() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals('.', e.getStrand());
+    e.setStrand('+');
+    assertEquals('+', e.getStrand());
+    e.setStrand('.');
+    assertEquals('.', e.getStrand());
+    e.setStrand('-');
+    assertEquals('-', e.getStrand());
+    e.setStrand('a');
+    assertEquals('.', e.getStrand());
+  }
+
+  @Test
+  public void testSetPhase() {
+
+    GFFEntry e = new GFFEntry();
+    assertEquals(-1, e.getPhase());
+    e.setPhase(-2);
+    assertEquals(-1, e.getPhase());
+    e.setPhase(-1);
+    assertEquals(-1, e.getPhase());
+    e.setPhase(0);
+    assertEquals(0, e.getPhase());
+    e.setPhase(1);
+    assertEquals(1, e.getPhase());
+    e.setPhase(2);
+    assertEquals(2, e.getPhase());
+    e.setPhase(3);
+    assertEquals(-1, e.getPhase());
   }
 
 }
