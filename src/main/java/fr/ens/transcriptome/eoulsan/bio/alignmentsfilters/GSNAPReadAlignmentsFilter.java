@@ -41,7 +41,7 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public String getName() {
 
-    return "gsnapfilter";
+    return FILTER_NAME;
   }
 
   @Override

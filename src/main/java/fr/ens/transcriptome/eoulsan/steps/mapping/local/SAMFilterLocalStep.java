@@ -140,7 +140,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Add counters for this sample to log file
     return reporter.countersValuesToString(COUNTER_GROUP, "Filter SAM file ("
-        + sample.getName() + ", " + inFile + ")");
+        + sample.getName() + ", " + inFile.getName() + ")");
   }
 
   /**

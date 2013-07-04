@@ -65,7 +65,7 @@ fi
 
 COMMON_LIBS=$(make_paths $LIBDIR)
 LOCAL_LIBS=$(make_paths $LIBDIR/local)
-PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS)
+PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS_DIR)
 
 # Launch Eoulsan
 $JAVA_CMD \
