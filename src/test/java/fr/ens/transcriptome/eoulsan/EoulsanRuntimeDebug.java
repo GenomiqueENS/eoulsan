@@ -35,6 +35,8 @@ public class EoulsanRuntimeDebug {
   public static void initDebugEoulsanRuntime() throws IOException,
       EoulsanException {
 
+    Logger.getLogger(Globals.APP_NAME).getParent().setLevel(Level.OFF);
+
     if (!EoulsanRuntime.isRuntime())
       newEoulsanRuntime(new Settings(true));
 

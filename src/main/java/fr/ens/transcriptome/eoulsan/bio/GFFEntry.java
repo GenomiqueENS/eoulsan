@@ -244,7 +244,7 @@ public class GFFEntry {
     if (seqId == null || ".".equals(seqId)) {
       this.seqId = "";
     } else {
-      this.seqId = seqId;
+      this.seqId = seqId.trim();
     }
   }
 
@@ -257,7 +257,7 @@ public class GFFEntry {
     if (source == null || ".".equals(source)) {
       this.source = "";
     } else {
-      this.source = source;
+      this.source = source.trim();
     }
   }
 
@@ -270,7 +270,7 @@ public class GFFEntry {
     if (type == null || ".".equals(type)) {
       this.type = "";
     } else {
-      this.type = type;
+      this.type = type.trim();
     }
   }
 
@@ -279,7 +279,11 @@ public class GFFEntry {
    * @param start the start position
    */
   public final void setStart(final int start) {
-    this.start = start;
+
+    if (start < 1)
+      this.start = -1;
+    else
+      this.start = start;
   }
 
   /**
@@ -287,7 +291,11 @@ public class GFFEntry {
    * @param end the end position
    */
   public final void setEnd(final int end) {
-    this.end = end;
+
+    if (end < 1)
+      this.end = -1;
+    else
+      this.end = end;
   }
 
   /**
@@ -441,8 +449,8 @@ public class GFFEntry {
     this.seqId = "";
     this.source = "";
     this.type = "";
-    this.start = Integer.MIN_VALUE;
-    this.end = Integer.MAX_VALUE;
+    this.start = -1;
+    this.end = -1;
     this.score = Double.NaN;
     this.strand = '.';
     this.phase = -1;
@@ -469,7 +477,7 @@ public class GFFEntry {
    */
   public final boolean isValidEntry() {
 
-    return seqId == null
+    return seqId != null
         && source != null && type != null && isValidStartAndEnd()
         && isValidStrand();
   }
@@ -675,11 +683,23 @@ public class GFFEntry {
     return ("".equals(seqId) ? "." : StringUtils.protectGFF(seqId))
         + '\t' + ("".equals(source) ? "." : StringUtils.protectGFF(source))
         + '\t' + ("".equals(type) ? "." : StringUtils.protectGFF(type)) + '\t'
-        + (getStart() == Integer.MIN_VALUE ? "." : getStart()) + '\t'
-        + (getEnd() == Integer.MAX_VALUE ? "." : getEnd()) + '\t'
+        + (getStart() == -1 ? "." : getStart()) + '\t'
+        + (getEnd() == -1 ? "." : getEnd()) + '\t'
         + (Double.isNaN(getScore()) ? "." : getScore()) + '\t' + getStrand()
         + '\t' + (getPhase() == -1 ? "." : getPhase()) + '\t'
         + attributesToString();
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor.
+   */
+  public GFFEntry() {
+
+    clear();
   }
 
 }

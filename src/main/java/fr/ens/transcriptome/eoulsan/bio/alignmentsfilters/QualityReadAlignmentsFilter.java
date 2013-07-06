@@ -44,7 +44,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
   @Override
   public String getName() {
-    return "mappingquality";
+    return FILTER_NAME;
   }
 
   @Override
