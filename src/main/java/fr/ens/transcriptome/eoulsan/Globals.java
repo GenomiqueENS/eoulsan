@@ -180,9 +180,6 @@ public final class Globals {
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
-  /** AWS Multipart upload mode default. */
-  public static final boolean AWS_UPLOAD_MULTIPART_DEFAULT = false;
-
   /** FASTA file width. */
   public static final int FASTA_FILE_WIDTH = 60;
 
