@@ -39,7 +39,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.Transfer.TransferState;
@@ -71,7 +70,6 @@ public class S3DataProtocol implements DataProtocol {
 
   private AmazonS3 s3;
   private TransferManager tx;
-  private boolean multipartUpload;
 
   @Override
   public String getSourceFilename(final String source) {
@@ -243,13 +241,8 @@ public class S3DataProtocol implements DataProtocol {
 
         try {
 
-          if (multipartUpload)
-            multipartUpload(md);
-          else
-            standardUpload(md);
-
+          multipartUpload(md);
           uploadOk = true;
-
         } catch (AmazonClientException e) {
           ace = e;
           LOGGER.warning("Error while uploading "
@@ -286,9 +279,13 @@ public class S3DataProtocol implements DataProtocol {
       final Transfer myUpload;
 
       if (file != null)
-        myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), file);
+        myUpload =
+            getTransferManager()
+                .upload(s3url.bucket, s3url.getFilePath(), file);
       else
-        myUpload = tx.upload(s3url.bucket, s3url.getFilePath(), this.is, md);
+        myUpload =
+            getTransferManager().upload(s3url.bucket, s3url.getFilePath(),
+                this.is, md);
 
       try {
 
@@ -314,26 +311,6 @@ public class S3DataProtocol implements DataProtocol {
         }
 
       }
-    }
-
-    private void standardUpload(final ObjectMetadata md) {
-
-      final PutObjectRequest or;
-
-      if (file != null)
-        or = new PutObjectRequest(s3url.bucket, s3url.getFilePath(), file);
-      else
-        or =
-            new PutObjectRequest(s3url.bucket, s3url.getFilePath(), this.is, md);
-
-      getS3().putObject(or);
-
-      if (this.is != null)
-        try {
-          this.is.close();
-        } catch (IOException e) {
-          throw new AmazonClientException(e.getMessage());
-        }
     }
 
     //
@@ -511,17 +488,23 @@ public class S3DataProtocol implements DataProtocol {
 
       LOGGER.info("AWS S3 account owner: " + this.s3.getS3AccountOwner());
 
-      this.multipartUpload = settings.isAWSMultipartUpload();
-      LOGGER.info("AWS Multipart upload: " + this.multipartUpload);
-
-      if (this.multipartUpload) {
-        this.tx = new TransferManager(this.s3);
-      } else
-        this.tx = null;
-
+      this.tx = new TransferManager(this.s3);
     }
 
     return this.s3;
+  }
+
+  /**
+   * Get transfert manager.
+   * @return the transfert manager
+   */
+  private TransferManager getTransferManager() {
+
+    if (this.tx == null) {
+      this.tx = new TransferManager(getS3());
+    }
+
+    return this.tx;
   }
 
 }

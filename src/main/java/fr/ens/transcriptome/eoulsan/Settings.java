@@ -56,7 +56,6 @@ public final class Settings {
   private static final String DEBUG_KEY = MAIN_PREFIX_KEY + "debug";
   private static final String AWS_ACCESS_KEY = "aws.access.key";
   private static final String AWS_SECRET_KEY = "aws.secret.key";
-  private static final String AWS_UPLOAD_MULTIPART = "aws.upload.multipart";
 
   private static final String PRINT_STACK_TRACE_KEY = MAIN_PREFIX_KEY
       + "printstacktrace";
@@ -173,19 +172,6 @@ public final class Settings {
   public String getAWSSecretKey() {
 
     return this.properties.getProperty(AWS_SECRET_KEY);
-  }
-
-  /**
-   * Test if AWS multipart upload is enabled.
-   * @return true if the multipart upload is enabled
-   */
-  public boolean isAWSMultipartUpload() {
-
-    final String value =
-        this.properties.getProperty(AWS_UPLOAD_MULTIPART,
-            Boolean.toString(Globals.AWS_UPLOAD_MULTIPART_DEFAULT));
-
-    return Boolean.valueOf(value);
   }
 
   /**
@@ -501,16 +487,6 @@ public final class Settings {
 
     this.properties.setProperty(AWS_SECRET_KEY, value);
     this.properties.setProperty(HADOOP_AWS_SECRET_KEY, value);
-  }
-
-  /**
-   * Set if the AWS multipart upload mode is enabled.
-   * @param multipartUpload true if the multipart upload is enabled
-   */
-  public void setAWSMultipartUpload(final boolean multipartUpload) {
-
-    this.properties.setProperty(AWS_UPLOAD_MULTIPART,
-        Boolean.toString(multipartUpload));
   }
 
   /**
