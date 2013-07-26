@@ -26,7 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
         // Get alignment file
         final DataFile alignmentFile =
-            context.getInputDataFile(FILTERED_MAPPER_RESULTS_SAM, s);
+            context.getInputDataFile(MAPPER_RESULTS_SAM, s);
 
         // Get genome desc file
         final DataFile genomeDescFile =

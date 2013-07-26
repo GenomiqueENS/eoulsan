@@ -1,9 +1,0 @@
-<dataformat>
-  <name>filtered_mapper_results_index_bai</name>
-  <description>bam index filtered alignments format</description>
-  <type>filtered_mapper_results_index</type>
-  <content-type>application/octet-stream</content-type>
-  <extensions>
-  	<extension default="true">.bai</extension>
-  </extensions>
-</dataformat>

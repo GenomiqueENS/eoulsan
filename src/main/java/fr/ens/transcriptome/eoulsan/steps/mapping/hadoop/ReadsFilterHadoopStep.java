@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
@@ -47,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -82,7 +80,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {FILTERED_READS_TFQ};
+    return new DataFormat[] {READS_TFQ};
   }
 
   @Override
@@ -186,7 +184,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat(DataTypes.READS)))
+    if (READS_FASTQ.equals(inputDataFile.getDataFormat()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
@@ -199,10 +197,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(context.getOutputDataFile(DataFormats.FILTERED_READS_TFQ,
-            sample).getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getOutputDataFile(DataFormats.READS_TFQ, sample)
+            .getSource()));
 
     return job;
   }
@@ -262,8 +259,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath2);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile1.getDataFormat(DataTypes.READS))
-        && READS_FASTQ.equals(inputDataFile2.getDataFormat(DataTypes.READS)))
+    if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
+        && READS_FASTQ.equals(inputDataFile2.getDataFormat()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class

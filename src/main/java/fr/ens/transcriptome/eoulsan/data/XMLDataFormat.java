@@ -68,7 +68,10 @@ public final class XMLDataFormat extends AbstractDataFormat {
 
   private String name;
   private String description;
-  private String typeName;
+  private String prefix;
+  private boolean oneFilePerAnalysis;
+  private boolean dataTypeFromDesignFile;
+  private String designFieldName;
   private String contentType = "text/plain";
   private String[] extensions;
   private String generatorClassName;
@@ -82,10 +85,27 @@ public final class XMLDataFormat extends AbstractDataFormat {
     return this.name;
   }
 
-  @Override
-  public DataType getType() {
+  public String getPrefix() {
 
-    return DataTypeRegistry.getInstance().getDataTypeFromName(this.typeName);
+    return this.prefix;
+  }
+
+  @Override
+  public boolean isOneFilePerAnalysis() {
+
+    return this.oneFilePerAnalysis;
+  }
+
+  @Override
+  public boolean isDataTypeFromDesignFile() {
+
+    return this.dataTypeFromDesignFile;
+  }
+
+  @Override
+  public String getDesignFieldName() {
+
+    return this.designFieldName;
   }
 
   @Override
@@ -207,10 +227,16 @@ public final class XMLDataFormat extends AbstractDataFormat {
 
       this.name = XMLUtils.getTagValue(e, "name");
       this.description = XMLUtils.getTagValue(e, "description");
-      this.typeName = XMLUtils.getTagValue(e, "type");
+      this.prefix = XMLUtils.getTagValue(e, "prefix");
+      this.oneFilePerAnalysis =
+          Boolean.parseBoolean(XMLUtils.getTagValue(e, "onefileperanalysis"));
+      this.designFieldName = XMLUtils.getTagValue(e, "designfieldname");
       this.contentType = XMLUtils.getTagValue(e, "content-type");
       this.generatorClassName = XMLUtils.getTagValue(e, "generator");
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
+
+      if (this.designFieldName != null)
+        this.dataTypeFromDesignFile = true;
 
       // Get the parameters of the generator step
       for (Element generatorElement : XMLUtils.getElementsByTagName(e,
@@ -302,7 +328,10 @@ public final class XMLDataFormat extends AbstractDataFormat {
 
     return equal(this.name, that.name)
         && equal(this.description, that.description)
-        && equal(this.typeName, that.typeName)
+        && equal(this.prefix, that.prefix)
+        && equal(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
+        && equal(this.dataTypeFromDesignFile, that.dataTypeFromDesignFile)
+        && equal(this.designFieldName, that.designFieldName)
         && equal(this.contentType, that.contentType)
         && equal(this.extensions, that.extensions)
         && equal(this.generatorClassName, that.generatorClassName)
@@ -313,16 +342,17 @@ public final class XMLDataFormat extends AbstractDataFormat {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.name, this.description, this.typeName,
-        this.contentType, this.extensions, this.generatorClassName,
-        this.checkerClassName, this.maxFilesCount);
+    return Objects.hashCode(this.name, this.description, this.prefix,
+        this.oneFilePerAnalysis, this.dataTypeFromDesignFile,
+        this.designFieldName, this.contentType, this.extensions,
+        this.generatorClassName, this.checkerClassName, this.maxFilesCount);
   }
 
   @Override
   public String toString() {
 
     return Objects.toStringHelper(this).add("name", this.name)
-        .add("description", this.description).add("typeName", typeName)
+        .add("description", this.description).add("prefix", prefix)
         .add("contentType", this.contentType)
         .add("defaultExtension", this.extensions[0])
         .add("extensions", Arrays.toString(this.extensions))

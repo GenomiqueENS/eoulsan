@@ -1,7 +1,8 @@
 <dataformat>
   <name>reads_fastq</name>
   <description>reads in fastq format</description>
-  <type>reads</type>
+  <prefix>reads</prefix>
+  <designfieldname>Reads</designfieldname>
   <maxfilescount>2</maxfilescount>
   <checker>fr.ens.transcriptome.eoulsan.checkers.ReadsChecker</checker>
   <extensions>

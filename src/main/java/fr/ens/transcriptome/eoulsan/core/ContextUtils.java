@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
- * This class contains utility methods for Context class. 
+ * This class contains utility methods for Context class.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -91,10 +91,10 @@ public final class ContextUtils {
     final StringBuilder sb = new StringBuilder();
 
     // Set the prefix of the file
-    sb.append(df.getType().getPrefix());
+    sb.append(df.getPrefix());
 
     // Set the id of the sample
-    if (df.getType().isOneFilePerAnalysis()) {
+    if (df.isOneFilePerAnalysis()) {
       sb.append('1');
       if (NEW_STYLE)
         sb.append("-common");

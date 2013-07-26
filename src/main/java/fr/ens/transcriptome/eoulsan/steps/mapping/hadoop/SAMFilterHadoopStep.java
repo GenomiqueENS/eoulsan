@@ -159,8 +159,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(
-            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
+        new Path(context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM,
+            sample).getSource()));
 
     return job;
   }

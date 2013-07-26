@@ -1,7 +1,9 @@
 <dataformat>
   <name>totoformat</name>
   <description>totoformat</description>
-  <type>tototype</type>
+  <prefix>tototype</prefix>
+  <onefileperanalysis>false</onefileperanalysis>
+  <designfieldname>Titi</designfieldname>
   <contenttype>text/html</contenttype>
   <extensions>
     <extension>.txt</extension>

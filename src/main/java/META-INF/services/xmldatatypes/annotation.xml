@@ -1,7 +1,0 @@
-<datatype>
-  <name>annotation</name>
-  <description>annotation type</description>
-  <prefix>annotation_</prefix>
-  <onefileperanalysis>true</onefileperanalysis>
-  <designfieldname>Annotation</designfieldname>
-</datatype>

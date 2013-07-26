@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 public class XMLDataFormatTest {
 
   @Test
-  public void testXMLDataType() {
+  public void testXMLDataFormat() {
 
     try {
       new XMLDataFormat(this.getClass().getResourceAsStream(

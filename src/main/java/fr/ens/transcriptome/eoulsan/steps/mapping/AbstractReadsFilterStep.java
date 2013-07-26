@@ -84,7 +84,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_READS_FASTQ};
+    return new DataFormat[] {DataFormats.READS_FASTQ};
   }
 
   @Override

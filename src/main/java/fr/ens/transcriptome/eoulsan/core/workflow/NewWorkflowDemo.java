@@ -37,9 +37,12 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.SimpleContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
+import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 public class NewWorkflowDemo {
+
+  private static final String TEST_DIR = "/home/jourdren/tmp/workflow-test/";
 
   private static Command createCommand() throws EoulsanException {
 
@@ -84,17 +87,17 @@ public class NewWorkflowDemo {
 
     d.addMetadataField(SampleMetadata.READS_FIELD);
     d.getSample("s1").getMetadata()
-        .setReads(Collections.singletonList("s1.fq"));
+        .setReads(Collections.singletonList(TEST_DIR + "s1.fq.bz2"));
     d.getSample("s2").getMetadata()
-        .setReads(Collections.singletonList("s2.fq"));
+        .setReads(Collections.singletonList(TEST_DIR + "s2.fq.bz2"));
 
-//    d.addMetadataField(SampleMetadata.GENOME_FIELD);
-//    d.getSample("s1").getMetadata().setGenome("genome.fasta");
-//    d.getSample("s2").getMetadata().setGenome("genome.fasta");
+    d.addMetadataField(SampleMetadata.GENOME_FIELD);
+    d.getSample("s1").getMetadata().setGenome(TEST_DIR + "genome.fasta.bz2");
+    d.getSample("s2").getMetadata().setGenome(TEST_DIR + "genome.fasta.bz2");
 
     d.addMetadataField(SampleMetadata.ANNOTATION_FIELD);
-    d.getSample("s1").getMetadata().setAnnotation("annotation.gff");
-    d.getSample("s2").getMetadata().setAnnotation("annotation.gff");
+    d.getSample("s1").getMetadata().setAnnotation(TEST_DIR + "annotation.gff.bz2");
+    d.getSample("s2").getMetadata().setAnnotation(TEST_DIR + "annotation.gff.bz2");
 
     return d;
   }
@@ -108,10 +111,14 @@ public class NewWorkflowDemo {
     Design design = createDesign();
     Context context = new SimpleContext();
 
-    NewWorkflow nwf =
-        new NewWorkflow(command, null, null, design, context, false);
+    DesignUtils.showDesign(design);
 
-    nwf.show();
+    CommandWorkflow nwf = new CommandWorkflow(command, null, null, design, context);
+
+    //nwf.show();
+    
+    
+    
 
   }
 

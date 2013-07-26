@@ -157,8 +157,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Get the dest
     final DataFile outFile =
-        context.getOutputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
-            sample);
+        context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample);
 
     // filter alignments in single-end mode or in paired-end mode
     filterFile(inFile, outFile, reporter, filter);

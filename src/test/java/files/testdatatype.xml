@@ -1,7 +1,0 @@
-<datatype>
-  <name>toto</name>
-  <description>la description</description>
-  <prefix>.toto</prefix>
-  <onefileperanalysis>false</onefileperanalysis>
-  <designfieldname>Titi</designfieldname>
-</datatype>

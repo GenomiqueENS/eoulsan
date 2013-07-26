@@ -67,9 +67,6 @@ public class DataFormatConverter {
       return;
     }
 
-    if (this.inFormat.getType() != this.outFormat.getType())
-      throw new IOException("Can convert data from different DataType.");
-
     final CompressionType srcCT =
         CompressionType.getCompressionTypeByContentEncoding(inFile
             .getMetaData().getContentEncoding());

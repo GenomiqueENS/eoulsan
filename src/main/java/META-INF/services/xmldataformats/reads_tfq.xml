@@ -1,7 +1,7 @@
 <dataformat>
   <name>reads_tfq</name>
   <description>reads in tfq format</description>
-  <type>reads</type>
+  <prefix>reads</prefix>
   <extensions>
   	<extension default="true">.tfq</extension>
   </extensions>

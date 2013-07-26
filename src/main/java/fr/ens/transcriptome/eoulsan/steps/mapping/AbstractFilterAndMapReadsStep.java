@@ -24,9 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -59,7 +56,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   protected static final int HADOOP_TIMEOUT =
       AbstractReadsMapperStep.HADOOP_TIMEOUT;
 
-  private boolean pairEnd;
+  private boolean pairedEnd;
 
   private MultiReadFilterBuilder readFilterBuilder;
   private MultiReadAlignmentsFilterBuilder readAlignmentsFilterBuilder;
@@ -85,8 +82,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    * Test if the step works in pair end mode.
    * @return true if the pair end mode is enable
    */
-  protected boolean isPairend() {
-    return this.pairEnd;
+  protected boolean isPairedEnd() {
+    return this.pairedEnd;
   }
 
   /**
@@ -143,13 +140,13 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {READS_FASTQ, READS_TFQ,
+    return new DataFormat[] {DataFormats.READS_FASTQ,
         this.mapper.getArchiveFormat(), DataFormats.GENOME_DESC_TXT};
   }
 
   @Override
   public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_MAPPER_RESULTS_SAM};
+    return new DataFormat[] {DataFormats.MAPPER_RESULTS_SAM};
   }
 
   @Override
@@ -161,8 +158,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
-
-    // NEW VERSION...
 
     String mapperName = null;
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();

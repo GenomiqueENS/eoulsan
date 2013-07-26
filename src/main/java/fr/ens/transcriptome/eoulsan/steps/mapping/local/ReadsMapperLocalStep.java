@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -66,8 +66,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {FILTERED_READS_FASTQ,
-        getMapper().getArchiveFormat(), GENOME_DESC_TXT};
+    return new DataFormat[] {READS_FASTQ, getMapper().getArchiveFormat(),
+        GENOME_DESC_TXT};
   }
 
   @Override
@@ -119,7 +119,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Get the source
           final File inFile =
-              context.getInputDataFile(FILTERED_READS_FASTQ, s, 0).toFile();
+              context.getInputDataFile(READS_FASTQ, s, 0).toFile();
 
           // Single read mapping
           mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
@@ -137,10 +137,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
           // Get the source
           final File inFile1 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, s, 0).toFile();
+              context.getInputDataFile(READS_FASTQ, s, 0).toFile();
 
           final File inFile2 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, s, 1).toFile();
+              context.getInputDataFile(READS_FASTQ, s, 1).toFile();
 
           // Single read mapping
           mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,

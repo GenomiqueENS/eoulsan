@@ -45,13 +45,31 @@ public interface DataFormat {
    * @return the name of the format
    */
   String getDescription();
-  
-  /**
-   * Get the data type.
-   * @return the DataType of this format
-   */
-  DataType getType();
 
+  /**
+   * Get DataFormat prefix.
+   * @return the DataFormat prefix
+   */
+  String getPrefix();
+
+  /**
+   * Test if there is only one file for this DataType per analysis.
+   * @return true if there is only one file for this DataType per analysis
+   */
+  boolean isOneFilePerAnalysis();
+
+  /**
+   * Test if the DataType is provided by the design file.
+   * @return true if the DataType is provided by the design file
+   */
+  boolean isDataTypeFromDesignFile();
+
+  /**
+   * Get the name of the field of the design file that can provide the DataFile.
+   * @return the design field name
+   */
+  String getDesignFieldName();
+  
   /**
    * Get the content type.
    * @return the content type of this format

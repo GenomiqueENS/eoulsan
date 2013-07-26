@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
@@ -65,7 +65,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {FILTERED_READS_TFQ, getMapper().getArchiveFormat()};
+    return new DataFormat[] {READS_TFQ, getMapper().getArchiveFormat()};
   }
 
   @Override
@@ -135,8 +135,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     final Path inputPath =
-        new Path(context.getInputDataFilename(DataFormats.FILTERED_READS_TFQ,
-            sample));
+        new Path(context.getInputDataFilename(DataFormats.READS_TFQ, sample));
 
     // Set genome index reference path
     final Path genomeIndex =

@@ -280,7 +280,8 @@ public abstract class UploadStep extends AbstractStep {
                 DataFile file = context.getOtherDataFile(df, sample, i);
                 exists = file.exists();
                 if (exists) {
-                  final DataFile inFile = context.getOtherDataFile(df, sample, i);
+                  final DataFile inFile =
+                      context.getOtherDataFile(df, sample, i);
                   final DataFile outFile =
                       getUploadedDataFile(inFile, sample, df, i);
                   result.put(inFile, outFile);
@@ -325,7 +326,7 @@ public abstract class UploadStep extends AbstractStep {
 
       if (first) {
         for (String fieldName : s.getMetadata().getFields())
-          if (registry.getDataTypeForDesignField(fieldName) != null)
+          if (registry.getDataFormatForDesignField(fieldName) != null)
             fieldWithFiles.add(fieldName);
         first = false;
       }
@@ -340,11 +341,10 @@ public abstract class UploadStep extends AbstractStep {
         if (nValues == 1) {
           final DataFile inFile = new DataFile(oldValues.get(0));
           // final DataFormat format = inFile.getDataFormat();
-          
-          DataFormat format =
-              registry.getDataFormatFromExtension(
-                  registry.getDataTypeForDesignField(field),
-                  inFile.getExtension());
+
+          DataFormat format = registry.getDataFormatFromExtension(
+
+          inFile.getExtension());
 
           if (format == null)
             format = inFile.getMetaData().getDataFormat();

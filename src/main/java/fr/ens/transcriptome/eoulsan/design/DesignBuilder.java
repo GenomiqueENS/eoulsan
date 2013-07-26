@@ -49,9 +49,9 @@ import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataType;
-import fr.ens.transcriptome.eoulsan.data.DataTypes;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
 import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
 import fr.ens.transcriptome.eoulsan.illumina.io.CasavaDesignCSVReader;
@@ -298,7 +298,7 @@ public class DesignBuilder {
     } catch (IOException e) {
     }
 
-    if (isDataTypeExtension(DataTypes.READS, extension, md)) {
+    if (isDataFormatExtension(DataFormats.READS_FASTQ, extension, md)) {
 
       final FastqEntry entry;
 
@@ -330,9 +330,9 @@ public class DesignBuilder {
       if (!sampleEntries.contains(entry))
         sampleEntries.add(entry);
 
-    } else if (isDataTypeExtension(DataTypes.GENOME, extension, md)) {
+    } else if (isDataFormatExtension(DataFormats.GENOME_FASTA, extension, md)) {
       this.genomeFile = file;
-    } else if (isDataTypeExtension(DataTypes.ANNOTATION, extension, md))
+    } else if (isDataFormatExtension(DataFormats.ANNOTATION_GFF, extension, md))
       this.gffFile = file;
     else
       throw new EoulsanException("Unknown file type: " + file);
@@ -645,15 +645,14 @@ public class DesignBuilder {
 
   }
 
-  private boolean isDataTypeExtension(final DataType dataType,
+  private boolean isDataFormatExtension(final DataFormat dataFormat,
       final String extension, DataFileMetadata md) {
 
     if (md != null
-        && md.getDataFormat() != null
-        && dataType.equals(md.getDataFormat().getType()))
+        && md.getDataFormat() != null && dataFormat.equals(md.getDataFormat()))
       return true;
 
-    return dfr.getDataFormatFromExtension(dataType, extension) != null;
+    return dfr.getDataFormatFromExtension(extension) != null;
   }
 
   /**

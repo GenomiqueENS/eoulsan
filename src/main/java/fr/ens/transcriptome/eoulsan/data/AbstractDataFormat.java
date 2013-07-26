@@ -106,7 +106,6 @@ abstract class AbstractDataFormat implements DataFormat {
 
     return equal(this.getFormatName(), that.getFormatName())
         && equal(this.getDescription(), that.getDescription())
-        && equal(this.getType(), that.getType())
         && equal(this.getContentType(), that.getContentType())
         && equal(this.getDefaultExtention(), that.getDefaultExtention())
         && Arrays.equals(this.getExtensions(), that.getExtensions())
@@ -134,7 +133,7 @@ abstract class AbstractDataFormat implements DataFormat {
     final Integer checkerHashCode =
         isChecker() ? getChecker().getClass().hashCode() : null;
 
-    return Objects.hashCode(getFormatName(), getDescription(), getType(),
+    return Objects.hashCode(getFormatName(), getDescription(),
         getContentType(), getDefaultExtention(), extensionsHashCode,
         isGenerator(), isChecker(), generatorHashCode, checkerHashCode,
         getMaxFilesCount());
@@ -150,7 +149,6 @@ abstract class AbstractDataFormat implements DataFormat {
         .toStringHelper(this)
         .add("name", getFormatName())
         .add("description", getDescription())
-        .add("typeName", getType().getName())
         .add("contentType", getContentType())
         .add("defaultExtension", getDefaultExtention())
         .add("extensions", Arrays.toString(getExtensions()))

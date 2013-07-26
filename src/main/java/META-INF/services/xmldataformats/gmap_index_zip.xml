@@ -1,7 +1,8 @@
 <dataformat>
   <name>gmap_index_zip</name>
   <description>gmap index zipped format</description>
-  <type>gmap_index</type>
+  <prefix>gmap_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
   <generator mapperName="gmap" >fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
   <extensions>

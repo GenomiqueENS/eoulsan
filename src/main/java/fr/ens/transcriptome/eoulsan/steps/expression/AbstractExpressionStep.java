@@ -137,7 +137,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_MAPPER_RESULTS_SAM,
+    return new DataFormat[] {DataFormats.MAPPER_RESULTS_SAM,
         DataFormats.ANNOTATION_GFF, DataFormats.GENOME_DESC_TXT};
   }
 

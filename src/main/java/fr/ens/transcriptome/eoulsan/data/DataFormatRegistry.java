@@ -58,7 +58,7 @@ public class DataFormatRegistry {
 
   private Set<DataFormat> formats = newHashSet();
   private Map<String, DataFormat> mapFormats = newHashMap();
-  private Map<String, DataType> mapDesignDataType = newHashMap();
+  private Map<String, DataFormat> mapDesignDataFormat = newHashMap();
 
   private static DataFormatRegistry instance;
 
@@ -100,13 +100,11 @@ public class DataFormatRegistry {
             + df.getFormatName() + " is already registered.");
     }
 
-    final DataType dt = df.getType();
+    final String prefix = df.getPrefix();
 
-    if (dt == null)
+    if (prefix == null)
       throw new EoulsanException("The DataFormat \""
-          + df.getFormatName() + "\" as no type");
-
-    final String prefix = df.getType().getPrefix();
+          + df.getFormatName() + "\" as no prefix");
 
     if (prefix == null || "".equals(prefix))
       throw new EoulsanException(
@@ -156,10 +154,9 @@ public class DataFormatRegistry {
             + df.getFormatName()
             + " is not registered as a spi service. Cannot register it.");
 
-      // Register DataType is necessary
-      final DataType dataType = df.getType();
-      if (dataType.getDesignFieldName() != null)
-        this.mapDesignDataType.put(dataType.getDesignFieldName(), dataType);
+      // Register DataFormat for design fields is necessary
+      if (df.getDesignFieldName() != null)
+        this.mapDesignDataFormat.put(df.getDesignFieldName(), df);
 
       formats.add(df);
       this.mapFormats.put(key, df);
@@ -236,7 +233,7 @@ public class DataFormatRegistry {
     }
 
     for (DataFormat df : this.formats)
-      if (df.getType().isDataTypeFromDesignFile())
+      if (df.isDataTypeFromDesignFile())
         for (String dfExt : df.getExtensions())
           if (dfExt.equals(ext))
             return df;
@@ -266,31 +263,20 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its DataType and an extension.
-   * @param dataType the name type the DataFormat to get
    * @param extension the extension of the file without compression extension
    * @return a DataFormat if found or null
    */
-  public DataFormat getDataFormatFromExtension(final DataType dataType,
-      final String extension) {
+  public DataFormat getDataFormatFromExtension(final String extension) {
 
-    if (dataType == null || extension == null) {
+    if (extension == null) {
       return null;
     }
 
-    // Standard search
-    final DataFormat result =
-        getDataFormatFromFilename(dataType.getPrefix(), extension);
-
-    if (result != null)
-      return result;
-
     // Search with DataType
     for (DataFormat df : this.formats) {
-      if (df.getType().equals(dataType)) {
-        for (String ext : df.getExtensions()) {
-          if (extension.equals(ext)) {
-            return df;
-          }
+      for (String ext : df.getExtensions()) {
+        if (extension.equals(ext)) {
+          return df;
         }
       }
     }
@@ -308,16 +294,16 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get the DataType that define a field in the design file.
+   * Get the DataFormat that define a field in the design file.
    * @param fieldName the name of the field
-   * @return a DataType
+   * @return a DataFormat
    */
-  public DataType getDataTypeForDesignField(final String fieldName) {
+  public DataFormat getDataFormatForDesignField(final String fieldName) {
 
     if (fieldName == null)
       return null;
 
-    return this.mapDesignDataType.get(fieldName);
+    return this.mapDesignDataFormat.get(fieldName);
   }
 
   /**
@@ -326,8 +312,8 @@ public class DataFormatRegistry {
    * @param datatype datatype to search
    * @return the field name if found or null
    */
-  public String getDesignFieldnameForDataType(final Design design,
-      final DataType datatype) {
+  public String getDesignFieldnameForDataFormat(final Design design,
+      final DataFormat datatype) {
 
     if (design == null || datatype == null)
       return null;
@@ -335,8 +321,8 @@ public class DataFormatRegistry {
     final List<String> fieldnames = design.getMetadataFieldsNames();
     for (String fieldname : fieldnames) {
 
-      final DataType dt = getDataTypeForDesignField(fieldname);
-      if (datatype.equals(dt))
+      final DataFormat df = getDataFormatForDesignField(fieldname);
+      if (datatype.equals(df))
         return fieldname;
     }
 

@@ -1,7 +1,8 @@
 <dataformat>
   <name>annotation_index_serial</name>
   <description>serialized annotation index format</description>
-  <type>annotation_index</type>
+  <prefix>annotation_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/java-serialized-object</content-type>
   <extensions>
   	<extension default="true">.ser</extension>

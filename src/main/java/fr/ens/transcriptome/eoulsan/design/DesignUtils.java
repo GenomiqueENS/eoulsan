@@ -336,7 +336,7 @@ public final class DesignUtils {
     final List<String> fieldsToModify = Utils.newArrayList();
 
     for (String field : design.getMetadataFieldsNames())
-      if (registry.getDataTypeForDesignField(field) != null)
+      if (registry.getDataFormatForDesignField(field) != null)
         fieldsToModify.add(field);
 
     for (final Sample s : design.getSamples())

@@ -42,14 +42,6 @@ public class DataFormats {
   public static final DataFormat READS_TFQ = registry
       .getDataFormatFromName("reads_tfq");
 
-  /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_FASTQ = registry
-      .getDataFormatFromName("filtered_reads_fastq");
-
-  /** Filtered reads fasta data format. */
-  public static final DataFormat FILTERED_READS_TFQ = registry
-      .getDataFormatFromName("filtered_reads_tfq");
-
   /** SOAP index data format. */
   public static final DataFormat SOAP_INDEX_ZIP = registry
       .getDataFormatFromName("soap_index_zip");
@@ -69,25 +61,6 @@ public class DataFormats {
   /** Gmap index data format. */
   public static final DataFormat GMAP_INDEX_ZIP = registry
       .getDataFormatFromName("gmap_index_zip");
-
-  /** Filtered SAM data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_SAM = registry
-      .getDataFormatFromName("filtered_mapper_results_sam");
-
-  /** Filtered BAM data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_BAM = registry
-      .getDataFormatFromName("filtered_mapper_results_bam");
-
-  /** Filtered BAM index data format. */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_INDEX_BAI = registry
-      .getDataFormatFromName("filtered_mapper_results_index_bai");
-
-  /**
-   * Filtered SAM data format for paired-end data : the two alignments of a read
-   * are on the same line, separated by a '£'.
-   */
-  public static final DataFormat FILTERED_MAPPER_RESULTS_TSAM = registry
-      .getDataFormatFromName("filtered_mapper_results_tsam");
 
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM = registry

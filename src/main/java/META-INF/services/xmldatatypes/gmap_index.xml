@@ -1,6 +1,0 @@
-<datatype>
-  <name>gmap_index</name>
-  <description>gmap index type</description>
-  <prefix>gmap_index_</prefix>
-  <onefileperanalysis>true</onefileperanalysis>
-</datatype>

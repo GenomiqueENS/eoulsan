@@ -1,6 +1,0 @@
-<datatype>
-  <name>filtered_reads</name>
-  <description>filtered reads type</description>
-  <prefix>filtered_reads_</prefix>
-  <onefileperanalysis>false</onefileperanalysis>
-</datatype>

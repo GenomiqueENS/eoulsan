@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -93,7 +93,7 @@ public class GsnapStep extends AbstractStep {
 
   @Override
   public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_READS_FASTQ,
+    return new DataFormat[] {DataFormats.READS_FASTQ,
         DataFormats.GMAP_INDEX_ZIP, DataFormats.GENOME_DESC_TXT};
   }
 
@@ -169,8 +169,7 @@ public class GsnapStep extends AbstractStep {
           // of the requested file. With single end fastq the value is always 0.
           // In paired-end mode, the number of the second end is 1.
           final File inFile =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
-                  .toFile();
+              context.getInputDataFile(READS_FASTQ, sample, 0).toFile();
 
           // Single read mapping
           mapSingleEnd(context, inFile, sample.getMetadata().getFastqFormat(),
@@ -189,14 +188,12 @@ public class GsnapStep extends AbstractStep {
           // The third argument of context.getDataFile is 0 like in single end
           // mode.
           final File inFile1 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
-                  .toFile();
+              context.getInputDataFile(READS_FASTQ, sample, 0).toFile();
 
           // Get the path of the second end
           // The third argument of context.getDataFile is 1.
           final File inFile2 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 1)
-                  .toFile();
+              context.getInputDataFile(READS_FASTQ, sample, 1).toFile();
 
           // Single read mapping
           mapPairedEnd(context, inFile1, inFile2, sample.getMetadata()

@@ -1,7 +1,8 @@
 <dataformat>
   <name>soap_index_zip</name>
   <description>soap index zipped format</description>
-  <type>soap_index</type>
+  <prefix>soap_index</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
   <generator mapperName="soap" >fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
   <extensions>

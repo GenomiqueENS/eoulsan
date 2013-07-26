@@ -1,7 +1,7 @@
 <dataformat>
   <name>expression_results_tsv</name>
   <description>tsv expression resultst format</description>
-  <type>expression_results</type>
+  <prefix>expression_</prefix>
   <extensions>
   	<extension default="true">.tsv</extension>
   	<extension>.txt</extension>

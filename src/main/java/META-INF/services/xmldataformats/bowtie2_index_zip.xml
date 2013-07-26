@@ -1,7 +1,8 @@
 <dataformat>
   <name>bowtie2_index_zip</name>
   <description>bowtie 2 index zipped format</description>
-  <type>bowtie2_index</type>
+  <prefix>bowtie2_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
   <generator mapperName="bowtie2">fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
   <extensions>

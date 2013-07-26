@@ -24,10 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_SAM;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_MAPPER_RESULTS_TSAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
@@ -65,7 +66,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -93,18 +93,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private Configuration conf;
+  private static final String TSAM_EXTENSION = ".tsam";
 
-  // @Override
-  // public DataFormat[] getInputFormats() {
-  // return new DataFormat[] {FILTERED_MAPPER_RESULTS_SAM,
-  // TAB_FILTERED_MAPPER_RESULTS_SAM};
-  // }
-  //
-  // @Override
-  // public DataFormat[] getOutputFormats() {
-  // return new DataFormat[] {EXPRESSION_RESULTS_TXT};
-  // }
+  private Configuration conf;
 
   /**
    * Create JobConf object for the Eoulsan counter.
@@ -120,18 +111,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Sample sample, final String genomicType, final String attributeId)
       throws IOException, BadBioEntryException {
 
+    // Create JobConf
     final Configuration jobConf = new Configuration(parentConf);
 
-    // Create JobConf
-    // final JobConf conf = new JobConf(ExpressionHadoopStep.class);
-
     final Path inputPath =
-        new Path(context.getInputDataFilename(
-            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample));
+        new Path(context.getInputDataFilename(MAPPER_RESULTS_SAM, sample));
 
     // Get annotation DataFile
     final DataFile annotationDataFile =
-        context.getInputDataFile(DataFormats.ANNOTATION_GFF, sample);
+        context.getInputDataFile(ANNOTATION_GFF, sample);
 
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
@@ -145,7 +133,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+        .getInputDataFile(GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
         new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
@@ -156,8 +144,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           genomicType, attributeId, exonsIndexPath, jobConf);
 
     // Set the path to the exons index
-    // conf.set(Globals.PARAMETER_PREFIX + ".expression.exonsindex.path",
-    // exonsIndexPath.toString());
     DistributedCache.addCacheFile(exonsIndexPath.toUri(), jobConf);
 
     // Debug
@@ -192,11 +178,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // job.setNumReduceTasks(1);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
-            sample).getSourceWithoutExtension()
-            + ".tmp"));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
+            .getSourceWithoutExtension() + ".tmp"));
 
     return job;
   }
@@ -213,30 +197,34 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   private static final Job createJobHTSeqCounter(
       final Configuration parentConf, final Context context,
       final Sample sample, final String genomicType, final String attributeId,
-      final String stranded, final String overlapMode) throws IOException,
-      BadBioEntryException, EoulsanException {
+      final String stranded, final String overlapMode, final boolean tsamFormat)
+      throws IOException, BadBioEntryException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Get input DataFile
-    DataFile inputDataFile = null;
-    inputDataFile =
-        context.getExistingInputDataFile(
-            new DataFormat[] {FILTERED_MAPPER_RESULTS_TSAM}, sample);
-    if (inputDataFile == null)
-      inputDataFile =
-          context.getExistingInputDataFile(
-              new DataFormat[] {FILTERED_MAPPER_RESULTS_SAM}, sample);
+    DataFile inputDataFile =
+        context.getExistingInputDataFile(new DataFormat[] {MAPPER_RESULTS_SAM},
+            sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
 
+    final String dataFileSource;
+
+    if (tsamFormat)
+      dataFileSource =
+          StringUtils.filenameWithoutExtension(inputDataFile.getSource())
+              + TSAM_EXTENSION;
+    else
+      dataFileSource = inputDataFile.getSource();
+
     // Set input path
-    final Path inputPath = new Path(inputDataFile.getSource());
+    final Path inputPath = new Path(dataFileSource);
 
     // Get annotation DataFile
     final DataFile annotationDataFile =
-        context.getInputDataFile(DataFormats.ANNOTATION_GFF, sample);
+        context.getInputDataFile(ANNOTATION_GFF, sample);
 
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
@@ -250,7 +238,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     final DataFile genomeDescDataFile =
-        context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample);
+        context.getInputDataFile(GENOME_DESC_TXT, sample);
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
         genomeDescDataFile.getSource());
 
@@ -302,66 +290,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(context.getOutputDataFile(DataFormats.EXPRESSION_RESULTS_TXT,
-            sample).getSourceWithoutExtension()
-            + ".tmp"));
+    FileOutputFormat.setOutputPath(job,
+        new Path(context.getOutputDataFile(EXPRESSION_RESULTS_TXT, sample)
+            .getSourceWithoutExtension() + ".tmp"));
 
     return job;
   }
-
-  // private static final Job createJobGFFReader(final Configuration parentConf,
-  // final Context context, final Sample sample, final String genomicType)
-  // throws IOException, BadBioEntryException {
-  //
-  // final Configuration jobConf = new Configuration(parentConf);
-  //
-  // // Set counter group
-  // jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
-  //
-  // // Get annotation DataFile
-  // final DataFile annotationDataFile =
-  // context.getInputDataFile(DataFormats.ANNOTATION_GFF, sample);
-  //
-  // // Set input path
-  // final Path inputPath = new Path(annotationDataFile.getSource());
-  //
-  // // Create the job and its name
-  // final Job job =
-  // new Job(jobConf, "Annotation file reading ("
-  // + annotationDataFile.getSource() + ", " + genomicType + ")");
-  //
-  // // Set the jar
-  // job.setJarByClass(ExpressionHadoopStep.class);
-  //
-  // // Set input path
-  // FileInputFormat.setInputPaths(job, inputPath);
-  //
-  // // Set the Mapper class
-  // job.setMapperClass(GFFReaderMapper.class);
-  //
-  // // Set the reducer class
-  // job.setReducerClass(GFFReaderReducer.class);
-  //
-  // // Set the output key class
-  // job.setOutputKeyClass(Text.class);
-  //
-  // // Set the output value class
-  // job.setOutputValueClass(Text.class);
-  //
-  // // Output name
-  // String outputName =
-  // StringUtils.filenameWithoutExtension(inputPath.getName());
-  // // outputName = outputName.substring(0, outputName.length() - 1);
-  // outputName += ".tsam";
-  //
-  // // Set output path
-  // FileOutputFormat.setOutputPath(job, new Path(inputPath.getParent(),
-  // outputName));
-  //
-  // return job;
-  // }
 
   private static final Job createJobPairedEnd(final Configuration parentConf,
       final Context context, final Sample sample) throws IOException,
@@ -370,8 +304,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // get input file count for the sample
-    final int inFileCount =
-        context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+    final int inFileCount = context.getDataFileCount(READS_FASTQ, sample);
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -382,8 +315,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Get the source
     final DataFile inputDataFile =
-        context.getInputDataFile(DataFormats.FILTERED_MAPPER_RESULTS_SAM,
-            sample);
+        context.getInputDataFile(MAPPER_RESULTS_SAM, sample);
 
     // Set input path
     final Path inputPath = new Path(inputDataFile.getSource());
@@ -393,7 +325,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputDataFile(DataFormats.GENOME_DESC_TXT, sample).getSource());
+        .getInputDataFile(GENOME_DESC_TXT, sample).getSource());
 
     // Create the job and its name
     final Job job =
@@ -422,15 +354,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     String outputName =
         StringUtils.filenameWithoutExtension(inputPath.getName());
     outputName = outputName.substring(0, outputName.length());
-    outputName += ".tsam";
+    outputName += TSAM_EXTENSION;
 
     // Set output path
     FileOutputFormat.setOutputPath(job, new Path(inputPath.getParent(),
         outputName));
-    // FileOutputFormat.setOutputPath(
-    // job,
-    // new Path(context.getOutputDataFile(
-    // DataFormats.TAB_FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
 
     return job;
   }
@@ -505,18 +433,21 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       if (featureType.equals(gff.getType())) {
 
         final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null)
+        if (featureId == null) {
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType + " does not contain a " + attributeId
               + " attribute");
+        }
 
         if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
-            && '.' == gff.getStrand())
+            && '.' == gff.getStrand()) {
+          gffReader.close();
           throw new EoulsanException("Feature "
               + featureType
               + " does not have strand information but you are running "
               + "htseq-count in stranded mode.");
-
+        }
         // Addition to the list of features of a GenomicInterval object
         // corresponding to the current annotation line
         features.addEntry(
@@ -750,9 +681,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Create the list of jobs to run
       for (Sample s : design.getSamples()) {
 
+        final boolean tsamFormat =
+            context.getDataFileCount(READS_FASTQ, s) == 2;
+
         final Job jconf =
             createJobHTSeqCounter(conf, context, s, getGenomicType(),
-                getAttributeId(), getStranded(), getOverlapMode());
+                getAttributeId(), getStranded(), getOverlapMode(), tsamFormat);
 
         jconf.submit();
         jobsRunning.put(s, jconf);

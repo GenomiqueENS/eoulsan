@@ -1,6 +1,0 @@
-<datatype>
-  <name>genome_desc</name>
-  <description>genome description type</description>
-  <prefix>genome_desc_</prefix>
-  <onefileperanalysis>true</onefileperanalysis>
-</datatype>

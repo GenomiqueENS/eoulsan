@@ -1,9 +1,0 @@
-<dataformat>
-  <name>filtered_mapper_results_bam</name>
-  <description>bam filtered alignments format</description>
-  <type>filtered_mapper_results</type>
-  <content-type>application/octet-stream</content-type>
-  <extensions>
-  	<extension default="true">.bam</extension>
-  </extensions>
-</dataformat>

@@ -1,7 +1,7 @@
 <dataformat>
   <name>unmap_fasta</name>
   <description>unmap reads in fasta format</description>
-  <type>unmap</type>
+  <prefix>unmap</prefix>
   <extensions>
   	<extension default="true">.fasta</extension>
   </extensions>

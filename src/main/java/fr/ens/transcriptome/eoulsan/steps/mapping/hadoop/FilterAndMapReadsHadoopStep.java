@@ -50,7 +50,6 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.data.DataTypes;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -148,10 +147,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       inputDataFile =
           context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ},
               sample);
-    
-//    final DataFile inputDataFile =
-//        context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ,
-//            READS_TFQ}, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -184,9 +179,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           e.getValue());
     }
 
-    // Set pair end mode
-    // jobConf.set(ReadsMapperMapper.PAIR_END_KEY, "" + isPairend());
-
     //
     // Reads mapping parameters
     //
@@ -200,7 +192,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
-    
+
     // Set pair end or single end mode
     if (context.getDataFileCount(READS_FASTQ, sample) == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
@@ -209,8 +201,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the number of threads for the mapper
     if (getMapperHadoopThreads() < 0) {
-      jobConf
-          .set(ReadsMapperMapper.MAPPER_THREADS_KEY, "" + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
+          + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
@@ -260,7 +252,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat(DataTypes.READS)))
+    if (READS_FASTQ.equals(inputDataFile.getDataFormat()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class
@@ -281,8 +273,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputDataFile(
-            DataFormats.FILTERED_MAPPER_RESULTS_SAM, sample).getSource()));
+        new Path(context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM,
+            sample).getSource()));
 
     return job;
   }
@@ -298,7 +290,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final Context context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
-    
+
     // get input file count for the sample
     final int inFileCount =
         context.getDataFileCount(DataFormats.READS_FASTQ, sample);
@@ -342,8 +334,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     FileInputFormat.addInputPath(job, inputPath2);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile1.getDataFormat(DataTypes.READS))
-        && READS_FASTQ.equals(inputDataFile2.getDataFormat(DataTypes.READS)))
+    if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
+        && READS_FASTQ.equals(inputDataFile2.getDataFormat()))
       job.setInputFormatClass(FastQFormatNew.class);
 
     // Set the Mapper class

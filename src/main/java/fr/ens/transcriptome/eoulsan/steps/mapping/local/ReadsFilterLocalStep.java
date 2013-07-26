@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
@@ -135,8 +135,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         context.getInputDataFile(DataFormats.READS_FASTQ, sample, 0);
 
     // Get the dest
-    final DataFile outFile =
-        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 0);
+    final DataFile outFile = context.getOutputDataFile(READS_FASTQ, sample, 0);
 
     // Filter reads
     filterFile(inFile, outFile, reporter, filter, sample.getMetadata()
@@ -166,10 +165,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         context.getInputDataFile(DataFormats.READS_FASTQ, sample, 1);
 
     // Get the dest
-    final DataFile outFile1 =
-        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 0);
-    final DataFile outFile2 =
-        context.getOutputDataFile(FILTERED_READS_FASTQ, sample, 1);
+    final DataFile outFile1 = context.getOutputDataFile(READS_FASTQ, sample, 0);
+    final DataFile outFile2 = context.getOutputDataFile(READS_FASTQ, sample, 1);
 
     // Filter reads
     filterFile(inFile1, inFile2, outFile1, outFile2, reporter, filter, sample

@@ -45,10 +45,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
@@ -86,7 +84,7 @@ public final class SimpleContext implements Context {
 
   private long contextCreationTime;
 
-  private final Map<DataType, String> dataTypesFields = Maps.newHashMap();
+  private final Map<DataFormat, String> dataFormatsFields = Maps.newHashMap();
 
   //
   // Getters
@@ -353,9 +351,9 @@ public final class SimpleContext implements Context {
 
     for (String fieldname : fieldnames) {
 
-      DataType dt = registry.getDataTypeForDesignField(fieldname);
+      DataFormat dt = registry.getDataFormatForDesignField(fieldname);
       if (dt != null)
-        this.dataTypesFields.put(dt, fieldname);
+        this.dataFormatsFields.put(dt, fieldname);
     }
 
   }
@@ -578,15 +576,11 @@ public final class SimpleContext implements Context {
   private DataFile getFileFromDesign(final Sample sample, final DataFormat df) {
 
     // First try search the file in the design file
-    final DataType dt = df.getType();
-    final String fieldName = this.dataTypesFields.get(dt);
+    final String fieldName = this.dataFormatsFields.get(df);
 
     if (fieldName != null) {
 
-      final DataFile file =
-          new DataFile(sample.getMetadata().getField(fieldName));
-
-      return isDesignDataFileValidFormat(file, dt, df) ? file : null;
+      return new DataFile(sample.getMetadata().getField(fieldName));
     }
 
     return null;
@@ -602,8 +596,7 @@ public final class SimpleContext implements Context {
   private DataFile getFileFromDesign(final Sample sample, final DataFormat df,
       final int fileIndex) {
 
-    final DataType dt = df.getType();
-    final String fieldName = this.dataTypesFields.get(dt);
+    final String fieldName = this.dataFormatsFields.get(df);
 
     if (fieldName != null) {
 
@@ -612,49 +605,11 @@ public final class SimpleContext implements Context {
 
       if (fieldValues != null && fieldValues.size() > fileIndex) {
 
-        final DataFile file = new DataFile(fieldValues.get(fileIndex));
-
-        return isDesignDataFileValidFormat(file, dt, df) ? file : null;
+        return new DataFile(fieldValues.get(fileIndex));
       }
     }
 
     return null;
-  }
-
-  /**
-   * Check if a DataFile from the design has a the good format.
-   * @param file the DataFile to test
-   * @param dt the DataType
-   * @param df the DataFormat
-   * @return true if a DataFile from the design has a the good format
-   */
-  private boolean isDesignDataFileValidFormat(final DataFile file,
-      final DataType dt, final DataFormat df) {
-
-    if (file == null || dt == null || df == null)
-      return false;
-
-    DataFileMetadata md = null;
-
-    try {
-      md = file.getMetaData();
-    } catch (IOException e) {
-      logger.warning("Error while getting metadata for file "
-          + file + ": " + e.getMessage());
-      md = null;
-    }
-
-    if (md != null && df.equals(md.getDataFormat()))
-      return true;
-
-    final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-    final DataFormat sourceDf =
-        dfr.getDataFormatFromExtension(dt, file.getExtension());
-
-    if (sourceDf != null && sourceDf.equals(df))
-      return true;
-
-    return false;
   }
 
   @Override
@@ -667,8 +622,7 @@ public final class SimpleContext implements Context {
       throw new EoulsanRuntimeException(
           "Only multifiles DataFormat are handled by this method.");
 
-    final DataType dt = df.getType();
-    final String fieldName = this.dataTypesFields.get(dt);
+    final String fieldName = this.dataFormatsFields.get(df);
     if (fieldName != null) {
 
       return sample.getMetadata().getFieldAsList(fieldName).size();
