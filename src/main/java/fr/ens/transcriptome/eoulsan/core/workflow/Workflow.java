@@ -22,43 +22,36 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.checkers;
+package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
-/**
- * This interface define a checker.
- * @since 1.0
- * @author Laurent Jourdren
- */
-public interface Checker {
+public interface Workflow {
+
+  public Design getDesign();
+
+  public Context getContext();
+
+  
+  public Set<WorkflowStep> getSteps();
+  
+  /**
+   * Get the first step of the workflow (after generator steps).
+   * @return the first step of the workflow
+   */
+  public WorkflowStep getFirstStep();
 
   /**
-   * Get the name of the step.
-   * @return the name of the step
+   * Get the first steps of the workflow.
+   * @return the root step of the workflow
    */
-  String getName();
+  public WorkflowStep getRootStep();
 
-  /**
-   * Set the parameters of the checker to configure the checker.
-   * @param stepParameters parameters of the step
-   * @throws EoulsanException if a parameter is invalid
-   */
-  void configure(Set<Parameter> stepParameters) throws EoulsanException;
+  public WorkflowFiles getWorkflowFilesAtRootStep();
 
-  /**
-   * Launch the check.
-   * @param context Execution context
-   * @param sample check data for the sample
-   * @throws EoulsanException if an error occurs while executing step
-   */
-  boolean check(Context context, Sample sample, CheckStore checkInfo)
-      throws EoulsanException;
+  public WorkflowFiles getWorkflowFilesAtFirstStep();
 
 }

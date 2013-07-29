@@ -93,7 +93,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getDataFileCount(READS_FASTQ, s) == 2)
+        if (context.getInputDataFileCount(READS_FASTQ, s) == 2)
           jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
       }
 
@@ -143,12 +143,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Get input DataFile
     DataFile inputDataFile = null;
-    inputDataFile =
-        context.getExistingInputDataFile(new DataFormat[] {READS_TFQ}, sample);
+    inputDataFile = context.getInputDataFile(READS_TFQ, sample);
     if (inputDataFile == null)
-      inputDataFile =
-          context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ},
-              sample);
+      inputDataFile = context.getInputDataFile(READS_FASTQ, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -218,7 +215,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // get input file count for the sample
     final int inFileCount =
-        context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+        context.getInputDataFileCount(DataFormats.READS_FASTQ, sample);
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");

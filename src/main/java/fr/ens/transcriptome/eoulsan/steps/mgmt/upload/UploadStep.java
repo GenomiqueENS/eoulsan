@@ -39,7 +39,8 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.core.SimpleContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
@@ -50,7 +51,6 @@ import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
@@ -87,7 +87,7 @@ public abstract class UploadStep extends AbstractStep {
     final StringBuilder log = new StringBuilder();
 
     // Save and change base pathname
-    final SimpleContext fullContext = (SimpleContext) context;
+    final WorkflowContext fullContext = (WorkflowContext) context;
 
     final Map<DataFile, DataFile> filesToCopy = newHashMap();
     File repackagedJarFile = null;
@@ -254,46 +254,17 @@ public abstract class UploadStep extends AbstractStep {
   private Map<DataFile, DataFile> findDataFilesInWorkflow(Sample sample,
       final Context context) throws IOException {
 
-    boolean afterThis = false;
-
     final Map<DataFile, DataFile> result = newHashMap();
 
-    for (Step s : context.getWorkflow().getSteps()) {
+    Set<WorkflowStepOutputDataFile> inFiles =
+        context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
 
-      if (afterThis) {
-
-        DataFormat[] formats = s.getInputFormats();
-        if (formats != null)
-
-          for (DataFormat df : formats)
-            if (df.getMaxFilesCount() == 1) {
-              final DataFile inFile = context.getInputDataFile(df, sample);
-              final DataFile outFile = getUploadedDataFile(inFile, sample, df);
-              result.put(inFile, outFile);
-            } else {
-
-              int i = 0;
-              boolean exists = true;
-
-              do {
-
-                DataFile file = context.getOtherDataFile(df, sample, i);
-                exists = file.exists();
-                if (exists) {
-                  final DataFile inFile =
-                      context.getOtherDataFile(df, sample, i);
-                  final DataFile outFile =
-                      getUploadedDataFile(inFile, sample, df, i);
-                  result.put(inFile, outFile);
-                }
-                i++;
-              } while (exists);
-
-            }
-
-      } else if (s == this)
-        afterThis = true;
-
+    for (WorkflowStepOutputDataFile file : inFiles) {
+      final DataFile in = file.getDataFile();
+      final DataFile out =
+          getUploadedDataFile(in, file.getSample(), file.getFormat(),
+              file.getFileIndex());
+      result.put(in, out);
     }
 
     return result;

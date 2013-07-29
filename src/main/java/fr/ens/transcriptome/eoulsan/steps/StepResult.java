@@ -34,6 +34,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -43,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class StepResult {
 
-  private Step step;
+  private WorkflowStep step;
   private boolean success;
   private String logMessage;
   private Exception exception;
@@ -75,7 +76,7 @@ public class StepResult {
    * Get the step object.
    * @return Returns the step
    */
-  public Step getStep() {
+  public WorkflowStep getStep() {
 
     return step;
   }
@@ -110,24 +111,16 @@ public class StepResult {
 
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
-    final Step step = context.getCurrentStep();
+    final WorkflowStep step = context.getCurrentStep();
 
     return "Job Id: "
-        + context.getJobId()
-        + " ["
-        + context.getJobUUID()
-        + "]\nJob description: "
-        + context.getJobDescription()
-        + "\nJob environment: "
-        + context.getJobEnvironment()
-        + "\nStep: "
-        + step.getName()
-        + " ["
-        + step.getClass().getCanonicalName()
-        + "]\nParameters:\n"
-        + parametersToString(context.getWorkflow().getStepParameters(
-            step.getName())) + "Start time: " + new Date(startTime)
-        + "\nEnd time: " + new Date(endTime) + "\nDuration: "
+        + context.getJobId() + " [" + context.getJobUUID()
+        + "]\nJob description: " + context.getJobDescription()
+        + "\nJob environment: " + context.getJobEnvironment() + "\nStep: "
+        + step.getId() + " [" + step.getClass().getCanonicalName()
+        + "]\nParameters:\n" + parametersToString(step.getParameters())
+        + "Start time: " + new Date(startTime) + "\nEnd time: "
+        + new Date(endTime) + "\nDuration: "
         + StringUtils.toTimeHumanReadable(duration) + "\n" + logMsg;
   }
 

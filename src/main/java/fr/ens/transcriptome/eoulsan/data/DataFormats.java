@@ -82,10 +82,6 @@ public class DataFormats {
   public static final DataFormat ANNOTATION_GFF = registry
       .getDataFormatFromName("annotation_gff");
 
-  /** Annotation data format. */
-  public static final DataFormat ANNOTATION_INDEX_SERIAL = registry
-      .getDataFormatFromName("annotation_index_serial");
-
   /** Diffana results data format. */
   public static final DataFormat DIFFANA_RESULTS_TSV = registry
       .getDataFormatFromName("diffana_results_tsv");

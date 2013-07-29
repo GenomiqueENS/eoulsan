@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.checkers;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -34,7 +33,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 
@@ -59,25 +57,17 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Design design, final Context context,
+  public boolean check(final Context context, final Sample sample,
       final CheckStore checkInfo) throws EoulsanException {
-
-    if (design == null)
-      throw new NullPointerException("The design is null");
 
     if (context == null)
       throw new NullPointerException("The execution context is null");
 
+    if (sample == null)
+      throw new NullPointerException("The sample is null");
+
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
-
-    final List<Sample> samples = design.getSamples();
-
-    if (samples == null)
-      throw new NullPointerException("The samples are null");
-
-    if (samples.size() == 0)
-      throw new EoulsanException("No samples found in design");
 
     // If genome has already been checked do not launch check another time
     if (checkInfo.contains(GENOME_DESCRIPTION)) {
@@ -85,10 +75,8 @@ public class GenomeChecker implements Checker {
       return true;
     }
 
-    final Sample s = samples.get(0);
-
     final DataFile genomeFile =
-        context.getOtherDataFile(DataFormats.GENOME_FASTA, s);
+        context.getOutputDataFile(DataFormats.GENOME_FASTA, sample);
 
     try {
 

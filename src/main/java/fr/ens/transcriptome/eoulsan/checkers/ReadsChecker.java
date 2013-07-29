@@ -38,7 +38,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -62,55 +61,51 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Design design, final Context context,
+  public boolean check(final Context context, final Sample sample,
       final CheckStore checkInfo) throws EoulsanException {
-
-    if (design == null)
-      throw new NullPointerException("The design is null");
 
     if (context == null)
       throw new NullPointerException("The execution context is null");
 
+    if (sample == null)
+      throw new NullPointerException("The sample is null");
+
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
 
-    for (Sample s : design.getSamples()) {
+    // get input file count for the sample
+    final int inFileCount =
+        context.getOutputDataFileCount(DataFormats.READS_FASTQ, sample);
 
-      // get input file count for the sample
-      final int inFileCount =
-          context.getDataFileCount(DataFormats.READS_FASTQ, s);
+    if (inFileCount < 1)
+      throw new EoulsanException("No reads file found.");
 
-      if (inFileCount < 1)
-        throw new EoulsanException("No reads file found.");
+    if (inFileCount > 2)
+      throw new EoulsanException(
+          "Cannot handle more than 2 reads files at the same time.");
 
-      if (inFileCount > 2)
-        throw new EoulsanException(
-            "Cannot handle more than 2 reads files at the same time.");
+    final FastqFormat format = sample.getMetadata().getFastqFormat();
 
-      final FastqFormat format = s.getMetadata().getFastqFormat();
+    // Single end mode
+    if (inFileCount == 1) {
 
-      // Single end mode
-      if (inFileCount == 1) {
+      final DataFile file =
+          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 0);
 
-        final DataFile file =
-            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 0);
+      checkReadFile(file, format);
+    }
 
-        checkReadFile(file, format);
-      }
+    // Paired end mode
+    if (inFileCount == 2) {
 
-      // Paired end mode
-      if (inFileCount == 2) {
+      final DataFile file1 =
+          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 0);
 
-        final DataFile file1 =
-            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 0);
+      final DataFile file2 =
+          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 1);
 
-        final DataFile file2 =
-            context.getOtherDataFile(DataFormats.READS_FASTQ, s, 1);
-
-        checkReadFile(file1, format, true, 1);
-        checkReadFile(file2, format, true, 2);
-      }
-
+      checkReadFile(file1, format, true, 1);
+      checkReadFile(file2, format, true, 2);
     }
 
     return true;

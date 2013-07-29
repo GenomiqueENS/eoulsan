@@ -139,7 +139,7 @@ public class GsnapStep extends AbstractStep {
         // It could have one or two fastq files by sample (single end or
         // paired-end data)
         final int inFileCount =
-            context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+            context.getInputDataFileCount(DataFormats.READS_FASTQ, sample);
 
         // Throw error if no reads file found.
         if (inFileCount < 1)

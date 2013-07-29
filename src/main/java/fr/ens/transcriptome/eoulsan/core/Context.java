@@ -31,10 +31,11 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This interface define a context.
@@ -161,13 +162,13 @@ public interface Context {
    * Get the workflow description
    * @return the workflow description
    */
-  WorkflowDescription getWorkflow();
+  Workflow getWorkflow();
 
   /**
    * Get the current step.
    * @return the current Step or null if no Step is currently running.
    */
-  Step getCurrentStep();
+  WorkflowStep getCurrentStep();
 
   /**
    * Get the pathname for an input DataType and a Sample.
@@ -251,7 +252,7 @@ public interface Context {
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getOtherDataFilename(DataFormat df, Sample sample);
+  // String getOtherDataFilename(DataFormat df, Sample sample);
 
   /**
    * Get the pathname for a DataType and a Sample. This method works only for a
@@ -262,7 +263,7 @@ public interface Context {
    * @return a String with the pathname
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  String getOtherDataFilename(DataFormat df, Sample sample, int fileIndex);
+  // String getOtherDataFilename(DataFormat df, Sample sample, int fileIndex);
 
   /**
    * Get the DataFile for a DataType and a Sample.
@@ -270,7 +271,7 @@ public interface Context {
    * @param sample the sample for the source
    * @return a new DataFile object
    */
-  DataFile getOtherDataFile(DataFormat df, Sample sample);
+  // DataFile getOtherDataFile(DataFormat df, Sample sample);
 
   /**
    * Get the DataFile for a DataType and a Sample. This method works only for a
@@ -281,7 +282,7 @@ public interface Context {
    * @return a new DataFile object
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  DataFile getOtherDataFile(DataFormat df, Sample sample, int fileIndex);
+  //DataFile getOtherDataFile(DataFormat df, Sample sample, int fileIndex);
 
   /**
    * Count the number for DataFile available for a multifile DataFormat and a
@@ -291,8 +292,18 @@ public interface Context {
    * @return the number of multifile for the DataFormat and the sample
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  int getDataFileCount(final DataFormat df, final Sample sample);
+  int getInputDataFileCount(final DataFormat df, final Sample sample);
 
+  /**
+   * Count the number for DataFile available for a multifile DataFormat and a
+   * Sample. This method works only for a multifile DataFormat.
+   * @param df the DataFormat of the source
+   * @param sample the sample for the source
+   * @return the number of multifile for the DataFormat and the sample
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  int getOutputDataFileCount(final DataFormat df, final Sample sample);
+  
   /**
    * Get the first existing DataFile for a sample and a list of DataFormat.
    * @param formats the DataFormat test
@@ -300,7 +311,7 @@ public interface Context {
    * @return a new DataFile object or null if no existing DataFile has been
    *         found
    */
-  DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample);
+  // DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample);
 
   /**
    * Get the first existing DataFile for a sample and a list of DataFormat.
@@ -310,8 +321,8 @@ public interface Context {
    * @return a new DataFile object or null if no existing DataFile has been
    *         found
    */
-  DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample,
-      int fileIndex);
+  // DataFile getExistingInputDataFile(DataFormat[] formats, Sample sample,
+  // int fileIndex);
 
   /**
    * Create an InputStream to load data.
@@ -319,7 +330,8 @@ public interface Context {
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  InputStream getInputStream(DataFormat df, Sample sample) throws IOException;
+  // InputStream getInputStream(DataFormat df, Sample sample) throws
+  // IOException;
 
   /**
    * Create an InputStream to load data. This method works only for a multifile
@@ -330,8 +342,8 @@ public interface Context {
    * @return an InputStream corresponding to DataType and Sample
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  InputStream getInputStream(DataFormat df, Sample sample, int fileIndex)
-      throws IOException;
+  // InputStream getInputStream(DataFormat df, Sample sample, int fileIndex)
+  // throws IOException;
 
   /**
    * Create a raw InputStream (without decompression of input data) to load
@@ -340,8 +352,8 @@ public interface Context {
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  InputStream getRawInputStream(DataFormat df, Sample sample)
-      throws IOException;
+  // InputStream getRawInputStream(DataFormat df, Sample sample)
+  // throws IOException;
 
   /**
    * Create a raw InputStream (without decompression of input data) to load
@@ -352,8 +364,8 @@ public interface Context {
    * @return an InputStream corresponding to DataType and Sample
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  InputStream getRawInputStream(DataFormat df, Sample sample, int fileIndex)
-      throws IOException;
+  // InputStream getRawInputStream(DataFormat df, Sample sample, int fileIndex)
+  // throws IOException;
 
   /**
    * Create an OutputStream to load data.
@@ -361,7 +373,8 @@ public interface Context {
    * @param sample the sample
    * @return an InputStream corresponding to DataType and Sample
    */
-  OutputStream getOutputStream(DataFormat df, Sample sample) throws IOException;
+  // OutputStream getOutputStream(DataFormat df, Sample sample) throws
+  // IOException;
 
   /**
    * Create an OutputStream to load data. This method works only for a multifile
@@ -372,6 +385,6 @@ public interface Context {
    * @return an InputStream corresponding to DataType and Sample
    * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  OutputStream getOutputStream(DataFormat df, Sample sample, int fileIndex)
-      throws IOException;
+  // OutputStream getOutputStream(DataFormat df, Sample sample, int fileIndex)
+  // throws IOException;
 }

@@ -85,7 +85,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
               // get input file count for the sample
               final int inFileCount =
-                  context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+                  context
+                      .getInputDataFileCount(DataFormats.READS_FASTQ, sample);
 
               if (inFileCount < 1)
                 throw new IOException("No reads file found.");

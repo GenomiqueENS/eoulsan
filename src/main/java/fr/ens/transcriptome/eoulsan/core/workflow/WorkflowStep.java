@@ -26,19 +26,37 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 public interface WorkflowStep {
 
   public static enum StepType {
-    STANDARD_STEP, DESIGN_STEP, FIRST_STEP, TERMINAL_STEP, GENERATOR_STEP
+    ROOT_STEP(0), DESIGN_STEP(1), GENERATOR_STEP(2), FIRST_STEP(3),
+    STANDARD_STEP(4), TERMINAL_STEP(5);
+
+    private int priority;
+
+    public int getPriority() {
+      return this.priority;
+    }
+
+    StepType(final int priority) {
+
+      this.priority = priority;
+    }
   };
 
   public static enum StepState {
-    CREATED, CONFIGURED, WORKING, DONE
+    CREATED, CONFIGURED, WAITING, READY, WORKING, DONE
   };
+
+  /**
+   * Get the workflow of the step.
+   * @return the workflow of the step
+   */
+  Workflow getWorkflow();
+
+  int getNumber();
 
   /**
    * Get step id.
@@ -59,11 +77,14 @@ public interface WorkflowStep {
   StepType getType();
 
   /**
-   * Get the step.
+   * Get the step name.
    * @return the step object
    */
-  Step getStep();
+  String getStepName();
 
+  
+  Set<Parameter> getParameters();
+  
   /**
    * Get the duration of the execution of the step.
    * @return the duration of the step in milliseconds
@@ -75,29 +96,5 @@ public interface WorkflowStep {
    * @return the state of the step
    */
   StepState getState();
-
-  /**
-   * Configure the step.
-   * @throws EoulsanException if an error occurs while configuring a step
-   */
-  void configure() throws EoulsanException;
-
-  /**
-   * Execute the step.
-   * @return a Step result object.
-   */
-  StepResult execute();
-
-  /**
-   * Get the previous steps.
-   * @return the previous steps
-   */
-  Set<WorkflowStep> getPreviousSteps();
-
-  /**
-   * Get the next steps.
-   * @return the next steps
-   */
-  Set<WorkflowStep> getNextSteps();
 
 }

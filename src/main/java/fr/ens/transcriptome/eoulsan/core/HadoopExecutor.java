@@ -38,6 +38,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -54,10 +55,10 @@ public class HadoopExecutor extends Executor {
   private Configuration conf;
   private Path designPath;
   private Design design;
-  private SimpleContext context;
+  private WorkflowContext context;
 
   @Override
-  protected SimpleContext getContext() {
+  protected WorkflowContext getContext() {
 
     return this.context;
   }
@@ -84,7 +85,7 @@ public class HadoopExecutor extends Executor {
   @Override
   protected void writeStepLogs(final StepResult result) {
 
-    if (result == null || result.getStep().getLogName() == null)
+    if (result == null || result.getStep() == null)
       return;
 
     final boolean debug = this.context.getSettings().isDebug();
@@ -99,7 +100,7 @@ public class HadoopExecutor extends Executor {
       if (!logFs.exists(logPath))
         logFs.mkdirs(logPath);
 
-      final String logFilename = result.getStep().getLogName();
+      final String logFilename = result.getStep().getId();
 
       // Write logs in the log directory
       writeResultLog(new Path(logPath, logFilename + ".log"), logFs, result);
@@ -227,7 +228,7 @@ public class HadoopExecutor extends Executor {
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.context = new SimpleContext(millisSinceEpoch);
+    this.context = new WorkflowContext(millisSinceEpoch);
   }
 
   /**
@@ -285,7 +286,7 @@ public class HadoopExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final SimpleContext context = getContext();
+    final WorkflowContext context = getContext();
 
     // Set base pathname
     context.setBasePathname(this.designPath.getParent().toString());

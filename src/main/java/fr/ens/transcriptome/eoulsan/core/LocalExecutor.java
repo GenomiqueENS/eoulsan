@@ -31,6 +31,7 @@ import java.io.Writer;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -46,11 +47,11 @@ import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
  */
 public class LocalExecutor extends Executor {
 
-  private SimpleContext context = new SimpleContext();
+  private WorkflowContext context = new WorkflowContext();
   private final File designFile;
 
   @Override
-  protected SimpleContext getContext() {
+  protected WorkflowContext getContext() {
 
     return this.context;
   }
@@ -72,7 +73,7 @@ public class LocalExecutor extends Executor {
   @Override
   protected void writeStepLogs(final StepResult result) {
 
-    if (result == null || result.getStep().getLogName() == null)
+    if (result == null || result.getStep() == null)
       return;
 
     try {
@@ -86,7 +87,7 @@ public class LocalExecutor extends Executor {
               + logDir.getAbsolutePath());
         }
 
-      final String logFilename = result.getStep().getLogName();
+      final String logFilename = result.getStep().getId();
 
       final Writer writer =
           FileUtils.createFastBufferedWriter(new File(logDir, logFilename
@@ -132,7 +133,7 @@ public class LocalExecutor extends Executor {
     if (!tempDir.canWrite())
       throw new EoulsanRuntimeException(
           "Temporary directory cannot be written: " + tempDir);
-    
+
     if (!tempDir.canExecute())
       throw new EoulsanRuntimeException(
           "Temporary directory is not executable: " + tempDir);
@@ -162,7 +163,7 @@ public class LocalExecutor extends Executor {
 
     this.designFile = designFile;
 
-    final SimpleContext context = getContext();
+    final WorkflowContext context = getContext();
 
     // Set the base path
     context.setBasePathname(designFile.getAbsoluteFile().getParentFile()

@@ -30,13 +30,10 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.S
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -44,20 +41,17 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
-public class CommandWorkflow implements Workflow {
+public class CommandWorkflow extends AbstractWorkflow {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -68,8 +62,10 @@ public class CommandWorkflow implements Workflow {
   private Set<String> stepsIds = Sets.newHashSet();
 
   private final Command command;
-  private final Design design;
-  private final Context context;
+
+  private final CommandWorkflowStep rootStep;
+  private final CommandWorkflowStep designStep;
+  private final CommandWorkflowStep firstStep;
 
   private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
@@ -131,8 +127,8 @@ public class CommandWorkflow implements Workflow {
       LOGGER.info("Create "
           + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
           + ") step.");
-      addStep(new CommandWorkflowStep(design, context, stepId, stepName,
-          stepParameters, skip));
+      addStep(new CommandWorkflowStep(this, stepId, stepName, stepParameters,
+          skip));
     }
   }
 
@@ -148,15 +144,18 @@ public class CommandWorkflow implements Workflow {
       for (Step step : Utils.listWithoutNull(firstSteps)) {
 
         final String stepId = step.getName();
-        addStep(0, new CommandWorkflowStep(this.design, this.context, stepId,
-            step.getName(), EMPTY_PARAMETERS, false));
+        addStep(0, new CommandWorkflowStep(this, stepId, step.getName(),
+            EMPTY_PARAMETERS, false));
       }
 
     // Add the first step. Generators cannot be added after this step
-    addStep(0, new CommandWorkflowStep(design, context, StepType.FIRST_STEP));
+    addStep(0, this.firstStep);
 
     // Add the design step
-    addStep(0, new CommandWorkflowStep(design, context, StepType.DESIGN_STEP));
+    addStep(0, this.designStep);
+
+    // Add the design step
+    addStep(0, this.rootStep);
   }
 
   /**
@@ -173,18 +172,9 @@ public class CommandWorkflow implements Workflow {
 
       final String stepId = step.getName();
 
-      addStep(new CommandWorkflowStep(this.design, this.context, stepId,
-          step.getName(), EMPTY_PARAMETERS, false));
+      addStep(new CommandWorkflowStep(this, stepId, step.getName(),
+          EMPTY_PARAMETERS, false));
     }
-  }
-
-  private int findFirstStepPos() {
-
-    for (int i = 0; i < this.steps.size(); i++)
-      if (this.steps.get(i).getType() == StepType.FIRST_STEP)
-        return i;
-
-    return -1;
   }
 
   /**
@@ -204,86 +194,82 @@ public class CommandWorkflow implements Workflow {
       settings.setSetting(p.getName(), p.getStringValue());
 
     // Configure all the steps
-    CommandWorkflowStep previousStep = null;
     for (CommandWorkflowStep step : this.steps) {
-
-      step.addPreviousStep(previousStep);
-      if (previousStep != null)
-        previousStep.addNextStep(step);
       step.configure();
-      previousStep = step;
     }
   }
 
-  private Set<DataType> getDesignDataTypes() {
+  private Set<DataFormat> getDesignDataFormats() {
 
-    final Set<DataType> result = Sets.newHashSet();
-    final List<String> fields = this.design.getMetadataFieldsNames();
+    final Set<DataFormat> result = Sets.newHashSet();
+    final List<String> fields = getDesign().getMetadataFieldsNames();
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
     for (String fieldName : fields) {
-      DataType dt = registry.getDataFormatForDesignField(fieldName);
+      DataFormat df = registry.getDataFormatForDesignField(fieldName);
 
-      if (dt != null)
-        result.add(dt);
+      if (df != null)
+        result.add(df);
     }
 
     return result;
   }
 
-  private void searchInputDataFormat() throws EoulsanException {
+  private void searchDependencies() throws EoulsanException {
 
-    final Set<DataType> dataTypesFromDesign = getDesignDataTypes();
+    final Set<DataFormat> dataFormatsFromDesign = getDesignDataFormats();
 
-    for (int i = this.steps.size() - 1; i >= 0; i--) {
+    final List<CommandWorkflowStep> steps = this.steps;
 
-      final CommandWorkflowStep step = this.steps.get(i);
-      System.out.println("In step " + step.getId());
+    for (int i = steps.size() - 1; i >= 0; i--) {
 
-      ListMultimap<DataType, DataFormat> lmm =
-          step.getInputDataFormatByDataTypes();
+      final CommandWorkflowStep step = steps.get(i);
 
-      for (DataType dt : lmm.keySet()) {
-        System.out.println("\tsearch for " + dt.getName());
+      // If step need no data, the step depends from the previous step
+      if (step.getInputDataFormats().isEmpty() && i > 0)
+        step.addDependency(steps.get(i - 1));
+
+      for (DataFormat df : step.getInputDataFormats()) {
+
+        // Do not search dependency for the format if already has been manually
+        // set
+        if (step.isDependencySet(df))
+          continue;
+
         boolean found = false;
         List<DataFormat> generatorAvaillables = Lists.newArrayList();
 
-        for (DataFormat df : lmm.get(dt)) {
-          System.out.println("\t\tas dataformat " + df.getFormatName());
-          if (!found) {
-            for (int j = i - 1; j >= 0; j--) {
+        for (int j = i - 1; j >= 0; j--) {
 
-              final CommandWorkflowStep stepTested = this.steps.get(j);
+          final CommandWorkflowStep stepTested = steps.get(j);
 
-              // The tested step is a standard/generator step
-              if ((stepTested.getType() == StepType.STANDARD_STEP || stepTested
-                  .getType() == StepType.GENERATOR_STEP)
-                  && stepTested.getOutputDataFormats().contains(df)) {
+          // The tested step is a standard/generator step
+          if ((stepTested.getType() == StepType.STANDARD_STEP || stepTested
+              .getType() == StepType.GENERATOR_STEP)
+              && stepTested.getOutputDataFormats().contains(df)) {
 
-                step.addInputFormatLocation(df, stepTested);
-                found = true;
-                break;
-              }
+            step.addDependency(df, stepTested);
 
-              // The tested step is the design step
-              if (stepTested.getType() == StepType.DESIGN_STEP
-                  && dataTypesFromDesign.contains(dt)) {
-
-                for (DataFormat df2 : lmm.get(dt))
-                  step.addInputFormatLocation(df2, stepTested);
-                found = true;
-                break;
-              }
-
-            }
+            found = true;
+            break;
           }
 
-          // A generator is available for the DataType
-          if (df.isGenerator() && !this.generatorAdded.contains(df))
-            generatorAvaillables.add(df);
+          // The tested step is the design step
+          if (stepTested.getType() == StepType.DESIGN_STEP
+              && dataFormatsFromDesign.contains(df)) {
+
+            step.addDependency(df, stepTested);
+
+            found = true;
+            break;
+          }
 
         }
+
+        // A generator is available for the DataType
+        if (df.isGenerator() && !this.generatorAdded.contains(df))
+          generatorAvaillables.add(df);
 
         if (!found) {
 
@@ -291,20 +277,20 @@ public class CommandWorkflow implements Workflow {
           if (!generatorAvaillables.isEmpty()) {
 
             final CommandWorkflowStep generatorStep =
-                new CommandWorkflowStep(this.design, this.context,
-                    generatorAvaillables.get(0));
+                new CommandWorkflowStep(this, generatorAvaillables.get(0));
 
             generatorStep.configure();
-            System.out.println("add + " + dt.getName());
-            addStep(1, generatorStep);
 
-            searchInputDataFormat();
+            // Add after design step (in pos 2)
+            addStep(2, generatorStep);
+
+            searchDependencies();
             return;
           }
 
           else
             throw new EoulsanException("Cannot found \""
-                + dt.getName() + "\" for step " + step.getId() + ".");
+                + df.getFormatName() + "\" for step " + step.getId() + ".");
         }
       }
     }
@@ -340,7 +326,7 @@ public class CommandWorkflow implements Workflow {
    */
   private void convertDesignS3URLs() {
 
-    for (Sample s : this.design.getSamples()) {
+    for (Sample s : getDesign().getSamples()) {
 
       // Convert read file URL
       final List<String> readsSources =
@@ -370,131 +356,65 @@ public class CommandWorkflow implements Workflow {
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
 
-  //
-  // Check existing files
-  //
+  private WorkflowFiles listStepsFiles(final WorkflowStep firstStep) {
 
-  private void checkExistingOutputFiles() throws EoulsanException {
+    final Set<WorkflowStepOutputDataFile> inFiles = Sets.newHashSet();
+    final Set<WorkflowStepOutputDataFile> reusedFiles = Sets.newHashSet();
+    final Set<WorkflowStepOutputDataFile> outFiles = Sets.newHashSet();
 
-    final Set<DataFile> testedFiles = Sets.newHashSet();
+    boolean firstStepFound = false;
 
     for (CommandWorkflowStep step : this.steps) {
+
+      if (!firstStepFound) {
+
+        if (step == firstStep)
+          firstStepFound = true;
+        else
+          continue;
+      }
 
       if (step.getType() == STANDARD_STEP && !step.isSkip()) {
 
         // If a terminal step exist don't go further
         if (step.getStep().isTerminalStep())
-          return;
-
-        for (DataFormat format : step.getOutputDataFormats())
-          for (Sample sample : this.design.getSamples()) {
-
-            DataFile file;
-
-            if (format.getMaxFilesCount() > 1)
-              file = step.getOutputDataFile(format, sample, 0);
-            else
-              file = step.getOutputDataFile(format, sample);
-
-            if (!testedFiles.contains(file) && file.exists())
-              throw new EoulsanException("For sample "
-                  + sample.getId() + ", generated \"" + format.getFormatName()
-                  + "\" already exists (" + file + ").");
-
-            testedFiles.add(file);
-          }
+          return new WorkflowFiles(inFiles, reusedFiles, outFiles);
       }
-    }
 
-  }
+      for (Sample sample : getDesign().getSamples()) {
+        for (DataFormat format : step.getInputDataFormats()) {
 
-  private void checkExistingInputFiles() throws EoulsanException {
+          final List<WorkflowStepOutputDataFile> files;
 
-    final Map<DataFile, Boolean> testedFiles = Maps.newHashMap();
-    final Set<DataFile> generatedFiles = Sets.newHashSet();
+          if (format.getMaxFilesCount() == 1) {
 
-    for (CommandWorkflowStep step : this.steps) {
+            WorkflowStepOutputDataFile f =
+                new WorkflowStepOutputDataFile(
+                    step.getInputDataFormatStep(format), format, sample);
 
-      if ((step.getType() == STANDARD_STEP || step.getType() == GENERATOR_STEP)
-          && !step.isSkip()) {
+            files = Collections.singletonList(f);
+          } else {
+            files = Lists.newArrayList();
+            final int count = step.getInputDataFileCount(format, sample, false);
 
-        // If a terminal step exist don't go further
-        if (step.getStep().isTerminalStep())
-          return;
+            for (int i = 0; i < count; i++) {
 
-        ListMultimap<DataType, DataFormat> lmm =
-            step.getInputDataFormatByDataTypes();
+              WorkflowStepOutputDataFile f =
+                  new WorkflowStepOutputDataFile(
+                      step.getInputDataFormatStep(format), format, sample, i);
 
-        for (Sample sample : this.design.getSamples()) {
-          for (DataType type : lmm.keys()) {
-
-            boolean found = false;
-            for (DataFormat format : lmm.get(type)) {
-
-              DataFile inFile = step.getInputDataFile(format, sample);
-
-              if (generatedFiles.contains(inFile))
-                found = true;
-              else if (testedFiles.containsKey(inFile))
-                found = testedFiles.get(inFile);
-              else {
-                found = inFile.exists();
-                testedFiles.put(inFile, found);
-              }
-
-              if (found)
-                break;
+              files.add(f);
             }
-
-            if (!found)
-              throw new EoulsanException("For sample "
-                  + sample.getId() + " in step " + step.getId()
-                  + ", input file for " + type.getName() + " not exists.");
-
           }
-        }
 
-        // Add generated file of the step
-        for (DataFormat format : step.getOutputDataFormats())
-          for (Sample sample : this.design.getSamples())
-            generatedFiles.add(step.getOutputDataFile(format, sample));
+          for (WorkflowStepOutputDataFile file : files) {
 
-      }
-    }
-
-  }
-
-  private void scanStepsFiles() {
-
-    final Set<DataFile> inFiles = Sets.newHashSet();
-    final Set<DataFile> interFiles = Sets.newHashSet();
-    final Set<DataFile> outFiles = Sets.newHashSet();
-
-    for (CommandWorkflowStep step : this.steps) {
-
-      if (step.getType() == STANDARD_STEP && !step.isSkip()) {
-
-        // If a terminal step exist don't go further
-        if (step.getStep().isTerminalStep())
-          return;
-      }
-
-      ListMultimap<DataType, DataFormat> lmm =
-          step.getInputDataFormatByDataTypes();
-
-      for (Sample sample : this.design.getSamples()) {
-        for (DataType type : lmm.keys()) {
-
-          for (DataFormat format : lmm.get(type)) {
-
-            DataFile file = step.getInputDataFile(format, sample);
-
-            if (interFiles.contains(file))
+            if (reusedFiles.contains(file))
               continue;
 
             if (outFiles.contains(file)) {
               outFiles.remove(file);
-              interFiles.add(file);
+              reusedFiles.add(file);
               continue;
             }
 
@@ -504,15 +424,62 @@ public class CommandWorkflow implements Workflow {
       }
 
       // Add output files of the step
-      for (DataFormat format : step.getOutputDataFormats())
-        for (Sample sample : this.design.getSamples()) {
-          
-          DataFile file = step.getOutputDataFile(format, sample);
+      if (!step.isSkip()) {
+        for (DataFormat format : step.getOutputDataFormats()) {
+          for (Sample sample : getDesign().getSamples()) {
 
-          outFiles.add(file);
+            if (format.getMaxFilesCount() == 1) {
+
+              WorkflowStepOutputDataFile f =
+                  new WorkflowStepOutputDataFile(step, format, sample);
+
+              outFiles.add(f);
+            } else {
+              final int count =
+                  step.getOutputDataFileCount(format, sample, false);
+
+              for (int i = 0; i < count; i++) {
+                WorkflowStepOutputDataFile f =
+                    new WorkflowStepOutputDataFile(step, format, sample, i);
+                outFiles.add(f);
+              }
+            }
+          }
         }
+      }
     }
 
+    return new WorkflowFiles(inFiles, reusedFiles, outFiles);
+  }
+
+  //
+  // Workflow methods
+  //
+
+  public WorkflowStep getFirstStep() {
+
+    return this.firstStep;
+  }
+
+  /**
+   * Get the first steps of the workflow.
+   * @return a set with the first steps the workflow
+   */
+  public WorkflowStep getRootStep() {
+
+    return this.rootStep;
+  }
+
+  @Override
+  public WorkflowFiles getWorkflowFilesAtRootStep() {
+
+    return listStepsFiles(getRootStep());
+  }
+
+  @Override
+  public WorkflowFiles getWorkflowFilesAtFirstStep() {
+
+    return listStepsFiles(getFirstStep());
   }
 
   //
@@ -520,21 +487,29 @@ public class CommandWorkflow implements Workflow {
   //
 
   public CommandWorkflow(final Command command, final List<Step> firstSteps,
-      final List<Step> endSteps, final Design design, final Context context)
-      throws EoulsanException {
+      final List<Step> endSteps, final Design design) throws EoulsanException {
+
+    super(design);
 
     if (command == null)
       throw new NullPointerException("The command is null.");
 
-    if (design == null)
-      throw new NullPointerException("The design is null.");
+    // Define the root step
+    this.rootStep = new CommandWorkflowStep(this, StepType.ROOT_STEP);
 
-    if (context == null)
-      throw new NullPointerException("The execution context is null.");
+    // Define the design step
+    this.designStep = new CommandWorkflowStep(this, StepType.DESIGN_STEP);
+
+    // Define the first step
+    this.firstStep = new CommandWorkflowStep(this, StepType.FIRST_STEP);
 
     this.command = command;
-    this.design = design;
-    this.context = context;
+
+    // Set command information in context
+    final WorkflowContext context = getWorkflowContext();
+    context.setCommandName(command.getName());
+    context.setCommandDescription(command.getDescription());
+    context.setCommandAuthor(command.getAuthor());
 
     // Convert s3:// urls to s3n:// urls
     convertDesignS3URLs();
@@ -554,32 +529,7 @@ public class CommandWorkflow implements Workflow {
     // TODO Set manually defined input format source
 
     // Search others input format sources
-    searchInputDataFormat();
-
-    // check if output files does not exists
-    checkExistingOutputFiles();
-
-    // check if input files exists
-    checkExistingInputFiles();
-  }
-
-  public void show() {
-
-    for (CommandWorkflowStep ws : this.steps)
-      ws.show();
-  }
-
-  //
-  // Workflow methods
-  //
-
-  /**
-   * Get the first steps of the workflow.
-   * @return a set with the first steps the workflow
-   */
-  public Set<WorkflowStep> getFirstSteps() {
-
-    return Collections.singleton((WorkflowStep) this.steps.get(0));
+    searchDependencies();
   }
 
 }

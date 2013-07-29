@@ -18,10 +18,6 @@ fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
 fr.ens.transcriptome.eoulsan.steps.mapping.local.SAMFilterLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterHadoopStep
 
-# Filter samples
-fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesHadoopStep
-fr.ens.transcriptome.eoulsan.steps.filtersamples.FilterSamplesLocalStep
-
 # Expression steps
 fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep

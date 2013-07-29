@@ -48,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -91,7 +90,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getDataFileCount(READS_FASTQ, s) == 2)
+        if (context.getInputDataFileCount(READS_FASTQ, s) == 2)
           jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
       }
 
@@ -141,12 +140,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Get input DataFile
     DataFile inputDataFile = null;
-    inputDataFile =
-        context.getExistingInputDataFile(new DataFormat[] {READS_TFQ}, sample);
+    inputDataFile = context.getInputDataFile(READS_TFQ, sample);
     if (inputDataFile == null)
-      inputDataFile =
-          context.getExistingInputDataFile(new DataFormat[] {READS_FASTQ},
-              sample);
+      inputDataFile = context.getInputDataFile(READS_FASTQ, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -194,7 +190,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getDataFileCount(READS_FASTQ, sample) == 2)
+    if (context.getInputDataFileCount(READS_FASTQ, sample) == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
@@ -293,7 +289,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // get input file count for the sample
     final int inFileCount =
-        context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+        context.getInputDataFileCount(DataFormats.READS_FASTQ, sample);
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");

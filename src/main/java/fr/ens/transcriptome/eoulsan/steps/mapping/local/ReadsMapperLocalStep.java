@@ -103,7 +103,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
         // get input file count for the sample
         final int inFileCount =
-            context.getDataFileCount(DataFormats.READS_FASTQ, s);
+            context.getInputDataFileCount(DataFormats.READS_FASTQ, s);
 
         if (inFileCount < 1)
           throw new IOException("No reads file found.");

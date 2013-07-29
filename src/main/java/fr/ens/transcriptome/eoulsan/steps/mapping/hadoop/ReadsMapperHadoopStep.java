@@ -148,7 +148,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getDataFileCount(READS_FASTQ, sample) == 2)
+    if (context.getInputDataFileCount(READS_FASTQ, sample) == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());

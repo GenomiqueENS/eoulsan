@@ -45,12 +45,10 @@ import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -134,24 +132,23 @@ public class HDFSDataDownloadStep extends AbstractStep {
         throw new EoulsanException("The base directory is not a directory: "
             + inPath);
 
-      // Get the list of DataFormat to download
-      final List<DataFormat> formats = getDataFormats(context);
-
-      // Add files to download
+      // Map with files to download
       final Map<DataFile, DataFile> files = Maps.newHashMap();
-      for (Sample sample : design.getSamples()) {
 
-        // If no DataFormat set, add all generated data
-        if (formats.size() > 0) {
-          for (DataFormat df : formats) {
-            addFile(context, df, sample, outputDir, files);
-          }
-        } else {
-          for (DataFormat df : context.getWorkflow().getGlobalOutputDataFormat(
-              sample)) {
-            addFile(context, df, sample, outputDir, files);
-          }
-        }
+      // Get the output file of the workflow
+      final Set<WorkflowStepOutputDataFile> outFiles =
+          context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
+
+      // Add the output files of the workflow to the list of files to downloads
+      for (WorkflowStepOutputDataFile file : outFiles) {
+        final DataFile in = file.getDataFile();
+
+        final DataFile out =
+
+            new DataFile(outputDir, in.getName()
+                + CompressionType.BZIP2.getExtension());
+
+        files.put(in, out);
       }
 
       // If no file to copy, do nothing
@@ -228,79 +225,6 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return new StepResult(context, e, "Error while download results: "
           + e.getMessage());
     }
-  }
-
-  /**
-   * Add a file to the the list of file to download
-   * @param context current context
-   * @param df DataFormat of the file to download
-   * @param sample current sample
-   * @param outputDir output directory
-   * @param files map of the files to download
-   */
-  private void addFile(final Context context, final DataFormat df,
-      final Sample sample, final DataFile outputDir,
-      final Map<DataFile, DataFile> files) {
-
-    if (context == null || df == null || sample == null) {
-      return;
-    }
-
-    if (df.getMaxFilesCount() > 1) {
-
-      int i = 0;
-      DataFile f = null;
-
-      while ((f = context.getOtherDataFile(df, sample, i)).exists()) {
-
-        files.put(f,
-            new DataFile(f.getName() + CompressionType.BZIP2.getExtension()));
-        i++;
-      }
-
-    } else {
-
-      final DataFile inFile = context.getOtherDataFile(df, sample);
-
-      if (!inFile.exists()) {
-        return;
-      }
-
-      files.put(inFile, new DataFile(outputDir, inFile.getName()
-          + CompressionType.BZIP2.getExtension()));
-    }
-  }
-
-  /**
-   * Get the list of DataFormat of the files to download
-   * @param context current context
-   * @return a list with the DataFormat of the files to download
-   */
-  private List<DataFormat> getDataFormats(final Context context) {
-
-    final List<DataFormat> result = Lists.newArrayList();
-
-    final String list =
-        context.getRuntime().getSettings()
-            .getSetting(DATAFORMATS_TO_DOWNLOAD_SETTING);
-
-    if (list == null) {
-      return result;
-    }
-
-    final String[] fields = list.split(",");
-
-    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-
-    for (String dataFormatName : fields) {
-
-      final DataFormat df = registry.getDataFormatFromName(dataFormatName);
-      if (df != null) {
-        result.add(df);
-      }
-    }
-
-    return result;
   }
 
   /**

@@ -48,7 +48,6 @@
 		<tr><td><a href="step-gmap.html">Map reads with gmap</a></td><td>Yes</td><td>No</td><td></td></tr>
 		<tr><td><a href="step-filteralignments.html">Filter alignments</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-filterandmap.html">Filter and map reads</a></td><td>No</td><td>Yes</td><td></td></tr>
-		<tr><td><a href="step-filtersamples.html">Filter samples</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-expression.html">Expression</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-diffana.html">Differential analysis</a></td><td>Yes</td><td>No</td><td></td></tr>
 	</table>

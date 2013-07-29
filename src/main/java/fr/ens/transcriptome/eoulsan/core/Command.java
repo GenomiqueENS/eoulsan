@@ -170,7 +170,7 @@ public class Command {
       throw new EoulsanException("The name of the step is empty.");
 
     final String stepIdLower;
-    if (stepId == null)
+    if (stepId == null || "".equals(stepId.trim()))
       stepIdLower = stepNameLower;
     else
       stepIdLower = stepId.toLowerCase().trim();

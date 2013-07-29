@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_INDEX_SERIAL;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -65,7 +64,6 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
@@ -94,6 +92,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static final String TSAM_EXTENSION = ".tsam";
+  private static final String SERIALIZATION_EXTENSION = ".ser";
 
   private Configuration conf;
 
@@ -136,7 +135,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         .getInputDataFile(GENOME_DESC_TXT, sample).getSource());
 
     final Path exonsIndexPath =
-        new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+        getAnnotationIndexSerializedPath(context, sample);
+
     LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf))
@@ -204,8 +204,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Get input DataFile
     DataFile inputDataFile =
-        context.getExistingInputDataFile(new DataFormat[] {MAPPER_RESULTS_SAM},
-            sample);
+        context.getInputDataFile(MAPPER_RESULTS_SAM, sample);
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -249,7 +248,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(HTSeqCountMapper.OVERLAPMODE_PARAM, overlapMode);
 
     final Path featuresIndexPath =
-        new Path(context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+        getAnnotationIndexSerializedPath(context, sample);
+
     LOGGER.info("featuresIndexPath: " + featuresIndexPath);
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf))
@@ -304,7 +304,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // get input file count for the sample
-    final int inFileCount = context.getDataFileCount(READS_FASTQ, sample);
+    final int inFileCount = context.getInputDataFileCount(READS_FASTQ, sample);
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -385,8 +385,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         new TranscriptAndExonFinder(is, expressionType, attributeId);
     final File exonIndexFile =
         context.getRuntime().createFileInTempDir(
-            StringUtils.basename(gffPath.getName())
-                + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
+            StringUtils.basename(gffPath.getName()) + SERIALIZATION_EXTENSION);
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
@@ -464,8 +463,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     final File featuresIndexFile =
         context.getRuntime().createFileInTempDir(
-            StringUtils.basename(gffPath.getName())
-                + ANNOTATION_INDEX_SERIAL.getDefaultExtention());
+            StringUtils.basename(gffPath.getName()) + SERIALIZATION_EXTENSION);
 
     // Add all chromosomes even without annotations to the feature object
     features.addChromosomes(genomeDescription);
@@ -501,13 +499,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load the annotation index
       final Path exonsIndexPath =
-          new Path(
-              context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+          getAnnotationIndexSerializedPath(context, sample);
+
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(
+              context.getOutputDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fetc.initializeExpressionResults();
 
@@ -539,13 +538,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load the annotation index
       final Path featuresIndexPath =
-          new Path(
-              context.getOtherDataFilename(ANNOTATION_INDEX_SERIAL, sample));
+          getAnnotationIndexSerializedPath(context, sample);
+
       fefc = new FinalExpressionFeaturesCreator(fs.open(featuresIndexPath));
 
       // Set the result path
       final Path resultPath =
-          new Path(context.getOtherDataFilename(EXPRESSION_RESULTS_TXT, sample));
+          new Path(
+              context.getOutputDataFilename(EXPRESSION_RESULTS_TXT, sample));
 
       fefc.initializeExpressionResults();
 
@@ -556,6 +556,24 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       fefc.saveFinalResults(fs.create(resultPath));
     }
+  }
+
+  /**
+   * Create the path to the serialized annotation index.
+   * @param context Eoulsan context
+   * @param sample sample to process
+   * @return an Hadoop path with the path of the serialized annotation
+   */
+  private static Path getAnnotationIndexSerializedPath(final Context context,
+      final Sample sample) {
+
+    // Get annotation DataFile
+    String filename = context.getInputDataFilename(ANNOTATION_GFF, sample);
+
+    filename = StringUtils.removeCompressedExtensionFromFilename(filename);
+
+    return new Path(filename.substring(filename.lastIndexOf('.'))
+        + SERIALIZATION_EXTENSION);
   }
 
   //
@@ -671,7 +689,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Create the list of paired-end jobs to run
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getDataFileCount(READS_FASTQ, s) == 2)
+        if (context.getInputDataFileCount(READS_FASTQ, s) == 2)
           jobsPairedEnd.add(createJobPairedEnd(conf, context, s));
       }
 
@@ -682,7 +700,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       for (Sample s : design.getSamples()) {
 
         final boolean tsamFormat =
-            context.getDataFileCount(READS_FASTQ, s) == 2;
+            context.getInputDataFileCount(READS_FASTQ, s) == 2;
 
         final Job jconf =
             createJobHTSeqCounter(conf, context, s, getGenomicType(),

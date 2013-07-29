@@ -43,7 +43,6 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
@@ -90,31 +89,21 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Design design, final Context context,
+  public boolean check(final Context context, final Sample sample,
       final CheckStore checkInfo) throws EoulsanException {
-
-    if (design == null)
-      throw new NullPointerException("The design is null");
 
     if (context == null)
       throw new NullPointerException("The execution context is null");
 
+    if (sample == null)
+      throw new NullPointerException("The sample is null");
+
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
 
-    final List<Sample> samples = design.getSamples();
-
-    if (samples == null)
-      throw new NullPointerException("The samples are null");
-
-    if (samples.size() == 0)
-      throw new EoulsanException("No samples found in design");
-
-    final Sample s = samples.get(0);
-
     try {
       final DataFile annotationFile =
-          context.getOtherDataFile(DataFormats.ANNOTATION_GFF, s);
+          context.getOutputDataFile(DataFormats.ANNOTATION_GFF, sample);
 
       if (!annotationFile.exists())
         return true;
@@ -123,7 +112,7 @@ public class AnnotationChecker implements Checker {
         return true;
 
       final GenomeDescription desc =
-          getGenomeDescription(annotationFile, design, context, checkInfo);
+          getGenomeDescription(annotationFile, context, sample, checkInfo);
 
       validationAnnotation(annotationFile, desc, this.genomicType,
           this.attributeId, this.stranded);
@@ -321,14 +310,14 @@ public class AnnotationChecker implements Checker {
   }
 
   private GenomeDescription getGenomeDescription(final DataFile annotationFile,
-      final Design design, final Context context, final CheckStore checkInfo)
+      final Context context, final Sample sample, final CheckStore checkInfo)
       throws EoulsanException, BadBioEntryException, IOException {
 
     Object o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
     if (o == null) {
 
-      DataFormats.GENOME_FASTA.getChecker().check(design, context, checkInfo);
+      DataFormats.GENOME_FASTA.getChecker().check(context, sample, checkInfo);
       o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
       if (o == null)

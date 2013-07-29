@@ -28,14 +28,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
+import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
@@ -49,8 +51,6 @@ public abstract class Executor {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private Command command;
-
-  private long startTimeCurrentStep;
 
   //
   // Getters
@@ -95,7 +95,7 @@ public abstract class Executor {
    * Get the execution context
    * @return the Context
    */
-  protected abstract SimpleContext getContext();
+  protected abstract WorkflowContext getContext();
 
   /**
    * Check temporary directory.
@@ -157,7 +157,7 @@ public abstract class Executor {
       throw new EoulsanException("The command is null");
 
     // Get execution context
-    final SimpleContext context = getContext();
+    final WorkflowContext context = getContext();
 
     // Check base path
     if (context.getBasePathname() == null)
@@ -169,31 +169,12 @@ public abstract class Executor {
     // Check design
     checkDesign(design);
 
-    // Add executor info
-    context.addCommandInfo(command);
-
-    // Create the workflow
-    final Workflow workflow =
-        new Workflow(command, design, context, hadoopMode);
-
-    // Add the workflow to Context
-    context.setWorkflow(workflow);
-
-    // Add the design to the context
-    context.setDesign(design);
-
-    // Insert terminal steps (e.g. upload hdfs/S3, start local/Amazon hadoop)
-    workflow.addFirstSteps(firstSteps);
-    workflow.addEndSteps(endSteps);
-
-    // Init steps of the workflow
-    workflow.init();
+    // Create Workflow
+    final CommandWorkflow workflow =
+        new CommandWorkflow(command, firstSteps, endSteps, design);
 
     // Check temporary directory
     checkTemporaryDirectory();
-
-    // Check workflow
-    workflow.check();
 
     LOGGER.info("Date: " + new Date(System.currentTimeMillis()));
     LOGGER.info("Host: " + SystemUtils.getHostName());
@@ -204,120 +185,29 @@ public abstract class Executor {
     LOGGER.info("Java version: " + System.getProperty("java.version"));
     LOGGER.info("Log level: " + LOGGER.getLevel());
 
-    final long startTime = System.currentTimeMillis();
+    // Execute Workflow
+    workflow.execute(new WorkflowStepResultProcessor() {
 
-    // Execute steps
-    for (Step step : workflow.getSteps()) {
+      @Override
+      public void processResult(final WorkflowStep step, final StepResult result)
+          throws EoulsanException {
 
-      final String stepName = step.getName();
+        final String stepId = step.getId();
 
-      context.setStep(step);
-      logStartStep(stepName);
+        if (result == null) {
+          LOGGER.severe("No result for step: " + stepId);
+          throw new EoulsanException("No result for step: " + stepId);
+        }
 
-      // execute step
-      final StepResult result = step.execute(design, context);
-
-      logEndStep(stepName);
-      context.setStep(null);
-
-      if (result == null) {
-        LOGGER.severe("No result for step: " + stepName);
-        throw new EoulsanException("No result for step: " + stepName);
+        // Write step logs
+        writeStepLogs(result);
       }
+    });
 
-      // Write step logs
-      writeStepLogs(result);
-
-      // End of the analysis if the analysis fail
-      if (!result.isSuccess()) {
-        LOGGER.severe("Fail of the analysis: " + result.getErrorMessage());
-        logEndAnalysis(context, false, startTime);
-
-        if (result.getException() != null)
-          Common.errorExit(result.getException(), result.getErrorMessage());
-        else
-          Common.errorExit(new EoulsanException("Fail of the analysis."),
-              result.getErrorMessage());
-      }
-
-      // If the step is terminal step, end of the execution of the workflow
-      if (step.isTerminalStep())
-        break;
-    }
-
-    logEndAnalysis(context, true, startTime);
   }
 
   //
   // Utility methods
   //
 
-  /**
-   * Add log entry for step phase.
-   * @param stepName Name of current the phase
-   */
-  private void logStartStep(final String stepName) {
-
-    this.startTimeCurrentStep = System.currentTimeMillis();
-    LOGGER.info("Start " + stepName + " step.");
-  }
-
-  /**
-   * Add log entry for end step.
-   * @param stepName Name of current the step
-   */
-  private void logEndStep(final String stepName) {
-
-    final long endTimePhase = System.currentTimeMillis();
-
-    LOGGER.info("Process step "
-        + stepName
-        + " in "
-        + StringUtils.toTimeHumanReadable(endTimePhase
-            - this.startTimeCurrentStep) + " s.");
-  }
-
-  /**
-   * Log the state and the time of the analysis
-   * @param context Context object
-   * @param success true if analysis was successful
-   * @param startTime start time of the analysis is milliseconds since Java
-   *          epoch
-   */
-  private void logEndAnalysis(final Context context, final boolean success,
-      final long startTime) {
-
-    final long endTime = System.currentTimeMillis();
-    final String successString = success ? "Successful" : "Unsuccessful";
-
-    // Log the end of the analysis
-    LOGGER.info(successString
-        + " end of the analysis in "
-        + StringUtils.toTimeHumanReadable(endTime - startTime) + " s.");
-
-    // Send a mail
-
-    final String mailSubject =
-        "["
-            + Globals.APP_NAME + "] " + successString + " end of your job "
-            + context.getJobId() + " on " + context.getJobHost();
-
-    final String mailMessage =
-        "THIS IS AN AUTOMATED MESSAGE.\n\n"
-            + successString
-            + " end of your job "
-            + context.getJobId()
-            + " on "
-            + context.getJobHost()
-            + ".\nJob finished at "
-            + new Date(System.currentTimeMillis())
-            + " in "
-            + StringUtils.toTimeHumanReadable(endTime - startTime)
-            + " s.\n\nOutput files and logs can be found in the following location:\n"
-            + context.getOutputPathname() + "\n\nThe " + Globals.APP_NAME
-            + "team.";
-
-    // Send mail
-    Common.sendMail(mailSubject, mailMessage);
-  }
 }
