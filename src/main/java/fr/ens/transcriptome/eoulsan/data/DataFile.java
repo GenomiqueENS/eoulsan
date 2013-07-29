@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class DataFile {
+public class DataFile implements Comparable<DataFile> {
 
   /** Logger. */
   private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -386,6 +386,12 @@ public class DataFile {
   //
   // Object methods overrides
   //
+
+  @Override
+  public int compareTo(final DataFile o) {
+
+    return this.src.compareTo(o.src);
+  }
 
   @Override
   public boolean equals(final Object o) {
