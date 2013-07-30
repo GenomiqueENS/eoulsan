@@ -52,10 +52,17 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * This class define a Workflow. This class must be extended by a class to be
+ * able to work with a specific worklow file format.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public abstract class AbstractWorkflow implements Workflow {
 
   /** Logger */
@@ -68,12 +75,27 @@ public abstract class AbstractWorkflow implements Workflow {
   private final Multimap<StepState, AbstractWorkflowStep> states =
       ArrayListMultimap.create();
 
+  private AbstractWorkflowStep rootStep;
+  private AbstractWorkflowStep designStep;
+  private AbstractWorkflowStep firstStep;
+
   //
   // Inner interface
   //
 
+  /**
+   * This interface is used by the Executor to process the step result.
+   * @author Laurent Jourdren
+   * @since 1.3
+   */
   public interface WorkflowStepResultProcessor {
 
+    /**
+     * Process a step result.
+     * @param step Step that has been executed
+     * @param result result of the step
+     * @throws EoulsanException if an error occurs while processing the result
+     */
     void processResult(WorkflowStep step, StepResult result)
         throws EoulsanException;
 
@@ -95,44 +117,17 @@ public abstract class AbstractWorkflow implements Workflow {
     return this.context;
   }
 
+  /**
+   * Get the real Context object. This method is useful to redefine context
+   * values like base directory.
+   * @return The Context object
+   */
   WorkflowContext getWorkflowContext() {
 
     return this.context;
   }
 
-  private List<AbstractWorkflowStep> getSortedStepsByState(
-      final StepState... states) {
-
-    Preconditions.checkNotNull(states, "states argument is null");
-
-    final List<AbstractWorkflowStep> result = Lists.newArrayList();
-
-    for (StepState state : states)
-      result.addAll(getSortedStepsByState(state));
-
-    // Sort steps
-    sortListSteps(result);
-
-    return result;
-  }
-
-  List<AbstractWorkflowStep> getSortedStepsByState(final StepState state) {
-
-    Preconditions.checkNotNull(state, "state argument is null");
-
-    final Collection<AbstractWorkflowStep> collection;
-
-    synchronized (this) {
-      collection = this.states.get(state);
-    }
-
-    final List<AbstractWorkflowStep> result = Lists.newArrayList(collection);
-
-    sortListSteps(result);
-
-    return result;
-  }
-
+  @Override
   public Set<WorkflowStep> getSteps() {
 
     final Set<WorkflowStep> result = Sets.newHashSet();
@@ -141,11 +136,33 @@ public abstract class AbstractWorkflow implements Workflow {
     return Collections.unmodifiableSet(result);
   }
 
+  @Override
+  public WorkflowStep getRootStep() {
+
+    return this.rootStep;
+  }
+
+  @Override
+  public WorkflowStep getDesignStep() {
+
+    return this.designStep;
+  }
+
+  @Override
+  public WorkflowStep getFirstStep() {
+
+    return this.firstStep;
+  }
+
   //
   // Setters
   //
 
-  void register(final AbstractWorkflowStep step) {
+  /**
+   * Register a step of the workflow.
+   * @param step step to register
+   */
+  protected void register(final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(step, "step cannot be null");
 
@@ -157,12 +174,44 @@ public abstract class AbstractWorkflow implements Workflow {
       throw new IllegalStateException("2 step cannot had the same id: "
           + step.getId());
 
+    // Register root step
+    if (step.getType() == StepType.ROOT_STEP) {
+
+      if (this.rootStep != null && step != this.rootStep)
+        throw new IllegalStateException(
+            "Cannot add 2 root steps to the workflow");
+      this.rootStep = step;
+    }
+
+    // Register design step
+    if (step.getType() == StepType.DESIGN_STEP) {
+
+      if (this.designStep != null && step != this.designStep)
+        throw new IllegalStateException(
+            "Cannot add 2 design steps to the workflow");
+      this.designStep = step;
+    }
+
+    // Register first step
+    if (step.getType() == StepType.FIRST_STEP) {
+
+      if (this.firstStep != null && step != this.firstStep)
+        throw new IllegalStateException(
+            "Cannot add 2 first steps to the workflow");
+      this.firstStep = step;
+    }
+
     synchronized (this) {
       this.steps.put(step, step.getState());
       this.states.put(step.getState(), step);
     }
   }
 
+  /**
+   * Update the status of a step. This method is used by steps to inform the
+   * workflow object that the status of the step has been changed.
+   * @param step Step that the status has been changed.
+   */
   void updateStepState(final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(step, "step argument is null");
@@ -181,22 +230,14 @@ public abstract class AbstractWorkflow implements Workflow {
     }
   }
 
-  public void showDependenies() {
-
-    System.out.println("=== dependencies ===");
-
-    for (WorkflowStep step : this.steps.keySet()) {
-
-      ((AbstractWorkflowStep) step).printDeps();
-
-    }
-
-  }
-
   //
   // Check methods
   //
 
+  /**
+   * Check if the output file of the workflow already exists.
+   * @throws EoulsanException if output files of the workflow already exists
+   */
   private void checkExistingOutputFiles() throws EoulsanException {
 
     final WorkflowFiles files = getWorkflowFilesAtRootStep();
@@ -216,6 +257,10 @@ public abstract class AbstractWorkflow implements Workflow {
             + "\" already exists (" + file.getDataFile() + ").");
   }
 
+  /**
+   * Check if the input file of the workflow already exists.
+   * @throws EoulsanException if input files of the workflow already exists
+   */
   private void checkExistingInputFiles() throws EoulsanException {
 
     final WorkflowFiles files = getWorkflowFilesAtRootStep();
@@ -228,6 +273,15 @@ public abstract class AbstractWorkflow implements Workflow {
             + " not exists (" + file.getDataFile() + ").");
   }
 
+  //
+  // Workflow lifetime methods
+  //
+
+  /**
+   * Execute the workflow.
+   * @param processor result step processor
+   * @throws EoulsanException if an error occurs while executing the workflow
+   */
   public void execute(final WorkflowStepResultProcessor processor)
       throws EoulsanException {
 
@@ -300,6 +354,53 @@ public abstract class AbstractWorkflow implements Workflow {
   // Utility methods
   //
 
+  /**
+   * Get the steps which has some step status. The step are ordered.
+   * @param states step status to retrieve
+   * @return a sorted list with the steps
+   */
+  private List<AbstractWorkflowStep> getSortedStepsByState(
+      final StepState... states) {
+
+    Preconditions.checkNotNull(states, "states argument is null");
+
+    final List<AbstractWorkflowStep> result = Lists.newArrayList();
+
+    for (StepState state : states)
+      result.addAll(getSortedStepsByState(state));
+
+    // Sort steps
+    sortListSteps(result);
+
+    return result;
+  }
+
+  /**
+   * Get the steps which has a step status. The step are ordered.
+   * @param states step status to retrieve
+   * @return a sorted list with the steps
+   */
+  private List<AbstractWorkflowStep> getSortedStepsByState(final StepState state) {
+
+    Preconditions.checkNotNull(state, "state argument is null");
+
+    final Collection<AbstractWorkflowStep> collection;
+
+    synchronized (this) {
+      collection = this.states.get(state);
+    }
+
+    final List<AbstractWorkflowStep> result = Lists.newArrayList(collection);
+
+    sortListSteps(result);
+
+    return result;
+  }
+
+  /**
+   * Sort a list of step by priority and then by step number.
+   * @param list the list of step to sort
+   */
   private static final void sortListSteps(final List<AbstractWorkflowStep> list) {
 
     if (list == null)
@@ -324,8 +425,7 @@ public abstract class AbstractWorkflow implements Workflow {
   /**
    * Log the state and the time of the analysis
    * @param success true if analysis was successful
-   * @param startTime start time of the analysis is milliseconds since Java
-   *          epoch
+   * @param stopwatch stopwatch of the workflow epoch
    */
   private void logEndAnalysis(final boolean success, final StopWatch stopWatch) {
 
@@ -370,6 +470,10 @@ public abstract class AbstractWorkflow implements Workflow {
   // Constructor
   //
 
+  /**
+   * Protected constructor.
+   * @param design design to use for the workflow
+   */
   protected AbstractWorkflow(final Design design) {
 
     Preconditions.checkNotNull(design, "Design argument cannot be null");

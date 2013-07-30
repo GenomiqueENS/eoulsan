@@ -28,24 +28,51 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 
+/**
+ * This interface define a step of the workflow.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public interface WorkflowStep {
 
+  /**
+   * This enum define the type of step.
+   * @author Laurent Jourdren
+   * @since 1.3
+   */
   public static enum StepType {
     ROOT_STEP(0), DESIGN_STEP(1), GENERATOR_STEP(2), FIRST_STEP(3),
     STANDARD_STEP(4), TERMINAL_STEP(5);
 
     private int priority;
 
+    /**
+     * Get the priority of the step.
+     * @return the priority of the step
+     */
     public int getPriority() {
       return this.priority;
     }
 
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param priority priority of the step
+     */
     StepType(final int priority) {
 
       this.priority = priority;
     }
   };
 
+  /**
+   * This enum define the states of the steps.
+   * @author Laurent Jourdren
+   * @since 1.3
+   */
   public static enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, DONE
   };
@@ -56,6 +83,10 @@ public interface WorkflowStep {
    */
   Workflow getWorkflow();
 
+  /**
+   * Get the unique numerical identifier of the step.
+   * @return the number of the setp
+   */
   int getNumber();
 
   /**
@@ -82,9 +113,12 @@ public interface WorkflowStep {
    */
   String getStepName();
 
-  
+  /**
+   * Get the parameter of the step.
+   * @return a Set with the parameters of the step
+   */
   Set<Parameter> getParameters();
-  
+
   /**
    * Get the duration of the execution of the step.
    * @return the duration of the step in milliseconds

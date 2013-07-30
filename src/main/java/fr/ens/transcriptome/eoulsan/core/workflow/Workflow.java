@@ -29,29 +29,61 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
+/**
+ * This interface define a Workflow.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public interface Workflow {
 
-  public Design getDesign();
-
-  public Context getContext();
-
-  
-  public Set<WorkflowStep> getSteps();
-  
   /**
-   * Get the first step of the workflow (after generator steps).
-   * @return the first step of the workflow
+   * Get the design used by the workflow.
+   * @return a Design Object
    */
-  public WorkflowStep getFirstStep();
+  Design getDesign();
+
+  /**
+   * Get the context used by the workflow.
+   * @return a Context object
+   */
+  Context getContext();
+
+  /**
+   * Get the steps of the workflow.
+   * @return a Set with the steps of the workflow.
+   */
+  Set<WorkflowStep> getSteps();
 
   /**
    * Get the first steps of the workflow.
    * @return the root step of the workflow
    */
-  public WorkflowStep getRootStep();
+  WorkflowStep getRootStep();
 
-  public WorkflowFiles getWorkflowFilesAtRootStep();
+  /**
+   * Get the design step of the workflow.
+   * @return the design step of the workflow
+   */
+  WorkflowStep getDesignStep();
 
-  public WorkflowFiles getWorkflowFilesAtFirstStep();
+  /**
+   * Get the first step of the workflow (after generator steps).
+   * @return the first step of the workflow
+   */
+  WorkflowStep getFirstStep();
+
+  /**
+   * Get the list of the files used by the workflow from the begging of the
+   * workflow.
+   * @return a WorkflowFile object
+   */
+  WorkflowFiles getWorkflowFilesAtRootStep();
+
+  /**
+   * Get the list of the files used by the workflow from the first real step of
+   * the workflow (after the generators).
+   * @return a WorkflowFile object
+   */
+  WorkflowFiles getWorkflowFilesAtFirstStep();
 
 }

@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +51,12 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
+/**
+ * This class define a step of the workflow. This class must be extended by a
+ * class to be able to work with a specific worklow file format.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /** Logger */
@@ -134,7 +142,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
      * @param step Workflow step
      * @param format format
      */
-    public InputDataFileLocation(DataFormat format,
+    public InputDataFileLocation(final DataFormat format,
         final AbstractWorkflowStep step) {
 
       Preconditions.checkNotNull(step, "Format cannot be null");
@@ -231,6 +239,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   // Setters
   //
 
+  /**
+   * Set the state of the step.
+   * @param state the new state of the step
+   */
   public void setState(final StepState state) {
 
     if (state == null)
@@ -277,39 +289,44 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   // DataFile methods
   //
 
-  public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
+  /**
+   * Get an output file of the step.
+   * @param format DataFormat of the output file
+   * @param sample sample sample that correspond to the file
+   * @return a DataFile object
+   */
+  DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
     return new WorkflowStepOutputDataFile(this, format, sample).getDataFile();
   }
 
-  public DataFile getOutputDataFile(final DataFormat format,
-      final Sample sample, final int fileIndex) {
+  /**
+   * Get an output file of the step.
+   * @param format DataFormat of the output file
+   * @param sample sample sample that correspond to the file
+   * @param fileIndex file index
+   * @return a DataFile object
+   */
+  DataFile getOutputDataFile(final DataFormat format, final Sample sample,
+      final int fileIndex) {
 
     return new WorkflowStepOutputDataFile(this, format, sample, fileIndex)
         .getDataFile();
   }
 
-  public int getOutputDataFileCount(final DataFormat format,
-      final Sample sample, final boolean existingFiles) {
+  /**
+   * Get the file count for an output step of the step.
+   * @param format DataFormat of the output file
+   * @param sample sample sample that correspond to the file
+   * @param existingFiles if true return the number of files that really exists
+   *          otherwise the maximum of files.
+   * @return the count of output DataFiles
+   */
+  int getOutputDataFileCount(final DataFormat format, final Sample sample,
+      final boolean existingFiles) {
 
     return WorkflowStepOutputDataFile.dataFileCount(this, format, sample,
         existingFiles);
-  }
-
-  public int getInputDataFileCount(final DataFormat format,
-      final Sample sample, final boolean existingFiles) {
-
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
-
-    if (!this.inputFormatLocations.containsKey(format))
-      throw new EoulsanRuntimeException("The "
-          + format.getFormatName()
-          + " format is not an input format of the step " + getId());
-
-    return this.inputFormatLocations.get(format).getDataFileCount(sample,
-        existingFiles);
-
   }
 
   /**
@@ -318,7 +335,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param sample the sample
    * @return a DataFormat or null if the DataFormat is not available
    */
-  public DataFile getInputDataFile(final DataFormat format, final Sample sample) {
+  DataFile getInputDataFile(final DataFormat format, final Sample sample) {
 
     return getInputDataFile(format, sample, -1);
   }
@@ -329,8 +346,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param sample the sample
    * @return a DataFormat or null if the DataFormat is not available
    */
-  public DataFile getInputDataFile(final DataFormat format,
-      final Sample sample, final int fileIndex) {
+  DataFile getInputDataFile(final DataFormat format, final Sample sample,
+      final int fileIndex) {
 
     Preconditions.checkNotNull(format, "Format argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
@@ -343,6 +360,34 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.inputFormatLocations.get(format).getDataFile(sample, fileIndex);
   }
 
+  /**
+   * Get the file count for an input step of the step.
+   * @param format DataFormat of the input file
+   * @param sample sample sample that correspond to the file
+   * @param existingFiles if true return the number of files that really exists
+   *          otherwise the maximum of files.
+   * @return the count of intput DataFiles
+   */
+  int getInputDataFileCount(final DataFormat format, final Sample sample,
+      final boolean existingFiles) {
+
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+
+    if (!this.inputFormatLocations.containsKey(format))
+      throw new EoulsanRuntimeException("The "
+          + format.getFormatName()
+          + " format is not an input format of the step " + getId());
+
+    return this.inputFormatLocations.get(format).getDataFileCount(sample,
+        existingFiles);
+  }
+
+  /**
+   * Get the step that provided (as output) the input format of the step.
+   * @param format the format to search
+   * @return the step that provide the format as output
+   */
   protected AbstractWorkflowStep getInputDataFormatStep(final DataFormat format) {
 
     Preconditions.checkNotNull(format, "format cannot be null");
@@ -353,11 +398,21 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.inputFormatLocations.get(format).step;
   }
 
+  /**
+   * Test if a dependency is already set for an inputFormat.
+   * @param format input format
+   * @return true if the dependency is already set
+   */
   protected boolean isDependencySet(DataFormat format) {
 
     return this.inputFormatLocations.containsKey(format);
   }
 
+  /**
+   * Add a dependency for this step.
+   * @param format input format provided by the dependency
+   * @param step the dependency
+   */
   protected void addDependency(DataFormat format,
       final AbstractWorkflowStep step) {
 
@@ -377,6 +432,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     addDependency(step);
   }
 
+  /**
+   * Add a dependency for this step.
+   * @param step the dependency
+   */
   protected void addDependency(final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(step, "step  argument cannot be null");
@@ -394,6 +453,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   // Step lifetime methods
   //
 
+  /**
+   * Update the status of the step to READY if all the dependency of this step
+   * are in DONE state.
+   */
   private void updateStatus() {
 
     for (AbstractWorkflowStep step : this.requieredSteps)
@@ -455,7 +518,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return result;
   }
 
+  /**
+   * Run checker (runs only for Design step).
+   * @return a StepResult object
+   */
   private StepResult runCheckers() {
+
+    // This method can only works with design step
+    if (getType() != DESIGN_STEP)
+      return null;
 
     // Get the input files of the workflow
     final Set<WorkflowStepOutputDataFile> files =
@@ -510,37 +581,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return new StepResult(context, true, "");
   }
 
-  public void info() {
-
-    System.out.println("Id: " + getId());
-    System.out.print("Type: " + getType());
-
-    if (getType() == StepType.STANDARD_STEP
-        || getType() == StepType.GENERATOR_STEP) {
-      System.out.println("Step name: " + getStep().getName());
-      System.out.println("Inputs:");
-      for (Map.Entry<DataFormat, InputDataFileLocation> e : this.inputFormatLocations
-          .entrySet()) {
-        System.out.println("\t" + e.getValue());
-      }
-      for (DataFormat e : getOutputDataFormats()) {
-        System.out.println("\t" + e);
-      }
-    }
-    System.out.println();
-  }
-
-  public void printDeps() {
-
-    System.out.println(getId());
-    for (AbstractWorkflowStep s : this.requieredSteps)
-      System.out.println("\t" + s.getId());
-  }
-
   //
   // Constructor
   //
 
+  /**
+   * Constructor that create a step with nothing to execute like ROOT_STEP,
+   * DESIGN_STEP and FIRST_STEP.
+   * @param workflow the workflow of the step
+   * @param type the type of the step
+   */
   public AbstractWorkflowStep(final AbstractWorkflow workflow,
       final StepType type) {
 
@@ -589,6 +639,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow.register(this);
   }
 
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param step Step object
+   * @param skip true to skip execution of the step
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
       final String id, final Step step, final boolean skip,
       final Set<Parameter> parameters) throws EoulsanException {

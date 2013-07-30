@@ -35,6 +35,11 @@ import fr.ens.transcriptome.eoulsan.core.StepService;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
+/**
+ * This class define a step based on a Command object (parameter file).
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public class CommandWorkflowStep extends AbstractWorkflowStep {
 
   /** Logger */
@@ -109,6 +114,12 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
   // Constructors
   //
 
+  /**
+   * Constructor that create a step with nothing to execute like ROOT_STEP,
+   * DESIGN_STEP and FIRST_STEP.
+   * @param workflow the workflow of the step
+   * @param type the type of the step
+   */
   public CommandWorkflowStep(final AbstractWorkflow workflow,
       final StepType type) {
 
@@ -128,6 +139,15 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
     super(workflow, format);
   }
 
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param step Step object
+   * @param skip true to skip execution of the step
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
   public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
       final String stepName, final Set<Parameter> stepParameters,
       final boolean skip) throws EoulsanException {

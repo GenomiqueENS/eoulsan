@@ -26,8 +26,18 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
+/**
+ * This interface allow to process the result of a step while executing the
+ * workflow.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public interface WorkflowStepResultProcessor {
 
+  /**
+   * Process step result.
+   * @param result result to process
+   */
   void processResult(StepResult result);
-  
+
 }

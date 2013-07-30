@@ -26,13 +26,9 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -41,13 +37,11 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
- * This class define an simple ExecutorInfo.
+ * This class define the context implementation.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -74,8 +68,6 @@ public final class WorkflowContext implements Context {
   private AbstractWorkflowStep step;
 
   private long contextCreationTime;
-
-  private final Map<DataFormat, String> dataFormatsFields = Maps.newHashMap();
 
   //
   // Getters
@@ -299,27 +291,6 @@ public final class WorkflowContext implements Context {
     this.step = step;
   }
 
-  /**
-   * Set the design.
-   * @param design design to set
-   */
-  public void setDesign(final Design design) {
-
-    if (design == null)
-      return;
-
-    final List<String> fieldnames = design.getMetadataFieldsNames();
-    DataFormatRegistry registry = DataFormatRegistry.getInstance();
-
-    for (String fieldname : fieldnames) {
-
-      DataFormat dt = registry.getDataFormatForDesignField(fieldname);
-      if (dt != null)
-        this.dataFormatsFields.put(dt, fieldname);
-    }
-
-  }
-
   //
   // Other methods
   //
@@ -378,67 +349,69 @@ public final class WorkflowContext implements Context {
   }
 
   @Override
-  public String getInputDataFilename(final DataFormat df, final Sample sample) {
+  public String getInputDataFilename(final DataFormat format,
+      final Sample sample) {
 
-    return this.step.getInputDataFile(df, sample).getSource();
+    return this.step.getInputDataFile(format, sample).getSource();
   }
 
   @Override
-  public String getInputDataFilename(final DataFormat df, final Sample sample,
-      final int fileIndex) {
+  public String getInputDataFilename(final DataFormat format,
+      final Sample sample, final int fileIndex) {
 
-    return this.step.getInputDataFile(df, sample, fileIndex).getSource();
+    return this.step.getInputDataFile(format, sample, fileIndex).getSource();
   }
 
   @Override
-  public DataFile getInputDataFile(final DataFormat df, final Sample sample) {
+  public DataFile getInputDataFile(final DataFormat format, final Sample sample) {
 
-    return this.step.getInputDataFile(df, sample);
+    return this.step.getInputDataFile(format, sample);
   }
 
   @Override
-  public DataFile getInputDataFile(final DataFormat df, final Sample sample,
-      final int fileIndex) {
+  public DataFile getInputDataFile(final DataFormat format,
+      final Sample sample, final int fileIndex) {
 
-    return this.step.getInputDataFile(df, sample, fileIndex);
+    return this.step.getInputDataFile(format, sample, fileIndex);
   }
 
   @Override
-  public int getInputDataFileCount(final DataFormat df, final Sample sample) {
+  public int getInputDataFileCount(final DataFormat format, final Sample sample) {
 
-    return this.step.getInputDataFileCount(df, sample, true);
+    return this.step.getInputDataFileCount(format, sample, true);
   }
 
   @Override
-  public String getOutputDataFilename(final DataFormat df, final Sample sample) {
+  public String getOutputDataFilename(final DataFormat format,
+      final Sample sample) {
 
-    return this.step.getOutputDataFile(df, sample).getSource();
+    return this.step.getOutputDataFile(format, sample).getSource();
   }
 
   @Override
-  public String getOutputDataFilename(final DataFormat df, final Sample sample,
-      final int fileIndex) {
+  public String getOutputDataFilename(final DataFormat format,
+      final Sample sample, final int fileIndex) {
 
-    return this.step.getOutputDataFile(df, sample, fileIndex).getSource();
+    return this.step.getOutputDataFile(format, sample, fileIndex).getSource();
   }
 
   @Override
-  public DataFile getOutputDataFile(final DataFormat df, final Sample sample) {
+  public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
-    return this.step.getOutputDataFile(df, sample);
+    return this.step.getOutputDataFile(format, sample);
   }
 
   @Override
-  public DataFile getOutputDataFile(final DataFormat df, final Sample sample,
-      final int fileIndex) {
+  public DataFile getOutputDataFile(final DataFormat format,
+      final Sample sample, final int fileIndex) {
 
-    return this.step.getOutputDataFile(df, sample, fileIndex);
+    return this.step.getOutputDataFile(format, sample, fileIndex);
   }
 
   @Override
-  public int getOutputDataFileCount(final DataFormat df, final Sample sample) {
+  public int getOutputDataFileCount(final DataFormat format, final Sample sample) {
 
-    return this.step.getOutputDataFileCount(df, sample, true);
+    return this.step.getOutputDataFileCount(format, sample, true);
   }
 
   //

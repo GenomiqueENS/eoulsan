@@ -44,6 +44,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
+/**
+ * This class define an output file of workflow set.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public final class WorkflowStepOutputDataFile implements
     Comparable<WorkflowStepOutputDataFile> {
 
@@ -57,26 +62,37 @@ public final class WorkflowStepOutputDataFile implements
   private final int fileIndex;
   private final boolean mayNotExist;
 
+  /**
+   * Get the workflow step that produced the file.
+   * @return the workflow step
+   */
   public AbstractWorkflowStep getStep() {
 
     return this.step;
   }
 
+  /**
+   * Get the format of the output
+   * @return the DataFormat of the output
+   */
   public DataFormat getFormat() {
 
     return this.format;
   }
 
+  /**
+   * Get the sample that produced the file.
+   * @return the Sample
+   */
   public Sample getSample() {
 
     return this.sample;
   }
 
-  public DataFile getDataFile() {
-
-    return this.file;
-  }
-
+  /**
+   * Get file index.
+   * @return the file index
+   */
   public int getFileIndex() {
 
     return this.fileIndex;
@@ -87,10 +103,27 @@ public final class WorkflowStepOutputDataFile implements
     return this.mayNotExist;
   }
 
+  /**
+   * Get the file as a DataFile.
+   * @return a DataFile
+   */
+  public DataFile getDataFile() {
+
+    return this.file;
+  }
+
   //
   // DataFile creation
   //
 
+  /**
+   * Create a new DataFile object from the step, format, sample and file index.
+   * @param step step of the file
+   * @param format format of the file
+   * @param sample sample of the file
+   * @param fileIndex file index of the file for multifile data
+   * @return a new DataFile object
+   */
   private static final DataFile newDataFile(final AbstractWorkflowStep step,
       final DataFormat format, final Sample sample, final int fileIndex) {
 
@@ -126,6 +159,13 @@ public final class WorkflowStepOutputDataFile implements
 
   }
 
+  /**
+   * Get the field values in the design for a format and a sample.
+   * @param design design object
+   * @param format format of the file
+   * @param sample sample of the file
+   * @return a list with the values in the design
+   */
   private static final List<String> getDesignValues(final Design design,
       final DataFormat format, final Sample sample) {
 
@@ -142,6 +182,14 @@ public final class WorkflowStepOutputDataFile implements
     return sample.getMetadata().getFieldAsList(designFieldName);
   }
 
+  /**
+   * Create a new DataFile object defined in the design.
+   * @param fieldValues field values in the design
+   * @param format format of the file
+   * @param sample sample of the file
+   * @param fileIndex file index of the file for multifile data
+   * @return a new DataFile object
+   */
   private static final DataFile newDesignDataFile(
       final List<String> fieldValues, final DataFormat format,
       final Sample sample, final int fileIndex) {
@@ -162,16 +210,16 @@ public final class WorkflowStepOutputDataFile implements
   }
 
   /**
-   * Create a DataFile object that correspond to a standard Eoulsan input file
+   * Create a DataFile object that correspond to a standard Eoulsan output file.
    * @param context context object
-   * @param wStep step
-   * @param format format
-   * @param sample sample
-   * @param fileIndex file index for multifile data
-   * @return a new Datafile object
+   * @param step step that generated the file
+   * @param format format of the file
+   * @param sample sample of the file
+   * @param fileIndex file index of the file for multifile data
+   * @return a new DataFile object
    */
   private static final DataFile newStandardDataFile(final Context context,
-      final WorkflowStep wStep, final DataFormat format, final Sample sample,
+      final WorkflowStep step, final DataFormat format, final Sample sample,
       final int fileIndex) {
 
     final StringBuilder sb = new StringBuilder();
@@ -184,7 +232,7 @@ public final class WorkflowStepOutputDataFile implements
     }
 
     // Set the name of the step that generated the file
-    sb.append(wStep.getId());
+    sb.append(step.getId());
     sb.append('_');
 
     // Set the name of the format
@@ -273,9 +321,19 @@ public final class WorkflowStepOutputDataFile implements
   }
 
   //
-  // static method
+  // Static method
   //
 
+  /**
+   * Get the count of files that exists for a step, a format and sample (case of
+   * multifiles data).
+   * @param step step that generated the file
+   * @param format format of the file
+   * @param sample sample of the file
+   * @param existingFiles true if existence of file must be tested. If false the
+   *          return value will be the maximum number files
+   * @return the number of files
+   */
   public static final int dataFileCount(final WorkflowStep step,
       final DataFormat format, final Sample sample, final boolean existingFiles) {
 
@@ -324,12 +382,25 @@ public final class WorkflowStepOutputDataFile implements
   // Constructor
   //
 
+  /**
+   * Constructor.
+   * @param step step that create the file
+   * @param format format of the file
+   * @param sample sample of the file
+   */
   public WorkflowStepOutputDataFile(final AbstractWorkflowStep step,
       final DataFormat format, final Sample sample) {
 
     this(step, format, sample, -1);
   }
 
+  /**
+   * Constructor.
+   * @param step step that create the file
+   * @param format format of the file
+   * @param sample sample of the file
+   * @param fileIndex file index of the file for multifile data
+   */
   public WorkflowStepOutputDataFile(final AbstractWorkflowStep step,
       final DataFormat format, final Sample sample, final int fileIndex) {
 

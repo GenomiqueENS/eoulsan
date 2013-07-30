@@ -51,6 +51,11 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
+/**
+ * This class define a workflow based on a Command object (parameter file).
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public class CommandWorkflow extends AbstractWorkflow {
 
   /** Logger */
@@ -63,37 +68,44 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   private final Command command;
 
-  private final CommandWorkflowStep rootStep;
-  private final CommandWorkflowStep designStep;
-  private final CommandWorkflowStep firstStep;
-
   private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
   //
   // Add steps
   //
 
-  private void addStep(final CommandWorkflowStep ws) throws EoulsanException {
+  /**
+   * Add a step.
+   * @param step step to add.
+   * @throws EoulsanException if an error occurs while adding a step
+   */
+  private void addStep(final CommandWorkflowStep step) throws EoulsanException {
 
-    addStep(-1, ws);
+    addStep(-1, step);
   }
 
-  private void addStep(final int pos, final CommandWorkflowStep ws)
+  /**
+   * Add a step.
+   * @param pos position of the step in list of steps.
+   * @param step step to add.
+   * @throws EoulsanException if an error occurs while adding a step
+   */
+  private void addStep(final int pos, final CommandWorkflowStep step)
       throws EoulsanException {
 
-    if (ws == null)
+    if (step == null)
       throw new EoulsanException("Cannot add null step");
 
-    final String stepId = ws.getId();
+    final String stepId = step.getId();
 
     if (stepId == null)
       throw new EoulsanException("Cannot add a step with null id");
 
-    if (ws.getType() != GENERATOR_STEP && this.stepsIds.contains(stepId))
+    if (step.getType() != GENERATOR_STEP && this.stepsIds.contains(stepId))
       throw new EoulsanException(
           "Cannot add step because it already had been added: " + stepId);
 
-    if (ws.getType() == STANDARD_STEP || ws.getType() == GENERATOR_STEP) {
+    if (step.getType() == STANDARD_STEP || step.getType() == GENERATOR_STEP) {
       for (StepType t : StepType.values()) {
         if (t.name().equals(stepId))
           throw new EoulsanException("Cannot add a step with a reserved id: "
@@ -102,15 +114,15 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
 
     if (pos == -1)
-      this.steps.add(ws);
+      this.steps.add(step);
     else
-      this.steps.add(pos, ws);
+      this.steps.add(pos, step);
 
     this.stepsIds.add(stepId);
   }
 
   /**
-   * Create the list of steps
+   * Create the list of steps.
    * @throws EoulsanException if an error occurs while creating the step
    */
   private void addMainSteps() throws EoulsanException {
@@ -149,13 +161,13 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
 
     // Add the first step. Generators cannot be added after this step
-    addStep(0, this.firstStep);
+    addStep(0, new CommandWorkflowStep(this, StepType.FIRST_STEP));
 
     // Add the design step
-    addStep(0, this.designStep);
+    addStep(0, new CommandWorkflowStep(this, StepType.DESIGN_STEP));
 
-    // Add the design step
-    addStep(0, this.rootStep);
+    // Add the root step
+    addStep(0, new CommandWorkflowStep(this, StepType.ROOT_STEP));
   }
 
   /**
@@ -178,7 +190,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
-   * Initialize the steps of the Workflow
+   * Initialize the steps of the Workflow.
    * @throws EoulsanException if an error occurs while creating the step
    */
   private void init() throws EoulsanException {
@@ -199,6 +211,10 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
   }
 
+  /**
+   * Get the format provided by the design file.
+   * @return a Set with the DataFormat
+   */
   private Set<DataFormat> getDesignDataFormats() {
 
     final Set<DataFormat> result = Sets.newHashSet();
@@ -216,6 +232,10 @@ public class CommandWorkflow extends AbstractWorkflow {
     return result;
   }
 
+  /**
+   * Search dependency between steps.
+   * @throws EoulsanException if an error occurs while search dependencies
+   */
   private void searchDependencies() throws EoulsanException {
 
     final Set<DataFormat> dataFormatsFromDesign = getDesignDataFormats();
@@ -299,6 +319,9 @@ public class CommandWorkflow extends AbstractWorkflow {
     removeDuplicateGenerators();
   }
 
+  /**
+   * Remove duplicate generators.
+   */
   private void removeDuplicateGenerators() {
 
     Set<String> generatorNames = Sets.newHashSet();
@@ -356,7 +379,13 @@ public class CommandWorkflow extends AbstractWorkflow {
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
 
-  private WorkflowFiles listStepsFiles(final WorkflowStep firstStep) {
+  /**
+   * List the files (input files, output files and resused files) of the
+   * workflow from a given step.
+   * @param originStep origin step from which files must be searched
+   * @return a WorkflowFile object
+   */
+  private WorkflowFiles listStepsFiles(final WorkflowStep originStep) {
 
     final Set<WorkflowStepOutputDataFile> inFiles = Sets.newHashSet();
     final Set<WorkflowStepOutputDataFile> reusedFiles = Sets.newHashSet();
@@ -368,7 +397,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       if (!firstStepFound) {
 
-        if (step == firstStep)
+        if (step == originStep)
           firstStepFound = true;
         else
           continue;
@@ -456,20 +485,6 @@ public class CommandWorkflow extends AbstractWorkflow {
   // Workflow methods
   //
 
-  public WorkflowStep getFirstStep() {
-
-    return this.firstStep;
-  }
-
-  /**
-   * Get the first steps of the workflow.
-   * @return a set with the first steps the workflow
-   */
-  public WorkflowStep getRootStep() {
-
-    return this.rootStep;
-  }
-
   @Override
   public WorkflowFiles getWorkflowFilesAtRootStep() {
 
@@ -486,6 +501,14 @@ public class CommandWorkflow extends AbstractWorkflow {
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   * @param command Command object with the content of the parameter file
+   * @param firstSteps optional steps to add at the beginning of the workflow
+   * @param endSteps optional steps to add at the end of the workflow
+   * @param design Design to use with the workflow
+   * @throws EoulsanException
+   */
   public CommandWorkflow(final Command command, final List<Step> firstSteps,
       final List<Step> endSteps, final Design design) throws EoulsanException {
 
@@ -493,15 +516,6 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     if (command == null)
       throw new NullPointerException("The command is null.");
-
-    // Define the root step
-    this.rootStep = new CommandWorkflowStep(this, StepType.ROOT_STEP);
-
-    // Define the design step
-    this.designStep = new CommandWorkflowStep(this, StepType.DESIGN_STEP);
-
-    // Define the first step
-    this.firstStep = new CommandWorkflowStep(this, StepType.FIRST_STEP);
 
     this.command = command;
 

@@ -24,40 +24,67 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.util.Collections;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
+/**
+ * This class define objects that contains the input files, the output files and
+ * the reused files of a Workflow.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public final class WorkflowFiles {
 
   private final Set<WorkflowStepOutputDataFile> inFiles;
   private final Set<WorkflowStepOutputDataFile> reusedFiles;
   private final Set<WorkflowStepOutputDataFile> outFiles;
 
+  /**
+   * Get the input files of a workflow.
+   * @return an unmodifiable set that contains the input files
+   */
   public Set<WorkflowStepOutputDataFile> getInputFiles() {
 
-    return this.inFiles;
+    return Collections.unmodifiableSet(this.inFiles);
   }
 
+  /**
+   * Get the reused files of a workflow.
+   * @return an unmodifiable set that contains the reused files
+   */
   public Set<WorkflowStepOutputDataFile> getReusedFiles() {
 
-    return this.reusedFiles;
+    return Collections.unmodifiableSet(this.reusedFiles);
   }
 
+  /**
+   * Get the output files of a workflow.
+   * @return an unmodifiable set that contains the output files
+   */
   public Set<WorkflowStepOutputDataFile> getOutputFiles() {
 
-    return this.outFiles;
+    return Collections.unmodifiableSet(this.outFiles);
   }
 
   //
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   * @param inFiles input files of the workflow
+   * @param reusedFiles reused files of the workflow
+   * @param outFiles output files of the workflow
+   */
   public WorkflowFiles(final Set<WorkflowStepOutputDataFile> inFiles,
       final Set<WorkflowStepOutputDataFile> reusedFiles,
       final Set<WorkflowStepOutputDataFile> outFiles) {
 
-    this.inFiles = inFiles;
-    this.reusedFiles = reusedFiles;
-    this.outFiles = outFiles;
+    this.inFiles = Sets.newHashSet(inFiles);
+    this.reusedFiles = Sets.newHashSet(reusedFiles);
+    this.outFiles = Sets.newHashSet(outFiles);
   }
 
 }
