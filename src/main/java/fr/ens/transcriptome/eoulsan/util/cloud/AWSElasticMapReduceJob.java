@@ -47,7 +47,7 @@ import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 import com.amazonaws.services.elasticmapreduce.util.StepFactory;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**
  * This class define an AWS Elastic MapReduce job.
@@ -57,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public class AWSElasticMapReduceJob {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final int MAX_FAIL_COUNT = 5;
 

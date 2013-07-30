@@ -32,8 +32,8 @@ import com.amazonaws.services.ec2.model.InstanceType;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceJob;
 public class AWSElasticMapReduceExecStep extends AbstractStep {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final int COUNTDOWN_START = 30;
 

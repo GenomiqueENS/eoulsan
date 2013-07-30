@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -66,7 +67,7 @@ public abstract class AbstractSequenceReadsMapper implements
     SequenceReadsMapper {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();

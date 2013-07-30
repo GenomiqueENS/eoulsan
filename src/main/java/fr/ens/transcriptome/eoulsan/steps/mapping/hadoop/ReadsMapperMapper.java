@@ -49,6 +49,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -71,7 +72,7 @@ import fr.ens.transcriptome.eoulsan.util.locker.TicketLocker;
 public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String HADOOP_TEMP_DIR = "hadoop.tmp.dir";
 
@@ -153,7 +154,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set the mapper
     this.mapper =
-        SequenceReadsMapperService.getInstance().getMapper(mapperName);
+        SequenceReadsMapperService.getInstance().newService(mapperName);
 
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

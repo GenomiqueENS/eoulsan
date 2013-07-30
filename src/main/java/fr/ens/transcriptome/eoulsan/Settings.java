@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +36,6 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -48,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public final class Settings {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAIN_PREFIX_KEY = "main.";
   private final Properties properties = new Properties();
@@ -680,6 +678,18 @@ public final class Settings {
    */
   public void setSetting(final String settingName, final String settingValue) {
 
+    setSetting(settingName, settingValue, true);
+  }
+
+  /**
+   * Set a setting value.
+   * @param settingName name of the setting to set
+   * @param settingValue value of the setting to set
+   * @param logChange if true the change will be logged
+   */
+  public void setSetting(final String settingName, final String settingValue,
+      final boolean logChange) {
+
     if (settingName == null || settingValue == null) {
       return;
     }
@@ -691,16 +701,18 @@ public final class Settings {
     }
 
     if ("main.accesskey".equals(key)) {
-      setSetting(AWS_ACCESS_KEY, settingValue);
+      setSetting(AWS_ACCESS_KEY, settingValue, logChange);
       return;
     }
 
     if ("main.awssecretkey".equals(key)) {
-      setSetting(AWS_SECRET_KEY, settingValue);
+      setSetting(AWS_SECRET_KEY, settingValue, logChange);
       return;
     }
 
     this.properties.setProperty(key, settingValue);
+    if (logChange)
+      logSetting(key);
   }
 
   //
@@ -824,20 +836,6 @@ public final class Settings {
 
   private void init() {
 
-    LOGGER.info(Globals.WELCOME_MSG);
-
-    final Main main = Main.getInstance();
-
-    // Show show command line information
-    if (main != null) {
-      LOGGER
-          .info(Globals.APP_NAME
-              + " command line arguments: "
-              + StringUtils.join(main.getArgs(), " "));
-      LOGGER.fine(Globals.APP_NAME
-          + " command line arguments: " + Arrays.toString(main.getArgs()));
-    }
-
     LOGGER.info("System temp directory: "
         + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));
@@ -848,17 +846,20 @@ public final class Settings {
    */
   public void logSettings() {
 
-    for (Object key : properties.keySet()) {
+    for (Object key : properties.keySet())
+      logSetting((String) key);
+  }
 
-      final String sKey = (String) key;
-      final String sValue = properties.getProperty(sKey);
+  /**
+   * Log a setting value.
+   * @param key key to log
+   */
+  private void logSetting(final String key) {
 
-      if (OBFUSCATED_KEYS.contains(sKey))
-        LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
-      else
-        LOGGER.info("Setting: " + sKey + "=" + sValue);
-    }
-
+    if (OBFUSCATED_KEYS.contains(key))
+      LOGGER.info("Setting: " + key + "=xxxx value not shown xxxx");
+    else
+      LOGGER.info("Setting: " + key + "=" + properties.getProperty(key));
   }
 
   /**

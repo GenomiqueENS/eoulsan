@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -45,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public final class WorkflowContext implements Context {
+public class WorkflowContext implements Context {
 
   /** Logger. */
   protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
@@ -420,19 +421,64 @@ public final class WorkflowContext implements Context {
 
   /**
    * Public constructor.
+   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
    */
-  public WorkflowContext() {
+  public WorkflowContext(final long millisSinceEpoch,
+      final String jobDescription, final String jobEnvironment) {
 
-    this(System.currentTimeMillis());
+    createExecutionName(millisSinceEpoch);
+    this.host = SystemUtils.getHostName();
+    this.jobDescription = jobDescription == null ? "" : jobDescription;
+    this.jobEnvironment = jobEnvironment == null ? "" : jobEnvironment;
   }
 
   /**
-   * Public constructor.
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
+   * Constructor for a standard local job.
+   * @param designFile design file
+   * @param paramFile parameter file
+   * @param jobDescription job description
    */
-  public WorkflowContext(final long millisSinceEpoch) {
-    createExecutionName(millisSinceEpoch);
-    this.host = SystemUtils.getHostName();
+  public WorkflowContext(final File designFile, final File paramFile,
+      final String jobDescription) {
+
+    this(designFile, paramFile, jobDescription, null);
+  }
+
+  /**
+   * Constructor for a standard local job.
+   * @param designFile design file
+   * @param paramFile parameter file
+   * @param jobDescription job description
+   * @param jobEnvironment job environment
+   */
+  public WorkflowContext(final File designFile, final File paramFile,
+      final String jobDescription, final String jobEnvironment) {
+
+    this(System.currentTimeMillis(), jobDescription, jobEnvironment);
+
+    // Set the base path
+    setBasePathname(designFile.getAbsoluteFile().getParentFile()
+        .getAbsolutePath());
+
+    // Set the design path
+    setDesignPathname(designFile.getAbsolutePath());
+
+    // Set the parameter path
+    setParameterPathname(paramFile.getAbsolutePath());
+
+    final File logDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + getJobId());
+
+    final File outputDir =
+        new File(designFile.getAbsoluteFile().getParent().toString()
+            + "/" + getJobId());
+
+    // Set the output path
+    setOutputPathname(outputDir.getAbsolutePath());
+
+    // Set the log path
+    setLogPathname(logDir.getAbsolutePath());
   }
 
 }

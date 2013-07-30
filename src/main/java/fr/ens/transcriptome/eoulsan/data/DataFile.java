@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class DataFile implements Comparable<DataFile> {
 
   /** Logger. */
-  private static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** The separator char ('/'). */
   public static final char separatorChar = '/';
@@ -363,10 +363,10 @@ public class DataFile implements Comparable<DataFile> {
     if (protocolPrefixInSource == null)
       this.protocol = registery.getDefaultProtocol();
     else
-      this.protocol = registery.getProtocol(protocolPrefixInSource);
+      this.protocol = registery.newService(protocolPrefixInSource);
 
     if (this.protocol == null) {
-      logger.severe("Unknown protocol: \""
+      LOGGER.severe("Unknown protocol: \""
           + protocolPrefixInSource + "\", can't set protocol for DataFile.");
       this.unknownProtocolName = protocolPrefixInSource;
     }

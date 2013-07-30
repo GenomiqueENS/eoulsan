@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a ReadFilter.
  * @since 1.1
  * @author Laurent Jourdren
  */
-public class ReadFilterService {
+public class ReadFilterService extends ServiceNameLoader<ReadFilter> {
 
   private static ReadFilterService service;
 
@@ -54,35 +53,19 @@ public class ReadFilterService {
   }
 
   //
-  // Instance methods
+  // Protected methods
   //
 
-  /**
-   * Get a ReadFilter object.
-   * @param readFilterName name of the filter to get
-   * @return an Action
-   */
-  public ReadFilter getReadFilter(final String readFilterName) {
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    if (readFilterName == null) {
-      return null;
-    }
+    return true;
+  }
 
-    final String actionNameLower = readFilterName.toLowerCase();
+  @Override
+  protected String getMethodName() {
 
-    final Iterator<ReadFilter> it =
-        ServiceLoader.load(ReadFilter.class).iterator();
-
-    while (it.hasNext()) {
-
-      final ReadFilter filter = it.next();
-
-      if (actionNameLower.equals(filter.getName().toLowerCase())) {
-        return filter;
-      }
-    }
-
-    return null;
+    return "getName";
   }
 
   //
@@ -93,6 +76,7 @@ public class ReadFilterService {
    * Private constructor.
    */
   private ReadFilterService() {
+    super(ReadFilter.class);
   }
 
 }

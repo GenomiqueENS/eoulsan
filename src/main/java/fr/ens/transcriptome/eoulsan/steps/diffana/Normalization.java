@@ -46,6 +46,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -64,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
 public class Normalization {
 
   /** Logger. */
-  protected static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   protected static final String TARGET_CREATION = "/targetCreation.Rnw";
   protected static final String NORMALIZATION_FUNCTIONS =
@@ -96,10 +97,10 @@ public class Normalization {
   public void run(final Context context) throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Normalization : Rserve mode");
+      LOGGER.info("Normalization : Rserve mode");
       runRserveRnwScript(context);
     } else {
-      getLogger().info("Normalization : local mode");
+      LOGGER.info("Normalization : local mode");
       runLocalRnwScript(context);
     }
   }
@@ -111,14 +112,6 @@ public class Normalization {
    */
   protected RSConnectionNewImpl getRConnection() {
     return this.rConnection;
-  }
-
-  /**
-   * get Logger
-   * @return LOGGER
-   */
-  static protected Logger getLogger() {
-    return LOGGER;
   }
 
   /**
@@ -151,8 +144,7 @@ public class Normalization {
     try {
 
       // print log info
-      getLogger().info(
-          "Rserve server name : " + getRConnection().getServerName());
+      LOGGER.info("Rserve server name : " + getRConnection().getServerName());
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
@@ -163,9 +155,8 @@ public class Normalization {
         String cle = itr.next();
         List<Sample> experimentSampleList = experiments.get(cle);
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        LOGGER.info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
 
         putExpressionFiles(experimentSampleList);
 
@@ -218,9 +209,8 @@ public class Normalization {
         String cle = itr.next();
         List<Sample> experimentSampleList = experiments.get(cle);
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        LOGGER.info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
 
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);

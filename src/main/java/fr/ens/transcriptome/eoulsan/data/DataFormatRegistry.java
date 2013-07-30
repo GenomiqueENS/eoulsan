@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class DataFormatRegistry {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldataformats/";
 
@@ -83,6 +83,35 @@ public class DataFormatRegistry {
 
     if (df == null || formats.contains(df))
       return;
+
+    check(df, callFromConstructor);
+
+    for (String suffix : df.getExtensions()) {
+
+      final String prefix = df.getPrefix();
+      final String key = prefix + "\t" + suffix;
+
+      formats.add(df);
+      this.mapFormats.put(key, df);
+    }
+  }
+
+  /**
+   * Register DataFormats.
+   * @param array Array with DataFormats to register
+   * @throws EoulsanException if the DataFormat is not valid
+   */
+  public void register(final DataFormat[] array) throws EoulsanException {
+
+    if (array == null)
+      return;
+
+    for (DataFormat df : array)
+      register(df);
+  }
+
+  private void check(final DataFormat df, final boolean callFromConstructor)
+      throws EoulsanException {
 
     if (df.getFormatName() == null)
       throw new EoulsanException("The DataFormat "
@@ -128,7 +157,7 @@ public class DataFormatRegistry {
 
     boolean defaultExtensionFound = false;
 
-    for (String suffix : extensions) {
+    for (String suffix : df.getExtensions()) {
 
       if (suffix == null)
         throw new EoulsanException(
@@ -160,25 +189,13 @@ public class DataFormatRegistry {
 
       formats.add(df);
       this.mapFormats.put(key, df);
+
     }
 
     if (!defaultExtensionFound)
       throw new EoulsanException("The default extension of DataFormat \""
           + df.getFormatName() + "\" is not in the list of extensions.");
-  }
 
-  /**
-   * Register DataFormats.
-   * @param array Array with DataFormats to register
-   * @throws EoulsanException if the DataFormat is not valid
-   */
-  public void register(final DataFormat[] array) throws EoulsanException {
-
-    if (array == null)
-      return;
-
-    for (DataFormat df : array)
-      register(df);
   }
 
   /**
@@ -329,6 +346,63 @@ public class DataFormatRegistry {
     return null;
   }
 
+  /**
+   * Register all type defines by classes.
+   */
+  private void registerAllClassServices() {
+
+    final Iterator<DataFormat> it =
+        ServiceLoader.load(DataFormat.class).iterator();
+
+    for (final DataFormat df : Utils.newIterable(it)) {
+
+      try {
+
+        LOGGER.fine("try to register format: " + df);
+        register(df, true);
+
+      } catch (EoulsanException e) {
+        LOGGER.warning("Connot register "
+            + df.getFormatName() + ": " + e.getMessage());
+      }
+    }
+  }
+
+  /**
+   * Register all type defines by XML files.
+   */
+  private void registerAllXMLServices() {
+
+    // Get the classloader
+    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+    try {
+      for (String filename : ServiceListLoader.load(XMLDataFormat.class
+          .getName())) {
+
+        final String resource = RESOURCE_PREFIX + filename;
+        LOGGER.fine("Try to register an XML dataformat from "
+            + filename + " resource");
+
+        register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
+      }
+    } catch (EoulsanException e) {
+      LOGGER.severe("Cannot register XML data format: " + e.getMessage());
+    } catch (IOException e) {
+      LOGGER.severe("Unable to load the list of XML data format files: "
+          + e.getMessage());
+    }
+  }
+
+  /**
+   * Reload the list of the available data types.
+   */
+  public void reload() {
+
+    registerAllClassServices();
+    registerAllXMLServices();
+  }
+
   //
   // Static method
   //
@@ -354,43 +428,7 @@ public class DataFormatRegistry {
    */
   private DataFormatRegistry() {
 
-    final Iterator<DataFormat> it =
-        ServiceLoader.load(DataFormat.class).iterator();
-
-    for (final DataFormat df : Utils.newIterable(it)) {
-
-      try {
-
-        LOGGER.fine("try to register format: " + df);
-        register(df, true);
-
-      } catch (EoulsanException e) {
-        LOGGER.warning("Connot register "
-            + df.getFormatName() + ": " + e.getMessage());
-      }
-    }
-
-    // Get the classloader
-    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-    try {
-      for (String filename : ServiceListLoader.load(XMLDataFormat.class
-          .getName())) {
-
-        final String resource = RESOURCE_PREFIX + filename;
-        LOGGER.fine("Try to register an XML dataformat from "
-            + filename + " resource");
-
-        register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
-
-      }
-    } catch (EoulsanException e) {
-      LOGGER.severe("Cannot register XML data format: " + e.getMessage());
-    } catch (IOException e) {
-      LOGGER.severe("Unable to load the list of XML data format files: "
-          + e.getMessage());
-    }
-
+    reload();
   }
 
 }

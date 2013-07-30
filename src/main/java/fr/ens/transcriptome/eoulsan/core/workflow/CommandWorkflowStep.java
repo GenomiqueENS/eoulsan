@@ -102,7 +102,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
     final String lower = stepName.trim().toLowerCase();
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
-    final Step result = StepService.getInstance(hadoopMode).getStep(lower);
+    final Step result = StepService.getInstance(hadoopMode).newService(lower);
 
     if (result == null)
       throw new EoulsanException("Unknown step: " + lower);

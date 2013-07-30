@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
@@ -48,7 +48,8 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
-  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME = "removeambiguouscases";
+  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+      "removeambiguouscases";
 
   private static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
 
@@ -57,7 +58,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private static final String COUNTER_PARAMETER_NAME = "counter";
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
@@ -224,7 +225,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
       counterName = "eoulsanCounter";
 
     this.counter =
-        ExpressionCounterService.getInstance().getCounter(counterName);
+        ExpressionCounterService.getInstance().newService(counterName);
 
     if (this.counter == null) {
       throw new EoulsanException("Unknown counter: " + counterName);

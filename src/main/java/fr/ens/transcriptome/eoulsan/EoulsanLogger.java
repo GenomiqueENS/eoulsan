@@ -1,0 +1,69 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
+package fr.ens.transcriptome.eoulsan;
+
+import java.util.logging.Logger;
+
+/**
+ * This class allow to change the logger name for all Eoulsan classes. The
+ * setLoggetName() method must be called before any other Eoulsan method.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
+public class EoulsanLogger {
+
+  private static String loggerName = Globals.APP_NAME;
+
+  /**
+   * Get the logger object.
+   * @return a logger object for Eoulsan
+   */
+  public static Logger getLogger() {
+
+    return Logger.getLogger(loggerName);
+  }
+
+  /**
+   * Set the logger name.
+   * @param newLoggerName the new logger name
+   */
+  public static void setLoggerName(final String newLoggerName) {
+
+    if (newLoggerName == null)
+      throw new NullPointerException("New logger name is null");
+
+    loggerName = newLoggerName;
+  }
+
+  /**
+   * Get the logger name.
+   * @return the logger name
+   */
+  public static String getLoggerName() {
+
+    return loggerName;
+  }
+
+}

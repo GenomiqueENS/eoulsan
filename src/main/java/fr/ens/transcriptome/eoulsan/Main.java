@@ -26,7 +26,8 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.FileHandler;
+import java.util.List;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,9 +40,13 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class is the main class. Check the environment, if Hadoop library is in
@@ -52,17 +57,21 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public abstract class Main {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static Main main;
+
+  private final String launchModeName;
 
   private String[] args;
   private Action action;
   private String[] actionArgs;
 
   private String logLevel;
-  private String log;
+  private String logFile;
   private String conf;
+
+  private final BufferedHandler handler = new BufferedHandler();
 
   //
   // Getters
@@ -83,7 +92,7 @@ public abstract class Main {
    */
   public String[] getArgs() {
 
-    return args;
+    return this.args;
   }
 
   /**
@@ -92,7 +101,7 @@ public abstract class Main {
    */
   public Action getAction() {
 
-    return action;
+    return this.action;
   }
 
   /**
@@ -101,7 +110,7 @@ public abstract class Main {
    */
   public String[] getActionArgs() {
 
-    return actionArgs;
+    return this.actionArgs;
   }
 
   /**
@@ -110,7 +119,7 @@ public abstract class Main {
    */
   public String getLogLevelArgument() {
 
-    return logLevel;
+    return this.logLevel;
   }
 
   /**
@@ -119,7 +128,7 @@ public abstract class Main {
    */
   public String getLogFileArgument() {
 
-    return log;
+    return this.logFile;
   }
 
   /**
@@ -128,8 +137,31 @@ public abstract class Main {
    */
   public String getConfigurationFileArgument() {
 
-    return conf;
+    return this.conf;
   }
+
+  /**
+   * Get the path to the launch script.
+   * @return the path to the launch script or null if no launch script has been
+   *         used
+   */
+  public String getLaunchScriptPath() {
+
+    return System.getProperty(Globals.LAUNCH_SCRIPT_PATH);
+  }
+
+  /**
+   * Get the launch mode of the application.
+   * @return the launch mode of the application
+   */
+  public String getLaunchMode() {
+
+    return this.launchModeName;
+  }
+
+  //
+  // Parsing methods
+  //
 
   /**
    * Show command line help.
@@ -191,10 +223,9 @@ public abstract class Main {
   /**
    * Parse the options of the command line
    * @param args command line arguments
+   * @return the number of options argument in the command line
    */
-  private void parseCommandLine(final String args[]) {
-
-    this.args = args;
+  private int parseCommandLine() {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -230,35 +261,21 @@ public abstract class Main {
       if (line.hasOption("log")) {
 
         argsOptions += 2;
-        try {
-          this.log = line.getOptionValue("log");
-          final Handler fh = new FileHandler(this.log);
-          fh.setFormatter(Globals.LOG_FORMATTER);
-          LOGGER.setLevel(Globals.LOG_LEVEL);
-          LOGGER.setUseParentHandlers(false);
-
-          LOGGER.addHandler(fh);
-        } catch (IOException e) {
-          Common.errorExit(e,
-              "Error while creating log file: " + e.getMessage());
-        }
+        this.logFile = line.getOptionValue("log");
       }
 
       // Set log level
       if (line.hasOption("loglevel")) {
 
         argsOptions += 2;
-        try {
-          this.logLevel = line.getOptionValue("loglevel");
-          LOGGER.setLevel(Level.parse(this.logLevel.toUpperCase()));
-        } catch (IllegalArgumentException e) {
+        this.logLevel = line.getOptionValue("loglevel");
+      }
 
-          LOGGER
-              .warning("Unknown log level ("
-                  + this.logLevel
-                  + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
+      // Set the configuration file
+      if (line.hasOption("conf")) {
 
-        }
+        argsOptions += 2;
+        this.conf = line.getOptionValue("conf");
       }
 
       // eoulsan.sh options
@@ -275,40 +292,6 @@ public abstract class Main {
         argsOptions += 2;
       }
 
-      // Load configuration if exists
-      try {
-
-        final Settings settings;
-
-        if (line.hasOption("conf")) {
-          this.conf = line.getOptionValue("conf");
-          settings = new Settings(new File(this.conf));
-          argsOptions += 2;
-        } else {
-
-          // Default configuration file
-          final File defaultConfFile =
-              new File(Settings.getConfigurationFilePath());
-
-          if (defaultConfFile.exists()) {
-
-            this.conf = defaultConfFile.getAbsolutePath();
-            settings = new Settings(defaultConfFile);
-          } else {
-            LOGGER.config("No configuration file found.");
-            settings = new Settings(false);
-          }
-        }
-
-        // Initialize the runtime
-        initializeRuntime(settings);
-
-      } catch (IOException e) {
-        Common.errorExit(e, "Error while reading configuration file.");
-      } catch (EoulsanException e) {
-        Common.errorExit(e, e.getMessage());
-      }
-
     } catch (ParseException e) {
       Common.errorExit(e,
           "Error while parsing parameter file: " + e.getMessage());
@@ -321,25 +304,12 @@ public abstract class Main {
           + " Use the -h option to get more information.\n");
     }
 
-    // Set action name and arguments
-    final String actionName = args[argsOptions].trim().toLowerCase();
-    this.actionArgs =
-        StringUtils.arrayWithoutFirstsElement(args, argsOptions + 1);
-
-    // Test if is in hadoop mode
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
-
-    // Search action
-    this.action = ActionService.getInstance().getAction(actionName);
-
-    // Action not found ?
-    if (this.action == null || hadoopMode != action.isHadoopJarMode()) {
-      Common.showErrorMessageAndExit("Unknown action: "
-          + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
-          + " -help for more help.\n");
-    }
-
+    return argsOptions;
   }
+
+  //
+  // Other methods
+  //
 
   /**
    * Get in a string with all arch
@@ -365,6 +335,190 @@ public abstract class Main {
     return sb.toString();
   }
 
+  private void startupLog() {
+
+    // Welcome message
+    LOGGER.info("Welcome to " + Globals.WELCOME_MSG);
+    LOGGER.info("Start in " + this.launchModeName + " mode");
+
+    // Show versions
+    LOGGER.info(Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
+    LOGGER.info(Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
+    LOGGER.info(Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
+
+    // Startup script
+    LOGGER.info(Globals.APP_NAME
+        + " Startup script: "
+        + (getLaunchScriptPath() == null
+            ? "(no startup script)" : getLaunchScriptPath()));
+
+    // Command line arguments
+    final List<String> args = Lists.newArrayList();
+    for (String a : getArgs())
+      if (a.indexOf(' ') != -1)
+        args.add("\"" + a + "\"");
+      else
+        args.add(a);
+
+    LOGGER.info(Globals.APP_NAME
+        + " Command line arguments: " + Joiner.on(' ').join(args));
+
+    // Log file
+    LOGGER
+        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
+
+    // Log level
+    LOGGER.info("Log level: " + LOGGER.getLevel());
+
+    // Log system information
+    sysInfoLog();
+  }
+
+  /**
+   * Log system information.
+   */
+  protected void sysInfoLog() {
+
+    // Host
+    LOGGER.info("Host: " + SystemUtils.getHostName());
+
+    // Operating system
+    LOGGER.info("Operating system name: " + System.getProperty("os.name"));
+    LOGGER
+        .info("Operating system version: " + System.getProperty("os.version"));
+    LOGGER.info("Operating system arch: " + System.getProperty("os.arch"));
+
+    // Java version
+    LOGGER.info("Java vendor: " + System.getProperty("java.vendor"));
+    LOGGER.info("Java vm name: " + System.getProperty("java.vm.name"));
+    LOGGER.info("Java version: " + System.getProperty("java.version"));
+  }
+
+  /**
+   * Load the configuration file if exists.
+   * @return a new Settings object
+   * @throws IOException if an error occurs while reading the configuration file
+   * @throws EoulsanException if an error occurs while reading the configuration
+   *           file
+   */
+  private Settings loadConfigurationFile() throws IOException, EoulsanException {
+
+    // Load the setting file if has been defined in command line
+    if (this.conf != null) {
+      return new Settings(new File(this.conf));
+    }
+
+    // Define the default configuration file
+    final File defaultConfFile = new File(Settings.getConfigurationFilePath());
+
+    // Test if default configuration file exists
+    if (defaultConfFile.exists()) {
+      this.conf = defaultConfFile.getAbsolutePath();
+      return new Settings(defaultConfFile);
+    }
+
+    LOGGER.config("No configuration file found.");
+    return new Settings(false);
+  }
+
+  /**
+   * Initialize the application logger.
+   */
+  private void initApplicationLogger() {
+
+    // Disable parent Handler
+    LOGGER.setUseParentHandlers(false);
+
+    // Set log level to all before setting the real log level with
+    // BufferedHandler
+    LOGGER.setLevel(Level.ALL);
+
+    // Add Buffered handler as unique Handler
+    LOGGER.addHandler(this.handler);
+
+    // Set the formatter
+    this.handler.setFormatter(Globals.LOG_FORMATTER);
+
+    // Set the log level
+    if (this.logLevel != null) {
+      try {
+        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase()));
+      } catch (IllegalArgumentException e) {
+        Common
+            .showErrorMessageAndExit("Unknown log level ("
+                + this.logLevel
+                + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
+      }
+    } else
+      this.handler.setLevel(Globals.LOG_LEVEL);
+
+    // Set the log file in arguments
+    if (this.logFile != null) {
+      try {
+        this.handler.addHandler(getLogHandler(this.logFile));
+      } catch (IOException e) {
+        Common.errorExit(e, "Error while creating log file: " + e.getMessage());
+      }
+    } else {
+
+      final ConsoleHandler ch = new ConsoleHandler();
+      this.handler.addHandler(ch);
+    }
+
+  }
+
+  /**
+   * Create a new log file and flush log.
+   * @param logFilename log file name
+   * @throws EoulsanException if an error occurs while creating log file
+   */
+  public void createLogFileAndFlushLog(final String logFilename)
+      throws EoulsanException {
+
+    try {
+      Handler h = getLogHandler(logFilename);
+      this.handler.addHandler(h);
+    } catch (IOException e) {
+
+      throw new EoulsanException(e.getMessage());
+    }
+
+    flushLog();
+  }
+
+  /**
+   * Flush log.
+   */
+  public void flushLog() {
+
+    this.handler.flush();
+  }
+
+  /**
+   * Parse the action name and arguments from command line.
+   * @param optionsCount number of options in the command line
+   */
+  private void parseAction(final int optionsCount) {
+
+    // Set action name and arguments
+    final String actionName = args[optionsCount].trim().toLowerCase();
+    this.actionArgs =
+        StringUtils.arrayWithoutFirstsElement(args, optionsCount + 1);
+
+    // Test if is in hadoop mode
+    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
+
+    // Search action
+    this.action = ActionService.getInstance().newService(actionName);
+
+    // Action not found ?
+    if (this.action == null || hadoopMode != action.isHadoopJarMode()) {
+      Common.showErrorMessageAndExit("Unknown action: "
+          + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
+          + " -help for more help.\n");
+    }
+  }
+
   //
   // Abstract methods
   //
@@ -381,17 +535,56 @@ public abstract class Main {
    */
   protected abstract String getHelpEoulsanCommand();
 
+  /**
+   * Get the Handler to create the log file.
+   * @param logFile the path to the log file
+   * @return a new Handler object
+   * @throws IOException if an exception occurs while creating the handler
+   */
+  protected abstract Handler getLogHandler(final String logFile)
+      throws IOException;
+
   //
   // Constructor
   //
 
   /**
    * Constructor.
-   * @param args command line arguments
+   * @param args command line argument.
    */
-  Main(final String[] args) {
+  Main(final String modeName, final String[] args) {
 
-    parseCommandLine(args);
+    this.launchModeName = modeName;
+    this.args = args;
+
+    // Parse the command line
+    final int optionsCount = parseCommandLine();
+
+    // Initialize the logger
+    initApplicationLogger();
+
+    // Log some information about the application
+    startupLog();
+
+    try {
+
+      // Load configuration file (if needed)
+      final Settings settings = loadConfigurationFile();
+
+      // Log settings
+      settings.logSettings();
+
+      // Initialize the runtime
+      initializeRuntime(settings);
+
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while reading configuration file.");
+    } catch (EoulsanException e) {
+      Common.errorExit(e, e.getMessage());
+    }
+
+    // Parse action name and action arguments from command line
+    parseAction(optionsCount);
   }
 
   //
@@ -409,10 +602,6 @@ public abstract class Main {
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
-
-    // Set default log level
-    LOGGER.setLevel(Globals.LOG_LEVEL);
-    LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
     // Select the application execution mode
     final String eoulsanMode = System.getProperty(Globals.LAUNCH_MODE_PROPERTY);
@@ -439,8 +628,15 @@ public abstract class Main {
 
     }
 
+    LOGGER.info("Start " + action.getName() + " action");
+
     // Run action
     action.action(main.getActionArgs());
+
+    LOGGER.info("End of " + action.getName() + " action");
+
+    // Flush logs
+    main.flushLog();
   }
 
 }

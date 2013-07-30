@@ -35,6 +35,7 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
@@ -44,9 +45,12 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
  */
 public class CreateHadoopJarAction extends AbstractAction {
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "createhadoopjar";
+
   @Override
   public String getName() {
-    return "createhadoopjar";
+    return ACTION_NAME;
   }
 
   @Override
@@ -59,7 +63,7 @@ public class CreateHadoopJarAction extends AbstractAction {
 
     return true;
   }
-  
+
   @Override
   public void action(final String[] arguments) {
 
@@ -79,13 +83,16 @@ public class CreateHadoopJarAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {
       help(options);
     }
+
+    // Write log entries
+    Main.getInstance().flushLog();
 
     try {
 
@@ -106,7 +113,7 @@ public class CreateHadoopJarAction extends AbstractAction {
    * Create options for command line
    * @return an Options object
    */
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -121,11 +128,11 @@ public class CreateHadoopJarAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + getName(),
+    formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME,
         options);
 
     Common.exit(0);

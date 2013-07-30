@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAPPER_EXECUTABLE = "soap";
   private static final String INDEXER_EXECUTABLE = "2bwt-builder";

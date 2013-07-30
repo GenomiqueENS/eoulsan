@@ -25,9 +25,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.DESIGN_FILE_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.OUTPUT_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.PARAMETERS_FILE_PATH_CONSTANT_NAME;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,11 +53,13 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -85,6 +84,38 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
+
+  private static class HadoopWorkflowContext extends WorkflowContext {
+
+    public HadoopWorkflowContext(final Path designPath, final Path paramPath,
+        final String jobDescription, final String jobEnvironment,
+        final long millisSinceEpoch) {
+
+      super(millisSinceEpoch, jobDescription, jobEnvironment);
+
+      // Set base pathname
+      setBasePathname(designPath.getParent().toString());
+
+      final Path logPath =
+          new Path(designPath.getParent().toString() + "/" + getJobId());
+
+      final Path outputPath =
+          new Path(designPath.getParent().toString() + "/" + getJobId());
+
+      // Set log pathname
+      setLogPathname(logPath.toString());
+
+      // Set output pathname
+      setOutputPathname(outputPath.toString());
+
+      // Set design file pathname
+      setDesignPathname(designPath.toString());
+
+      // Set parameter file pathname
+      setParameterPathname(paramPath.toString());
+    }
+
+  }
 
   @Override
   public String getName() {
@@ -179,7 +210,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param url input URL
    * @return converted URL
    */
-  private String convertS3URL(final String url) {
+  private static final String convertS3URL(final String url) {
 
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
@@ -193,7 +224,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private static Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -225,13 +256,13 @@ public class ExecJarHadoopAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("hadoop -jar "
-        + Globals.APP_NAME_LOWER_CASE
-        + ".jar  [options] param.xml design.txt hdfs://server/path", options);
+        + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
+        + "param.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }
@@ -250,7 +281,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param millisSinceEpoch milliseconds since epoch
    * @param uploadOnly true if execution must end after upload
    */
-  private static void run(final String paramPathname,
+  private static final void run(final String paramPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
       final boolean uploadOnly, final long millisSinceEpoch) {
@@ -311,6 +342,11 @@ public class ExecJarHadoopAction extends AbstractAction {
       if (!designFs.exists(designPath))
         throw new FileNotFoundException(designPath.toString());
 
+      // Create execution context
+      final WorkflowContext context =
+          new HadoopWorkflowContext(designPath, paramPath, desc, env,
+              millisSinceEpoch);
+
       // Read design file
       final Design design =
           DesignUtils.readAndCheckDesign(designFs.open(designPath));
@@ -328,19 +364,20 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Parse param file
       final ParamParser pp =
           new ParamParser(PathUtils.createInputStream(paramPath, conf));
-      pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designPathname);
-      pp.addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME, paramPathname);
-      pp.addConstant(OUTPUT_PATH_CONSTANT_NAME, destPathname);
+      pp.addConstants(context);
 
       pp.parse(c);
 
       // Add download Step
       c.addStep(HDFSDataDownloadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
+      // Create the log File
+      Main.getInstance().createLogFileAndFlushLog(
+          context.getLogPathname() + File.separator + "eoulsan.log");
+
       // Create executor
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath, desc, env,
-              millisSinceEpoch);
+          new HadoopExecutor(conf, c, design, designPath, paramPath, context);
 
       // Create upload step
       final Step uploadStep =

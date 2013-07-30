@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -63,7 +63,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 public class ParamParser {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Version constant name. */
   public static final String VERSION_CONSTANT_NAME = APP_NAME_LOWER_CASE
@@ -85,6 +85,12 @@ public class ParamParser {
       "parameters.file.path";
   /** Output path constant name. */
   public static final String OUTPUT_PATH_CONSTANT_NAME = "output.path";
+  /** Job id constant name. */
+  public static final String JOB_ID_CONSTANT_NAME = "job.id";
+  /** Job UUID constant name. */
+  public static final String JOB_UUID_CONSTANT_NAME = "job.uuid";
+  /** Logs path constant name. */
+  public static final String LOGS_PATH_CONSTANT_NAME = "logs.path";
 
   /** Version of the format of the parameter file. */
   private static final String FORMAT_VERSION = "1.0";
@@ -110,6 +116,8 @@ public class ParamParser {
 
     if (command == null)
       throw new NullPointerException("The command is null");
+
+    LOGGER.info("Start parsing the workflow parameter file");
 
     final Document doc;
 
@@ -167,7 +175,7 @@ public class ParamParser {
         // Parse constants
         //
 
-        setConstants(parseParameters(eElement, "constants", null, false));
+        addConstants(parseParameters(eElement, "constants", null, false));
 
         //
         // Parse steps
@@ -226,6 +234,10 @@ public class ParamParser {
 
       }
     }
+
+    LOGGER.info("End of parsing of workflow parameter file");
+    LOGGER.info("Found "
+        + command.getStepIds().size() + " step(s) in workflow parameter file");
 
     return command;
   }
@@ -316,7 +328,7 @@ public class ParamParser {
    * @param parameters a set with the parameters
    * @throws EoulsanException if an error occurs while evaluating the parameters
    */
-  private void setConstants(final Set<Parameter> parameters)
+  private void addConstants(final Set<Parameter> parameters)
       throws EoulsanException {
 
     if (parameters == null)
@@ -325,6 +337,25 @@ public class ParamParser {
     for (Parameter p : parameters)
       if (!"".equals(p.getName()))
         addConstant(p.getName(), p.getValue(), true);
+  }
+
+  /**
+   * Add context information to constants.
+   * @param context execution context
+   * @throws EoulsanException if an error occurs while evaluating the constant
+   */
+  public void addConstants(final Context context) throws EoulsanException {
+
+    if (context == null)
+      return;
+
+    addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, context.getDesignPathname());
+    addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME,
+        context.getParameterPathname());
+    addConstant(OUTPUT_PATH_CONSTANT_NAME, context.getOutputPathname());
+    addConstant(JOB_ID_CONSTANT_NAME, context.getJobId());
+    addConstant(JOB_UUID_CONSTANT_NAME, context.getJobUUID());
+    addConstant(LOGS_PATH_CONSTANT_NAME, context.getLogPathname());
   }
 
   /**

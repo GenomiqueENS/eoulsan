@@ -24,15 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a SequenceReadsMapper
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SequenceReadsMapperService {
+public class SequenceReadsMapperService extends
+    ServiceNameLoader<SequenceReadsMapper> {
 
   private static SequenceReadsMapperService service;
 
@@ -54,35 +54,19 @@ public class SequenceReadsMapperService {
   }
 
   //
-  // Instance methods
+  // Protected methods
   //
 
-  /**
-   * Get SequenceReadsMapper.
-   * @param mapperName name of the mapper to get
-   * @return a SequenceReadsMapper
-   */
-  public SequenceReadsMapper getMapper(final String mapperName) {
+  @Override
+  protected boolean accept(final Class<?> clazz) {
 
-    if (mapperName == null) {
-      return null;
-    }
+    return true;
+  }
 
-    final String mapperNameLower = mapperName.toLowerCase();
+  @Override
+  protected String getMethodName() {
 
-    final Iterator<SequenceReadsMapper> it =
-        ServiceLoader.load(SequenceReadsMapper.class).iterator();
-
-    while (it.hasNext()) {
-
-      final SequenceReadsMapper mapper = it.next();
-
-      if (mapperNameLower.equals(mapper.getMapperName().toLowerCase())) {
-        return mapper;
-      }
-    }
-
-    return null;
+    return "getMapperName";
   }
 
   //
@@ -93,6 +77,7 @@ public class SequenceReadsMapperService {
    * Private constructor.
    */
   private SequenceReadsMapperService() {
+    super(SequenceReadsMapper.class);
   }
 
 }

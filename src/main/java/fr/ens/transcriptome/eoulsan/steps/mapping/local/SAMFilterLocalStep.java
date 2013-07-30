@@ -35,16 +35,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.common.base.Joiner;
-
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
+
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
@@ -70,7 +71,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public StepResult execute(final Design design, final Context context) {

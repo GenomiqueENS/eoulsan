@@ -42,6 +42,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -56,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX

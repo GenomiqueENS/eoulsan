@@ -69,7 +69,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private final Design design;
-  private final WorkflowContext context = new WorkflowContext();
+  private final WorkflowContext context;
   private final Set<String> stepIds = Sets.newHashSet();
   private final Map<AbstractWorkflowStep, StepState> steps = Maps.newHashMap();
   private final Multimap<StepState, AbstractWorkflowStep> states =
@@ -472,12 +472,15 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /**
    * Protected constructor.
+   * @param context the context of the workflow
    * @param design design to use for the workflow
    */
-  protected AbstractWorkflow(final Design design) {
+  protected AbstractWorkflow(final WorkflowContext context, final Design design) {
 
+    Preconditions.checkNotNull(context, "Context argument cannot be null");
     Preconditions.checkNotNull(design, "Design argument cannot be null");
 
+    this.context = context;
     this.design = design;
   }
 

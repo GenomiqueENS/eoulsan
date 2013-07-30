@@ -42,6 +42,7 @@ import org.apache.commons.cli.ParseException;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -55,11 +56,14 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 public class HadoopExecAction extends AbstractAction {
 
   /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
+
+  /** Name of this action. */
+  public static final String ACTION_NAME = "hadoopexec";
 
   @Override
   public String getName() {
-    return "hadoopexec";
+    return ACTION_NAME;
   }
 
   @Override
@@ -126,7 +130,7 @@ public class HadoopExecAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -148,12 +152,12 @@ public class HadoopExecAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName()
+        + ".sh " + ACTION_NAME
         + " [options] param.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
@@ -171,13 +175,16 @@ public class HadoopExecAction extends AbstractAction {
    * @param jobDescription job description
    * @param uploadOnly true if execution must end after upload
    */
-  private void run(final File paramFile, final File designFile,
+  private static final void run(final File paramFile, final File designFile,
       final String hdfsPath, final String jobDescription,
       final boolean uploadOnly) {
 
     checkNotNull(paramFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(hdfsPath, "hdfsPath is null");
+
+    // Write log entries
+    Main.getInstance().flushLog();
 
     try {
 

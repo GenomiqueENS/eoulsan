@@ -51,6 +51,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -71,7 +72,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".expression.genome.desc.file";
 
   /** Logger */
-  private static Logger logger = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
 
@@ -107,7 +108,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      logger.info("Invalid SAM output entry: "
+      LOGGER.info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + line + "'");
       return;
     }
@@ -170,7 +171,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
 
-      logger.info("Genome index compressed file (from distributed cache): "
+      LOGGER.info("Genome index compressed file (from distributed cache): "
           + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0].toString());
@@ -198,7 +199,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
       this.parser.setGenomeDescription(genomeDescription);
 
     } catch (IOException e) {
-      logger.severe("Error while loading annotation data in Mapper: "
+      LOGGER.severe("Error while loading annotation data in Mapper: "
           + e.getMessage());
     }
 

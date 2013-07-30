@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
@@ -38,7 +38,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class is the executor for running all the steps of an analysis.
@@ -48,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 public abstract class Executor {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private Command command;
 
@@ -159,31 +158,30 @@ public abstract class Executor {
     // Get execution context
     final WorkflowContext context = getContext();
 
+    // Add executor info
+    context.logInfo();
+
     // Check base path
     if (context.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Load design
+    LOGGER.info("Read design file");
     final Design design = loadDesign();
+    LOGGER.info("Found "
+        + design.getSampleCount() + " sample(s) in design file");
 
     // Check design
     checkDesign(design);
 
     // Create Workflow
     final CommandWorkflow workflow =
-        new CommandWorkflow(command, firstSteps, endSteps, design);
+        new CommandWorkflow(context, getCommand(), firstSteps, endSteps, design);
 
     // Check temporary directory
     checkTemporaryDirectory();
 
-    LOGGER.info("Date: " + new Date(System.currentTimeMillis()));
-    LOGGER.info("Host: " + SystemUtils.getHostName());
-    LOGGER.info("Operating system name: " + System.getProperty("os.name"));
-    LOGGER.info("Operating system arch: " + System.getProperty("os.arch"));
-    LOGGER
-        .info("Operating system version: " + System.getProperty("os.version"));
-    LOGGER.info("Java version: " + System.getProperty("java.version"));
-    LOGGER.info("Log level: " + LOGGER.getLevel());
+    LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
 
     // Execute Workflow
     workflow.execute(new WorkflowStepResultProcessor() {
@@ -205,7 +203,6 @@ public abstract class Executor {
     });
 
   }
-
   //
   // Utility methods
   //

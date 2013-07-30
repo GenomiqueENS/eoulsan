@@ -503,16 +503,18 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Public constructor.
+   * @param context context of the workflow
    * @param command Command object with the content of the parameter file
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
    * @throws EoulsanException
    */
-  public CommandWorkflow(final Command command, final List<Step> firstSteps,
-      final List<Step> endSteps, final Design design) throws EoulsanException {
+  public CommandWorkflow(final WorkflowContext context, final Command command,
+      final List<Step> firstSteps, final List<Step> endSteps,
+      final Design design) throws EoulsanException {
 
-    super(design);
+    super(context, design);
 
     if (command == null)
       throw new NullPointerException("The command is null.");
@@ -520,7 +522,6 @@ public class CommandWorkflow extends AbstractWorkflow {
     this.command = command;
 
     // Set command information in context
-    final WorkflowContext context = getWorkflowContext();
     context.setCommandName(command.getName());
     context.setCommandDescription(command.getDescription());
     context.setCommandAuthor(command.getAuthor());

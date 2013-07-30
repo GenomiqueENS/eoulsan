@@ -51,7 +51,7 @@ import net.sf.samtools.SAMRecord;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -74,7 +74,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private TranscriptAndExonFinder tef;
   private final String counterGroup;

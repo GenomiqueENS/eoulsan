@@ -25,9 +25,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.DESIGN_FILE_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.OUTPUT_PATH_CONSTANT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.ParamParser.PARAMETERS_FILE_PATH_CONSTANT_NAME;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,13 +44,16 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -70,7 +70,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class EMRExecAction extends AbstractAction {
 
   /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Action name. */
   static final String ACTION_NAME = "emrexec";
@@ -148,7 +148,7 @@ public class EMRExecAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -167,12 +167,12 @@ public class EMRExecAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName()
+        + ".sh " + ACTION_NAME
         + " [options] param.xml design.txt s3://mybucket/test", options);
 
     Common.exit(0);
@@ -189,14 +189,13 @@ public class EMRExecAction extends AbstractAction {
    * @param s3Path path of data on S3 file system
    * @param jobDescription job description
    */
-  private void run(final File paramFile, final File designFile,
+  private static final void run(final File paramFile, final File designFile,
       final DataFile s3Path, final String jobDescription) {
 
     checkNotNull(paramFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    LOGGER.info(Globals.WELCOME_MSG + " Local mode.");
     LOGGER.info("Parameter file: " + paramFile);
     LOGGER.info("Design file: " + designFile);
 
@@ -218,11 +217,13 @@ public class EMRExecAction extends AbstractAction {
       if (!designFile.exists())
         throw new FileNotFoundException(designFile.toString());
 
+      // Create execution context
+      final WorkflowContext context =
+          new WorkflowContext(designFile, paramFile, desc);
+
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
-      pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designFile.getPath());
-      pp.addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME, paramFile.getPath());
-      pp.addConstant(OUTPUT_PATH_CONSTANT_NAME, s3Path.toString());
+      pp.addConstants(context);
 
       final Command c = new Command();
 
@@ -231,8 +232,12 @@ public class EMRExecAction extends AbstractAction {
 
       pp.parse(c);
 
+      // Create the log File
+      Main.getInstance().createLogFileAndFlushLog(
+          context.getLogPathname() + File.separator + "eoulsan.log");
+
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile, desc);
+      final Executor e = new LocalExecutor(c, designFile, paramFile, context);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
           (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()),
           null, true);

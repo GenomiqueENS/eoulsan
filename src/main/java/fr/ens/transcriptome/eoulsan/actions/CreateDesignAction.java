@@ -37,6 +37,7 @@ import org.apache.commons.cli.ParseException;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -52,9 +53,12 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class CreateDesignAction extends AbstractAction {
 
+  /** Name of this action. */
+  public static final String ACTION_NAME = "createdesign";
+
   @Override
   public String getName() {
-    return "createdesign";
+    return ACTION_NAME;
   }
 
   @Override
@@ -129,6 +133,9 @@ public class CreateDesignAction extends AbstractAction {
           "Error while parsing parameter file: " + e.getMessage());
     }
 
+    // Write log entries
+    Main.getInstance().flushLog();
+
     Design design = null;
     final File designFile = new File(filename);
 
@@ -189,7 +196,7 @@ public class CreateDesignAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private Options makeOptions() {
+  private static final Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -225,12 +232,12 @@ public class CreateDesignAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private void help(final Options options) {
+  private static final void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName() + " [options] file1 file2 ... fileN", options);
+        + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN", options);
 
     Common.exit(0);
   }

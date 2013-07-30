@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
@@ -33,6 +38,8 @@ import org.apache.commons.cli.Options;
  * @author Laurent Jourdren
  */
 public final class MainCLI extends Main {
+
+  private static final String LAUNCH_MODE_NAME = "local";
 
   /**
    * Create options for command line
@@ -78,6 +85,23 @@ public final class MainCLI extends Main {
     return Globals.APP_NAME_LOWER_CASE;
   }
 
+  @Override
+  protected Handler getLogHandler(final String logFile) throws IOException {
+
+    if (logFile == null)
+      throw new NullPointerException("The log file is null");
+
+    final File parentFile = new File(logFile).getParentFile();
+
+    // Create parent directory if necessary
+    if (parentFile != null && !parentFile.exists())
+      if (!parentFile.mkdirs())
+        throw new IOException("Unable to create directory "
+            + parentFile + " for log file:" + logFile);
+
+    return new FileHandler(logFile);
+  }
+
   //
   // Constructor
   //
@@ -88,7 +112,7 @@ public final class MainCLI extends Main {
    */
   protected MainCLI(final String[] args) {
 
-    super(args);
+    super(LAUNCH_MODE_NAME, args);
   }
 
 }

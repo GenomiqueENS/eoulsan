@@ -218,59 +218,23 @@ public class HadoopExecutor extends Executor {
   //
 
   /**
-   * Private constructor.
-   * @param conf Hadoop configuration
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
-   */
-  private HadoopExecutor(final Configuration conf, final long millisSinceEpoch) {
-
-    if (conf == null)
-      throw new NullPointerException("The configuration is null.");
-
-    this.conf = conf;
-    this.context = new WorkflowContext(millisSinceEpoch);
-  }
-
-  /**
-   * Constructor
-   * @param command command to execute
-   * @param designPath the path the design file
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
-   */
-  public HadoopExecutor(final Configuration conf, final Command command,
-      final Path designPath, final long millisSinceEpoch) {
-
-    this(conf, millisSinceEpoch);
-
-    if (command == null)
-      throw new NullPointerException("The command is null");
-
-    setCommand(command);
-
-    if (designPath == null)
-      throw new NullPointerException("The design path is null.");
-
-    this.designPath = designPath;
-    getContext().setBasePathname(designPath.getParent().toString());
-  }
-
-  /**
    * Constructor
    * @param command command to execute
    * @param design the design object
    * @param designPath the design file path
    * @param paramPath the parameter file path
-   * @param jobDescription job description
-   * @param jobEnvironment job environment description
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
+   * @param context execution context
    * @throws IOException if cannot create log or output directory
    */
   public HadoopExecutor(final Configuration conf, final Command command,
       final Design design, final Path designPath, final Path paramPath,
-      final String jobDescription, final String jobEnvironment,
-      final long millisSinceEpoch) throws IOException {
+      final WorkflowContext context) throws IOException {
 
-    this(conf, millisSinceEpoch);
+    if (conf == null)
+      throw new NullPointerException("The configuration is null.");
+
+    this.conf = conf;
+    this.context = context;
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -286,41 +250,15 @@ public class HadoopExecutor extends Executor {
     this.design = design;
     this.designPath = designPath;
 
-    final WorkflowContext context = getContext();
-
-    // Set base pathname
-    context.setBasePathname(this.designPath.getParent().toString());
-
-    final Path logPath =
-        new Path(this.designPath.getParent().toString()
-            + "/" + context.getJobId());
-
-    final Path outputPath =
-        new Path(this.designPath.getParent().toString()
-            + "/" + context.getJobId());
-
+    // Create Log directory if necessary
+    final Path logPath = new Path(context.getLogPathname());
     if (!logPath.getFileSystem(conf).exists(logPath))
       PathUtils.mkdirs(logPath, conf);
+
+    // Create Output directory if necessary
+    final Path outputPath = new Path(context.getOutputPathname());
     if (!outputPath.getFileSystem(conf).exists(outputPath))
       PathUtils.mkdirs(outputPath, conf);
-
-    // Set log pathname
-    context.setLogPathname(logPath.toString());
-
-    // Set output pathname
-    context.setOutputPathname(outputPath.toString());
-
-    // Set design file pathname
-    context.setDesignPathname(designPath.toString());
-
-    // Set parameter file pathname
-    context.setParameterPathname(paramPath.toString());
-
-    // Set the job description
-    context.setJobDescription(jobDescription);
-
-    // Set job environment
-    context.setJobEnvironment(jobEnvironment);
   }
 
 }

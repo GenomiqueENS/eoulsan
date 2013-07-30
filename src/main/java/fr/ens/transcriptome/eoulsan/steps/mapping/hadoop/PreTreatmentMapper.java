@@ -39,6 +39,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -55,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -112,7 +113,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
-   * file. 'value': the TFQ record. 
+   * file. 'value': the TFQ record.
    */
   @Override
   protected void map(final LongWritable key, final Text value,
