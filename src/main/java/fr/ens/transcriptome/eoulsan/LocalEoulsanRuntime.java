@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -122,6 +124,20 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   private LocalEoulsanRuntime(final Settings settings) {
 
     super(settings);
+  }
+
+  /**
+   * Initialization Eoulsan runtime for external application who needed Eoulsan
+   * @throws IOException
+   * @throws EoulsanException
+   */
+  public static void initEoulsanRuntimeForExternalApp() throws IOException,
+      EoulsanException {
+
+    if (!EoulsanRuntime.isRuntime())
+      newEoulsanRuntime(new Settings(true));
+
+    Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
   }
 
 }

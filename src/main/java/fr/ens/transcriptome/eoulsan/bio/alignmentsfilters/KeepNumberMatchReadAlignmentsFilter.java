@@ -88,7 +88,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
   @Override
   public void filterReadAlignments(List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     List<SAMRecord> recordsToKeep = new ArrayList<SAMRecord>();
@@ -114,6 +114,13 @@ public class KeepNumberMatchReadAlignmentsFilter extends
       records.clear();
       records.addAll(recordsToKeep);
     }
-
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{name=" + getName() + ", numberMatch=" + this.numberMatch + "}";
+  }
+
 }

@@ -26,11 +26,12 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -150,7 +151,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     if (inputDataFile == null)
       throw new IOException("No input file found.");
 
-    // Set input path
+    // Setm input path
     final Path inputPath = new Path(inputDataFile.getSource());
 
     // Set counter group
@@ -161,12 +162,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         .getFastqFormat().getName());
 
     // Set read filter parameters
-    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
-
-      jobConf.set(
-          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
+    addParametersToJobConf(getReadFilterParameters(),
+        READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // Set Job name
     // Create the job and its name

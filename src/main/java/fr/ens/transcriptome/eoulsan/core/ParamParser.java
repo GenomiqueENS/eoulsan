@@ -65,6 +65,27 @@ public class ParamParser {
   /** Logger. */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  /** Version constant name. */
+  public static final String VERSION_CONSTANT_NAME = APP_NAME_LOWER_CASE
+      + ".version";
+  /** Build number constant name. */
+  public static final String BUILD_NUMBER_CONSTANT_NAME = APP_NAME_LOWER_CASE
+      + ".build.number";
+  /** Build date constant name. */
+  public static final String BUILD_DATE_CONSTANT_NAME = APP_NAME_LOWER_CASE
+      + ".build.date";
+  /** Available processor constant name. */
+  public static final String AVAILABLE_PROCESSORS_CONSTANT_NAME =
+      APP_NAME_LOWER_CASE + "available.processors";
+  /** Design file path constant name. */
+  public static final String DESIGN_FILE_PATH_CONSTANT_NAME =
+      "design.file.path";
+  /** Parameters file path constant name. */
+  public static final String PARAMETERS_FILE_PATH_CONSTANT_NAME =
+      "parameters.file.path";
+  /** Output path constant name. */
+  public static final String OUTPUT_PATH_CONSTANT_NAME = "output.path";
+
   /** Version of the format of the parameter file. */
   private static final String FORMAT_VERSION = "1.0";
 
@@ -303,8 +324,41 @@ public class ParamParser {
 
     for (Parameter p : parameters)
       if (!"".equals(p.getName()))
-        this.constants.put(p.getName().trim(),
-            evaluateExpressions(p.getValue(), true));
+        addConstant(p.getName(), p.getValue(), true);
+  }
+
+  /**
+   * Add a constant.
+   * @param constantName constant Name
+   * @param constantValue constant value
+   * @throws EoulsanException if an error occurs while evaluating the constant
+   */
+  public void addConstant(final String constantName, final String constantValue)
+      throws EoulsanException {
+
+    addConstant(constantName, constantValue, false);
+  }
+
+  /**
+   * Add a constant.
+   * @param constantName constant Name
+   * @param constantValue constant value
+   * @param evaluateValue allow evaluate the value of the constant and start an
+   *          external process to do this
+   * @throws EoulsanException if an error occurs while evaluating the constant
+   */
+  public void addConstant(final String constantName,
+      final String constantValue, final boolean evaluateValue)
+      throws EoulsanException {
+
+    if (constantName == null || constantValue == null)
+      return;
+
+    if (evaluateValue)
+      this.constants.put(constantName.trim(),
+          evaluateExpressions(constantValue, true));
+    else
+      this.constants.put(constantName.trim(), constantValue);
   }
 
   /**
@@ -315,11 +369,11 @@ public class ParamParser {
 
     final Map<String, String> constants = new HashMap<String, String>();
 
-    constants.put(APP_NAME_LOWER_CASE + ".version", APP_VERSION_STRING);
-    constants.put(APP_NAME_LOWER_CASE + ".build.number", APP_BUILD_NUMBER);
-    constants.put(APP_NAME_LOWER_CASE + ".build.date", APP_BUILD_DATE);
+    constants.put(VERSION_CONSTANT_NAME, APP_VERSION_STRING);
+    constants.put(BUILD_NUMBER_CONSTANT_NAME, APP_BUILD_NUMBER);
+    constants.put(BUILD_DATE_CONSTANT_NAME, APP_BUILD_DATE);
 
-    constants.put("available.processors", ""
+    constants.put(AVAILABLE_PROCESSORS_CONSTANT_NAME, ""
         + Runtime.getRuntime().availableProcessors());
 
     // Add java properties

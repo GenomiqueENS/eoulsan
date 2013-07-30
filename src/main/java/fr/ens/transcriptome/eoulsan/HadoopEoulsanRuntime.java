@@ -140,23 +140,13 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * Package constructor, initialize the runtime. This constructor can only
    * called by MainHadoop class.
    */
-  static HadoopEoulsanRuntime newEoulsanRuntime() throws EoulsanException {
+  static HadoopEoulsanRuntime newEoulsanRuntime(final Settings settings) {
 
-    try {
+    // Create Hadoop configuration object
+    final Configuration conf = CommonHadoop.createConfiguration(settings);
 
-      // Create and load settings
-      final Settings settings = new Settings();
-
-      // Create Hadoop configuration object
-      final Configuration conf = CommonHadoop.createConfiguration(settings);
-
-      // Initialize runtime
-      return newEoulsanRuntime(settings, conf);
-
-    } catch (IOException e) {
-      throw new EoulsanException("Error while reading settings: "
-          + e.getMessage());
-    }
+    // Initialize runtime
+    return newEoulsanRuntime(settings, conf);
   }
 
   /**

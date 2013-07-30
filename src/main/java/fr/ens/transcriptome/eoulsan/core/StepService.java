@@ -53,7 +53,7 @@ public class StepService {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private static StepService service;
-  private final ServiceLoader<Step> loader;
+  final Set<Class<? extends Annotation>> autorisedAnnotations;
 
   /**
    * This class loader allow to reject Steps without correct annotation to
@@ -144,7 +144,9 @@ public class StepService {
 
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
-    final Iterator<Step> it = this.loader.iterator();
+    final Iterator<Step> it =
+        ServiceLoader.load(Step.class,
+            new ServiceClassLoader(this.autorisedAnnotations)).iterator();
 
     while (it.hasNext()) {
 
@@ -176,22 +178,18 @@ public class StepService {
   @SuppressWarnings("unchecked")
   private StepService(final boolean hadoopMode) {
 
-    final Set<Class<? extends Annotation>> autorisedAnnotations;
-
     if (hadoopMode) {
-      autorisedAnnotations =
+      this.autorisedAnnotations =
           Sets.newHashSet(HadoopOnly.class, HadoopCompatible.class);
     } else {
-      autorisedAnnotations =
+      this.autorisedAnnotations =
           Sets.newHashSet(LocalOnly.class, HadoopCompatible.class);
     }
 
-    loader =
-        ServiceLoader.load(Step.class, new ServiceClassLoader(
-            autorisedAnnotations));
-
     // Log available steps
-    final Iterator<Step> it = this.loader.iterator();
+    final Iterator<Step> it =
+        ServiceLoader.load(Step.class,
+            new ServiceClassLoader(this.autorisedAnnotations)).iterator();
 
     while (it.hasNext()) {
 

@@ -146,7 +146,7 @@ public class GenomicInterval implements Serializable,
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof GenomicInterval))
+    if (!(o instanceof GenomicInterval))
       return false;
 
     final GenomicInterval that = (GenomicInterval) o;

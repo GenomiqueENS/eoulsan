@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -77,6 +79,9 @@ public final class Settings {
   private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
       + "rserve.servername";
 
+  private static final String SAVE_RSCRIPTS_KEY = MAIN_PREFIX_KEY
+      + "save.r.scripts";
+
   private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY
       + "design.obfuscate";
   private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
@@ -109,6 +114,10 @@ public final class Settings {
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
+
+  private static final Set<String> OBFUSCATED_KEYS = Utils
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   //
   // Getters
@@ -187,6 +196,15 @@ public final class Settings {
 
     return Boolean
         .parseBoolean(this.properties.getProperty(RSERVE_ENABLED_KEY));
+  }
+
+  /**
+   * Test if save.r.script is true
+   * @return boolean with keep Rscripts values
+   */
+  public boolean isSaveRscripts() {
+
+    return Boolean.parseBoolean(this.properties.getProperty(SAVE_RSCRIPTS_KEY));
   }
 
   /**
@@ -505,6 +523,15 @@ public final class Settings {
   }
 
   /**
+   * Set if save Rscripts is true
+   * @param krs boolean
+   */
+  public void setSaveRscript(final boolean krs) {
+
+    this.properties.setProperty(SAVE_RSCRIPTS_KEY, Boolean.toString(krs));
+  }
+
+  /**
    * Set the RServe server name.
    * @param serverName The name of the RServe to use
    */
@@ -639,7 +666,7 @@ public final class Settings {
 
   /**
    * Set the SMTP server host.
-   * @return the name of the SMTP server host
+   * @param smtpHost the name of the SMTP server host
    */
   public void setSMTPHost(final String smtpHost) {
 
@@ -798,6 +825,19 @@ public final class Settings {
   private void init() {
 
     LOGGER.info(Globals.WELCOME_MSG);
+
+    final Main main = Main.getInstance();
+
+    // Show show command line information
+    if (main != null) {
+      LOGGER
+          .info(Globals.APP_NAME
+              + " command line arguments: "
+              + StringUtils.join(main.getArgs(), " "));
+      LOGGER.fine(Globals.APP_NAME
+          + " command line arguments: " + Arrays.toString(main.getArgs()));
+    }
+
     LOGGER.info("System temp directory: "
         + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));
@@ -813,13 +853,21 @@ public final class Settings {
       final String sKey = (String) key;
       final String sValue = properties.getProperty(sKey);
 
-      if (sKey.equals(HADOOP_AWS_ACCESS_KEY)
-          || sKey.endsWith((HADOOP_AWS_SECRET_KEY)))
+      if (OBFUSCATED_KEYS.contains(sKey))
         LOGGER.info("Setting: " + sKey + "=xxxx value not shown xxxx");
       else
         LOGGER.info("Setting: " + sKey + "=" + sValue);
     }
 
+  }
+
+  /**
+   * Get a set with the names of the settings to obfuscate.
+   * @return a set of strings with the name of the settings to obfuscate
+   */
+  public Set<String> getSettingsKeyToObfuscated() {
+
+    return OBFUSCATED_KEYS;
   }
 
   //

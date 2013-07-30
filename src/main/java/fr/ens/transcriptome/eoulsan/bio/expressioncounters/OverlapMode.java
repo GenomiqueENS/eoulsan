@@ -55,7 +55,7 @@ public enum OverlapMode {
 
   /**
    * Get the OverlapMode from its name.
-   * @param name name of the strand usage
+   * @param name name of the overlap mode
    * @return a OverlapMode or null if no OverlapMode found for the name
    */
   public static OverlapMode getOverlapModeFromName(final String name) {

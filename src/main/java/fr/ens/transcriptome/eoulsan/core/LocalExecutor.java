@@ -195,6 +195,7 @@ public class LocalExecutor extends Executor {
     // Set job environment
     context.setJobEnvironment("Local Mode on "
         + new LinuxCpuInfo().getModelName() + ", "
+        + Runtime.getRuntime().availableProcessors() + " CPU(s)/thread(s), "
         + new LinuxMemInfo().getMemTotal());
   }
 

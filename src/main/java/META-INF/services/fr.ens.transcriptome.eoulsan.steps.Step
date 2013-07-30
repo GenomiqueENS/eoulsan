@@ -8,8 +8,6 @@ fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
 # Mapping reads steps
 fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsMapperLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep
-fr.ens.transcriptome.eoulsan.steps.mapping.GsnapStep
-fr.ens.transcriptome.eoulsan.steps.mapping.GmapStep
 
 # Filter and mapping steps
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
@@ -21,6 +19,9 @@ fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterHadoopStep
 # Expression steps
 fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
+
+# Normalisation step
+fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
 
 # Diffana step
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep

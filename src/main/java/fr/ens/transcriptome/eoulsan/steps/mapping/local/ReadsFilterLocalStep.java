@@ -33,6 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
@@ -41,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
+import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -96,7 +99,10 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
                     "Cannot handle more than 2 reads files at the same time.");
 
               // Get the read filter
-              final ReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
+              final MultiReadFilter filter =
+                  getReadFilter(reporter, COUNTER_GROUP);
+              LOGGER.info("Reads filters to apply: "
+                  + Joiner.on(", ").join(filter.getFilterNames()));
 
               // Run the filter in single or pair-end mode
               if (inFileCount == 1)
@@ -144,7 +150,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     // Add counters for this sample to log file
     return reporter.countersValuesToString(COUNTER_GROUP, "Filter reads ("
-        + sample.getName() + ", " + inFile + ")");
+        + sample.getName() + ", " + inFile.getName() + ")");
   }
 
   /**
@@ -174,8 +180,11 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         .getMetadata().getFastqFormat());
 
     // Add counters for this sample to log file
-    return reporter.countersValuesToString(COUNTER_GROUP, "Filter reads ("
-        + sample.getName() + ", " + inFile1 + ", " + inFile2 + ")");
+    return reporter.countersValuesToString(
+        COUNTER_GROUP,
+        "Filter reads ("
+            + sample.getName() + ", " + inFile1.getName() + ", "
+            + inFile2.getName() + ")");
   }
 
   /**

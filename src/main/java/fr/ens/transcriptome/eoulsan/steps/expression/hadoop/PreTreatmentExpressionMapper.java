@@ -24,10 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -35,8 +32,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-
-import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -93,15 +88,19 @@ public class PreTreatmentExpressionMapper extends
   // Map
   //
 
-  /**
-   * 'key': offset of the beginning of the line from the beginning of the
-   * TSAM file. 'value': the SAM record. 
+  /*
+   * 'key': offset of the beginning of the line from the beginning of the TSAM
+   * file. 'value': the SAM record.
    */
   @Override
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
     final String line = value.toString();
+
+    // Discard SAM headers
+    if (line.length() > 0 && line.charAt(0) == '@')
+      return;
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);

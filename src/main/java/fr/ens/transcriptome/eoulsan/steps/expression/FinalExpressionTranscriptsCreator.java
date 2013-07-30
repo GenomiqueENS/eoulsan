@@ -111,7 +111,7 @@ public class FinalExpressionTranscriptsCreator {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ExpressionTranscript))
+      if (!(o instanceof ExpressionTranscript))
         return false;
 
       final ExpressionTranscript et = (ExpressionTranscript) o;

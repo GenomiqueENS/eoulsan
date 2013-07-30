@@ -134,6 +134,16 @@ public class GenomeDescription {
   }
 
   /**
+   * Test if the genome description contains a sequence
+   * @param sequenceName name of the sequence
+   * @return true if the sequence exists in the genome description
+   */
+  public boolean containsSequence(final String sequenceName) {
+
+    return this.sequences.containsKey(sequenceName);
+  }
+
+  /**
    * Get the names of the sequences.
    * @return a set with the name of the sequence
    */

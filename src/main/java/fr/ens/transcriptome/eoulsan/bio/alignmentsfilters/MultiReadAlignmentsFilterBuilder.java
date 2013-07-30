@@ -55,15 +55,33 @@ public class MultiReadAlignmentsFilterBuilder {
    * Add a parameter to the builder
    * @param key key of the parameter
    * @param value value of the parameter
+   * @return true if the parameter has been successfully added
    * @throws EoulsanException if the filter reference in the key does not exist
    *           or if an error occurs while setting the parameter in the
    *           dedicated filter
    */
-  public void addParameter(final String key, final String value)
+  public boolean addParameter(final String key, final String value)
       throws EoulsanException {
 
+    return addParameter(key, value, false);
+  }
+
+  /**
+   * Add a parameter to the builder
+   * @param key key of the parameter
+   * @param value value of the parameter
+   * @param noExceptionIfFilterNotExists do not thrown an exception if the
+   *          filter does not exists.
+   * @return true if the parameter has been successfully added
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public boolean addParameter(final String key, final String value,
+      final boolean noExceptionIfFilterNotExists) throws EoulsanException {
+
     if (key == null || value == null)
-      return;
+      return false;
 
     // Get first dot position
     final String keyTrimmed = key.trim();
@@ -91,9 +109,14 @@ public class MultiReadAlignmentsFilterBuilder {
           ReadAlignmentsFilterService.getInstance().getAlignmentsFilter(
               filterName);
 
-      if (filter == null)
+      if (filter == null) {
+
+        if (noExceptionIfFilterNotExists)
+          return false;
+
         throw new EoulsanException("Unable to find "
             + filterName + " alignments filter.");
+      }
 
       this.mapFilters.put(filterName, filter);
       this.listFilter.add(filter);
@@ -108,10 +131,30 @@ public class MultiReadAlignmentsFilterBuilder {
           .info("Set alignments filter \""
               + filterName + "\" with parameter: " + filterKey + "="
               + valueTrimmed);
-    } else
+    } else {
+      this.mapParameters.put(filterName, "");
       LOGGER.info("Set alignments filter \""
           + filterName + "\" with no parameter");
+    }
 
+    return true;
+  }
+
+  /**
+   * Add parameters to the builder.
+   * @param parameters parameters to add
+   * @throws EoulsanException if the filter reference in the key does not exist
+   *           or if an error occurs while setting the parameter in the
+   *           dedicated filter
+   */
+  public void addParameters(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    if (parameters == null)
+      return;
+
+    for (Map.Entry<String, String> e : parameters.entrySet())
+      addParameter(e.getKey(), e.getValue());
   }
 
   /**
@@ -120,7 +163,8 @@ public class MultiReadAlignmentsFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public ReadAlignmentsFilter getAlignmentsFilter() throws EoulsanException {
+  public MultiReadAlignmentsFilter getAlignmentsFilter()
+      throws EoulsanException {
 
     for (ReadAlignmentsFilter f : this.listFilter)
       f.init();
@@ -139,7 +183,7 @@ public class MultiReadAlignmentsFilterBuilder {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  public ReadAlignmentsFilter getAlignmentsFilter(
+  public MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
@@ -161,6 +205,29 @@ public class MultiReadAlignmentsFilterBuilder {
   public Map<String, String> getParameters() {
 
     return Collections.unmodifiableMap(this.mapParameters);
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Public constructor.
+   */
+  public MultiReadAlignmentsFilterBuilder() {
+  }
+
+  /**
+   * Public constructor.
+   * @param parameters parameters to add to the builder
+   * @throws EoulsanException EoulsanException if the filter reference in the
+   *           key does not exist or if an error occurs while setting the
+   *           parameter in the dedicated filter
+   */
+  public MultiReadAlignmentsFilterBuilder(final Map<String, String> parameters)
+      throws EoulsanException {
+
+    addParameters(parameters);
   }
 
 }

@@ -1,0 +1,11 @@
+<dataformat>
+  <name>gsnap_index_zip</name>
+  <description>gsnap index zipped format</description>
+  <prefix>gsnap_index_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <content-type>application/zip</content-type>
+  <generator mapperName="gsnap" >fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
+  <extensions>
+  	<extension default="true">.zip</extension>
+  </extensions>
+</dataformat>

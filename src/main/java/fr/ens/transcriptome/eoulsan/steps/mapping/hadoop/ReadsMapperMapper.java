@@ -26,12 +26,16 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
@@ -41,6 +45,9 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -53,7 +60,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
-import fr.ens.transcriptome.eoulsan.util.locker.ExecLock;
+import fr.ens.transcriptome.eoulsan.util.locker.Locker;
+import fr.ens.transcriptome.eoulsan.util.locker.TicketLocker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -83,9 +91,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private String counterGroup = this.getClass().getName();
 
-  private File archiveIndexFile;
+  // private File archiveIndexFile;
 
-  private ExecLock lock;
+  private Locker lock;
 
   private SequenceReadsMapper mapper;
   private List<String> fields = newArrayList();
@@ -93,7 +101,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
    * file. 'value': the TFQ line (3 fields if data are in single-end mode, 6
-   * fields if data are in paired-end mode). 
+   * fields if data are in paired-end mode).
    */
   @Override
   protected void map(final LongWritable key, final Text value,
@@ -158,13 +166,41 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
             + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
+    // DistributedCache.purgeCache(conf);
+
+    // Download genome reference
+    final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+
+    if (localCacheFiles == null || localCacheFiles.length == 0)
+      throw new IOException("Unable to retrieve genome index");
+
+    if (localCacheFiles.length > 1)
+      throw new IOException("Retrieve more than one file in distributed cache");
+
+    // Get the local genome index zip file
+    File archiveIndexFile = new File(localCacheFiles[0].toString());
+
+    LOGGER.info("Genome index compressed file (from distributed cache): "
+        + archiveIndexFile);
+
+    // Set index directory
+    final File archiveIndexDir =
+        new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
+            + "/" + getIndexLocalName(archiveIndexFile));
+
+    LOGGER
+        .info("Genome index directory where decompressed: " + archiveIndexDir);
+
     // Init mapper
-    mapper.init(pairEnd, fastqFormat, new HadoopReporter(context),
-        this.counterGroup);
+    mapper.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        new HadoopReporter(context), this.counterGroup);
+
     LOGGER.info("Fastq format: " + fastqFormat);
 
     // Set lock
-    this.lock = new ExecLock(this.mapper.getMapperName().toLowerCase());
+    this.lock =
+        new TicketLocker(this.mapper.getMapperName().toLowerCase(), 9999,
+            context.getTaskAttemptID().toString());
 
     // Get Mapper arguments
     final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
@@ -199,32 +235,33 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set mapper temporary directory
     mapper.setTempDirectory(tempDir);
 
-    // DistributedCache.purgeCache(conf);
-
-    // Download genome reference
-    final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
-
-    if (localCacheFiles == null || localCacheFiles.length == 0)
-      throw new IOException("Unable to retrieve genome index");
-
-    if (localCacheFiles.length > 1)
-      throw new IOException("Retrieve more than one file in distributed cache");
-
-    // Get the local genome index zip file
-    this.archiveIndexFile = new File(localCacheFiles[0].toString());
-
-    LOGGER.info("Genome index compressed file (from distributed cache): "
-        + archiveIndexFile);
-
     LOGGER.info("End of setup()");
   }
 
   private String getIndexLocalName(final File archiveIndexFile)
       throws IOException {
 
-    return this.mapper.getMapperName()
-        + "-index-" + archiveIndexFile.length() + "-"
-        + archiveIndexFile.lastModified();
+    checkNotNull(archiveIndexFile, "Index Zip file is null");
+
+    final ZipFile zf = new ZipFile(archiveIndexFile);
+    final Enumeration<? extends ZipEntry> entries = zf.entries();
+
+    final HashFunction hf = Hashing.md5();
+    final Hasher hs = hf.newHasher();
+
+    while (entries.hasMoreElements()) {
+
+      final ZipEntry e = entries.nextElement();
+
+      hs.putString(e.getName());
+      hs.putLong(e.getSize());
+      hs.putLong(e.getTime());
+      hs.putLong(e.getCrc());
+    }
+
+    zf.close();
+
+    return this.mapper.getMapperName() + "-index-" + hs.hash().toString();
   }
 
   @Override
@@ -238,34 +275,24 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
+    // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
     lock.lock();
-    ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
-        .toLowerCase());
-
-    LOGGER
-        .info("Wait "
-            + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                - waitStartTime) + " before running "
-            + this.mapper.getMapperName());
-
-    // Close the data file
-    this.mapper.closeInput();
-
-    context.setStatus("Run " + this.mapper.getMapperName());
-
     try {
+      ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
+          .toLowerCase());
 
-      // Set index directory
-      final File archiveIndexDir =
-          new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-              + "/" + getIndexLocalName(this.archiveIndexFile));
+      LOGGER.info("Wait "
+          + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+              - waitStartTime) + " before running "
+          + this.mapper.getMapperName());
 
-      LOGGER.info("Genome index directory where decompressed: "
-          + archiveIndexDir);
+      // Close the data file
+      this.mapper.closeInput();
+
+      context.setStatus("Run " + this.mapper.getMapperName());
 
       // Process to mapping
-      mapper.map(this.archiveIndexFile, archiveIndexDir);
+      mapper.map();
 
     } catch (IOException e) {
 
@@ -281,8 +308,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.setStatus("Parse " + this.mapper.getMapperName() + " results");
     final File samOutputFile = this.mapper.getSAMFile(null);
     parseSAMResults(samOutputFile, context);
-
-    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
 
     // Remove temporary files
     if (!samOutputFile.delete())
@@ -310,12 +335,21 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(resultFile);
 
+    final int taskId = context.getTaskAttemptID().getTaskID().getId();
+
     int entriesParsed = 0;
 
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
+      if ("".equals(trimmedLine))
+        continue;
+
+      // Test if line is an header line
+      final boolean headerLine = trimmedLine.charAt(0) == '@';
+
+      // Only write header lines once (on the first output file)
+      if (headerLine && taskId > 0)
         continue;
 
       final int tabPos = line.indexOf('\t');
@@ -325,11 +359,15 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         outKey.set(line.substring(0, tabPos));
         outValue.set(line.substring(tabPos + 1));
 
-        entriesParsed++;
-
         context.write(outKey, outValue);
-        context.getCounter(this.counterGroup,
-            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+
+        // Increment counters if not header
+        if (!headerLine) {
+
+          entriesParsed++;
+          context.getCounter(this.counterGroup,
+              OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+        }
       }
 
     }

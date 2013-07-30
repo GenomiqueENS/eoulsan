@@ -1,0 +1,10 @@
+		\subsubsection{Differential analysis calling}
+	
+<<diffAna>>=
+anaDiff_allComparison(countDataSet, "${METHOD}", target$projectName, outPath)
+@
+
+\section{Session info}
+<<sessionInfo>>=
+sessionInfo()
+@

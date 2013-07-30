@@ -348,7 +348,7 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
-         <release version="1.2" description="Eoulsan 1.2" date="TBD">
+         <release version="1.2" description="Eoulsan 1.2 release" date="2013-02-23">
             <action dev="wallon" type="add">
                 Add the paired-end mode in the alignments filtering step.
             </action>
@@ -377,8 +377,53 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="add">
                 Eoulsan can now send mail to inform user of the end of the analysis.
             </action>
-             <action dev="jourdren" type="add">
+            <action dev="jourdren" type="add">
                 Datatypes and dataformat can now defined in XML files.
+            </action>
+            <action dev="jourdren" type="update">
+                Generated SAM files in Hadoop mode now contains SAM headers.
+            </action>
+            <action dev="deshaies" type="add">
+                Differential analysis and normalization steps can be executed on an Rserve server.
+            </action>
+            <action dev="deshaies" type="update">
+                Update the differential analysis and normalization steps with a new version of DESeq.
+            </action>
+            <action dev="jourdren" type="add">
+                New mappers for mapping step: Bowtie2 and gsmap.
+            </action>
+            <action dev="jourdren" type="update">
+                Remove gsnap and gmap standalone step.
+            </action>
+            <action dev="jourdren" type="add">
+                Add a constant section in the parameter file.
+            </action>
+         </release>
+
+         <release version="1.2.1" description="Eoulsan 1.2.1 release" date="2013-03-01">
+            <action dev="jourdren" type="update">
+                Add new configuration options for launching AWS EMR clusters 
+                (enabling debugging mode, EC2 key pair key to enable ssh connection to remote cluster
+                and setting the maximal number of mapper tasks in a task tracker).
+            </action>
+            <action dev="jourdren" type="update">
+                Enable a new locker for the reads mapping step in Hadoop mode that avoid to limit
+                the number of maximal mapper tasks of a tasktracker to 2.
+            </action>
+            <action dev="jourdren" type="update">
+                The default Hadoop version in AWS Elastic MapReduce mode is now 1.0.3.
+            </action>
+            <action dev="jourdren" type="fix" issue="22">
+                The order of the reads filters in parameter file is not the order the filter apply on the reads.
+            </action>
+            <action dev="jourdren" type="update">
+                In createdesign command, rename some command line option. Warning: -s is now for the path to the samplesheet and -l is for creating symbolic links.
+            </action>
+         </release>
+
+         <release version="1.2.2" description="Eoulsan 1.2.2 release" date="2013-03-01">
+            <action dev="jourdren" type="fix">
+                Fix malformed sample parameter file param-local.xml
             </action>
          </release>
 

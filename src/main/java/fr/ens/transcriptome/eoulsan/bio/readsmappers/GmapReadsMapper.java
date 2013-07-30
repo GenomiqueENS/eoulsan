@@ -26,9 +26,12 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -104,7 +107,7 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.GMAP_INDEX_ZIP;
+    return DataFormats.GSNAP_INDEX_ZIP;
   }
 
   @Override
@@ -120,7 +123,29 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected List<String> getIndexerCommand(String indexerPathname,
+      String genomePathname) {
+    List<String> cmd = new ArrayList<String>();
+
+    final String binariesDirectory =
+        new File(indexerPathname).getParentFile().getAbsolutePath();
+    final String genomeDirectory =
+        new File(genomePathname).getParentFile().getAbsolutePath();
+
+    cmd.add(indexerPathname);
+    cmd.add("-B");
+    cmd.add(binariesDirectory);
+    cmd.add("-D");
+    cmd.add(genomeDirectory);
+    cmd.add("-d");
+    cmd.add("genome");
+    cmd.add(genomePathname);
+
+    return cmd;
+  }
+
+  // TODO to remove
+  protected String getIndexerCommand_OLD(String indexerPathname,
       String genomePathname) {
 
     final String binariesDirectory =
@@ -156,15 +181,31 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
     // Do Nothing
   }
 
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
+
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
+  }
+
   //
   // Init
   //
 
   @Override
   public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

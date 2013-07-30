@@ -2,6 +2,7 @@
 
 GWT_PATH=~/Téléchargements/gwt-2.4.0
 PROJECT_NAME=DesignValidator
+GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
 
 BASEDIR=`dirname $0`
 if [ ! -d $BASEDIR/target ]; then
@@ -98,8 +99,11 @@ public class $PROJECT_NAME implements EntryPoint {
       + "B46=TCCCGA\n" + "B47=TCGAAG\n" + "B48=TCGGCA\n" + "E1=ATCACG\n"
       + "E2=CGATGT\n" + "E3=TTAGGC\n" + "E4=TGACCA\n" + "E5=ACAGTG\n"
       + "E6=GCCAAT\n" + "E7=CAGATC\n" + "E8=ACTTGA\n" + "E9=GATCAG\n"
-      + "E10=TAGCTT\n" + "E11=GGCTAC\n" + "E12=CTTGTA\n";
-
+      + "E10=TAGCTT\n" + "E11=GGCTAC\n" + "E12=CTTGTA\n"
+      + "M1=AACCAG\n" + "M2=TGGTGA\n" + "M3=AGTGAG\n" + "M4=GCACTA\n"
+      + "M5=ACCTCA\n" + "M6=GTGCTT\n" + "M7=AAGCCT\n" + "M8=GTCGTA\n"
+      + "M9=AAGAGG\n" + "M10=GGAGAA\n" + "M11=AGCATG\n" + "M12=GAGTCA\n"
+      + "M13=CGTAGA\n" + "M14=TCAGAG\n" + "M15=CACAGT\n" + "M16=TTGGCA\n";
 
 
   private static String DEFAULT_RESULT_MSG = "<pre>No valid design entered.</pre>";
@@ -276,7 +280,7 @@ public class $PROJECT_NAME implements EntryPoint {
 }
 EOF
 
-cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
+cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 <!doctype html>
 <!-- The DOCTYPE declaration above will set the     -->
 <!-- browser's rendering engine into                -->
@@ -323,6 +327,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
       </div>
     </noscript>
 
+<h4 align="right">__VERSION__</h4>
 <h1>Casava design validator</h1>
 
     <table align="center">
@@ -357,6 +362,14 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html << EOF
   </body>
 </html>
 EOF
+
+if [ -z $GIT_REVISION ]; then
+	GIT_REVISION=""
+else
+	GIT_REVISION="Revision $GIT_REVISION"
+fi
+sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > $PROJECT_NAME/war/$PROJECT_NAME.html 
+rm $PROJECT_NAME/war/$PROJECT_NAME.html.tmp
 
 # Compile
 

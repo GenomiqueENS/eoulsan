@@ -132,4 +132,11 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
 
   }
 
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{name=" + getName() + ", distance=" + this.distance + "}";
+  }
+
 }

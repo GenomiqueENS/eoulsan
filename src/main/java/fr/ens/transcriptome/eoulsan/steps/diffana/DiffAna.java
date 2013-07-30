@@ -24,34 +24,23 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
 
-import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 
-import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
 
 /**
  * This class create and launch a R script to compute differential analysis.
@@ -59,142 +48,213 @@ import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
  * @author Laurent Jourdren
  * @author Vivien Deshaies
  */
-public class DiffAna {
+public class DiffAna extends Normalization {
 
-  /** Logger. */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final String DISPERSION_ESTIMATION =
+      "/dispersionEstimation.Rnw";
+  private static final String ANADIFF_WITH_REFERENCE =
+      "/anadiffWithReference.Rnw";
+  private static final String ANADIFF_WITHOUT_REFERENCE =
+      "/anadiffWithoutReference.Rnw";
 
-  private static final String NORMALISATION_WHITH_TECHREP =
-      "/normalisationWithTechRep.Rnw";
-  private static final String NORMALISATION_WHITHOUT_TECHREP =
-      "/normalisationWithoutTechRep.Rnw";
-  private static final String NORMALISATION_FUNCTIONS =
-      "/normalizationRNAseqFunctions.R";
-  private static final String DISPERSION_ESTIMATION_WITH_REPLICATES =
-      "/dispersionEstimationWithReplicates.Rnw";
-  private static final String DISPERSION_ESTIMATION_WITHOUT_REPLICATES =
-      "/dispersionEstimationWithoutReplicates.Rnw";
-  private static final String KINETIC_DIFFANA = "/kineticAnadiff.Rnw";
-  private static final String NOT_KINETIC_DIFFANA = "/notKineticAnadiff.Rnw";
+  // dispersion estimation parameters
+  private DispersionMethod dispEstMethod;
+  private DispersionFitType dispEstFitType;
+  private DispersionSharingMode dispEstSharingMode;
 
-  private Design design;
-  private File expressionFilesDirectory;
-  private File outPath;
-  private String expressionFilesPrefix;
-  private String expressionFilesSuffix;
-  private RSConnectionNewImpl rConnection;
-  private final boolean rServeEnable;
+  //
+  // enums
+  //
+  /**
+   * Dispersion estimation method enum for DESeq differential analysis
+   */
+  public static enum DispersionMethod {
+
+    POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation method
+     * @return a string with the dispersion estimation method
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation method form its name
+     * @param name dispersion estimation method name
+     * @return a DispersionMethod or null if no DispersionMethod found for the
+     *         name
+     */
+    public static DispersionMethod getDispEstMethodFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionMethod dem : DispersionMethod.values()) {
+
+        if (dem.getName().toLowerCase().equals(lowerName)) {
+          return dem;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param method dispersion estimation method
+     */
+    DispersionMethod(String method) {
+
+      this.name = method;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation sharingMode enum for DESeq differential analysis
+   */
+  public static enum DispersionSharingMode {
+
+    FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation sharingMode name
+     * @return a string with the dispersion estimation sharingMode name
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation sharing mode form its name
+     * @param name dispersion estimation sharing mode name
+     * @return a DispersionSharingMode or null if no DispersionSharingMode found
+     *         for the name
+     */
+    public static DispersionSharingMode getDispEstSharingModeFromName(
+        final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionSharingMode desm : DispersionSharingMode.values()) {
+
+        if (desm.getName().toLowerCase().equals(lowerName)) {
+          return desm;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param name dispersion estimation sharingMode name
+     */
+    DispersionSharingMode(String name) {
+
+      this.name = name;
+    }
+
+  }
+
+  /**
+   * Dispersion estimation fitType enum for DESeq differential analysis
+   */
+  public static enum DispersionFitType {
+
+    PARAMETRIC("parametric"), LOCAL("local");
+
+    private String name;
+
+    /**
+     * Get the dispersion estimation fitType name
+     * @return a string with the dispersion estimation fitType name
+     */
+    public String getName() {
+
+      return this.name;
+    }
+
+    /**
+     * Get the Dispersion estimation fit type form its name
+     * @param name dispersion estimation fit type name
+     * @return a DispersionFitType or null if no DispersionFitType found for the
+     *         name
+     */
+    public static DispersionFitType getDispEstFitTypeFromName(final String name) {
+
+      if (name == null)
+        return null;
+
+      final String lowerName = name.trim().toLowerCase();
+
+      for (DispersionFitType deft : DispersionFitType.values()) {
+
+        if (deft.getName().toLowerCase().equals(lowerName)) {
+          return deft;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Constructor
+     * @param name dispersion estimation fitType name
+     */
+    DispersionFitType(String name) {
+
+      this.name = name;
+    }
+  }
 
   //
   // Public methods
   //
 
-  public void run() throws EoulsanException {
+  @Override
+  public void run(final Context context) throws EoulsanException {
 
-    if (this.rServeEnable)
-      runRserveRnwScript();
-    else
-      runLocalRnwScript();
-
-  }
-
-  private void runRserveRnwScript() throws EoulsanException {
-
-    try {
-
-      // print lof info
-      LOGGER.info("Differential analysis : Rserve mode");
-      LOGGER.info("Rserve server name : " + this.rConnection.getServerName());
-
-      // create an experiment map
-      HashMap<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experiment = experiments.get(cle);
-
-        putExpressionFiles(experiment);
-
-        String rScript = writeScript(experiment);
-        runRnwScript(rScript);
-
-        removeExpressionFiles(experiment);
-        this.rConnection.removeFile(rScript);
-        this.rConnection.getAllFiles(outPath.toString() + "/");
-      }
-
-    } catch (REngineException e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
-    } catch (REXPMismatchException e) {
-      throw new EoulsanException("Error while getting file : " + e.getMessage());
-
-    } finally {
-
-      try {
-
-        if (this.rServeEnable) {
-          this.rConnection.removeAllFiles();
-          this.rConnection.disConnect();
-        }
-
-      } catch (Exception e) {
-        throw new EoulsanException("Error while removing files on server : "
-            + e.getMessage());
-      }
-    }
-  }
-
-  private void runLocalRnwScript() throws EoulsanException {
-
-    try {
-
-      // print log info
-      LOGGER.info("Differential analysis : local mode");
-
-      // create an experiment map
-      HashMap<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experiment = experiments.get(cle);
-
-        String rScript = writeScript(experiment);
-        runRnwScript(rScript);
-      }
-
-    } catch (REngineException e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
+    if (context.getSettings().isRServeServerEnabled()) {
+      getLogger().info("Differential analysis : Rserve mode");
+      runRserveRnwScript(context);
+    } else {
+      getLogger().info("Differential analysis : local mode");
+      runLocalRnwScript(context);
     }
   }
 
   //
-  // Private methods
+  // Protected methods
   //
 
-  /**
-   * Write the R script
-   * @return rScript a String containing script to run
-   * @throws EoulsanException
-   */
-  private String writeScript(List<Sample> experiment) throws EoulsanException {
+  @Override
+  protected String generateScript(final List<Sample> experimentSamplesList,
+      final Context context) throws EoulsanException {
 
-    final Map<String, List<Integer>> conditionsMap =
-        new HashMap<String, List<Integer>>();
+    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 
-    final List<Integer> rSampleIds = new ArrayList<Integer>();
-    final List<String> rSampleNames = new ArrayList<String>();
-    final List<String> rCondNames = new ArrayList<String>();
-    final List<String> rRepTechGroup = new ArrayList<String>();
+    final List<Integer> rSampleIds = Lists.newArrayList();
+    final List<String> rSampleNames = Lists.newArrayList();
+    final List<String> rCondNames = Lists.newArrayList();
+    final List<String> rRepTechGroup = Lists.newArrayList();
     int i = 0;
 
-    // Get samples ids, conditions names/indexes and replicate types
-    for (Sample s : experiment) {
+    // Get samples ids, conditions names/indexes and repTechGoups
+    for (Sample s : experimentSamplesList) {
 
       if (!s.getMetadata().isConditionField())
         throw new EoulsanException("No condition field found in design file.");
@@ -211,13 +271,14 @@ public class DiffAna {
         rRepTechGroup.add(repTechGroup);
       }
 
+      final List<Integer> index;
       if (!conditionsMap.containsKey(condition)) {
-        List<Integer> index = new ArrayList<Integer>();
-        index.add(i);
+        index = Lists.newArrayList();
         conditionsMap.put(condition, index);
       } else {
-        conditionsMap.get(condition).add(i);
+        index = conditionsMap.get(condition);
       }
+      index.add(i);
 
       rSampleIds.add(s.getId());
       rSampleNames.add(s.getName());
@@ -226,127 +287,137 @@ public class DiffAna {
       i++;
     }
 
-    // Determine if there is biological replicates
-    boolean biologicalReplicate = false;
-    for (String condition : rCondNames) {
-      List<Integer> condPos = conditionsMap.get(condition);
-      for (i = 0; i < condPos.size() - 1; i++) {
-        int pos1 = condPos.get(i);
-        int pos2 = condPos.get(i + 1);
-        if (!rRepTechGroup.get(pos1).equals(rRepTechGroup.get(pos2))) {
-          biologicalReplicate = true;
-        }
-        if (biologicalReplicate)
-          break;
-      }
-      if (biologicalReplicate)
-        break;
-    }
+    checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
-    // Check repTechGroup field coherence
-    for (i = 0; i < rRepTechGroup.size(); i++) {
-      String repTechGroup1 = rRepTechGroup.get(i);
-      String condition = rCondNames.get(i);
-      for (int j = 0; j < rRepTechGroup.size(); j++) {
-        String repTechGroup2 = rRepTechGroup.get(j);
-        if (!repTechGroup2.equals(repTechGroup1)) {
-          if (rCondNames.get(j).equals(condition)) {
-            throw new EoulsanException(
-                "There is a mistake in RepTechGroup field of design file : "
-                    + "two condition have the same repTechGroup");
-          }
-        }
-      }
-    }
+    // Create Rnw script stringbuilder with preamble
+    String pdfTitle =
+        escapeUnderScore(experimentSamplesList.get(0).getMetadata()
+            .getExperiment())
+            + " differential analysis";
+    final StringBuilder sb =
+        generateRnwpreamble(experimentSamplesList, pdfTitle);
 
-    final StringBuilder sb = new StringBuilder();
+    /*
+     * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
+     * problem while executing R script
+     */
+    replaceRtgNA(rRepTechGroup, rSampleNames);
 
-    sb.append("\\documentclass[a4paper,10pt]{article}\n");
-    sb.append("\\usepackage[utf8]{inputenc}\n");
-    sb.append("\\usepackage{lmodern}\n");
-    sb.append("\\usepackage{a4wide}\n");
-    sb.append("\\usepackage{marvosym}\n");
-    sb.append("\\usepackage{graphicx}\n\n");
+    // Add reference if there is one
+    writeReferenceField(experimentSamplesList, sb);
 
-    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE}\n");
-    sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
+    // Add sampleNames vector
+    generateSampleNamePart(rSampleNames, sb);
 
-    sb.append("\\title{"
-        + experiment.get(1).getMetadata().getExperiment() + " analysis}\n\n");
+    // Add SampleIds vector
+    generateSampleIdsPart(rSampleIds, sb);
 
-    sb.append("\\begin{document}\n");
+    // Add file names vector
+    generateExpressionFileNamesPart(sb);
 
-    sb.append("\\maketitle\n\n");
+    // Add repTechGroupVector
+    generateRepTechGroupPart(rRepTechGroup, sb);
 
-    // Add function part of the script
-    sb.append("<<echo=FALSE>>=\n");
+    // Add condition to R script
+    generateConditionPart(rCondNames, sb);
 
-    sb.append("### Auto generated by ");
-    sb.append(Globals.APP_NAME);
-    sb.append(" ");
-    sb.append(Globals.APP_VERSION_STRING);
-    sb.append(" on ");
-    sb.append(new Date(System.currentTimeMillis()));
-    sb.append(" ###\n\n");
-
-    // add function part to string builder
-    sb.append(readStaticScript(NORMALISATION_FUNCTIONS));
+    // Add projectPath, outPath and projectName
+    sb.append("# projectPath : path of count files directory\n");
+    sb.append("projectPath <- \"\"\n");
+    sb.append("# outPath path of the outputs\n");
+    sb.append("outPath <- \"./\"\n");
+    sb.append("projectName <- ");
+    sb.append("\""
+        + experimentSamplesList.get(0).getMetadata().getExperiment() + "\""
+        + "\n");
     sb.append("@\n\n");
 
-    sb.append("\\section{Initialization}\n");
-    sb.append("<<>>=\n");
-    // determine if there is technical replicates
-    boolean rep = false;
-    for (int j = 0; j < rSampleIds.size(); j++) {
-      if (!rRepTechGroup.get(j).toLowerCase().equals("na")) {
-        rep = true;
-      } else {
-        // replace "na" values of repTechGroup by unique sample ids to avoid
-        // pooling problem while executing R script
-        rRepTechGroup.set(j, rSampleIds.get(j).toString());
+    sb.append(readStaticScript(TARGET_CREATION));
+
+    sb.append("\\section{Analysis}\n\n");
+    sb.append("<<beginAnalysis>>=\n");
+
+    // Add delete unexpressed gene call
+    sb.append("target$counts <- deleteUnexpressedGene(target$counts)\n");
+
+    if (isTechnicalReplicates(rRepTechGroup))
+      sb.append("target <- poolTechRep(target)\n\n");
+
+    sb.append("target <- sortTarget(target)\n");
+    sb.append("countDataSet <- normDESeq(target$counts, target$condition)\n");
+
+    sb.append("@\n");
+
+    // generate dispersion estimation part
+    String dispersionEstimation = readStaticScript(DISPERSION_ESTIMATION);
+    if (!isBiologicalReplicates(conditionsMap, rCondNames, rRepTechGroup)) {
+
+      if (!(this.dispEstMethod == DispersionMethod.BLIND)
+          || !(this.dispEstSharingMode == DispersionSharingMode.FIT_ONLY)) {
+        throw new EoulsanException(
+            "There is no replicates in this experiment, you have to use "
+                + "disp_est_method=blind and disp_est_sharingMode=fit-only in "
+                + "diffana parameters");
       }
     }
 
-    // Test if there is a reference field for kinetic experiments
-    if (isReference(experiment)) {
-      for (Sample s : experiment) {
-        boolean refval = s.getMetadata().isReference();
-        if (refval) {
-          // add reference to R script
-          sb.append("ref <- "
-              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
-          break;
-        }
+    dispersionEstimation =
+        dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${SHARINGMODE}",
+            this.dispEstSharingMode.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${FITTYPE}",
+            this.dispEstFitType.getName());
+
+    // Add dispersion estimation part to stringbuilder
+    sb.append(dispersionEstimation);
+
+    // Add plot dispersion
+    if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION)) {
+
+      List<String> passedConditionName = new ArrayList<String>();
+      for (String cond : rCondNames) {
+
+        if (passedConditionName.indexOf(cond) == -1) {
+          sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
+          sb.append("fitInfo <- fitInfo(countDataSet, name = \""
+              + cond + "\")\n");
+          sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
+          sb.append("@\n");
+          
+          passedConditionName.add(cond);
+        } else {}
       }
-    }
-
-    // Add normalization part
-    if (rep)
-      writeWithTechnicalReplicate(sb, rSampleIds, rSampleNames, rCondNames,
-          rRepTechGroup, experiment.get(1).getMetadata().getExperiment());
-    else
-      writeWithoutTechnicalReplicates(sb, rSampleIds, rSampleNames, rCondNames,
-          experiment.get(1).getMetadata().getExperiment());
-
-    // add dispersion estimation part
-    if (biologicalReplicate) {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITH_REPLICATES));
     } else {
-      sb.append(readStaticScript(DISPERSION_ESTIMATION_WITHOUT_REPLICATES));
+
+      sb.append("<<dispersionPlot, fig=TRUE>>=\n");
+      sb.append("fitInfo <- fitInfo(countDataSet)\n");
+      sb.append("plotDispEsts(countDataSet, fitInfo)\n");
+      sb.append("@\n");
     }
 
-    if (isReference(experiment)) {
-      sb.append(readStaticScript(KINETIC_DIFFANA));
+    String anadiffPart = "";
+    // check if there is a reference
+    if (isReference(experimentSamplesList)) {
+      anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
     } else {
-      sb.append(readStaticScript(NOT_KINETIC_DIFFANA));
+      anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
     }
+    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    sb.append(anadiffPart);
 
+    // end document
+    sb.append("\\end{document}");
+
+    // create file
     String rScript = null;
     try {
       rScript =
-          experiment.get(1).getMetadata().getExperiment()
-              + "_" + "diffAna" + ".Rnw";
-      if (this.rServeEnable) {
+          "diffana_"
+              + experimentSamplesList.get(0).getMetadata().getExperiment()
+              + "_" + System.currentTimeMillis() + ".Rnw";
+      if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -360,326 +431,35 @@ public class DiffAna {
     }
 
     return rScript;
-
-  }
-
-  /**
-   * Put all expression files needed for the analysis on the R server
-   * @throws REngineException
-   */
-  private void putExpressionFiles(List<Sample> experiment)
-      throws REngineException {
-
-    int i;
-
-    for (Sample s : experiment) {
-      i = s.getId();
-
-      // put file on rserve server
-      this.rConnection.putFile(new File(expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix),
-          this.expressionFilesPrefix + i + this.expressionFilesSuffix);
-    }
-  }
-
-  private void removeExpressionFiles(List<Sample> experiment)
-      throws REngineException {
-    int i;
-
-    for (Sample s : experiment) {
-      i = s.getId();
-
-      // remove file from rserve server
-      this.rConnection.removeFile(expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
-    }
   }
 
   //
   // Private methods
   //
 
-  private HashMap<String, List<Sample>> experimentsSpliter() {
-    String exp = this.design.getSample(0).getMetadata().getExperiment();
-    List<Sample> samples = this.design.getSamples();
-    // create design HashMap
-    HashMap<String, List<Sample>> experimentTab =
-        new HashMap<String, List<Sample>>();
-    List<Sample> sampleList = new ArrayList<Sample>();
-    for (Sample s : samples) {
-      String expName = s.getMetadata().getExperiment();
-
-      if (exp.equals(expName)) {
-        sampleList.add(s);
-      }
-    }
-    // put first experiment
-    experimentTab.put(exp, sampleList);
-
-    // add other experiments
-    for (Sample s1 : samples) {
-      String expName = s1.getMetadata().getExperiment();
-      // reinitialize sampleList
-      sampleList = new ArrayList<Sample>();
-
-      exp = s1.getMetadata().getExperiment();
-
-      if (!experimentTab.containsKey(exp)) {
-        for (Sample s2 : this.design.getSamples()) {
-          expName = s2.getMetadata().getExperiment();
-          if (exp.equals(expName)) {
-            sampleList.add(s2);
-          }
-        }
-        experimentTab.put(exp, sampleList);
-      }
-    }
-
-    return experimentTab;
-  }
-
   /**
-   * Execute the analysis.
-   * @param rScript
-   * @throws IOException
-   * @throws REngineException
-   * @throws EoulsanException
-   */
-  private void runRnwScript(String rnwScript) throws REngineException,
-      EoulsanException {
-
-    if (this.rServeEnable) {
-      this.rConnection.executeRnwCode(rnwScript);
-
-    } else {
-
-      try {
-
-        final ProcessBuilder pb =
-            new ProcessBuilder("/usr/bin/R", "CMD", "Sweave", rnwScript);
-
-        // Set the temporary directory for R
-        pb.environment().put("TMPDIR", this.outPath.getAbsolutePath());
-
-        ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
-            System.currentTimeMillis());
-
-        if (!new File(rnwScript).delete())
-          LOGGER.warning("Unable to remove R script: " + rnwScript);
-
-      } catch (IOException e) {
-
-        throw new EoulsanException(
-            "Error while executing R script in diffana: " + e.getMessage());
-      }
-
-    }
-
-  }
-
-  /**
-   * Read a static part of the generated script.
-   * @return a String with the static part of the script
-   */
-  private String readStaticScript(String ST) {
-
-    final StringBuilder sb = new StringBuilder();
-
-    final InputStream is = DiffAna.class.getResourceAsStream(ST);
-
-    try {
-      final BufferedReader br = FileUtils.createBufferedReader(is);
-
-      String line;
-
-      while ((line = br.readLine()) != null) {
-
-        sb.append(line);
-        sb.append('\n');
-      }
-    } catch (IOException e) {
-    }
-
-    return sb.toString();
-  }
-
-  /**
-   * Write code with technical replicates.
-   * @param sb StringBuilder to use
-   * @param rSampleIds R samples ids
-   * @param rSampleNames R samples names
-   * @param rCondIndexes R conditions indexes
-   * @param rCondNames R conditions names
-   * @param rRepTechGroup R technical replicate group
-   */
-  private void writeWithTechnicalReplicate(final StringBuilder sb,
-      final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<String> rCondNames, final List<String> rRepTechGroup,
-      final String experimentName) {
-
-    // Add samples names to R script
-    sb.append("# create sample names vector\n");
-    sb.append("sampleNames <- c(");
-    boolean first = true;
-    for (String r : rSampleNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r.toLowerCase());
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // put sample ids into R vector
-    sb.append("sampleIds <- c(");
-    int i = 0;
-    for (int id : rSampleIds) {
-      i++;
-      sb.append("" + id);
-      if (i < rSampleIds.size())
-        sb.append(",");
-    }
-    sb.append(")\n\n");
-
-    // Add file names vector
-    sb.append("#create file names vector\n");
-    sb.append("fileNames <- paste(\"" + expressionFilesPrefix + '\"' + ',');
-    sb.append("sampleIds"
-        + ',' + '\"' + expressionFilesSuffix + '\"' + ',' + "sep=\"\"" + ")"
-        + "\n\n");
-
-    // Add repTechGroup vector
-    sb.append("# create technical replicates groups vector\n");
-    sb.append("repTechGroup <- c(");
-    first = true;
-    for (String r : rRepTechGroup) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add condition to R script
-    sb.append("# create condition vector\n");
-    sb.append("condition <- c(");
-    first = true;
-    for (String r : rCondNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add exp, projectPath, outPath and projectName
-    sb.append("# create vector of comparision to proceed\n");
-    sb.append("exp <- c()\n");
-    sb.append("# projectPath : path of count files directory\n");
-    sb.append("projectPath <- \"\"\n");
-    sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experimentName + "\"" + "\n");
-    sb.append("@\n\n");
-
-    // add not variable part of the analysis
-    sb.append(readStaticScript(NORMALISATION_WHITH_TECHREP));
-
-  }
-
-  /**
-   * Write normalization code without replicates
-   * @param sb A StringBuilder
-   * @param rSampleIds
-   * @param rSampleNames
+   * Determine if there is biological replicates in an experiment
+   * @param conditionsMap
    * @param rCondNames
+   * @param rRepTechGroup
+   * @return a boolean
    */
-  private void writeWithoutTechnicalReplicates(final StringBuilder sb,
-      final List<Integer> rSampleIds, final List<String> rSampleNames,
-      final List<String> rCondNames, String experimentName) {
+  private boolean isBiologicalReplicates(
+      Map<String, List<Integer>> conditionsMap, List<String> rCondNames,
+      List<String> rRepTechGroup) {
 
-    // Add samples names to R script
-    sb.append("# create sample names vector\n");
-    sb.append("sampleNames <- c(");
-    boolean first = true;
-    for (String r : rSampleNames) {
+    for (String condition : rCondNames) {
+      List<Integer> condPos = conditionsMap.get(condition);
 
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
+      for (int i = 0; i < condPos.size() - 1; i++) {
+        int pos1 = condPos.get(i);
+        int pos2 = condPos.get(i + 1);
+        if (!rRepTechGroup.get(pos1).equals(rRepTechGroup.get(pos2))) {
+          return true;
+        }
+      }
     }
-    sb.append(")\n\n");
-
-    // put sample ids into R vector
-    sb.append("sampleIds <- c(");
-    int i = 0;
-    for (int id : rSampleIds) {
-      i++;
-      sb.append("" + id);
-      if (i < rSampleIds.size())
-        sb.append(",");
-    }
-    sb.append(")\n\n");
-
-    // Add file names vector
-    sb.append("#create file names vector\n");
-    sb.append("fileNames <- paste(\"" + expressionFilesPrefix + '\"' + ',');
-    sb.append("sampleIds"
-        + ',' + '\"' + expressionFilesSuffix + '\"' + ',' + "sep=\"\"" + ")"
-        + "\n\n");
-
-    // Add repTechGroup vector equal to sampleNames to avoid error in R
-    // function buildTarget
-    sb.append("# create technical replicates groups vector\n");
-    sb.append("repTechGroup <- sampleNames\n\n");
-
-    // Add condition to R script
-    sb.append("# create condition vector\n");
-    sb.append("condition <- c(");
-    first = true;
-    for (String r : rCondNames) {
-
-      if (first)
-        first = false;
-      else
-        sb.append(',');
-      sb.append('\"');
-      sb.append(r);
-      sb.append('\"');
-    }
-    sb.append(")\n\n");
-
-    // Add exp, projectPath, outPath and projectName
-    sb.append("# create vector of comparision to proceed\n");
-    sb.append("exp <- c()\n");
-    sb.append("# projectPath : path of count files directory\n");
-    sb.append("projectPath <- \"\"\n");
-    sb.append("# outPath path of the outputs\n");
-    sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experimentName + "\"" + "\n");
-    sb.append("@\n\n");
-
-    // add not variable part of the analysis
-    sb.append(readStaticScript(NORMALISATION_WHITHOUT_TECHREP));
-
+    return false;
   }
 
   /**
@@ -688,58 +468,75 @@ public class DiffAna {
    * @return boolean isRef
    */
   private boolean isReference(List<Sample> experiment) {
-    boolean isRef = false;
-    if (experiment.get(1).getMetadata().isReferenceField()) {
-      for (Sample s : experiment) {
+
+    if (experiment == null
+        || experiment.size() == 0
+        || !experiment.get(0).getMetadata().isReferenceField())
+      return false;
+
+    for (Sample s : experiment) {
+      if (s.getMetadata().isReference()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Add the reference to R script if there is one
+   * @param experimentSamplesList
+   * @param sb
+   */
+  private void writeReferenceField(List<Sample> experimentSamplesList,
+      StringBuilder sb) {
+
+    if (experimentSamplesList.get(0).getMetadata().isReferenceField()) {
+
+      for (Sample s : experimentSamplesList) {
+
         if (s.getMetadata().isReference()) {
-          isRef = true;
+          // Add reference to R script
+          sb.append("ref <- "
+              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
           break;
         }
       }
     }
-    return isRef;
   }
 
-  //
-  // Constructor
-  //
+  /*
+   * Constructor
+   */
 
   /**
-   * Public constructor.
-   * @param design Design to set
+   * Public constructor
+   * @param design
+   * @param expressionFilesDirectory
+   * @param expressionFilesPrefix
+   * @param expressionFilesSuffix
+   * @param outPath
+   * @param rServerName
+   * @throws EoulsanException
    */
-  public DiffAna(final Design design, final File expressionFilesDirectory,
-      final String expressionFilesPrefix, final String expressionFilesSuffix,
-      final File outPath, final String rServerName) {
+  public DiffAna(Design design, File expressionFilesDirectory,
+      String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
+      DispersionMethod dispEstMethod, DispersionSharingMode dispEstSharingMode,
+      DispersionFitType dispEstFitType, String rServerName, boolean rServeEnable)
+      throws EoulsanException {
 
-    checkNotNull(design, "design is null.");
-    checkNotNull(expressionFilesDirectory,
-        "The path of the expression files is null.");
-    checkNotNull(expressionFilesPrefix,
-        "The prefix for expression files is null");
-    checkNotNull(expressionFilesSuffix,
-        "The suffix for expression files is null");
+    super(design, expressionFilesDirectory, expressionFilesPrefix,
+        expressionFilesSuffix, outPath, rServerName, rServeEnable);
 
-    this.design = design;
-    this.expressionFilesPrefix = expressionFilesPrefix;
-    this.expressionFilesSuffix = expressionFilesSuffix;
-
-    if (!(expressionFilesDirectory.isDirectory() && expressionFilesDirectory
-        .exists()))
+    if (dispEstMethod == null
+        || dispEstFitType == null || dispEstSharingMode == null) {
       throw new NullPointerException(
-          "The path of the expression files doesn't exist or is not a directory.");
+          "dispersion estimation fit type or method or sharing mode is null");
+    } else {
+      this.dispEstMethod = dispEstMethod;
+      this.dispEstFitType = dispEstFitType;
+      this.dispEstSharingMode = dispEstSharingMode;
+    }
 
-    this.expressionFilesDirectory = expressionFilesDirectory;
-
-    if (!(outPath.isDirectory() && outPath.exists()))
-      throw new NullPointerException(
-          "The outpath file doesn't exist or is not a directory.");
-
-    this.outPath = outPath;
-
-    this.rConnection = new RSConnectionNewImpl(rServerName);
-
-    this.rServeEnable = rServerName != null;
   }
 
 }

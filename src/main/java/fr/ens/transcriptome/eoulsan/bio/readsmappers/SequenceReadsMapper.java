@@ -27,10 +27,12 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -161,6 +163,8 @@ public interface SequenceReadsMapper {
 
   String getMapperArguments();
 
+  List<String> getListMapperArguments();
+  
   /**
    * Set the mapper additional arguments.
    * @param arguments the additional mapper arguments
@@ -185,35 +189,44 @@ public interface SequenceReadsMapper {
 
   /**
    * Map reads that has been written using writeInputEntry() methods.
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   *          mapper
    * @throws IOException if an error occurs while mapping the reads
    */
-  void map(File archiveIndexFile, File archiveIndexDir) throws IOException;
+  void map() throws IOException;
 
+  
+  
   /**
    * Map reads of fastq file in single end mode.
-   * @param readsFile fastq input file
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   *          mapper
+   * @param readsFile fastq input file mapper
    * @throws IOException if an error occurs while mapping the reads
    */
-  void map(File readsFile, File archiveIndexFile, File archiveIndexDir)
-      throws IOException;
+  void map(File readsFile) throws IOException;
 
   /**
    * Map reads of fastq file in paired end mode.
    * @param readsFile1 fastq input file with reads of the first end
-   * @param readsFile2 fastq input file with reads of the first end
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   *          mapper
+   * @param readsFile2 fastq input file with reads of the first end mapper
    * @throws IOException if an error occurs while mapping the reads
    */
-  void map(File readsFile1, File readsFile2, File archiveIndexFile,
-      File archiveIndexDir) throws IOException;
+  void map(File readsFile1, File readsFile2) throws IOException;
+
+  
+  /**
+   * mode single-end : method used only by bowtie mapper
+   * @param readsFile fastq input file with reads
+   * @param parser SAMParserLine which parses the outputstream without create a file
+   * @throws IOException
+   */
+  void map(File readsFile, SAMParserLine parserLine) throws IOException;
+  
+  /**
+   * mode pair-end : method used only by bowtie mapper
+   * @param readsFile1 fastq input file with reads
+   * @param readsFile2 fastq input file with reads
+   * @param parser SAMParserLine which parses the outputstream without create a file
+   * @throws IOException
+   */
+  void map(File readsFile1, File readsFile2, SAMParserLine parserLine) throws IOException;
 
   /**
    * Get the output of the mapper as an SAM file.
@@ -237,12 +250,14 @@ public interface SequenceReadsMapper {
    * Initialize the mapper.
    * @param pairEnd true if the paired end mode must be enable
    * @param fastqFormat the format of the fastq files
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index for the
    * @param incrementer the incrementer to report the processing of the fastq
    *          files
    * @param counterGroup the group for the reporter
    */
-  void init(boolean pairEnd, FastqFormat fastqFormat,
-      ReporterIncrementer incrementer, String counterGroup);
+  void init(boolean pairEnd, FastqFormat fastqFormat, File archiveIndexFile,
+      File archiveIndexDir, ReporterIncrementer incrementer, String counterGroup) throws IOException ;
 
   /**
    * Get the DataFormat for genome index for the mapper.

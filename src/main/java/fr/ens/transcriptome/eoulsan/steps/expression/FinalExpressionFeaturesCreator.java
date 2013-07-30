@@ -97,7 +97,7 @@ public class FinalExpressionFeaturesCreator {
       if (o == this)
         return true;
 
-      if (o == null || !(o instanceof ExpressionFeature))
+      if (!(o instanceof ExpressionFeature))
         return false;
 
       final ExpressionFeature et = (ExpressionFeature) o;

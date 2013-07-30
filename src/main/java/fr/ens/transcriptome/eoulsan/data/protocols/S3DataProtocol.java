@@ -505,11 +505,6 @@ public class S3DataProtocol implements DataProtocol {
 
       final Settings settings = EoulsanRuntime.getSettings();
 
-      if (settings.isDebug()) {
-        LOGGER.info("AWS access key: " + settings.getAWSAccessKey());
-        LOGGER.info("AWS secret key: " + settings.getAWSSecretKey());
-      }
-
       this.s3 =
           new AmazonS3Client(new BasicAWSCredentials(
               settings.getAWSAccessKey(), settings.getAWSSecretKey()));

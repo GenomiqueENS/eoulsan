@@ -203,8 +203,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       throws IOException {
 
     // Init mapper
-    mapper.init(false, s.getMetadata().getFastqFormat(), reporter,
-        COUNTER_GROUP);
+    mapper.init(false, s.getMetadata().getFastqFormat(), archiveIndexFile,
+        indexDir, reporter, COUNTER_GROUP);
 
     // Set mapper arguments
     final int mapperThreads =
@@ -217,7 +217,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " threads option");
 
     // Process to mapping
-    mapper.map(inFile, archiveIndexFile, indexDir);
+    mapper.map(inFile);
 
   }
 
@@ -240,8 +240,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       throws IOException {
 
     // Init mapper
-    mapper
-        .init(true, s.getMetadata().getFastqFormat(), reporter, COUNTER_GROUP);
+    mapper.init(true, s.getMetadata().getFastqFormat(), archiveIndexFile,
+        indexDir, reporter, COUNTER_GROUP);
 
     // Set mapper arguments
     final int mapperThreads =
@@ -254,7 +254,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         + " with " + mapperThreads + " threads option");
 
     // Process to mapping
-    mapper.map(inFile1, inFile2, archiveIndexFile, indexDir);
+    mapper.map(inFile1, inFile2);
   }
 
   /**

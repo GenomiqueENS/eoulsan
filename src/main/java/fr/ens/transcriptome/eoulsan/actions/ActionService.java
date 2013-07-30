@@ -38,7 +38,6 @@ import com.google.common.collect.Lists;
 public class ActionService {
 
   private static ActionService service;
-  private final ServiceLoader<Action> loader;
 
   //
   // Static method
@@ -74,7 +73,7 @@ public class ActionService {
 
     final String actionNameLower = actionName.toLowerCase();
 
-    final Iterator<Action> it = this.loader.iterator();
+    final Iterator<Action> it = ServiceLoader.load(Action.class).iterator();
 
     while (it.hasNext()) {
 
@@ -93,17 +92,17 @@ public class ActionService {
    * @return a list with all the available actions
    */
   public List<Action> getActions() {
-    
+
     final List<Action> result = Lists.newArrayList();
-    final Iterator<Action> it = this.loader.iterator();
+    final Iterator<Action> it = ServiceLoader.load(Action.class).iterator();
 
     while (it.hasNext()) {
       result.add(it.next());
     }
-    
+
     return result;
   }
-  
+
   //
   // Constructor
   //
@@ -112,8 +111,6 @@ public class ActionService {
    * Private constructor.
    */
   private ActionService() {
-
-    loader = ServiceLoader.load(Action.class);
   }
 
 }

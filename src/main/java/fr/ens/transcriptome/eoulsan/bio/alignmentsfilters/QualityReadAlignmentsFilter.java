@@ -44,7 +44,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
   @Override
   public String getName() {
-    return "mappingquality";
+    return FILTER_NAME;
   }
 
   @Override
@@ -120,6 +120,14 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
     if (this.qualityThreshold < 0.0)
       throw new IllegalArgumentException("Quality threshold is not set for "
           + getName() + " alignments filter.");
+  }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName()
+        + "{name=" + getName() + ", qualityThreshold=" + this.qualityThreshold
+        + "}";
   }
 
 }

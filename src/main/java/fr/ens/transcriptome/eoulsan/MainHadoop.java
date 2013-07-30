@@ -24,63 +24,23 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-import fr.ens.transcriptome.eoulsan.actions.Action;
-import fr.ens.transcriptome.eoulsan.actions.ActionService;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
-
 /**
  * Main class in Hadoop mode.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public final class MainHadoop {
+public final class MainHadoop extends Main {
 
-  /**
-   * Main method. This method is called by MainHadoop.
-   * @param args command line arguments
-   */
-  public static void main(final String[] args) {
+  @Override
+  protected void initializeRuntime(final Settings settings) {
 
-    if (args.length == 0) {
+    HadoopEoulsanRuntime.newEoulsanRuntime(settings);
+  }
 
-      System.out.println("hadoop jar "
-          + Globals.APP_NAME_LOWER_CASE + ".jar command [arguments]");
+  @Override
+  protected String getHelpEoulsanCommand() {
 
-      Common.exit(0);
-    }
-
-    // Initialize Eoulsan runtime
-    try {
-      HadoopEoulsanRuntime.newEoulsanRuntime();
-    } catch (EoulsanException e) {
-      Common.showErrorMessageAndExit(e.getMessage());
-    }
-
-    // Set action name and arguments
-    final String actionName = args[0].trim().toLowerCase();
-    final String[] arguments = StringUtils.arrayWithoutFirstsElement(args, 1);
-
-    // Search action
-    final Action action = ActionService.getInstance().getAction(actionName);
-
-    // Action not found ?
-    if (action == null || !action.isHadoopJarMode()) {
-      Common.showErrorMessageAndExit("Unknown action: "
-          + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
-          + " -help for more help.\n");
-    }
-
-    // Test if action can be executed with current platform
-    if (!action.isCurrentArchCompatible()) {
-      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
-          + "\nThe " + action.getName() + " of " + Globals.APP_NAME
-          + " is not available for your platform.");
-
-    }
-
-    // Run action
-    action.action(arguments);
-
+    return "hadoop jar " + Globals.APP_NAME_LOWER_CASE + ".jar";
   }
 
   //
@@ -88,9 +48,12 @@ public final class MainHadoop {
   //
 
   /**
-   * Private constructor.
+   * Constructor.
+   * @param args command line arguments
    */
-  private MainHadoop() {
+  protected MainHadoop(final String[] args) {
+
+    super(args);
   }
 
 }

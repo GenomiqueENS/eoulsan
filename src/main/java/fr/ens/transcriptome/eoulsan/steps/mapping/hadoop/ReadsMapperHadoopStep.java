@@ -205,7 +205,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     job.setOutputValueClass(Text.class);
 
     // Set the number of reducers
-    // job.setNumReduceTasks(1);
+    job.setNumReduceTasks(0);
 
     // Set output path
     FileOutputFormat.setOutputPath(job,

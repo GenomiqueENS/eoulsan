@@ -41,7 +41,7 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public String getName() {
 
-    return "gsnapfilter";
+    return FILTER_NAME;
   }
 
   @Override
@@ -53,7 +53,7 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null || records.isEmpty())
       return;
 
     // single-end mode
@@ -68,4 +68,11 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
         records.removeAll(records);
     }
   }
+
+  @Override
+  public String toString() {
+
+    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
+  }
+
 }

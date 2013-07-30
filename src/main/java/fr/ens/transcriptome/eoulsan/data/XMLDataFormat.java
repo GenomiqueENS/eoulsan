@@ -317,7 +317,7 @@ public final class XMLDataFormat extends AbstractDataFormat {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof DataFormat)) {
+    if (!(o instanceof DataFormat)) {
       return false;
     }
 

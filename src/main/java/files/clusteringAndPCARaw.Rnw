@@ -1,0 +1,11 @@
+	\item Compute hierarchical clustering on raw data and plot dendrogram
+
+<<clusterRaw,fig=TRUE, width=12, height=8>>=
+repClust(target)
+@
+
+	\item Raw samples PCA
+	
+<<rawPCA, fig=TRUE, width=12, height=8>>=
+plotSamplesPCA(target, label=T)
+@

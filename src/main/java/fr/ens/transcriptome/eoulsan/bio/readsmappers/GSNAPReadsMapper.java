@@ -26,11 +26,14 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -47,8 +50,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final String MAPPER_EXECUTABLE = "gsnap_2012-07-12";
-  private static final String INDEXER_EXECUTABLE = "gmap_build_2012-07-12";
+  private static final String MAPPER_EXECUTABLE = "gsnap";
+  private static final String[] INDEXER_EXECUTABLES = new String[] {
+      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -116,17 +120,44 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.GMAP_INDEX_ZIP;
+    return DataFormats.GSNAP_INDEX_ZIP;
   }
 
   @Override
   protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
+    return null;
   }
 
   @Override
-  protected String getIndexerCommand(String indexerPathname,
+  protected String[] getIndexerExecutables() {
+
+    return INDEXER_EXECUTABLES.clone();
+  }
+
+  @Override
+  protected List<String> getIndexerCommand(String indexerPathname,
+      String genomePathname) {
+    List<String> cmd = new ArrayList<String>();
+    final String binariesDirectory =
+        new File(indexerPathname).getParentFile().getAbsolutePath();
+    final String genomeDirectory =
+        new File(genomePathname).getParentFile().getAbsolutePath();
+
+    cmd.add(indexerPathname);
+    cmd.add("-B");
+    cmd.add(binariesDirectory);
+    cmd.add("-D");
+    cmd.add(genomeDirectory);
+    cmd.add("-d");
+    cmd.add("genome");
+    cmd.add(genomePathname);
+
+    return cmd;
+  }
+
+  // TODO to remove
+  protected String getIndexerCommand_OLD(String indexerPathname,
       String genomePathname) {
 
     final String binariesDirectory =
@@ -154,17 +185,35 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
             .toLowerCase() + "-outputFile-", ".sam");
 
     // Build the command line
-    final String cmd =
-        gsnapPath
-            + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
-            + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
-            + " -d genome " + getMapperArguments() + " "
-            + readsFile1.getAbsolutePath() + " " + readsFile2.getAbsolutePath()
-            + " > " + outputFile.getAbsolutePath() + " 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(gsnapPath);
+    cmd.add("-A");
+    cmd.add("sam");
+    cmd.add(getGSNAPQualityArgument(getFastqFormat()));
+    cmd.add("-t");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-D");
+    cmd.add(archiveIndexDir.getAbsolutePath());
+    cmd.add("-d");
+    cmd.add("genome");
+    if (getListMapperArguments() != null)
+      cmd.addAll(getListMapperArguments());
+    cmd.add(readsFile1.getAbsolutePath());
+    cmd.add(readsFile2.getAbsolutePath());
 
-    LOGGER.info(cmd);
+    cmd.add(">");
+    cmd.add(outputFile.getAbsolutePath());
 
-    final int exitValue = sh(cmd);
+    // Old version : cmd = gsnapPath
+    // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
+    // + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
+    // + " -d genome " + getMapperArguments() + " "
+    // + readsFile1.getAbsolutePath() + " " + readsFile2.getAbsolutePath()
+    // + " > " + outputFile.getAbsolutePath() + " 2> /dev/null";
+
+    LOGGER.info(cmd.toString());
+
+    final int exitValue = ProcessUtils.sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -190,17 +239,34 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
             .toLowerCase() + "-outputFile-", ".sam");
 
     // Build the command line
-    final String cmd =
-        gsnapPath
-            + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
-            + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
-            + " -d genome " + getMapperArguments() + " "
-            + readsFile.getAbsolutePath() + " > "
-            + outputFile.getAbsolutePath() + " 2> /dev/null";
+    final List<String> cmd = new ArrayList<String>();
+    cmd.add(gsnapPath);
+    cmd.add("-A");
+    cmd.add("sam");
+    cmd.add(getGSNAPQualityArgument(getFastqFormat()));
+    cmd.add("-t");
+    cmd.add(getThreadsNumber() + "");
+    cmd.add("-D");
+    cmd.add(archiveIndexDir.getAbsolutePath());
+    cmd.add("-d");
+    cmd.add("genome");
+    if (getListMapperArguments() != null)
+      cmd.addAll(getListMapperArguments());
+    cmd.add(readsFile.getAbsolutePath());
 
-    LOGGER.info(cmd);
+    cmd.add(">");
+    cmd.add(outputFile.getAbsolutePath());
 
-    final int exitValue = sh(cmd);
+    // Old version : cmd = gsnapPath
+    // + " -A sam " + getGSNAPQualityArgument(getFastqFormat()) + " -t "
+    // + getThreadsNumber() + " -D " + archiveIndexDir.getAbsolutePath()
+    // + " -d genome " + getMapperArguments() + " "
+    // + readsFile.getAbsolutePath() + " > "
+    // + outputFile.getAbsolutePath() + " 2> /dev/null";
+
+    LOGGER.info(cmd.toString());
+
+    final int exitValue = ProcessUtils.sh(cmd);
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for "
@@ -209,6 +275,19 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
     this.outputFile = outputFile;
 
+  }
+
+  @Override
+  protected void internalMap(final File readsFile1, final File readsFile2,
+      final File archiveIndex, final SAMParserLine parserLine)
+      throws IOException {
+    new UnsupportedOperationException();
+  }
+
+  @Override
+  protected void internalMap(final File readsFile, final File archiveIndex,
+      final SAMParserLine parserLine) throws IOException {
+    new UnsupportedOperationException();
   }
 
   private static final String getGSNAPQualityArgument(final FastqFormat format)
@@ -236,10 +315,13 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairedEnd, final FastqFormat fastqFormat,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
+      final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
 
-    super.init(pairedEnd, fastqFormat, incrementer, counterGroup);
+    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
+        incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 

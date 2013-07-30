@@ -43,6 +43,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
@@ -190,6 +191,19 @@ public class HadoopExecAction extends AbstractAction {
       argsList.add("hadoop");
       argsList.add("jar");
       argsList.add(repackagedJarFile.getCanonicalPath());
+
+      final Main main = Main.getInstance();
+
+      if (main.getLogLevelArgument() != null) {
+        argsList.add("-loglevel");
+        argsList.add(main.getLogLevelArgument());
+      }
+
+      if (main.getConfigurationFileArgument() != null) {
+        argsList.add("-conf");
+        argsList.add(main.getConfigurationFileArgument());
+      }
+
       argsList.add(ExecJarHadoopAction.ACTION_NAME);
 
       if (jobDescription != null) {

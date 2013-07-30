@@ -98,7 +98,7 @@ abstract class AbstractDataFormat implements DataFormat {
     if (o == this)
       return true;
 
-    if (o == null || !(o instanceof DataFormat)) {
+    if (!(o instanceof DataFormat)) {
       return false;
     }
 

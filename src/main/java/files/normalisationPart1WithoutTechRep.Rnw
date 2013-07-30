@@ -1,0 +1,48 @@
+
+	\item Barplot of null counts in raw data
+<<barplotNullRaw,fig=TRUE, width=12, height=8>>=
+# plot barplot of null counts by sample
+barplotNull(target)
+@
+
+	\item Delete rows (genes) with only null counts
+<<del>>=
+# delete unexpressed gene
+target$counts <- deleteUnexpressedGene(target$counts)
+@
+	\item Barplot of total counts in raw counts
+<<barplotTotalCountRaw, fig=TRUE, width=12, height=8>>=
+barplotTotalCount(target)
+@
+	\item Boxplot of log2(raw counts + 1)
+<<boxplotRaw, fig=TRUE, width=12, height=8>>=
+boxplotCounts(target)
+@
+	\item Density plot of log2(raw counts + 1)
+<<densityPlotRaw,fig=TRUE, width=12, height=8>>=
+densityplotRNA(target)
+@
+	\item{Save raw matrix}
+<<matrixRaw>>=
+saveCountMatrix(
+		target$counts,
+		# path of the file (do not omit the last "/")
+		outPath,
+		# file name
+		paste("diffana_", projectName,"_rawCountMatrix.tsv", sep="")
+)
+@
+
+	\item create countDataSet (DESeq object) with count matrix and estimate size
+	factor 
+
+<<cds>>=
+countDataSet <- normDESeq(target$counts, target$condition)
+# print size factors
+print("Size factors : ", quote=F)
+print(sizeFactors(countDataSet))
+@
+	\item Normalize count
+<<norm>>=
+normTarget <- normalizeTarget(target)
+@

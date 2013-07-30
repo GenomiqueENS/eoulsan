@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.core.ParamParser.DESIGN_FILE_PATH_CONSTANT_NAME;
+import static fr.ens.transcriptome.eoulsan.core.ParamParser.PARAMETERS_FILE_PATH_CONSTANT_NAME;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -198,6 +200,9 @@ public class ExecAction extends AbstractAction {
 
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
+      pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designFile.getPath());
+      pp.addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME, paramFile.getPath());
+
       final Command c = new Command();
 
       // Add execution info to log Step

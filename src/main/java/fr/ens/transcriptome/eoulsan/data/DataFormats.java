@@ -59,8 +59,8 @@ public class DataFormats {
       .getDataFormatFromName("bowtie2_index_zip");
 
   /** Gmap index data format. */
-  public static final DataFormat GMAP_INDEX_ZIP = registry
-      .getDataFormatFromName("gmap_index_zip");
+  public static final DataFormat GSNAP_INDEX_ZIP = registry
+      .getDataFormatFromName("gsnap_index_zip");
 
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM = registry
@@ -75,7 +75,7 @@ public class DataFormats {
       .getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
-  public static final DataFormat EXPRESSION_RESULTS_TXT = registry
+  public static final DataFormat EXPRESSION_RESULTS_TSV = registry
       .getDataFormatFromName("expression_results_tsv");
 
   /** Annotation data format. */

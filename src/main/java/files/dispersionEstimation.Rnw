@@ -1,0 +1,11 @@
+	\subsection{Differential analysis}
+
+		\subsubsection{Dispersion estimation}
+	
+<<dispertionEstimation>>=
+countDataSet <- estimateDispersions(countDataSet, 
+	sharingMode = "${SHARINGMODE}",
+	fitType = "${FITTYPE}",
+	method = "${METHOD}"
+)
+@

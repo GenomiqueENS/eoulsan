@@ -26,11 +26,12 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -168,12 +169,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         + sample.getMetadata().getFastqFormat());
 
     // Set read filters parameters
-    for (Map.Entry<String, String> e : getReadFilterParameters().entrySet()) {
-
-      jobConf.set(
-          ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
+    addParametersToJobConf(getReadFilterParameters(),
+        READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     //
     // Reads mapping parameters
@@ -214,18 +211,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Alignment filtering
     //
 
-    // Set counter group
-    // jobConf.set(SAMFilterMapper.MAPPING_QUALITY_THRESOLD_KEY,
-    // Integer.toString(getMappingQualityThreshold()));
-
     // Set read alignments filters parameters
-    for (Map.Entry<String, String> e : getAlignmentsFilterParameters()
-        .entrySet()) {
-
-      jobConf.set(
-          SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX + e.getKey(),
-          e.getValue());
-    }
+    addParametersToJobConf(getAlignmentsFilterParameters(),
+        SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,

@@ -26,28 +26,37 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterMapper.SAM_HEADER_FILE_PREFIX;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMParser;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+
+import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
-import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
@@ -59,6 +68,9 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
+  /** Logger. */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
   static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
@@ -66,7 +78,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   private final SAMParser parser = new SAMParser();
   private String counterGroup;
-  private ReadAlignmentsFilter filter;
+  private MultiReadAlignmentsFilter filter;
 
   private Text outKey = new Text();
   private Text outValue = new Text();
@@ -109,20 +121,60 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       final MultiReadAlignmentsFilterBuilder mrafb =
           new MultiReadAlignmentsFilterBuilder();
 
-      for (Map.Entry<String, String> e : conf) {
-
-        if (e.getKey().startsWith(MAP_FILTER_PARAMETER_KEY_PREFIX))
-          mrafb.addParameter(
-              e.getKey().substring(MAP_FILTER_PARAMETER_KEY_PREFIX.length()),
-              e.getValue());
-      }
+      // Add the parameters from the job configuration to the builder
+      mrafb.addParameters(jobConfToParameters(conf,
+          MAP_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
           mrafb.getAlignmentsFilter(new HadoopReporter(context),
               this.counterGroup);
+      LOGGER.info("Read alignments filters to apply: "
+          + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());
+    }
+
+    // Write SAM header
+    if (context.getTaskAttemptID().getTaskID().getId() == 0) {
+
+      // TODO change for Hadoop 2.0
+      final Path outputPath =
+          new Path(context.getConfiguration().get("mapred.output.dir"));
+
+      final FileSystem fs =
+          context.getWorkingDirectory().getFileSystem(
+              context.getConfiguration());
+
+      // Found the complete SAM header file
+      Path bestFile = null;
+      long maxLen = -1;
+
+      for (FileStatus status : fs.listStatus(outputPath)) {
+        if (status.getPath().getName().startsWith(SAM_HEADER_FILE_PREFIX)
+            && status.getLen() > maxLen) {
+          maxLen = status.getLen();
+          bestFile = status.getPath();
+        }
+      }
+
+      if (bestFile != null) {
+        final BufferedReader reader =
+            new BufferedReader(new InputStreamReader(fs.open(bestFile)));
+
+        String line = null;
+
+        while ((line = reader.readLine()) != null) {
+
+          final int indexOfFirstTab = line.indexOf("\t");
+          this.outKey.set(line.substring(0, indexOfFirstTab));
+          this.outValue.set(line.substring(indexOfFirstTab + 1));
+
+          context.write(this.outKey, this.outValue);
+        }
+
+        reader.close();
+      }
     }
 
   }
@@ -130,7 +182,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   /**
    * 'key': identifier of the aligned read, without the integer indicating the
    * pair member if data are in paired-end mode. 'value': alignments without the
-   * identifier part of the SAM line. 
+   * identifier part of the SAM line.
    */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,
