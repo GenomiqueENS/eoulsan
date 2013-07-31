@@ -103,7 +103,7 @@
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapper&lt;/name&gt;
-                                &lt;value&gt;bowtie&lt;/name&gt;
+                                &lt;value&gt;bowtie&lt;/value&gt;
                         &lt;/parameter&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapperarguments&lt;/name&gt;
