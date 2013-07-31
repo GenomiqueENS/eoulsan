@@ -190,6 +190,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Set the output value class
     job.setOutputValueClass(Text.class);
 
+    // Set the number of reducers
+    job.setNumReduceTasks(0);
+
     // Set output path
     FileOutputFormat.setOutputPath(job,
         new Path(context.getOutputDataFile(DataFormats.READS_TFQ, sample)
