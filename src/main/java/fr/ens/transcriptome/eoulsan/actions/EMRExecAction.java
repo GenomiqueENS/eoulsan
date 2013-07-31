@@ -28,8 +28,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -53,12 +51,10 @@ import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.AWSElasticMapReduceExecStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.LocalUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -74,9 +70,6 @@ public class EMRExecAction extends AbstractAction {
 
   /** Action name. */
   static final String ACTION_NAME = "emrexec";
-
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
 
   @Override
   public String getName() {
@@ -227,9 +220,6 @@ public class EMRExecAction extends AbstractAction {
       pp.addConstants(arguments);
 
       final Command c = new Command();
-
-      // Add execution info to log Step
-      c.addStep(ExecInfoLogStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       pp.parse(c);
 

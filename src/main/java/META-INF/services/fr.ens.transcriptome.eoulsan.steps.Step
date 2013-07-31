@@ -28,4 +28,3 @@ fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep
-fr.ens.transcriptome.eoulsan.steps.mgmt.local.ExecInfoLogStep

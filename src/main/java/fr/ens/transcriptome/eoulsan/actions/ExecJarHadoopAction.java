@@ -34,7 +34,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -59,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -81,9 +79,6 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   /** Name of this action. */
   public static final String ACTION_NAME = "execjarhadoop";
-
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
-      .emptySet();
 
   private static class HadoopExecutionArguments extends ExecutionArguments {
 
@@ -353,22 +348,12 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Create command object
       final Command c = new Command();
 
-      // Add init global logger Step
-      c.addStep(InitGlobalLoggerStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
-
-      // Add Copy design and parameter file Step
-      c.addStep(CopyDesignAndParametersToOutputStep.STEP_NAME,
-          EMPTY_PARAMEMETER_SET);
-
       // Parse param file
       final ParamParser pp =
           new ParamParser(PathUtils.createInputStream(paramPath, conf));
       pp.addConstants(arguments);
 
       pp.parse(c);
-
-      // Add download Step
-      c.addStep(HDFSDataDownloadStep.STEP_NAME, EMPTY_PARAMEMETER_SET);
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
@@ -382,16 +367,27 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Step uploadStep =
           new HadoopUploadStep(new DataFile(destURI.toString()), conf);
 
+      // Add init global logger Step
+      // Add Copy design and parameter file Step
       // Add terminal step if upload only
       final List<Step> firstSteps;
       if (uploadOnly) {
-        firstSteps = Arrays.asList(new Step[] {uploadStep, new TerminalStep()});
+        firstSteps =
+            Arrays.asList(new Step[] {uploadStep, new TerminalStep(),
+                new InitGlobalLoggerStep(),
+                new CopyDesignAndParametersToOutputStep()});
       } else {
-        firstSteps = Collections.singletonList(uploadStep);
+        firstSteps =
+            Arrays.asList(uploadStep, new InitGlobalLoggerStep(),
+                new CopyDesignAndParametersToOutputStep());
       }
 
+      // Add download Step
+      final List<Step> lastSteps =
+          Collections.singletonList((Step) new HDFSDataDownloadStep());
+
       // Execute
-      e.execute(firstSteps, null);
+      e.execute(firstSteps, lastSteps);
 
     } catch (FileNotFoundException e) {
 

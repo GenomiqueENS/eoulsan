@@ -93,7 +93,7 @@ public class Command {
    * Set the name
    * @param name The name to set
    */
-  public void setName(final String name) {
+  void setName(final String name) {
 
     if (name != null)
       this.name = name;
@@ -103,7 +103,7 @@ public class Command {
    * Set the description
    * @param description The description to set
    */
-  public void setDescription(final String description) {
+  void setDescription(final String description) {
 
     if (description != null)
       this.description = description;
@@ -113,7 +113,7 @@ public class Command {
    * Set the author.
    * @param author The author to set
    */
-  public void setAuthor(final String author) {
+  void setAuthor(final String author) {
 
     if (author != null)
       this.author = author;
@@ -123,7 +123,7 @@ public class Command {
    * Set globals parameters.
    * @param parameters parameters to set
    */
-  public void setGlobalParameters(final Set<Parameter> parameters) {
+  void setGlobalParameters(final Set<Parameter> parameters) {
 
     this.globalParameters.addAll(parameters);
   }
@@ -143,7 +143,7 @@ public class Command {
    * @param parameters parameters of the step
    * @throws EoulsanException if an error occurs while adding the step
    */
-  public void addStep(final String stepName, final Set<Parameter> parameters)
+  void addStep(final String stepName, final Set<Parameter> parameters)
       throws EoulsanException {
 
     addStep(stepName, stepName, parameters, false);
@@ -157,7 +157,7 @@ public class Command {
    * @param skipStep true if the step must be skip
    * @throws EoulsanException if an error occurs while adding the step
    */
-  public void addStep(final String stepId, final String stepName,
+  void addStep(final String stepId, final String stepName,
       final Set<Parameter> parameters, final boolean skipStep)
       throws EoulsanException {
 
