@@ -55,11 +55,11 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -85,13 +85,11 @@ public class ExecJarHadoopAction extends AbstractAction {
   private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
       .emptySet();
 
-  private static class HadoopWorkflowContext extends WorkflowContext {
+  private static class HadoopExecutionArguments extends ExecutionArguments {
 
-    public HadoopWorkflowContext(final Path designPath, final Path paramPath,
-        final String jobDescription, final String jobEnvironment,
-        final long millisSinceEpoch) {
-
-      super(millisSinceEpoch, jobDescription, jobEnvironment);
+    public HadoopExecutionArguments(final long millisSinceEpoch,
+        final Path designPath, final Path paramPath) {
+      super(millisSinceEpoch);
 
       // Set base pathname
       setBasePathname(designPath.getParent().toString());
@@ -342,10 +340,11 @@ public class ExecJarHadoopAction extends AbstractAction {
       if (!designFs.exists(designPath))
         throw new FileNotFoundException(designPath.toString());
 
-      // Create execution context
-      final WorkflowContext context =
-          new HadoopWorkflowContext(designPath, paramPath, desc, env,
-              millisSinceEpoch);
+      // Create ExecutionArgument object
+      final ExecutionArguments arguments =
+          new HadoopExecutionArguments(millisSinceEpoch, paramPath, designPath);
+      arguments.setJobDescription(desc);
+      arguments.setJobEnvironment(env);
 
       // Read design file
       final Design design =
@@ -364,7 +363,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Parse param file
       final ParamParser pp =
           new ParamParser(PathUtils.createInputStream(paramPath, conf));
-      pp.addConstants(context);
+      pp.addConstants(arguments);
 
       pp.parse(c);
 
@@ -373,11 +372,11 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
-          context.getLogPathname() + File.separator + "eoulsan.log");
+          arguments.getLogPathname() + File.separator + "eoulsan.log");
 
       // Create executor
       final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath, context);
+          new HadoopExecutor(conf, c, design, designPath, paramPath, arguments);
 
       // Create upload step
       final Step uploadStep =

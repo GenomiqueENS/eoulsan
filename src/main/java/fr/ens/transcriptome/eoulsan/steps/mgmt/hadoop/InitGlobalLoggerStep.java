@@ -116,7 +116,6 @@ public class InitGlobalLoggerStep extends AbstractStep {
       LOGGER.setLevel(Globals.LOG_LEVEL);
 
       LOGGER.info(Globals.WELCOME_MSG + " Hadoop mode.");
-      context.logInfo();
 
     } catch (IOException e) {
       LOGGER.severe("Unable to configure global logger: " + loggerPath);

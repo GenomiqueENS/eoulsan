@@ -134,11 +134,6 @@ public interface Context {
   String getJarPathname();
 
   /**
-   * Add executor information to log.
-   */
-  void logInfo();
-
-  /**
    * Get EoulsanRuntime.
    * @return the EoulsanRuntime
    */

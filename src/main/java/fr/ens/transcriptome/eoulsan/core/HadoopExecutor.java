@@ -37,8 +37,8 @@ import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -55,12 +55,12 @@ public class HadoopExecutor extends Executor {
   private Configuration conf;
   private Path designPath;
   private Design design;
-  private WorkflowContext context;
+  private ExecutionArguments arguments;
 
   @Override
-  protected WorkflowContext getContext() {
+  protected ExecutionArguments getExecutionArguments() {
 
-    return this.context;
+    return this.arguments;
   }
 
   @Override
@@ -88,12 +88,12 @@ public class HadoopExecutor extends Executor {
     if (result == null || result.getStep() == null)
       return;
 
-    final boolean debug = this.context.getSettings().isDebug();
+    final boolean debug = EoulsanRuntime.getSettings().isDebug();
 
     try {
 
-      final Path logPath = new Path(getContext().getLogPathname());
-      final Path basePath = new Path(getContext().getBasePathname());
+      final Path logPath = new Path(getExecutionArguments().getLogPathname());
+      final Path basePath = new Path(getExecutionArguments().getBasePathname());
       final FileSystem logFs = logPath.getFileSystem(this.conf);
       final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
@@ -176,7 +176,7 @@ public class HadoopExecutor extends Executor {
         new OutputStreamWriter(fs.create(catPath),
             Globals.DEFAULT_FILE_ENCODING);
 
-    final Path basePath = new Path(getContext().getBasePathname());
+    final Path basePath = new Path(getExecutionArguments().getBasePathname());
     final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
     final StringBuilder sb = new StringBuilder();
@@ -228,13 +228,13 @@ public class HadoopExecutor extends Executor {
    */
   public HadoopExecutor(final Configuration conf, final Command command,
       final Design design, final Path designPath, final Path paramPath,
-      final WorkflowContext context) throws IOException {
+      final ExecutionArguments arguments) throws IOException {
 
     if (conf == null)
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.context = context;
+    this.arguments = arguments;
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -251,12 +251,12 @@ public class HadoopExecutor extends Executor {
     this.designPath = designPath;
 
     // Create Log directory if necessary
-    final Path logPath = new Path(context.getLogPathname());
+    final Path logPath = new Path(arguments.getLogPathname());
     if (!logPath.getFileSystem(conf).exists(logPath))
       PathUtils.mkdirs(logPath, conf);
 
     // Create Output directory if necessary
-    final Path outputPath = new Path(context.getOutputPathname());
+    final Path outputPath = new Path(arguments.getOutputPathname());
     if (!outputPath.getFileSystem(conf).exists(outputPath))
       PathUtils.mkdirs(outputPath, conf);
   }

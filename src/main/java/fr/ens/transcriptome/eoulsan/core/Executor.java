@@ -33,7 +33,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.Step;
@@ -91,10 +90,10 @@ public abstract class Executor {
   protected abstract void writeStepLogs(final StepResult result);
 
   /**
-   * Get the execution context
-   * @return the Context
+   * Get the execution arguments
+   * @return the execution arguments
    */
-  protected abstract WorkflowContext getContext();
+  protected abstract ExecutionArguments getExecutionArguments();
 
   /**
    * Check temporary directory.
@@ -156,13 +155,13 @@ public abstract class Executor {
       throw new EoulsanException("The command is null");
 
     // Get execution context
-    final WorkflowContext context = getContext();
+    final ExecutionArguments executionArguments = getExecutionArguments();
 
     // Add executor info
-    context.logInfo();
+    logInfo(executionArguments, this.command);
 
     // Check base path
-    if (context.getBasePathname() == null)
+    if (executionArguments.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Load design
@@ -176,7 +175,7 @@ public abstract class Executor {
 
     // Create Workflow
     final CommandWorkflow workflow =
-        new CommandWorkflow(context, getCommand(), firstSteps, endSteps, design);
+        new CommandWorkflow(executionArguments, getCommand(), firstSteps, endSteps, design);
 
     // Check temporary directory
     checkTemporaryDirectory();
@@ -203,8 +202,33 @@ public abstract class Executor {
     });
 
   }
+
   //
   // Utility methods
   //
+
+  /**
+   * Log some information about the current execution.
+   * @param execArgs execution information
+   * @param command parameter file content
+   */
+  private static void logInfo(ExecutionArguments execArgs, final Command command) {
+
+    LOGGER.info("EXECINFO Design path: " + execArgs.getDesignPathname());
+    LOGGER.info("EXECINFO Parameter path: " + execArgs.getParameterPathname());
+
+    LOGGER.info("EXECINFO Author: " + command.getAuthor());
+    LOGGER.info("EXECINFO Description: " + command.getDescription());
+    LOGGER.info("EXECINFO Command name: " + command.getName());
+
+    LOGGER.info("EXECINFO Job Id: " + execArgs.getJobId());
+    LOGGER.info("EXECINFO Job UUID: " + execArgs.getJobUUID());
+    LOGGER.info("EXECINFO Job Description: " + execArgs.getJobDescription());
+    LOGGER.info("EXECINFO Job Environment: " + execArgs.getJobEnvironment());
+
+    LOGGER.info("EXECINFO Base path: " + execArgs.getBasePathname());
+    LOGGER.info("EXECINFO Output path: " + execArgs.getOutputPathname());
+    LOGGER.info("EXECINFO Log path: " + execArgs.getLogPathname());
+  }
 
 }

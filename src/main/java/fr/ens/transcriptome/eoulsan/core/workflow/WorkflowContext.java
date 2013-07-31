@@ -24,11 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
@@ -36,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -49,26 +47,26 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 public class WorkflowContext implements Context {
 
   /** Logger. */
-  protected static final Logger logger = Logger.getLogger(Globals.APP_NAME);
+  protected static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private String basePathname;
   private String logPathname;
   private String outputPathname;
-  private String jobId;
+  private final String jobId;
   private final String host;
   private String designPathname;
   private String paramPathname;
   private String jarPathname;
-  private final String jobUUID = UUID.randomUUID().toString();
-  private String jobDescription = "";
-  private String jobEnvironment = "";
+  private final String jobUUID;
+  private final String jobDescription;
+  private final String jobEnvironment;
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
   private Workflow workflow;
   private AbstractWorkflowStep step;
 
-  private long contextCreationTime;
+  private final long contextCreationTime;
 
   //
   // Getters
@@ -170,7 +168,6 @@ public class WorkflowContext implements Context {
    */
   public void setBasePathname(final String basePath) {
 
-    logger.info("Base path: " + basePath);
     this.basePathname = basePath;
   }
 
@@ -180,7 +177,6 @@ public class WorkflowContext implements Context {
    */
   public void setLogPathname(final String logPath) {
 
-    logger.info("Log path: " + logPath);
     this.logPathname = logPath;
   }
 
@@ -190,7 +186,6 @@ public class WorkflowContext implements Context {
    */
   public void setOutputPathname(final String outputPath) {
 
-    logger.info("Output path: " + outputPath);
     this.outputPathname = outputPath;
   }
 
@@ -200,7 +195,6 @@ public class WorkflowContext implements Context {
    */
   public void setDesignPathname(final String designPathname) {
 
-    logger.info("Design path: " + designPathname);
     this.designPathname = designPathname;
   }
 
@@ -210,7 +204,6 @@ public class WorkflowContext implements Context {
    */
   public void setParameterPathname(final String paramPathname) {
 
-    logger.info("Parameter path: " + paramPathname);
     this.paramPathname = paramPathname;
   }
 
@@ -220,7 +213,6 @@ public class WorkflowContext implements Context {
    */
   public void setJarPathname(final String jarPathname) {
 
-    logger.info("Jar path: " + jarPathname);
     this.jarPathname = jarPathname;
   }
 
@@ -230,7 +222,6 @@ public class WorkflowContext implements Context {
    */
   void setCommandName(final String commandName) {
 
-    logger.info("Command name: " + commandName);
     this.commandName = commandName;
   }
 
@@ -240,7 +231,6 @@ public class WorkflowContext implements Context {
    */
   void setCommandDescription(final String commandDescription) {
 
-    logger.info("Command description: " + commandDescription);
     this.commandDescription = commandDescription;
   }
 
@@ -250,7 +240,6 @@ public class WorkflowContext implements Context {
    */
   void setCommandAuthor(final String commandAuthor) {
 
-    logger.info("Command author: " + commandAuthor);
     this.commandAuthor = commandAuthor;
   }
 
@@ -261,26 +250,6 @@ public class WorkflowContext implements Context {
   void setWorkflow(final Workflow workflow) {
 
     this.workflow = workflow;
-  }
-
-  /**
-   * Set job description.
-   * @param jobDescription job description
-   */
-  public void setJobDescription(final String jobDescription) {
-
-    logger.info("Job description: " + jobDescription);
-    this.jobDescription = jobDescription;
-  }
-
-  /**
-   * Set job environment.
-   * @param jobEnvironment job environment
-   */
-  public void setJobEnvironment(final String jobEnvironment) {
-
-    logger.info("Job environmnent: " + jobEnvironment);
-    this.jobEnvironment = jobEnvironment;
   }
 
   /**
@@ -296,40 +265,7 @@ public class WorkflowContext implements Context {
   // Other methods
   //
 
-  private void createExecutionName(final long millisSinceEpoch) {
 
-    final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-    cal.setTime(new Date(millisSinceEpoch));
-
-    final String creationDate =
-        String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-            cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
-            cal.get(Calendar.SECOND));
-
-    this.contextCreationTime = millisSinceEpoch;
-    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + creationDate;
-  }
-
-  @Override
-  public void logInfo() {
-
-    logger.info("EXECINFO Design path: " + this.getDesignPathname());
-    logger.info("EXECINFO Parameter path: " + this.getParameterPathname());
-
-    logger.info("EXECINFO Author: " + this.getCommandAuthor());
-    logger.info("EXECINFO Description: " + this.getCommandDescription());
-    logger.info("EXECINFO Command name: " + this.getCommandName());
-
-    logger.info("EXECINFO Job Id: " + this.getJobId());
-    logger.info("EXECINFO Job UUID: " + this.getJobUUID());
-    logger.info("EXECINFO Job Description: " + this.getJobDescription());
-    logger.info("EXECINFO Job Environment: " + this.getJobEnvironment());
-
-    logger.info("EXECINFO Base path: " + this.getBasePathname());
-    logger.info("EXECINFO Output path: " + this.getOutputPathname());
-    logger.info("EXECINFO Log path: " + this.getLogPathname());
-  }
 
   @Override
   public AbstractEoulsanRuntime getRuntime() {
@@ -346,7 +282,7 @@ public class WorkflowContext implements Context {
   @Override
   public Logger getLogger() {
 
-    return logger;
+    return LOGGER;
   }
 
   @Override
@@ -420,65 +356,36 @@ public class WorkflowContext implements Context {
   //
 
   /**
-   * Public constructor.
-   * @param millisSinceEpoch milliseconds since epoch (1.1.1970)
+   * Constructor.
+   * @param arguments arguments object
    */
-  public WorkflowContext(final long millisSinceEpoch,
-      final String jobDescription, final String jobEnvironment) {
+  WorkflowContext(final ExecutionArguments arguments) {
 
-    createExecutionName(millisSinceEpoch);
+    checkNotNull(arguments.getBasePathname(), "arguments cannot be null");
+
+    this.jobId = arguments.getJobId();
+    this.jobUUID = arguments.getJobUUID();
+    this.contextCreationTime = arguments.getCreationTime();
     this.host = SystemUtils.getHostName();
-    this.jobDescription = jobDescription == null ? "" : jobDescription;
-    this.jobEnvironment = jobEnvironment == null ? "" : jobEnvironment;
-  }
 
-  /**
-   * Constructor for a standard local job.
-   * @param designFile design file
-   * @param paramFile parameter file
-   * @param jobDescription job description
-   */
-  public WorkflowContext(final File designFile, final File paramFile,
-      final String jobDescription) {
+    checkNotNull(arguments.getBasePathname(), "base path cannot be null");
+    checkNotNull(arguments.getParameterPathname(),
+        "parameter path cannot be null");
+    checkNotNull(arguments.getDesignPathname(), "design cannot be null");
+    checkNotNull(arguments.getOutputPathname(), "output path cannot be null");
+    checkNotNull(arguments.getLogPathname(), "log path cannot be null");
+    checkNotNull(arguments.getJobDescription(),
+        "job description cannot be null");
+    checkNotNull(arguments.getJobEnvironment(),
+        "job environment cannot be null");
 
-    this(designFile, paramFile, jobDescription, null);
-  }
-
-  /**
-   * Constructor for a standard local job.
-   * @param designFile design file
-   * @param paramFile parameter file
-   * @param jobDescription job description
-   * @param jobEnvironment job environment
-   */
-  public WorkflowContext(final File designFile, final File paramFile,
-      final String jobDescription, final String jobEnvironment) {
-
-    this(System.currentTimeMillis(), jobDescription, jobEnvironment);
-
-    // Set the base path
-    setBasePathname(designFile.getAbsoluteFile().getParentFile()
-        .getAbsolutePath());
-
-    // Set the design path
-    setDesignPathname(designFile.getAbsolutePath());
-
-    // Set the parameter path
-    setParameterPathname(paramFile.getAbsolutePath());
-
-    final File logDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + getJobId());
-
-    final File outputDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + getJobId());
-
-    // Set the output path
-    setOutputPathname(outputDir.getAbsolutePath());
-
-    // Set the log path
-    setLogPathname(logDir.getAbsolutePath());
+    this.basePathname = arguments.getBasePathname();
+    this.paramPathname = arguments.getParameterPathname();
+    this.designPathname = arguments.getDesignPathname();
+    this.outputPathname = arguments.getOutputPathname();
+    this.logPathname = arguments.getLogPathname();
+    this.jobDescription = arguments.getJobDescription();
+    this.jobEnvironment = arguments.getJobEnvironment();
   }
 
 }

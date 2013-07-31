@@ -48,11 +48,11 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -195,13 +195,14 @@ public class UploadS3Action extends AbstractAction {
       if (!designFile.exists())
         throw new FileNotFoundException(designFile.toString());
 
-      // Create execution context
-      final WorkflowContext context =
-          new WorkflowContext(designFile, paramFile, jobDescription);
+      // Create ExecutionArgument object
+      final ExecutionArguments arguments =
+          new ExecutionArguments(paramFile, designFile);
+      arguments.setJobDescription(jobDescription);
 
       // Parse param file
       final ParamParser pp = new ParamParser(paramFile);
-      pp.addConstants(context);
+      pp.addConstants(arguments);
 
       final Command c = new Command();
 
@@ -212,10 +213,10 @@ public class UploadS3Action extends AbstractAction {
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
-          context.getLogPathname() + File.separator + "eoulsan.log");
+          arguments.getLogPathname() + File.separator + "eoulsan.log");
 
       // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile, context);
+      final Executor e = new LocalExecutor(c, designFile, paramFile, arguments);
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
           (Step) new TerminalStep()), null, true);
 

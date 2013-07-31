@@ -340,22 +340,23 @@ public class ParamParser {
   }
 
   /**
-   * Add context information to constants.
-   * @param context execution context
+   * Add job arguments information to constants.
+   * @param arguments job arguments
    * @throws EoulsanException if an error occurs while evaluating the constant
    */
-  public void addConstants(final Context context) throws EoulsanException {
+  public void addConstants(final ExecutionArguments arguments)
+      throws EoulsanException {
 
-    if (context == null)
+    if (arguments == null)
       return;
 
-    addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, context.getDesignPathname());
+    addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, arguments.getDesignPathname());
     addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME,
-        context.getParameterPathname());
-    addConstant(OUTPUT_PATH_CONSTANT_NAME, context.getOutputPathname());
-    addConstant(JOB_ID_CONSTANT_NAME, context.getJobId());
-    addConstant(JOB_UUID_CONSTANT_NAME, context.getJobUUID());
-    addConstant(LOGS_PATH_CONSTANT_NAME, context.getLogPathname());
+        arguments.getParameterPathname());
+    addConstant(OUTPUT_PATH_CONSTANT_NAME, arguments.getOutputPathname());
+    addConstant(JOB_ID_CONSTANT_NAME, arguments.getJobId());
+    addConstant(JOB_UUID_CONSTANT_NAME, arguments.getJobUUID());
+    addConstant(LOGS_PATH_CONSTANT_NAME, arguments.getLogPathname());
   }
 
   /**

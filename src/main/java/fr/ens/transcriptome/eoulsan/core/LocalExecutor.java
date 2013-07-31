@@ -30,8 +30,8 @@ import java.io.Writer;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -45,14 +45,14 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class LocalExecutor extends Executor {
 
-  private final WorkflowContext context;
+  private final ExecutionArguments arguments;
 
   private final File designFile;
 
   @Override
-  protected WorkflowContext getContext() {
+  protected ExecutionArguments getExecutionArguments() {
 
-    return this.context;
+    return this.arguments;
   }
 
   @Override
@@ -78,7 +78,8 @@ public class LocalExecutor extends Executor {
     try {
 
       final File logDir =
-          new File(this.designFile.getParent(), getContext().getJobId());
+          new File(this.designFile.getParent(), getExecutionArguments()
+              .getJobId());
 
       if (!logDir.exists())
         if (!logDir.mkdirs()) {
@@ -109,7 +110,7 @@ public class LocalExecutor extends Executor {
   @Override
   protected void checkTemporaryDirectory() {
 
-    final File tempDir = getContext().getSettings().getTempDirectoryFile();
+    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
     if (tempDir == null)
       throw new EoulsanRuntimeException("Temporary directory is null");
@@ -150,7 +151,7 @@ public class LocalExecutor extends Executor {
    * @param context execution context
    */
   public LocalExecutor(final Command command, final File designFile,
-      final File paramFile, final WorkflowContext context) {
+      final File paramFile, final ExecutionArguments arguments) {
 
     if (command == null)
       throw new NullPointerException("The command is null");
@@ -161,6 +162,6 @@ public class LocalExecutor extends Executor {
       throw new NullPointerException("The design file is null");
 
     this.designFile = designFile;
-    this.context = context;
+    this.arguments = arguments;
   }
 }

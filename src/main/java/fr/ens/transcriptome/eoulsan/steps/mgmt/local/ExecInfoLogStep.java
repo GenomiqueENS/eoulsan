@@ -70,7 +70,7 @@ public class ExecInfoLogStep extends AbstractStep {
   @Override
   public StepResult execute(Design design, Context context) {
 
-    context.logInfo();
+    //context.logInfo();
 
     return new StepResult(context, true, "");
   }

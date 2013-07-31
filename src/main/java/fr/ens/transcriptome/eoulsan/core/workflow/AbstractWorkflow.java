@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -472,15 +473,16 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /**
    * Protected constructor.
-   * @param context the context of the workflow
+   * @param executionArguments execution arguments
    * @param design design to use for the workflow
    */
-  protected AbstractWorkflow(final WorkflowContext context, final Design design) {
+  protected AbstractWorkflow(final ExecutionArguments executionArguments,
+      final Design design) {
 
-    Preconditions.checkNotNull(context, "Context argument cannot be null");
+    Preconditions.checkNotNull(executionArguments, "Argument cannot be null");
     Preconditions.checkNotNull(design, "Design argument cannot be null");
 
-    this.context = context;
+    this.context = new WorkflowContext(executionArguments);
     this.design = design;
   }
 

@@ -41,6 +41,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Command;
+import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -510,11 +511,11 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param design Design to use with the workflow
    * @throws EoulsanException
    */
-  public CommandWorkflow(final WorkflowContext context, final Command command,
-      final List<Step> firstSteps, final List<Step> endSteps,
-      final Design design) throws EoulsanException {
+  public CommandWorkflow(final ExecutionArguments executionArguments,
+      final Command command, final List<Step> firstSteps,
+      final List<Step> endSteps, final Design design) throws EoulsanException {
 
-    super(context, design);
+    super(executionArguments, design);
 
     if (command == null)
       throw new NullPointerException("The command is null.");
@@ -522,6 +523,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     this.command = command;
 
     // Set command information in context
+    final WorkflowContext context = getWorkflowContext();
     context.setCommandName(command.getName());
     context.setCommandDescription(command.getDescription());
     context.setCommandAuthor(command.getAuthor());
