@@ -175,7 +175,8 @@ public abstract class Executor {
 
     // Create Workflow
     final CommandWorkflow workflow =
-        new CommandWorkflow(executionArguments, getCommand(), firstSteps, endSteps, design);
+        new CommandWorkflow(executionArguments, getCommand(), firstSteps,
+            endSteps, design);
 
     // Check temporary directory
     checkTemporaryDirectory();
@@ -214,21 +215,22 @@ public abstract class Executor {
    */
   private static void logInfo(ExecutionArguments execArgs, final Command command) {
 
-    LOGGER.info("EXECINFO Design path: " + execArgs.getDesignPathname());
-    LOGGER.info("EXECINFO Parameter path: " + execArgs.getParameterPathname());
+    LOGGER.info("Design file path: " + execArgs.getDesignPathname());
+    LOGGER.info("Workflow parameter file path: "
+        + execArgs.getParameterPathname());
 
-    LOGGER.info("EXECINFO Author: " + command.getAuthor());
-    LOGGER.info("EXECINFO Description: " + command.getDescription());
-    LOGGER.info("EXECINFO Command name: " + command.getName());
+    LOGGER.info("Workflow Author: " + command.getAuthor());
+    LOGGER.info("Workflow Description: " + command.getDescription());
+    LOGGER.info("Workflow Name: " + command.getName());
 
-    LOGGER.info("EXECINFO Job Id: " + execArgs.getJobId());
-    LOGGER.info("EXECINFO Job UUID: " + execArgs.getJobUUID());
-    LOGGER.info("EXECINFO Job Description: " + execArgs.getJobDescription());
-    LOGGER.info("EXECINFO Job Environment: " + execArgs.getJobEnvironment());
+    LOGGER.info("Job Id: " + execArgs.getJobId());
+    LOGGER.info("Job UUID: " + execArgs.getJobUUID());
+    LOGGER.info("Job Description: " + execArgs.getJobDescription());
+    LOGGER.info("Job Environment: " + execArgs.getJobEnvironment());
 
-    LOGGER.info("EXECINFO Base path: " + execArgs.getBasePathname());
-    LOGGER.info("EXECINFO Output path: " + execArgs.getOutputPathname());
-    LOGGER.info("EXECINFO Log path: " + execArgs.getLogPathname());
+    LOGGER.info("Job Base path: " + execArgs.getBasePathname());
+    LOGGER.info("Job Output path: " + execArgs.getOutputPathname());
+    LOGGER.info("Job Log path: " + execArgs.getLogPathname());
   }
 
 }
