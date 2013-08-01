@@ -60,7 +60,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -352,13 +351,12 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Add terminal step if upload only
       final List<Step> firstSteps;
       if (uploadOnly) {
-        firstSteps =
-            Arrays.asList(new Step[] {uploadStep, new TerminalStep(),
-                new InitGlobalLoggerStep(),
-                new CopyDesignAndWorkflowFilesToOutputStep()});
+        firstSteps = Arrays.asList(new Step[] {uploadStep, new TerminalStep(),
+
+        new CopyDesignAndWorkflowFilesToOutputStep()});
       } else {
         firstSteps =
-            Arrays.asList(uploadStep, new InitGlobalLoggerStep(),
+            Arrays.asList(uploadStep,
                 new CopyDesignAndWorkflowFilesToOutputStep());
       }
 

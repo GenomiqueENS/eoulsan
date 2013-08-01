@@ -87,6 +87,11 @@ public abstract class Executor {
   protected abstract void checkTemporaryDirectory();
 
   /**
+   * Log system information.
+   */
+  protected abstract void logSysInfo();
+
+  /**
    * Check design.
    * @param design design to check
    * @throws EoulsanException if there is an issue with the design
@@ -125,8 +130,11 @@ public abstract class Executor {
   public void execute(final List<Step> firstSteps, final List<Step> lastSteps)
       throws EoulsanException {
 
-    // Add executor info
+    // Add general executor info
     logInfo(this.arguments, this.command);
+
+    // Add system info
+    logSysInfo();
 
     // Check base path
     if (this.arguments.getBasePathname() == null)
@@ -175,11 +183,11 @@ public abstract class Executor {
    * @param execArgs execution information
    * @param command workflow file content
    */
-  private static void logInfo(ExecutorArguments execArgs, final WorkflowCommand command) {
+  private static void logInfo(ExecutorArguments execArgs,
+      final WorkflowCommand command) {
 
     LOGGER.info("Design file path: " + execArgs.getDesignPathname());
-    LOGGER.info("Workflow file path: "
-        + execArgs.getWorkflowPathname());
+    LOGGER.info("Workflow file path: " + execArgs.getWorkflowPathname());
 
     LOGGER.info("Workflow Author: " + command.getAuthor());
     LOGGER.info("Workflow Description: " + command.getDescription());

@@ -24,22 +24,30 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
+import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -49,7 +57,14 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 public class HadoopExecutor extends Executor {
 
+  /** Logger */
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
+
   private Configuration conf;
+
+  private static final String ROOT_PATH = "/";
+  private static final String VAR_PATH = "/var";
+  private static final String TMP_PATH = "/tmp";
 
   @Override
   protected void writeStepLogs(final StepResult result) {
@@ -180,6 +195,96 @@ public class HadoopExecutor extends Executor {
 
     writer.write(sb.toString());
     writer.close();
+  }
+
+  @Override
+  protected void logSysInfo() {
+
+    HadoopInfo();
+
+    if (EoulsanRuntime.getSettings().isDebug())
+      sysInfo(conf);
+  }
+
+  //
+  // Other methods
+  //
+
+  private void sysInfo(final Configuration conf) {
+
+    try {
+
+      parseCpuinfo();
+      parseMeminfo();
+
+      df(new File(ROOT_PATH), conf);
+      df(new File(TMP_PATH), conf);
+      df(new File(VAR_PATH), conf);
+
+      // Log the usage of the hadoop temporary directory partition
+      final String hadoopTmp = conf.get("hadoop.tmp.dir");
+      if (hadoopTmp != null)
+        df(new File(hadoopTmp), conf);
+
+      // Log the usage of the Java temporary directory partition
+      final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory())
+        df(tmpDir, conf);
+    } catch (IOException e) {
+
+      LOGGER.warning("Error while get system information: " + e.getMessage());
+    }
+  }
+
+  private static final void parseCpuinfo() throws IOException {
+
+    final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
+
+    final String modelName = cpuinfo.getModelName();
+    final String processor = cpuinfo.getProcessor();
+    final String cpuMHz = cpuinfo.getCPUMHz();
+    final String bogomips = cpuinfo.getBogoMips();
+    final String cores = cpuinfo.getCores();
+
+    LOGGER.info("SYSINFO CPU model name: "
+        + (modelName == null ? "NA" : modelName));
+    LOGGER.info("SYSINFO CPU count: "
+        + (processor == null ? "NA" : ""
+            + (Integer.parseInt(processor.trim()) + 1)));
+    LOGGER.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    LOGGER.info("SYSINFO CPU clock: "
+        + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    LOGGER.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+  }
+
+  private static final void parseMeminfo() throws IOException {
+
+    final LinuxMemInfo meminfo = new LinuxMemInfo();
+    final String memTotal = meminfo.getMemTotal();
+
+    LOGGER.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+  }
+
+  private static final void df(final File f, final Configuration conf)
+      throws IOException {
+
+    DF df = new DF(f, conf);
+
+    LOGGER.info("SYSINFO "
+        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
+        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
+        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
+        + " available, " + df.getPercentUsed() + "% used");
+
+  }
+
+  private static final void HadoopInfo() {
+
+    LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
+    LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
+    LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
+    LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
+    LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
 
   //

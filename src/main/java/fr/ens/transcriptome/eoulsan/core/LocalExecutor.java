@@ -112,6 +112,12 @@ public class LocalExecutor extends Executor {
           "Temporary directory is not executable: " + tempDir);
   }
 
+  @Override
+  protected void logSysInfo() {
+
+    // Nothing special to log
+  }
+
   //
   // Constructor
   //
@@ -127,4 +133,5 @@ public class LocalExecutor extends Executor {
 
     super(arguments);
   }
+
 }
