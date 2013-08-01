@@ -44,7 +44,7 @@
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>parameter path</td><td>a path</td><td>The path to parameter file to use</td></tr>
+		<tr><td>workflow path</td><td>a path</td><td>The path to workflow file to use</td></tr>
 		<tr><td>design path</td><td>a path</td><td>The path design file to use</td></tr>
 		<tr><td>data path on HDFS</td><td>a path</td><td>The path where to upload data on HDFS</td></tr>
 	</table>
@@ -60,7 +60,7 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh hadoopexec -d 'my test' param.xml design.txt hdfs://master.example.com/test
+$ eoulsan.sh hadoopexec -d 'my test' workflow.xml design.txt hdfs://master.example.com/test
 </source>
 
 </li>

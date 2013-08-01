@@ -45,7 +45,7 @@
 	
 		<p>The configuration of this repositories are quite the same. You must define the path of the root 
 		of the repository by setting the following global parameters (In <a href="conffile.html">configuration file</a> or in the 
-		<a href="paramfile.html#Global_parameter_section">globals section of the parameter file</a>) :</p>
+		<a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
 	
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
@@ -85,7 +85,7 @@ lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 		If true, the previous computed genome is used, if false, the genome index is computed and then stored for a next usage.</p>
 	
 		<p>To use genome index repository, user must only define the following global parameter (In <a href="conffile.html">configuration file</a>
-		or in the <a href="paramfile.html#Global_parameter_section">globals section of the parameter file</a>) :</p>
+		or in the <a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
 			
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
@@ -105,7 +105,7 @@ lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 	
 	
 		<p>To use genome description repository, user must only define the following global parameter (In <a href="conffile.html">configuration file</a>
-		or in the <a href="paramfile.html#Global_parameter_section">globals section of the parameter file</a>) :</p>
+		or in the <a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
 			
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>

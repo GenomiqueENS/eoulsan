@@ -44,7 +44,7 @@
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>parameter file</td><td>a path</td><td>The parameter file to use</td></tr>
+		<tr><td>workflow file</td><td>a path</td><td>The workflow file to use</td></tr>
 		<tr><td>design file</td><td>a path</td><td>The design file to use</td></tr>
 	</table>
         </li>
@@ -58,7 +58,7 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh exec -d 'my first eoulsan launch' param.xml design.txt
+$ eoulsan.sh exec -d 'my first eoulsan launch' workflow.xml design.txt
 </source>
 
 </li>

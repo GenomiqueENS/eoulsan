@@ -131,9 +131,9 @@ public abstract class UploadStep extends AbstractStep {
       filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()),
           uploadedDesignDataFile);
 
-      // Add parameter file to the list of file to upload
+      // Add workflow file to the list of file to upload
       final DataFile currentParamDataFile =
-          new DataFile(context.getParameterPathname());
+          new DataFile(context.getWorkflowPathname());
       final DataFile uploadedParamDataFile =
           getUploadedDataFile(currentParamDataFile);
       filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
@@ -155,9 +155,9 @@ public abstract class UploadStep extends AbstractStep {
         LOGGER.warning("Cannot remove temporary desihn file: " + newDesignFile);
       }
 
-      // Change the path of design and parameter file in the context
+      // Change the path of design and workflow file in the context
       fullContext.setDesignPathname(uploadedDesignDataFile.getSource());
-      fullContext.setParameterPathname(uploadedParamDataFile.getSource());
+      fullContext.setWorkflowPathname(uploadedParamDataFile.getSource());
 
     } catch (IOException e) {
 

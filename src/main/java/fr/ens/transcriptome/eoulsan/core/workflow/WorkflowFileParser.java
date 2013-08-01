@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_DATE;
 import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_NUMBER;
@@ -51,16 +51,18 @@ import org.xml.sax.SAXException;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
- * This class allow parse the parameter file.
+ * This class allow parse the workflow file.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ParamParser {
+public class WorkflowFileParser {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -81,8 +83,8 @@ public class ParamParser {
   public static final String DESIGN_FILE_PATH_CONSTANT_NAME =
       "design.file.path";
   /** Parameters file path constant name. */
-  public static final String PARAMETERS_FILE_PATH_CONSTANT_NAME =
-      "parameters.file.path";
+  public static final String WORKFLOW_FILE_PATH_CONSTANT_NAME =
+      "workflow.file.path";
   /** Output path constant name. */
   public static final String OUTPUT_PATH_CONSTANT_NAME = "output.path";
   /** Job id constant name. */
@@ -92,7 +94,7 @@ public class ParamParser {
   /** Logs path constant name. */
   public static final String LOGS_PATH_CONSTANT_NAME = "logs.path";
 
-  /** Version of the format of the parameter file. */
+  /** Version of the format of the workflow file. */
   private static final String FORMAT_VERSION = "1.0";
 
   private InputStream is;
@@ -100,14 +102,14 @@ public class ParamParser {
   private Map<String, String> constants = initConstants();
 
   /**
-   * Parse the parameter file.
+   * Parse the workflow file.
    * @throws EoulsanException if an error occurs while parsing file
    */
-  public Command parse() throws EoulsanException {
+  public WorkflowCommand parse() throws EoulsanException {
 
-    LOGGER.info("Start parsing the workflow parameter file");
+    LOGGER.info("Start parsing the workflow workflow file");
 
-    final Command result = new Command();
+    final WorkflowCommand result = new WorkflowCommand();
     final Document doc;
 
     //
@@ -149,7 +151,7 @@ public class ParamParser {
         final String formatVersion = getTagValue("formatversion", eElement);
         if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion))
           throw new EoulsanException(
-              "Invalid version of the format of the parameter file.");
+              "Invalid version of the format of the workflow file.");
 
         final String name = getTagValue("name", eElement);
         result.setName(name);
@@ -200,12 +202,12 @@ public class ParamParser {
                   stepName = getTagValue("name", eStepElement);
                 if (stepName == null)
                   throw new EoulsanException(
-                      "Step name not found in parameter file.");
+                      "Step name not found in workflow file.");
 
                 final Set<Parameter> parameters =
                     parseParameters(eStepElement, "parameters", stepName, true);
 
-                LOGGER.info("In parameter file found "
+                LOGGER.info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, stepName, parameters, skip);
 
@@ -224,9 +226,9 @@ public class ParamParser {
       }
     }
 
-    LOGGER.info("End of parsing of workflow parameter file");
+    LOGGER.info("End of parsing of workflow file");
     LOGGER.info("Found "
-        + result.getStepIds().size() + " step(s) in workflow parameter file");
+        + result.getStepIds().size() + " step(s) in workflow file");
 
     return result;
   }
@@ -271,12 +273,12 @@ public class ParamParser {
               throw new EoulsanException(
                   "<name> Tag not found in parameter section of "
                       + (stepName == null ? "global parameters" : stepName
-                          + " step") + " in parameter file.");
+                          + " step") + " in workflow file.");
             if (paramValue == null)
               throw new EoulsanException(
                   "<value> Tag not found in parameter section of "
                       + (stepName == null ? "global parameters" : stepName
-                          + " step") + " in parameter file.");
+                          + " step") + " in workflow file.");
 
             result.add(new Parameter(paramName, evaluateValues
                 ? evaluateExpressions(paramValue, true) : paramValue));
@@ -340,8 +342,8 @@ public class ParamParser {
       return;
 
     addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, arguments.getDesignPathname());
-    addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME,
-        arguments.getParameterPathname());
+    addConstant(WORKFLOW_FILE_PATH_CONSTANT_NAME,
+        arguments.getWorkflowPathname());
     addConstant(OUTPUT_PATH_CONSTANT_NAME, arguments.getOutputPathname());
     addConstant(JOB_ID_CONSTANT_NAME, arguments.getJobId());
     addConstant(JOB_UUID_CONSTANT_NAME, arguments.getJobUUID());
@@ -492,20 +494,20 @@ public class ParamParser {
 
   /**
    * Public constructor.
-   * @param file the parameter file
+   * @param file the workflow file
    * @throws FileNotFoundException if the file is not found
    */
-  public ParamParser(final File file) throws FileNotFoundException {
+  public WorkflowFileParser(final File file) throws FileNotFoundException {
 
     this(FileUtils.createInputStream(file));
   }
 
   /**
    * Public constructor.
-   * @param file the parameter file
+   * @param file the workflow file
    * @throws IOException if an error occurs while opening the file
    */
-  public ParamParser(final DataFile file) throws IOException {
+  public WorkflowFileParser(final DataFile file) throws IOException {
 
     this(file.open());
   }
@@ -514,7 +516,7 @@ public class ParamParser {
    * Public constructor.
    * @param is Input stream
    */
-  public ParamParser(final InputStream is) {
+  public WorkflowFileParser(final InputStream is) {
 
     this.is = is;
   }

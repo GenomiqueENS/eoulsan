@@ -120,7 +120,7 @@ public class LocalExecutor extends Executor {
    * Constructor
    * @param arguments executor arguments
    * @throws EoulsanException if an error occurs while loading the design file
-   *           or the parameter file
+   *           or the workflow file
    */
   public LocalExecutor(final ExecutorArguments arguments)
       throws EoulsanException {

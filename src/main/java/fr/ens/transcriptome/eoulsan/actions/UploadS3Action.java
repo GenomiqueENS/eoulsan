@@ -103,7 +103,7 @@ public class UploadS3Action extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -150,7 +150,7 @@ public class UploadS3Action extends AbstractAction {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
         + ".sh " + ACTION_NAME
-        + " [options] param.xml design.txt s3://mybucket/test", options);
+        + " [options] workflow.xml design.txt s3://mybucket/test", options);
 
     Common.exit(0);
   }
@@ -161,26 +161,26 @@ public class UploadS3Action extends AbstractAction {
 
   /**
    * Run Eoulsan in hadoop mode.
-   * @param paramFile parameter file
+   * @param workflowFile workflow file
    * @param designFile design file
    * @param s3Path path of data on S3 file system
    * @param jobDescription job description
    */
-  private static final void run(final File paramFile, final File designFile,
+  private static final void run(final File workflowFile, final File designFile,
       final DataFile s3Path, final String jobDescription) {
 
-    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    LOGGER.info("Parameter file: " + paramFile);
+    LOGGER.info("Parameter file: " + workflowFile);
     LOGGER.info("Design file: " + designFile);
 
     try {
 
       // Test if param file exists
-      if (!paramFile.exists())
-        throw new FileNotFoundException(paramFile.toString());
+      if (!workflowFile.exists())
+        throw new FileNotFoundException(workflowFile.toString());
 
       // Test if design file exists
       if (!designFile.exists())
@@ -188,7 +188,7 @@ public class UploadS3Action extends AbstractAction {
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
-          new ExecutorArguments(paramFile, designFile);
+          new ExecutorArguments(workflowFile, designFile);
       arguments.setJobDescription(jobDescription);
 
       // Create the log File

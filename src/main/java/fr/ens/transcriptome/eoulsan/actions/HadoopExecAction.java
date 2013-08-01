@@ -106,7 +106,7 @@ public class HadoopExecAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -158,7 +158,7 @@ public class HadoopExecAction extends AbstractAction {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
         + ".sh " + ACTION_NAME
-        + " [options] param.xml design.txt hdfs://server/path", options);
+        + " [options] workflow.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }
@@ -169,17 +169,17 @@ public class HadoopExecAction extends AbstractAction {
 
   /**
    * Run Eoulsan in hadoop mode.
-   * @param paramFile parameter file
+   * @param workflowFile workflow file
    * @param designFile design file
    * @param hdfsPath path of data on hadoop file system
    * @param jobDescription job description
    * @param uploadOnly true if execution must end after upload
    */
-  private static final void run(final File paramFile, final File designFile,
+  private static final void run(final File workflowFile, final File designFile,
       final String hdfsPath, final String jobDescription,
       final boolean uploadOnly) {
 
-    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
     checkNotNull(hdfsPath, "hdfsPath is null");
 
@@ -224,7 +224,7 @@ public class HadoopExecAction extends AbstractAction {
 
       argsList.add("-e");
       argsList.add("local hadoop cluster");
-      argsList.add(paramFile.toString());
+      argsList.add(workflowFile.toString());
       argsList.add(designFile.toString());
       argsList.add(hdfsPath);
 

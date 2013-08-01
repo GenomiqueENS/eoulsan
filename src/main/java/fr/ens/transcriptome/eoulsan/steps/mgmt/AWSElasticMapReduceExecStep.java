@@ -189,7 +189,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
     eoulsanArgsList.add(sb.toString());
-    eoulsanArgsList.add(context.getParameterPathname());
+    eoulsanArgsList.add(context.getWorkflowPathname());
     eoulsanArgsList.add(context.getDesignPathname());
     eoulsanArgsList.add("hdfs:///test");
 

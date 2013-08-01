@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
- * This class define a step based on a Command object (parameter file).
+ * This class define a step based on a Command object (workflow file).
  * @author Laurent Jourdren
  * @since 1.3
  */

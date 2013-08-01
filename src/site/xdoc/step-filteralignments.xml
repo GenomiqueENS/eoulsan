@@ -38,7 +38,7 @@
     <section name="Filter alignments step">
 
       <p>This step allow to filter the output alignments in SAM format.</p>
-      <p>WARNING : the filters order in the parameter file is not trivial. The output file of this step is the same, regardless the filters order. Nevertheless, informations in the log file depend of the filters order. </p>
+      <p>WARNING : the filters order in the workflow file is not trivial. The output file of this step is the same, regardless the filters order. Nevertheless, informations in the log file depend of the filters order. </p>
 
       <ul>
 	<li><b>Internal name</b>: filtersam</li> 

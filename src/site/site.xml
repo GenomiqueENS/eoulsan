@@ -64,7 +64,7 @@
 
 			<item name="Quickstart Guide" href="/quickstart.html"/>
 			<item name="Design file" href="/designfile.html"/>
-			<item name="Parameter file" href="/paramfile.html"/>
+			<item name="Workflow file" href="/workflowfile.html"/>
 			<item name="Configuration file" href="/conffile.html"/>
 			
 			<item name="Built-in steps" href="/steps.html" collapse="true">

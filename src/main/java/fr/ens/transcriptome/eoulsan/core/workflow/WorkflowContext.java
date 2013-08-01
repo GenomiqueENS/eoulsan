@@ -55,7 +55,7 @@ public class WorkflowContext implements Context {
   private final String jobId;
   private final String host;
   private String designPathname;
-  private String paramPathname;
+  private String workflowPathname;
   private String jarPathname;
   private final String jobUUID;
   private final String jobDescription;
@@ -108,8 +108,8 @@ public class WorkflowContext implements Context {
   }
 
   @Override
-  public String getParameterPathname() {
-    return this.paramPathname;
+  public String getWorkflowPathname() {
+    return this.workflowPathname;
   }
 
   @Override
@@ -190,8 +190,8 @@ public class WorkflowContext implements Context {
   }
 
   /**
-   * Set the design path
-   * @param designPathname The design path to set
+   * Set the design file path
+   * @param designPathname The design file path to set
    */
   public void setDesignPathname(final String designPathname) {
 
@@ -199,12 +199,12 @@ public class WorkflowContext implements Context {
   }
 
   /**
-   * Set the parameter path
-   * @param paramPathname The parameter path to set
+   * Set the workflow file path
+   * @param workflowPathname The workflow file path to set
    */
-  public void setParameterPathname(final String paramPathname) {
+  public void setWorkflowPathname(final String workflowPathname) {
 
-    this.paramPathname = paramPathname;
+    this.workflowPathname = workflowPathname;
   }
 
   /**
@@ -264,8 +264,6 @@ public class WorkflowContext implements Context {
   //
   // Other methods
   //
-
-
 
   @Override
   public AbstractEoulsanRuntime getRuntime() {
@@ -369,7 +367,7 @@ public class WorkflowContext implements Context {
     this.host = SystemUtils.getHostName();
 
     checkNotNull(arguments.getBasePathname(), "base path cannot be null");
-    checkNotNull(arguments.getParameterPathname(),
+    checkNotNull(arguments.getWorkflowPathname(),
         "parameter path cannot be null");
     checkNotNull(arguments.getDesignPathname(), "design cannot be null");
     checkNotNull(arguments.getOutputPathname(), "output path cannot be null");
@@ -380,7 +378,7 @@ public class WorkflowContext implements Context {
         "job environment cannot be null");
 
     this.basePathname = arguments.getBasePathname();
-    this.paramPathname = arguments.getParameterPathname();
+    this.workflowPathname = arguments.getWorkflowPathname();
     this.designPathname = arguments.getDesignPathname();
     this.outputPathname = arguments.getOutputPathname();
     this.logPathname = arguments.getLogPathname();

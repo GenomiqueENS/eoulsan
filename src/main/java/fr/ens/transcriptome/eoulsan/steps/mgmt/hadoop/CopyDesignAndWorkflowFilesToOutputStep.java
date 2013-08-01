@@ -47,12 +47,12 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This step copy design and parameter file to output directory.
+ * This step copy design and workflow file to output directory.
  * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class CopyDesignAndParametersToOutputStep extends AbstractStep {
+public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -75,7 +75,7 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
   @Override
   public String getDescription() {
 
-    return "Copy design and parameters file to output path.";
+    return "Copy design and workflow file to output path.";
   }
 
   @Override
@@ -97,11 +97,11 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
     final Configuration conf = this.conf;
 
     final Path designPath = new Path(context.getDesignPathname());
-    final Path paramPath = new Path(context.getParameterPathname());
+    final Path workflowPath = new Path(context.getWorkflowPathname());
     final Path outputPath = new Path(context.getOutputPathname());
 
     final Path outputDesignPath = new Path(outputPath, designPath.getName());
-    final Path outputParamPath = new Path(outputPath, paramPath.getName());
+    final Path outputWorkflowPath = new Path(outputPath, workflowPath.getName());
 
     // Copy design file
     try {
@@ -118,10 +118,10 @@ public class CopyDesignAndParametersToOutputStep extends AbstractStep {
       LOGGER.severe("Unable to copy design file to output path.");
     }
 
-    // Copy parameter file
+    // Copy workflow file
     try {
-      if (!PathUtils.exists(outputParamPath, conf))
-        PathUtils.copy(designPath, outputParamPath, conf);
+      if (!PathUtils.exists(outputWorkflowPath, conf))
+        PathUtils.copy(designPath, outputWorkflowPath, conf);
     } catch (IOException e) {
       LOGGER.severe("Unable to copy design file to output path.");
     }

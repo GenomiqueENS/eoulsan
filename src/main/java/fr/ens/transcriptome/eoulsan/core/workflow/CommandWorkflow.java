@@ -40,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.Command;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
@@ -53,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
- * This class define a workflow based on a Command object (parameter file).
+ * This class define a workflow based on a Command object (workflow file).
  * @author Laurent Jourdren
  * @since 1.3
  */
@@ -67,7 +66,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private List<CommandWorkflowStep> steps;
   private Set<String> stepsIds = Sets.newHashSet();
 
-  private final Command command;
+  private final WorkflowCommand workflowCommand;
 
   private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
@@ -129,7 +128,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void addMainSteps() throws EoulsanException {
 
     this.steps = new ArrayList<CommandWorkflowStep>();
-    final Command c = this.command;
+    final WorkflowCommand c = this.workflowCommand;
 
     for (String stepId : c.getStepIds()) {
 
@@ -196,7 +195,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void init() throws EoulsanException {
 
-    final Command c = this.command;
+    final WorkflowCommand c = this.workflowCommand;
     final Set<Parameter> globalParameters = c.getGlobalParameters();
 
     final Settings settings = EoulsanRuntime.getSettings();
@@ -505,28 +504,29 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Public constructor.
    * @param context context of the workflow
-   * @param command Command object with the content of the parameter file
+   * @param workflowCommand Command object with the content of the parameter
+   *          file
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
    * @throws EoulsanException
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
-      final Command command, final List<Step> firstSteps,
+      final WorkflowCommand workflowCommand, final List<Step> firstSteps,
       final List<Step> endSteps, final Design design) throws EoulsanException {
 
     super(executionArguments, design);
 
-    if (command == null)
+    if (workflowCommand == null)
       throw new NullPointerException("The command is null.");
 
-    this.command = command;
+    this.workflowCommand = workflowCommand;
 
     // Set command information in context
     final WorkflowContext context = getWorkflowContext();
-    context.setCommandName(command.getName());
-    context.setCommandDescription(command.getDescription());
-    context.setCommandAuthor(command.getAuthor());
+    context.setCommandName(workflowCommand.getName());
+    context.setCommandDescription(workflowCommand.getDescription());
+    context.setCommandAuthor(workflowCommand.getAuthor());
 
     // Convert s3:// urls to s3n:// urls
     convertDesignS3URLs();

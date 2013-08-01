@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +36,14 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 /**
  * This class define the command object of Eoulsan.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class Command {
+public class WorkflowCommand {
 
   private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
       .emptySet();
@@ -258,7 +259,7 @@ public class Command {
   /**
    * Public constructor.
    */
-  public Command() {
+  public WorkflowCommand() {
 
     this(true);
   }
@@ -268,7 +269,7 @@ public class Command {
    * @param addSettingsValues if all the settings must be added to global
    *          properties
    */
-  public Command(final boolean addSettingsValues) {
+  public WorkflowCommand(final boolean addSettingsValues) {
 
     if (addSettingsValues) {
 

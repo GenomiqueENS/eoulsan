@@ -36,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowCommand;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowFileParser;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -53,7 +55,7 @@ public abstract class Executor {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final ExecutorArguments arguments;
-  private final Command command;
+  private final WorkflowCommand command;
   private final Design design;
 
   //
@@ -171,13 +173,13 @@ public abstract class Executor {
   /**
    * Log some information about the current execution.
    * @param execArgs execution information
-   * @param command parameter file content
+   * @param command workflow file content
    */
-  private static void logInfo(ExecutorArguments execArgs, final Command command) {
+  private static void logInfo(ExecutorArguments execArgs, final WorkflowCommand command) {
 
     LOGGER.info("Design file path: " + execArgs.getDesignPathname());
-    LOGGER.info("Workflow parameter file path: "
-        + execArgs.getParameterPathname());
+    LOGGER.info("Workflow file path: "
+        + execArgs.getWorkflowPathname());
 
     LOGGER.info("Workflow Author: " + command.getAuthor());
     LOGGER.info("Workflow Description: " + command.getDescription());
@@ -213,17 +215,17 @@ public abstract class Executor {
     }
   }
 
-  private static Command loadCommand(final ExecutorArguments arguments)
+  private static WorkflowCommand loadCommand(final ExecutorArguments arguments)
       throws EoulsanException {
 
     try {
 
-      // Get input stream of parameter file from arguments object
+      // Get input stream of workflow file from arguments object
       final InputStream is = arguments.openParamFile();
-      checkNotNull(is, "The input stream for parameter file is null");
+      checkNotNull(is, "The input stream for workflow file is null");
 
       // Parse param file
-      final ParamParser pp = new ParamParser(is);
+      final WorkflowFileParser pp = new WorkflowFileParser(is);
       pp.addConstants(arguments);
 
       return pp.parse();
@@ -240,7 +242,7 @@ public abstract class Executor {
    * Constructor.
    * @param arguments arguments for the Executor
    * @throws EoulsanException if an error occurs while loading and parsing
-   *           design and parameter files
+   *           design and workflow files
    */
   protected Executor(final ExecutorArguments arguments) throws EoulsanException {
 

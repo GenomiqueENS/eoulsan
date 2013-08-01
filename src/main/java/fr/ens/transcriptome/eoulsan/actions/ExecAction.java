@@ -105,7 +105,7 @@ public class ExecAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 2) {
@@ -152,7 +152,7 @@ public class ExecAction extends AbstractAction {
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + ACTION_NAME + " [options] param.xml design.txt", options);
+        + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt", options);
 
     Common.exit(0);
   }
@@ -163,14 +163,14 @@ public class ExecAction extends AbstractAction {
 
   /**
    * Run Eoulsan
-   * @param paramFile parameter file
+   * @param workflowFile workflow file
    * @param designFile design file
    * @param jobDescription job description
    */
-  private static final void run(final File paramFile, final File designFile,
+  private static final void run(final File workflowFile, final File designFile,
       final String jobDescription) {
 
-    checkNotNull(paramFile, "paramFile is null");
+    checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
 
     final String desc;
@@ -181,14 +181,14 @@ public class ExecAction extends AbstractAction {
       desc = jobDescription.trim();
     }
 
-    LOGGER.info("Worflow parameter file: " + paramFile);
+    LOGGER.info("Worflow file: " + workflowFile);
     LOGGER.info("Design file: " + designFile);
 
     try {
 
       // Test if param file exists
-      if (!paramFile.exists())
-        throw new FileNotFoundException(paramFile.toString());
+      if (!workflowFile.exists())
+        throw new FileNotFoundException(workflowFile.toString());
 
       // Test if design file exists
       if (!designFile.exists())
@@ -205,7 +205,7 @@ public class ExecAction extends AbstractAction {
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
-          new ExecutorArguments(paramFile, designFile);
+          new ExecutorArguments(workflowFile, designFile);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 

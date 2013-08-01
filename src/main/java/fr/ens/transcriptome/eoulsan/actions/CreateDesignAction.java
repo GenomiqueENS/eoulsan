@@ -130,7 +130,7 @@ public class CreateDesignAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     // Write log entries

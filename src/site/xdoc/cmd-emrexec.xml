@@ -41,7 +41,7 @@
          first upload on Amazon S3 storage before running analysis is 
          started using the Amazon Elastic MapReduce (EMR) service. To 
          run Eoulsan on AWS, you must set the AWS credentials in 
-         global parameters of your parameter file or in a configuration file.
+         global parameters of your workflow file or in a configuration file.
          Eoulsan use the AWS Java SDK library to transfer data to Amazon S3 
          and launch Amazon Elastic MapReduce jobs.</p>  
 
@@ -50,7 +50,7 @@
          <li><b>Mandatory parameters</b>:
 	<table>
 		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
-		<tr><td>parameter path</td><td>a path</td><td>The path to parameter file to use</td></tr>
+		<tr><td>workflow path</td><td>a path</td><td>The path to workflow file to use</td></tr>
 		<tr><td>design path</td><td>a path</td><td>The path design file to use</td></tr>
 		<tr><td>data path on S3</td><td>a path</td><td>The path where to upload data on S3</td></tr>
 	</table>
@@ -65,18 +65,12 @@
 	<br/>
         <li><b>Usage</b>:
 <source>
-$ eoulsan.sh emrexec -d 'My Eoulsan test' param.xml design.txt s3://my-bucket/test
+$ eoulsan.sh emrexec -d 'My Eoulsan test' workflow.xml design.txt s3://my-bucket/test
 </source>
 
 </li>
         
        </ul>
-      
-      <p><b>Experimental: </b> Eoulsan support since version 1.1 the Amazon S3 multipart upload
-      that allow to dramatically increase the speed of the upload. 
-      To enable it, set the <b>aws.upload.multipart</b> global parameter to <b>true</b>. 
-      The <a href="http://code.google.com/p/eoulsan/issues/detail?id=6">issue</a> related to this 
-      new functionality has no effect on Eoulsan results.</p>
       
     </section>
 

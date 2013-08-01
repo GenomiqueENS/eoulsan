@@ -116,16 +116,16 @@ public interface Context {
   long getContextCreationTime();
 
   /**
-   * Get the design path.
-   * @return the design path
+   * Get the design file path.
+   * @return the design file path
    */
   String getDesignPathname();
 
   /**
-   * Get the parameter path.
-   * @return the parameter path
+   * Get the workflow file path.
+   * @return the workflow file path
    */
-  String getParameterPathname();
+  String getWorkflowPathname();
 
   /**
    * Get the application jar path.

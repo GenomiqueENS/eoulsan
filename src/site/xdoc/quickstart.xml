@@ -46,7 +46,7 @@
 					<a href="#design_file">Create design file</a>
 				</li>
 				<li>
-					<a href="#parameter_file">Create parameter file</a>
+					<a href="#workflow_file">Create workflow file</a>
 				</li>
 				<li>
 					<a href="#local_mode">Execute Eoulsan in local mode</a>
@@ -99,15 +99,15 @@
 
 
 			 <br/>
-			 <li>Parameters files<br/>
-			    The following files are sample parameter files to analyze previous reads files. There are 2 files, 
+			 <li>Worflow files<br/>
+			    The following files are sample workflow files to analyze previous reads files. There are 2 files, 
                             one for local analysis which include differential analysis and one for distributed (on cluster 
                             or cloud computing facilities) without differential analysis as this last steps are performed 
                             only on local computer.</li>
 
 			  <ul>
-				<li><a href="./param-local.xml">Parameter file for local analysis</a></li>
-                                <li><a href="./param-hadoop.xml">Parameter file for distributed analysis (without differential analysis).</a></li>
+				<li><a href="./workflow-local.xml">Workflow file for local analysis</a></li>
+                                <li><a href="./workflow-hadoop.xml">Workflow file for distributed analysis (without differential analysis).</a></li>
 			  </ul>
 			</ul>
 
@@ -127,14 +127,14 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 
 
 
-		<a name="param_file"/>
-		<subsection name="Create parameter file">
+		<a name="workflow_file"/>
+		<subsection name="Create workflow file">
 
-			<p>To create a parameter file, the best solution is to reuse an existing 
-			parameter file (see <a href="#samples">sample section</a>) and adapt it 
+			<p>To create a workflow file, the best solution is to reuse an existing 
+			workflow file (see <a href="#samples">sample section</a>) and adapt it 
 			to your needs.</p>
 
-			<p>The parameter file contains the list of the steps that will be executed 
+			<p>The workflow file contains the list of the steps that will be executed 
 			by Eoulsan. Some step are only available in local mode (like 
                         differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
 			for more details. For each step you can change, add or remove parameters. 
@@ -142,7 +142,7 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 			of the built-in steps for the list of available parameters of each step.</p>
 
 
-			<p>At least, there is a global section in the parameter file that override the 
+			<p>At least, there is a global section in the workflow file that override the 
 			values of Eoulsan configuration file. This section is useful to set for example 
 			the path of the temporary directory to use.</p>
 
@@ -151,20 +151,20 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 		<a name="local_mode"/>
 		<subsection name="Launch Eoulsan in local mode">
 
-			<p>Once your design file and parameter file are ready, you can launch Eoulsan analysis with the following command:</p>
+			<p>Once your design file and workflow file are ready, you can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh exec param-local.xml design.txt
+$ eoulsan.sh exec workflow-local.xml design.txt
 </source>
 
-            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample parameter file), you must install R 
+            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample workflow file), you must install R 
             (or use an RServe server) and related packages (See <a href="./step-diffana.html">differential analysis step</a> 
             for more information).</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
-			  <li>The design file and parameter file are valid</li>
+			  <li>The design file and workflow file are valid</li>
 			  <li>All the steps exit</li>
-			  <li>The parameter of all the steps are valid</li>
+			  <li>The workflow of all the steps are valid</li>
 			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>
 			  <li>A genome mapper index is needed. In this case, a step to generate this index is automatically added</li>
@@ -181,7 +181,7 @@ $ eoulsan.sh exec param-local.xml design.txt
 			<p>First, you must have a configurated Hadoop cluster (see <a href="hadoopmode.html">hadoop configuration</a>). 
 			   You can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/test
+$ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com/test
 </source>
 		
 			<p>At the start of the analysis and after the check of the input files (like 
@@ -209,7 +209,7 @@ $ eoulsan.sh hadoopexec param-hadoop.xml design.txt hdfs://master.example.com/te
 
 			<p>Then you 
                            must set Amazon credentials in a <a href="./conffile.html">Eoulsan configuration file</a> or 
-			   in the <a href="./paramfile.html#globalsection">parameter file</a> (see <a href="./awsmode.html">AWS configuration</a>).
+			   in the <a href="./workflowfile.html#globalsection">workflow file</a> (see <a href="./awsmode.html">AWS configuration</a>).
 			   Here an example of <b>~/.eoulsan</b> configuration file.</p>
 <source>
 # This is an example of configuration file for Eoulsan.
@@ -234,12 +234,12 @@ aws.access.key=022QF06E7MXBSH9DHM02
 aws.secret.key=kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct
 </source>
 
-			<p><b>Warning:</b> If you use the sample parameter file, check the global section of the file to set the AWS region, the type and the number of instances to use. 
+			<p><b>Warning:</b> If you use the sample workflow file, check the global section of the file to set the AWS region, the type and the number of instances to use. 
 			   See the <a href="./conffile.html">configuration file page</a> for the list of global parameters dedicated to AWS mode. </p>
 
 			<p>Then you can launch Eoulsan analysis with the following command:</p>
 <source>
-$ eoulsan.sh emrexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybucket/test
+$ eoulsan.sh emrexec -d "My Eoulsan Test" workflow-hadoop.xml design.txt s3://mybucket/test
 </source>
 
 			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 
@@ -247,7 +247,7 @@ $ eoulsan.sh emrexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybuc
 
 			<p>In AWS mode, there is 2 phases in the analysis:</p>
 			<ul>
-				<li>First data to analyse, design and parameter files are uploaded to your S3 
+				<li>First data to analyse, design and workflow files are uploaded to your S3 
                                     bucket on Amazon Cloud.</li>
 				<li>Then, the cluster in the cloud is created and the "real" analysis starts. 
                                     Eoulsan on your local computer only wait the end of the analysis. 
@@ -257,7 +257,7 @@ $ eoulsan.sh emrexec -d "My Eoulsan Test" param-hadoop.xml design.txt s3://mybuc
 
 
 			<p>At the end of the analysis, the results files, the logs files (one main and one for each steps)
-			   and a copy of the design and the parameter files will be in a new directory 
+			   and a copy of the design and the workflow files will be in a new directory 
                            in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
                            directory name after eoulsan are respectively the date and the time of the launch 
                            of the analysis). You must manually download these data from S3 to your computer.</p>

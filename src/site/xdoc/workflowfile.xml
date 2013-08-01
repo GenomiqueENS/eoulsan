@@ -35,14 +35,14 @@
 
   <body>
   
-    <section name="The parameter file">
+    <section name="The workflow file">
 
-      <p>The parameter file (usually named as <b>param.xml</b>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
+      <p>The workflow file (usually named as <b>workflow.xml</b>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
 
 
       <ul>
-        <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the parameter files.</li>
-        <li>The <a href="#constantssection">constants section</a> that contains constants parameters that can be used in parameters values.</li>
+        <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the workflow file.</li>
+        <li>The <a href="#constantssection">constants section</a> that contains constants that can be used in parameters values.</li>
         <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
         <li>The <a href="#globalsection">global section</a> that contains global parameters (override configuration settings) that can be use in all the steps of the analysis.</li>
      </ul>
@@ -51,7 +51,7 @@
 	<ul>
 		<li>Built-in variables (<code>${eoulsan.version}</code>, 
 		  <code>${eoulsan.build.number}</code>, <code>${eoulsan.build.date}</code>,
-		  <code>${design.file.path}</code>, <code>${parameters.file.path}</code>, 
+		  <code>${design.file.path}</code>, <code>${workflow.file.path}</code>, 
 		  <code>${output.path}</code>, <code>${logs.path}</code>,
 		  <code>${job.id}</code>, <code>${job.uuid}</code> and <code>${available.processors}</code>)</li>
 		<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/System.html#getProperty(java.lang.String)">java properties</a> (e.g. <code>${java.version}</code>)</li>
@@ -64,7 +64,7 @@
 	 &lt;value&gt;`pwd`/tmp&lt;/value&gt;
 	 &lt;value&gt;`basedir ${user.home}`/tmp&lt;/value&gt;</source>
 
-	<p>All the tags must be in lower case. The following source show the structure of a typical <b>design.xml</b> file:</p>
+	<p>All the tags must be in lower case. The following source show the structure of a typical <b>workflow.xml</b> file:</p>
 
 <source>
 &lt;analysis&gt;
@@ -210,13 +210,13 @@
      <subsection name="Description section">
         <a name="descsection" />
 
-	<p>The firsts tags of the parameter file allow to set some information about the file:</p>
+	<p>The first tags of the workflow file allow to set some information about the file:</p>
 
         <ul>
-                <li><b>formatversion:</b> The version of the format of this parameter file.</li>
-                <li><b>name:</b> The name of this parameter file.</li>
-                <li><b>description:</b> The description of this parameter file.</li>
-                <li><b>author:</b> The author of this parameter file.</li>
+                <li><b>formatversion:</b> The version of the format of this workflow file.</li>
+                <li><b>name:</b> The name of this workflow file.</li>
+                <li><b>description:</b> The description of this workflow file.</li>
+                <li><b>author:</b> The author of this workflow file.</li>
         </ul> 
 
      </subsection>
@@ -290,7 +290,7 @@
      <subsection name="Global parameter section">
         <a name="globalsection" />
 
-	<p>The global parameter file contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in the steps.</p>
+	<p>The global parameter section contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in the steps.</p>
 
 <source>
     &lt;globals&gt;

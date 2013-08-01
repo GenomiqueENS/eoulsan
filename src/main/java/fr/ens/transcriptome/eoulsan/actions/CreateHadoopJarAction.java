@@ -84,7 +84,7 @@ public class CreateHadoopJarAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {

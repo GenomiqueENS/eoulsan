@@ -61,9 +61,9 @@
 
 	<p>Eoulsan behaviour with Amazon Elastic MapReduce is the same as with 
            a Hadoop cluster. You don't have to change your design file or the 
-           steps of the parameter file.</p>
+           steps of the workflow file.</p>
         <p>The only requierement is to set the AWS 
-           credentials in configuration file or parameter file. We strongly 
+           credentials in configuration file or workflow file. We strongly 
            recommand to store this values in a configuration file. See the 
            <a href="conffile.html">configuration file</a> section for more 
            information.</p>

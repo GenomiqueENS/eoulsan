@@ -191,7 +191,7 @@ public class HadoopExecutor extends Executor {
    * @param arguments executor arguments
    * @param conf Hadoop configuration
    * @throws EoulsanException if an error occurs while loading the design file
-   *           or the parameter file
+   *           or the workflow file
    */
   public HadoopExecutor(final ExecutorArguments arguments,
       final Configuration conf) throws IOException, EoulsanException {

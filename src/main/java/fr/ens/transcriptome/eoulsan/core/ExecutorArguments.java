@@ -47,7 +47,7 @@ public class ExecutorArguments {
 
   private String basePathname;
   private String designPathname;
-  private String paramPathname;
+  private String workflowPathname;
   private String jobDescription = "";
   private String jobEnvironment = "";
   private String outputPathname;
@@ -85,19 +85,19 @@ public class ExecutorArguments {
   }
 
   /**
-   * Get the design path.
-   * @return the design path
+   * Get the design file path.
+   * @return the design file path
    */
   public final String getDesignPathname() {
     return this.designPathname;
   }
 
   /**
-   * Get the parameter path.
-   * @return the parameter path
+   * Get the workflow file path.
+   * @return the workflow file path
    */
-  public final String getParameterPathname() {
-    return this.paramPathname;
+  public final String getWorkflowPathname() {
+    return this.workflowPathname;
   }
 
   /**
@@ -178,7 +178,7 @@ public class ExecutorArguments {
   }
 
   /**
-   * Set the design path
+   * Set the design file path.
    * @param designPathname The design path to set
    */
   public final void setDesignPathname(final String designPathname) {
@@ -190,15 +190,15 @@ public class ExecutorArguments {
   }
 
   /**
-   * Set the parameter path
-   * @param paramPathname The parameter path to set
+   * Set the workflow file path.
+   * @param workflowPathname The parameter path to set
    */
-  public final void setParameterPathname(final String paramPathname) {
+  public final void setWorkflowPathname(final String workflowPathname) {
 
-    if (paramPathname == null)
+    if (workflowPathname == null)
       return;
 
-    this.paramPathname = paramPathname.trim();
+    this.workflowPathname = workflowPathname.trim();
   }
 
   /**
@@ -236,7 +236,7 @@ public class ExecutorArguments {
    */
   public InputStream openParamFile() throws IOException {
 
-    return new DataFile(getParameterPathname()).open();
+    return new DataFile(getWorkflowPathname()).open();
   }
 
   /**
@@ -282,16 +282,16 @@ public class ExecutorArguments {
 
   /**
    * Public constructor.
-   * @param paramFile parameter file
+   * @param workflowFile workflow file
    * @param designFile design file
    */
-  public ExecutorArguments(final File paramFile, final File designFile) {
+  public ExecutorArguments(final File workflowFile, final File designFile) {
 
     this();
 
-    checkNotNull(paramFile, "The parameter file is null");
+    checkNotNull(workflowFile, "The workflow file is null");
     checkNotNull(designFile, "The design file is null");
-    checkArgument(paramFile.exists(), "The workflow file does not exists");
+    checkArgument(workflowFile.exists(), "The workflow file does not exists");
     checkArgument(designFile.exists(), "The design file does not exists");
 
     // Set the base path
@@ -302,7 +302,7 @@ public class ExecutorArguments {
     setDesignPathname(designFile.getAbsolutePath());
 
     // Set the parameter path
-    setParameterPathname(paramFile.getAbsolutePath());
+    setWorkflowPathname(workflowFile.getAbsolutePath());
 
     final File logDir =
         new File(designFile.getAbsoluteFile().getParent().toString()

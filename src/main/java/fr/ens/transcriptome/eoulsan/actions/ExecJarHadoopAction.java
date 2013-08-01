@@ -59,7 +59,7 @@ import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
@@ -99,8 +99,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Set design file pathname
       setDesignPathname(designPath.toString());
 
-      // Set parameter file pathname
-      setParameterPathname(paramPath.toString());
+      // Set workflow file pathname
+      setWorkflowPathname(paramPath.toString());
     }
 
   }
@@ -175,7 +175,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -250,7 +250,7 @@ public class ExecJarHadoopAction extends AbstractAction {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("hadoop -jar "
         + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
-        + "param.xml design.txt hdfs://server/path", options);
+        + "workflow.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }
@@ -261,20 +261,20 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   /**
    * Run Eoulsan in hadoop mode
-   * @param paramPathname parameter file
-   * @param designPathname design file
+   * @param workflowPathname workflow file path
+   * @param designPathname design file path
    * @param destPathname data path
    * @param jobDescription job description
    * @param jobEnvironment job environment
    * @param millisSinceEpoch milliseconds since epoch
    * @param uploadOnly true if execution must end after upload
    */
-  private static final void run(final String paramPathname,
+  private static final void run(final String workflowPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
       final boolean uploadOnly, final long millisSinceEpoch) {
 
-    checkNotNull(paramPathname, "paramPathname is null");
+    checkNotNull(workflowPathname, "paramPathname is null");
     checkNotNull(designPathname, "designPathname is null");
     checkNotNull(destPathname, "destPathname is null");
 
@@ -302,10 +302,10 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Define parameter URI
       final URI paramURI;
-      if (paramPathname.indexOf("://") != -1)
-        paramURI = new URI(paramPathname);
+      if (workflowPathname.indexOf("://") != -1)
+        paramURI = new URI(workflowPathname);
       else
-        paramURI = new File(paramPathname).getAbsoluteFile().toURI();
+        paramURI = new File(workflowPathname).getAbsoluteFile().toURI();
 
       // Define design URI
       final URI designURI;
@@ -348,18 +348,18 @@ public class ExecJarHadoopAction extends AbstractAction {
           new HadoopUploadStep(new DataFile(destURI.toString()), conf);
 
       // Add init global logger Step
-      // Add Copy design and parameter file Step
+      // Add Copy design and workflow file Step
       // Add terminal step if upload only
       final List<Step> firstSteps;
       if (uploadOnly) {
         firstSteps =
             Arrays.asList(new Step[] {uploadStep, new TerminalStep(),
                 new InitGlobalLoggerStep(),
-                new CopyDesignAndParametersToOutputStep()});
+                new CopyDesignAndWorkflowFilesToOutputStep()});
       } else {
         firstSteps =
             Arrays.asList(uploadStep, new InitGlobalLoggerStep(),
-                new CopyDesignAndParametersToOutputStep());
+                new CopyDesignAndWorkflowFilesToOutputStep());
       }
 
       // Add download Step

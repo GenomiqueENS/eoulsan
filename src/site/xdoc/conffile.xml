@@ -87,8 +87,8 @@
 
 	</table>
 
-	<p>This values are overridden by the values of the global section of the XML parameter file. It is useful to use a configuration file to set AWS keys to remove
-	 this entries from the parameter file that is sent on the network when using Amazon Web Services. 
+	<p>This values are overridden by the values of the global section of the XML workflow file. It is useful to use a configuration file to set AWS keys to remove
+	 this entries from the workflow file that is sent on the network when using Amazon Web Services. 
 	 Developers can also use additional parameter that are not in the previous table.</p>
 
 	<p>The following table contains the endpoints for the several AWS regions where EMR is available:</p>
