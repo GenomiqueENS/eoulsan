@@ -32,9 +32,6 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -45,30 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class LocalExecutor extends Executor {
 
-  private final ExecutionArguments arguments;
-
-  private final File designFile;
-
-  @Override
-  protected ExecutionArguments getExecutionArguments() {
-
-    return this.arguments;
-  }
-
-  @Override
-  protected Design loadDesign() throws EoulsanException {
-
-    if (this.designFile == null)
-      throw new EoulsanException("The design file is null.");
-
-    if (!this.designFile.exists())
-      throw new EoulsanException("The design file does not exist: "
-          + this.designFile);
-
-    DesignReader dr = new SimpleDesignReader(designFile);
-    return dr.read();
-  }
-
   @Override
   protected void writeStepLogs(final StepResult result) {
 
@@ -78,7 +51,7 @@ public class LocalExecutor extends Executor {
     try {
 
       final File logDir =
-          new File(this.designFile.getParent(), getExecutionArguments()
+          new File(new File(getArguments().getLogPathname()), getArguments()
               .getJobId());
 
       if (!logDir.exists())
@@ -145,23 +118,13 @@ public class LocalExecutor extends Executor {
 
   /**
    * Constructor
-   * @param command command to execute
-   * @param designFile the path to the design file
-   * @param paramFile the path to the parameter file
-   * @param context execution context
+   * @param arguments executor arguments
+   * @throws EoulsanException if an error occurs while loading the design file
+   *           or the parameter file
    */
-  public LocalExecutor(final Command command, final File designFile,
-      final File paramFile, final ExecutionArguments arguments) {
+  public LocalExecutor(final ExecutorArguments arguments)
+      throws EoulsanException {
 
-    if (command == null)
-      throw new NullPointerException("The command is null");
-
-    setCommand(command);
-
-    if (designFile == null)
-      throw new NullPointerException("The design file is null");
-
-    this.designFile = designFile;
-    this.arguments = arguments;
+    super(arguments);
   }
 }

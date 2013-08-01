@@ -44,11 +44,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
-import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
-import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
 import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 
@@ -64,8 +62,6 @@ public class ExecAction extends AbstractAction {
 
   /** Name of this action. */
   public static final String ACTION_NAME = "exec";
-
-
 
   //
   // Action methods
@@ -208,25 +204,19 @@ public class ExecAction extends AbstractAction {
               + " CPU(s)/thread(s), " + new LinuxMemInfo().getMemTotal();
 
       // Create ExecutionArgument object
-      final ExecutionArguments arguments =
-          new ExecutionArguments(paramFile, designFile);
+      final ExecutorArguments arguments =
+          new ExecutorArguments(paramFile, designFile);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
-
-      // Parse param file
-      final ParamParser pp = new ParamParser(paramFile);
-      pp.addConstants(arguments);
-
-      final Command c = new Command();
-
-      pp.parse(c);
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
           arguments.getLogPathname() + File.separator + "eoulsan.log");
 
-      // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile, arguments);
+      // Create executor
+      final Executor e = new LocalExecutor(arguments);
+
+      // Launch executor
       e.execute();
 
     } catch (FileNotFoundException e) {

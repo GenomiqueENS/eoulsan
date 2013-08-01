@@ -24,17 +24,21 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
@@ -48,30 +52,21 @@ public abstract class Executor {
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
-  private Command command;
+  private final ExecutorArguments arguments;
+  private final Command command;
+  private final Design design;
 
   //
   // Getters
   //
 
   /**
-   * Get the command object
-   * @return Returns the command
+   * Get executor arguments.
+   * @return the ExecutorArguments object
    */
-  protected Command getCommand() {
-    return this.command;
-  }
+  protected ExecutorArguments getArguments() {
 
-  //
-  // Setters
-  //
-
-  /**
-   * Set the command object.
-   * @param command The command to set
-   */
-  protected void setCommand(final Command command) {
-    this.command = command;
+    return this.arguments;
   }
 
   //
@@ -79,21 +74,10 @@ public abstract class Executor {
   //
 
   /**
-   * Load design object.
-   */
-  protected abstract Design loadDesign() throws EoulsanException;
-
-  /**
    * Write the log file of the result of a step
    * @param result Step result
    */
   protected abstract void writeStepLogs(final StepResult result);
-
-  /**
-   * Get the execution arguments
-   * @return the execution arguments
-   */
-  protected abstract ExecutionArguments getExecutionArguments();
 
   /**
    * Check temporary directory.
@@ -114,6 +98,9 @@ public abstract class Executor {
     if (design.getSampleCount() == 0)
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
+
+    LOGGER.info("Found "
+        + design.getSampleCount() + " sample(s) in design file");
   }
 
   /**
@@ -129,54 +116,27 @@ public abstract class Executor {
   /**
    * run Eoulsan.
    * @param firstSteps steps to add at the begin the workflow
-   * @param endSteps steps to add at the end the workflow
+   * @param lastSteps steps to add at the end the workflow
    * @throws EoulsanException if an error occurs while creating of executing
    *           steps
    */
-  public void execute(final List<Step> firstSteps, final List<Step> endSteps)
+  public void execute(final List<Step> firstSteps, final List<Step> lastSteps)
       throws EoulsanException {
 
-    execute(firstSteps, endSteps, EoulsanRuntime.getRuntime().isHadoopMode());
-  }
-
-  /**
-   * run Eoulsan.
-   * @param firstSteps steps to add at the begin the workflow
-   * @param endSteps steps to add at the end the workflow
-   * @param hadoopMode true if the steps must be compatible with Hadoop mode
-   * @throws EoulsanException if an error occurs while creating of executing
-   *           steps
-   */
-  public void execute(final List<Step> firstSteps, final List<Step> endSteps,
-      final boolean hadoopMode) throws EoulsanException {
-
-    // Check command object
-    if (this.command == null)
-      throw new EoulsanException("The command is null");
-
-    // Get execution context
-    final ExecutionArguments executionArguments = getExecutionArguments();
-
     // Add executor info
-    logInfo(executionArguments, this.command);
+    logInfo(this.arguments, this.command);
 
     // Check base path
-    if (executionArguments.getBasePathname() == null)
+    if (this.arguments.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
-
-    // Load design
-    LOGGER.info("Read design file");
-    final Design design = loadDesign();
-    LOGGER.info("Found "
-        + design.getSampleCount() + " sample(s) in design file");
 
     // Check design
     checkDesign(design);
 
     // Create Workflow
     final CommandWorkflow workflow =
-        new CommandWorkflow(executionArguments, getCommand(), firstSteps,
-            endSteps, design);
+        new CommandWorkflow(this.arguments, this.command, firstSteps,
+            lastSteps, this.design);
 
     // Check temporary directory
     checkTemporaryDirectory();
@@ -213,7 +173,7 @@ public abstract class Executor {
    * @param execArgs execution information
    * @param command parameter file content
    */
-  private static void logInfo(ExecutionArguments execArgs, final Command command) {
+  private static void logInfo(ExecutorArguments execArgs, final Command command) {
 
     LOGGER.info("Design file path: " + execArgs.getDesignPathname());
     LOGGER.info("Workflow parameter file path: "
@@ -231,6 +191,64 @@ public abstract class Executor {
     LOGGER.info("Job Base path: " + execArgs.getBasePathname());
     LOGGER.info("Job Output path: " + execArgs.getOutputPathname());
     LOGGER.info("Job Log path: " + execArgs.getLogPathname());
+  }
+
+  private static Design loadDesign(final ExecutorArguments arguments)
+      throws EoulsanException {
+
+    try {
+
+      // Load design
+      LOGGER.info("Read design file");
+
+      // Get input stream of design file from arguments object
+      final InputStream is = arguments.openDesignFile();
+      checkNotNull(is, "The input stream for design file is null");
+
+      // Read design file and return the design object
+      return new SimpleDesignReader(is).read();
+
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
+  }
+
+  private static Command loadCommand(final ExecutorArguments arguments)
+      throws EoulsanException {
+
+    try {
+
+      // Get input stream of parameter file from arguments object
+      final InputStream is = arguments.openParamFile();
+      checkNotNull(is, "The input stream for parameter file is null");
+
+      // Parse param file
+      final ParamParser pp = new ParamParser(is);
+      pp.addConstants(arguments);
+
+      return pp.parse();
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Constructor.
+   * @param arguments arguments for the Executor
+   * @throws EoulsanException if an error occurs while loading and parsing
+   *           design and parameter files
+   */
+  protected Executor(final ExecutorArguments arguments) throws EoulsanException {
+
+    checkNotNull(arguments, "The arguments of the executor is null");
+
+    this.arguments = arguments;
+    this.design = loadDesign(arguments);
+    this.command = loadCommand(arguments);
   }
 
 }

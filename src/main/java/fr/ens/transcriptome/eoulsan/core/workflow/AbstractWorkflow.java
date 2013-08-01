@@ -51,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -476,7 +476,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param executionArguments execution arguments
    * @param design design to use for the workflow
    */
-  protected AbstractWorkflow(final ExecutionArguments executionArguments,
+  protected AbstractWorkflow(final ExecutorArguments executionArguments,
       final Design design) {
 
     Preconditions.checkNotNull(executionArguments, "Argument cannot be null");

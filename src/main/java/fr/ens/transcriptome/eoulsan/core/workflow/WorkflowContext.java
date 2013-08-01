@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -359,7 +359,7 @@ public class WorkflowContext implements Context {
    * Constructor.
    * @param arguments arguments object
    */
-  WorkflowContext(final ExecutionArguments arguments) {
+  WorkflowContext(final ExecutorArguments arguments) {
 
     checkNotNull(arguments.getBasePathname(), "arguments cannot be null");
 

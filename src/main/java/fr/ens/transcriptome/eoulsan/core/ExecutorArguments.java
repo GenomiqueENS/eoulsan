@@ -24,15 +24,26 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
-public class ExecutionArguments {
+/**
+ * This class contains arguments for the Executor.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
+public class ExecutorArguments {
 
   private String basePathname;
   private String designPathname;
@@ -49,34 +60,66 @@ public class ExecutionArguments {
   // Getters
   //
 
+  /**
+   * Get the base path.
+   * @return Returns the basePath
+   */
   public final String getBasePathname() {
     return this.basePathname;
   }
 
+  /**
+   * Get the log path.
+   * @return Returns the log Path
+   */
   public final String getLogPathname() {
     return this.logPathname;
   }
 
+  /**
+   * Get the output path.
+   * @return Returns the output Path
+   */
   public final String getOutputPathname() {
     return this.outputPathname;
   }
 
+  /**
+   * Get the design path.
+   * @return the design path
+   */
   public final String getDesignPathname() {
     return this.designPathname;
   }
 
+  /**
+   * Get the parameter path.
+   * @return the parameter path
+   */
   public final String getParameterPathname() {
     return this.paramPathname;
   }
 
+  /**
+   * Get the job description.
+   * @return the job description
+   */
   public final String getJobDescription() {
     return this.jobDescription == null ? "" : this.jobDescription.trim();
   }
 
+  /**
+   * Get the job environment.
+   * @return the job environment
+   */
   public final String getJobEnvironment() {
     return this.jobEnvironment == null ? "" : this.jobEnvironment.trim();
   }
 
+  /**
+   * Get the job id.
+   * @return the job id
+   */
   public final String getJobId() {
     return this.jobId;
   }
@@ -85,6 +128,11 @@ public class ExecutionArguments {
     return this.jobUUID;
   }
 
+  /**
+   * Get the creation time of the job.
+   * @return the creation time of the context in milliseconds since epoch
+   *         (1.1.1970)
+   */
   public final long getCreationTime() {
     return this.creationTime;
   }
@@ -178,15 +226,46 @@ public class ExecutionArguments {
   }
 
   //
+  // Other methods
+  //
+
+  /**
+   * Open the Workflow file.
+   * @return an InputStream with the content of the workflow file
+   * @throws IOException if an error occurs while opening the workflow file
+   */
+  public InputStream openParamFile() throws IOException {
+
+    return new DataFile(getParameterPathname()).open();
+  }
+
+  /**
+   * Open the design file.
+   * @return an InputStream with the content of the design file
+   * @throws IOException if an error occurs while opening the design file
+   */
+  public InputStream openDesignFile() throws IOException {
+
+    return new DataFile(getDesignPathname()).open();
+  }
+
+  //
   // Constructor
   //
 
-  public ExecutionArguments() {
+  /**
+   * Public constructor.
+   */
+  public ExecutorArguments() {
 
     this(System.currentTimeMillis());
   }
 
-  public ExecutionArguments(final long millisSinceEpoch) {
+  /**
+   * Public constructor.
+   * @param millisSinceEpoch creation time of the job
+   */
+  public ExecutorArguments(final long millisSinceEpoch) {
 
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
     cal.setTime(new Date(millisSinceEpoch));
@@ -201,9 +280,19 @@ public class ExecutionArguments {
     this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + creationDate;
   }
 
-  public ExecutionArguments(final File parameterFile, final File designFile) {
+  /**
+   * Public constructor.
+   * @param paramFile parameter file
+   * @param designFile design file
+   */
+  public ExecutorArguments(final File paramFile, final File designFile) {
 
     this();
+
+    checkNotNull(paramFile, "The parameter file is null");
+    checkNotNull(designFile, "The design file is null");
+    checkArgument(paramFile.exists(), "The workflow file does not exists");
+    checkArgument(designFile.exists(), "The design file does not exists");
 
     // Set the base path
     setBasePathname(designFile.getAbsoluteFile().getParentFile()
@@ -213,7 +302,7 @@ public class ExecutionArguments {
     setDesignPathname(designFile.getAbsolutePath());
 
     // Set the parameter path
-    setParameterPathname(parameterFile.getAbsolutePath());
+    setParameterPathname(paramFile.getAbsolutePath());
 
     final File logDir =
         new File(designFile.getAbsoluteFile().getParent().toString()

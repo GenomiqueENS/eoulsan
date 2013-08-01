@@ -53,14 +53,10 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Main;
-import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
-import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep;
@@ -68,7 +64,6 @@ import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.InitGlobalLoggerStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class define an action that allow to execute a jar on an Hadoop cluster.
@@ -80,9 +75,9 @@ public class ExecJarHadoopAction extends AbstractAction {
   /** Name of this action. */
   public static final String ACTION_NAME = "execjarhadoop";
 
-  private static class HadoopExecutionArguments extends ExecutionArguments {
+  private static class HadoopExecutorArguments extends ExecutorArguments {
 
-    public HadoopExecutionArguments(final long millisSinceEpoch,
+    public HadoopExecutorArguments(final long millisSinceEpoch,
         final Path designPath, final Path paramPath) {
       super(millisSinceEpoch);
 
@@ -336,32 +331,17 @@ public class ExecJarHadoopAction extends AbstractAction {
         throw new FileNotFoundException(designPath.toString());
 
       // Create ExecutionArgument object
-      final ExecutionArguments arguments =
-          new HadoopExecutionArguments(millisSinceEpoch, paramPath, designPath);
+      final ExecutorArguments arguments =
+          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
-
-      // Read design file
-      final Design design =
-          DesignUtils.readAndCheckDesign(designFs.open(designPath));
-
-      // Create command object
-      final Command c = new Command();
-
-      // Parse param file
-      final ParamParser pp =
-          new ParamParser(PathUtils.createInputStream(paramPath, conf));
-      pp.addConstants(arguments);
-
-      pp.parse(c);
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
           arguments.getLogPathname() + File.separator + "eoulsan.log");
 
       // Create executor
-      final Executor e =
-          new HadoopExecutor(conf, c, design, designPath, paramPath, arguments);
+      final Executor e = new HadoopExecutor(arguments, conf);
 
       // Create upload step
       final Step uploadStep =
@@ -386,7 +366,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final List<Step> lastSteps =
           Collections.singletonList((Step) new HDFSDataDownloadStep());
 
-      // Execute
+      // Launch executor
       e.execute(firstSteps, lastSteps);
 
     } catch (FileNotFoundException e) {

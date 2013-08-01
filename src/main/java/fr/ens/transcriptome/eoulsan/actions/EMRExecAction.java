@@ -46,11 +46,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
-import fr.ens.transcriptome.eoulsan.core.Command;
-import fr.ens.transcriptome.eoulsan.core.ExecutionArguments;
 import fr.ens.transcriptome.eoulsan.core.Executor;
+import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
-import fr.ens.transcriptome.eoulsan.core.ParamParser;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -211,27 +209,21 @@ public class EMRExecAction extends AbstractAction {
         throw new FileNotFoundException(designFile.toString());
 
       // Create ExecutionArgument object
-      final ExecutionArguments arguments =
-          new ExecutionArguments(paramFile, designFile);
+      final ExecutorArguments arguments =
+          new ExecutorArguments(paramFile, designFile);
       arguments.setJobDescription(desc);
-
-      // Parse param file
-      final ParamParser pp = new ParamParser(paramFile);
-      pp.addConstants(arguments);
-
-      final Command c = new Command();
-
-      pp.parse(c);
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
           arguments.getLogPathname() + File.separator + "eoulsan.log");
 
-      // Execute
-      final Executor e = new LocalExecutor(c, designFile, paramFile, arguments);
+      // Create executor
+      final Executor e = new LocalExecutor(arguments);
+
+      // Launch executor
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
           (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()),
-          null, true);
+          null);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());

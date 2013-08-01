@@ -39,9 +39,6 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
@@ -53,34 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class HadoopExecutor extends Executor {
 
   private Configuration conf;
-  private Path designPath;
-  private Design design;
-  private ExecutionArguments arguments;
-
-  @Override
-  protected ExecutionArguments getExecutionArguments() {
-
-    return this.arguments;
-  }
-
-  @Override
-  protected Design loadDesign() throws EoulsanException {
-
-    if (this.design != null)
-      return this.design;
-
-    try {
-
-      final DesignReader dr =
-          new SimpleDesignReader(this.designPath.toUri().toURL().openStream());
-
-      return dr.read();
-
-    } catch (IOException e) {
-      throw new EoulsanException("Error while reading design file: "
-          + e.getMessage());
-    }
-  }
 
   @Override
   protected void writeStepLogs(final StepResult result) {
@@ -92,8 +61,8 @@ public class HadoopExecutor extends Executor {
 
     try {
 
-      final Path logPath = new Path(getExecutionArguments().getLogPathname());
-      final Path basePath = new Path(getExecutionArguments().getBasePathname());
+      final Path logPath = new Path(getArguments().getLogPathname());
+      final Path basePath = new Path(getArguments().getBasePathname());
       final FileSystem logFs = logPath.getFileSystem(this.conf);
       final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
@@ -176,7 +145,7 @@ public class HadoopExecutor extends Executor {
         new OutputStreamWriter(fs.create(catPath),
             Globals.DEFAULT_FILE_ENCODING);
 
-    final Path basePath = new Path(getExecutionArguments().getBasePathname());
+    final Path basePath = new Path(getArguments().getBasePathname());
     final FileSystem baseFs = basePath.getFileSystem(this.conf);
 
     final StringBuilder sb = new StringBuilder();
@@ -219,36 +188,20 @@ public class HadoopExecutor extends Executor {
 
   /**
    * Constructor
-   * @param command command to execute
-   * @param design the design object
-   * @param designPath the design file path
-   * @param paramPath the parameter file path
-   * @param context execution context
-   * @throws IOException if cannot create log or output directory
+   * @param arguments executor arguments
+   * @param conf Hadoop configuration
+   * @throws EoulsanException if an error occurs while loading the design file
+   *           or the parameter file
    */
-  public HadoopExecutor(final Configuration conf, final Command command,
-      final Design design, final Path designPath, final Path paramPath,
-      final ExecutionArguments arguments) throws IOException {
+  public HadoopExecutor(final ExecutorArguments arguments,
+      final Configuration conf) throws IOException, EoulsanException {
+
+    super(arguments);
 
     if (conf == null)
       throw new NullPointerException("The configuration is null.");
 
     this.conf = conf;
-    this.arguments = arguments;
-
-    if (command == null)
-      throw new NullPointerException("The command is null");
-
-    setCommand(command);
-
-    if (design == null)
-      throw new NullPointerException("The design is null.");
-
-    if (designPath == null)
-      throw new NullPointerException("The design path is null.");
-
-    this.design = design;
-    this.designPath = designPath;
 
     // Create Log directory if necessary
     final Path logPath = new Path(arguments.getLogPathname());

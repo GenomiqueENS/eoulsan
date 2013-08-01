@@ -105,20 +105,9 @@ public class ParamParser {
    */
   public Command parse() throws EoulsanException {
 
-    return parse(new Command());
-  }
-
-  /**
-   * Parse the parameter file.
-   * @throws EoulsanException if an error occurs while parsing file
-   */
-  public Command parse(final Command command) throws EoulsanException {
-
-    if (command == null)
-      throw new NullPointerException("The command is null");
-
     LOGGER.info("Start parsing the workflow parameter file");
 
+    final Command result = new Command();
     final Document doc;
 
     //
@@ -163,13 +152,13 @@ public class ParamParser {
               "Invalid version of the format of the parameter file.");
 
         final String name = getTagValue("name", eElement);
-        command.setName(name);
+        result.setName(name);
 
         final String description = getTagValue("description", eElement);
-        command.setDescription(description);
+        result.setDescription(description);
 
         final String author = getTagValue("author", eElement);
-        command.setAuthor(author);
+        result.setAuthor(author);
 
         //
         // Parse constants
@@ -218,7 +207,7 @@ public class ParamParser {
 
                 LOGGER.info("In parameter file found "
                     + stepName + " step (parameters: " + parameters + ").");
-                command.addStep(stepId, stepName, parameters, skip);
+                result.addStep(stepId, stepName, parameters, skip);
 
               }
             }
@@ -229,7 +218,7 @@ public class ParamParser {
         // Parse globals parameters
         //
 
-        command.setGlobalParameters(parseParameters(eElement, "globals", null,
+        result.setGlobalParameters(parseParameters(eElement, "globals", null,
             true));
 
       }
@@ -237,9 +226,9 @@ public class ParamParser {
 
     LOGGER.info("End of parsing of workflow parameter file");
     LOGGER.info("Found "
-        + command.getStepIds().size() + " step(s) in workflow parameter file");
+        + result.getStepIds().size() + " step(s) in workflow parameter file");
 
-    return command;
+    return result;
   }
 
   /**
@@ -344,7 +333,7 @@ public class ParamParser {
    * @param arguments job arguments
    * @throws EoulsanException if an error occurs while evaluating the constant
    */
-  public void addConstants(final ExecutionArguments arguments)
+  public void addConstants(final ExecutorArguments arguments)
       throws EoulsanException {
 
     if (arguments == null)
