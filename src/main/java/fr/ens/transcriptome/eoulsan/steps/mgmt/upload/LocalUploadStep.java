@@ -34,7 +34,8 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.ContextUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
@@ -72,12 +73,12 @@ public class LocalUploadStep extends UploadStep {
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file,
-      final Sample sample, final DataFormat df, final int fileIndex)
-      throws IOException {
+      final WorkflowStep step, final Sample sample, final DataFormat format,
+      final int fileIndex) throws IOException {
 
     final String filename;
 
-    if (sample == null || df == null) {
+    if (sample == null || format == null) {
 
       if (file == null)
         throw new IOException("Input file is null.");
@@ -85,10 +86,9 @@ public class LocalUploadStep extends UploadStep {
       filename = file.getName();
     } else {
 
-      if (fileIndex == -1)
-        filename = ContextUtils.getNewDataFilename(df, sample);
-      else
-        filename = ContextUtils.getNewDataFilename(df, sample, fileIndex);
+      filename =
+          WorkflowStepOutputDataFile.newStandardFilename(step, format, sample,
+              fileIndex);
     }
 
     // Don't compress ZIP files

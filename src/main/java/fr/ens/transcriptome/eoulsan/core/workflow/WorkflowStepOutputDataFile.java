@@ -231,26 +231,7 @@ public final class WorkflowStepOutputDataFile implements
       sb.append('/');
     }
 
-    // Set the name of the step that generated the file
-    sb.append(step.getId());
-    sb.append('_');
-
-    // Set the name of the format
-    sb.append(format.getFormatName());
-    sb.append('_');
-
-    // Set the id of the sample
-    if (format.isOneFilePerAnalysis())
-      sb.append('1');
-    else
-      sb.append(sample.getId());
-
-    // Set the file index if needed
-    if (fileIndex >= 0)
-      sb.append(toLetter(fileIndex));
-
-    // Set the extension
-    sb.append(format.getDefaultExtention());
+    sb.append(newStandardFilename(step, format, sample, fileIndex));
 
     return new DataFile(sb.toString());
   }
@@ -323,6 +304,39 @@ public final class WorkflowStepOutputDataFile implements
   //
   // Static method
   //
+
+  public static final String newStandardFilename(final WorkflowStep step,
+      final DataFormat format, final Sample sample, final int fileIndex) {
+
+    Preconditions.checkNotNull(step, "Step argument cannot be null");
+    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+
+    final StringBuilder sb = new StringBuilder();
+
+    // Set the name of the step that generated the file
+    sb.append(step.getId());
+    sb.append('_');
+
+    // Set the name of the format
+    sb.append(format.getFormatName());
+    sb.append('_');
+
+    // Set the id of the sample
+    if (format.isOneFilePerAnalysis())
+      sb.append('1');
+    else
+      sb.append(sample.getId());
+
+    // Set the file index if needed
+    if (fileIndex >= 0)
+      sb.append(toLetter(fileIndex));
+
+    // Set the extension
+    sb.append(format.getDefaultExtention());
+
+    return sb.toString();
+  }
 
   /**
    * Get the count of files that exists for a step, a format and sample (case of

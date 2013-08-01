@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -116,7 +117,7 @@ public abstract class UploadStep extends AbstractStep {
       final Settings settings = context.getRuntime().getSettings();
 
       // Add all files to upload in a map
-      reWriteDesign(design, filesToCopy);
+      reWriteDesign(context, filesToCopy);
 
       // Obfuscate design is needed
       if (settings.isObfuscateDesign()) {
@@ -207,30 +208,32 @@ public abstract class UploadStep extends AbstractStep {
   /**
    * Generate the DataFile Object for the uploaded DataFile
    * @param file DataFile to upload
-   * @param df the DataFormat of the source
+   * @param step step that create the data
+   * @param format the DataFormat of the source
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
   private DataFile getUploadedDataFile(final DataFile file,
-      final Sample sample, final DataFormat df) throws IOException {
+      final WorkflowStep step, final Sample sample, final DataFormat format)
+      throws IOException {
 
-    return getUploadedDataFile(file, sample, df, -1);
+    return getUploadedDataFile(file, step, sample, format, -1);
   }
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
    * @param file DataFile to upload
-   * @param df the DataFormat of the source
+   * @param format the DataFormat of the source
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
   protected abstract DataFile getUploadedDataFile(final DataFile file,
-      final Sample sample, final DataFormat df, final int fileIndex)
-      throws IOException;
+      final WorkflowStep step, final Sample sample, final DataFormat format,
+      final int fileIndex) throws IOException;
 
   /**
    * Copy files to destinations.
@@ -262,8 +265,8 @@ public abstract class UploadStep extends AbstractStep {
     for (WorkflowStepOutputDataFile file : inFiles) {
       final DataFile in = file.getDataFile();
       final DataFile out =
-          getUploadedDataFile(in, file.getSample(), file.getFormat(),
-              file.getFileIndex());
+          getUploadedDataFile(in, file.getStep(), file.getSample(),
+              file.getFormat(), file.getFileIndex());
       result.put(in, out);
 
     }
@@ -287,10 +290,13 @@ public abstract class UploadStep extends AbstractStep {
       files.remove(file);
   }
 
-  private void reWriteDesign(final Design design,
+  private void reWriteDesign(final Context context,
       final Map<DataFile, DataFile> filesToCopy) throws IOException {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+
+    final WorkflowStep designStep = context.getWorkflow().getDesignStep();
+    final Design design = context.getWorkflow().getDesign();
 
     final Set<String> fieldWithFiles = newHashSet();
     boolean first = true;
@@ -324,9 +330,9 @@ public abstract class UploadStep extends AbstractStep {
           final DataFile outFile;
 
           if (format.getMaxFilesCount() == 1)
-            outFile = getUploadedDataFile(inFile, s, format);
+            outFile = getUploadedDataFile(inFile, designStep, s, format);
           else
-            outFile = getUploadedDataFile(inFile, s, format, 0);
+            outFile = getUploadedDataFile(inFile, designStep, s, format, 0);
 
           filesToCopy.put(inFile, outFile);
           newValues.add(outFile.toString());
@@ -336,7 +342,8 @@ public abstract class UploadStep extends AbstractStep {
           for (int i = 0; i < nValues; i++) {
             final DataFile inFile = new DataFile(oldValues.get(i));
             final DataFormat format = inFile.getDataFormat();
-            final DataFile outFile = getUploadedDataFile(inFile, s, format, i);
+            final DataFile outFile =
+                getUploadedDataFile(inFile, designStep, s, format, i);
             filesToCopy.put(inFile, outFile);
             newValues.add(outFile.toString());
           }
