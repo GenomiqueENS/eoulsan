@@ -26,4 +26,4 @@ fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
 # Management steps
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
-fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndParametersToOutputStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep
