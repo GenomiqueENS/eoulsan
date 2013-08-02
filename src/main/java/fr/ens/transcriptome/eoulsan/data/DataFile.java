@@ -307,10 +307,31 @@ public class DataFile implements Comparable<DataFile> {
     }
   }
 
-  @Override
-  public String toString() {
+  /**
+   * Create a directory with the path of the DataFile.
+   * @throws IOException if an error occurs while creating the directory
+   */
+  public void mkdir() throws IOException {
 
-    return this.src;
+    if (!getProtocol().isMkdir())
+      throw new IOException(
+          "The underlying protocol does not allow creating directories");
+
+    getProtocol().mkdir(this);
+  }
+
+  /**
+   * Create a directory and its parents if not exists with the path of the
+   * DataFile.
+   * @throws IOException if an error occurs while creating the directory
+   */
+  public void mkdirs() throws IOException {
+
+    if (!getProtocol().isMkdir())
+      throw new IOException(
+          "The underlying protocol does not allow creating directories");
+
+    getProtocol().mkdirs(this);
   }
 
   //
@@ -411,6 +432,12 @@ public class DataFile implements Comparable<DataFile> {
   public int hashCode() {
 
     return this.src.hashCode();
+  }
+
+  @Override
+  public String toString() {
+
+    return this.src;
   }
 
   //

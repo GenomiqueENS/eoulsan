@@ -53,7 +53,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
   protected Configuration conf;
 
   /**
-   * Get Convert a DataFile object to a Path object
+   * Get Convert a DataFile object to a Path object.
    * @param dataFile DataFile to convert
    * @return a Path object
    */

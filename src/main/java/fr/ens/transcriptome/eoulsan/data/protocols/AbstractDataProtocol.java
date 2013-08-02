@@ -103,4 +103,25 @@ abstract class AbstractDataProtocol implements DataProtocol {
     return null;
   }
 
+  @Override
+  public void mkdir(final DataFile dir) throws IOException {
+
+    throw new IOException("The mkdir() method is not supported by the "
+        + getName() + " protocol");
+
+  }
+
+  @Override
+  public void mkdirs(final DataFile dir) throws IOException {
+
+    throw new IOException("The mkdir() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean isMkdir() {
+
+    return false;
+  }
+
 }

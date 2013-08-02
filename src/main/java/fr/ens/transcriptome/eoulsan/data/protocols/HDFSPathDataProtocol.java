@@ -120,4 +120,36 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     return result;
   }
 
+  @Override
+  public void mkdir(final DataFile dir) throws IOException {
+
+    mkdirs(dir);
+  }
+
+  @Override
+  public void mkdirs(final DataFile dir) throws IOException {
+
+    final Path path = getPath(dir);
+
+    if (path == null)
+      throw new NullPointerException("Path to create is null");
+    if (this.conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(this.conf);
+
+    if (fs == null)
+      throw new IOException(
+          "Unable to create the directorty, The FileSystem is null");
+
+    if (!fs.mkdirs(path))
+      throw new IOException("Unable to create the directory: " + dir);
+  }
+
+  @Override
+  public boolean isMkdir() {
+
+    return true;
+  }
+
 }

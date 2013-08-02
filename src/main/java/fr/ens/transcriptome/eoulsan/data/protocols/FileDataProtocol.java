@@ -137,4 +137,29 @@ public class FileDataProtocol extends AbstractDataProtocol {
     return true;
   }
 
+  @Override
+  public void mkdir(final DataFile dir) throws IOException {
+
+    final File file = getSourceAsFile(dir);
+
+    if (!file.mkdir())
+      throw new IOException("Unable to create the directory: " + dir);
+
+  }
+
+  @Override
+  public void mkdirs(final DataFile dir) throws IOException {
+
+    final File file = getSourceAsFile(dir);
+
+    if (!file.mkdirs())
+      throw new IOException("Unable to create the directory: " + dir);
+  }
+
+  @Override
+  public boolean isMkdir() {
+
+    return true;
+  }
+
 }

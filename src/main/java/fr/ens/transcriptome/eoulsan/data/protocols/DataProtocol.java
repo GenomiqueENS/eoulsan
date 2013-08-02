@@ -100,6 +100,20 @@ public interface DataProtocol {
   boolean exists(DataFile src);
 
   /**
+   * Create a directory.
+   * @param dir directory to create
+   * @throws IOException if an error occurs while creating the directory
+   */
+  void mkdir(DataFile dir) throws IOException;
+
+  /**
+   * Create a directory and its parents if not exists.
+   * @param dir directory to create
+   * @throws IOException if an error occurs while creating the directory
+   */
+  void mkdirs(DataFile dir) throws IOException;
+
+  /**
    * Get the metadata for the source.
    * @param src source to use
    * @return always a metadataObject
@@ -118,7 +132,13 @@ public interface DataProtocol {
    * @return true if the source is writable
    */
   boolean isWritable();
-  
+
+  /**
+   * Test if the mkdir() and mkdirs() methods are available with this protocol.
+   * @return true if mkdir() and mkdirs() are available
+   */
+  boolean isMkdir();
+
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.
    * @return a File object or null if the protocol does not allow it
