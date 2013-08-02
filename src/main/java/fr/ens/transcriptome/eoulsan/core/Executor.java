@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -34,22 +35,22 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow.WorkflowStepResultProcessor;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowCommand;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowFileParser;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This class is the executor for running all the steps of an analysis.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public abstract class Executor {
+public class Executor {
 
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -59,56 +60,89 @@ public abstract class Executor {
   private final Design design;
 
   //
-  // Getters
+  // Check methods
   //
-
-  /**
-   * Get executor arguments.
-   * @return the ExecutorArguments object
-   */
-  protected ExecutorArguments getArguments() {
-
-    return this.arguments;
-  }
-
-  //
-  // Abstract methods
-  //
-
-  /**
-   * Write the log file of the result of a step
-   * @param result Step result
-   */
-  protected abstract void writeStepLogs(final StepResult result);
-
-  /**
-   * Check temporary directory.
-   */
-  protected abstract void checkTemporaryDirectory();
-
-  /**
-   * Log system information.
-   */
-  protected abstract void logSysInfo();
 
   /**
    * Check design.
    * @param design design to check
    * @throws EoulsanException if there is an issue with the design
    */
-  private void checkDesign(final Design design) throws EoulsanException {
+  private void checkDesign() throws EoulsanException {
 
-    if (design == null)
+    if (this.design == null)
       throw new EoulsanException("The design is null");
 
     // Check samples count
-    if (design.getSampleCount() == 0)
+    if (this.design.getSampleCount() == 0)
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
 
     LOGGER.info("Found "
-        + design.getSampleCount() + " sample(s) in design file");
+        + this.design.getSampleCount() + " sample(s) in design file");
   }
+
+  /**
+   * Check the log directory.
+   * @throws EoulsanException if an error occurs while checking the log
+   *           directory
+   */
+  private void checkLogDirectory() throws EoulsanException {
+
+    if (this.arguments.getLogPathname() == null)
+      throw new EoulsanException("The log directory path is null");
+
+    DataFile logDir = new DataFile(this.arguments.getLogPathname());
+
+    try {
+      if (!logDir.exists()) {
+        logDir.mkdirs();
+      } else {
+        if (!logDir.getMetaData().isDir())
+          throw new EoulsanException("The log directory is not a directory");
+      }
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
+  }
+
+  /**
+   * Check temporary directory.
+   */
+  private void checkTemporaryDirectory() {
+
+    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+
+    if (tempDir == null)
+      throw new EoulsanRuntimeException("Temporary directory is null");
+
+    if ("".equals(tempDir.getAbsolutePath()))
+      throw new EoulsanRuntimeException("Temporary directory is null");
+
+    if (!tempDir.exists())
+      throw new EoulsanRuntimeException("Temporary directory does not exists: "
+          + tempDir);
+
+    if (!tempDir.isDirectory())
+      throw new EoulsanRuntimeException(
+          "Temporary directory is not a directory: " + tempDir);
+
+    if (!tempDir.canRead())
+      throw new EoulsanRuntimeException("Temporary directory cannot be read: "
+          + tempDir);
+
+    if (!tempDir.canWrite())
+      throw new EoulsanRuntimeException(
+          "Temporary directory cannot be written: " + tempDir);
+
+    if (!tempDir.canExecute())
+      throw new EoulsanRuntimeException(
+          "Temporary directory is not executable: " + tempDir);
+  }
+
+  //
+  // Execute methods
+  //
 
   /**
    * run Eoulsan.
@@ -133,20 +167,24 @@ public abstract class Executor {
     // Add general executor info
     logInfo(this.arguments, this.command);
 
-    // Add system info
-    logSysInfo();
+    // Add Hadoop info in Hadoop mode
+    if (EoulsanRuntime.getRuntime().isHadoopMode())
+      HadoopInfo.logHadoopSysInfo();
 
     // Check base path
     if (this.arguments.getBasePathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Check design
-    checkDesign(design);
+    checkDesign();
 
     // Create Workflow
     final CommandWorkflow workflow =
         new CommandWorkflow(this.arguments, this.command, firstSteps,
             lastSteps, this.design);
+
+    // Check log directory
+    checkLogDirectory();
 
     // Check temporary directory
     checkTemporaryDirectory();
@@ -154,23 +192,7 @@ public abstract class Executor {
     LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
 
     // Execute Workflow
-    workflow.execute(new WorkflowStepResultProcessor() {
-
-      @Override
-      public void processResult(final WorkflowStep step, final StepResult result)
-          throws EoulsanException {
-
-        final String stepId = step.getId();
-
-        if (result == null) {
-          LOGGER.severe("No result for step: " + stepId);
-          throw new EoulsanException("No result for step: " + stepId);
-        }
-
-        // Write step logs
-        writeStepLogs(result);
-      }
-    });
+    workflow.execute();
 
   }
 
@@ -252,7 +274,7 @@ public abstract class Executor {
    * @throws EoulsanException if an error occurs while loading and parsing
    *           design and workflow files
    */
-  protected Executor(final ExecutorArguments arguments) throws EoulsanException {
+  public Executor(final ExecutorArguments arguments) throws EoulsanException {
 
     checkNotNull(arguments, "The arguments of the executor is null");
 

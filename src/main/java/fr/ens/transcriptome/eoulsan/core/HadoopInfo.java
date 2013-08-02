@@ -26,191 +26,53 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.DF;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.VersionInfo;
 
-import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
 import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This class define an executor for hadoop mode.
+ * This class show in log some Hadoop information.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class HadoopExecutor extends Executor {
+public class HadoopInfo {
 
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
-
-  private Configuration conf;
 
   private static final String ROOT_PATH = "/";
   private static final String VAR_PATH = "/var";
   private static final String TMP_PATH = "/tmp";
 
-  @Override
-  protected void writeStepLogs(final StepResult result) {
+  public static void logHadoopSysInfo() {
 
-    if (result == null || result.getStep() == null)
+    if (!EoulsanRuntime.getRuntime().isAmazonMode())
       return;
 
-    final boolean debug = EoulsanRuntime.getSettings().isDebug();
+    logHadoopVersionInfo();
 
-    try {
-
-      final Path logPath = new Path(getArguments().getLogPathname());
-      final Path basePath = new Path(getArguments().getBasePathname());
-      final FileSystem logFs = logPath.getFileSystem(this.conf);
-      final FileSystem baseFs = basePath.getFileSystem(this.conf);
-
-      if (!logFs.exists(logPath))
-        logFs.mkdirs(logPath);
-
-      final String logFilename = result.getStep().getId();
-
-      // Write logs in the log directory
-      writeResultLog(new Path(logPath, logFilename + ".log"), logFs, result);
-      if (debug)
-        writeErrorLog(new Path(logPath, logFilename + ".err"), logFs, result);
-
-      // Write logs in the base directory
-      writeResultLog(new Path(basePath, logFilename + ".log"), baseFs, result);
-      if (debug)
-        writeErrorLog(new Path(basePath, logFilename + ".err"), baseFs, result);
-
-      // Write the catlog of the base path
-      if (debug)
-        writeDirectoryCatalog(new Path(logPath, logFilename + ".cat"), logFs);
-
-    } catch (IOException e) {
-
-      Common.showAndLogErrorMessage("Unable to create log file for "
-          + result.getStep() + " step.");
-    }
-
-  }
-
-  @Override
-  protected void checkTemporaryDirectory() {
-
-    // Do nothing
-  }
-
-  private void writeResultLog(final Path logPath, final FileSystem fs,
-      final StepResult result) throws IOException {
-
-    final Writer writer =
-        new OutputStreamWriter(fs.create(logPath),
-            Globals.DEFAULT_FILE_ENCODING);
-
-    final String data = result.getLogMessage();
-
-    if (data != null)
-      writer.write(data);
-    writer.close();
-  }
-
-  private void writeErrorLog(final Path logPath, final FileSystem fs,
-      final StepResult result) throws IOException {
-
-    final Writer writer =
-        new OutputStreamWriter(fs.create(logPath),
-            Globals.DEFAULT_FILE_ENCODING);
-
-    final String data = result.getErrorMessage();
-    final Exception e = result.getException();
-
-    if (data != null)
-      writer.write(data);
-
-    if (e != null) {
-
-      writer.write("\n");
-      writer.write("Exception: " + e.getClass().getName() + "\n");
-      writer.write("Message: " + e.getMessage() + "\n");
-      writer.write("StackTrace:\n");
-      e.printStackTrace(new PrintWriter(writer));
-    }
-
-    writer.close();
-  }
-
-  private void writeDirectoryCatalog(final Path catPath, final FileSystem fs)
-      throws IOException {
-
-    final Writer writer =
-        new OutputStreamWriter(fs.create(catPath),
-            Globals.DEFAULT_FILE_ENCODING);
-
-    final Path basePath = new Path(getArguments().getBasePathname());
-    final FileSystem baseFs = basePath.getFileSystem(this.conf);
-
-    final StringBuilder sb = new StringBuilder();
-
-    final FileStatus[] files = baseFs.listStatus(basePath);
-
-    long count = 0;
-
-    if (files != null)
-      for (FileStatus f : files) {
-
-        if (f.isDir())
-          sb.append("D ");
-        else
-          sb.append("  ");
-
-        sb.append(new Date(f.getModificationTime()));
-        sb.append("\t");
-
-        sb.append(String.format("%10d", f.getLen()));
-        sb.append("\t");
-
-        sb.append(f.getPath().getName());
-        sb.append("\n");
-
-        count += f.getLen();
-      }
-    sb.append(count);
-    sb.append(" bytes in ");
-    sb.append(basePath);
-    sb.append(" directory.\n");
-
-    writer.write(sb.toString());
-    writer.close();
-  }
-
-  @Override
-  protected void logSysInfo() {
-
-    HadoopInfo();
+    // Get Eoulsan Hadoop runtime
+    HadoopEoulsanRuntime runtime =
+        (HadoopEoulsanRuntime) EoulsanRuntime.getRuntime();
 
     if (EoulsanRuntime.getSettings().isDebug())
-      sysInfo(conf);
+      sysInfo(runtime.getConfiguration());
   }
 
   //
   // Other methods
   //
 
-  private void sysInfo(final Configuration conf) {
+  private static void sysInfo(final Configuration conf) {
 
     try {
 
@@ -278,45 +140,13 @@ public class HadoopExecutor extends Executor {
 
   }
 
-  private static final void HadoopInfo() {
+  private static final void logHadoopVersionInfo() {
 
     LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
     LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
     LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
     LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
     LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Constructor
-   * @param arguments executor arguments
-   * @param conf Hadoop configuration
-   * @throws EoulsanException if an error occurs while loading the design file
-   *           or the workflow file
-   */
-  public HadoopExecutor(final ExecutorArguments arguments,
-      final Configuration conf) throws IOException, EoulsanException {
-
-    super(arguments);
-
-    if (conf == null)
-      throw new NullPointerException("The configuration is null.");
-
-    this.conf = conf;
-
-    // Create Log directory if necessary
-    final Path logPath = new Path(arguments.getLogPathname());
-    if (!logPath.getFileSystem(conf).exists(logPath))
-      PathUtils.mkdirs(logPath, conf);
-
-    // Create Output directory if necessary
-    final Path outputPath = new Path(arguments.getOutputPathname());
-    if (!outputPath.getFileSystem(conf).exists(outputPath))
-      PathUtils.mkdirs(outputPath, conf);
   }
 
 }

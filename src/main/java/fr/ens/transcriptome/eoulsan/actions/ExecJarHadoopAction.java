@@ -55,7 +55,6 @@ import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.HadoopExecutor;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -340,7 +339,7 @@ public class ExecJarHadoopAction extends AbstractAction {
           arguments.getLogPathname() + File.separator + "eoulsan.log");
 
       // Create executor
-      final Executor e = new HadoopExecutor(arguments, conf);
+      final Executor e = new Executor(arguments);
 
       // Create upload step
       final Step uploadStep =

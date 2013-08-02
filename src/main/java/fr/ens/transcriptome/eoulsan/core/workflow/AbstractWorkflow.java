@@ -29,6 +29,8 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,8 +56,10 @@ import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -69,6 +73,8 @@ public abstract class AbstractWorkflow implements Workflow {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final String STEP_RESULT_FILE_EXTENSION = ".log";
+
   private final Design design;
   private final WorkflowContext context;
   private final Set<String> stepIds = Sets.newHashSet();
@@ -79,28 +85,6 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractWorkflowStep rootStep;
   private AbstractWorkflowStep designStep;
   private AbstractWorkflowStep firstStep;
-
-  //
-  // Inner interface
-  //
-
-  /**
-   * This interface is used by the Executor to process the step result.
-   * @author Laurent Jourdren
-   * @since 1.3
-   */
-  public interface WorkflowStepResultProcessor {
-
-    /**
-     * Process a step result.
-     * @param step Step that has been executed
-     * @param result result of the step
-     * @throws EoulsanException if an error occurs while processing the result
-     */
-    void processResult(WorkflowStep step, StepResult result)
-        throws EoulsanException;
-
-  }
 
   //
   // Getters
@@ -280,11 +264,9 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /**
    * Execute the workflow.
-   * @param processor result step processor
    * @throws EoulsanException if an error occurs while executing the workflow
    */
-  public void execute(final WorkflowStepResultProcessor processor)
-      throws EoulsanException {
+  public void execute() throws EoulsanException {
 
     // check if output files does not exists
     checkExistingOutputFiles();
@@ -320,9 +302,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
         if (step.getType() == GENERATOR_STEP || step.getType() == STANDARD_STEP) {
 
-          // Process result
-          if (processor != null)
-            processor.processResult(step, result);
+          // Write step result in a file
+          writeStepResult(step, result);
 
           // End of the analysis if the analysis fail
           if (!result.isSuccess()) {
@@ -349,6 +330,37 @@ public abstract class AbstractWorkflow implements Workflow {
 
     }
 
+  }
+
+  /**
+   * This method write the step result in a file.
+   * @param step step that has been executed
+   * @param result result object
+   */
+  private void writeStepResult(final WorkflowStep step, final StepResult result) {
+
+    // Log directory
+    final DataFile logDir = new DataFile(this.context.getLogPathname());
+    
+    // Step result file
+    final DataFile logFile =
+        new DataFile(logDir, result.getStep().getId()
+            + STEP_RESULT_FILE_EXTENSION);
+
+    try {
+      final Writer writer = FileUtils.createBufferedWriter(logFile.create());
+
+      if (result.getLogMessage() != null)
+        writer.write(result.getLogMessage());
+      else
+        writer.write("Nothing to log.");
+      writer.close();
+
+    } catch (IOException e) {
+
+      Common.showAndLogErrorMessage("Unable to create log file for "
+          + result.getStep() + " step.");
+    }
   }
 
   //

@@ -48,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.LocalExecutor;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
@@ -218,7 +217,7 @@ public class EMRExecAction extends AbstractAction {
           arguments.getLogPathname() + File.separator + "eoulsan.log");
 
       // Create executor
-      final Executor e = new LocalExecutor(arguments);
+      final Executor e = new Executor(arguments);
 
       // Launch executor
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
