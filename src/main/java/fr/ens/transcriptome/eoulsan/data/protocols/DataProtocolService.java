@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.annotations.AnnotationUtils;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
@@ -128,7 +128,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return AnnotationUtils.accept(clazz, this.hadoopMode);
+    return EoulsanMode.accept(clazz, this.hadoopMode);
   }
 
   @Override

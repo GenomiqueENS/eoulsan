@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.annotations.AnnotationUtils;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
@@ -70,7 +70,7 @@ public class StepService extends ServiceNameLoader<Step> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return AnnotationUtils.accept(clazz, this.hadoopMode);
+    return EoulsanMode.accept(clazz, this.hadoopMode);
   }
 
   @Override
