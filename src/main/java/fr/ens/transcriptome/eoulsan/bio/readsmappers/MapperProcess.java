@@ -610,6 +610,17 @@ public abstract class MapperProcess {
       this.inputStdinMode = stdinMode;
       this.pairedEnd = pairedEnd;
 
+      final File tmpDir = mapper.getTempDirectory();
+      this.tmpInFile1 =
+          FileUtils.createTempFile(tmpDir, "mapper-inputfile1-", ".fq");
+      this.tmpInFile2 =
+          FileUtils.createTempFile(tmpDir, "mapper-inputfile2-", ".fq");
+
+      this.tmpOutFile1 =
+          FileUtils.createTempFile(tmpDir, "mapper-outputfile1-", ".data");
+      this.tmpOutFile2 =
+          FileUtils.createTempFile(tmpDir, "mapper-outputfile2-", ".data");
+
       if (fileMode) {
         this.stdin = null;
         startProcess();
@@ -625,18 +636,8 @@ public abstract class MapperProcess {
       } else {
         this.stdin =
             new OutputStreamWrapper(new FileOutputStream(this.tmpInFile1));
+
       }
-
-      final File tmpDir = mapper.getTempDirectory();
-      this.tmpInFile1 =
-          FileUtils.createTempFile(tmpDir, "mapper-inputfile1-", ".fq");
-      this.tmpInFile2 =
-          FileUtils.createTempFile(tmpDir, "mapper-inputfile2-", ".fq");
-
-      this.tmpOutFile1 =
-          FileUtils.createTempFile(tmpDir, "mapper-outputfile1-", ".data");
-      this.tmpOutFile2 =
-          FileUtils.createTempFile(tmpDir, "mapper-outputfile2-", ".data");
 
     } catch (InterruptedException e) {
       throw new IOException(e.getMessage());
