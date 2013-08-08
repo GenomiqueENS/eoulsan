@@ -41,8 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.common.base.Objects;
-
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -427,8 +425,8 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete())
-    LOGGER.warning("Can not delete sort output file: "
-        + this.sortOutputFile.getAbsolutePath());
+      LOGGER.warning("Can not delete sort output file: "
+          + this.sortOutputFile.getAbsolutePath());
   }
 
 }
