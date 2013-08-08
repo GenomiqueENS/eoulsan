@@ -297,7 +297,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd2.add("samse");
         cmd2.add(indexPath);
         cmd2.add(tmpFile.getAbsolutePath());
-        cmd2.add(readsFile.getAbsolutePath());
+        
+        // TODO fix version Laurent
+        // cmd2.add(readsFile.getAbsolutePath());
+        if (fileMode)
+          cmd2.add(readsFile.getAbsolutePath());
+        else
+          cmd2.add(getTmpInputFile1().getAbsolutePath());
 
         final List<List<String>> result = new ArrayList<List<String>>();
         result.add(cmd1);
