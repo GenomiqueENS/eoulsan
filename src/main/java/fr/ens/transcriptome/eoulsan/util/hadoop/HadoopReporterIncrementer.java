@@ -22,41 +22,43 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.util.hadoop;
 
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
-import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.design.Design;
+import org.apache.hadoop.mapreduce.TaskInputOutputContext;
+
+import com.google.common.base.Preconditions;
+
+import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
- * This class define a first step that do nothing. All generator steps must be
- * added before this step.
- * @since 1.1
+ * This class define a Hadoop reporter.
+ * @since 1.0
  * @author Laurent Jourdren
  */
-@HadoopCompatible
-public final class FirstStep extends AbstractStep {
+@SuppressWarnings("unchecked")
+public class HadoopReporterIncrementer implements ReporterIncrementer {
+
+  private final TaskInputOutputContext context;
 
   @Override
-  public String getName() {
+  public void incrCounter(String counterGroup, String counterName, long amount) {
 
-    return "first";
+    context.getCounter(counterGroup, counterName).increment(amount);
   }
 
-  @Override
-  public String getLogName() {
-    return null;
-  }
+  //
+  // Constructor
+  //
 
-  @Override
-  public StepResult execute(Design design, Context context,
-      final StepStatus status) {
+  /**
+   * Constructor.
+   * @param context context to use for counter incrementation
+   */
+  public HadoopReporterIncrementer(final TaskInputOutputContext context) {
 
-    // Clear the CheckStore before the start of the "real" steps
-    CheckStore.getCheckStore().clear();
+    Preconditions.checkNotNull(context, "Context is null");
 
-    return status.createStepResult();
+    this.context = context;
   }
 
 }

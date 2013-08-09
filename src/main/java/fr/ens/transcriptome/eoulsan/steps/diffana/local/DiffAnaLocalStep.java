@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionFitType;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionMethod;
@@ -97,12 +98,10 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
-      final long startTime = System.currentTimeMillis();
-      final StringBuilder log = new StringBuilder();
-
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
 
       String rServeName = null;
@@ -122,12 +121,12 @@ public class DiffAnaLocalStep extends AbstractStep {
       ad.run(context);
 
       // Write log file
-      return new StepResult(context, startTime, log.toString());
+      return status.createStepResult();
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e, "Error while analysis data: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while analysis data: " + e.getMessage());
     }
   }
 

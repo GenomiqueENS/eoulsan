@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This Step allow to define the list of the formats of the files to download at
@@ -119,9 +120,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, Context context) {
-
-    final long startTime = System.currentTimeMillis();
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     final StringBuilder sb = new StringBuilder();
     boolean first = true;
@@ -146,7 +146,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats, false);
 
-    return new StepResult(context, startTime, "Formats to download: " + formats);
+    status.setStepMessage("Formats to download: " + formats);
+    return status.createStepResult();
   }
 
 }

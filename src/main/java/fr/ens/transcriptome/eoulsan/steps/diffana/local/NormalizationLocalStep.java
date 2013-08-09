@@ -34,6 +34,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.diffana.Normalization;
 
 /**
@@ -68,11 +69,10 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
-      final long startTime = System.currentTimeMillis();
-      final StringBuilder log = new StringBuilder();
 
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
 
@@ -89,11 +89,11 @@ public class NormalizationLocalStep extends AbstractStep {
       norm.run(context);
 
       // Write log file
-      return new StepResult(context, startTime, log.toString());
+      return status.createStepResult();
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e,
+      return status.createStepResult(e,
           "Error while normalizing expression data: " + e.getMessage());
     }
 

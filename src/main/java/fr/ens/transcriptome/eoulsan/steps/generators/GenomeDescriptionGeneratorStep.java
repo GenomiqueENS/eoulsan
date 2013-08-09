@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This class implements a genome description generator step.
@@ -84,9 +85,8 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
-
-    final long startTime = System.currentTimeMillis();
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
 
@@ -117,18 +117,20 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       desc.save(genomeDescriptionDataFile.create());
 
       LOGGER.fine("Genome description object: " + desc.toString());
+
     } catch (BadBioEntryException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     } catch (IOException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     }
 
-    return new StepResult(context, startTime, "Genome description creation");
+    status.setStepMessage("Genome description creation");
+    return status.createStepResult();
   }
 
   /**

@@ -24,41 +24,54 @@
 
 package fr.ens.transcriptome.eoulsan.util.hadoop;
 
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
+import java.util.Set;
 
-import com.google.common.base.Preconditions;
+import org.apache.hadoop.mapreduce.Counter;
+import org.apache.hadoop.mapreduce.Counters;
 
-import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
+import com.google.common.collect.Sets;
 
-/**
- * This class define a Hadoop reporter.
- * @since 1.0
- * @author Laurent Jourdren
- */
-@SuppressWarnings("unchecked")
-public class HadoopReporter implements ReporterIncrementer {
+import fr.ens.transcriptome.eoulsan.util.Reporter;
 
-  private final TaskInputOutputContext context;
+public class HadoopReporter implements Reporter {
+
+  private final Counters counters;
 
   @Override
-  public void incrCounter(String counterGroup, String counterName, long amount) {
+  public void incrCounter(final String counterGroup, final String counterName,
+      long amount) {
 
-    context.getCounter(counterGroup, counterName).increment(amount);
+    this.counters.getGroup(counterGroup).findCounter(counterName)
+        .increment(amount);
   }
 
-  //
-  // Constructor
-  //
+  @Override
+  public long getCounterValue(final String counterGroup,
+      final String counterName) {
 
-  /**
-   * Constructor.
-   * @param context context to use for counter incrementation
-   */
-  public HadoopReporter(final TaskInputOutputContext context) {
+    return this.counters.findCounter(counterGroup, counterName).getValue();
+  }
 
-    Preconditions.checkNotNull(context, "Context is null");
+  @Override
+  public Set<String> getCounterGroups() {
 
-    this.context = context;
+    return Sets.newHashSet(counters.getGroupNames());
+  }
+
+  @Override
+  public Set<String> getCounterNames(final String group) {
+
+    final Set<String> result = Sets.newHashSet();
+
+    for (Counter c : counters.getGroup(group))
+      result.add(c.getName());
+
+    return result;
+  }
+
+  public HadoopReporter(final Counters counter) {
+
+    this.counters = counter;
   }
 
 }

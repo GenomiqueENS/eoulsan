@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This class define a step that generate a genome mapper index.
@@ -105,9 +106,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
-
-    final long startTime = System.currentTimeMillis();
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
 
@@ -141,14 +141,14 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     } catch (IOException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     }
 
-    return new StepResult(context, startTime, this.mapper.getMapperName()
-        + " index creation");
+    status.setStepMessage(this.mapper.getMapperName() + " index creation");
+    return status.createStepResult();
   }
 
 }

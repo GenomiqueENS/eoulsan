@@ -32,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -39,6 +40,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
@@ -50,9 +53,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
@@ -85,7 +88,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   }
 
   @Override
-  public StepResult execute(Design design, final Context context) {
+  public StepResult execute(Design design, final Context context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration();
@@ -98,34 +102,32 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
           jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
       }
 
+      // Submit job paired end if needed
       MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-          CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+          CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      final List<Job> jobs = new ArrayList<Job>();
-      for (Sample s : design.getSamples())
-        jobs.add(createJobConf(conf, context, s));
+      final Map<Job, Sample> jobs = Maps.newHashMap();
+      for (Sample sample : design.getSamples())
+        jobs.put(createJobConf(conf, context, sample), sample);
 
-      final long startTime = System.currentTimeMillis();
+      MapReduceUtils.submitAndWaitForJobs(jobs,
+          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
-      final HadoopJobsResults jobsResults =
-          MapReduceUtils.submitAndWaitForJobs(jobs,
-              CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
-
-      return jobsResults.getStepResult(context, startTime);
+      return status.createStepResult();
 
     } catch (IOException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     }
 
   }

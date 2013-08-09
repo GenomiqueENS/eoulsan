@@ -44,7 +44,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
+import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -60,20 +62,17 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
-      final long startTime = System.currentTimeMillis();
-      final StringBuilder log = new StringBuilder();
 
       final ExpressionCounter counter = getCounter();
-
-      final String genomicType = getGenomicType();
 
       for (Sample s : design.getSamples()) {
 
         // Create the reporter
-        final Reporter reporter = new Reporter();
+        final Reporter reporter = new LocalReporter();
 
         // Get annotation file
         final DataFile annotationFile =
@@ -100,7 +99,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
                 + getAttributeId() + ", stranded: " + getStranded()
                 + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
 
-        log.append(reporter.countersValuesToString(COUNTER_GROUP,
+        final String sampleCounterHeader =
             "Expression computation with "
                 + counter.getCounterName() + " ("
                 + s.getName()
@@ -109,26 +108,28 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
                 + ", "
                 + annotationFile.getName()
                 + ", "
-                + genomicType
+                + getGenomicType()
                 // If counter is HTSeq-count add additional parameters to log
                 + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
-                    ? htSeqArgsLog : "") + ")"));
+                    ? htSeqArgsLog : "") + ")";
 
+        status.setSampleCounters(s, reporter, COUNTER_GROUP,
+            sampleCounterHeader);
       }
 
       // Write log file
-      return new StepResult(context, startTime, log.toString());
+      return status.createStepResult();
 
     } catch (FileNotFoundException e) {
-      return new StepResult(context, e, "File not found: " + e.getMessage());
+      return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return new StepResult(context, e, "Error while filtering: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while filtering: " + e.getMessage());
     } catch (EoulsanException e) {
-      return new StepResult(context, e,
+      return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     } catch (BadBioEntryException e) {
-      return new StepResult(context, e,
+      return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }
 
@@ -167,7 +168,6 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
     // Set counter temporary directory
     counter.setTempDirectory(tempDirectory);
-
   }
 
 }

@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,9 +46,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -71,11 +73,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
-      final long startTime = System.currentTimeMillis();
-      final StringBuilder log = new StringBuilder();
 
       final SequenceReadsMapper mapper = getMapper();
 
@@ -91,7 +92,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       for (Sample s : design.getSamples()) {
 
         // Create the reporter
-        final Reporter reporter = new Reporter();
+        final Reporter reporter = new LocalReporter();
 
         final File archiveIndexFile =
             context.getInputDataFile(getMapper().getArchiveFormat(), s)
@@ -169,19 +170,17 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         Files.move(samOutputFile, outFile);
 
         // Add counters for this sample to log file
-
-        log.append(reporter.countersValuesToString(COUNTER_GROUP, logMsg));
-
+        status.setSampleCounters(s, reporter, COUNTER_GROUP, logMsg);
       }
-      return new StepResult(context, startTime, log.toString());
+      return status.createStepResult();
 
     } catch (FileNotFoundException e) {
 
-      return new StepResult(context, e, "File not found: " + e.getMessage());
+      return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(context, e, "error while filtering: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "error while filtering: " + e.getMessage());
     }
   }
 

@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This generator allow to generate a genome fasta file from the fasta section
@@ -85,9 +86,8 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
-
-    final long startTime = System.currentTimeMillis();
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     try {
 
@@ -120,13 +120,14 @@ public class GFFFastaGeneratorStep extends AbstractStep {
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     } catch (IOException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     }
 
-    return new StepResult(context, startTime, "Genome fasta creation");
+    status.setStepMessage("Genome fasta creation");
+    return status.createStepResult();
   }
 
 }

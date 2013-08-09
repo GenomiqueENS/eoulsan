@@ -49,9 +49,10 @@ public class TerminalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
-    return new StepResult(context, System.currentTimeMillis(), "Terminal step.");
+    return status.createStepResult();
   }
 
   @Override

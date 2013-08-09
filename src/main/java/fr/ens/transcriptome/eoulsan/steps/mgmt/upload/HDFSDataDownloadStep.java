@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
@@ -110,22 +111,24 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
     final String noDownloadValue =
         context.getSettings().getSetting(NO_HDFS_DOWNLOAD);
     if (noDownloadValue != null
-        && "true".equals(noDownloadValue.trim().toLowerCase()))
-      return new StepResult(context, System.currentTimeMillis(),
-          "Download step skipped in settings.");
+        && "true".equals(noDownloadValue.trim().toLowerCase())) {
+
+      status.setStepMessage("Download step skipped in settings.");
+      return status.createStepResult();
+    }
 
     LOGGER.info("Start copying results.");
     LOGGER.info("inpath="
         + context.getBasePathname() + "\toutpath="
         + context.getOutputPathname());
 
-    final long startTime = System.currentTimeMillis();
     final Configuration conf = this.conf;
 
     if (context.getBasePathname() == null)
@@ -227,16 +230,17 @@ public class HDFSDataDownloadStep extends AbstractStep {
         logMsg.append('\n');
       }
 
-      return new StepResult(context, startTime, logMsg.toString());
+      status.setStepMessage(logMsg.toString());
+      return status.createStepResult();
 
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e, "Error while download results: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while download results: " + e.getMessage());
     } catch (IOException e) {
 
-      return new StepResult(context, e, "Error while download results: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while download results: " + e.getMessage());
     }
   }
 

@@ -33,13 +33,13 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -70,6 +71,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final StepType type;
   private final Set<Parameter> parameters;
   private final Step step;
+  private final EoulsanMode mode;
   private final boolean skip;
 
   private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
@@ -81,7 +83,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       Maps.newHashMap();
 
   private StepState stepState = StepState.CREATED;
-  private long duration = -1;
+  private StepResult result;
 
   //
   // Internal class
@@ -188,9 +190,22 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.type;
   }
 
+  /**
+   * Get the underlying Step object.
+   * @return the Step object
+   */
   public Step getStep() {
 
     return this.step;
+  }
+
+  /**
+   * Get the Eoulsan mode of the step.
+   * @return an EoulsanMode enum
+   */
+  public EoulsanMode getEoulsanMode() {
+
+    return this.mode;
   }
 
   @Override
@@ -203,12 +218,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public StepState getState() {
 
     return this.stepState;
-  }
-
-  @Override
-  public long getDuration() {
-
-    return this.duration;
   }
 
   @Override
@@ -233,6 +242,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   protected Set<DataFormat> getOutputDataFormats() {
 
     return Collections.unmodifiableSet(this.outputFormats);
+  }
+
+  @Override
+  public StepResult getResult() {
+
+    return this.result;
   }
 
   //
@@ -484,10 +499,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Set the current step in the context
     this.workflow.getWorkflowContext().setStep(this);
+    final StepStatus status = new StepStatus(this);
     final StepResult result;
-
-    Stopwatch stopwatch = new Stopwatch();
-    stopwatch.start();
 
     switch (getType()) {
 
@@ -495,23 +508,24 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     case GENERATOR_STEP:
 
       result =
-          step.execute(this.workflow.getDesign(), this.workflow.getContext());
+          step.execute(this.workflow.getDesign(), this.workflow.getContext(),
+              status);
       break;
 
     case DESIGN_STEP:
 
-      result = runCheckers();
+      result = runCheckers(status);
       break;
 
     default:
       result = null;
     }
 
-    this.duration = stopwatch.elapsedMillis();
-
-    LOGGER.info("Process step "
-        + getId() + " in "
-        + StringUtils.toTimeHumanReadable(this.duration / 1000000) + " s.");
+    if (result != null)
+      LOGGER.info("Process step "
+          + getId() + " in "
+          + StringUtils.toTimeHumanReadable(result.getDuration() / 1000000)
+          + " s.");
 
     setState(StepState.DONE);
 
@@ -520,9 +534,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Run checker (runs only for Design step).
+   * @param status step status
    * @return a StepResult object
    */
-  private StepResult runCheckers() {
+  private StepResult runCheckers(final StepStatus status) {
 
     // This method can only works with design step
     if (getType() != DESIGN_STEP)
@@ -572,13 +587,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       // Set the context as before starting the checkers
       context.setStep(this);
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     }
 
     // Set the context as before starting the checkers
     context.setStep(this);
 
-    return new StepResult(context, true, "");
+    return status.createStepResult(true);
   }
 
   //
@@ -605,6 +620,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.skip = false;
     this.type = type;
     this.step = null;
+    this.mode = EoulsanMode.NONE;
     this.parameters = Collections.emptySet();
 
     // Register this step in the workflow
@@ -633,6 +649,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.skip = false;
     this.type = StepType.GENERATOR_STEP;
     this.step = generator;
+    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Collections.emptySet();
 
     // Register this step in the workflow
@@ -663,7 +680,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.skip = skip;
     this.type = StepType.STANDARD_STEP;
     this.step = step;
-    this.parameters = Sets.newHashSet(parameters);
+    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
+    this.parameters = Sets.newLinkedHashSet(parameters);
 
     // Register this step in the workflow
     this.workflow.register(this);

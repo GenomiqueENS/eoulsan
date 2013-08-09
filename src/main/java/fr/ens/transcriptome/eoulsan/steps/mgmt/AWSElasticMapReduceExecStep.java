@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceBuilder;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceJob;
 
@@ -155,9 +156,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
-
-    final long startTime = System.currentTimeMillis();
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     // Envrionment argument
     final StringBuilder sb = new StringBuilder();
@@ -252,18 +252,21 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
 
       if ("FAILED".equals(jobStatus)) {
 
-        return new StepResult(context, false, startTime,
-            "End of Amazon MapReduce Job "
-                + jobFlowId + " with " + jobStatus + " status.");
+        status.setStepMessage("End of Amazon MapReduce Job "
+            + jobFlowId + " with " + jobStatus + " status.");
+        return status.createStepResult(false);
+
       }
 
-      return new StepResult(context, startTime,
-          "End of Amazon Elastic MapReduce Job "
-              + jobFlowId + " with " + jobStatus + " status.");
+      status.setStepMessage("End of Amazon Elastic MapReduce Job "
+          + jobFlowId + " with " + jobStatus + " status.");
+
+      return status.createStepResult();
     }
 
-    return new StepResult(context, startTime,
-        "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
+    status.setStepMessage("Launch of Amazon Elastic MapReduce Job "
+        + jobFlowId + ".");
+    return status.createStepResult();
   }
 
   @Override

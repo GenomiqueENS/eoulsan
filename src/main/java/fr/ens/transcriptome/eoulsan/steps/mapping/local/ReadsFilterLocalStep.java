@@ -53,7 +53,9 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.ProcessSample;
 import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
+import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -69,20 +71,18 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
-    return ProcessSampleExecutor.processAllSamples(context, design,
+    return ProcessSampleExecutor.processAllSamples(context, design, status,
         getLocalThreads(), new ProcessSample() {
 
           @Override
-          public String processSample(final Context context, final Sample sample)
-              throws ProcessSampleException {
-
-            // Define Result
-            String resultString = null;
+          public void processSample(final Context context, final Sample sample,
+              final StepStatus status) throws ProcessSampleException {
 
             // Create the reporter
-            final Reporter reporter = new Reporter();
+            final Reporter reporter = new LocalReporter();
 
             try {
 
@@ -106,9 +106,11 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
               // Run the filter in single or pair-end mode
               if (inFileCount == 1)
-                resultString = singleEnd(context, sample, reporter, filter);
+
+                singleEnd(context, sample, reporter, status, filter);
               else
-                resultString = pairedEnd(context, sample, reporter, filter);
+
+                pairedEnd(context, sample, reporter, status, filter);
 
             } catch (FileNotFoundException e) {
               throwException(e, "File not found: " + e.getMessage());
@@ -118,8 +120,6 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
               throwException(e,
                   "Error while initializing filter: " + e.getMessage());
             }
-
-            return resultString;
           }
         });
 
@@ -130,12 +130,13 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param context Eoulsan context
    * @param sample sample to process
    * @param reporter reporter to use
+   * @param status step status
    * @param filter reads filter to use
-   * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static String singleEnd(final Context context, final Sample sample,
-      final Reporter reporter, final ReadFilter filter) throws IOException {
+  private static void singleEnd(final Context context, final Sample sample,
+      final Reporter reporter, final StepStatus status, final ReadFilter filter)
+      throws IOException {
 
     // Get the source
     final DataFile inFile =
@@ -149,7 +150,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         .getFastqFormat());
 
     // Add counters for this sample to log file
-    return reporter.countersValuesToString(COUNTER_GROUP, "Filter reads ("
+    status.setSampleCounters(sample, reporter, COUNTER_GROUP, "Filter reads ("
         + sample.getName() + ", " + inFile.getName() + ")");
   }
 
@@ -162,8 +163,9 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static String pairedEnd(final Context context, final Sample sample,
-      final Reporter reporter, final ReadFilter filter) throws IOException {
+  private static void pairedEnd(final Context context, final Sample sample,
+      final Reporter reporter, final StepStatus status, final ReadFilter filter)
+      throws IOException {
 
     // Get the source
     final DataFile inFile1 =
@@ -180,7 +182,9 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         .getMetadata().getFastqFormat());
 
     // Add counters for this sample to log file
-    return reporter.countersValuesToString(
+    status.setSampleCounters(
+        sample,
+        reporter,
         COUNTER_GROUP,
         "Filter reads ("
             + sample.getName() + ", " + inFile1.getName() + ", "

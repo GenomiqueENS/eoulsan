@@ -33,7 +33,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +47,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -70,6 +71,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionFeaturesCreator;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
@@ -77,9 +79,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.NewAPIJobsResults;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -495,15 +495,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionTranscriptsFile(
-      final Context context, final Map<Sample, Job> jobconfs,
+      final Context context, final Map<Job, Sample> jobconfs,
       final Configuration conf) throws IOException, InterruptedException {
 
     FinalExpressionTranscriptsCreator fetc = null;
 
-    for (Map.Entry<Sample, Job> e : jobconfs.entrySet()) {
+    for (Map.Entry<Job, Sample> e : jobconfs.entrySet()) {
 
-      final Sample sample = e.getKey();
-      final Job rj = e.getValue();
+      final Job rj = e.getKey();
+      final Sample sample = e.getValue();
 
       final long readsUsed =
           rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
@@ -537,15 +537,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionFeaturesFile(
-      final Context context, final Map<Sample, Job> jobconfs,
+      final Context context, final Map<Job, Sample> jobconfs,
       final Configuration conf) throws IOException {
 
     FinalExpressionFeaturesCreator fefc = null;
 
-    for (Map.Entry<Sample, Job> e : jobconfs.entrySet()) {
+    for (Map.Entry<Job, Sample> e : jobconfs.entrySet()) {
 
-      final Sample sample = e.getKey();
-      // final Job rj = e.getValue();
+      final Job rj = e.getKey();
+      final Sample sample = e.getValue();
 
       final FileSystem fs =
           new Path(context.getBasePathname()).getFileSystem(conf);
@@ -564,8 +564,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       fefc.initializeExpressionResults();
 
       // Load map-reduce results
-      fefc.loadPreResults(new DataFile(e.getValue().getConfiguration()
-          .get("mapred.output.dir")).open());
+      fefc.loadPreResults(new DataFile(rj.getConfiguration().get(
+          "mapred.output.dir")).open());
 
       fefc.saveFinalResults(fs.create(resultPath));
     }
@@ -601,14 +601,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME))
-      return executeJobEoulsanCounter(design, context);
+      return executeJobEoulsanCounter(design, context, status);
     else if (getCounter().getCounterName().equals(HTSeqCounter.COUNTER_NAME))
-      return executeJobHTSeqCounter(design, context);
+      return executeJobHTSeqCounter(design, context, status);
 
-    return new StepResult(context, new EoulsanException("Unknown counter: "
+    return status.createStepResult(new EoulsanException("Unknown counter: "
         + getCounter().getCounterName()), "Unknown counter: "
         + getCounter().getCounterName());
   }
@@ -617,16 +618,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * Execute Eoulsan counter as an Hadoop job.
    * @param design design object
    * @param context Eoulsan context
+   * @param status Eoulsan status
    * @return a StepResult object
    */
   private StepResult executeJobEoulsanCounter(final Design design,
-      final Context context) {
+      final Context context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
+    final Map<Job, Sample> jobsRunning = Maps.newHashMap();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -634,20 +636,19 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       LOGGER.info("Genomic type: " + getGenomicType());
 
       // Create the list of jobs to run
-      for (Sample s : design.getSamples()) {
+      for (Sample sample : design.getSamples()) {
 
-        final Job jconf =
-            createJobEoulsanCounter(conf, context, s, getGenomicType(),
+        final Job job =
+            createJobEoulsanCounter(conf, context, sample, getGenomicType(),
                 getAttributeId());
 
-        jconf.submit();
-        jobsRunning.put(s, jconf);
+        job.submit();
+        jobsRunning.put(job, sample);
       }
 
       // Compute map-reduce part of the expression computation
-      final HadoopJobsResults jobsResults =
-          new NewAPIJobsResults(jobsRunning.values(),
-              CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+      MapReduceUtils.submitAndWaitForJobs(jobsRunning,
+          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
       LOGGER.info("Finish the first part of the expression computation in "
@@ -660,22 +661,22 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
           + " seconds.");
 
-      return jobsResults.getStepResult(context, startTime);
+      return status.createStepResult();
 
     } catch (IOException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (BadBioEntryException e) {
 
-      return new StepResult(context, e, "Invalid annotation entry: "
-          + e.getEntry());
+      return status.createStepResult(e,
+          "Invalid annotation entry: " + e.getEntry());
     } catch (ClassNotFoundException e) {
-      return new StepResult(context, e, "Class not found: " + e.getMessage());
+      return status.createStepResult(e, "Class not found: " + e.getMessage());
     }
   }
 
@@ -683,16 +684,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * Execute HTSeq-count counter as an Hadoop job.
    * @param design design object
    * @param context Eoulsan context
+   * @param status Eoulsan status
    * @return a StepResult object
    */
   private StepResult executeJobHTSeqCounter(final Design design,
-      final Context context) {
+      final Context context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Sample, Job> jobsRunning = new HashMap<Sample, Job>();
+    final Map<Job, Sample> jobsRunning = Maps.newHashMap();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -706,29 +708,29 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           jobsPairedEnd.add(createJobPairedEnd(conf, context, s));
       }
 
+      // Paired-end preprocessing
       if (jobsPairedEnd.size() > 0)
         MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-            CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+            CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      for (Sample s : design.getSamples()) {
+      for (Sample sample : design.getSamples()) {
 
         final boolean tsamFormat =
-            context.getInputDataFileCount(READS_FASTQ, s) == 2;
+            context.getInputDataFileCount(READS_FASTQ, sample) == 2;
 
-        final Job jconf =
-            createJobHTSeqCounter(conf, context, s, getGenomicType(),
+        final Job job =
+            createJobHTSeqCounter(conf, context, sample, getGenomicType(),
                 getAttributeId(), getStranded(), getOverlapMode(),
                 isRemoveAmbiguousCases(), tsamFormat);
 
-        jconf.submit();
-        jobsRunning.put(s, jconf);
+        job.submit();
+        jobsRunning.put(job, sample);
       }
 
       // Compute map-reduce part of the expression computation
-      final HadoopJobsResults jobsResults =
-          new NewAPIJobsResults(jobsRunning.values(),
-              CommonHadoop.CHECK_COMPLETION_TIME, COUNTER_GROUP);
+      MapReduceUtils.submitAndWaitForJobs(jobsRunning,
+          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
       LOGGER.info("Finish the first part of the expression computation in "
@@ -741,26 +743,26 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
           + " seconds.");
 
-      return jobsResults.getStepResult(context, startTime);
+      return status.createStepResult();
 
     } catch (IOException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (InterruptedException e) {
 
-      return new StepResult(context, e, "Error while running job: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while running job: " + e.getMessage());
     } catch (BadBioEntryException e) {
 
-      return new StepResult(context, e, "Invalid annotation entry: "
-          + e.getEntry());
+      return status.createStepResult(e,
+          "Invalid annotation entry: " + e.getEntry());
     } catch (ClassNotFoundException e) {
 
-      return new StepResult(context, e, "Class not found: " + e.getMessage());
+      return status.createStepResult(e, "Class not found: " + e.getMessage());
     } catch (EoulsanException e) {
 
-      return new StepResult(context, e,
+      return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }
   }

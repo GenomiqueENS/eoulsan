@@ -59,11 +59,12 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
     LOGGER.info("execute design: " + design);
 
-    return new StepResult(context, true, null);
+    return status.createStepResult();
   }
 
 }

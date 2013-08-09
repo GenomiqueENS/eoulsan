@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
@@ -82,9 +83,9 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public StepResult execute(final Design design, final Context context,
+      final StepStatus status) {
 
-    final long startTime = System.currentTimeMillis();
     final StringBuilder log = new StringBuilder();
 
     // Save and change base pathname
@@ -153,7 +154,7 @@ public abstract class UploadStep extends AbstractStep {
 
       // Remove temporary design file
       if (!newDesignFile.delete()) {
-        LOGGER.warning("Cannot remove temporary desihn file: " + newDesignFile);
+        LOGGER.warning("Cannot remove temporary design file: " + newDesignFile);
       }
 
       // Change the path of design and workflow file in the context
@@ -162,10 +163,10 @@ public abstract class UploadStep extends AbstractStep {
 
     } catch (IOException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     } catch (EoulsanIOException e) {
 
-      return new StepResult(context, e);
+      return status.createStepResult(e);
     }
 
     // The base path is now the place where files where uploaded.
@@ -177,7 +178,8 @@ public abstract class UploadStep extends AbstractStep {
           + "/" + repackagedJarFile.getName());
     }
 
-    return new StepResult(context, startTime, log.toString());
+    status.setStepMessage(log.toString());
+    return status.createStepResult();
   }
 
   @Override

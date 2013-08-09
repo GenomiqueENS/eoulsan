@@ -29,7 +29,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_R
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
-import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtilsNewAPI.parseKeyValue;
+import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils.parseKeyValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
 
 /**
  * This class defines a read filter mapper.
@@ -125,7 +125,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
           READ_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
-          mrfb.getReadFilter(new HadoopReporter(context), this.counterGroup);
+          mrfb.getReadFilter(new HadoopReporterIncrementer(context), this.counterGroup);
 
       LOGGER.info("Reads filters to apply: "
           + Joiner.on(", ").join(this.filter.getFilterNames()));

@@ -60,7 +60,7 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
 
 /**
  * This class define a reducer for alignments filtering.
@@ -127,7 +127,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
           MAP_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
-          mrafb.getAlignmentsFilter(new HadoopReporter(context),
+          mrafb.getAlignmentsFilter(new HadoopReporterIncrementer(context),
               this.counterGroup);
       LOGGER.info("Read alignments filters to apply: "
           + Joiner.on(", ").join(this.filter.getFilterNames()));

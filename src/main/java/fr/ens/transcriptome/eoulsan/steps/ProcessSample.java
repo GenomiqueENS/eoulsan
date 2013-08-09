@@ -98,10 +98,9 @@ public abstract class ProcessSample {
    * Process a Sample.
    * @param context Eoulsan context of execution
    * @param sample Sample to process
-   * @return a String with the log message about the process of the sample
-   * @throws ProcessSampleException if error occurs while processing sample
+   * @param status step status
    */
-  public abstract String processSample(Context context, Sample sample)
-      throws ProcessSampleException;
+  public abstract void processSample(Context context, Sample sample,
+      StepStatus status) throws ProcessSampleException;
 
 }

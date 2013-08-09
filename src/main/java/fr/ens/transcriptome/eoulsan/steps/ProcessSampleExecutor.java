@@ -60,19 +60,15 @@ public class ProcessSampleExecutor {
 
     private final Context context;
     private final Sample sample;
+    private final StepStatus status;
     private final ProcessSample ps;
 
-    private String log;
     private Exception exception;
     private String errorMsg;
 
     //
     // Getters
     //
-
-    public String getLog() {
-      return this.log;
-    }
 
     public Exception getException() {
       return this.exception;
@@ -90,7 +86,7 @@ public class ProcessSampleExecutor {
     public void run() {
 
       try {
-        this.log = this.ps.processSample(this.context, this.sample);
+        this.ps.processSample(this.context, this.sample, this.status);
         this.success = true;
       } catch (ProcessSampleException e) {
         this.exception = e.getException();
@@ -104,10 +100,11 @@ public class ProcessSampleExecutor {
     //
 
     public SampleThread(final Context context, final ProcessSample ps,
-        final Sample sample) {
+        final Sample sample, final StepStatus status) {
 
       this.context = context;
       this.sample = sample;
+      this.status = status;
       this.ps = ps;
 
     }
@@ -121,10 +118,10 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final Context context,
-      final Design design, final ProcessSample ps) {
+      final Design design, final StepStatus status, final ProcessSample ps) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        EoulsanRuntime.getSettings().getLocalThreadsNumber(), ps);
+        status, EoulsanRuntime.getSettings().getLocalThreadsNumber(), ps);
   }
 
   /**
@@ -137,11 +134,11 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final Context context,
-      final Design design, final int localThreads, final int maxLocalThreads,
-      final ProcessSample ps) {
+      final Design design, final StepStatus status, final int localThreads,
+      final int maxLocalThreads, final ProcessSample ps) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        getThreadsNumber(localThreads, maxLocalThreads), ps);
+        status, getThreadsNumber(localThreads, maxLocalThreads), ps);
   }
 
   /**
@@ -153,9 +150,10 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
-      final Context context, final Design design, final ProcessSample ps) {
+      final Context context, final Design design, final StepStatus status,
+      final ProcessSample ps) {
 
-    return processAllSamples(startTime, context, design, EoulsanRuntime
+    return processAllSamples(startTime, context, design, status, EoulsanRuntime
         .getSettings().getLocalThreadsNumber(), ps);
   }
 
@@ -168,10 +166,11 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final Context context,
-      final Design design, final int threadNumber, final ProcessSample ps) {
+      final Design design, final StepStatus status, final int threadNumber,
+      final ProcessSample ps) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        threadNumber, ps);
+        status, threadNumber, ps);
   }
 
   /**
@@ -184,18 +183,18 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
-      final Context context, final Design design, final int threadNumber,
-      final ProcessSample ps) {
+      final Context context, final Design design, final StepStatus status,
+      final int threadNumber, final ProcessSample ps) {
 
     if (threadNumber > 1) {
 
       LOGGER.info("Process step with " + threadNumber + " threads.");
-      return processAllSamplesWithThreads(startTime, context, design, ps,
-          threadNumber);
+      return processAllSamplesWithThreads(startTime, context, design, status,
+          ps, threadNumber);
     }
 
     LOGGER.info("Process step without thread.");
-    return processAllSamplesWithNoThread(startTime, context, design, ps);
+    return processAllSamplesWithNoThread(startTime, context, design, status, ps);
   }
 
   /**
@@ -208,21 +207,19 @@ public class ProcessSampleExecutor {
    */
   private static final StepResult processAllSamplesWithNoThread(
       final long startTime, final Context context, final Design design,
-      final ProcessSample ps) {
-
-    final StringBuilder log = new StringBuilder();
+      final StepStatus status, final ProcessSample ps) {
 
     try {
 
       // Process all the samples
       for (Sample sample : design.getSamples())
-        log.append(ps.processSample(context, sample));
+        ps.processSample(context, sample, status);
 
     } catch (ProcessSampleException e) {
-      new StepResult(context, e.getException(), e.getMessage());
+      return status.createStepResult(e.getException(), e.getMessage());
     }
 
-    return new StepResult(context, startTime, log.toString());
+    return status.createStepResult();
   }
 
   /**
@@ -235,7 +232,7 @@ public class ProcessSampleExecutor {
    */
   private static final StepResult processAllSamplesWithThreads(
       final long startTime, final Context context, final Design design,
-      final ProcessSample ps, final int threadNumber) {
+      final StepStatus status, final ProcessSample ps, final int threadNumber) {
 
     // Create executor service
     ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
@@ -245,7 +242,7 @@ public class ProcessSampleExecutor {
     // Submit all the samples to process
     for (Sample sample : design.getSamples()) {
 
-      final SampleThread st = new SampleThread(context, ps, sample);
+      final SampleThread st = new SampleThread(context, ps, sample, status);
       threads.add(executor.submit(st, st));
     }
 
@@ -280,7 +277,7 @@ public class ProcessSampleExecutor {
                   .awaitTermination(WAIT_SHUTDOWN_MINUTES, TimeUnit.MINUTES);
 
               // Return error Step Result
-              return new StepResult(context, st.getException(),
+              return status.createStepResult(st.getException(),
                   st.getErrorMessage());
             }
 
@@ -301,21 +298,7 @@ public class ProcessSampleExecutor {
     // Close the thread pool
     executor.shutdown();
 
-    // Create the final log
-    final StringBuilder log = new StringBuilder();
-    for (Future<SampleThread> fst : threads) {
-
-      try {
-        final SampleThread st = fst.get();
-        log.append(st.getLog());
-      } catch (InterruptedException e) {
-        LOGGER.warning("InterruptedException: " + e.getMessage());
-      } catch (ExecutionException e) {
-        LOGGER.warning("ExecutionException: " + e.getMessage());
-      }
-    }
-
-    return new StepResult(context, startTime, log.toString());
+    return status.createStepResult();
   }
 
   /**

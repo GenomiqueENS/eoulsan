@@ -62,7 +62,7 @@ public abstract class PseudoMapReduce {
   private List<File> listMapOutputFile = new ArrayList<File>();
 
   private File sortOutputFile;
-  private Reporter reporter = new Reporter();
+  private LocalReporter reporter = new LocalReporter();
 
   /**
    * This class avoid storing repeated entries of a list in memory.

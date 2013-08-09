@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.steps.StepResult;
 
 /**
  * This interface define a step of the workflow.
@@ -120,15 +121,15 @@ public interface WorkflowStep {
   Set<Parameter> getParameters();
 
   /**
-   * Get the duration of the execution of the step.
-   * @return the duration of the step in milliseconds
-   */
-  long getDuration();
-
-  /**
    * Get the state of the step.
    * @return the state of the step
    */
   StepState getState();
+
+  /**
+   * Get step result.
+   * @return the result object
+   */
+  StepResult getResult();
 
 }

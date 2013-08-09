@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.G
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -339,27 +337,24 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void writeStepResult(final WorkflowStep step, final StepResult result) {
 
+    if (result == null)
+      return;
+
     // Log directory
     final DataFile logDir = new DataFile(this.context.getLogPathname());
-    
+
     // Step result file
     final DataFile logFile =
-        new DataFile(logDir, result.getStep().getId()
-            + STEP_RESULT_FILE_EXTENSION);
+        new DataFile(logDir, step.getId() + STEP_RESULT_FILE_EXTENSION);
 
     try {
-      final Writer writer = FileUtils.createBufferedWriter(logFile.create());
 
-      if (result.getLogMessage() != null)
-        writer.write(result.getLogMessage());
-      else
-        writer.write("Nothing to log.");
-      writer.close();
+      result.write(logFile);
 
     } catch (IOException e) {
 
       Common.showAndLogErrorMessage("Unable to create log file for "
-          + result.getStep() + " step.");
+          + step.getId() + " step.");
     }
   }
 
@@ -495,6 +490,7 @@ public abstract class AbstractWorkflow implements Workflow {
     Preconditions.checkNotNull(design, "Design argument cannot be null");
 
     this.context = new WorkflowContext(executionArguments);
+    this.context.setWorkflow(this);
     this.design = design;
   }
 

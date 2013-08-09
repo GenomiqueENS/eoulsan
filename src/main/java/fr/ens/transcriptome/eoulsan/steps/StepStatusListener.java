@@ -24,39 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
-import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.design.Design;
-
 /**
- * This class define a first step that do nothing. All generator steps must be
- * added before this step.
- * @since 1.1
+ * This interface define a listener on a StepStatus.
  * @author Laurent Jourdren
+ * @Since 1.3
  */
-@HadoopCompatible
-public final class FirstStep extends AbstractStep {
+public interface StepStatusListener {
 
-  @Override
-  public String getName() {
-
-    return "first";
-  }
-
-  @Override
-  public String getLogName() {
-    return null;
-  }
-
-  @Override
-  public StepResult execute(Design design, Context context,
-      final StepStatus status) {
-
-    // Clear the CheckStore before the start of the "real" steps
-    CheckStore.getCheckStore().clear();
-
-    return status.createStepResult();
-  }
+  /**
+   * Step status has been changed.
+   * @param status step status that has been changed
+   */
+  void statusChanged(StepStatus status);
 
 }
