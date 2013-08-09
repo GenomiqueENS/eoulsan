@@ -395,6 +395,16 @@ public class DesignImpl implements Design {
   }
 
   @Override
+  public boolean contains(final Sample sample) {
+
+    if (sample == null)
+      return false;
+
+    return this.samples.containsKey(sample.getName())
+        && this.ids.get(samples.get(sample.getName())) == sample.getId();
+  }
+
+  @Override
   public int hashCode() {
 
     return Utils.hashCode(this.samplesOrder, this.samples, this.ids,

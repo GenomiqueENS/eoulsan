@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.design;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -40,7 +42,14 @@ public class DesignTest {
     d.addSample("G5_1");
     assertEquals(true, d.isSample("G5_1"));
     assertEquals(1, d.getSample("G5_1").getId());
+
+    Sample s = d.getSample("G5_1");
+    assertNotNull(s);
+    assertTrue(d.contains(s));
     d.addSample("G3_1");
+    assertTrue(d.contains(d.getSample("G3_1")));
+    assertTrue(d.contains(d.getSample(0)));
+    assertTrue(d.contains(d.getSample(1)));
     assertEquals(true, d.isSample("G5_1"));
     assertEquals(true, d.isSample("G3_1"));
     assertEquals(1, d.getSample("G5_1").getId());

@@ -159,4 +159,11 @@ public interface Design {
    */
   String getMetadata(final String sampleName, final String fieldName);
 
+  /**
+   * Test if the design contains a sample.
+   * @param sample sample to test
+   * @return true if the design contains the sample
+   */
+  boolean contains(Sample sample);
+
 }
