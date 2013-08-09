@@ -122,6 +122,19 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
+   * Get the index of step in the list of step.
+   * @param step the step to search
+   * @return the index of the step or -1 if the step is not found
+   */
+  private int indexOfStep(final WorkflowStep step) {
+
+    if (step == null)
+      return -1;
+
+    return this.steps.indexOf(step);
+  }
+
+  /**
    * Create the list of steps.
    * @throws EoulsanException if an error occurs while creating the step
    */
@@ -162,6 +175,9 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Add the first step. Generators cannot be added after this step
     addStep(0, new CommandWorkflowStep(this, StepType.FIRST_STEP));
+
+    // Add the checker step
+    addStep(0, new CommandWorkflowStep(this, StepType.CHECKER_STEP));
 
     // Add the design step
     addStep(0, new CommandWorkflowStep(this, StepType.DESIGN_STEP));
@@ -301,8 +317,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
             generatorStep.configure();
 
-            // Add after design step (in pos 2)
-            addStep(2, generatorStep);
+            // Add after checker
+            addStep(indexOfStep(getCheckerStep()) + 1, generatorStep);
 
             searchDependencies();
             return;

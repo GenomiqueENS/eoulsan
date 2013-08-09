@@ -42,8 +42,8 @@ public interface WorkflowStep {
    * @since 1.3
    */
   public static enum StepType {
-    ROOT_STEP(0), DESIGN_STEP(1), GENERATOR_STEP(2), FIRST_STEP(3),
-    STANDARD_STEP(4), TERMINAL_STEP(5);
+    ROOT_STEP(0), DESIGN_STEP(1), CHECKER_STEP(2), GENERATOR_STEP(3), FIRST_STEP(4),
+    STANDARD_STEP(5), TERMINAL_STEP(6);
 
     private int priority;
 

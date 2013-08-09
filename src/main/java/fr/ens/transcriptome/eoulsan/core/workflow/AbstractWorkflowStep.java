@@ -512,7 +512,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
               status);
       break;
 
-    case DESIGN_STEP:
+    case CHECKER_STEP:
 
       result = runCheckers(status);
       break;

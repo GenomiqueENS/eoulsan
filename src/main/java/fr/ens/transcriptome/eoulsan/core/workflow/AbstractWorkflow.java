@@ -82,6 +82,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private AbstractWorkflowStep rootStep;
   private AbstractWorkflowStep designStep;
+  private AbstractWorkflowStep checkerStep;
   private AbstractWorkflowStep firstStep;
 
   //
@@ -137,6 +138,15 @@ public abstract class AbstractWorkflow implements Workflow {
     return this.firstStep;
   }
 
+  /**
+   * Get checker step.
+   * @return the checker step
+   */
+  protected WorkflowStep getCheckerStep() {
+
+    return this.checkerStep;
+  }
+
   //
   // Setters
   //
@@ -173,6 +183,15 @@ public abstract class AbstractWorkflow implements Workflow {
         throw new IllegalStateException(
             "Cannot add 2 design steps to the workflow");
       this.designStep = step;
+    }
+
+    // Register checker step
+    if (step.getType() == StepType.CHECKER_STEP) {
+
+      if (this.checkerStep != null && step != this.checkerStep)
+        throw new IllegalStateException(
+            "Cannot add 2 checkers steps to the workflow");
+      this.checkerStep = step;
     }
 
     // Register first step
