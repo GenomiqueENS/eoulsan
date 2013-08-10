@@ -164,6 +164,9 @@ public class WorkflowStepStatus implements StepStatus {
   public void setNote(final String note) {
 
     this.note = note;
+
+    // Inform listener that status has changed
+    noteStatusUpdated();
   }
 
   @Override
@@ -188,7 +191,7 @@ public class WorkflowStepStatus implements StepStatus {
     }
 
     // Inform listener that status has changed
-    statusUpdated();
+    progressStatusUpdated();
   }
 
   @Override
@@ -216,7 +219,7 @@ public class WorkflowStepStatus implements StepStatus {
     }
 
     // Inform listener that status has changed
-    statusUpdated();
+    progressStatusUpdated();
   }
 
   //
@@ -287,9 +290,20 @@ public class WorkflowStepStatus implements StepStatus {
   /**
    * Inform listener that the status has been changed.
    */
-  private void statusUpdated() {
+  private void progressStatusUpdated() {
 
-    // TODO inform here listener
+    // Inform listeners
+    WorkflowStepEventRelay.getInstance().updateStepState(this.step,
+        getProgress());
+  }
+
+  /**
+   * Inform listener that the status has been changed.
+   */
+  private void noteStatusUpdated() {
+
+    // Inform listeners
+    WorkflowStepEventRelay.getInstance().updateStepState(this.step, this.note);
   }
 
   //

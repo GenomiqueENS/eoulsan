@@ -40,9 +40,11 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepEventRelay;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.ui.BasicUI;
 
 /**
  * This class is the executor for running all the steps of an analysis.
@@ -188,6 +190,10 @@ public class Executor {
     // Check temporary directory
     checkTemporaryDirectory();
 
+    // Create UI
+    final BasicUI ui = new BasicUI();
+    WorkflowStepEventRelay.getInstance().addListener(ui);
+
     LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
 
     // Execute Workflow
@@ -244,8 +250,8 @@ public class Executor {
     }
   }
 
-  private static CommandWorkflowModel loadCommand(final ExecutorArguments arguments)
-      throws EoulsanException {
+  private static CommandWorkflowModel loadCommand(
+      final ExecutorArguments arguments) throws EoulsanException {
 
     try {
 

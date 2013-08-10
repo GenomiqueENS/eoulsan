@@ -282,6 +282,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Inform workflow object
     this.workflow.updateStepState(this);
+    
+    // Inform listeners
+    WorkflowStepEventRelay.getInstance().updateStepState(this);
   }
 
   /**
