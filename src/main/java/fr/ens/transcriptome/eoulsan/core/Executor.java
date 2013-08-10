@@ -43,7 +43,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowFileParser;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class is the executor for running all the steps of an analysis.

@@ -33,8 +33,8 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepService;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class store step instances and avoid storing this instance in

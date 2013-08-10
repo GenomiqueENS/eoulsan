@@ -31,7 +31,7 @@ import java.util.Arrays;
 import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
-import fr.ens.transcriptome.eoulsan.steps.Step;
+import fr.ens.transcriptome.eoulsan.core.Step;
 
 /**
  * This class define an abstract data format.

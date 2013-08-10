@@ -34,15 +34,15 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This class define a step that generate a genome mapper index.

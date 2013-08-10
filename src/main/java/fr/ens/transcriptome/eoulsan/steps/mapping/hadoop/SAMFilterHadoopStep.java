@@ -43,11 +43,11 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 

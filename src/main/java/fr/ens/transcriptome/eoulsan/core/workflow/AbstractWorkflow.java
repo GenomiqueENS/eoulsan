@@ -53,11 +53,11 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**

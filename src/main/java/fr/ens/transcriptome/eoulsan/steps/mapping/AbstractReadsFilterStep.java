@@ -32,11 +32,11 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**

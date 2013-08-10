@@ -34,15 +34,15 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceWriter;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This generator allow to generate a genome fasta file from the fasta section

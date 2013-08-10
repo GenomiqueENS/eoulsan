@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

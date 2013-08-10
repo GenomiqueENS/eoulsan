@@ -37,8 +37,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This class contains utility method to easily manipulate the new Hadoop

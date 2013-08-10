@@ -22,9 +22,8 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.core;
 
-import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**

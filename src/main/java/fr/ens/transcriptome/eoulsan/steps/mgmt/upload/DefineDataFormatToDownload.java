@@ -35,14 +35,14 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 
 /**
  * This Step allow to define the list of the formats of the files to download at

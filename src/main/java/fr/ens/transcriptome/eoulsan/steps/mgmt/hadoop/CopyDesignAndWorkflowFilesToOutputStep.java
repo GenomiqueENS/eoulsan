@@ -36,15 +36,15 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**

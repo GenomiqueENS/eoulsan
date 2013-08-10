@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -36,10 +36,9 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.ProcessSample.ProcessSampleException;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.ProcessSample.ProcessSampleException;
 
 /**
  * This class allow to process samples of a step with multithreading.

@@ -37,12 +37,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceBuilder;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceJob;
 

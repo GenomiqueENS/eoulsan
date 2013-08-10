@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**

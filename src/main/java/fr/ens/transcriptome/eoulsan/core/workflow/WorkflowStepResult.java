@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps;
+package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -47,14 +47,14 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
-public class SimpleStepResult implements StepResult {
+public class WorkflowStepResult implements StepResult {
 
   private static final String TAB = "  ";
 
@@ -515,11 +515,11 @@ public class SimpleStepResult implements StepResult {
   // Constructor
   //
 
-  SimpleStepResult() {
+  WorkflowStepResult() {
 
   }
 
-  SimpleStepResult(final Context context, final AbstractWorkflowStep step) {
+  WorkflowStepResult(final Context context, final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(context, "context is null");
     Preconditions.checkNotNull(step, "step is null");

@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 
 /**
  * This interface define a step of the workflow.

@@ -41,12 +41,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 

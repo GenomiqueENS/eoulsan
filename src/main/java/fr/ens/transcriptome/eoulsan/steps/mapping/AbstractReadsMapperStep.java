@@ -33,10 +33,10 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.ProcessSampleExecutor;
 
 /**
  * This class define an abstract step for read mapping.

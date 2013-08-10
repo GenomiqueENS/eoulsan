@@ -43,13 +43,13 @@ import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.Step;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -493,6 +493,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   abstract void configure() throws EoulsanException;
 
+  /**
+   * Execute the step.
+   * @return a StepResult object
+   */
   StepResult execute() {
 
     if (getState() != StepState.READY)
@@ -505,7 +509,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Set the current step in the context
     this.workflow.getWorkflowContext().setStep(this);
-    final StepStatus status = new StepStatus(this);
+    final StepStatus status = new WorkflowStepStatus(this);
     final StepResult result;
 
     switch (getType()) {

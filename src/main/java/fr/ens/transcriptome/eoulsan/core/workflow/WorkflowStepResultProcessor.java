@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
 
 /**
  * This interface allow to process the result of a step while executing the

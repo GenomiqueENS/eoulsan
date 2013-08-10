@@ -34,10 +34,10 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 
 /**
  * This class define an abstract step for read filtering, mapping and alignments
