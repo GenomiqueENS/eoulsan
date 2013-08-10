@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class WorkflowFileParser {
+public class CommandWorkflowParser {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -105,11 +105,11 @@ public class WorkflowFileParser {
    * Parse the workflow file.
    * @throws EoulsanException if an error occurs while parsing file
    */
-  public WorkflowCommand parse() throws EoulsanException {
+  public CommandWorkflowModel parse() throws EoulsanException {
 
     LOGGER.info("Start parsing the workflow workflow file");
 
-    final WorkflowCommand result = new WorkflowCommand();
+    final CommandWorkflowModel result = new CommandWorkflowModel();
     final Document doc;
 
     //
@@ -497,7 +497,7 @@ public class WorkflowFileParser {
    * @param file the workflow file
    * @throws FileNotFoundException if the file is not found
    */
-  public WorkflowFileParser(final File file) throws FileNotFoundException {
+  public CommandWorkflowParser(final File file) throws FileNotFoundException {
 
     this(FileUtils.createInputStream(file));
   }
@@ -507,7 +507,7 @@ public class WorkflowFileParser {
    * @param file the workflow file
    * @throws IOException if an error occurs while opening the file
    */
-  public WorkflowFileParser(final DataFile file) throws IOException {
+  public CommandWorkflowParser(final DataFile file) throws IOException {
 
     this(file.open());
   }
@@ -516,7 +516,7 @@ public class WorkflowFileParser {
    * Public constructor.
    * @param is Input stream
    */
-  public WorkflowFileParser(final InputStream is) {
+  public CommandWorkflowParser(final InputStream is) {
 
     this.is = is;
   }

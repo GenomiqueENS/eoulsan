@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowCommand;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowFileParser;
+import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
+import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
@@ -55,7 +55,7 @@ public class Executor {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final ExecutorArguments arguments;
-  private final WorkflowCommand command;
+  private final CommandWorkflowModel command;
   private final Design design;
 
   //
@@ -205,7 +205,7 @@ public class Executor {
    * @param command workflow file content
    */
   private static void logInfo(ExecutorArguments execArgs,
-      final WorkflowCommand command) {
+      final CommandWorkflowModel command) {
 
     LOGGER.info("Design file path: " + execArgs.getDesignPathname());
     LOGGER.info("Workflow file path: " + execArgs.getWorkflowPathname());
@@ -244,7 +244,7 @@ public class Executor {
     }
   }
 
-  private static WorkflowCommand loadCommand(final ExecutorArguments arguments)
+  private static CommandWorkflowModel loadCommand(final ExecutorArguments arguments)
       throws EoulsanException {
 
     try {
@@ -254,7 +254,7 @@ public class Executor {
       checkNotNull(is, "The input stream for workflow file is null");
 
       // Parse param file
-      final WorkflowFileParser pp = new WorkflowFileParser(is);
+      final CommandWorkflowParser pp = new CommandWorkflowParser(is);
       pp.addConstants(arguments);
 
       return pp.parse();

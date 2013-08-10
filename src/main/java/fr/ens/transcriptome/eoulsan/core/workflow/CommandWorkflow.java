@@ -65,7 +65,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private List<CommandWorkflowStep> steps;
   private Set<String> stepsIds = Sets.newHashSet();
 
-  private final WorkflowCommand workflowCommand;
+  private final CommandWorkflowModel workflowCommand;
 
   private final Set<DataFormat> generatorAdded = Sets.newHashSet();
 
@@ -140,7 +140,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void addMainSteps() throws EoulsanException {
 
     this.steps = new ArrayList<CommandWorkflowStep>();
-    final WorkflowCommand c = this.workflowCommand;
+    final CommandWorkflowModel c = this.workflowCommand;
 
     for (String stepId : c.getStepIds()) {
 
@@ -211,7 +211,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void init() throws EoulsanException {
 
-    final WorkflowCommand c = this.workflowCommand;
+    final CommandWorkflowModel c = this.workflowCommand;
     final Set<Parameter> globalParameters = c.getGlobalParameters();
 
     final Settings settings = EoulsanRuntime.getSettings();
@@ -529,7 +529,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @throws EoulsanException
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
-      final WorkflowCommand workflowCommand, final List<Step> firstSteps,
+      final CommandWorkflowModel workflowCommand, final List<Step> firstSteps,
       final List<Step> endSteps, final Design design) throws EoulsanException {
 
     super(executionArguments, design);

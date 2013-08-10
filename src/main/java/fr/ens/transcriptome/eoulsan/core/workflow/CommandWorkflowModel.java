@@ -40,11 +40,11 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 /**
- * This class define the command object of Eoulsan.
+ * This class define the workflow model object of Eoulsan.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class WorkflowCommand implements Serializable {
+public class CommandWorkflowModel implements Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -5182569666862886788L;
@@ -263,7 +263,7 @@ public class WorkflowCommand implements Serializable {
   /**
    * Public constructor.
    */
-  public WorkflowCommand() {
+  public CommandWorkflowModel() {
 
     this(true);
   }
@@ -273,7 +273,7 @@ public class WorkflowCommand implements Serializable {
    * @param addSettingsValues if all the settings must be added to global
    *          properties
    */
-  public WorkflowCommand(final boolean addSettingsValues) {
+  public CommandWorkflowModel(final boolean addSettingsValues) {
 
     if (addSettingsValues) {
 
