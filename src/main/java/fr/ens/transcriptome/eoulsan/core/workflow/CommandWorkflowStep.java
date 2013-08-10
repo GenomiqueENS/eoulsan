@@ -24,16 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepService;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.Step;
 
 /**
  * This class define a step based on a Command object (workflow file).
@@ -42,8 +39,8 @@ import fr.ens.transcriptome.eoulsan.steps.Step;
  */
 public class CommandWorkflowStep extends AbstractWorkflowStep {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -1736197317540226070L;
 
   //
   // Step lifetime methods
@@ -60,8 +57,9 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
     if (getType() == StepType.STANDARD_STEP
         || getType() == StepType.GENERATOR_STEP) {
 
-      LOGGER.info("Configure "
-          + getId() + " step with step parameters: " + getParameters());
+      getLogger().info(
+          "Configure "
+              + getId() + " step with step parameters: " + getParameters());
 
       if (getType() == StepType.STANDARD_STEP)
         getStep().configure(getParameters());
@@ -81,33 +79,6 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
     }
 
     setState(StepState.CONFIGURED);
-  }
-
-  //
-  // Static methods
-  //
-
-  /**
-   * Get a Step object from its name.
-   * @param stepName name of the step
-   * @return a Step object
-   * @throws EoulsanException if the step does not exits
-   */
-  private final static Step loadStep(final String stepName)
-      throws EoulsanException {
-
-    if (stepName == null)
-      throw new EoulsanException("Step name is null");
-
-    final String lower = stepName.trim().toLowerCase();
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
-
-    final Step result = StepService.getInstance(hadoopMode).newService(lower);
-
-    if (result == null)
-      throw new EoulsanException("Unknown step: " + lower);
-
-    return result;
   }
 
   //
@@ -152,7 +123,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
       final String stepName, final Set<Parameter> stepParameters,
       final boolean skip) throws EoulsanException {
 
-    super(workflow, id, loadStep(stepName), skip, stepParameters);
+    super(workflow, id, stepName, skip, stepParameters);
   }
 
 }

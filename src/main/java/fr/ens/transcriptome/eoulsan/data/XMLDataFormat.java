@@ -28,6 +28,7 @@ import static com.google.common.base.Objects.equal;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,10 +59,10 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public final class XMLDataFormat extends AbstractDataFormat {
+public final class XMLDataFormat extends AbstractDataFormat implements
+    Serializable {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
+  private static final long serialVersionUID = -6926659317643003910L;
 
   private static final String DEFAULT_CONTENT_TYPE = "text/plain";
   private static final int DEFAULT_MAX_FILES_COUNT = 1;
@@ -147,7 +148,8 @@ public final class XMLDataFormat extends AbstractDataFormat {
       return generator;
     } catch (EoulsanException e) {
 
-      LOGGER.severe("Cannot create generator: " + e.getMessage());
+      final Logger logger = EoulsanLogger.getLogger();
+      logger.severe("Cannot create generator: " + e.getMessage());
       return null;
     }
   }

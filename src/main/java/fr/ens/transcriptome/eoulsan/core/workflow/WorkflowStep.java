@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -34,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.steps.StepResult;
  * @author Laurent Jourdren
  * @since 1.3
  */
-public interface WorkflowStep {
+public interface WorkflowStep extends Serializable {
 
   /**
    * This enum define the type of step.
@@ -42,8 +43,8 @@ public interface WorkflowStep {
    * @since 1.3
    */
   public static enum StepType {
-    ROOT_STEP(0), DESIGN_STEP(1), CHECKER_STEP(2), GENERATOR_STEP(3), FIRST_STEP(4),
-    STANDARD_STEP(5), TERMINAL_STEP(6);
+    ROOT_STEP(0), DESIGN_STEP(1), CHECKER_STEP(2), GENERATOR_STEP(3),
+    FIRST_STEP(4), STANDARD_STEP(5), TERMINAL_STEP(6);
 
     private int priority;
 

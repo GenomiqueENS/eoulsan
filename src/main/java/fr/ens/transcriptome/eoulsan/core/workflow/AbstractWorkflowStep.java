@@ -24,12 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -38,7 +39,6 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
@@ -60,8 +60,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class AbstractWorkflowStep implements WorkflowStep {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 2040628014465126384L;
 
   private static int instanceCounter;
 
@@ -70,7 +70,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final String id;
   private final StepType type;
   private final Set<Parameter> parameters;
-  private final Step step;
+  private final String stepName;
   private final EoulsanMode mode;
   private final boolean skip;
 
@@ -94,7 +94,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * DataFormat of the Workflow step.
    * @author Laurent Jourdren
    */
-  private static final class InputDataFileLocation {
+  private static final class InputDataFileLocation implements Serializable {
+
+    /** Serialization version UID. */
+    private static final long serialVersionUID = 5140719397219910909L;
 
     private final DataFormat format;
     private final AbstractWorkflowStep step;
@@ -196,7 +199,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   public Step getStep() {
 
-    return this.step;
+    if (this.stepName == null)
+      return null;
+
+    return StepInstances.getInstance().getStep(this);
   }
 
   /**
@@ -211,7 +217,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   @Override
   public String getStepName() {
 
-    return this.step == null ? null : this.step.getName();
+    return this.stepName;
   }
 
   @Override
@@ -493,7 +499,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       throw new IllegalStateException("Illegal step state for execution: "
           + getState());
 
-    LOGGER.info("Start " + getId() + " step.");
+    getLogger().info("Start " + getId() + " step.");
 
     setState(StepState.WORKING);
 
@@ -506,6 +512,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     case STANDARD_STEP:
     case GENERATOR_STEP:
+
+      final Step step = StepInstances.getInstance().getStep(this);
 
       result =
           step.execute(this.workflow.getDesign(), this.workflow.getContext(),
@@ -522,10 +530,11 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     }
 
     if (result != null)
-      LOGGER.info("Process step "
-          + getId() + " in "
-          + StringUtils.toTimeHumanReadable(result.getDuration() / 1000000)
-          + " s.");
+      getLogger().info(
+          "Process step "
+              + getId() + " in "
+              + StringUtils.toTimeHumanReadable(result.getDuration() / 1000000)
+              + " s.");
 
     setState(StepState.DONE);
 
@@ -619,7 +628,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = type.name();
     this.skip = false;
     this.type = type;
-    this.step = null;
+    this.stepName = null;
     this.mode = EoulsanMode.NONE;
     this.parameters = Collections.emptySet();
 
@@ -641,6 +650,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(format, "Format argument cannot be null");
 
     final Step generator = format.getGenerator();
+    StepInstances.getInstance().registerStep(this, generator);
 
     Preconditions.checkNotNull(generator, "The generator step is null");
 
@@ -648,8 +658,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = generator.getName();
     this.skip = false;
     this.type = StepType.GENERATOR_STEP;
-    this.step = generator;
-    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
+    this.stepName = generator.getName();
+    this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
     this.parameters = Collections.emptySet();
 
     // Register this step in the workflow
@@ -666,12 +676,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @throws EoulsanException id an error occurs while creating the step
    */
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final Step step, final boolean skip,
+      final String id, final String stepName, final boolean skip,
       final Set<Parameter> parameters) throws EoulsanException {
 
     Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
     Preconditions.checkNotNull(id, "Step id argument cannot be null");
-    Preconditions.checkNotNull(step, "Step argument cannot be null");
+    Preconditions.checkNotNull(stepName, "Step name argument cannot be null");
     Preconditions.checkNotNull(parameters,
         "Step arguments argument cannot be null");
 
@@ -679,7 +689,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = id;
     this.skip = skip;
     this.type = StepType.STANDARD_STEP;
-    this.step = step;
+    this.stepName = stepName;
+
+    // Load Step instance
+    final Step step = StepInstances.getInstance().getStep(this, stepName);
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
 

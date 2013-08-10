@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
@@ -37,7 +38,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.util.StopWatch;
 
@@ -68,8 +68,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class AbstractWorkflow implements Workflow {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 4865597995432347155L;
 
   private static final String STEP_RESULT_FILE_EXTENSION = ".log";
 
@@ -312,7 +312,7 @@ public abstract class AbstractWorkflow implements Workflow {
           continue;
         }
 
-        LOGGER.info("Execute step: " + step.getId());
+        getLogger().info("Execute step: " + step.getId());
 
         // Execute step
         final StepResult result = step.execute();
@@ -327,7 +327,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
             stopWatch.stop();
 
-            LOGGER.severe("Fail of the analysis: " + result.getErrorMessage());
+            getLogger().severe(
+                "Fail of the analysis: " + result.getErrorMessage());
             logEndAnalysis(false, stopWatch);
 
             if (result.getException() != null)
@@ -461,10 +462,12 @@ public abstract class AbstractWorkflow implements Workflow {
     final String successString = success ? "Successful" : "Unsuccessful";
 
     // Log the end of the analysis
-    LOGGER.info(successString
-        + " end of the analysis in "
-        + StringUtils.toTimeHumanReadable(stopWatch.getElapsedTime() / 1000000)
-        + " s.");
+    getLogger()
+        .info(
+            successString
+                + " end of the analysis in "
+                + StringUtils.toTimeHumanReadable(stopWatch.getElapsedTime() / 1000000)
+                + " s.");
 
     // Send a mail
 

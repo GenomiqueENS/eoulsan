@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,10 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class WorkflowCommand {
+public class WorkflowCommand implements Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -5182569666862886788L;
 
   private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
       .emptySet();

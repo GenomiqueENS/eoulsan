@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
@@ -31,14 +32,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -58,8 +57,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class CommandWorkflow extends AbstractWorkflow {
 
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 4132064673361068654L;
 
   private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
@@ -149,9 +148,10 @@ public class CommandWorkflow extends AbstractWorkflow {
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
 
-      LOGGER.info("Create "
-          + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
-          + ") step.");
+      getLogger().info(
+          "Create "
+              + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
+              + ") step.");
       addStep(new CommandWorkflowStep(this, stepId, stepName, stepParameters,
           skip));
     }
@@ -217,7 +217,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Add globals parameters to Settings
-    LOGGER.info("Init all steps with global parameters: " + globalParameters);
+    getLogger().info(
+        "Init all steps with global parameters: " + globalParameters);
     for (Parameter p : globalParameters)
       settings.setSetting(p.getName(), p.getStringValue());
 

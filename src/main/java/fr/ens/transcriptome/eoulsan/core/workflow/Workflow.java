@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -34,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
  * @author Laurent Jourdren
  * @since 1.3
  */
-public interface Workflow {
+public interface Workflow extends Serializable {
 
   /**
    * Get the design used by the workflow.

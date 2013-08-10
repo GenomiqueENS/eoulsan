@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.design.impl;
 
+import java.io.Serializable;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -37,7 +38,10 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SampleMetadataImpl implements SampleMetadata {
+public class SampleMetadataImpl implements SampleMetadata, Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 2796810098849730445L;
 
   private DesignImpl design;
   private int slideId;

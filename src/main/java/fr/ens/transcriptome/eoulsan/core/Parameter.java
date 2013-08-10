@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.Serializable;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
@@ -31,7 +33,10 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class Parameter {
+public class Parameter implements Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -3788321419921821433L;
 
   private final String name;
   private final String value;

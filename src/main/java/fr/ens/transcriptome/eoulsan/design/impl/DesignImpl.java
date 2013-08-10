@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.design.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +43,10 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class DesignImpl implements Design {
+public class DesignImpl implements Design, Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -7616692450023046216L;
 
   private List<String> samplesOrder = new ArrayList<String>();
   private Map<String, Integer> samples = new HashMap<String, Integer>();

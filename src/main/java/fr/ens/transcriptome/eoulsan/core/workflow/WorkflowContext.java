@@ -26,11 +26,12 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
@@ -44,10 +45,10 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class WorkflowContext implements Context {
+public class WorkflowContext implements Context, Serializable {
 
-  /** Logger. */
-  protected static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -260344001954382358L;
 
   private String basePathname;
   private String logPathname;
@@ -280,7 +281,7 @@ public class WorkflowContext implements Context {
   @Override
   public Logger getLogger() {
 
-    return LOGGER;
+    return EoulsanLogger.getLogger();
   }
 
   @Override

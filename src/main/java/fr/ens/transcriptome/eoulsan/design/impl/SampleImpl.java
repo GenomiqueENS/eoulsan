@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.design.impl;
 
+import java.io.Serializable;
+
 import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
@@ -36,7 +38,10 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SampleImpl implements Sample {
+public class SampleImpl implements Sample, Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 3268835969259003788L;
 
   private DesignImpl design;
   private int sampleId;

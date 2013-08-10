@@ -34,8 +34,8 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
@@ -53,7 +53,7 @@ public final class WorkflowStepOutputDataFile implements
     Comparable<WorkflowStepOutputDataFile> {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final AbstractWorkflowStep step;
   private final DataFormat format;
