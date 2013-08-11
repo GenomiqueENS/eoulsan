@@ -301,8 +301,6 @@ public abstract class AbstractSequenceReadsMapper implements
 
     LOGGER.fine("Want to create a temporary directory with prefix: "
         + indexTmpDirPrefix + " in " + getTempDirectory());
-    System.out.println("makeArchiveIndex  tempo directory with prefix: "
-        + indexTmpDirPrefix + " in " + getTempDirectory());
 
     final File indexTmpDir =
         File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
