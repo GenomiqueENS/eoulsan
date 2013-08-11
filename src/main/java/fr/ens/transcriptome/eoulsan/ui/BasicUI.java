@@ -90,6 +90,11 @@ public class BasicUI implements WorkflowStepEvent {
     this.lastMessageLength = msg.length();
 
     System.out.print(msg);
+
+    // At the end of the workflow print \n
+    if (globalProgress == 1.0)
+      System.out.println();
+
     System.out.flush();
 
   }
