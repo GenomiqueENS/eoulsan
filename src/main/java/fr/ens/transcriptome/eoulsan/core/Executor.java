@@ -191,7 +191,9 @@ public class Executor {
     checkTemporaryDirectory();
 
     // Create UI
-    final BasicUI ui = new BasicUI();
+    final BasicUI ui = new BasicUI(workflow);
+
+    // Enable listen workflow events by ui
     WorkflowStepEventRelay.getInstance().addListener(ui);
 
     LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
