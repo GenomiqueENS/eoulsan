@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -40,8 +40,7 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
-import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
-import fr.ens.transcriptome.eoulsan.checkers.Checker;
+import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -282,7 +281,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Inform workflow object
     this.workflow.updateStepState(this);
-    
+
     // Inform listeners
     WorkflowStepEventRelay.getInstance().updateStepState(this);
   }
@@ -517,6 +516,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     switch (getType()) {
 
+    case CHECKER_STEP:
+
+      // Checker can only be configured after execution of configure() on other
+      // step.
+      configureCheckerStep(status);
+
     case STANDARD_STEP:
     case GENERATOR_STEP:
 
@@ -525,11 +530,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       result =
           step.execute(this.workflow.getDesign(), this.workflow.getContext(),
               status);
-      break;
-
-    case CHECKER_STEP:
-
-      result = runCheckers(status);
       break;
 
     default:
@@ -553,11 +553,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param status step status
    * @return a StepResult object
    */
-  private StepResult runCheckers(final StepStatus status) {
+  private void configureCheckerStep(final StepStatus status) {
 
     // This method can only works with design step
-    if (getType() != DESIGN_STEP)
-      return null;
+    if (getType() != CHECKER_STEP)
+      return;
+
+    // Get Checker step
+    final CheckerStep checkerStep =
+        (CheckerStep) StepInstances.getInstance().getStep(this);
 
     // Get the input files of the workflow
     final Set<WorkflowStepOutputDataFile> files =
@@ -571,45 +575,20 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // If no sample there is nothing to do
     if (design.getSampleCount() == 0)
-      return null;
+      return;
 
-    // Get first sample
-    final Sample firstSample = design.getSamples().get(0);
+    // Search to format to check
+    for (WorkflowStepOutputDataFile file : files)
+      if (file.getFormat().isChecker()) {
 
-    // Get the checkstore
-    final CheckStore checkStore = CheckStore.getCheckStore();
+        // Change current step for the context
+        context.setStep(file.getStep());
 
-    try {
+        // Add the checker to the list of checkers to launch
+        checkerStep.addChecker(file.getFormat().getChecker());
 
-      // Search to format to check
-      for (WorkflowStepOutputDataFile file : files)
-        if (file.getFormat().isChecker()) {
+      }
 
-          // Change current step for the context
-          context.setStep(file.getStep());
-
-          // Get the checker
-          final Checker checker = file.getFormat().getChecker();
-
-          final Sample sample =
-              file.getSample() != null ? file.getSample() : firstSample;
-
-          // Launch the check
-          checker.check(context, sample, checkStore);
-        }
-
-    } catch (EoulsanException e) {
-
-      // Set the context as before starting the checkers
-      context.setStep(this);
-
-      return status.createStepResult(e);
-    }
-
-    // Set the context as before starting the checkers
-    context.setStep(this);
-
-    return status.createStepResult(true);
   }
 
   //
@@ -627,6 +606,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     Preconditions.checkArgument(type != StepType.STANDARD_STEP,
         "This constructor cannot be used for standard steps");
+    Preconditions.checkArgument(type != StepType.GENERATOR_STEP,
+        "This constructor cannot be used for standard steps");
 
     Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
     Preconditions.checkNotNull(type, "Type argument cannot be null");
@@ -635,9 +616,24 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = type.name();
     this.skip = false;
     this.type = type;
-    this.stepName = null;
-    this.mode = EoulsanMode.NONE;
     this.parameters = Collections.emptySet();
+
+    switch (type) {
+    case CHECKER_STEP:
+
+      // Create and register checker step
+      final Step checkerStep = new CheckerStep();
+      StepInstances.getInstance().registerStep(this, checkerStep);
+
+      this.stepName = checkerStep.getName();
+      this.mode = EoulsanMode.getEoulsanMode(checkerStep.getClass());
+      break;
+
+    default:
+      this.stepName = null;
+      this.mode = EoulsanMode.NONE;
+      break;
+    }
 
     // Register this step in the workflow
     this.workflow.register(this);
