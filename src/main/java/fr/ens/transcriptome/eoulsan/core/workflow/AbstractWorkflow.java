@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -39,9 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.util.StopWatch;
-
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -295,7 +295,8 @@ public abstract class AbstractWorkflow implements Workflow {
     for (AbstractWorkflowStep step : this.steps.keySet())
       step.setState(WAITING);
 
-    final StopWatch stopWatch = new StopWatch();
+    final Stopwatch stopwatch = new Stopwatch();
+    stopwatch.start();
 
     while (!getSortedStepsByState(READY, WAITING).isEmpty()) {
 
@@ -325,11 +326,9 @@ public abstract class AbstractWorkflow implements Workflow {
           // End of the analysis if the analysis fail
           if (!result.isSuccess()) {
 
-            stopWatch.stop();
-
             getLogger().severe(
                 "Fail of the analysis: " + result.getErrorMessage());
-            logEndAnalysis(false, stopWatch);
+            logEndAnalysis(false, stopwatch);
 
             if (result.getException() != null)
               Common.errorExit(result.getException(), result.getErrorMessage());
@@ -344,9 +343,9 @@ public abstract class AbstractWorkflow implements Workflow {
           break;
 
       }
-      logEndAnalysis(true, stopWatch);
 
     }
+    logEndAnalysis(true, stopwatch);
 
   }
 
@@ -455,19 +454,18 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param success true if analysis was successful
    * @param stopwatch stopwatch of the workflow epoch
    */
-  private void logEndAnalysis(final boolean success, final StopWatch stopWatch) {
+  private void logEndAnalysis(final boolean success, final Stopwatch stopwatch) {
 
-    stopWatch.stop();
+    stopwatch.stop();
 
     final String successString = success ? "Successful" : "Unsuccessful";
 
     // Log the end of the analysis
-    getLogger()
-        .info(
-            successString
-                + " end of the analysis in "
-                + StringUtils.toTimeHumanReadable(stopWatch.getElapsedTime() / 1000000)
-                + " s.");
+    getLogger().info(
+        successString
+            + " end of the analysis in "
+            + StringUtils.toTimeHumanReadable(stopwatch
+                .elapsedTime(MILLISECONDS)) + " s.");
 
     // Send a mail
 
@@ -486,8 +484,8 @@ public abstract class AbstractWorkflow implements Workflow {
             + ".\nJob finished at "
             + new Date(System.currentTimeMillis())
             + " in "
-            + StringUtils
-                .toTimeHumanReadable(stopWatch.getElapsedTime() / 1000000)
+            + StringUtils.toTimeHumanReadable(stopwatch
+                .elapsedTime(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
             + context.getOutputPathname() + "\n\nThe " + Globals.APP_NAME
             + "team.";

@@ -540,8 +540,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       getLogger().info(
           "Process step "
               + getId() + " in "
-              + StringUtils.toTimeHumanReadable(result.getDuration() / 1000000)
-              + " s.");
+              + StringUtils.toTimeHumanReadable(result.getDuration()) + " s.");
 
     setState(StepState.DONE);
 

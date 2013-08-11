@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
