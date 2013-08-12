@@ -80,7 +80,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       super(millisSinceEpoch);
 
       // Set base pathname
-      setBasePathname(designPath.getParent().toString());
+      setHadoopWorkingPathname(designPath.getParent().toString());
 
       final Path logPath =
           new Path(designPath.getParent().toString() + "/" + getJobId());

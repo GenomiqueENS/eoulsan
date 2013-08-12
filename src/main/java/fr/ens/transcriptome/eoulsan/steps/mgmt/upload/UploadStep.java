@@ -170,7 +170,9 @@ public abstract class UploadStep extends AbstractStep {
     }
 
     // The base path is now the place where files where uploaded.
-    fullContext.setBasePathname(getDest().toString());
+    // TODO Warning, the context.setBasePathname() no more exist
+    // Upload step must be rewritten or replace by something better
+    // fullContext.setBasePathname(getDest().toString());
 
     // The path to the jar file
     if (!context.getRuntime().isHadoopMode()) {

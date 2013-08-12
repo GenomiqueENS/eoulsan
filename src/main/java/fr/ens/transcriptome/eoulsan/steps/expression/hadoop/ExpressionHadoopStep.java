@@ -508,12 +508,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final long readsUsed =
           rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
 
-      final FileSystem fs =
-          new Path(context.getBasePathname()).getFileSystem(conf);
-
       // Load the annotation index
       final Path exonsIndexPath =
           getAnnotationIndexSerializedPath(context, sample);
+
+      final FileSystem fs = exonsIndexPath.getFileSystem(conf);
 
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
@@ -547,12 +546,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Job rj = e.getKey();
       final Sample sample = e.getValue();
 
-      final FileSystem fs =
-          new Path(context.getBasePathname()).getFileSystem(conf);
-
       // Load the annotation index
       final Path featuresIndexPath =
           getAnnotationIndexSerializedPath(context, sample);
+
+      final FileSystem fs = featuresIndexPath.getFileSystem(conf);
 
       fefc = new FinalExpressionFeaturesCreator(fs.open(featuresIndexPath));
 

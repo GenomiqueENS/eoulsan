@@ -79,10 +79,16 @@ public interface Context {
   String getCommandAuthor();
 
   /**
-   * Get the base path.
-   * @return Returns the basePath
+   * Get the local working path.
+   * @return Returns the local working Path
    */
-  String getBasePathname();
+  String getLocalWorkingPathname();
+
+  /**
+   * Get the Hadoop working path.
+   * @return Returns the Hadoop working Path
+   */
+  String getHadoopWorkingPathname();
 
   /**
    * Get the log path.
@@ -95,6 +101,12 @@ public interface Context {
    * @return Returns the output Path
    */
   String getOutputPathname();
+
+  /**
+   * Get the step working path.
+   * @return Returns the step working path
+   */
+  String getStepWorkingPathname();
 
   /**
    * Get the job id.

@@ -148,12 +148,15 @@ public class CommandWorkflow extends AbstractWorkflow {
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
 
+      // TODO the value must be defined in CommandWorkflowModel
+      final boolean copyResultsToOutput = true;
+
       getLogger().info(
           "Create "
               + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
               + ") step.");
       addStep(new CommandWorkflowStep(this, stepId, stepName, stepParameters,
-          skip));
+          skip, copyResultsToOutput));
     }
   }
 
@@ -170,7 +173,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         final String stepId = step.getName();
         addStep(0, new CommandWorkflowStep(this, stepId, step.getName(),
-            EMPTY_PARAMETERS, false));
+            EMPTY_PARAMETERS, false, false));
       }
 
     // Add the first step. Generators cannot be added after this step
@@ -201,7 +204,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final String stepId = step.getName();
 
       addStep(new CommandWorkflowStep(this, stepId, step.getName(),
-          EMPTY_PARAMETERS, false));
+          EMPTY_PARAMETERS, false, false));
     }
   }
 
@@ -249,6 +252,16 @@ public class CommandWorkflow extends AbstractWorkflow {
     return result;
   }
 
+  private static void addDependency(final AbstractWorkflowStep step,
+      final DataFormat format, final AbstractWorkflowStep dependency) {
+
+    // TODO if step requires that input format files are in its working dir and
+    // if working dir is not the same between the 2 steps, add a step that copy
+    // the input data
+
+    step.addDependency(format, dependency);
+  }
+
   /**
    * Search dependency between steps.
    * @throws EoulsanException if an error occurs while search dependencies
@@ -267,11 +280,11 @@ public class CommandWorkflow extends AbstractWorkflow {
       if (step.getInputDataFormats().isEmpty() && i > 0)
         step.addDependency(steps.get(i - 1));
 
-      for (DataFormat df : step.getInputDataFormats()) {
+      for (DataFormat format : step.getInputDataFormats()) {
 
         // Do not search dependency for the format if already has been manually
         // set
-        if (step.isDependencySet(df))
+        if (step.isDependencySet(format))
           continue;
 
         boolean found = false;
@@ -284,9 +297,9 @@ public class CommandWorkflow extends AbstractWorkflow {
           // The tested step is a standard/generator step
           if ((stepTested.getType() == StepType.STANDARD_STEP || stepTested
               .getType() == StepType.GENERATOR_STEP)
-              && stepTested.getOutputDataFormats().contains(df)) {
+              && stepTested.getOutputDataFormats().contains(format)) {
 
-            step.addDependency(df, stepTested);
+            addDependency(step, format, stepTested);
 
             found = true;
             break;
@@ -294,9 +307,9 @@ public class CommandWorkflow extends AbstractWorkflow {
 
           // The tested step is the design step
           if (stepTested.getType() == StepType.DESIGN_STEP
-              && dataFormatsFromDesign.contains(df)) {
+              && dataFormatsFromDesign.contains(format)) {
 
-            step.addDependency(df, stepTested);
+            addDependency(step, format, stepTested);
 
             found = true;
             break;
@@ -305,8 +318,8 @@ public class CommandWorkflow extends AbstractWorkflow {
         }
 
         // A generator is available for the DataType
-        if (df.isGenerator() && !this.generatorAdded.contains(df))
-          generatorAvaillables.add(df);
+        if (format.isGenerator() && !this.generatorAdded.contains(format))
+          generatorAvaillables.add(format);
 
         if (!found) {
 
@@ -327,13 +340,16 @@ public class CommandWorkflow extends AbstractWorkflow {
 
           else
             throw new EoulsanException("Cannot found \""
-                + df.getFormatName() + "\" for step " + step.getId() + ".");
+                + format.getFormatName() + "\" for step " + step.getId() + ".");
         }
       }
     }
 
     // Remove duplicate generators
     removeDuplicateGenerators();
+
+    // TODO add steps to copy output data from steps to output directory if
+    // necessary
   }
 
   /**

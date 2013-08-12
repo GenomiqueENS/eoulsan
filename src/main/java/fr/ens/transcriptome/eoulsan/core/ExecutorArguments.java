@@ -45,7 +45,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  */
 public class ExecutorArguments {
 
-  private String basePathname;
+  private String localWorkingPathname;
+  private String hadoopWorkingPathname;
   private String designPathname;
   private String workflowPathname;
   private String jobDescription = "";
@@ -61,11 +62,19 @@ public class ExecutorArguments {
   //
 
   /**
-   * Get the base path.
-   * @return Returns the basePath
+   * Get the local working path.
+   * @return Returns the local working path
    */
-  public final String getBasePathname() {
-    return this.basePathname;
+  public final String getLocalWorkingPathname() {
+    return this.localWorkingPathname;
+  }
+
+  /**
+   * Get the Hadoop working path.
+   * @return Returns the local working path
+   */
+  public final String getHadoopWorkingPathname() {
+    return this.hadoopWorkingPathname;
   }
 
   /**
@@ -142,15 +151,27 @@ public class ExecutorArguments {
   //
 
   /**
-   * Set the base path
-   * @param basePath The basePath to set
+   * Set the local working path.
+   * @param localWorkingPath The local working path to set
    */
-  public final void setBasePathname(final String basePath) {
+  public final void setLocalWorkingPathname(final String localWorkingPath) {
 
-    if (basePath == null)
+    if (localWorkingPath == null)
       return;
 
-    this.basePathname = basePath.trim();
+    this.localWorkingPathname = localWorkingPath.trim();
+  }
+
+  /**
+   * Set the local working path.
+   * @param hadoopWorkingPath The local working path to set
+   */
+  public final void setHadoopWorkingPathname(final String hadoopWorkingPath) {
+
+    if (hadoopWorkingPath == null)
+      return;
+
+    this.hadoopWorkingPathname = hadoopWorkingPath.trim();
   }
 
   /**
@@ -294,23 +315,20 @@ public class ExecutorArguments {
     checkArgument(workflowFile.exists(), "The workflow file does not exists");
     checkArgument(designFile.exists(), "The design file does not exists");
 
-    // Set the base path
-    setBasePathname(designFile.getAbsoluteFile().getParentFile()
-        .getAbsolutePath());
+    final File outputDir = new File(designFile.getAbsoluteFile().getParent());
+
+    final File logDir = new File(outputDir, getJobId());
+
+    final File workingDir = new File(logDir, "working");
+
+    // Set the local working path
+    setLocalWorkingPathname(workingDir.getAbsolutePath());
 
     // Set the design path
     setDesignPathname(designFile.getAbsolutePath());
 
     // Set the parameter path
     setWorkflowPathname(workflowFile.getAbsolutePath());
-
-    final File logDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + getJobId());
-
-    final File outputDir =
-        new File(designFile.getAbsoluteFile().getParent().toString()
-            + "/" + getJobId());
 
     // Set the output path
     setOutputPathname(outputDir.getAbsolutePath());

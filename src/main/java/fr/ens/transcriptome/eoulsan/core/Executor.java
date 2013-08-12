@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -36,12 +35,10 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepEventRelay;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.ui.BasicUI;
@@ -83,64 +80,6 @@ public class Executor {
         + this.design.getSampleCount() + " sample(s) in design file");
   }
 
-  /**
-   * Check the log directory.
-   * @throws EoulsanException if an error occurs while checking the log
-   *           directory
-   */
-  private void checkLogDirectory() throws EoulsanException {
-
-    if (this.arguments.getLogPathname() == null)
-      throw new EoulsanException("The log directory path is null");
-
-    DataFile logDir = new DataFile(this.arguments.getLogPathname());
-
-    try {
-      if (!logDir.exists()) {
-        logDir.mkdirs();
-      } else {
-        if (!logDir.getMetaData().isDir())
-          throw new EoulsanException("The log directory is not a directory");
-      }
-    } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
-    }
-  }
-
-  /**
-   * Check temporary directory.
-   */
-  private void checkTemporaryDirectory() {
-
-    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
-
-    if (tempDir == null)
-      throw new EoulsanRuntimeException("Temporary directory is null");
-
-    if ("".equals(tempDir.getAbsolutePath()))
-      throw new EoulsanRuntimeException("Temporary directory is null");
-
-    if (!tempDir.exists())
-      throw new EoulsanRuntimeException("Temporary directory does not exists: "
-          + tempDir);
-
-    if (!tempDir.isDirectory())
-      throw new EoulsanRuntimeException(
-          "Temporary directory is not a directory: " + tempDir);
-
-    if (!tempDir.canRead())
-      throw new EoulsanRuntimeException("Temporary directory cannot be read: "
-          + tempDir);
-
-    if (!tempDir.canWrite())
-      throw new EoulsanRuntimeException(
-          "Temporary directory cannot be written: " + tempDir);
-
-    if (!tempDir.canExecute())
-      throw new EoulsanRuntimeException(
-          "Temporary directory is not executable: " + tempDir);
-  }
-
   //
   // Execute methods
   //
@@ -173,7 +112,7 @@ public class Executor {
       HadoopInfo.logHadoopSysInfo();
 
     // Check base path
-    if (this.arguments.getBasePathname() == null)
+    if (this.arguments.getLocalWorkingPathname() == null)
       throw new EoulsanException("The base path is null");
 
     // Check design
@@ -184,11 +123,8 @@ public class Executor {
         new CommandWorkflow(this.arguments, this.command, firstSteps,
             lastSteps, this.design);
 
-    // Check log directory
-    checkLogDirectory();
-
-    // Check temporary directory
-    checkTemporaryDirectory();
+    // Check directories (log, working, output, temporary...)
+    workflow.checkDirectories();
 
     // Create UI
     final BasicUI ui = new BasicUI(workflow);
@@ -227,7 +163,7 @@ public class Executor {
     LOGGER.info("Job Description: " + execArgs.getJobDescription());
     LOGGER.info("Job Environment: " + execArgs.getJobEnvironment());
 
-    LOGGER.info("Job Base path: " + execArgs.getBasePathname());
+    LOGGER.info("Job Base path: " + execArgs.getLocalWorkingPathname());
     LOGGER.info("Job Output path: " + execArgs.getOutputPathname());
     LOGGER.info("Job Log path: " + execArgs.getLogPathname());
   }

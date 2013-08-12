@@ -142,8 +142,8 @@ public final class WorkflowStepOutputDataFile implements
             + step.getStep().getName());
 
       // Return a file created by a step
-      return newStandardDataFile(step.getWorkflow().getContext(), step, format,
-          sample, fileIndex);
+      return newStandardDataFile(step.getContext(), step, format, sample,
+          fileIndex);
 
     case DESIGN_STEP:
 
@@ -225,7 +225,7 @@ public final class WorkflowStepOutputDataFile implements
     final StringBuilder sb = new StringBuilder();
 
     // Set base path if exists
-    final String basePath = context.getBasePathname();
+    final String basePath = context.getStepWorkingPathname();
     if (basePath != null) {
       sb.append(basePath);
       sb.append('/');
@@ -371,8 +371,7 @@ public final class WorkflowStepOutputDataFile implements
       do {
 
         final DataFile file =
-            newStandardDataFile(step.getWorkflow().getContext(), step, format,
-                sample, count);
+            newStandardDataFile(step.getContext(), step, format, sample, count);
 
         found = file.exists();
         if (found)

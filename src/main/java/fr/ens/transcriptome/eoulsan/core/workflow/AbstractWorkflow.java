@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
@@ -31,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.G
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,8 +52,8 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -73,8 +75,13 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private static final String STEP_RESULT_FILE_EXTENSION = ".log";
 
+  private final DataFile localWorkingDir;
+  private final DataFile hadoopWorkingDir;
+  private final DataFile outputDir;
+  private final DataFile logDir;
+
   private final Design design;
-  private final WorkflowContext context;
+  private final WorkflowContext workflowContext;
   private final Set<String> stepIds = Sets.newHashSet();
   private final Map<AbstractWorkflowStep, StepState> steps = Maps.newHashMap();
   private final Multimap<StepState, AbstractWorkflowStep> states =
@@ -89,26 +96,42 @@ public abstract class AbstractWorkflow implements Workflow {
   // Getters
   //
 
+  /**
+   * Get the local working directory.
+   * @return Returns the local working directory
+   */
+  DataFile getLocalWorkingDir() {
+    return this.localWorkingDir;
+  }
+
+  /**
+   * Get the local working directory.
+   * @return Returns the local working directory
+   */
+  DataFile getHadoopWorkingDir() {
+    return this.hadoopWorkingDir;
+  }
+
+  /**
+   * Get the output directory.
+   * @return Returns the output directory
+   */
+  DataFile getOutputDir() {
+    return this.outputDir;
+  }
+
+  /**
+   * Get the log directory.
+   * @return Returns the log directory
+   */
+  DataFile getLogDir() {
+    return this.logDir;
+  }
+
   @Override
   public Design getDesign() {
 
     return this.design;
-  }
-
-  @Override
-  public Context getContext() {
-
-    return this.context;
-  }
-
-  /**
-   * Get the real Context object. This method is useful to redefine context
-   * values like base directory.
-   * @return The Context object
-   */
-  WorkflowContext getWorkflowContext() {
-
-    return this.context;
   }
 
   @Override
@@ -145,6 +168,16 @@ public abstract class AbstractWorkflow implements Workflow {
   protected WorkflowStep getCheckerStep() {
 
     return this.checkerStep;
+  }
+
+  /**
+   * Get the real Context object. This method is useful to redefine context
+   * values like base directory.
+   * @return The Context object
+   */
+  WorkflowContext getWorkflowContext() {
+
+    return this.workflowContext;
   }
 
   //
@@ -359,12 +392,9 @@ public abstract class AbstractWorkflow implements Workflow {
     if (result == null)
       return;
 
-    // Log directory
-    final DataFile logDir = new DataFile(this.context.getLogPathname());
-
     // Step result file
     final DataFile logFile =
-        new DataFile(logDir, step.getId() + STEP_RESULT_FILE_EXTENSION);
+        new DataFile(this.logDir, step.getId() + STEP_RESULT_FILE_EXTENSION);
 
     try {
 
@@ -450,6 +480,87 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   /**
+   * Create a DataFile object from a path.
+   * @param path the path
+   * @return null if the path is null or a new DataFile object with the required
+   *         path
+   */
+  private static final DataFile newDataFile(final String path) {
+
+    if (path == null)
+      return null;
+
+    return new DataFile(path);
+  }
+
+  /**
+   * Check directories needed by the workflow.
+   * @throws EoulsanException if an error about the directories is found
+   */
+  public void checkDirectories() throws EoulsanException {
+
+    checkNotNull(this.logDir, "the log directory is null");
+    checkNotNull(this.outputDir, "the output directory is null");
+    checkNotNull(this.localWorkingDir, "the local working directory is null");
+
+    try {
+      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir}) {
+
+        if (dir == null)
+          continue;
+
+        if (dir.exists() && !dir.getMetaData().isDir())
+          throw new EoulsanException("the directory is not a directory: " + dir);
+
+        if (!dir.exists())
+          dir.mkdirs();
+
+      }
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
+
+    // Check temporary directory
+    checkTemporaryDirectory();
+  }
+
+  /**
+   * Check temporary directory.
+   * @throws EoulsanException
+   */
+  private void checkTemporaryDirectory() throws EoulsanException {
+
+    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+
+    if (tempDir == null)
+      throw new EoulsanException("Temporary directory is null");
+
+    if ("".equals(tempDir.getAbsolutePath()))
+      throw new EoulsanException("Temporary directory is null");
+
+    if (!tempDir.exists())
+      throw new EoulsanException("Temporary directory does not exists: "
+          + tempDir);
+
+    if (!tempDir.isDirectory())
+      throw new EoulsanException("Temporary directory is not a directory: "
+          + tempDir);
+
+    if (!tempDir.canRead())
+      throw new EoulsanException("Temporary directory cannot be read: "
+          + tempDir);
+
+    if (!tempDir.canWrite())
+      throw new EoulsanException("Temporary directory cannot be written: "
+          + tempDir);
+
+    if (!tempDir.canExecute())
+      throw new EoulsanException("Temporary directory is not executable: "
+          + tempDir);
+  }
+
+  /**
    * Log the state and the time of the analysis
    * @param success true if analysis was successful
    * @param stopwatch stopwatch of the workflow epoch
@@ -472,23 +583,24 @@ public abstract class AbstractWorkflow implements Workflow {
     final String mailSubject =
         "["
             + Globals.APP_NAME + "] " + successString + " end of your job "
-            + context.getJobId() + " on " + context.getJobHost();
+            + workflowContext.getJobId() + " on "
+            + workflowContext.getJobHost();
 
     final String mailMessage =
         "THIS IS AN AUTOMATED MESSAGE.\n\n"
             + successString
             + " end of your job "
-            + context.getJobId()
+            + workflowContext.getJobId()
             + " on "
-            + context.getJobHost()
+            + workflowContext.getJobHost()
             + ".\nJob finished at "
             + new Date(System.currentTimeMillis())
             + " in "
             + StringUtils.toTimeHumanReadable(stopwatch
                 .elapsedTime(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
-            + context.getOutputPathname() + "\n\nThe " + Globals.APP_NAME
-            + "team.";
+            + workflowContext.getOutputPathname() + "\n\nThe "
+            + Globals.APP_NAME + "team.";
 
     // Send mail
     Common.sendMail(mailSubject, mailMessage);
@@ -509,9 +621,15 @@ public abstract class AbstractWorkflow implements Workflow {
     Preconditions.checkNotNull(executionArguments, "Argument cannot be null");
     Preconditions.checkNotNull(design, "Design argument cannot be null");
 
-    this.context = new WorkflowContext(executionArguments);
-    this.context.setWorkflow(this);
+    this.workflowContext = new WorkflowContext(executionArguments, this);
     this.design = design;
-  }
 
+    this.logDir = newDataFile(executionArguments.getLogPathname());
+
+    this.localWorkingDir =
+        newDataFile(executionArguments.getLocalWorkingPathname());
+    this.hadoopWorkingDir =
+        newDataFile(executionArguments.getHadoopWorkingPathname());
+    this.outputDir = newDataFile(executionArguments.getOutputPathname());
+  }
 }

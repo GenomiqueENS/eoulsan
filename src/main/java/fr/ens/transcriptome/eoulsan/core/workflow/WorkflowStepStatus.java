@@ -350,7 +350,7 @@ public class WorkflowStepStatus implements StepStatus {
     this.step = step;
     this.design = step.getWorkflow().getDesign();
 
-    this.result = new WorkflowStepResult(step.getWorkflow().getContext(), step);
+    this.result = new WorkflowStepResult(step.getContext(), step);
 
     // Get the start date
     this.startDate = new Date(System.currentTimeMillis());

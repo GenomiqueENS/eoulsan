@@ -33,11 +33,8 @@ import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
@@ -45,14 +42,11 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class WorkflowContext implements Context, Serializable {
+public class WorkflowContext implements Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -260344001954382358L;
 
-  private String basePathname;
-  private String logPathname;
-  private String outputPathname;
   private final String jobId;
   private final String host;
   private String designPathname;
@@ -64,8 +58,7 @@ public class WorkflowContext implements Context, Serializable {
   private String commandName = "";
   private String commandDescription = "";
   private String commandAuthor = "";
-  private Workflow workflow;
-  private AbstractWorkflowStep step;
+  private final AbstractWorkflow workflow;
 
   private final long contextCreationTime;
 
@@ -73,122 +66,159 @@ public class WorkflowContext implements Context, Serializable {
   // Getters
   //
 
-  @Override
-  public String getBasePathname() {
-    return this.basePathname;
+  /**
+   * Get the local working path.
+   * @return Returns the local working path
+   */
+  public String getLocalWorkingPathname() {
+
+    final DataFile dir = this.workflow.getLocalWorkingDir();
+
+    return dir == null ? null : dir.getSource();
   }
 
-  @Override
-  public String getLogPathname() {
-    return this.logPathname;
+  /**
+   * Get the local working path.
+   * @return Returns the local working path
+   */
+  public String getHadoopWorkingPathname() {
+
+    final DataFile dir = this.workflow.getHadoopWorkingDir();
+
+    return dir == null ? null : dir.getSource();
   }
 
-  @Override
+  /**
+   * Get the output path.
+   * @return Returns the output Path
+   */
   public String getOutputPathname() {
-    return this.outputPathname;
+
+    final DataFile dir = this.workflow.getOutputDir();
+
+    return dir == null ? null : dir.getSource();
   }
 
-  @Override
+  /**
+   * Get the log path.
+   * @return Returns the log Path
+   */
+  public String getLogPathname() {
+
+    final DataFile dir = this.workflow.getLogDir();
+
+    return dir == null ? null : dir.getSource();
+  }
+
+  /**
+   * Get the job id.
+   * @return the job id
+   */
   public String getJobId() {
     return this.jobId;
   }
 
-  @Override
+  /**
+   * Get the host of the job.
+   * @return a string with the host of the job
+   */
   public String getJobHost() {
     return this.host;
   }
 
-  @Override
+  /**
+   * Get the creation time of the context.
+   * @return the creation time of the context in milliseconds since epoch
+   *         (1.1.1970)
+   */
   public long getContextCreationTime() {
     return this.contextCreationTime;
   }
 
-  @Override
+  /**
+   * Get the design file path.
+   * @return the design file path
+   */
   public String getDesignPathname() {
     return this.designPathname;
   }
 
-  @Override
+  /**
+   * Get the workflow file path.
+   * @return the workflow file path
+   */
   public String getWorkflowPathname() {
     return this.workflowPathname;
   }
 
-  @Override
+  /**
+   * Get the application jar path.
+   * @return Returns the jar path
+   */
   public String getJarPathname() {
     return this.jarPathname;
   }
 
-  @Override
+  /**
+   * Get the UUID of the job.
+   * @return the job UUID
+   */
   public String getJobUUID() {
     return this.jobUUID;
   }
 
-  @Override
+  /**
+   * Get the job description.
+   * @return the job description
+   */
   public String getJobDescription() {
     return this.jobDescription;
   }
 
-  @Override
+  /**
+   * Get the job environment.
+   * @return the job environment
+   */
   public String getJobEnvironment() {
     return this.jobEnvironment;
   }
 
-  @Override
+  /**
+   * Get the command name.
+   * @return the command name
+   */
   public String getCommandName() {
     return this.commandName;
   }
 
-  @Override
+  /**
+   * Get command description.
+   * @return the command description
+   */
   public String getCommandDescription() {
     return this.commandDescription;
   }
 
-  @Override
+  /**
+   * Get the command author.
+   * @return the command author
+   */
   public String getCommandAuthor() {
     return this.commandAuthor;
   }
 
-  @Override
+  /**
+   * Get the workflow description
+   * @return the workflow description
+   */
   public Workflow getWorkflow() {
 
     return this.workflow;
   }
 
-  @Override
-  public WorkflowStep getCurrentStep() {
-    return this.step;
-  }
-
   //
   // Setters
   //
-
-  /**
-   * Set the base path
-   * @param basePath The basePath to set
-   */
-  public void setBasePathname(final String basePath) {
-
-    this.basePathname = basePath;
-  }
-
-  /**
-   * Set the log path
-   * @param logPath The log path to set
-   */
-  public void setLogPathname(final String logPath) {
-
-    this.logPathname = logPath;
-  }
-
-  /**
-   * Set the output path
-   * @param outputPath The output path to set
-   */
-  public void setOutputPathname(final String outputPath) {
-
-    this.outputPathname = outputPath;
-  }
 
   /**
    * Set the design file path
@@ -244,110 +274,35 @@ public class WorkflowContext implements Context, Serializable {
     this.commandAuthor = commandAuthor;
   }
 
-  /**
-   * Set the workflow of the execution
-   * @param workflow the workflow to set
-   */
-  void setWorkflow(final Workflow workflow) {
-
-    this.workflow = workflow;
-  }
-
-  /**
-   * Set the current step running.
-   * @param step step to set
-   */
-  public void setStep(final AbstractWorkflowStep step) {
-
-    this.step = step;
-  }
-
   //
   // Other methods
   //
 
-  @Override
+  /**
+   * Get EoulsanRuntime.
+   * @return the EoulsanRuntime
+   */
   public AbstractEoulsanRuntime getRuntime() {
 
     return EoulsanRuntime.getRuntime();
   }
 
-  @Override
+  /**
+   * Get Eoulsan settings.
+   * @return the Settings
+   */
   public Settings getSettings() {
 
     return getRuntime().getSettings();
   }
 
-  @Override
+  /**
+   * Get the logger.
+   * @return the logger
+   */
   public Logger getLogger() {
 
     return EoulsanLogger.getLogger();
-  }
-
-  @Override
-  public String getInputDataFilename(final DataFormat format,
-      final Sample sample) {
-
-    return this.step.getInputDataFile(format, sample).getSource();
-  }
-
-  @Override
-  public String getInputDataFilename(final DataFormat format,
-      final Sample sample, final int fileIndex) {
-
-    return this.step.getInputDataFile(format, sample, fileIndex).getSource();
-  }
-
-  @Override
-  public DataFile getInputDataFile(final DataFormat format, final Sample sample) {
-
-    return this.step.getInputDataFile(format, sample);
-  }
-
-  @Override
-  public DataFile getInputDataFile(final DataFormat format,
-      final Sample sample, final int fileIndex) {
-
-    return this.step.getInputDataFile(format, sample, fileIndex);
-  }
-
-  @Override
-  public int getInputDataFileCount(final DataFormat format, final Sample sample) {
-
-    return this.step.getInputDataFileCount(format, sample, true);
-  }
-
-  @Override
-  public String getOutputDataFilename(final DataFormat format,
-      final Sample sample) {
-
-    return this.step.getOutputDataFile(format, sample).getSource();
-  }
-
-  @Override
-  public String getOutputDataFilename(final DataFormat format,
-      final Sample sample, final int fileIndex) {
-
-    return this.step.getOutputDataFile(format, sample, fileIndex).getSource();
-  }
-
-  @Override
-  public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
-
-    return this.step.getOutputDataFile(format, sample);
-  }
-
-  @Override
-  public DataFile getOutputDataFile(final DataFormat format,
-      final Sample sample, final int fileIndex) {
-
-    return this.step.getOutputDataFile(format, sample, fileIndex);
-  }
-
-  @Override
-  public int getOutputDataFileCount(final DataFormat format, final Sample sample) {
-
-    return this.step.getOutputDataFileCount(format, sample, true);
   }
 
   //
@@ -358,16 +313,21 @@ public class WorkflowContext implements Context, Serializable {
    * Constructor.
    * @param arguments arguments object
    */
-  WorkflowContext(final ExecutorArguments arguments) {
+  WorkflowContext(final ExecutorArguments arguments,
+      final AbstractWorkflow workflow) {
 
-    checkNotNull(arguments.getBasePathname(), "arguments cannot be null");
+    checkNotNull(arguments.getLocalWorkingPathname(),
+        "arguments cannot be null");
+    checkNotNull(workflow, "workflow cannot be null");
 
+    this.workflow = workflow;
     this.jobId = arguments.getJobId();
     this.jobUUID = arguments.getJobUUID();
     this.contextCreationTime = arguments.getCreationTime();
     this.host = SystemUtils.getHostName();
 
-    checkNotNull(arguments.getBasePathname(), "base path cannot be null");
+    checkNotNull(arguments.getLocalWorkingPathname(),
+        "base path cannot be null");
     checkNotNull(arguments.getWorkflowPathname(),
         "parameter path cannot be null");
     checkNotNull(arguments.getDesignPathname(), "design cannot be null");
@@ -378,11 +338,8 @@ public class WorkflowContext implements Context, Serializable {
     checkNotNull(arguments.getJobEnvironment(),
         "job environment cannot be null");
 
-    this.basePathname = arguments.getBasePathname();
     this.workflowPathname = arguments.getWorkflowPathname();
     this.designPathname = arguments.getDesignPathname();
-    this.outputPathname = arguments.getOutputPathname();
-    this.logPathname = arguments.getLogPathname();
     this.jobDescription = arguments.getJobDescription();
     this.jobEnvironment = arguments.getJobEnvironment();
   }

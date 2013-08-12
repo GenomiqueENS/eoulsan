@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.io.Serializable;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 
@@ -84,6 +85,12 @@ public interface WorkflowStep extends Serializable {
    * @return the workflow of the step
    */
   Workflow getWorkflow();
+
+  /**
+   * Get the context used by the workflow.
+   * @return a Context object
+   */
+  Context getContext();
 
   /**
    * Get the unique numerical identifier of the step.

@@ -126,12 +126,12 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     LOGGER.info("Start copying results.");
     LOGGER.info("inpath="
-        + context.getBasePathname() + "\toutpath="
+        + context.getHadoopWorkingPathname() + "\toutpath="
         + context.getOutputPathname());
 
     final Configuration conf = this.conf;
 
-    if (context.getBasePathname() == null)
+    if (context.getHadoopWorkingPathname() == null)
       throw new NullPointerException("The input path is null");
 
     if (context.getOutputPathname() == null)
@@ -142,7 +142,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     try {
 
-      final Path inPath = new Path(context.getBasePathname());
+      final Path inPath = new Path(context.getHadoopWorkingPathname());
 
       if (!PathUtils.isExistingDirectoryFile(inPath, conf))
         throw new EoulsanException("The base directory is not a directory: "
@@ -204,8 +204,9 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
           // Create temporary files
           final Path jobPath =
-              PathUtils.createTempPath(new Path(context.getBasePathname()),
-                  "distcp-", "", this.conf);
+              PathUtils.createTempPath(
+                  new Path(context.getHadoopWorkingPathname()), "distcp-", "",
+                  this.conf);
 
           final DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);

@@ -121,9 +121,10 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    */
   public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
       final String stepName, final Set<Parameter> stepParameters,
-      final boolean skip) throws EoulsanException {
+      final boolean skip, final boolean copyResultsToOutput)
+      throws EoulsanException {
 
-    super(workflow, id, stepName, skip, stepParameters);
+    super(workflow, id, stepName, skip, copyResultsToOutput, stepParameters);
   }
 
 }

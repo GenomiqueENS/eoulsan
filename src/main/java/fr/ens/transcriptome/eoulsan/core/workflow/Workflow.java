@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.io.Serializable;
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.core.Context;
 import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
@@ -42,12 +41,6 @@ public interface Workflow extends Serializable {
    * @return a Design Object
    */
   Design getDesign();
-
-  /**
-   * Get the context used by the workflow.
-   * @return a Context object
-   */
-  Context getContext();
 
   /**
    * Get the steps of the workflow.
