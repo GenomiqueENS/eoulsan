@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -45,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -58,6 +60,12 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
  */
 @HadoopOnly
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
+
+  @Override
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return getInputFormats();
+  }
 
   @Override
   public StepResult execute(final Design design, final StepContext context,
@@ -97,8 +105,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
    * @return a new JobConf object
    * @throws IOException
    */
-  private Job createJob(final Configuration parentConf, final StepContext context,
-      final Sample sample) throws IOException {
+  private Job createJob(final Configuration parentConf,
+      final StepContext context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

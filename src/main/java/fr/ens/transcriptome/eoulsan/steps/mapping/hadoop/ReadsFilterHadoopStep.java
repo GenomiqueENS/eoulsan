@@ -74,13 +74,14 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   //
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(READS_FASTQ, READS_TFQ);
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(READS_TFQ);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(READS_TFQ);
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return getInputFormats();
   }
 
   @Override

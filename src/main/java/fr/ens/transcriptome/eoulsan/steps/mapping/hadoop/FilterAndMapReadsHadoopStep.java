@@ -49,11 +49,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -68,6 +69,12 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
  */
 @HadoopOnly
 public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
+
+  @Override
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return getInputFormats();
+  }
 
   @Override
   public void configure(final Set<Parameter> stepParameters)

@@ -70,6 +70,12 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return Collections.emptySet();
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
   }

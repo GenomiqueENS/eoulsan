@@ -28,7 +28,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +48,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -65,11 +65,12 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
@@ -318,7 +319,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // get input file count for the sample
-    final int inFileCount = context.getInputDataFileCount(READS_FASTQ, sample);
+    final int inFileCount = sample.getMetadata().getReads().size();
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -575,8 +576,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param sample sample to process
    * @return an Hadoop path with the path of the serialized annotation
    */
-  private static Path getAnnotationIndexSerializedPath(final StepContext context,
-      final Sample sample) {
+  private static Path getAnnotationIndexSerializedPath(
+      final StepContext context, final Sample sample) {
 
     // Get annotation DataFile
     String filename = context.getInputDataFilename(ANNOTATION_GFF, sample);
@@ -590,6 +591,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   //
   // Step methods
   //
+
+  @Override
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return Sets.newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
+  }
 
   @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
@@ -702,7 +709,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Create the list of paired-end jobs to run
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getInputDataFileCount(READS_FASTQ, s) == 2)
+
+        if (s.getMetadata().getReads().size() == 2)
           jobsPairedEnd.add(createJobPairedEnd(conf, context, s));
       }
 
@@ -714,8 +722,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Create the list of jobs to run
       for (Sample sample : design.getSamples()) {
 
-        final boolean tsamFormat =
-            context.getInputDataFileCount(READS_FASTQ, sample) == 2;
+        final boolean tsamFormat = sample.getMetadata().getReads().size() == 2;
 
         final Job job =
             createJobHTSeqCounter(conf, context, sample, getGenomicType(),

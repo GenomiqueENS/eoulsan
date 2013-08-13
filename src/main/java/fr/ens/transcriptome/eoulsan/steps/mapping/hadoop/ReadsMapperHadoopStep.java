@@ -71,6 +71,12 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
+  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+
+    return getInputFormats();
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 

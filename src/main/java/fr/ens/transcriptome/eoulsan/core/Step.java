@@ -64,15 +64,28 @@ public interface Step {
 
   /**
    * Get the input data format.
-   * @return an array of DataFormat
+   * @return a set with DataFormat or null if the step does not any need input
+   *         format
    */
   Set<DataFormat> getInputFormats();
 
   /**
    * Get the output data format.
-   * @return an array of DataFormat
+   * @return an set with DataFormat or null if the step does not produce any
+   *         output data
    */
   Set<DataFormat> getOutputFormats();
+
+  /**
+   * Get the input data format required in the working directory. This method
+   * allow to declare the input files that need to be copied in the working
+   * directory before starting the step. As an example, it is used to copy files
+   * from a local file system to a distributed file system like HDFS. After that
+   * mapreduce jobs can be efficiency launched.
+   * @return a set with DataFormat or null if the step does not need any input
+   *         format in the working directory.
+   */
+  Set<DataFormat> getRequiredInputFormatsInWorkingDirectory();
 
   /**
    * Set the parameters of the step to configure the step.
