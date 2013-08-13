@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
@@ -45,8 +46,8 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -65,8 +66,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {READS_TFQ, getMapper().getArchiveFormat()};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(READS_TFQ, getMapper().getArchiveFormat());
   }
 
   @Override

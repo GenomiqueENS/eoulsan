@@ -24,6 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -37,7 +43,6 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This abstract class define and parse arguments for the expression step.
@@ -164,14 +169,13 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.MAPPER_RESULTS_SAM,
-        DataFormats.ANNOTATION_GFF, DataFormats.GENOME_DESC_TXT};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(MAPPER_RESULTS_SAM, ANNOTATION_GFF, GENOME_DESC_TXT);
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TSV};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(EXPRESSION_RESULTS_TSV);
   }
 
   @Override

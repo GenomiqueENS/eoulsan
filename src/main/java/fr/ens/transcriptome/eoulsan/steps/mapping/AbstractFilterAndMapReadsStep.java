@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -37,7 +42,6 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define an abstract step for read filtering, mapping and alignments
@@ -139,14 +143,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ,
-        this.mapper.getArchiveFormat(), DataFormats.GENOME_DESC_TXT};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(READS_FASTQ, this.mapper.getArchiveFormat(),
+        GENOME_DESC_TXT);
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.MAPPER_RESULTS_SAM};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(MAPPER_RESULTS_SAM);
   }
 
   @Override

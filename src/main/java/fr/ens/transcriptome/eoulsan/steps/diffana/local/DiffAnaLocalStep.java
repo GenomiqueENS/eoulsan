@@ -24,6 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.DIFFANA_RESULTS_TSV;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+
 import java.io.File;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -32,8 +36,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -88,13 +92,13 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TSV};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(EXPRESSION_RESULTS_TSV);
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.DIFFANA_RESULTS_TSV};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(DIFFANA_RESULTS_TSV);
   }
 
   @Override

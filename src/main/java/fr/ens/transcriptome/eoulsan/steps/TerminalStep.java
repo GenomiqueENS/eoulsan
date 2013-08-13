@@ -47,11 +47,6 @@ public class TerminalStep extends AbstractStep {
   }
 
   @Override
-  public String getLogName() {
-    return null;
-  }
-
-  @Override
   public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 

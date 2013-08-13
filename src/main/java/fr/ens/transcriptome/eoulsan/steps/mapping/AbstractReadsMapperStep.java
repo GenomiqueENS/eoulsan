@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
@@ -126,8 +127,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {MAPPER_RESULTS_SAM};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(MAPPER_RESULTS_SAM);
   }
 
   @Override

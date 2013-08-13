@@ -74,12 +74,6 @@ public class DefineDataFormatToDownload extends AbstractStep {
   }
 
   @Override
-  public String getLogName() {
-
-    return null;
-  }
-
-  @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 

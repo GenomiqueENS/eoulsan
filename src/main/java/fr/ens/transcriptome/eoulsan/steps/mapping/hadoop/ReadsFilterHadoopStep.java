@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -72,19 +74,13 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   //
 
   @Override
-  public String getLogName() {
-
-    return "filterreads";
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(READS_FASTQ, READS_TFQ);
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {READS_FASTQ, READS_TFQ};
-  }
-
-  @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {READS_TFQ};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(READS_TFQ);
   }
 
   @Override

@@ -66,19 +66,13 @@ public interface Step {
    * Get the input data format.
    * @return an array of DataFormat
    */
-  DataFormat[] getInputFormats();
+  Set<DataFormat> getInputFormats();
 
   /**
    * Get the output data format.
    * @return an array of DataFormat
    */
-  DataFormat[] getOutputFormats();
-
-  /**
-   * Get the name of the log file name for this step.
-   * @return the name of the file for the log name
-   */
-  String getLogName();
+  Set<DataFormat> getOutputFormats();
 
   /**
    * Set the parameters of the step to configure the step.

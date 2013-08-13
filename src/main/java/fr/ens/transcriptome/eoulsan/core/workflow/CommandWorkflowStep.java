@@ -65,16 +65,18 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
         getStep().configure(getParameters());
 
       // Get output formats
-      final DataFormat[] dfOut = getStep().getOutputFormats();
-      if (dfOut != null)
-        for (DataFormat df : dfOut)
-          registerOutputFormat(df);
+      final Set<DataFormat> outputFormats = getStep().getOutputFormats();
+      if (outputFormats != null)
+        for (DataFormat format : outputFormats)
+          if (format != null)
+            registerOutputFormat(format);
 
       // Get input format
-      final DataFormat[] dfIn = getStep().getInputFormats();
-      if (dfIn != null)
-        for (DataFormat df : dfIn)
-          registerInputFormat(df);
+      final Set<DataFormat> inputFormats = getStep().getInputFormats();
+      if (inputFormats != null)
+        for (DataFormat format : inputFormats)
+          if (format != null)
+            registerInputFormat(format);
 
     }
 

@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
@@ -35,8 +36,8 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -66,15 +67,13 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-
-    return new DataFormat[] {GENOME_FASTA, GENOME_DESC_TXT};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(GENOME_FASTA, GENOME_DESC_TXT);
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-
-    return new DataFormat[] {this.mapper.getArchiveFormat()};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(this.mapper.getArchiveFormat());
   }
 
   @Override

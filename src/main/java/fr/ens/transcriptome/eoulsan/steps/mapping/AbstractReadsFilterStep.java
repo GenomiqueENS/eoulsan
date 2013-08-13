@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -71,13 +74,13 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(READS_FASTQ);
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.READS_FASTQ};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(DataFormats.READS_FASTQ);
   }
 
   @Override

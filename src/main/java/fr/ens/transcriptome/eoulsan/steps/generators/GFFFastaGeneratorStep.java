@@ -24,7 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
+
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -40,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -68,21 +72,13 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public String getLogName() {
-
-    return null;
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(ANNOTATION_GFF);
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-
-    return new DataFormat[] {DataFormats.ANNOTATION_GFF};
-  }
-
-  @Override
-  public DataFormat[] getOutputFormats() {
-
-    return new DataFormat[] {DataFormats.GENOME_FASTA};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(GENOME_FASTA);
   }
 
   @Override
@@ -98,11 +94,11 @@ public class GFFFastaGeneratorStep extends AbstractStep {
 
       // Get the annotation DataFile
       final DataFile annotationDataFile =
-          context.getInputDataFile(getInputFormats()[0], s1);
+          context.getInputDataFile(GENOME_FASTA, s1);
 
       // Get the output DataFile
       final DataFile genomeDataFile =
-          context.getOutputDataFile(getOutputFormats()[0], s1);
+          context.getOutputDataFile(GENOME_FASTA, s1);
 
       LOGGER.info("Input annotation file: " + annotationDataFile);
       LOGGER.info("Output genome file: " + genomeDataFile);

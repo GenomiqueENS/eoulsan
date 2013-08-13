@@ -32,8 +32,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -67,9 +69,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {READS_FASTQ, getMapper().getArchiveFormat(),
-        GENOME_DESC_TXT};
+  public Set<DataFormat> getInputFormats() {
+    return Sets.newHashSet(READS_FASTQ, getMapper().getArchiveFormat(),
+        GENOME_DESC_TXT);
   }
 
   @Override

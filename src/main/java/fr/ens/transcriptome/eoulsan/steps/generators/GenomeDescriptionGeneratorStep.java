@@ -24,7 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
+
 import java.io.IOException;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -67,21 +72,13 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public String getLogName() {
-
-    return null;
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(GENOME_FASTA);
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-
-    return new DataFormat[] {DataFormats.GENOME_FASTA};
-  }
-
-  @Override
-  public DataFormat[] getOutputFormats() {
-
-    return new DataFormat[] {DataFormats.GENOME_DESC_TXT};
+  public Set<DataFormat> getOutputFormats() {
+    return newHashSet(GENOME_DESC_TXT);
   }
 
   @Override
@@ -102,7 +99,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
       // Get the output DataFile
       final DataFile genomeDescriptionDataFile =
-          context.getOutputDataFile(getOutputFormats()[0], s1);
+          context.getOutputDataFile(GENOME_DESC_TXT, s1);
 
       LOGGER.fine("Input genome file: " + genomeDataFile);
       LOGGER.fine("Output genome description file: "

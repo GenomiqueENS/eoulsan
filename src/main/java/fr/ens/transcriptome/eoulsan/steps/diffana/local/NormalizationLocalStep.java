@@ -24,7 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+
 import java.io.File;
+import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
@@ -64,8 +68,8 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.EXPRESSION_RESULTS_TSV};
+  public Set<DataFormat> getInputFormats() {
+    return newHashSet(EXPRESSION_RESULTS_TSV);
   }
 
   @Override

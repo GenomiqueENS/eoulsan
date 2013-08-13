@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -57,21 +58,15 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public DataFormat[] getInputFormats() {
+  public Set<DataFormat> getInputFormats() {
 
-    return null;
+    return Collections.emptySet();
   }
 
   @Override
-  public DataFormat[] getOutputFormats() {
+  public Set<DataFormat> getOutputFormats() {
 
-    return null;
-  }
-
-  @Override
-  public String getLogName() {
-
-    return getName();
+    return Collections.emptySet();
   }
 
   @Override

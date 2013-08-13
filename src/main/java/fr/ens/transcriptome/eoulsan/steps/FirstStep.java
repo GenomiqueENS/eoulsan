@@ -48,11 +48,6 @@ public final class FirstStep extends AbstractStep {
   }
 
   @Override
-  public String getLogName() {
-    return null;
-  }
-
-  @Override
   public StepResult execute(Design design, StepContext context,
       final StepStatus status) {
 
