@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
  * @author Laurent Jourdren
  * @since 1.3
  */
-public class WorkflowStepContext implements Context, Serializable {
+public class WorkflowStepContext implements StepContext, Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 8288158811122533646L;

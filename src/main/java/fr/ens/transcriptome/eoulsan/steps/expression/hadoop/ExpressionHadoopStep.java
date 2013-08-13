@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -109,7 +109,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final Job createJobEoulsanCounter(
-      final Configuration parentConf, final Context context,
+      final Configuration parentConf, final StepContext context,
       final Sample sample, final String genomicType, final String attributeId)
       throws IOException, BadBioEntryException {
 
@@ -203,7 +203,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws EoulsanException
    */
   private static final Job createJobHTSeqCounter(
-      final Configuration parentConf, final Context context,
+      final Configuration parentConf, final StepContext context,
       final Sample sample, final String genomicType, final String attributeId,
       final StrandUsage stranded, final OverlapMode overlapMode,
       final boolean removeAmbiguousCases, final boolean tsamFormat)
@@ -312,7 +312,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final Job createJobPairedEnd(final Configuration parentConf,
-      final Context context, final Sample sample) throws IOException,
+      final StepContext context, final Sample sample) throws IOException,
       BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -387,7 +387,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws IOException if an error occurs while creating the index
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
-  private static final Path createExonsIndex(final Context context,
+  private static final Path createExonsIndex(final StepContext context,
       final Path gffPath, final String expressionType,
       final String attributeId, final Path exonsIndexPath,
       final Configuration conf) throws IOException, BadBioEntryException {
@@ -425,7 +425,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiants
    */
-  private static final Path createFeaturesIndex(final Context context,
+  private static final Path createFeaturesIndex(final StepContext context,
       final Path gffPath, final String featureType, final String attributeId,
       final StrandUsage stranded, final DataFile genomeDescDataFile,
       final Path featuresIndexPath, final Configuration conf)
@@ -495,7 +495,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionTranscriptsFile(
-      final Context context, final Map<Job, Sample> jobconfs,
+      final StepContext context, final Map<Job, Sample> jobconfs,
       final Configuration conf) throws IOException, InterruptedException {
 
     FinalExpressionTranscriptsCreator fetc = null;
@@ -536,7 +536,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionFeaturesFile(
-      final Context context, final Map<Job, Sample> jobconfs,
+      final StepContext context, final Map<Job, Sample> jobconfs,
       final Configuration conf) throws IOException {
 
     FinalExpressionFeaturesCreator fefc = null;
@@ -575,7 +575,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param sample sample to process
    * @return an Hadoop path with the path of the serialized annotation
    */
-  private static Path getAnnotationIndexSerializedPath(final Context context,
+  private static Path getAnnotationIndexSerializedPath(final StepContext context,
       final Sample sample) {
 
     // Get annotation DataFile
@@ -599,7 +599,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME))
@@ -620,7 +620,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @return a StepResult object
    */
   private StepResult executeJobEoulsanCounter(final Design design,
-      final Context context, final StepStatus status) {
+      final StepContext context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
@@ -686,7 +686,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @return a StepResult object
    */
   private StepResult executeJobHTSeqCounter(final Design design,
-      final Context context, final StepStatus status) {
+      final StepContext context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);

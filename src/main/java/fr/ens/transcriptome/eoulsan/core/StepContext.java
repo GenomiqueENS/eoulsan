@@ -36,11 +36,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
- * This interface define a context.
+ * This interface define the context of a step.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public interface Context {
+public interface StepContext {
 
   /**
    * Get the command name.

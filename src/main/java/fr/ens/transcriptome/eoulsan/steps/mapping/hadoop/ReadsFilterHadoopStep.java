@@ -46,7 +46,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -88,7 +88,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   }
 
   @Override
-  public StepResult execute(Design design, final Context context,
+  public StepResult execute(Design design, final StepContext context,
       final StepStatus status) {
 
     // Create configuration object
@@ -140,7 +140,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final Context context, final Sample sample) throws IOException {
+      final StepContext context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -211,7 +211,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
    * @throws IOException
    */
   private Job createJobConfPairedEnd(final Configuration parentConf,
-      final Context context, final Sample sample) throws IOException {
+      final StepContext context, final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

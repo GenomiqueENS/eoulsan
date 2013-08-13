@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -62,7 +62,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     try {
@@ -135,7 +135,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
   }
 
-  private void count(final Context context, final ExpressionCounter counter,
+  private void count(final StepContext context, final ExpressionCounter counter,
       final DataFile annotationFile, final DataFile alignmentFile,
       final DataFile expressionFile, final DataFile genomeDescFile,
       final Reporter reporter) throws IOException, EoulsanException,

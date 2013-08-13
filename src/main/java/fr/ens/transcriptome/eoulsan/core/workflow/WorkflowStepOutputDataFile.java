@@ -36,7 +36,7 @@ import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -218,7 +218,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
-  private static final DataFile newStandardDataFile(final Context context,
+  private static final DataFile newStandardDataFile(final StepContext context,
       final WorkflowStep step, final DataFormat format, final Sample sample,
       final int fileIndex) {
 

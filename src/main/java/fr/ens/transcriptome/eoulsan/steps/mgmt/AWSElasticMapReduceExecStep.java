@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -156,7 +156,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     // Envrionment argument

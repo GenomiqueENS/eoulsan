@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.checkers;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -58,7 +58,7 @@ public interface Checker {
    * @param sample check data for the sample
    * @throws EoulsanException if an error occurs while executing step
    */
-  boolean check(Context context, Sample sample, CheckStore checkInfo)
+  boolean check(StepContext context, Sample sample, CheckStore checkInfo)
       throws EoulsanException;
 
 }

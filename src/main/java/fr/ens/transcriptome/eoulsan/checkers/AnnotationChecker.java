@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -89,7 +89,7 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public boolean check(final Context context, final Sample sample,
+  public boolean check(final StepContext context, final Sample sample,
       final CheckStore checkInfo) throws EoulsanException {
 
     if (context == null)
@@ -310,7 +310,7 @@ public class AnnotationChecker implements Checker {
   }
 
   private GenomeDescription getGenomeDescription(final DataFile annotationFile,
-      final Context context, final Sample sample, final CheckStore checkInfo)
+      final StepContext context, final Sample sample, final CheckStore checkInfo)
       throws EoulsanException, BadBioEntryException, IOException {
 
     Object o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);

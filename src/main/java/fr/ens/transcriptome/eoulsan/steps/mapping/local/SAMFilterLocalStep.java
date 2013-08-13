@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.ProcessSample;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -76,7 +76,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     // Process all samples
@@ -84,7 +84,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
         getLocalThreads(), new ProcessSample() {
 
           @Override
-          public void processSample(final Context context, final Sample sample,
+          public void processSample(final StepContext context, final Sample sample,
               final StepStatus status) throws ProcessSampleException {
 
             // Create the reporter
@@ -121,7 +121,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @param pairedEnd true if data are in paired-end mode
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void filterSample(final Context context, final Sample sample,
+  private static void filterSample(final StepContext context, final Sample sample,
       final Reporter reporter, final StepStatus status,
       final ReadAlignmentsFilter filter) throws IOException {
 

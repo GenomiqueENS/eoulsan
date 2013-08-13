@@ -57,7 +57,7 @@ public class ProcessSampleExecutor {
 
     private boolean success;
 
-    private final Context context;
+    private final StepContext context;
     private final Sample sample;
     private final StepStatus status;
     private final ProcessSample ps;
@@ -98,7 +98,7 @@ public class ProcessSampleExecutor {
     // Constructor
     //
 
-    public SampleThread(final Context context, final ProcessSample ps,
+    public SampleThread(final StepContext context, final ProcessSample ps,
         final Sample sample, final StepStatus status) {
 
       this.context = context;
@@ -116,7 +116,7 @@ public class ProcessSampleExecutor {
    * @param ps ProcessSample Object
    * @return a StepResult object
    */
-  public static final StepResult processAllSamples(final Context context,
+  public static final StepResult processAllSamples(final StepContext context,
       final Design design, final StepStatus status, final ProcessSample ps) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
@@ -132,7 +132,7 @@ public class ProcessSampleExecutor {
    * @param ps ProcessSample Object
    * @return a StepResult object
    */
-  public static final StepResult processAllSamples(final Context context,
+  public static final StepResult processAllSamples(final StepContext context,
       final Design design, final StepStatus status, final int localThreads,
       final int maxLocalThreads, final ProcessSample ps) {
 
@@ -149,7 +149,7 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
-      final Context context, final Design design, final StepStatus status,
+      final StepContext context, final Design design, final StepStatus status,
       final ProcessSample ps) {
 
     return processAllSamples(startTime, context, design, status, EoulsanRuntime
@@ -164,7 +164,7 @@ public class ProcessSampleExecutor {
    * @param ps ProcessSample Object
    * @return a StepResult object
    */
-  public static final StepResult processAllSamples(final Context context,
+  public static final StepResult processAllSamples(final StepContext context,
       final Design design, final StepStatus status, final int threadNumber,
       final ProcessSample ps) {
 
@@ -182,7 +182,7 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
-      final Context context, final Design design, final StepStatus status,
+      final StepContext context, final Design design, final StepStatus status,
       final int threadNumber, final ProcessSample ps) {
 
     if (threadNumber > 1) {
@@ -205,7 +205,7 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   private static final StepResult processAllSamplesWithNoThread(
-      final long startTime, final Context context, final Design design,
+      final long startTime, final StepContext context, final Design design,
       final StepStatus status, final ProcessSample ps) {
 
     try {
@@ -230,7 +230,7 @@ public class ProcessSampleExecutor {
    * @return a StepResult object
    */
   private static final StepResult processAllSamplesWithThreads(
-      final long startTime, final Context context, final Design design,
+      final long startTime, final StepContext context, final Design design,
       final StepStatus status, final ProcessSample ps, final int threadNumber) {
 
     // Create executor service

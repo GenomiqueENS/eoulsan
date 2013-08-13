@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.ProcessSample;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -71,14 +71,14 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     return ProcessSampleExecutor.processAllSamples(context, design, status,
         getLocalThreads(), new ProcessSample() {
 
           @Override
-          public void processSample(final Context context, final Sample sample,
+          public void processSample(final StepContext context, final Sample sample,
               final StepStatus status) throws ProcessSampleException {
 
             // Create the reporter
@@ -134,7 +134,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param filter reads filter to use
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void singleEnd(final Context context, final Sample sample,
+  private static void singleEnd(final StepContext context, final Sample sample,
       final Reporter reporter, final StepStatus status, final ReadFilter filter)
       throws IOException {
 
@@ -163,7 +163,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void pairedEnd(final Context context, final Sample sample,
+  private static void pairedEnd(final StepContext context, final Sample sample,
       final Reporter reporter, final StepStatus status, final ReadFilter filter)
       throws IOException {
 

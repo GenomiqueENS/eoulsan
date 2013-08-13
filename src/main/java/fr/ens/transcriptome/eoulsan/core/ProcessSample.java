@@ -99,7 +99,7 @@ public abstract class ProcessSample {
    * @param sample Sample to process
    * @param status step status
    */
-  public abstract void processSample(Context context, Sample sample,
+  public abstract void processSample(StepContext context, Sample sample,
       StepStatus status) throws ProcessSampleException;
 
 }

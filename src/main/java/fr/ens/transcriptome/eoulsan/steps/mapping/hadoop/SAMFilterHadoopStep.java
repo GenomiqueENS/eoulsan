@@ -42,7 +42,7 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -60,7 +60,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     // Create configuration object
@@ -97,7 +97,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
    * @return a new JobConf object
    * @throws IOException
    */
-  private Job createJob(final Configuration parentConf, final Context context,
+  private Job createJob(final Configuration parentConf, final StepContext context,
       final Sample sample) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);

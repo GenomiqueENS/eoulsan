@@ -45,7 +45,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -519,7 +519,7 @@ public class WorkflowStepResult implements StepResult {
 
   }
 
-  WorkflowStepResult(final Context context, final AbstractWorkflowStep step) {
+  WorkflowStepResult(final StepContext context, final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(context, "context is null");
     Preconditions.checkNotNull(step, "step is null");

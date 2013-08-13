@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -73,7 +73,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     try {
@@ -196,7 +196,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param reporter Eoulsan reporter object
    * @throws IOException if an error occurs while the mapping
    */
-  private void mapSingleEnd(final Context context, final Sample s,
+  private void mapSingleEnd(final StepContext context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile,
       final File archiveIndexFile, final File indexDir, final Reporter reporter)
       throws IOException {
@@ -233,7 +233,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param reporter Eoulsan reporter object
    * @throws IOException if an error occurs while the mapping
    */
-  private void mapPairedEnd(final Context context, final Sample s,
+  private void mapPairedEnd(final StepContext context, final Sample s,
       final SequenceReadsMapper mapper, final File inFile1, final File inFile2,
       final File archiveIndexFile, final File indexDir, final Reporter reporter)
       throws IOException {

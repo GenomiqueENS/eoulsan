@@ -48,7 +48,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -94,7 +94,7 @@ public class Normalization {
    * Run normalisation step
    * @throws EoulsanException
    */
-  public void run(final Context context) throws EoulsanException {
+  public void run(final StepContext context) throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
       LOGGER.info("Normalization : Rserve mode");
@@ -138,7 +138,7 @@ public class Normalization {
    * run Rnw script on Rserve server
    * @throws EoulsanException
    */
-  protected void runRserveRnwScript(final Context context)
+  protected void runRserveRnwScript(final StepContext context)
       throws EoulsanException {
 
     try {
@@ -195,7 +195,7 @@ public class Normalization {
    * run Rnw script on local mode
    * @throws EoulsanException
    */
-  protected void runLocalRnwScript(final Context context)
+  protected void runLocalRnwScript(final StepContext context)
       throws EoulsanException {
 
     try {
@@ -322,7 +322,7 @@ public class Normalization {
    * @throws EoulsanException
    */
   protected String generateScript(final List<Sample> experimentSamplesList,
-      final Context context) throws EoulsanException {
+      final StepContext context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
 

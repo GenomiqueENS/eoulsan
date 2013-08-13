@@ -94,7 +94,7 @@ public interface Step {
    * @param status of the step
    * @throws EoulsanException if an error occurs while executing step
    */
-  StepResult execute(Design design, Context context, StepStatus status);
+  StepResult execute(Design design, StepContext context, StepStatus status);
 
   /**
    * Test if the workflow must end after this step.

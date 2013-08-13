@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
@@ -83,7 +83,7 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final Design design, final Context context,
+  public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
     final StringBuilder log = new StringBuilder();
@@ -259,7 +259,7 @@ public abstract class UploadStep extends AbstractStep {
    * @throws IOException
    */
   private Map<DataFile, DataFile> findDataFilesInWorkflow(Sample sample,
-      final Context context) throws IOException {
+      final StepContext context) throws IOException {
 
     final Map<DataFile, DataFile> result = newHashMap();
 
@@ -294,7 +294,7 @@ public abstract class UploadStep extends AbstractStep {
       files.remove(file);
   }
 
-  private void reWriteDesign(final Context context,
+  private void reWriteDesign(final StepContext context,
       final Map<DataFile, DataFile> filesToCopy) throws IOException {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
@@ -369,7 +369,7 @@ public abstract class UploadStep extends AbstractStep {
    * @throws EoulsanIOException if an error occurs while writing the design file
    * @throws IOException if an error occurs while writing the design file
    */
-  private File writeTempDesignFile(final Context context, final Design design)
+  private File writeTempDesignFile(final StepContext context, final Design design)
       throws EoulsanIOException, IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");

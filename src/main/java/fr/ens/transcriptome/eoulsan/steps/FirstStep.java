@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.Context;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -53,7 +53,7 @@ public final class FirstStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, Context context,
+  public StepResult execute(Design design, StepContext context,
       final StepStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps
