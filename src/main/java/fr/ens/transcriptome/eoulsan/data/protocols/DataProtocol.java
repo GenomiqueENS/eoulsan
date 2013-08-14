@@ -114,6 +114,14 @@ public interface DataProtocol {
   void mkdirs(DataFile dir) throws IOException;
 
   /**
+   * Create a symbolic link.
+   * @param target target file
+   * @param link symbolic link file
+   * @throws IOException if an error occurs while creating the symbolic link
+   */
+  void symlink(DataFile target, DataFile link) throws IOException;
+
+  /**
    * Get the metadata for the source.
    * @param src source to use
    * @return always a metadataObject
@@ -138,6 +146,12 @@ public interface DataProtocol {
    * @return true if mkdir() and mkdirs() are available
    */
   boolean isMkdir();
+
+  /**
+   * Test if the symlink() method are available with this protocol.
+   * @return true if symlink() is available
+   */
+  boolean isSymlink();
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.

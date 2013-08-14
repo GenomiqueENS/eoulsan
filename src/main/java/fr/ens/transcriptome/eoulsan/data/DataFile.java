@@ -334,6 +334,23 @@ public class DataFile implements Comparable<DataFile> {
     getProtocol().mkdirs(this);
   }
 
+  /**
+   * Create a symbolic link that target is the current file.
+   * @param link symbolic file
+   * @throws IOException if an error occurs while creating the symbolic link
+   */
+  public void symlink(final DataFile link) throws IOException {
+
+    if (link == null)
+      throw new NullPointerException("The link can not be null.");
+
+    if (!getProtocol().isSymlink())
+      throw new IOException(
+          "The underlying protocol does not allow creating symbolic links");
+
+    getProtocol().symlink(this, link);
+  }
+
   //
   // Internal methods
   //

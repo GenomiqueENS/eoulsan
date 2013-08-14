@@ -162,4 +162,37 @@ public class FileDataProtocol extends AbstractDataProtocol {
     return true;
   }
 
+  @Override
+  public void symlink(final DataFile target, final DataFile link)
+      throws IOException {
+
+    if (target == null)
+      throw new NullPointerException("target is null");
+
+    if (link == null)
+      throw new NullPointerException("link is null");
+
+    if (link.exists())
+      throw new IOException("the symlink already exists");
+
+    if (target.getProtocol() != this)
+      throw new IOException("the protocol of the target is not "
+          + getName() + " protocol: " + target);
+
+    if (link.getProtocol() != this)
+      throw new IOException("the protocol of the link is not "
+          + getName() + " protocol: " + link);
+
+    final File targetFile = target.toFile();
+    final File linkFile = link.toFile();
+
+    FileUtils.createSymbolicLink(targetFile, linkFile);
+  }
+
+  @Override
+  public boolean isSymlink() {
+
+    return true;
+  }
+
 }

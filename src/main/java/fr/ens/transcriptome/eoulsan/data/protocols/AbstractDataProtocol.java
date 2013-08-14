@@ -124,4 +124,18 @@ abstract class AbstractDataProtocol implements DataProtocol {
     return false;
   }
 
+  @Override
+  public void symlink(final DataFile target, final DataFile link)
+      throws IOException {
+
+    throw new IOException("The symlink() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean isSymlink() {
+
+    return false;
+  }
+
 }
