@@ -55,11 +55,14 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -356,6 +359,9 @@ public abstract class AbstractWorkflow implements Workflow {
           // Write step result in a file
           writeStepResult(step, result);
 
+          // Create symlink in output directory
+          createSymlinksInOutputDirectory(step);
+
           // End of the analysis if the analysis fail
           if (!result.isSuccess()) {
 
@@ -404,6 +410,59 @@ public abstract class AbstractWorkflow implements Workflow {
 
       Common.showAndLogErrorMessage("Unable to create log file for "
           + step.getId() + " step.");
+    }
+  }
+
+  /**
+   * Create symbolic
+   * @param step
+   */
+
+  private void createSymlinksInOutputDirectory(final AbstractWorkflowStep step) {
+
+    if (step == null)
+      return;
+
+    final DataFile stepDir = step.getStepWorkingDir();
+    final DataFile outputDir = getOutputDir();
+    final StepContext context = step.getContext();
+
+    try {
+      if (!outputDir.getProtocol().isSymlink()
+          || !stepDir.getProtocol().isSymlink() || outputDir.equals(stepDir))
+        return;
+
+      for (DataFormat format : step.getOutputDataFormats()) {
+        for (Sample sample : getDesign().getSamples()) {
+
+          // Test the number of files by data
+          if (format.getMaxFilesCount() == 1) {
+            final DataFile file = context.getOutputDataFile(format, sample);
+
+            // Create symbolic link
+            file.symlink(new DataFile(getOutputDir(), file.getName()));
+          } else {
+
+            // Handle multi files
+            final int count = context.getOutputDataFileCount(format, sample);
+            for (int i = 0; i < count; i++) {
+              final DataFile file =
+                  context.getOutputDataFile(format, sample, i);
+
+              // Create symbolic link
+              file.symlink(new DataFile(getOutputDir(), file.getName()));
+            }
+          }
+          // if one file per analysis for the format, there only one symlink to
+          // create
+          if (format.isOneFilePerAnalysis())
+            break;
+        }
+      }
+    } catch (IOException e) {
+      getLogger().warning(
+          "Error while creating symlink of output step ("
+              + step.getId() + ") file: " + e.getMessage());
     }
   }
 
