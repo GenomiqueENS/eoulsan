@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -492,7 +490,8 @@ public class WorkflowStepResult implements StepResult {
     checkNotNull(in);
     checkState();
 
-    throw new NotImplementedException();
+    // TODO implement this method
+    throw new UnsupportedOperationException();
   }
 
   public void write(final DataFile file) throws IOException {
