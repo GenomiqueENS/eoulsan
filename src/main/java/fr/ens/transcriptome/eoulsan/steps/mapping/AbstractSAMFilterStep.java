@@ -31,8 +31,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
@@ -77,7 +75,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   @Override
   public Set<DataFormat> getInputFormats() {
-    return Sets.newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
+    return newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
   }
 
   @Override

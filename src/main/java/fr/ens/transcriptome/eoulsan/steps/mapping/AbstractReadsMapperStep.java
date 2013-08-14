@@ -127,7 +127,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
+  public Set<DataFormat> getOutputFormats() {
     return newHashSet(MAPPER_RESULTS_SAM);
   }
 

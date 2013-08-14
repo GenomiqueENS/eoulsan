@@ -28,7 +28,6 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -135,7 +134,7 @@ public final class WorkflowStepOutputDataFile implements
     case STANDARD_STEP:
     case GENERATOR_STEP:
 
-      if (!Arrays.asList(step.getStep().getOutputFormats()).contains(format))
+      if (!step.getStep().getOutputFormats().contains(format))
         throw new EoulsanRuntimeException("The "
             + format.getFormatName()
             + " format is not an output format of the step "
