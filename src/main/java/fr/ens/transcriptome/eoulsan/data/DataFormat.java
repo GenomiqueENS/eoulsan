@@ -38,7 +38,7 @@ public interface DataFormat {
    * Get the name of the format.
    * @return the name of the format
    */
-  String getFormatName();
+  String getName();
 
   /**
    * Get the description of the format.

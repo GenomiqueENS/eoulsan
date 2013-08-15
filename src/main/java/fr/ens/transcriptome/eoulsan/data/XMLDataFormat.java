@@ -81,7 +81,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private int maxFilesCount;
 
   @Override
-  public String getFormatName() {
+  public String getName() {
 
     return this.name;
   }

@@ -45,7 +45,7 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public String getDescription() {
 
-    return getFormatName() + " description.";
+    return getName() + " description.";
   }
 
   @Override
@@ -104,7 +104,7 @@ abstract class AbstractDataFormat implements DataFormat {
 
     final DataFormat that = (DataFormat) o;
 
-    return equal(this.getFormatName(), that.getFormatName())
+    return equal(this.getName(), that.getName())
         && equal(this.getDescription(), that.getDescription())
         && equal(this.getContentType(), that.getContentType())
         && equal(this.getDefaultExtention(), that.getDefaultExtention())
@@ -133,7 +133,7 @@ abstract class AbstractDataFormat implements DataFormat {
     final Integer checkerHashCode =
         isChecker() ? getChecker().getClass().hashCode() : null;
 
-    return Objects.hashCode(getFormatName(), getDescription(),
+    return Objects.hashCode(getName(), getDescription(),
         getContentType(), getDefaultExtention(), extensionsHashCode,
         isGenerator(), isChecker(), generatorHashCode, checkerHashCode,
         getMaxFilesCount());
@@ -147,7 +147,7 @@ abstract class AbstractDataFormat implements DataFormat {
 
     return Objects
         .toStringHelper(this)
-        .add("name", getFormatName())
+        .add("name", getName())
         .add("description", getDescription())
         .add("contentType", getContentType())
         .add("defaultExtension", getDefaultExtention())

@@ -113,32 +113,32 @@ public class DataFormatRegistry {
   private void check(final DataFormat df, final boolean callFromConstructor)
       throws EoulsanException {
 
-    if (df.getFormatName() == null)
+    if (df.getName() == null)
       throw new EoulsanException("The DataFormat "
           + df.getClass().getName() + " as no name.");
 
-    if (!df.getFormatName().toLowerCase().trim().equals(df.getFormatName())) {
+    if (!df.getName().toLowerCase().trim().equals(df.getName())) {
       throw new EoulsanException(
           "The DataFormat name can't contains upper case character"
               + df.getClass().getName() + " as no name.");
     }
 
     for (DataFormat format : this.formats) {
-      if (format.getFormatName().equals(df.getFormatName()))
+      if (format.getName().equals(df.getName()))
         throw new EoulsanException("A DataFormat named "
-            + df.getFormatName() + " is already registered.");
+            + df.getName() + " is already registered.");
     }
 
     final String prefix = df.getPrefix();
 
     if (prefix == null)
       throw new EoulsanException("The DataFormat \""
-          + df.getFormatName() + "\" as no prefix");
+          + df.getName() + "\" as no prefix");
 
     if (prefix == null || "".equals(prefix))
       throw new EoulsanException(
           "The prefix of a DataType can't be null or empty ("
-              + df.getFormatName() + ")");
+              + df.getName() + ")");
 
     if (prefix.indexOf('\t') != -1)
       throw new EoulsanException(
@@ -153,7 +153,7 @@ public class DataFormatRegistry {
     if (df.getDefaultExtention() == null)
       throw new EoulsanException(
           "The no default extension is provided for DataFormat: "
-              + df.getFormatName());
+              + df.getName());
 
     boolean defaultExtensionFound = false;
 
@@ -180,7 +180,7 @@ public class DataFormatRegistry {
 
       if (!callFromConstructor)
         throw new EoulsanException("This DataFormat "
-            + df.getFormatName()
+            + df.getName()
             + " is not registered as a spi service. Cannot register it.");
 
       // Register DataFormat for design fields is necessary
@@ -194,7 +194,7 @@ public class DataFormatRegistry {
 
     if (!defaultExtensionFound)
       throw new EoulsanException("The default extension of DataFormat \""
-          + df.getFormatName() + "\" is not in the list of extensions.");
+          + df.getName() + "\" is not in the list of extensions.");
 
   }
 
@@ -270,7 +270,7 @@ public class DataFormatRegistry {
     }
 
     for (DataFormat df : this.formats) {
-      if (df.getFormatName().equals(dataFormatName)) {
+      if (df.getName().equals(dataFormatName)) {
         return df;
       }
     }
@@ -363,7 +363,7 @@ public class DataFormatRegistry {
 
       } catch (EoulsanException e) {
         LOGGER.warning("Connot register "
-            + df.getFormatName() + ": " + e.getMessage());
+            + df.getName() + ": " + e.getMessage());
       }
     }
   }

@@ -284,14 +284,14 @@ public abstract class AbstractWorkflow implements Workflow {
       if (file.getDataFile().exists())
         throw new EoulsanException("For sample "
             + file.getSample().getId() + ", generated \""
-            + file.getFormat().getFormatName() + "\" already exists ("
+            + file.getFormat().getName() + "\" already exists ("
             + file.getDataFile() + ").");
 
     for (WorkflowStepOutputDataFile file : files.getReusedFiles())
       if (file.getDataFile().exists())
         throw new EoulsanException("For sample "
             + file.getSample().getId() + " in step " + file.getStep().getId()
-            + ", generated \"" + file.getFormat().getFormatName()
+            + ", generated \"" + file.getFormat().getName()
             + "\" already exists (" + file.getDataFile() + ").");
   }
 
@@ -308,10 +308,10 @@ public abstract class AbstractWorkflow implements Workflow {
        System.out.println(file.getDataFile());
        System.out.println(file.getSample().getId());
        System.out.println(file.getStep().getId());
-       System.out.println(file.getFormat().getFormatName());
+       System.out.println(file.getFormat().getName());
         throw new EoulsanException("For sample "
             + file.getSample().getId() + " in step " + file.getStep().getId()
-            + ", input file for " + file.getFormat().getFormatName()
+            + ", input file for " + file.getFormat().getName()
             + " not exists (" + file.getDataFile() + ").");
       }
     }

@@ -128,7 +128,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
         sb.append(',');
       }
 
-      sb.append(df.getFormatName());
+      sb.append(df.getName());
     }
 
     final String formats = sb.toString();

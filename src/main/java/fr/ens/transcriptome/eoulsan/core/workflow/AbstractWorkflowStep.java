@@ -479,7 +479,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if (!this.inputFormatLocations.containsKey(format))
       throw new EoulsanRuntimeException("The "
-          + format.getFormatName()
+          + format.getName()
           + " format is not an output format of the step " + getId());
 
     return this.inputFormatLocations.get(format).getDataFile(sample, fileIndex);
@@ -501,7 +501,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if (!this.inputFormatLocations.containsKey(format))
       throw new EoulsanRuntimeException("The "
-          + format.getFormatName()
+          + format.getName()
           + " format is not an input format of the step " + getId());
 
     return this.inputFormatLocations.get(format).getDataFileCount(sample,
@@ -547,7 +547,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         && step.getType() != StepType.GENERATOR_STEP && step.getType() != StepType.STANDARD_STEP)
         || !this.inputFormats.containsKey(format))
       throw new EoulsanRuntimeException("The dependency ("
-          + step.getId() + ") do not provide data (" + format.getFormatName()
+          + step.getId() + ") do not provide data (" + format.getName()
           + ")");
 
     if (!this.inputFormatLocations.containsKey(format))

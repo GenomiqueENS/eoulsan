@@ -386,7 +386,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Set parameters
     final Set<Parameter> parameters = Sets.newHashSet();
     parameters.add(new Parameter(CopyInputFormatStep.FORMAT_PARAMETER, format
-        .getFormatName()));
+        .getName()));
     parameters.add(new Parameter(
         CopyInputFormatStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
 
@@ -479,7 +479,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
           else
             throw new EoulsanException("Cannot found \""
-                + format.getFormatName() + "\" for step " + step.getId() + ".");
+                + format.getName() + "\" for step " + step.getId() + ".");
         }
       }
     }

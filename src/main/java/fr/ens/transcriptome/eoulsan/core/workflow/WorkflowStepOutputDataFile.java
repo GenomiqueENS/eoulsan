@@ -137,7 +137,7 @@ public final class WorkflowStepOutputDataFile implements
 
       if (!step.getStep().getOutputFormats().contains(format))
         throw new EoulsanRuntimeException("The "
-            + format.getFormatName()
+            + format.getName()
             + " format is not an output format of the step "
             + step.getStep().getName());
 
@@ -175,7 +175,7 @@ public final class WorkflowStepOutputDataFile implements
 
     if (designFieldName == null)
       throw new EoulsanRuntimeException("The "
-          + format.getFormatName()
+          + format.getName()
           + " format was not found in the design file for sample "
           + sample.getId() + " (" + sample.getName() + ")");
 
@@ -202,8 +202,8 @@ public final class WorkflowStepOutputDataFile implements
 
     if (!isDesignDataFileValidFormat(file, format))
       throw new EoulsanRuntimeException("The file "
-          + file + " in design file is not a " + format.getFormatName()
-          + format.getFormatName() + " format for " + sample.getId() + " ("
+          + file + " in design file is not a " + format.getName()
+          + format.getName() + " format for " + sample.getId() + " ("
           + sample.getName() + ")");
 
     return file;
@@ -322,7 +322,7 @@ public final class WorkflowStepOutputDataFile implements
     sb.append('_');
 
     // Set the name of the format
-    sb.append(format.getFormatName());
+    sb.append(format.getName());
     sb.append('_');
 
     // Set the id of the sample
@@ -436,7 +436,7 @@ public final class WorkflowStepOutputDataFile implements
       throw new IllegalArgumentException("file index ("
           + fileIndex
           + ") must be greater or equals to 0 for multi files formats ("
-          + format.getFormatName() + ")");
+          + format.getName() + ")");
 
     this.step = step;
     this.format = format;
