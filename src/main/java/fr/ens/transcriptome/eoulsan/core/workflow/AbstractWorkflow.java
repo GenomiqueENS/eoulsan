@@ -305,10 +305,6 @@ public abstract class AbstractWorkflow implements Workflow {
 
     for (WorkflowStepOutputDataFile file : files.getInputFiles()) {
       if (!file.isMayNotExist() && !file.getDataFile().exists()) {
-        System.out.println(file.getDataFile());
-        System.out.println(file.getSample().getId());
-        System.out.println(file.getStep().getId());
-        System.out.println(file.getFormat().getName());
         throw new EoulsanException("For sample "
             + file.getSample().getId() + " in step " + file.getStep().getId()
             + ", input file for " + file.getFormat().getName()
