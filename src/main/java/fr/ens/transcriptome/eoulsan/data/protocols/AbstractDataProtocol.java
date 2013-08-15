@@ -71,7 +71,7 @@ abstract class AbstractDataProtocol implements DataProtocol {
   public OutputStream putData(final DataFile src, final DataFileMetadata md)
       throws IOException {
 
-    if (!isWritable())
+    if (!canWrite())
       throw new IOException("Writing is not allowed for the source: " + src);
 
     return putData(src);
@@ -119,7 +119,7 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean isMkdir() {
+  public boolean canMkdir() {
 
     return false;
   }
@@ -133,7 +133,20 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean isSymlink() {
+  public boolean canSymlink() {
+
+    return false;
+  }
+
+  @Override
+  public void delete(final DataFile file) throws IOException {
+
+    throw new IOException("The delete() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canDelete() {
 
     return false;
   }

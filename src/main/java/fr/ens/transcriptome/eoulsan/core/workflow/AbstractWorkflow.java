@@ -305,10 +305,10 @@ public abstract class AbstractWorkflow implements Workflow {
 
     for (WorkflowStepOutputDataFile file : files.getInputFiles()) {
       if (!file.isMayNotExist() && !file.getDataFile().exists()) {
-       System.out.println(file.getDataFile());
-       System.out.println(file.getSample().getId());
-       System.out.println(file.getStep().getId());
-       System.out.println(file.getFormat().getName());
+        System.out.println(file.getDataFile());
+        System.out.println(file.getSample().getId());
+        System.out.println(file.getStep().getId());
+        System.out.println(file.getFormat().getName());
         throw new EoulsanException("For sample "
             + file.getSample().getId() + " in step " + file.getStep().getId()
             + ", input file for " + file.getFormat().getName()
@@ -434,8 +434,8 @@ public abstract class AbstractWorkflow implements Workflow {
     final StepContext context = step.getContext();
 
     try {
-      if (!outputDir.getProtocol().isSymlink()
-          || !stepDir.getProtocol().isSymlink() || outputDir.equals(stepDir))
+      if (!outputDir.getProtocol().canSymlink()
+          || !stepDir.getProtocol().canSymlink() || outputDir.equals(stepDir))
         return;
 
       for (DataFormat format : step.getOutputDataFormats()) {
@@ -444,9 +444,14 @@ public abstract class AbstractWorkflow implements Workflow {
           // Test the number of files by data
           if (format.getMaxFilesCount() == 1) {
             final DataFile file = context.getOutputDataFile(format, sample);
+            final DataFile link = new DataFile(getOutputDir(), file.getName());
+
+            // Remove existing file/symlink
+            if (link.exists())
+              link.delete();
 
             // Create symbolic link
-            file.symlink(new DataFile(getOutputDir(), file.getName()));
+            file.symlink(link);
           } else {
 
             // Handle multi files
@@ -454,9 +459,15 @@ public abstract class AbstractWorkflow implements Workflow {
             for (int i = 0; i < count; i++) {
               final DataFile file =
                   context.getOutputDataFile(format, sample, i);
+              final DataFile link =
+                  new DataFile(getOutputDir(), file.getName());
+
+              // Remove existing file/symlink
+              if (link.exists())
+                link.delete();
 
               // Create symbolic link
-              file.symlink(new DataFile(getOutputDir(), file.getName()));
+              file.symlink(link);
             }
           }
           // if one file per analysis for the format, there only one symlink to

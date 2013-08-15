@@ -204,7 +204,7 @@ public class FileDataProtocolTest {
   public void testIsReadable() {
 
     FileDataProtocol p = new FileDataProtocol();
-    assertTrue(p.isReadable());
+    assertTrue(p.canRead());
 
   }
 
@@ -212,7 +212,7 @@ public class FileDataProtocolTest {
   public void testIsWritable() {
 
     FileDataProtocol p = new FileDataProtocol();
-    assertTrue(p.isWritable());
+    assertTrue(p.canWrite());
   }
 
 }

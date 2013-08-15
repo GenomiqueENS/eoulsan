@@ -85,13 +85,13 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean isReadable() {
+  public boolean canRead() {
 
     return true;
   }
 
   @Override
-  public boolean isWritable() {
+  public boolean canWrite() {
 
     return true;
   }

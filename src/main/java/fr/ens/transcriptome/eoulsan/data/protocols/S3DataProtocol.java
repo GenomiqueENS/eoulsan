@@ -448,13 +448,13 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean isReadable() {
+  public boolean canRead() {
 
     return true;
   }
 
   @Override
-  public boolean isWritable() {
+  public boolean canWrite() {
 
     return true;
   }
@@ -523,7 +523,7 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean isMkdir() {
+  public boolean canMkdir() {
 
     return false;
   }
@@ -537,7 +537,20 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean isSymlink() {
+  public boolean canSymlink() {
+
+    return false;
+  }
+
+  @Override
+  public void delete(final DataFile file) throws IOException {
+
+    throw new IOException("The delete() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canDelete() {
 
     return false;
   }

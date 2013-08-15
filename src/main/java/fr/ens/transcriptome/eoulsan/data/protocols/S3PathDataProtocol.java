@@ -76,7 +76,7 @@ public class S3PathDataProtocol extends PathDataProtocol {
   }
 
   @Override
-  public boolean isMkdir() {
+  public boolean canMkdir() {
 
     return true;
   }

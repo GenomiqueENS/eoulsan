@@ -126,13 +126,13 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean isReadable() {
+  public boolean canRead() {
 
     return true;
   }
 
   @Override
-  public boolean isWritable() {
+  public boolean canWrite() {
 
     return true;
   }
@@ -157,7 +157,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean isMkdir() {
+  public boolean canMkdir() {
 
     return true;
   }
@@ -190,7 +190,22 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean isSymlink() {
+  public boolean canSymlink() {
+
+    return true;
+  }
+
+  @Override
+  public void delete(final DataFile file) throws IOException {
+
+    final File f = getSourceAsFile(file);
+
+    if (!f.delete())
+      throw new IOException("Unable to create the directory: " + f);
+  }
+
+  @Override
+  public boolean canDelete() {
 
     return true;
   }

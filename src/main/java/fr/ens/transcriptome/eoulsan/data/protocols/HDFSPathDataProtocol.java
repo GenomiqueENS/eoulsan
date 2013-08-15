@@ -147,7 +147,32 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
   }
 
   @Override
-  public boolean isMkdir() {
+  public boolean canMkdir() {
+
+    return true;
+  }
+
+  @Override
+  public void delete(final DataFile file) throws IOException {
+
+    final Path path = getPath(file);
+
+    if (path == null)
+      throw new NullPointerException("Path to delete is null");
+    if (this.conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(this.conf);
+
+    if (fs == null)
+      throw new IOException("Unable to delete the file, The FileSystem is null");
+
+    if (!fs.delete(path, false))
+      throw new IOException("Unable to delete the directory: " + file);
+  }
+
+  @Override
+  public boolean canDelete() {
 
     return true;
   }

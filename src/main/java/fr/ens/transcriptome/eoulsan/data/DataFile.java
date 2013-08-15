@@ -343,7 +343,7 @@ public class DataFile implements Comparable<DataFile> {
    */
   public void mkdir() throws IOException {
 
-    if (!getProtocol().isMkdir())
+    if (!getProtocol().canMkdir())
       throw new IOException(
           "The underlying protocol does not allow creating directories");
 
@@ -357,7 +357,7 @@ public class DataFile implements Comparable<DataFile> {
    */
   public void mkdirs() throws IOException {
 
-    if (!getProtocol().isMkdir())
+    if (!getProtocol().canMkdir())
       throw new IOException(
           "The underlying protocol does not allow creating directories");
 
@@ -374,11 +374,24 @@ public class DataFile implements Comparable<DataFile> {
     if (link == null)
       throw new NullPointerException("The link can not be null.");
 
-    if (!getProtocol().isSymlink())
+    if (!getProtocol().canSymlink())
       throw new IOException(
           "The underlying protocol does not allow creating symbolic links");
 
     getProtocol().symlink(this, link);
+  }
+
+  /**
+   * Delete the DataFile.
+   * @throws IOException if an error occurs while deleting the DataFile
+   */
+  public void delete() throws IOException {
+
+    if (!getProtocol().canDelete())
+      throw new IOException(
+          "The underlying protocol does not allow deleting files");
+
+    getProtocol().delete(this);
   }
 
   //

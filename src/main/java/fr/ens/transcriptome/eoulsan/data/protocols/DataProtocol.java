@@ -122,6 +122,13 @@ public interface DataProtocol {
   void symlink(DataFile target, DataFile link) throws IOException;
 
   /**
+   * Delete a file.
+   * @param file file to delete
+   * @throws IOException if an error occurs while deleting the file
+   */
+  void delete(DataFile file) throws IOException;
+
+  /**
    * Get the metadata for the source.
    * @param src source to use
    * @return always a metadataObject
@@ -133,25 +140,31 @@ public interface DataProtocol {
    * Test if source is readable with this protocol.
    * @return true if the source is readable
    */
-  boolean isReadable();
+  boolean canRead();
 
   /**
    * Test if source is writable with this protocol.
    * @return true if the source is writable
    */
-  boolean isWritable();
+  boolean canWrite();
 
   /**
    * Test if the mkdir() and mkdirs() methods are available with this protocol.
    * @return true if mkdir() and mkdirs() are available
    */
-  boolean isMkdir();
+  boolean canMkdir();
 
   /**
-   * Test if the symlink() method are available with this protocol.
+   * Test if the symlink() method is available with this protocol.
    * @return true if symlink() is available
    */
-  boolean isSymlink();
+  boolean canSymlink();
+
+  /**
+   * Test if the delete() method is available with this protocol.
+   * @return true if delete() is available
+   */
+  boolean canDelete();
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.
