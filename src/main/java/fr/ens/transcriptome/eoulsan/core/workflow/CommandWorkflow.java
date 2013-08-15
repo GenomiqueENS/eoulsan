@@ -33,9 +33,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -73,7 +75,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   private final CommandWorkflowModel workflowCommand;
 
-  private final Set<DataFormat> generatorAdded = Sets.newHashSet();
+  private final Map<DataFormat, CommandWorkflowStep> generatorAdded = Maps
+      .newHashMap();
 
   //
   // Add steps
@@ -427,7 +430,6 @@ public class CommandWorkflow extends AbstractWorkflow {
           continue;
 
         boolean found = false;
-        List<DataFormat> generatorAvaillables = Lists.newArrayList();
 
         for (int j = i - 1; j >= 0; j--) {
 
@@ -456,59 +458,52 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         }
 
-        // A generator is available for the DataType
-        if (format.isGenerator() && !this.generatorAdded.contains(format))
-          generatorAvaillables.add(format);
-
         if (!found) {
 
-          // Add generator if needed
-          if (!generatorAvaillables.isEmpty()) {
+          // A generator is available for the DataType
+          if (format.isGenerator()) {
 
-            final CommandWorkflowStep generatorStep =
-                new CommandWorkflowStep(this, generatorAvaillables.get(0));
+            if (!this.generatorAdded.containsKey(format)) {
 
-            generatorStep.configure();
+              final CommandWorkflowStep generatorStep =
+                  new CommandWorkflowStep(this, format);
 
-            // Add after checker
-            addStep(indexOfStep(getCheckerStep()) + 1, generatorStep);
+              generatorStep.configure();
 
-            searchDependencies();
-            return;
-          }
+              // Add after checker
+              addStep(indexOfStep(getCheckerStep()) + 1, generatorStep);
 
-          else
+              this.generatorAdded.put(format, generatorStep);
+
+              searchDependencies();
+              return;
+            } else {
+
+              if (step.getType() == StepType.GENERATOR_STEP) {
+
+                // Swap generators order
+                Collections.swap(this.steps, indexOfStep(step),
+                    indexOfStep(this.generatorAdded.get(format)));
+
+                searchDependencies();
+                return;
+
+              } else
+                throw new EoulsanException("Cannot found \""
+                    + format.getName() + "\" for step " + step.getId() + ".");
+            }
+          } else
             throw new EoulsanException("Cannot found \""
                 + format.getName() + "\" for step " + step.getId() + ".");
         }
       }
     }
 
-    // Remove duplicate generators
-    removeDuplicateGenerators();
+    // Clear map of generators used
+    this.generatorAdded.clear();
 
     // TODO add steps to copy output data from steps to output directory if
     // necessary
-  }
-
-  /**
-   * Remove duplicate generators.
-   */
-  private void removeDuplicateGenerators() {
-
-    Set<String> generatorNames = Sets.newHashSet();
-    for (WorkflowStep ws : Lists.newArrayList(this.steps)) {
-
-      if (ws.getType() == StepType.GENERATOR_STEP) {
-
-        final String stepId = ws.getId();
-
-        if (generatorNames.contains(stepId))
-          this.steps.remove(ws);
-        else
-          generatorNames.add(stepId);
-      }
-    }
   }
 
   //
