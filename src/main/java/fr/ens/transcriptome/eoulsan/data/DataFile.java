@@ -241,17 +241,46 @@ public class DataFile implements Comparable<DataFile> {
   //
 
   /**
-   * Create an OutputStream for the DataFile.
+   * Create an OutputStream for the DataFile. If the DataFile is declared as
+   * compressed by its content type or its extension, the output stream will be
+   * automatically compress data.
    * @return an OutputStream object
    * @throws IOException if an error occurs while creating the DataFile
    */
   public OutputStream create() throws IOException {
 
+    final OutputStream os = rawCreate();
+
+    final CompressionType ct;
+
+    final String contentEncoding =
+        this.md == null ? null : md.getContentEncoding();
+
+    if (contentEncoding != null)
+      ct = CompressionType.getCompressionTypeByContentEncoding(contentEncoding);
+    else
+      ct = CompressionType.getCompressionTypeByFilename(getName());
+
+    if (ct == null)
+      return os;
+
+    return ct.createOutputStream(os);
+  }
+
+  /**
+   * Create an OutputStream for the DataFile. The output stream will not
+   * automatically compress data.
+   * @return an OutputStream object
+   * @throws IOException if an error occurs while creating the DataFile
+   */
+  public OutputStream rawCreate() throws IOException {
+
     return getProtocol().putData(this, md == null ? null : md);
   }
 
   /**
-   * Create an InputStream for the DataFile.
+   * Create an InputStream for the DataFile. If the DataFile is compressed, the
+   * input stream will be automatically uncompress.
    * @return an InputStream object
    * @throws IOException if an error occurs while opening the DataFile
    */
@@ -271,7 +300,8 @@ public class DataFile implements Comparable<DataFile> {
   }
 
   /**
-   * Create an InputStream for the DataFile.
+   * Create an InputStream for the DataFile. The input stream will not
+   * automatically uncompress data.
    * @return an InputStream object
    * @throws IOException if an error occurs while opening the DataFile
    */
