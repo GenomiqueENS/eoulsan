@@ -593,7 +593,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   //
 
   @Override
-  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
 
     return Sets.newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
   }

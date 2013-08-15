@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -76,7 +77,7 @@ public class HadoopUploadStep extends UploadStep {
 
       filename =
           WorkflowStepOutputDataFile.newStandardFilename(step, format, sample,
-              fileIndex);
+              fileIndex, CompressionType.NONE);
     }
 
     return new DataFile(getDest(), filename);

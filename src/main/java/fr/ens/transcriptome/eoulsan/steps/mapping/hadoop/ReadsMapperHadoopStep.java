@@ -71,7 +71,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
 
     return getInputFormats();
   }

@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
   @Override
-  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
 
     return getInputFormats();
   }

@@ -88,7 +88,7 @@ public class LocalUploadStep extends UploadStep {
 
       filename =
           WorkflowStepOutputDataFile.newStandardFilename(step, format, sample,
-              fileIndex);
+              fileIndex, CompressionType.NONE);
     }
 
     // Don't compress ZIP files

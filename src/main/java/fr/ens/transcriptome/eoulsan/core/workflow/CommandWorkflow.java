@@ -28,8 +28,10 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,10 +45,14 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputFormatStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -252,14 +258,147 @@ public class CommandWorkflow extends AbstractWorkflow {
     return result;
   }
 
-  private static void addDependency(final AbstractWorkflowStep step,
-      final DataFormat format, final AbstractWorkflowStep dependency) {
+  /**
+   * Add a dependency. Add an additional step that copy/(un)compress data if
+   * necessary.
+   * @param step the step
+   * @param format format provided by the dependency
+   * @param dependency the dependency
+   * @throws EoulsanException if an error occurs while adding the dependency
+   */
+  private void addDependency(final AbstractWorkflowStep step,
+      final DataFormat format, final AbstractWorkflowStep dependency)
+      throws EoulsanException {
 
-    // TODO if step requires that input format files are in its working dir and
-    // if working dir is not the same between the 2 steps, add a step that copy
-    // the input data
+    try {
 
-    step.addDependency(format, dependency);
+      final DataFile stepDir = step.getStepWorkingDir();
+      final DataFile depDir = dependency.getStepWorkingDir();
+
+      final DataProtocol stepProtocol = stepDir.getProtocol();
+      final DataProtocol depProtocol = depDir.getProtocol();
+
+      final EnumSet<CompressionType> stepCompressionsAllowed =
+          step.getInputDataFormatCompressionsAllowed(format);
+      final CompressionType depOutputCompression =
+          dependency == getDesignStep() ? CompressionType.NONE : dependency
+              .getOutputDataFormatCompression(format);
+
+      final Set<DataFormat> stepFormatRequieredWD =
+          step.getInputFormatsRequieredInWorkingDirectory();
+
+      CommandWorkflowStep newStep = null;
+
+      // Check if copy is needed in the working directory
+      if (step.getType() == StepType.STANDARD_STEP
+          && stepProtocol != depProtocol
+          && stepFormatRequieredWD.contains(format)) {
+        newStep =
+            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+                depOutputCompression, stepCompressionsAllowed);
+      }
+
+      // Check if (un)compression is needed
+      if (newStep == null
+          && step.getType() == StepType.STANDARD_STEP
+          && !stepCompressionsAllowed.contains(depOutputCompression)) {
+        newStep =
+            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+                depOutputCompression, stepCompressionsAllowed);
+      }
+
+      // If the dependency if design step and step does not allow all the
+      // compression types as input, (un)compress data
+      if (newStep == null
+          && step.getType() == StepType.STANDARD_STEP
+          && dependency == this.getDesignStep()
+          && !EnumSet.allOf(CompressionType.class).containsAll(
+              stepCompressionsAllowed)) {
+        newStep =
+            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+                depOutputCompression, stepCompressionsAllowed);
+      }
+
+      // Set the dependencies
+      if (newStep != null) {
+
+        // Add the copy step in the list of steps just before the step given as
+        // method argument
+        addStep(indexOfStep(step), newStep);
+
+        // Add the copy dependency
+        newStep.addDependency(format, dependency);
+
+        // Add the step dependency
+        step.addDependency(format, newStep);
+      } else {
+
+        // Add the step dependency
+        step.addDependency(format, dependency);
+      }
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
+  }
+
+  /**
+   * Create a new step that copy/(un)compress input data of a step
+   * @param workflow workflow where adding the step
+   * @param oriStepId id of the step that required copying data
+   * @param format format of the data
+   * @param inputCompression compression format of the data to read
+   * @param outputCompressionAllowed compression formats allowed by the step
+   * @return a new step
+   * @throws EoulsanException if an error occurs while creating the step
+   */
+  private static CommandWorkflowStep newInputFormatCopyStep(
+      final CommandWorkflow workflow, final String oriStepId,
+      final DataFile workingDirectory, final DataFormat format,
+      final CompressionType inputCompression,
+      final EnumSet<CompressionType> outputCompressionAllowed)
+      throws EoulsanException {
+
+    // Set the step name
+    final String stepName = CopyInputFormatStep.STEP_NAME;
+
+    // Search a non used step id
+    final Set<String> stepsIds = Sets.newHashSet();
+    for (WorkflowStep s : workflow.getSteps())
+      stepsIds.add(s.getId());
+    int i = 1;
+    String stepId;
+    do {
+
+      stepId = oriStepId + "prepare" + i;
+      i++;
+
+    } while (stepsIds.contains(stepId));
+
+    // Find output compression
+    CompressionType comp = null;
+    if (outputCompressionAllowed.contains(inputCompression))
+      comp = inputCompression;
+    else if (outputCompressionAllowed.contains(CompressionType.NONE))
+      comp = CompressionType.NONE;
+    else
+      comp = outputCompressionAllowed.iterator().next();
+
+    // Set parameters
+    final Set<Parameter> parameters = Sets.newHashSet();
+    parameters.add(new Parameter(CopyInputFormatStep.FORMAT_PARAMETER, format
+        .getFormatName()));
+    parameters.add(new Parameter(
+        CopyInputFormatStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+
+    // Create step
+    CommandWorkflowStep step =
+        new CommandWorkflowStep(workflow, stepId, stepName, parameters, false,
+            false);
+
+    // Configure step
+    step.configure();
+
+    return step;
   }
 
   /**

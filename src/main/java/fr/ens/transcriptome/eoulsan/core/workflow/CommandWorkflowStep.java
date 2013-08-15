@@ -30,6 +30,8 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -61,23 +63,12 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
           "Configure "
               + getId() + " step with step parameters: " + getParameters());
 
+      final Step step = getStep();
       if (getType() == StepType.STANDARD_STEP)
-        getStep().configure(getParameters());
+        step.configure(getParameters());
 
-      // Get output formats
-      final Set<DataFormat> outputFormats = getStep().getOutputFormats();
-      if (outputFormats != null)
-        for (DataFormat format : outputFormats)
-          if (format != null)
-            registerOutputFormat(format);
-
-      // Get input format
-      final Set<DataFormat> inputFormats = getStep().getInputFormats();
-      if (inputFormats != null)
-        for (DataFormat format : inputFormats)
-          if (format != null)
-            registerInputFormat(format);
-
+      // register input and output formats
+      registerInputAndOutputFormats(step);
     }
 
     setState(StepState.CONFIGURED);
@@ -122,11 +113,29 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
-      final String stepName, final Set<Parameter> stepParameters,
+      final String stepName, final Set<Parameter> parameters,
       final boolean skip, final boolean copyResultsToOutput)
       throws EoulsanException {
 
-    super(workflow, id, stepName, skip, copyResultsToOutput, stepParameters);
+    super(workflow, id, stepName, skip, copyResultsToOutput, parameters);
   }
 
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param step Step object
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput copy step result to output directory
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  protected CommandWorkflowStep(final AbstractWorkflow workflow,
+      final String id, final String stepName, final boolean skip,
+      final boolean copyResultsToOutput, final DataFile workingDir,
+      final Set<Parameter> parameters) throws EoulsanException {
+
+    super(workflow, id, stepName, skip, copyResultsToOutput, workingDir,
+        parameters);
+  }
 }

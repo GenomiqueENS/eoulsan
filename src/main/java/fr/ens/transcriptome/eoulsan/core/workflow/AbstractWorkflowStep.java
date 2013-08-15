@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.C
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,15 +43,16 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -81,11 +83,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
   private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
 
-  private final Set<DataFormat> outputFormats = Sets.newHashSet();
-  private final Set<DataFormat> inputFormats = Sets.newHashSet();
+  private final Map<DataFormat, CompressionType> outputFormats = Maps
+      .newHashMap();
+  private final Map<DataFormat, EnumSet<CompressionType>> inputFormats = Maps
+      .newHashMap();
   private final Map<DataFormat, InputDataFileLocation> inputFormatLocations =
       Maps.newHashMap();
 
+  private final Set<DataFormat> requiredInputFormatsInWorkingDirectory = Sets
+      .newHashSet();
   private final DataFile workingDir;
 
   private StepState stepState = StepState.CREATED;
@@ -250,7 +256,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   protected Set<DataFormat> getInputDataFormats() {
 
-    return Collections.unmodifiableSet(this.inputFormats);
+    return Collections.unmodifiableSet(this.inputFormats.keySet());
   }
 
   /**
@@ -259,7 +265,55 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   protected Set<DataFormat> getOutputDataFormats() {
 
-    return Collections.unmodifiableSet(this.outputFormats);
+    return Collections.unmodifiableSet(this.outputFormats.keySet());
+  }
+
+  /**
+   * Get an output format compression.
+   * @param format the format
+   * @return the compression type
+   */
+  protected CompressionType getOutputDataFormatCompression(
+      final DataFormat format) {
+
+    Preconditions.checkNotNull(format, "the format cannot be null");
+
+    if (!this.outputFormats.containsKey(format))
+      throw new IllegalArgumentException(
+          "the format is not an output format of the step: " + format);
+
+    return this.outputFormats.get(format);
+  }
+
+  /**
+   * Get the compression allowed for an input format by the step.
+   * @param format the format
+   * @return an EnumSet with the compression types allowed
+   */
+  protected EnumSet<CompressionType> getInputDataFormatCompressionsAllowed(
+      final DataFormat format) {
+
+    Preconditions.checkNotNull(format, "the format cannot be null");
+
+    if (!this.inputFormats.containsKey(format))
+      throw new IllegalArgumentException(
+          "the format is not an input format of the step: " + format);
+
+    return EnumSet.copyOf(this.inputFormats.get(format));
+  }
+
+  /**
+   * Get the input data format required in the working directory. This method
+   * allow to declare the input files that need to be copied in the working
+   * directory before starting the step. As an example, it is used to copy files
+   * from a local file system to a distributed file system like HDFS. After that
+   * mapreduce jobs can be efficiency launched.
+   * @return a set with DataFormat or null if the step does not need any input
+   *         format in the working directory.
+   */
+  protected Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
+
+    return this.requiredInputFormatsInWorkingDirectory;
   }
 
   @Override
@@ -308,26 +362,52 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     WorkflowStepEventRelay.getInstance().updateStepState(this);
   }
 
-  /**
-   * Register input DataFormat.
-   * @param format format to register
-   */
-  protected void registerInputFormat(final DataFormat format) {
+  protected void registerInputAndOutputFormats(final Step step) {
 
-    Preconditions.checkNotNull(format, "format cannot be null");
+    Preconditions.checkNotNull(step, "step cannot be null");
 
-    this.inputFormats.add(format);
-  }
+    // Get output formats
+    final Set<DataFormat> outputFormats = step.getOutputFormats();
+    if (outputFormats != null) {
+      for (DataFormat format : outputFormats) {
+        if (format != null) {
 
-  /**
-   * Register input DataFormat.
-   * @param format format to register
-   */
-  protected void registerOutputFormat(final DataFormat format) {
+          CompressionType compression = step.getOutputFormatCompression(format);
+          if (compression == null)
+            compression = CompressionType.NONE;
 
-    Preconditions.checkNotNull(format, "format cannot be null");
+          this.outputFormats.put(format, compression);
+        }
+      }
+    }
 
-    this.outputFormats.add(format);
+    // Get input formats
+    final Set<DataFormat> inputFormats = step.getInputFormats();
+    if (inputFormats != null) {
+      for (DataFormat format : inputFormats) {
+        if (format != null) {
+
+          EnumSet<CompressionType> compressionsAllowed =
+              step.acceptInputFormatCompression(format);
+          if (compressionsAllowed == null)
+            compressionsAllowed = EnumSet.allOf(CompressionType.class);
+
+          this.inputFormats.put(format, compressionsAllowed);
+        }
+      }
+    }
+
+    // Get input format required in working directory
+    Set<DataFormat> inputFormatRequired =
+        Sets.newHashSet(step.getInputFormatsRequieredInWorkingDirectory());
+    if (inputFormatRequired != null) {
+      // Put the values in a new HashSet
+      inputFormatRequired = Sets.newHashSet(inputFormatRequired);
+      // Keep only real input format of the step
+      inputFormatRequired.retainAll(getInputDataFormats());
+      this.requiredInputFormatsInWorkingDirectory.addAll(inputFormatRequired);
+    }
+
   }
 
   //
@@ -465,7 +545,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if ((step.getType() != StepType.DESIGN_STEP
         && step.getType() != StepType.GENERATOR_STEP && step.getType() != StepType.STANDARD_STEP)
-        || !this.inputFormats.contains(format))
+        || !this.inputFormats.containsKey(format))
       throw new EoulsanRuntimeException("The dependency ("
           + step.getId() + ") do not provide data (" + format.getFormatName()
           + ")");
@@ -772,10 +852,61 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Define working directory
     this.workingDir =
-        defineWorkingDirectory(workflow, step, this.copyResultsToOutput);
+        defineWorkingDirectory(workflow, step, copyResultsToOutput);
 
     // Register this step in the workflow
     this.workflow.register(this);
   }
 
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param step Step object
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput copy step result to output directory
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  protected AbstractWorkflowStep(final AbstractWorkflow workflow,
+      final String id, final String stepName, final boolean skip,
+      final boolean copyResultsToOutput, final DataFile workingDir,
+      final Set<Parameter> parameters) throws EoulsanException {
+
+    Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
+    Preconditions.checkNotNull(id, "Step id argument cannot be null");
+    Preconditions.checkNotNull(stepName, "Step name argument cannot be null");
+    Preconditions.checkNotNull(workingDir,
+        "working directory argument cannot be null");
+    Preconditions.checkNotNull(parameters,
+        "Step arguments argument cannot be null");
+
+    if (!(workingDir.equals(workflow.getOutputDir())
+        || workingDir.equals(workflow.getLocalWorkingDir()) || workingDir
+          .equals(workflow.getHadoopWorkingDir()))) {
+      throw new IllegalArgumentException(
+          "working dir is not the output/local/hadoop directory of the workflow: "
+              + workingDir);
+    }
+
+    this.workflow = workflow;
+    this.stepContext =
+        new WorkflowStepContext(workflow.getWorkflowContext(), this);
+    this.id = id;
+    this.skip = skip;
+    this.type = StepType.STANDARD_STEP;
+    this.stepName = stepName;
+    this.copyResultsToOutput = copyResultsToOutput;
+
+    // Load Step instance
+    final Step step = StepInstances.getInstance().getStep(this, stepName);
+    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
+    this.parameters = Sets.newLinkedHashSet(parameters);
+
+    // Define working directory
+    this.workingDir = workingDir;
+
+    // Register this step in the workflow
+    this.workflow.register(this);
+  }
 }

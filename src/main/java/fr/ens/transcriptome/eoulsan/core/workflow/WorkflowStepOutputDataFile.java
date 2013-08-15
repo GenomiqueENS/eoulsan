@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define an output file of workflow set.
@@ -142,7 +143,7 @@ public final class WorkflowStepOutputDataFile implements
 
       // Return a file created by a step
       return newStandardDataFile(step.getContext(), step, format, sample,
-          fileIndex);
+          fileIndex, step.getOutputDataFormatCompression(format));
 
     case DESIGN_STEP:
 
@@ -219,7 +220,7 @@ public final class WorkflowStepOutputDataFile implements
    */
   private static final DataFile newStandardDataFile(final StepContext context,
       final WorkflowStep step, final DataFormat format, final Sample sample,
-      final int fileIndex) {
+      final int fileIndex, final CompressionType compression) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -230,7 +231,7 @@ public final class WorkflowStepOutputDataFile implements
       sb.append('/');
     }
 
-    sb.append(newStandardFilename(step, format, sample, fileIndex));
+    sb.append(newStandardFilename(step, format, sample, fileIndex, compression));
 
     return new DataFile(sb.toString());
   }
@@ -305,11 +306,14 @@ public final class WorkflowStepOutputDataFile implements
   //
 
   public static final String newStandardFilename(final WorkflowStep step,
-      final DataFormat format, final Sample sample, final int fileIndex) {
+      final DataFormat format, final Sample sample, final int fileIndex,
+      final CompressionType compression) {
 
-    Preconditions.checkNotNull(step, "Step argument cannot be null");
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+    Preconditions.checkNotNull(step, "step argument cannot be null");
+    Preconditions.checkNotNull(format, "format argument cannot be null");
+    Preconditions.checkNotNull(sample, "sample argument cannot be null");
+    Preconditions.checkNotNull(compression,
+        "compression argument cannot be null");
 
     final StringBuilder sb = new StringBuilder();
 
@@ -323,7 +327,7 @@ public final class WorkflowStepOutputDataFile implements
 
     // Set the id of the sample
     if (format.isOneFilePerAnalysis())
-      sb.append('1');
+      sb.append('0');
     else
       sb.append(sample.getId());
 
@@ -333,6 +337,9 @@ public final class WorkflowStepOutputDataFile implements
 
     // Set the extension
     sb.append(format.getDefaultExtention());
+
+    // Set the compression extension
+    sb.append(compression.getExtension());
 
     return sb.toString();
   }
@@ -347,7 +354,7 @@ public final class WorkflowStepOutputDataFile implements
    *          return value will be the maximum number files
    * @return the number of files
    */
-  public static final int dataFileCount(final WorkflowStep step,
+  public static final int dataFileCount(final AbstractWorkflowStep step,
       final DataFormat format, final Sample sample, final boolean existingFiles) {
 
     Preconditions.checkNotNull(format, "Format argument cannot be null");
@@ -370,7 +377,8 @@ public final class WorkflowStepOutputDataFile implements
       do {
 
         final DataFile file =
-            newStandardDataFile(step.getContext(), step, format, sample, count);
+            newStandardDataFile(step.getContext(), step, format, sample, count,
+                step.getOutputDataFormatCompression(format));
 
         found = file.exists();
         if (found)
@@ -419,8 +427,16 @@ public final class WorkflowStepOutputDataFile implements
     Preconditions.checkNotNull(step, "step cannot be null");
     Preconditions.checkNotNull(format, "format cannot be null");
     Preconditions.checkNotNull(sample, "sample cannot be null");
-    Preconditions.checkArgument(fileIndex >= -1,
-        "fileIndex cannot be lower than -1");
+
+    if (format.getMaxFilesCount() == 1 && fileIndex != -1)
+      throw new IllegalArgumentException(
+          "file index must be used for multi files formats");
+
+    if (format.getMaxFilesCount() > 1 && fileIndex < 0)
+      throw new IllegalArgumentException("file index ("
+          + fileIndex
+          + ") must be greater or equals to 0 for multi files formats ("
+          + format.getFormatName() + ")");
 
     this.step = step;
     this.format = format;
@@ -429,5 +445,4 @@ public final class WorkflowStepOutputDataFile implements
     this.fileIndex = fileIndex;
     this.mayNotExist = fileIndex > 0;
   }
-
 }

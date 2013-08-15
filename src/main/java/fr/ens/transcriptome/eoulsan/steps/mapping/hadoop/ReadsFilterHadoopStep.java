@@ -79,7 +79,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   }
 
   @Override
-  public Set<DataFormat> getRequiredInputFormatsInWorkingDirectory() {
+  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
 
     return getInputFormats();
   }
