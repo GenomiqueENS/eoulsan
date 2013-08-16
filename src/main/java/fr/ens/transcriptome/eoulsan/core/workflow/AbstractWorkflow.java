@@ -76,7 +76,7 @@ public abstract class AbstractWorkflow implements Workflow {
   /** Serialization version UID. */
   private static final long serialVersionUID = 4865597995432347155L;
 
-  private static final String STEP_RESULT_FILE_EXTENSION = ".log";
+  private static final String STEP_RESULT_FILE_EXTENSION = ".result";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
