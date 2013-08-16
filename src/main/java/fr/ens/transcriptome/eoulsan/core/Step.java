@@ -125,4 +125,9 @@ public interface Step {
    */
   boolean isTerminalStep();
 
+  /**
+   * Test if log files of the step must be created.
+   * @return true if log files of the step must be created.
+   */
+  boolean isCreateLogFiles();
 }

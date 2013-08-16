@@ -99,4 +99,9 @@ public abstract class AbstractStep implements Step {
     return false;
   }
 
+  @Override
+  public boolean isCreateLogFiles() {
+    return true;
+  }
+
 }

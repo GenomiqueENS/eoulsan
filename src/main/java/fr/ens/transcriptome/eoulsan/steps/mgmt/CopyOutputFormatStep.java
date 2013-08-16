@@ -66,6 +66,12 @@ public class CopyOutputFormatStep extends AbstractStep {
   }
 
   @Override
+  public boolean isCreateLogFiles() {
+
+    return false;
+  }
+
+  @Override
   public Set<DataFormat> getInputFormats() {
 
     return Collections.unmodifiableSet(this.formats);

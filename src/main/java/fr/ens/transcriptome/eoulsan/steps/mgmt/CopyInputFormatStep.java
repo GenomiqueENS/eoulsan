@@ -69,6 +69,12 @@ public class CopyInputFormatStep extends AbstractStep {
   }
 
   @Override
+  public boolean isCreateLogFiles() {
+
+    return false;
+  }
+
+  @Override
   public Set<DataFormat> getInputFormats() {
 
     return Collections.singleton(this.format);

@@ -362,7 +362,8 @@ public abstract class AbstractWorkflow implements Workflow {
         if (step.getType() == GENERATOR_STEP || step.getType() == STANDARD_STEP) {
 
           // Write step result in a file
-          writeStepResult(step, result);
+          if (step.isCreateLogFiles())
+            writeStepResult(step, result);
 
           // Create symlink in output directory
           createSymlinksInOutputDirectory(step);

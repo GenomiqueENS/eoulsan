@@ -80,6 +80,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final boolean skip;
   private final boolean terminalStep;
   private final boolean copyResultsToOutput;
+  private final boolean createLogFiles;
 
   private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
   private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
@@ -349,6 +350,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   protected boolean isCopyResultsToOutput() {
 
     return this.copyResultsToOutput;
+  }
+
+  /**
+   * Test if step log files must be created.
+   * @return true if step log files must be created
+   */
+  boolean isCreateLogFiles() {
+
+    return this.createLogFiles;
   }
 
   //
@@ -764,6 +774,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = type.name();
     this.skip = false;
     this.terminalStep = false;
+    this.createLogFiles = false;
     this.type = type;
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
@@ -822,6 +833,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = generator.getName();
     this.skip = false;
     this.terminalStep = false;
+    this.createLogFiles = false;
     this.type = StepType.GENERATOR_STEP;
     this.stepName = generator.getName();
     this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
@@ -871,6 +883,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
+    this.createLogFiles = step.isCreateLogFiles();
 
     // Define working directory
     this.workingDir =
@@ -925,6 +938,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
+    this.createLogFiles = step.isCreateLogFiles();
 
     // Define working directory
     this.workingDir = workingDir;
