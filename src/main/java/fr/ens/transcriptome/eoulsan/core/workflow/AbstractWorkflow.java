@@ -323,6 +323,9 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   public void execute() throws EoulsanException {
 
+    // TODO the check of existing in/output files must also done in local/hadoop
+    // directories and outputDirectories.
+
     // check if output files does not exists
     checkExistingOutputFiles();
 

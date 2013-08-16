@@ -78,6 +78,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final String stepName;
   private final EoulsanMode mode;
   private final boolean skip;
+  private final boolean terminalStep;
   private final boolean copyResultsToOutput;
 
   private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
@@ -203,6 +204,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public boolean isSkip() {
 
     return this.skip;
+  }
+
+  /**
+   * Test if the step is a terminal step.
+   * @return true if the step is a terminal step
+   */
+  protected boolean isTerminalStep() {
+
+    return this.terminalStep;
   }
 
   @Override
@@ -479,8 +489,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if (!this.inputFormatLocations.containsKey(format))
       throw new EoulsanRuntimeException("The "
-          + format.getName()
-          + " format is not an output format of the step " + getId());
+          + format.getName() + " format is not an output format of the step "
+          + getId());
 
     return this.inputFormatLocations.get(format).getDataFile(sample, fileIndex);
   }
@@ -501,8 +511,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if (!this.inputFormatLocations.containsKey(format))
       throw new EoulsanRuntimeException("The "
-          + format.getName()
-          + " format is not an input format of the step " + getId());
+          + format.getName() + " format is not an input format of the step "
+          + getId());
 
     return this.inputFormatLocations.get(format).getDataFileCount(sample,
         existingFiles);
@@ -547,8 +557,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         && step.getType() != StepType.GENERATOR_STEP && step.getType() != StepType.STANDARD_STEP)
         || !this.inputFormats.containsKey(format))
       throw new EoulsanRuntimeException("The dependency ("
-          + step.getId() + ") do not provide data (" + format.getName()
-          + ")");
+          + step.getId() + ") do not provide data (" + format.getName() + ")");
 
     if (!this.inputFormatLocations.containsKey(format))
       this.inputFormatLocations.put(format, new InputDataFileLocation(format,
@@ -744,6 +753,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.id = type.name();
     this.skip = false;
+    this.terminalStep = false;
     this.type = type;
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
@@ -801,6 +811,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.id = generator.getName();
     this.skip = false;
+    this.terminalStep = false;
     this.type = StepType.GENERATOR_STEP;
     this.stepName = generator.getName();
     this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
@@ -849,6 +860,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     final Step step = StepInstances.getInstance().getStep(this, stepName);
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
+    this.terminalStep = step.isTerminalStep();
 
     // Define working directory
     this.workingDir =
@@ -902,6 +914,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     final Step step = StepInstances.getInstance().getStep(this, stepName);
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
+    this.terminalStep = step.isTerminalStep();
 
     // Define working directory
     this.workingDir = workingDir;

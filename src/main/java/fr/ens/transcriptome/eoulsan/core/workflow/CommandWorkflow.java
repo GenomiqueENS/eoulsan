@@ -502,6 +502,17 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Clear map of generators used
     this.generatorAdded.clear();
 
+    // Add dependencies for terminal steps
+    final List<CommandWorkflowStep> terminalSteps = Lists.newArrayList();
+    for (CommandWorkflowStep step : this.steps) {
+
+      for (CommandWorkflowStep terminalStep : terminalSteps)
+        step.addDependency(terminalStep);
+
+      if (step.isTerminalStep())
+        terminalSteps.add(step);
+    }
+
     // TODO add steps to copy output data from steps to output directory if
     // necessary
   }
