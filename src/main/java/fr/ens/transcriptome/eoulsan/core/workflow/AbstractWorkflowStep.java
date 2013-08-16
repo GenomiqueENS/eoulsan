@@ -341,6 +341,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.workingDir;
   }
 
+  /**
+   * Test if output files of the steps must be copied to output directory.
+   * @return true if output files of the steps must be copied to output
+   *         directory
+   */
+  protected boolean isCopyResultsToOutput() {
+
+    return this.copyResultsToOutput;
+  }
+
   //
   // Setters
   //

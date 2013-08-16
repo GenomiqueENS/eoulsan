@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -55,6 +56,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputFormatStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputFormatStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -345,7 +347,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
-   * Create a new step that copy/(un)compress input data of a step
+   * Create a new step that copy/(un)compress input data of a step.
    * @param workflow workflow where adding the step
    * @param oriStepId id of the step that required copying data
    * @param format format of the data
@@ -392,6 +394,55 @@ public class CommandWorkflow extends AbstractWorkflow {
         .getName()));
     parameters.add(new Parameter(
         CopyInputFormatStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+
+    // Create step
+    CommandWorkflowStep step =
+        new CommandWorkflowStep(workflow, stepId, stepName, parameters, false,
+            false);
+
+    // Configure step
+    step.configure();
+
+    return step;
+  }
+
+  /**
+   * Create a new step that copy output data of a step.
+   * @param workflow workflow where adding the step
+   * @param oriStepId id of the step that required copying data
+   * @param format format of the data
+   * @return a new step
+   * @throws EoulsanException if an error occurs while creating the step
+   */
+  private static CommandWorkflowStep newOutputFormatCopyStep(
+      final CommandWorkflow workflow, final String oriStepId,
+      final DataFile workingDirectory, final Set<DataFormat> formats)
+      throws EoulsanException {
+
+    // Set the step name
+    final String stepName = CopyOutputFormatStep.STEP_NAME;
+
+    // Search a non used step id
+    final Set<String> stepsIds = Sets.newHashSet();
+    for (WorkflowStep s : workflow.getSteps())
+      stepsIds.add(s.getId());
+    int i = 1;
+    String stepId;
+    do {
+
+      stepId = oriStepId + "finalize" + i;
+      i++;
+
+    } while (stepsIds.contains(stepId));
+
+    List<String> formatsList = Lists.newArrayList();
+    for (DataFormat format : formats)
+      formatsList.add(format.getName());
+
+    // Set parameters
+    final Set<Parameter> parameters = Sets.newHashSet();
+    parameters.add(new Parameter(CopyOutputFormatStep.FORMAT_PARAMETER, Joiner
+        .on(',').join(formatsList)));
 
     // Create step
     CommandWorkflowStep step =
@@ -513,8 +564,27 @@ public class CommandWorkflow extends AbstractWorkflow {
         terminalSteps.add(step);
     }
 
-    // TODO add steps to copy output data from steps to output directory if
+    // Add steps to copy output data from steps to output directory if
     // necessary
+    for (CommandWorkflowStep step : Lists.newArrayList(this.steps)) {
+
+      if (step.isCopyResultsToOutput()
+          && !step.getStepWorkingDir().equals(getOutputDir())) {
+
+        CommandWorkflowStep newStep =
+            newOutputFormatCopyStep(this, step.getId(), getOutputDir(),
+                step.getOutputDataFormats());
+
+        // Add the copy step in the list of steps just before the step given as
+        // method argument
+        addStep(indexOfStep(step) + 1, newStep);
+
+        // Add the copy dependencies
+        for (DataFormat format : step.getOutputDataFormats())
+          newStep.addDependency(format, step);
+      }
+    }
+
   }
 
   //
