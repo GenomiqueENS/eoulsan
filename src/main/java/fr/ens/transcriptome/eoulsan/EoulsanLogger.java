@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -36,11 +38,24 @@ public class EoulsanLogger {
 
   private static String loggerName = Globals.APP_NAME;
 
+  private static Map<String, Logger> threadGroupLoggers =
+      new HashMap<String, Logger>();
+
   /**
    * Get the logger object.
    * @return a logger object for Eoulsan
    */
   public static Logger getLogger() {
+
+    ThreadGroup tg = Thread.currentThread().getThreadGroup();
+
+    do {
+
+      if (threadGroupLoggers.containsKey(tg.getName()))
+        return threadGroupLoggers.get(tg.getName());
+
+      tg = tg.getParent();
+    } while (tg != null);
 
     return Logger.getLogger(loggerName);
   }
@@ -64,6 +79,32 @@ public class EoulsanLogger {
   public static String getLoggerName() {
 
     return loggerName;
+  }
+
+  /**
+   * Register a logger for a thread group.
+   * @param threadGroup thread group
+   * @param logger logger to register
+   */
+  public static void registerThreadGroupLogger(final ThreadGroup threadGroup,
+      final Logger logger) {
+
+    if (threadGroup == null || logger == null)
+      return;
+
+    threadGroupLoggers.put(threadGroup.getName(), logger);
+  }
+
+  /**
+   * Remove a logger for a thread group.
+   * @param threadGroup thread group
+   */
+  public static void removeThreadGroupLogger(final ThreadGroup threadGroup) {
+
+    if (threadGroup == null)
+      return;
+
+    threadGroupLoggers.remove(threadGroup.getName());
   }
 
 }

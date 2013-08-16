@@ -34,6 +34,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +42,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
@@ -52,8 +57,10 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -357,7 +364,7 @@ public abstract class AbstractWorkflow implements Workflow {
         getLogger().info("Execute step: " + step.getId());
 
         // Execute step
-        final StepResult result = step.execute();
+        final StepResult result = executeStep(step);
 
         if (step.getType() == GENERATOR_STEP || step.getType() == STANDARD_STEP) {
 
@@ -392,6 +399,115 @@ public abstract class AbstractWorkflow implements Workflow {
     }
     logEndAnalysis(true, stopwatch);
 
+  }
+
+  /**
+   * Launch the step and create a log file for each step.
+   * @param step step
+   * @return the step result object
+   * @throws EoulsanException if an Interrupted exception occurs
+   */
+  private StepResult executeStep(final AbstractWorkflowStep step)
+      throws EoulsanException {
+
+    // Thread group name
+    final String threadGroupName = "eoulsan-step-#" + step.getNumber();
+
+    // Define thread group
+    final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
+
+    // Create Log handler and register it
+    final Logger logger =
+        step.isCreateLogFiles()
+            ? createStepLogger(step, threadGroupName) : null;
+
+    // Register the logger
+    if (logger != null)
+      EoulsanLogger.registerThreadGroupLogger(threadGroup, logger);
+
+    // Wrapper for step result
+    final List<StepResult> resultWrapper = Lists.newArrayList();
+
+    // Runnable object
+    final Runnable r = new Runnable() {
+
+      @Override
+      public void run() {
+        resultWrapper.add(step.execute());
+      }
+    };
+
+    try {
+      // Create thread
+      final Thread thread = new Thread(threadGroup, r);
+
+      // Start thread
+      thread.start();
+
+      // Wait the end of the thread
+      thread.join();
+
+    } catch (InterruptedException e) {
+      throw new EoulsanException(e.getMessage());
+    } finally {
+
+      if (logger != null) {
+
+        Handler handler = logger.getHandlers()[0];
+
+        // Close handler
+        handler.close();
+
+        // Remove logger from EoulsanLogger registry
+        EoulsanLogger.removeThreadGroupLogger(threadGroup);
+
+        // Remove handler
+        logger.removeHandler(handler);
+      }
+    }
+
+    return resultWrapper.get(0);
+  }
+
+  /**
+   * Create the logger for a step.
+   * @param step the step
+   * @param threadGroupName the name of the thread group
+   * @return a Logger instance
+   */
+  private Logger createStepLogger(final AbstractWorkflowStep step,
+      final String threadGroupName) {
+
+    // Define the log file for the step
+    final DataFile logFile = new DataFile(getLogDir(), step.getId() + ".log");
+    OutputStream logOut;
+    try {
+
+      logOut = logFile.create();
+
+    } catch (IOException e) {
+      return null;
+    }
+
+    // Get the logger for the step
+    final Logger logger = Logger.getLogger(threadGroupName);
+
+    final Handler handler = new StreamHandler(logOut, Globals.LOG_FORMATTER);
+
+    // Disable parent Handler
+    logger.setUseParentHandlers(false);
+
+    // Set log level to all before setting the real log level
+    logger.setLevel(Level.ALL);
+
+    // Set the Handler
+    logger.addHandler(handler);
+
+    // Set log level
+    handler.setLevel(Level.parse(Main.getInstance().getLogLevelArgument()
+        .toUpperCase()));
+
+    return logger;
   }
 
   /**
