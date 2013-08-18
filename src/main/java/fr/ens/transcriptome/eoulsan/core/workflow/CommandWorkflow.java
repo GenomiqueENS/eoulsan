@@ -158,9 +158,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final String stepName = c.getStepName(stepId);
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
-
-      // TODO the value must be defined in CommandWorkflowModel
-      final boolean copyResultsToOutput = true;
+      final boolean copyResultsToOutput = !c.isStepDiscardOutput(stepId);
 
       getLogger().info(
           "Create "

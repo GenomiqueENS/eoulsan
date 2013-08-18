@@ -197,6 +197,10 @@ public class CommandWorkflowParser {
                     Boolean.parseBoolean(eStepElement.getAttribute("skip")
                         .trim().toLowerCase());
 
+                final boolean discardOutput =
+                    Boolean.parseBoolean(eStepElement
+                        .getAttribute("discardOutput").trim().toLowerCase());
+
                 String stepName = getTagValue("stepname", eStepElement);
                 if (stepName == null)
                   stepName = getTagValue("name", eStepElement);
@@ -209,7 +213,8 @@ public class CommandWorkflowParser {
 
                 LOGGER.info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
-                result.addStep(stepId, stepName, parameters, skip);
+                result.addStep(stepId, stepName, parameters, skip,
+                    discardOutput);
 
               }
             }

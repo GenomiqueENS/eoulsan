@@ -60,6 +60,7 @@ public class CommandWorkflowModel implements Serializable {
   private Map<String, String> stepIdNames = Maps.newHashMap();
   private final Map<String, Set<Parameter>> stepParameters = Maps.newHashMap();
   private Map<String, Boolean> stepSkiped = Maps.newHashMap();
+  private Map<String, Boolean> stepDiscardOutput = Maps.newHashMap();
   private final Set<Parameter> globalParameters = Sets.newHashSet();
 
   //
@@ -144,27 +145,16 @@ public class CommandWorkflowModel implements Serializable {
 
   /**
    * Add a step to the analysis
-   * @param stepName name of the step to add
-   * @param parameters parameters of the step
-   * @throws EoulsanException if an error occurs while adding the step
-   */
-  void addStep(final String stepName, final Set<Parameter> parameters)
-      throws EoulsanException {
-
-    addStep(stepName, stepName, parameters, false);
-  }
-
-  /**
-   * Add a step to the analysis
    * @param stepId id of the step
    * @param stepName name of the step to add
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
+   * @param discardOutput true if the output of the step can be removed
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String stepName,
-      final Set<Parameter> parameters, final boolean skipStep)
-      throws EoulsanException {
+      final Set<Parameter> parameters, final boolean skipStep,
+      final boolean discardOutput) throws EoulsanException {
 
     if (stepName == null)
       throw new EoulsanException("The name of the step is null.");
@@ -193,6 +183,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepIdNames.put(stepIdLower, stepNameLower);
     this.stepParameters.put(stepNameLower, parameters);
     this.stepSkiped.put(stepIdLower, skipStep);
+    this.stepDiscardOutput.put(stepIdLower, discardOutput);
   }
 
   /**
@@ -234,6 +225,16 @@ public class CommandWorkflowModel implements Serializable {
   public boolean isStepSkipped(final String stepId) {
 
     return this.stepSkiped.get(stepId);
+  }
+
+  /**
+   * Test if the output of the step can be removed.
+   * @param stepId step id
+   * @return true if the output of the step can be removed
+   */
+  public boolean isStepDiscardOutput(final String stepId) {
+
+    return this.stepDiscardOutput.get(stepId);
   }
 
   /**
