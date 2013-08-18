@@ -287,19 +287,44 @@ public abstract class AbstractWorkflow implements Workflow {
 
     final WorkflowFiles files = getWorkflowFilesAtRootStep();
 
-    for (WorkflowStepOutputDataFile file : files.getOutputFiles())
-      if (file.getDataFile().exists())
-        throw new EoulsanException("For sample "
-            + file.getSample().getId() + ", generated \""
-            + file.getFormat().getName() + "\" already exists ("
-            + file.getDataFile() + ").");
+    // Location where find files, null means the expected outputFile
+    final List<DataFile> directories =
+        Lists.newArrayList(getLocalWorkingDir(), getHadoopWorkingDir(),
+            getOutputDir(), null);
 
-    for (WorkflowStepOutputDataFile file : files.getReusedFiles())
-      if (file.getDataFile().exists())
-        throw new EoulsanException("For sample "
-            + file.getSample().getId() + " in step " + file.getStep().getId()
-            + ", generated \"" + file.getFormat().getName()
-            + "\" already exists (" + file.getDataFile() + ").");
+    for (WorkflowStepOutputDataFile file : files.getOutputFiles()) {
+
+      for (DataFile dir : directories) {
+
+        // Set the file to test
+        final DataFile test =
+            dir == null ? file.getDataFile() : new DataFile(dir, file
+                .getDataFile().getName());
+
+        if (test.exists())
+          throw new EoulsanException("For sample "
+              + file.getSample().getId() + ", generated \""
+              + file.getFormat().getName() + "\" already exists (" + test
+              + ").");
+      }
+    }
+
+    for (WorkflowStepOutputDataFile file : files.getReusedFiles()) {
+
+      for (DataFile dir : directories) {
+
+        // Set the file to test
+        final DataFile test =
+            dir == null ? file.getDataFile() : new DataFile(dir, file
+                .getDataFile().getName());
+
+        if (test.exists())
+          throw new EoulsanException("For sample "
+              + file.getSample().getId() + " in step " + file.getStep().getId()
+              + ", generated \"" + file.getFormat().getName()
+              + "\" already exists (" + test + ").");
+      }
+    }
   }
 
   /**
@@ -329,9 +354,6 @@ public abstract class AbstractWorkflow implements Workflow {
    * @throws EoulsanException if an error occurs while executing the workflow
    */
   public void execute() throws EoulsanException {
-
-    // TODO the check of existing in/output files must also done in local/hadoop
-    // directories and outputDirectories.
 
     // check if output files does not exists
     checkExistingOutputFiles();
