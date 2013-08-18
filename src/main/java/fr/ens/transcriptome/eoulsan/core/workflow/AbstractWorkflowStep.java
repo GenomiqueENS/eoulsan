@@ -771,7 +771,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow = workflow;
     this.stepContext =
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
-    this.id = type.name();
+    this.id = type.getDefaultStepId();
     this.skip = false;
     this.terminalStep = false;
     this.createLogFiles = false;

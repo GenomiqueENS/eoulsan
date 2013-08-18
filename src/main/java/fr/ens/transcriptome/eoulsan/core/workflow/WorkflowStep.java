@@ -27,6 +27,8 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -44,10 +46,12 @@ public interface WorkflowStep extends Serializable {
    * @since 1.3
    */
   public static enum StepType {
-    ROOT_STEP(0), DESIGN_STEP(1), CHECKER_STEP(2), GENERATOR_STEP(3),
-    FIRST_STEP(4), STANDARD_STEP(5), TERMINAL_STEP(6);
+    ROOT_STEP(0, "root"), DESIGN_STEP(1, "design"), CHECKER_STEP(2, "checker"),
+    GENERATOR_STEP(3, null), FIRST_STEP(4, "first"), STANDARD_STEP(5, null),
+    TERMINAL_STEP(6, "terminal");
 
     private int priority;
+    private String defaultStepId;
 
     /**
      * Get the priority of the step.
@@ -57,17 +61,46 @@ public interface WorkflowStep extends Serializable {
       return this.priority;
     }
 
+    /**
+     * Get default step id.
+     * @return the default step id or null if not exists
+     */
+    public String getDefaultStepId() {
+
+      return this.defaultStepId;
+    }
+
+    /**
+     * Return the available default step ids of the step types.
+     * @return a set with the values
+     */
+    public static final Set<String> getAllDefaultStepId() {
+
+      final Set<String> result = Sets.newHashSet();
+
+      for (StepType type : values()) {
+
+        final String stepId = type.getDefaultStepId();
+        if (stepId != null)
+          result.add(stepId);
+      }
+
+      return result;
+    }
+
     //
     // Constructor
     //
 
     /**
      * Constructor.
-     * @param priority priority of the step
+     * @param priority priority of the ste
+     * @param defaultStepId default step id
      */
-    StepType(final int priority) {
+    StepType(final int priority, final String defaultStepId) {
 
       this.priority = priority;
+      this.defaultStepId = defaultStepId;
     }
   };
 
