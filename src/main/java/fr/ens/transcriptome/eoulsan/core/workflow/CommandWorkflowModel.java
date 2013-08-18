@@ -38,6 +38,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 
 /**
  * This class define the workflow model object of Eoulsan.
@@ -49,15 +52,14 @@ public class CommandWorkflowModel implements Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = -5182569666862886788L;
 
-  private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
-      .emptySet();
-
   private String name = "";
   private String description = "";
   private String author = "";
 
   private List<String> stepIdList = Lists.newArrayList();
   private Map<String, String> stepIdNames = Maps.newHashMap();
+  private final Map<String, Map<DataFormat, String>> stepInputs = Maps
+      .newHashMap();
   private final Map<String, Set<Parameter>> stepParameters = Maps.newHashMap();
   private Map<String, Boolean> stepSkiped = Maps.newHashMap();
   private Map<String, Boolean> stepDiscardOutput = Maps.newHashMap();
@@ -147,14 +149,16 @@ public class CommandWorkflowModel implements Serializable {
    * Add a step to the analysis
    * @param stepId id of the step
    * @param stepName name of the step to add
+   * @param inputs where find step inputs
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
    * @param discardOutput true if the output of the step can be removed
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String stepName,
-      final Set<Parameter> parameters, final boolean skipStep,
-      final boolean discardOutput) throws EoulsanException {
+      final Map<String, String> inputs, final Set<Parameter> parameters,
+      final boolean skipStep, final boolean discardOutput)
+      throws EoulsanException {
 
     if (stepName == null)
       throw new EoulsanException("The name of the step is null.");
@@ -173,14 +177,44 @@ public class CommandWorkflowModel implements Serializable {
     if ("".equals(stepIdLower))
       throw new EoulsanException("The id of the step is empty.");
 
-    if (this.stepParameters.containsKey(stepIdLower))
+    if (this.stepParameters.containsKey(stepIdLower)
+        || StepType.getAllDefaultStepId().contains(stepIdLower))
       throw new EoulsanException("The step id already exists: " + stepIdLower);
 
     if (parameters == null)
       throw new EoulsanException("The parameters are null.");
 
+    if (inputs == null)
+      throw new EoulsanException("The inputs are null.");
+
+    // Check input data formats
+    Map<DataFormat, String> inputsMap = Maps.newHashMap();
+    DataFormatRegistry registry = DataFormatRegistry.getInstance();
+    for (Map.Entry<String, String> e : inputs.entrySet()) {
+
+      final DataFormat inputFormat = registry.getDataFormatFromName(e.getKey());
+      final String inputStepId = e.getValue().toLowerCase().trim();
+
+      if (e.getValue() == null)
+        throw new EoulsanException("The step that generate \""
+            + inputFormat + "\" for step \"" + stepId + "\" is null");
+
+      if (inputFormat == null)
+        throw new EoulsanException("Unknown input format for the step \""
+            + stepId + "\": " + inputFormat);
+
+      if (!StepType.DESIGN_STEP.getDefaultStepId().equals(inputStepId)
+          && !this.stepIdNames.containsKey(inputStepId))
+        throw new EoulsanException("The step that generate \""
+            + inputFormat + "\" for step \"" + stepId
+            + "\" has not been yet declared");
+
+      inputsMap.put(inputFormat, inputStepId);
+    }
+
     this.stepIdList.add(stepIdLower);
     this.stepIdNames.put(stepIdLower, stepNameLower);
+    this.stepInputs.put(stepIdLower, inputsMap);
     this.stepParameters.put(stepNameLower, parameters);
     this.stepSkiped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
@@ -206,15 +240,33 @@ public class CommandWorkflowModel implements Serializable {
   }
 
   /**
+   * Get the inputs of a step
+   * @param stepId the id of the step
+   * @return a Map of with the inputs of the step
+   */
+  public Map<DataFormat, String> getStepInputs(final String stepId) {
+
+    Map<DataFormat, String> result = this.stepInputs.get(stepId);
+
+    if (result == null)
+      result = Collections.emptyMap();
+
+    return result;
+  }
+
+  /**
    * Get the parameters of a step
    * @param stepId the id of the step
    * @return a set of the parameters of the step
    */
   public Set<Parameter> getStepParameters(final String stepId) {
 
-    final Set<Parameter> result = this.stepParameters.get(stepId);
+    Set<Parameter> result = this.stepParameters.get(stepId);
 
-    return result == null ? EMPTY_SET_PARAMETER : result;
+    if (result == null)
+      result = Collections.emptySet();
+
+    return result;
   }
 
   /**

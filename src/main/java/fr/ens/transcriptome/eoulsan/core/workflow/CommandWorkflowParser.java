@@ -208,12 +208,16 @@ public class CommandWorkflowParser {
                   throw new EoulsanException(
                       "Step name not found in workflow file.");
 
+                final Map<String, String> inputs =
+                    parseInputs(eStepElement, "".equals(stepId)
+                        ? stepName : stepId);
+
                 final Set<Parameter> parameters =
                     parseParameters(eStepElement, "parameters", stepName, true);
 
                 LOGGER.info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
-                result.addStep(stepId, stepName, parameters, skip,
+                result.addStep(stepId, stepName, inputs, parameters, skip,
                     discardOutput);
 
               }
@@ -234,6 +238,56 @@ public class CommandWorkflowParser {
     LOGGER.info("End of parsing of workflow file");
     LOGGER.info("Found "
         + result.getStepIds().size() + " step(s) in workflow file");
+
+    return result;
+  }
+
+  /**
+   * Parse inputs sections
+   * @param root root element to parse
+   * @param stepId step id for the exception message
+   * @throws EoulsanException if the tags of the parameter are not found
+   */
+  private Map<String, String> parseInputs(final Element root,
+      final String stepId) throws EoulsanException {
+
+    final Map<String, String> result = new HashMap<String, String>();
+
+    final NodeList nList = root.getElementsByTagName("inputs");
+
+    for (int i = 0; i < nList.getLength(); i++) {
+
+      final Node node = nList.item(i);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+        Element element = (Element) node;
+        final NodeList nParameterList = element.getElementsByTagName("input");
+
+        for (int j = 0; j < nParameterList.getLength(); j++) {
+
+          final Node nParameterNode = nParameterList.item(j);
+
+          if (nParameterNode.getNodeType() == Node.ELEMENT_NODE) {
+
+            Element eStepElement = (Element) nParameterNode;
+
+            final String inputFormatName = getTagValue("format", eStepElement);
+            final String inputStepId = getTagValue("stepId", eStepElement);
+
+            if (inputFormatName == null)
+              throw new EoulsanException(
+                  "<format> Tag not found in input section of step \""
+                      + stepId + "\" in workflow file.");
+            if (inputStepId == null)
+              throw new EoulsanException(
+                  "<stepId> Tag not found in input section of step \""
+                      + stepId + "\" in workflow file.");
+
+            result.put(inputFormatName, inputStepId);
+          }
+        }
+      }
+    }
 
     return result;
   }

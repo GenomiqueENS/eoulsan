@@ -454,6 +454,38 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
+   * Add user defined dependencies.
+   * @throws EoulsanException if an error occurs while setting dependencies
+   */
+  private void addManualDependencies() throws EoulsanException {
+
+    // Create a map with the name of the steps
+    final Map<String, CommandWorkflowStep> stepsMap = Maps.newHashMap();
+    for (CommandWorkflowStep step : this.steps)
+      stepsMap.put(step.getId(), step);
+
+    for (CommandWorkflowStep step : this.steps) {
+
+      final Map<DataFormat, String> inputs =
+          this.workflowCommand.getStepInputs(step.getId());
+
+      for (Map.Entry<DataFormat, String> e : inputs.entrySet()) {
+
+        final DataFormat inputFormat = e.getKey();
+        final CommandWorkflowStep inputStep = stepsMap.get(e.getValue());
+
+        if (inputStep == null)
+          throw new EoulsanException("No workflow step found with id: "
+              + e.getValue());
+
+        addDependency(step, inputFormat, inputStep);
+      }
+
+    }
+
+  }
+
+  /**
    * Search dependency between steps.
    * @throws EoulsanException if an error occurs while search dependencies
    */
@@ -789,7 +821,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     // initialize steps
     init();
 
-    // TODO Set manually defined input format source
+    // Set manually defined input format source
+    addManualDependencies();
 
     // Search others input format sources
     searchDependencies();
