@@ -294,6 +294,10 @@ public abstract class AbstractWorkflow implements Workflow {
 
     for (WorkflowStepOutputDataFile file : files.getOutputFiles()) {
 
+      // Do not check output of skipped steps
+      if (file.getStep().isSkip())
+        continue;
+
       for (DataFile dir : directories) {
 
         // Set the file to test
@@ -310,6 +314,10 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     for (WorkflowStepOutputDataFile file : files.getReusedFiles()) {
+
+      // Do not check output of skipped steps
+      if (file.getStep().isSkip())
+        continue;
 
       for (DataFile dir : directories) {
 
@@ -336,7 +344,8 @@ public abstract class AbstractWorkflow implements Workflow {
     final WorkflowFiles files = getWorkflowFilesAtRootStep();
 
     for (WorkflowStepOutputDataFile file : files.getInputFiles()) {
-      if (!file.isMayNotExist() && !file.getDataFile().exists()) {
+      if (!file.getStep().isSkip()
+          && !file.isMayNotExist() && !file.getDataFile().exists()) {
         throw new EoulsanException("For sample "
             + file.getSample().getId() + " in step " + file.getStep().getId()
             + ", input file for " + file.getFormat().getName()
