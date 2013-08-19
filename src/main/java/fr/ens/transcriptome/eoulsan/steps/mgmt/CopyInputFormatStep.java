@@ -105,10 +105,10 @@ public class CopyInputFormatStep extends AbstractStep {
     }
 
     if (this.format == null)
-      new EoulsanException("No format set.");
+      throw new EoulsanException("No format set.");
 
     if (this.outputCompression == null)
-      new EoulsanException("No output compression set.");
+      throw new EoulsanException("No output compression set.");
   }
 
   @Override

@@ -59,13 +59,13 @@ public class GSNAPReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
       if (records.size() > 1)
-        records.removeAll(records);
+        records.clear();
     }
 
     // paired-end mode
     else {
       if (records.size() > 2)
-        records.removeAll(records);
+        records.clear();
     }
   }
 

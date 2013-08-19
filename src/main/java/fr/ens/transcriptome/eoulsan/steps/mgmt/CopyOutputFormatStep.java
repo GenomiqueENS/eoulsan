@@ -96,7 +96,7 @@ public class CopyOutputFormatStep extends AbstractStep {
     }
 
     if (this.formats.isEmpty())
-      new EoulsanException("No format set.");
+      throw new EoulsanException("No format set.");
 
   }
 

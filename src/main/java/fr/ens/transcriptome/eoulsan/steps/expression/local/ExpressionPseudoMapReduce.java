@@ -184,7 +184,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     while (values.hasNext()) {
 
       count++;
-      StringUtils.fastSplit(values.next().toString(), this.fields);
+      StringUtils.fastSplit(values.next(), this.fields);
 
       final String exonChr = this.fields[0];
       final int exonStart = Integer.parseInt(this.fields[1]);

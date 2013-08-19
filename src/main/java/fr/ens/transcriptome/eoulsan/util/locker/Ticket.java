@@ -40,9 +40,6 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
 
   private static final long serialVersionUID = -7934169474677708526L;
 
-  private final static DateFormat DATE_FORMAT = new SimpleDateFormat(
-      "HH:mm:ss.SSS");
-
   private final int pid;
   private final long threadId;
   private final long creationTime;
@@ -147,11 +144,13 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public String toString() {
 
-    return DATE_FORMAT.format(new Date(this.creationTime))
+    final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+    return dateFormat.format(new Date(this.creationTime))
         + " "
-        + DATE_FORMAT.format(new Date(this.lastActiveTime))
+        + dateFormat.format(new Date(this.lastActiveTime))
         + " "
-        + DATE_FORMAT.format(new Date(System.currentTimeMillis()
+        + dateFormat.format(new Date(System.currentTimeMillis()
             - this.creationTime)) + " "
         + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid + '.'
         + this.threadId + " "

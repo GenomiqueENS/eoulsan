@@ -190,7 +190,7 @@ public class WorkflowStepResult implements StepResult {
 
     checkNotNull(date, "date is null");
 
-    this.startTime = date;
+    this.startTime = new Date(date.getTime());
   }
 
   /**
@@ -201,7 +201,7 @@ public class WorkflowStepResult implements StepResult {
 
     checkNotNull(date, "date is null");
 
-    this.endTime = date;
+    this.endTime = new Date(date.getTime());
   }
 
   /**

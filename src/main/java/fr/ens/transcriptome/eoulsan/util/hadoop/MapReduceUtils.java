@@ -172,29 +172,34 @@ public final class MapReduceUtils {
       Thread.sleep(waitTimeInMillis);
       completedJobs = 0;
 
-      for (Job j : jobs.keySet())
-        if (j.isComplete()) {
+      for (Map.Entry<Job, Sample> e : jobs.entrySet()) {
+
+        final Job job = e.getKey();
+        final Sample sample = e.getValue();
+
+        if (job.isComplete()) {
           completedJobs++;
 
-          if (counterGroup != null && !completedJobsSet.contains(j)) {
-            sb.append(j.getJobName());
+          if (counterGroup != null && !completedJobsSet.contains(job)) {
+            sb.append(job.getJobName());
             sb.append('\n');
 
-            if (!j.isSuccessful()) {
+            if (!job.isSuccessful()) {
 
-              status.setSampleMessage(jobs.get(j), "FAILED");
+              status.setSampleMessage(sample, "FAILED");
 
             } else {
 
-              status.setSampleCounters(jobs.get(j),
-                  new HadoopReporter(j.getCounters()), counterGroup,
-                  j.getJobName());
+              status.setSampleCounters(jobs.get(job),
+                  new HadoopReporter(job.getCounters()), counterGroup,
+                  job.getJobName());
 
             }
           }
 
-          completedJobsSet.add(j);
+          completedJobsSet.add(job);
         }
+      }
     }
   }
 

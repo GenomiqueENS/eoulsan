@@ -106,8 +106,8 @@ public class PreTreatmentExpressionReducer extends
       final Context context) throws IOException, InterruptedException {
 
     String stringVal;
-    String strOutKey = "";
-    String strOutValue = "";
+    final String strOutKey;
+    StringBuilder strOutValue = new StringBuilder();
     SAMRecord samRecord;
     String stringRecord;
 
@@ -138,21 +138,22 @@ public class PreTreatmentExpressionReducer extends
     // Writing records
     int indexOfFirstTab = records.get(0).getSAMString().indexOf("\t");
     strOutKey = records.get(0).getSAMString().substring(0, indexOfFirstTab);
-    strOutValue =
-        records.get(0).getSAMString().substring(indexOfFirstTab + 1)
-            .replaceAll("\n", "");
+    strOutValue.append(records.get(0).getSAMString()
+        .substring(indexOfFirstTab + 1).replaceAll("\n", ""));
 
     records.remove(0);
+
     for (SAMRecord r : records) {
       if (r.getFirstOfPairFlag()) {
-        strOutValue += "\n" + r.getSAMString().replaceAll("\n", "");
+        strOutValue.append('\n');
       } else {
-        strOutValue += "£" + r.getSAMString().replaceAll("\n", "");
+        strOutValue.append('£');
       }
+      strOutValue.append(r.getSAMString().replaceAll("\n", ""));
     }
 
     this.outKey.set(strOutKey);
-    this.outValue.set(strOutValue);
+    this.outValue.set(strOutValue.toString());
     context.write(this.outKey, this.outValue);
   }
 }

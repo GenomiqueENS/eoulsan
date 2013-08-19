@@ -323,10 +323,11 @@ public abstract class PseudoMapReduce {
 
     this.sortOutputFile = File.createTempFile("sort-", ".txt", this.tmpDir);
 
-    String listFile = "";
+    final StringBuilder listFile = new StringBuilder();
     for (File mapOutputFile : listMapOutputFile) {
-      listFile +=
-          StringUtils.bashEscaping(mapOutputFile.getAbsolutePath()) + " ";
+      listFile
+          .append(StringUtils.bashEscaping(mapOutputFile.getAbsolutePath()));
+      listFile.append(" ");
     }
 
     final String cmd =
@@ -335,7 +336,7 @@ public abstract class PseudoMapReduce {
                 + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath()) : "")
             + " -o "
             + StringUtils.bashEscaping(this.sortOutputFile.getAbsolutePath())
-            + " " + listFile;
+            + " " + listFile.toString();
 
     final boolean result = ProcessUtils.system(cmd) == 0;
     for (File mapOutputFile : listMapOutputFile) {

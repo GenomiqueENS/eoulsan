@@ -185,13 +185,13 @@ public class GmapReadsMapper extends AbstractSequenceReadsMapper {
   protected void internalMap(final File readsFile1, final File readsFile2,
       final File archiveIndex, final SAMParserLine parserLine)
       throws IOException {
-    new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   protected void internalMap(final File readsFile, final File archiveIndex,
       final SAMParserLine parserLine) throws IOException {
-    new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   //

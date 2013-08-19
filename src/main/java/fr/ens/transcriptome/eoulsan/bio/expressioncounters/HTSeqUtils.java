@@ -316,7 +316,7 @@ public class HTSeqUtils {
         }
 
         // At least one interval is found
-        if (intervals != null && intervals.size() > 0) {
+        if (intervals.size() > 0) {
           for (Map.Entry<GenomicInterval, Set<String>> i : intervals.entrySet()) {
 
             final Set<String> fs2 = i.getValue();

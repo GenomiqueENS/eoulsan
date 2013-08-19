@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.apache.hadoop.io.Text;
@@ -72,12 +73,14 @@ public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
 
     int counts = 0;
 
-    for (Text val : values) {
+    final Iterator<Text> it = values.iterator();
+    while (it.hasNext()) {
+      it.next();
       counts++;
     }
 
     // context.write(key, new Text(String.valueOf(counts)));
-    context.write(key, new Long(counts));
+    context.write(key, Long.valueOf(counts));
   }
 
 }

@@ -32,10 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.rosuda.REngine.REXPMismatchException;
@@ -148,12 +146,9 @@ public class Normalization {
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experimentSampleList = experiments.get(cle);
+
+      // create an iterator on the map values
+      for (List<Sample> experimentSampleList : experiments.values()) {
 
         LOGGER.info("Experiment : "
             + experimentSampleList.get(0).getMetadata().getExperiment());
@@ -202,12 +197,9 @@ public class Normalization {
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
-      // create an iterator on the map
-      Set<String> cles = experiments.keySet();
-      Iterator<String> itr = cles.iterator();
-      while (itr.hasNext()) {
-        String cle = itr.next();
-        List<Sample> experimentSampleList = experiments.get(cle);
+
+      // create an iterator on the map values
+      for (List<Sample> experimentSampleList : experiments.values()) {
 
         LOGGER.info("Experiment : "
             + experimentSampleList.get(0).getMetadata().getExperiment());

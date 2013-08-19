@@ -127,16 +127,15 @@ abstract class AbstractDataFormat implements DataFormat {
 
     final String[] extensions = getExtensions();
     final Integer extensionsHashCode =
-        extensions == null ? null : extensions.hashCode();
+        extensions == null ? null : Arrays.hashCode(extensions);
     final Integer generatorHashCode =
         isGenerator() ? getGenerator().getClass().hashCode() : null;
     final Integer checkerHashCode =
         isChecker() ? getChecker().getClass().hashCode() : null;
 
-    return Objects.hashCode(getName(), getDescription(),
-        getContentType(), getDefaultExtention(), extensionsHashCode,
-        isGenerator(), isChecker(), generatorHashCode, checkerHashCode,
-        getMaxFilesCount());
+    return Objects.hashCode(getName(), getDescription(), getContentType(),
+        getDefaultExtention(), extensionsHashCode, isGenerator(), isChecker(),
+        generatorHashCode, checkerHashCode, getMaxFilesCount());
   }
 
   @Override

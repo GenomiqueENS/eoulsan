@@ -708,6 +708,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     setState(StepState.DONE);
 
+    this.result = result;
     return result;
   }
 

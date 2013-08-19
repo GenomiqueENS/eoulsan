@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
@@ -89,7 +90,8 @@ public abstract class UploadStep extends AbstractStep {
     final StringBuilder log = new StringBuilder();
 
     // Save and change base pathname
-    final WorkflowContext fullContext = (WorkflowContext) context;
+    final WorkflowContext fullContext =
+        ((AbstractWorkflow) context.getWorkflow()).getWorkflowContext();
 
     final Map<DataFile, DataFile> filesToCopy = newHashMap();
     File repackagedJarFile = null;
@@ -369,8 +371,8 @@ public abstract class UploadStep extends AbstractStep {
    * @throws EoulsanIOException if an error occurs while writing the design file
    * @throws IOException if an error occurs while writing the design file
    */
-  private File writeTempDesignFile(final StepContext context, final Design design)
-      throws EoulsanIOException, IOException {
+  private File writeTempDesignFile(final StepContext context,
+      final Design design) throws EoulsanIOException, IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");
 

@@ -85,7 +85,7 @@ public class WorkflowStepStatus implements StepStatus {
   @Override
   public Map<String, Long> getSampleCounters(final Sample sample) {
 
-    return this.getSampleCounters(sample);
+    return this.result.getSampleCounters(sample);
   }
 
   @Override

@@ -776,6 +776,9 @@ public abstract class AbstractSequenceReadsMapper implements
                 parserLine.parseLine(line);
               }// while
 
+              // Close reader
+              buff.close();
+
             } catch (IOException e) {
               e.printStackTrace();
             }

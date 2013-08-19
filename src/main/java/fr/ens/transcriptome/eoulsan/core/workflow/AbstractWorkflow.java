@@ -185,7 +185,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * values like base directory.
    * @return The Context object
    */
-  WorkflowContext getWorkflowContext() {
+  public WorkflowContext getWorkflowContext() {
 
     return this.workflowContext;
   }

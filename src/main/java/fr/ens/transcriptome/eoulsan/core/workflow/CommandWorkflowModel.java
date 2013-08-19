@@ -201,7 +201,7 @@ public class CommandWorkflowModel implements Serializable {
 
       if (inputFormat == null)
         throw new EoulsanException("Unknown input format for the step \""
-            + stepId + "\": " + inputFormat);
+            + stepId + "\": " + e.getKey());
 
       if (!StepType.DESIGN_STEP.getDefaultStepId().equals(inputStepId)
           && !this.stepIdNames.containsKey(inputStepId))

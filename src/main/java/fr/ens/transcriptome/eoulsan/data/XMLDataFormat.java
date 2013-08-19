@@ -291,7 +291,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     this.name = this.name.trim().toLowerCase();
 
     if (this.description != null)
-      this.description.trim();
+      this.description = this.description.trim();
 
     if (this.contentType == null || "".equals(this.contentType.trim()))
       this.contentType = DEFAULT_CONTENT_TYPE;
