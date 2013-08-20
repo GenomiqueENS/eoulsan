@@ -161,7 +161,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
       if (bestFile != null) {
         final BufferedReader reader =
-            new BufferedReader(new InputStreamReader(fs.open(bestFile)));
+            new BufferedReader(new InputStreamReader(fs.open(bestFile),
+                "ISO-8859-1"));
 
         String line = null;
 

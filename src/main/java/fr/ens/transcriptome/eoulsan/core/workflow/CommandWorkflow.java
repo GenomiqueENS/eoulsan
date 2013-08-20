@@ -297,7 +297,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           && stepProtocol != depProtocol
           && stepFormatRequieredWD.contains(format)) {
         newStep =
-            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+            newInputFormatCopyStep(this, step.getId(), format,
                 depOutputCompression, stepCompressionsAllowed);
       }
 
@@ -306,7 +306,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           && step.getType() == StepType.STANDARD_STEP
           && !stepCompressionsAllowed.contains(depOutputCompression)) {
         newStep =
-            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+            newInputFormatCopyStep(this, step.getId(), format,
                 depOutputCompression, stepCompressionsAllowed);
       }
 
@@ -318,7 +318,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !EnumSet.allOf(CompressionType.class).containsAll(
               stepCompressionsAllowed)) {
         newStep =
-            newInputFormatCopyStep(this, step.getId(), stepDir, format,
+            newInputFormatCopyStep(this, step.getId(), format,
                 depOutputCompression, stepCompressionsAllowed);
       }
 
@@ -356,8 +356,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private static CommandWorkflowStep newInputFormatCopyStep(
       final CommandWorkflow workflow, final String oriStepId,
-      final DataFile workingDirectory, final DataFormat format,
-      final CompressionType inputCompression,
+      final DataFormat format, final CompressionType inputCompression,
       final EnumSet<CompressionType> outputCompressionAllowed)
       throws EoulsanException {
 
@@ -414,8 +413,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private static CommandWorkflowStep newOutputFormatCopyStep(
       final CommandWorkflow workflow, final String oriStepId,
-      final DataFile workingDirectory, final Set<DataFormat> formats)
-      throws EoulsanException {
+      final Set<DataFormat> formats) throws EoulsanException {
 
     // Set the step name
     final String stepName = CopyOutputFormatStep.STEP_NAME;
@@ -558,24 +556,21 @@ public class CommandWorkflow extends AbstractWorkflow {
 
               searchDependencies();
               return;
-            } else {
-
-              if (step.getType() == StepType.GENERATOR_STEP) {
-
-                // Swap generators order
-                Collections.swap(this.steps, indexOfStep(step),
-                    indexOfStep(this.generatorAdded.get(format)));
-
-                searchDependencies();
-                return;
-
-              } else
-                throw new EoulsanException("Cannot found \""
-                    + format.getName() + "\" for step " + step.getId() + ".");
             }
-          } else
+
+            if (step.getType() == StepType.GENERATOR_STEP) {
+
+              // Swap generators order
+              Collections.swap(this.steps, indexOfStep(step),
+                  indexOfStep(this.generatorAdded.get(format)));
+
+              searchDependencies();
+              return;
+            }
+
             throw new EoulsanException("Cannot found \""
                 + format.getName() + "\" for step " + step.getId() + ".");
+          }
         }
       }
     }
@@ -602,7 +597,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !step.getStepWorkingDir().equals(getOutputDir())) {
 
         CommandWorkflowStep newStep =
-            newOutputFormatCopyStep(this, step.getId(), getOutputDir(),
+            newOutputFormatCopyStep(this, step.getId(),
                 step.getOutputDataFormats());
 
         // Add the copy step in the list of steps just before the step given as

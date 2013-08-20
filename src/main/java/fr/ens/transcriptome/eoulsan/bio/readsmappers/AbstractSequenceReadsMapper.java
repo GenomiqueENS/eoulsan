@@ -769,7 +769,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
               InputStream is = p.getInputStream();
               BufferedReader buff =
-                  new BufferedReader(new InputStreamReader(is));
+                  new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
               String line = "";
 
               while ((line = buff.readLine()) != null) {

@@ -96,7 +96,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   }
 
   @Override
-  public boolean isDataTypeFromDesignFile() {
+  public boolean isDataFormatFromDesignFile() {
 
     return this.dataTypeFromDesignFile;
   }

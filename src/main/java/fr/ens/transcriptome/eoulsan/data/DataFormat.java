@@ -61,10 +61,10 @@ public interface DataFormat {
   boolean isOneFilePerAnalysis();
 
   /**
-   * Test if the DataType is provided by the design file.
+   * Test if the DataFormat is provided by the design file.
    * @return true if the DataType is provided by the design file
    */
-  boolean isDataTypeFromDesignFile();
+  boolean isDataFormatFromDesignFile();
 
   /**
    * Get the name of the field of the design file that can provide the DataFile.

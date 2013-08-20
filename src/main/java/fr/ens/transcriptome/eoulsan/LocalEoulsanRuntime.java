@@ -28,8 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -137,7 +137,11 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
     if (!EoulsanRuntime.isRuntime())
       newEoulsanRuntime(new Settings(true));
 
-    Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
+    // Disable logging
+    final Handler[] handlers = EoulsanLogger.getLogger().getHandlers();
+    if (handlers != null)
+      for (Handler handler : handlers)
+        handler.setLevel(Level.OFF);
   }
 
 }

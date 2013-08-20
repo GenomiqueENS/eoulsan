@@ -82,10 +82,6 @@ public class StepInstances {
       // Load step
       final Step stepInstance = loadStep(stepName);
 
-      // Check if step is null
-      if (stepInstance == null)
-        return null;
-
       // Register step instance
       registerStep(workflowStep, stepInstance);
 

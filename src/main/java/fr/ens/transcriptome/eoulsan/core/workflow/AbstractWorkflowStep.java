@@ -71,7 +71,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final AbstractWorkflow workflow;
   private final WorkflowStepContext stepContext;
 
-  private final int number = instanceCounter++;
+  private final int number;
   private final String id;
   private final StepType type;
   private final Set<Parameter> parameters;
@@ -619,8 +619,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
       if (copyResultsToOutput)
         return workflow.getOutputDir();
-      else
-        return workflow.getLocalWorkingDir();
+
+      return workflow.getLocalWorkingDir();
     }
 
     switch (EoulsanMode.getEoulsanMode(step.getClass())) {
@@ -628,8 +628,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     case HADOOP_COMPATIBLE:
       if (copyResultsToOutput)
         return workflow.getOutputDir();
-      else
-        return workflow.getHadoopWorkingDir();
+
+      return workflow.getHadoopWorkingDir();
 
     case HADOOP_ONLY:
       return workflow.getHadoopWorkingDir();
@@ -715,7 +715,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   /**
    * Run checker (runs only for Design step).
    * @param status step status
-   * @return a StepResult object
    */
   private void configureCheckerStep(final StepStatus status) {
 
@@ -772,6 +771,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow = workflow;
     this.stepContext =
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
+    this.number = instanceCounter++;
     this.id = type.getDefaultStepId();
     this.skip = false;
     this.terminalStep = false;
@@ -831,6 +831,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow = workflow;
     this.stepContext =
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
+    this.number = instanceCounter++;
     this.id = generator.getName();
     this.skip = false;
     this.terminalStep = false;
@@ -873,6 +874,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow = workflow;
     this.stepContext =
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
+    this.number = instanceCounter++;
     this.id = id;
     this.skip = skip;
     this.type = StepType.STANDARD_STEP;
@@ -928,6 +930,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow = workflow;
     this.stepContext =
         new WorkflowStepContext(workflow.getWorkflowContext(), this);
+    this.number = instanceCounter++;
     this.id = id;
     this.skip = skip;
     this.type = StepType.STANDARD_STEP;

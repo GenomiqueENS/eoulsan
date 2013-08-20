@@ -1647,16 +1647,22 @@ public class FileUtils {
   public static boolean compareFile(final File fileA, final File fileB)
       throws IOException {
 
-    final InputStream isa = new FileInputStream(fileA);
-    final InputStream isb = new FileInputStream(fileB);
+    InputStream isa = null;
+    InputStream isb = null;
 
     try {
+
+      isa = new FileInputStream(fileA);
+      isb = new FileInputStream(fileB);
+
       return compareFile(isa, isb);
     } catch (IOException e) {
       throw e;
     } finally {
-      isa.close();
-      isb.close();
+      if (isa != null)
+        isa.close();
+      if (isb != null)
+        isb.close();
     }
   }
 

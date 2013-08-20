@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -121,7 +122,7 @@ public class WorkflowStepEventRelay implements WorkflowStepEvent {
     if (this.lastStates.containsKey(step)
         && this.lastNotes.containsKey(step)
         && step.getState() == this.lastStates.get(step)
-        && note == this.lastNotes.get(step))
+        && Objects.equal(note, this.lastNotes.get(step)))
       return;
 
     for (WorkflowStepEvent listener : this.listeners)

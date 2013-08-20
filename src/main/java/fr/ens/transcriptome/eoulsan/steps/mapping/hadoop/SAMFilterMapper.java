@@ -189,7 +189,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
                 + context.getTaskAttemptID().toString());
         final Writer writer =
             new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
-                context.getConfiguration()));
+                context.getConfiguration()), "ISO-8859-1");
 
         for (String l : this.headers)
           writer.write(l + "\n");

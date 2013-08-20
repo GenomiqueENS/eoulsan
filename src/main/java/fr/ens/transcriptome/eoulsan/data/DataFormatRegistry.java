@@ -131,18 +131,14 @@ public class DataFormatRegistry {
 
     final String prefix = df.getPrefix();
 
-    if (prefix == null)
-      throw new EoulsanException("The DataFormat \""
-          + df.getName() + "\" as no prefix");
-
     if (prefix == null || "".equals(prefix))
       throw new EoulsanException(
-          "The prefix of a DataType can't be null or empty ("
+          "The prefix of a DataFormat can't be null or empty ("
               + df.getName() + ")");
 
     if (prefix.indexOf('\t') != -1)
       throw new EoulsanException(
-          "The prefix of a DataType can't contains tab character: " + prefix);
+          "The prefix of a DataFormat can't contains tab character: " + prefix);
 
     final List<String> extensions = df.getExtensions();
 
@@ -164,7 +160,7 @@ public class DataFormatRegistry {
             "The extension of a DataFormat can't be null");
       if (suffix.indexOf('\t') != -1)
         throw new EoulsanException(
-            "The extension of a DataType can't contains tab character: "
+            "The extension of a DataFormat can't contains tab character: "
                 + suffix);
 
       if (suffix.equals(df.getDefaultExtention()))
@@ -250,7 +246,7 @@ public class DataFormatRegistry {
     }
 
     for (DataFormat df : this.formats)
-      if (df.isDataTypeFromDesignFile())
+      if (df.isDataFormatFromDesignFile())
         for (String dfExt : df.getExtensions())
           if (dfExt.equals(ext))
             return df;

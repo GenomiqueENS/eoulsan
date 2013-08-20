@@ -179,45 +179,6 @@ public final class ProcessUtils {
     return exitValue;
   }
 
-  // public static int sh(final String cmd, final File temporaryDirectory)
-  // throws IOException {
-  //
-  // final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
-  // UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
-  // bw.write("#!/bin/sh\n");
-  // bw.write(cmd);
-  // bw.close();
-  // f.setExecutable(true);
-  //
-  // logger.fine("execute script (Thread "
-  // + Thread.currentThread().getId() + "): " + cmd);
-  //
-  // final Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
-  //
-  // try {
-  // final int result = p.waitFor();
-  // if (!f.delete())
-  // logger.warning("Can not remove sh script: " + f.getAbsolutePath());
-  // return result;
-  // } catch (InterruptedException e) {
-  // if (!f.delete())
-  // logger.warning("Can not remove sh script: " + f.getAbsolutePath());
-  // throw new IOException(e.getMessage());
-  // }
-  // }
-
-  /**
-   * Execute a command.
-   * @param cmd command to execute
-   * @return the exit error of the program
-   * @throws IOException
-   */
-  private static ProcessResult shWithOutputs(final String cmd)
-      throws IOException {
-
-    return shWithOutputs(cmd, null);
-  }
-
   /**
    * Execute a command.
    * @param cmd command to execute
@@ -225,69 +186,6 @@ public final class ProcessUtils {
    * @return the exit error of the program
    * @throws IOException
    */
-  private static ProcessResult shWithOutputs(final String cmd,
-      final File temporaryDirectory) throws IOException {
-
-    final File f = File.createTempFile("sh-", ".sh", temporaryDirectory);
-    UnSynchronizedBufferedWriter bw = FileUtils.createFastBufferedWriter(f);
-    bw.write("#!/bin/sh\n");
-    bw.write(cmd);
-    bw.close();
-    f.setExecutable(true);
-
-    LOGGER.fine("execute script (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
-
-    final Process p = Runtime.getRuntime().exec(f.getAbsolutePath());
-
-    final StringBuilder stdout = new StringBuilder();
-    final StringBuilder stderr = new StringBuilder();
-
-    try {
-
-      final InputStream std = p.getInputStream();
-      final BufferedReader stdr =
-          new BufferedReader(new InputStreamReader(std, CHARSET));
-
-      String stdoutLine = null;
-
-      while ((stdoutLine = stdr.readLine()) != null) {
-        stdout.append(stdoutLine);
-        stdout.append('\n');
-      }
-
-      InputStream err = p.getInputStream();
-      BufferedReader errr =
-          new BufferedReader(new InputStreamReader(err, CHARSET));
-
-      String stderrLine = null;
-
-      while ((stderrLine = errr.readLine()) != null) {
-        stderr.append(stderrLine);
-        stderr.append('\n');
-      }
-
-      stdr.close();
-      errr.close();
-
-      final int exitValue = p.waitFor();
-
-      if (!f.delete())
-        LOGGER.warning("Can not remove sh script: " + f.getAbsolutePath());
-
-      // Return result
-      return new ProcessResult(exitValue, stdout.toString(), stderr.toString());
-
-    } catch (IOException e) {
-      if (!f.delete())
-        LOGGER.warning("Can not remove sh script: " + f.getAbsolutePath());
-      throw e;
-    } catch (InterruptedException e) {
-      if (!f.delete())
-        LOGGER.warning("Can not remove sh script: " + f.getAbsolutePath());
-      throw new IOException(e.getMessage());
-    }
-  }
 
   /**
    * Execute a command with the OS.
@@ -557,7 +455,8 @@ public final class ProcessUtils {
     @Override
     public void run() {
       try {
-        while (new BufferedReader(new InputStreamReader(err)).readLine() != null) {
+        while (new BufferedReader(new InputStreamReader(err, "ISO-8859-1"))
+            .readLine() != null) {
         }
 
         err.close();
