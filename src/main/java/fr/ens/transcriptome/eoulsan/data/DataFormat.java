@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Step;
 
@@ -69,7 +71,7 @@ public interface DataFormat {
    * @return the design field name
    */
   String getDesignFieldName();
-  
+
   /**
    * Get the content type.
    * @return the content type of this format
@@ -84,9 +86,9 @@ public interface DataFormat {
 
   /**
    * Get the extensions for the DataType
-   * @return an array of strings with the extension of the DataType
+   * @return an list of strings with the extension of the DataType
    */
-  String[] getExtensions();
+  List<String> getExtensions();
 
   /**
    * Test if a generator is available for this DataFormat.

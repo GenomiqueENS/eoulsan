@@ -29,8 +29,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -44,6 +42,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -51,7 +50,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**
@@ -74,7 +72,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private boolean dataTypeFromDesignFile;
   private String designFieldName;
   private String contentType = "text/plain";
-  private String[] extensions;
+  private final List<String> extensions = Lists.newArrayList();
   private String generatorClassName;
   private Set<Parameter> generatorParameters = Sets.newLinkedHashSet();
   private String checkerClassName;
@@ -112,11 +110,11 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   @Override
   public String getDefaultExtention() {
 
-    return this.extensions[0];
+    return this.extensions.get(0);
   }
 
   @Override
-  public String[] getExtensions() {
+  public List<String> getExtensions() {
 
     return this.extensions;
   }
@@ -266,7 +264,6 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       }
 
       // Parse extensions
-      List<String> extensions = Utils.newArrayList();
       for (Element e2 : XMLUtils.getElementsByTagName(document, "extensions"))
         for (Element e3 : XMLUtils.getElementsByTagName(e2, "extension")) {
 
@@ -274,13 +271,10 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
           if (defaultAttribute != null
               && "true".equals(defaultAttribute.trim().toLowerCase()))
-            extensions.add(0, e3.getTextContent().trim());
+            this.extensions.add(0, e3.getTextContent().trim());
           else
-            extensions.add(e3.getTextContent().trim());
+            this.extensions.add(e3.getTextContent().trim());
         }
-
-      this.extensions =
-          new LinkedHashSet<String>(extensions).toArray(new String[0]);
 
     }
 
@@ -307,6 +301,10 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     if (this.maxFilesCount < 1 || this.maxFilesCount > 2)
       throw new EoulsanException("Invalid maximal files count for data format "
           + this.name + ": " + this.maxFilesCount);
+
+    if (this.extensions.size() == 0)
+      throw new EoulsanException("No extension define for the data format "
+          + this.name);
   }
 
   //
@@ -356,8 +354,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     return Objects.toStringHelper(this).add("name", this.name)
         .add("description", this.description).add("prefix", prefix)
         .add("contentType", this.contentType)
-        .add("defaultExtension", this.extensions[0])
-        .add("extensions", Arrays.toString(this.extensions))
+        .add("defaultExtension", this.extensions.get(0))
+        .add("extensions", this.extensions)
         .add("generatorClassName", this.generatorClassName)
         .add("generatorParameters", this.generatorParameters)
         .add("checkerClassName", this.checkerClassName)

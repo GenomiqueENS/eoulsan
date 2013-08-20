@@ -26,7 +26,8 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import static com.google.common.base.Objects.equal;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import com.google.common.base.Objects;
 
@@ -40,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.core.Step;
  */
 abstract class AbstractDataFormat implements DataFormat {
 
-  private String[] extensions;
+  private List<String> extensions;
 
   @Override
   public String getDescription() {
@@ -49,10 +50,10 @@ abstract class AbstractDataFormat implements DataFormat {
   }
 
   @Override
-  public String[] getExtensions() {
+  public List<String> getExtensions() {
 
     if (this.extensions == null)
-      this.extensions = new String[] {getDefaultExtention()};
+      this.extensions = Collections.singletonList(getDefaultExtention());
 
     return this.extensions;
   }
@@ -108,7 +109,7 @@ abstract class AbstractDataFormat implements DataFormat {
         && equal(this.getDescription(), that.getDescription())
         && equal(this.getContentType(), that.getContentType())
         && equal(this.getDefaultExtention(), that.getDefaultExtention())
-        && Arrays.equals(this.getExtensions(), that.getExtensions())
+        && equal(this.getExtensions(), that.getExtensions())
         && equal(this.isGenerator(), that.isGenerator())
         && equal(this.isChecker(), that.isChecker())
         && ((this.getGenerator() == null && that.getGenerator() == null) || (this
@@ -125,9 +126,8 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public int hashCode() {
 
-    final String[] extensions = getExtensions();
     final Integer extensionsHashCode =
-        extensions == null ? null : Arrays.hashCode(extensions);
+        extensions == null ? null : extensions.hashCode();
     final Integer generatorHashCode =
         isGenerator() ? getGenerator().getClass().hashCode() : null;
     final Integer checkerHashCode =
@@ -150,7 +150,7 @@ abstract class AbstractDataFormat implements DataFormat {
         .add("description", getDescription())
         .add("contentType", getContentType())
         .add("defaultExtension", getDefaultExtention())
-        .add("extensions", Arrays.toString(getExtensions()))
+        .add("extensions", getExtensions())
         .add("generatorClassName",
             generator != null ? generator.getClass().getCanonicalName() : null)
         .add("checkerClassName",

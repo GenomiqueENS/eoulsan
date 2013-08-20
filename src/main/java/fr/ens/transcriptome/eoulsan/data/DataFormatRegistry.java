@@ -144,9 +144,9 @@ public class DataFormatRegistry {
       throw new EoulsanException(
           "The prefix of a DataType can't contains tab character: " + prefix);
 
-    final String[] extensions = df.getExtensions();
+    final List<String> extensions = df.getExtensions();
 
-    if (extensions == null || extensions.length == 0)
+    if (extensions == null || extensions.size() == 0)
       throw new EoulsanException(
           "The extensions of a DataFormat can't be null or empty.");
 
