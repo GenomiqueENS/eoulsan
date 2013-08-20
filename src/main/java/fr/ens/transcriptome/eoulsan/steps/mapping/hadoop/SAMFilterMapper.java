@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
 import java.io.IOException;
@@ -189,7 +190,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
                 + context.getTaskAttemptID().toString());
         final Writer writer =
             new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
-                context.getConfiguration()), "ISO-8859-1");
+                context.getConfiguration()), SAM_CHARSET);
 
         for (String l : this.headers)
           writer.write(l + "\n");

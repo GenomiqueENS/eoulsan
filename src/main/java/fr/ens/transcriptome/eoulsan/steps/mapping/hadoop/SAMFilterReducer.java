@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
@@ -162,7 +163,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       if (bestFile != null) {
         final BufferedReader reader =
             new BufferedReader(new InputStreamReader(fs.open(bestFile),
-                "ISO-8859-1"));
+                SAM_CHARSET));
 
         String line = null;
 

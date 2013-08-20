@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.io.FileCharsets;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -166,8 +168,6 @@ public final class Globals {
   /** Design file version. */
   public static final double DESIGN_FILE_VERSION = 1.1;
 
-  public static final String DEFAULT_FILE_ENCODING = "UTF-8";
-
   /**
    * The name of the system property that contains the list of libraries to
    * repack for hadoop mode.
@@ -198,6 +198,18 @@ public final class Globals {
   /** Remove design replicate info when obfuscate design default. */
   public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT =
       true;
+
+  //
+  // Files encoding
+  //
+
+  /** Default file encoding. */
+  public static final String DEFAULT_FILE_ENCODING =
+      FileCharsets.UTF8_FILE_ENCODING;
+
+  /** Default charset. */
+  public static final Charset DEFAULT_CHARSET = Charset
+      .forName(DEFAULT_FILE_ENCODING);
 
   //
   // Private constants

@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.io.FileCharsets;
 
 /**
  * Utility class for launching external process.
@@ -455,8 +456,8 @@ public final class ProcessUtils {
     @Override
     public void run() {
       try {
-        while (new BufferedReader(new InputStreamReader(err, "ISO-8859-1"))
-            .readLine() != null) {
+        while (new BufferedReader(new InputStreamReader(err,
+            FileCharsets.LATIN1_CHARSET)).readLine() != null) {
         }
 
         err.close();

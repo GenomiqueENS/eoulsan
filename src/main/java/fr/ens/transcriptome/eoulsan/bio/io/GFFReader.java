@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
+
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
@@ -31,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -50,9 +51,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     Closeable {
-
-  /* Default Charset. */
-  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
   private BufferedReader reader;
   private GFFEntry result = null;
@@ -201,7 +199,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
+    this.reader = new BufferedReader(new InputStreamReader(is, GFF_CHARSET));
   }
 
   /**
@@ -213,7 +211,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     if (file == null)
       throw new NullPointerException("File is null");
 
-    this.reader = FileUtils.createBufferedReader(file, CHARSET);
+    this.reader = FileUtils.createBufferedReader(file, GFF_CHARSET);
   }
 
   /**
@@ -222,6 +220,6 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    */
   public GFFReader(final String filename) throws FileNotFoundException {
 
-    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
+    this.reader = FileUtils.createBufferedReader(filename, GFF_CHARSET);
   }
 }

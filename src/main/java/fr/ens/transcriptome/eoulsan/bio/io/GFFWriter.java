@@ -24,17 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
 
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a GFF writer.
@@ -42,9 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class GFFWriter implements Closeable {
-
-  /* Default Charset. */
-  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
   private Writer writer;
 
@@ -118,7 +115,7 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os, CHARSET);
+    this.writer = FileUtils.createFastBufferedWriter(os, GFF_CHARSET);
   }
 
   /**
@@ -127,7 +124,7 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile, CHARSET);
+    this.writer = FileUtils.createFastBufferedWriter(outputFile, GFF_CHARSET);
   }
 
   /**
@@ -136,6 +133,7 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final String outputFilename) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFilename, CHARSET);
+    this.writer =
+        FileUtils.createFastBufferedWriter(outputFilename, GFF_CHARSET);
   }
 }

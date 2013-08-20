@@ -54,6 +54,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.io.FileCharsets;
 
 /**
  * This class define useful method to handle files.
@@ -64,8 +65,6 @@ public class FileUtils {
 
   /** The default size of the buffer. */
   private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
-  /** The charset to use. */
-  private static final String CHARSET = System.getProperty("file.encoding");
 
   private static final boolean USE_CHANNEL = false;
 
@@ -317,7 +316,7 @@ public class FileUtils {
       return new BufferedReader(new InputStreamReader(is, charset));
 
     return new BufferedReader(new InputStreamReader(is,
-        Charset.forName(CHARSET)));
+        FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -346,12 +345,12 @@ public class FileUtils {
       return new BufferedReader(new InputStreamReader(is, charset));
 
     return new BufferedReader(new InputStreamReader(is,
-        Charset.forName(CHARSET)));
+        FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param filename Name of the file to write
    * @param charset Charset to use
    * @return a BufferedWriter
@@ -368,7 +367,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param filename Name of the file to write
    * @return a BufferedWriter
    * @throws IOException if the file is not found
@@ -381,7 +380,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param file File to write
    * @return a BufferedWriter
    * @throws IOException if the file is not found
@@ -394,7 +393,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param file File to write
    * @param charset Charset to use
    * @return a BufferedWriter
@@ -406,12 +405,12 @@ public class FileUtils {
     final OutputStream os = createOutputStream(file);
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
-        charset != null ? charset : Charset.forName(CHARSET)));
+        charset != null ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param os OutputStream to write
    * @return a BufferedWriter
    * @throws FileNotFoundException if the file is not found
@@ -424,7 +423,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param os OutputStream to write
    * @return a BufferedWriter
    * @throws FileNotFoundException if the file is not found
@@ -437,7 +436,7 @@ public class FileUtils {
       throw new NullPointerException("The output stream is null");
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(os,
-        charset != null ? charset : Charset.forName(CHARSET)));
+        charset != null ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -467,12 +466,12 @@ public class FileUtils {
             .newOutputStream(outChannel));
 
     return new UnSynchronizedBufferedWriter(new OutputStreamWriter(gzos,
-        Charset.forName(CHARSET)));
+        FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param filename Name of the file to write
    * @return a BufferedWriter
    * @throws IOException if the file is not found
@@ -485,7 +484,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param filename Name of the file to write
    * @param charset Charset to use
    * @return a BufferedWriter
@@ -502,7 +501,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param file File to write
    * @return a BufferedWriter
    * @throws IOException if the file is not found
@@ -515,7 +514,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param file File to write
    * @param charset Charset to use
    * @return a BufferedWriter
@@ -527,12 +526,12 @@ public class FileUtils {
     final OutputStream os = createOutputStream(file);
 
     return new BufferedWriter(new OutputStreamWriter(os, charset != null
-        ? charset : Charset.forName(CHARSET)));
+        ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param os OutputStream to write
    * @return a BufferedWriter
    * @throws FileNotFoundException if the file is not found
@@ -545,7 +544,7 @@ public class FileUtils {
 
   /**
    * Utility method to create fast BufferedWriter. Warning the buffer is not
-   * safe-thread. The created file use ISO-8859-1 encoding.
+   * safe-thread.
    * @param os OutputStream to write
    * @param charset Charset to use
    * @return a BufferedWriter
@@ -559,7 +558,7 @@ public class FileUtils {
       throw new NullPointerException("The output stream is null");
 
     return new BufferedWriter(new OutputStreamWriter(os, charset != null
-        ? charset : Charset.forName(CHARSET)));
+        ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -589,7 +588,7 @@ public class FileUtils {
             .newOutputStream(outChannel));
 
     return new BufferedWriter(new OutputStreamWriter(gzos,
-        Charset.forName(CHARSET)));
+        FileCharsets.SYSTEM_CHARSET));
   }
 
   /**

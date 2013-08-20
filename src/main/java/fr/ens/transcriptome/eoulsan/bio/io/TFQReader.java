@@ -24,12 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.FASTQ_CHARSET;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -43,9 +44,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class TFQReader implements ReadSequenceReader {
-
-  /* Default Charset. */
-  private static final Charset CHARSET = Charset.forName("ISO-8859-1");
 
   private BufferedReader reader;
 
@@ -159,7 +157,7 @@ public class TFQReader implements ReadSequenceReader {
     if (is == null)
       throw new NullPointerException("InputStream is null");
 
-    this.reader = FileUtils.createBufferedReader(is, CHARSET);
+    this.reader = FileUtils.createBufferedReader(is, FASTQ_CHARSET);
     this.reuse = reuseResultObject;
   }
 
@@ -186,7 +184,7 @@ public class TFQReader implements ReadSequenceReader {
     if (file == null)
       throw new NullPointerException("File is null");
 
-    this.reader = FileUtils.createBufferedReader(file, CHARSET);
+    this.reader = FileUtils.createBufferedReader(file, FASTQ_CHARSET);
     this.reuse = reuseResultObject;
   }
 
@@ -213,7 +211,7 @@ public class TFQReader implements ReadSequenceReader {
     if (filename == null)
       throw new NullPointerException("File is null");
 
-    this.reader = FileUtils.createBufferedReader(filename, CHARSET);
+    this.reader = FileUtils.createBufferedReader(filename, FASTQ_CHARSET);
     this.reuse = reuseResultObject;
   }
 

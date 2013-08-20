@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
+import fr.ens.transcriptome.eoulsan.bio.io.BioCharsets;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -769,7 +770,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
               InputStream is = p.getInputStream();
               BufferedReader buff =
-                  new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
+                  new BufferedReader(new InputStreamReader(is,
+                      BioCharsets.SAM_CHARSET));
               String line = "";
 
               while ((line = buff.readLine()) != null) {

@@ -44,6 +44,7 @@ import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
+import fr.ens.transcriptome.eoulsan.io.FileCharsets;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -803,7 +804,7 @@ public final class PathUtils {
           try {
             IOUtils.copyBytes(in, out, conf, false);
             if (addString != null)
-              out.write(addString.getBytes("UTF-8"));
+              out.write(addString.getBytes(FileCharsets.UTF8_CHARSET));
 
           } finally {
             in.close();
