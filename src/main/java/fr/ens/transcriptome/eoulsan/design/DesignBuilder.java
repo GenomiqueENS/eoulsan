@@ -368,6 +368,20 @@ public class DesignBuilder {
   }
 
   /**
+   * Add filenames to the design builder
+   * @param filenames array with the filenames to add
+   * @throws EoulsanException if the file does not exists
+   */
+  public void addFiles(final List<String> filenames) throws EoulsanException {
+
+    if (filenames == null)
+      return;
+
+    for (String filename : filenames)
+      addFile(filename);
+  }
+
+  /**
    * Add all the sample from a Casava design.
    * @param casavaDesign The Casava design object
    * @param projectName name of the project

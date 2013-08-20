@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -83,7 +84,7 @@ public class UploadS3Action extends AbstractAction {
   }
 
   @Override
-  public void action(final String[] arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -93,7 +94,8 @@ public class UploadS3Action extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, arguments, true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -105,14 +107,14 @@ public class UploadS3Action extends AbstractAction {
           "Error while parsing command line arguments: " + e.getMessage());
     }
 
-    if (arguments.length != argsOptions + 3) {
+    if (arguments.size() != argsOptions + 3) {
       help(options);
     }
 
-    final File paramFile = new File(arguments[argsOptions]);
-    final File designFile = new File(arguments[argsOptions + 1]);
+    final File paramFile = new File(arguments.get(argsOptions));
+    final File designFile = new File(arguments.get(argsOptions + 1));
     final DataFile s3Path =
-        new DataFile(StringUtils.replacePrefix(arguments[argsOptions + 2],
+        new DataFile(StringUtils.replacePrefix(arguments.get(argsOptions + 2),
             "s3:/", "s3n:/"));
     final String jobDescription = "Upload data to " + s3Path;
 

@@ -24,8 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -45,7 +48,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
@@ -63,9 +65,9 @@ public abstract class Main {
 
   private final String launchModeName;
 
-  private String[] args;
+  private List<String> args;
   private Action action;
-  private String[] actionArgs;
+  private List<String> actionArgs;
 
   private String logLevel;
   private String logFile;
@@ -90,9 +92,9 @@ public abstract class Main {
    * Get command line arguments.
    * @return Returns the arguments
    */
-  public String[] getArgs() {
+  public List<String> getArgs() {
 
-    return this.args;
+    return unmodifiableList(this.args);
   }
 
   /**
@@ -108,9 +110,9 @@ public abstract class Main {
    * Get the action arguments.
    * @return Returns the actionArgs
    */
-  public String[] getActionArgs() {
+  public List<String> getActionArgs() {
 
-    return this.actionArgs;
+    return unmodifiableList(this.actionArgs);
   }
 
   /**
@@ -235,7 +237,8 @@ public abstract class Main {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, args, true);
+      final CommandLine line =
+          parser.parse(options, args.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -298,7 +301,7 @@ public abstract class Main {
     }
 
     // No arguments found
-    if (args == null || args.length == argsOptions) {
+    if (args == null || args.size() == argsOptions) {
 
       Common.showErrorMessageAndExit("This program needs one argument."
           + " Use the -h option to get more information.\n");
@@ -501,9 +504,8 @@ public abstract class Main {
   private void parseAction(final int optionsCount) {
 
     // Set action name and arguments
-    final String actionName = args[optionsCount].trim().toLowerCase();
-    this.actionArgs =
-        StringUtils.arrayWithoutFirstsElement(args, optionsCount + 1);
+    final String actionName = args.get(optionsCount).trim().toLowerCase();
+    this.actionArgs = args.subList(optionsCount + 1, args.size() - 1);
 
     // Test if is in hadoop mode
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
@@ -555,7 +557,7 @@ public abstract class Main {
   Main(final String modeName, final String[] args) {
 
     this.launchModeName = modeName;
-    this.args = args;
+    this.args = Arrays.asList(args);
 
     // Parse the command line
     final int optionsCount = parseCommandLine();

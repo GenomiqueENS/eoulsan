@@ -122,7 +122,7 @@ public class ExecJarHadoopAction extends AbstractAction {
   }
 
   @Override
-  public void action(String[] arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -137,7 +137,8 @@ public class ExecJarHadoopAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, arguments, true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -176,14 +177,14 @@ public class ExecJarHadoopAction extends AbstractAction {
           "Error while parsing command line arguments: " + e.getMessage());
     }
 
-    if (arguments.length != argsOptions + 3) {
+    if (arguments.size() != argsOptions + 3) {
       help(options);
     }
 
     // Get the command line arguments
-    final String paramPathname = convertS3URL(arguments[argsOptions]);
-    final String designPathname = convertS3URL(arguments[argsOptions + 1]);
-    final String destPathname = convertS3URL(arguments[argsOptions + 2]);
+    final String paramPathname = convertS3URL(arguments.get(argsOptions));
+    final String designPathname = convertS3URL(arguments.get(argsOptions + 1));
+    final String destPathname = convertS3URL(arguments.get(argsOptions + 2));
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,

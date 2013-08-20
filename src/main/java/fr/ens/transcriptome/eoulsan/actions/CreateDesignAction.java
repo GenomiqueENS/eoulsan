@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define an action to create design file.
@@ -73,7 +73,7 @@ public class CreateDesignAction extends AbstractAction {
   }
 
   @Override
-  public void action(final String[] arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -87,7 +87,8 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, arguments, true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Pair-end option
       if (line.hasOption("pair-end")) {
@@ -141,8 +142,8 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      final String[] newArgs =
-          StringUtils.arrayWithoutFirstsElement(arguments, argsOptions);
+      final List<String> newArgs =
+          arguments.subList(argsOptions, arguments.size() - 1);
 
       final DesignBuilder db = new DesignBuilder();
 

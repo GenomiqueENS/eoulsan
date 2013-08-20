@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import java.util.List;
+
 /**
  * This interface define an action.
  * @since 1.0
@@ -47,7 +49,7 @@ public interface Action {
    * Execute action.
    * @param arguments arguments of the action.
    */
-  public void action(String[] arguments);
+  public void action(List<String> arguments);
 
   /**
    * Test if the action can be executed in hadoop Jar mode.

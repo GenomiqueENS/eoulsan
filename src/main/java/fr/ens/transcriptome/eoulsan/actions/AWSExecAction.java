@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
@@ -64,7 +65,7 @@ public class AWSExecAction extends AbstractAction {
   }
 
   @Override
-  public void action(final String[] arguments) {
+  public void action(final List<String> arguments) {
 
     LOGGER.severe("The \""
         + getName() + "\" action has been renamed to \""

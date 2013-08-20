@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -65,7 +66,7 @@ public class CreateHadoopJarAction extends AbstractAction {
   }
 
   @Override
-  public void action(final String[] arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -75,7 +76,8 @@ public class CreateHadoopJarAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, arguments, true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -87,7 +89,7 @@ public class CreateHadoopJarAction extends AbstractAction {
           "Error while parsing command line arguments: " + e.getMessage());
     }
 
-    if (arguments.length != argsOptions) {
+    if (arguments.size() != argsOptions) {
       help(options);
     }
 

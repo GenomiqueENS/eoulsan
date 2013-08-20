@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -77,7 +78,7 @@ public class ExecAction extends AbstractAction {
   }
 
   @Override
-  public void action(final String[] arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -89,7 +90,8 @@ public class ExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options, arguments, true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -107,12 +109,12 @@ public class ExecAction extends AbstractAction {
           "Error while parsing command line arguments: " + e.getMessage());
     }
 
-    if (arguments.length != argsOptions + 2) {
+    if (arguments.size() != argsOptions + 2) {
       help(options);
     }
 
-    final File paramFile = new File(arguments[argsOptions]);
-    final File designFile = new File(arguments[argsOptions + 1]);
+    final File paramFile = new File(arguments.get(argsOptions));
+    final File designFile = new File(arguments.get(argsOptions + 1));
 
     // Execute program in local mode
     run(paramFile, designFile, jobDescription);
