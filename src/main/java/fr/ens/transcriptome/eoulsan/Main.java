@@ -28,6 +28,7 @@ import static java.util.Collections.unmodifiableList;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -61,6 +62,10 @@ public abstract class Main {
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
+  private static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
+  private static final String EOULSAN_SCRIPT_PATH_JVM_ARG =
+      "eoulsan.script.path";
+
   private static Main main;
 
   private final String launchModeName;
@@ -86,6 +91,43 @@ public abstract class Main {
   public static Main getInstance() {
 
     return main;
+  }
+
+  /**
+   * Get java executable path.
+   * @return the path to the java executable
+   */
+  public String getJavaExecutablePath() {
+
+    return System.getProperty("java.home") + "/bin/java";
+  }
+
+  /**
+   * Get JVM arguments.
+   * @return the JVM arguments as an array
+   */
+  public List<String> getJVMArgs() {
+
+    return ManagementFactory.getRuntimeMXBean().getInputArguments();
+  }
+
+  /**
+   * Get Eoulsan classpath. The result of the method is based on the content of
+   * the -Deoulsan.hadoop.libs JVM argument.
+   * @return the JVM class as a String
+   */
+  public String getClassPath() {
+
+    return System.getProperty(EOULSAN_CLASSPATH_JVM_ARG);
+  }
+
+  /**
+   * Get Eoulsan script path.
+   * @return the Eoulsan script path
+   */
+  public String getEoulsanScriptPath() {
+
+    return System.getProperty(EOULSAN_SCRIPT_PATH_JVM_ARG);
   }
 
   /**
@@ -505,7 +547,7 @@ public abstract class Main {
 
     // Set action name and arguments
     final String actionName = args.get(optionsCount).trim().toLowerCase();
-    this.actionArgs = args.subList(optionsCount + 1, args.size() - 1);
+    this.actionArgs = args.subList(optionsCount + 1, args.size());
 
     // Test if is in hadoop mode
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();

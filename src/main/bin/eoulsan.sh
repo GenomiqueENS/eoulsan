@@ -65,14 +65,16 @@ fi
 
 COMMON_LIBS=$(make_paths $LIBDIR)
 LOCAL_LIBS=$(make_paths $LIBDIR/local)
-PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS_DIR)
+PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS)
+APP_CLASSPATH=$COMMON_LIBS:$LOCAL_LIBS:$PLUGINS:$PLUGINS_LIBS
 
 # Launch Eoulsan
 $JAVA_CMD \
 		$JVM_OPTS \
 		-Xmx${MEMORY}m \
-		-cp $COMMON_LIBS:$LOCAL_LIBS:$PLUGINS:$PLUGINS_LIBS \
-		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \
+		-cp $APP_CLASSPATH \
+		-Deoulsan.script.path="$0" \
+		-Deoulsan.classpath=$APP_CLASSPATH \
 		-Deoulsan.launch.mode=local \
 		-Deoulsan.launch.script.path=$0 \
 		fr.ens.transcriptome.eoulsan.Main "$@"
