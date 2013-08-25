@@ -50,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
+import fr.ens.transcriptome.eoulsan.core.MultithreadedSampleProcessing;
 import fr.ens.transcriptome.eoulsan.core.ProcessSample;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -70,7 +71,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Claire Wallon
  */
 @LocalOnly
-public class SAMFilterLocalStep extends AbstractSAMFilterStep {
+public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
+    MultithreadedSampleProcessing {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -79,37 +81,40 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
   public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
-    // Process all samples
     return ProcessSampleExecutor.processAllSamples(context, design, status,
-        getLocalThreads(), new ProcessSample() {
+        getLocalThreads(), getProcessSample());
+  }
 
-          @Override
-          public void processSample(final StepContext context,
-              final Sample sample, final StepStatus status)
-              throws ProcessSampleException {
+  @Override
+  public ProcessSample getProcessSample() {
 
-            // Create the reporter
-            final Reporter reporter = new LocalReporter();
+    return new ProcessSample() {
 
-            try {
+      @Override
+      public void processSample(final StepContext context, final Sample sample,
+          final StepStatus status) throws ProcessSampleException {
 
-              // Get the read filter
-              final MultiReadAlignmentsFilter filter =
-                  getAlignmentsFilter(reporter, COUNTER_GROUP);
-              LOGGER.info("Read alignments filters to apply: "
-                  + Joiner.on(", ").join(filter.getFilterNames()));
+        // Create the reporter
+        final Reporter reporter = new LocalReporter();
 
-              filterSample(context, sample, reporter, status, filter);
+        try {
 
-            } catch (IOException e) {
-              throwException(e, "Error while filtering: " + e.getMessage());
-            } catch (EoulsanException e) {
-              throwException(e,
-                  "Error while initializing filter: " + e.getMessage());
-            }
-          }
+          // Get the read filter
+          final MultiReadAlignmentsFilter filter =
+              getAlignmentsFilter(reporter, COUNTER_GROUP);
+          LOGGER.info("Read alignments filters to apply: "
+              + Joiner.on(", ").join(filter.getFilterNames()));
 
-        });
+          filterSample(context, sample, reporter, status, filter);
+
+        } catch (IOException e) {
+          throwException(e, "Error while filtering: " + e.getMessage());
+        } catch (EoulsanException e) {
+          throwException(e,
+              "Error while initializing filter: " + e.getMessage());
+        }
+      } // End of processSample()
+    };
   }
 
   /**

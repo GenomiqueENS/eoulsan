@@ -45,9 +45,10 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.MultithreadedSampleProcessing;
 import fr.ens.transcriptome.eoulsan.core.ProcessSample;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -65,7 +66,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Maria Bernard
  */
 @LocalOnly
-public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
+public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
+    MultithreadedSampleProcessing {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -75,53 +77,57 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       final StepStatus status) {
 
     return ProcessSampleExecutor.processAllSamples(context, design, status,
-        getLocalThreads(), new ProcessSample() {
+        getLocalThreads(), getProcessSample());
+  }
 
-          @Override
-          public void processSample(final StepContext context, final Sample sample,
-              final StepStatus status) throws ProcessSampleException {
+  @Override
+  public ProcessSample getProcessSample() {
 
-            // Create the reporter
-            final Reporter reporter = new LocalReporter();
+    return new ProcessSample() {
 
-            try {
+      @Override
+      public void processSample(final StepContext context, final Sample sample,
+          final StepStatus status) throws ProcessSampleException {
 
-              // get input file count for the sample
-              final int inFileCount =
-                  context
-                      .getInputDataFileCount(DataFormats.READS_FASTQ, sample);
+        // Create the reporter
+        final Reporter reporter = new LocalReporter();
 
-              if (inFileCount < 1)
-                throw new IOException("No reads file found.");
+        try {
 
-              if (inFileCount > 2)
-                throw new IOException(
-                    "Cannot handle more than 2 reads files at the same time.");
+          // get input file count for the sample
+          final int inFileCount =
+              context.getInputDataFileCount(DataFormats.READS_FASTQ, sample);
 
-              // Get the read filter
-              final MultiReadFilter filter =
-                  getReadFilter(reporter, COUNTER_GROUP);
-              LOGGER.info("Reads filters to apply: "
-                  + Joiner.on(", ").join(filter.getFilterNames()));
+          if (inFileCount < 1)
+            throw new IOException("No reads file found.");
 
-              // Run the filter in single or pair-end mode
-              if (inFileCount == 1)
+          if (inFileCount > 2)
+            throw new IOException(
+                "Cannot handle more than 2 reads files at the same time.");
 
-                singleEnd(context, sample, reporter, status, filter);
-              else
+          // Get the read filter
+          final MultiReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
+          LOGGER.info("Reads filters to apply: "
+              + Joiner.on(", ").join(filter.getFilterNames()));
 
-                pairedEnd(context, sample, reporter, status, filter);
+          // Run the filter in single or pair-end mode
+          if (inFileCount == 1)
 
-            } catch (FileNotFoundException e) {
-              throwException(e, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-              throwException(e, "Error while filtering: " + e.getMessage());
-            } catch (EoulsanException e) {
-              throwException(e,
-                  "Error while initializing filter: " + e.getMessage());
-            }
-          }
-        });
+            singleEnd(context, sample, reporter, status, filter);
+          else
+
+            pairedEnd(context, sample, reporter, status, filter);
+
+        } catch (FileNotFoundException e) {
+          throwException(e, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+          throwException(e, "Error while filtering: " + e.getMessage());
+        } catch (EoulsanException e) {
+          throwException(e,
+              "Error while initializing filter: " + e.getMessage());
+        }
+      }
+    };
 
   }
 

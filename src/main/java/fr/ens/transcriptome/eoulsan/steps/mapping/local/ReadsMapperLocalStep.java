@@ -42,6 +42,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.transcriptome.eoulsan.core.MultithreadedSampleProcessing;
+import fr.ens.transcriptome.eoulsan.core.ProcessSample;
+import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -63,7 +66,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Maria Bernard
  */
 @LocalOnly
-public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
+public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
+    MultithreadedSampleProcessing {
 
   /** Logger */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -78,112 +82,125 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   public StepResult execute(final Design design, final StepContext context,
       final StepStatus status) {
 
-    try {
+    return ProcessSampleExecutor.processAllSamples(context, design, status, 1,
+        getProcessSample());
+  }
 
-      final SequenceReadsMapper mapper = getMapper();
+  @Override
+  public ProcessSample getProcessSample() {
 
-      // Load genome description object
-      final GenomeDescription genomeDescription;
-      if (design.getSampleCount() > 0) {
-        genomeDescription =
-            GenomeDescription.load(context.getInputDataFile(
-                DataFormats.GENOME_DESC_TXT, design.getSample(0)).open());
-      } else
-        genomeDescription = null;
+    return new ProcessSample() {
 
-      for (Sample s : design.getSamples()) {
+      private boolean firstSample = true;
+      private GenomeDescription genomeDescription;
+      private final SequenceReadsMapper mapper = getMapper();
 
-        // Create the reporter
-        final Reporter reporter = new LocalReporter();
+      @Override
+      public void processSample(final StepContext context, final Sample s,
+          final StepStatus status) throws ProcessSampleException {
+        try {
 
-        final File archiveIndexFile =
-            context.getInputDataFile(getMapper().getArchiveFormat(), s)
-                .toFile();
+          // Load genome description object
+          if (this.firstSample) {
+            if (this.genomeDescription == null) {
+              genomeDescription =
+                  GenomeDescription.load(context.getInputDataFile(
+                      DataFormats.GENOME_DESC_TXT, s).open());
+            } else
+              genomeDescription = null;
+            this.firstSample = false;
+          }
 
-        final File indexDir =
-            new File(StringUtils.filenameWithoutExtension(archiveIndexFile
-                .getPath()));
+          // Create the reporter
+          final Reporter reporter = new LocalReporter();
 
-        // get input file count for the sample
-        final int inFileCount =
-            context.getInputDataFileCount(DataFormats.READS_FASTQ, s);
+          final File archiveIndexFile =
+              context.getInputDataFile(getMapper().getArchiveFormat(), s)
+                  .toFile();
 
-        if (inFileCount < 1)
-          throw new IOException("No reads file found.");
+          final File indexDir =
+              new File(StringUtils.filenameWithoutExtension(archiveIndexFile
+                  .getPath()));
 
-        if (inFileCount > 2)
-          throw new IOException(
-              "Cannot handle more than 2 reads files at the same time.");
+          // get input file count for the sample
+          final int inFileCount =
+              context.getInputDataFileCount(DataFormats.READS_FASTQ, s);
 
-        String logMsg = "";
+          if (inFileCount < 1)
+            throw new IOException("No reads file found.");
 
-        // Single end mode
-        if (inFileCount == 1) {
+          if (inFileCount > 2)
+            throw new IOException(
+                "Cannot handle more than 2 reads files at the same time.");
 
-          // Get the source
-          final File inFile =
-              context.getInputDataFile(READS_FASTQ, s, 0).toFile();
+          String logMsg = "";
 
-          // Single read mapping
-          mapSingleEnd(context, s, mapper, inFile, archiveIndexFile, indexDir,
-              reporter);
+          // Single end mode
+          if (inFileCount == 1) {
 
-          logMsg =
-              "Mapping reads in "
-                  + s.getMetadata().getFastqFormat() + " with "
-                  + mapper.getMapperName() + " (" + s.getName() + ", "
-                  + inFile.getName() + ")";
+            // Get the source
+            final File inFile =
+                context.getInputDataFile(READS_FASTQ, s, 0).toFile();
+
+            // Single read mapping
+            mapSingleEnd(context, s, mapper, inFile, archiveIndexFile,
+                indexDir, reporter);
+
+            logMsg =
+                "Mapping reads in "
+                    + s.getMetadata().getFastqFormat() + " with "
+                    + mapper.getMapperName() + " (" + s.getName() + ", "
+                    + inFile.getName() + ")";
+          }
+
+          // Paired end mode
+          if (inFileCount == 2) {
+
+            // Get the source
+            final File inFile1 =
+                context.getInputDataFile(READS_FASTQ, s, 0).toFile();
+
+            final File inFile2 =
+                context.getInputDataFile(READS_FASTQ, s, 1).toFile();
+
+            // Single read mapping
+            mapPairedEnd(context, s, mapper, inFile1, inFile2,
+                archiveIndexFile, indexDir, reporter);
+
+            logMsg =
+                "Mapping reads in "
+                    + s.getMetadata().getFastqFormat() + " with "
+                    + mapper.getMapperName() + " (" + s.getName() + ", "
+                    + inFile1.getName() + "," + inFile2.getName() + ")";
+          }
+
+          final File samOutputFile = mapper.getSAMFile(genomeDescription);
+
+          // Parse SAM output file to get information for reporter object
+          parseSAMResults(samOutputFile, reporter);
+
+          // Clean mapper temporary files
+          mapper.clean();
+
+          // define final output SAM file
+          final File outFile =
+              context.getOutputDataFile(MAPPER_RESULTS_SAM, s).toFile();
+
+          // Rename the output SAM file to its final name
+          Files.move(samOutputFile, outFile);
+
+          // Add counters for this sample to log file
+          status.setSampleCounters(s, reporter, COUNTER_GROUP, logMsg);
+
+        } catch (FileNotFoundException e) {
+
+          throwException(e, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+
+          throwException(e, "Error while filtering: " + e.getMessage());
         }
-
-        // Paired end mode
-        if (inFileCount == 2) {
-
-          // Get the source
-          final File inFile1 =
-              context.getInputDataFile(READS_FASTQ, s, 0).toFile();
-
-          final File inFile2 =
-              context.getInputDataFile(READS_FASTQ, s, 1).toFile();
-
-          // Single read mapping
-          mapPairedEnd(context, s, mapper, inFile1, inFile2, archiveIndexFile,
-              indexDir, reporter);
-
-          logMsg =
-              "Mapping reads in "
-                  + s.getMetadata().getFastqFormat() + " with "
-                  + mapper.getMapperName() + " (" + s.getName() + ", "
-                  + inFile1.getName() + "," + inFile2.getName() + ")";
-        }
-
-        final File samOutputFile = mapper.getSAMFile(genomeDescription);
-
-        // Parse SAM output file to get information for reporter object
-        parseSAMResults(samOutputFile, reporter);
-
-        // Clean mapper temporary files
-        mapper.clean();
-
-        // define final output SAM file
-        final File outFile =
-            context.getOutputDataFile(MAPPER_RESULTS_SAM, s).toFile();
-
-        // Rename the output SAM file to its final name
-        Files.move(samOutputFile, outFile);
-
-        // Add counters for this sample to log file
-        status.setSampleCounters(s, reporter, COUNTER_GROUP, logMsg);
       }
-      return status.createStepResult();
-
-    } catch (FileNotFoundException e) {
-
-      return status.createStepResult(e, "File not found: " + e.getMessage());
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "error while filtering: " + e.getMessage());
-    }
+    };
   }
 
   /**

@@ -300,6 +300,10 @@ public class ProcessSampleExecutor {
     return status.createStepResult();
   }
 
+  //
+  // Utility methods
+  //
+
   /**
    * Get the number of threads to use from localThreads, maxLocalThreads and
    * global threads number.
