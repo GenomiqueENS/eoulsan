@@ -139,8 +139,9 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     // Set the quality format
     result.add(bowtieQualityArgument());
 
+    //TODO option used for specify sam file 
     // Output in SAM format
-    result.add("-S");
+    // result.add("-S");
 
     // Quiet mode
     result.add("--quiet");
