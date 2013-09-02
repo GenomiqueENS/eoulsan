@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.common.base.Charsets;
@@ -491,15 +492,14 @@ public abstract class MapperProcess {
         throw new IllegalStateException(
             "Streaming stdin in paired-end mode with "
                 + this.mapperName + " is not available");
-      } else {
-
-        this.writer1 =
-            new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
-                Charsets.ISO_8859_1);
-        this.writer2 =
-            new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
-                Charsets.ISO_8859_1);
       }
+
+      this.writer1 =
+          new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
+              Charsets.ISO_8859_1);
+      this.writer2 =
+          new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
+              Charsets.ISO_8859_1);
     }
 
     if (!this.isPairedEnd())
@@ -610,6 +610,19 @@ public abstract class MapperProcess {
       this.inputStdinMode = stdinMode;
       this.pairedEnd = pairedEnd;
 
+      // Define temporary files
+      final File tmpDir = mapper.getTempDirectory();
+      final UUID uuid = UUID.randomUUID();
+      this.tmpInFile1 =
+          new File(tmpDir, "mapper-inputfile1-" + uuid.toString() + ".fq");
+      this.tmpInFile2 =
+          new File(tmpDir, "mapper-inputfile2-" + uuid.toString() + ".fq");
+
+      this.tmpOutFile1 =
+          new File(tmpDir, "mapper-outputfile1-" + uuid.toString() + ".data");
+      this.tmpOutFile2 =
+          new File(tmpDir, "mapper-outputfile2-" + uuid.toString() + ".data");
+
       if (fileMode) {
         this.stdin = null;
         startProcess();
@@ -627,19 +640,9 @@ public abstract class MapperProcess {
             new OutputStreamWrapper(new FileOutputStream(this.tmpInFile1));
       }
 
-      final File tmpDir = mapper.getTempDirectory();
-      this.tmpInFile1 =
-          FileUtils.createTempFile(tmpDir, "mapper-inputfile1-", ".fq");
-      this.tmpInFile2 =
-          FileUtils.createTempFile(tmpDir, "mapper-inputfile2-", ".fq");
-
-      this.tmpOutFile1 =
-          FileUtils.createTempFile(tmpDir, "mapper-outputfile1-", ".data");
-      this.tmpOutFile2 =
-          FileUtils.createTempFile(tmpDir, "mapper-outputfile2-", ".data");
-
     } catch (InterruptedException e) {
       throw new IOException(e.getMessage());
     }
   }
+
 }
