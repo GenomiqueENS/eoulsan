@@ -18,7 +18,7 @@ PACKAGE_PATH=`echo $PACKAGE | sed 's/\./\//g'`
 
 
 rm -rf $PROJECT_NAME
-$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.DesignValidator
+$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.$PROJECT_NAME
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/client/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/server/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/shared/*
@@ -294,12 +294,12 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     <!--                                                               -->
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
-    <link type="text/css" rel="stylesheet" href="DesignValidator.css">
+    <link type="text/css" rel="stylesheet" href="$PROJECT_NAME.css">
 
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>Casava design validator</title>
+    <title>CASAVA/BCL2FASTQ samplesheet validator</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
@@ -328,7 +328,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     </noscript>
 
 <h4 align="right">__VERSION__</h4>
-<h1>Casava design validator</h1>
+<h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
 
     <table align="center">
       <!--tr>
@@ -363,7 +363,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 </html>
 EOF
 
-if [ -z $GIT_REVISION ]; then
+if [ -z "$GIT_REVISION" ]; then
 	GIT_REVISION=""
 else
 	GIT_REVISION="Revision $GIT_REVISION"
@@ -381,5 +381,5 @@ mv war ../$PROJECT_NAME-tmp
 rm -rf ../$PROJECT_NAME-tmp/WEB-INF
 cd ..
 rm -rf $PROJECT_NAME
-mv $PROJECT_NAME-tmp $PROJECT_NAME
+mv $PROJECT_NAME-tmp `echo $PROJECT_NAME | tr '[A-Z]' '[a-z]'`
 
