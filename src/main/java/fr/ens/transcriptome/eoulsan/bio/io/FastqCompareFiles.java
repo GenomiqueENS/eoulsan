@@ -69,7 +69,7 @@ public class FastqCompareFiles extends AbstractCompareFiles {
     final ReadSequenceReader reader2 = new FastqReader(inB);
 
     // Read the second file and check if ALL lines hashcode has been seen
-    for (ReadSequence read : reader1) {
+    for (ReadSequence read : reader2) {
 
       final int hashcode = read.toFastQ().hashCode();
 
