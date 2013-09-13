@@ -49,25 +49,25 @@ public class GFFWriter implements Closeable {
   private Writer writer;
 
   private boolean first = true;
-  private StringBuilder sb;
 
   private void writeMetadata(final GFFEntry entry) throws IOException {
 
+    final StringBuilder sb = new StringBuilder();
+
     if (!entry.isMetaDataEntry("gff-version"))
-      sb.append("##gff-version\t3\n");
+      sb.append("##gff-version 3\n");
 
     for (String k : entry.getMetadataKeyNames()) {
       for (String e : entry.getMetadataEntryValues(k)) {
         sb.append("##");
-        sb.append(StringUtils.protectGFF(k));
-        sb.append('\t');
-        sb.append(StringUtils.protectGFF(e));
+        sb.append(k);
+        sb.append(' ');
+        sb.append(e);
         sb.append('\n');
       }
     }
 
     this.writer.write(sb.toString());
-    this.sb.setLength(0);
   }
 
   /**
@@ -80,11 +80,11 @@ public class GFFWriter implements Closeable {
       return;
 
     if (first) {
-      this.sb = new StringBuilder();
       writeMetadata(entry);
       this.first = false;
     }
 
+    this.writer.write(entry.toString() + '\n');
   }
 
   /**
@@ -93,7 +93,6 @@ public class GFFWriter implements Closeable {
    */
   public void close() throws IOException {
 
-    this.sb = null;
     this.writer.close();
   }
 

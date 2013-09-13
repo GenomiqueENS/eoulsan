@@ -43,7 +43,7 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
   @Override
   public String getName() {
 
-    return "removemultimatches";
+    return FILTER_NAME;
   }
 
   @Override

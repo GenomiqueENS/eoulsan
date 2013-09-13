@@ -22,25 +22,31 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
+package fr.ens.transcriptome.eoulsan.util;
 
-import static fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime.newEoulsanRuntime;
+import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.File;
 
-public class EoulsanRuntimeDebug {
+import org.junit.Test;
 
-  public static void initDebugEoulsanRuntime() throws IOException,
-      EoulsanException {
+public class FileUtilsTest {
 
-    Logger.getLogger(Globals.APP_NAME).getParent().setLevel(Level.OFF);
+  @Test
+  public void relativizePathTest() {
 
-    if (!EoulsanRuntime.isRuntime())
-      newEoulsanRuntime(new Settings(true));
+    File r1 =
+        FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"), new File(
+            "/usr/share"));
 
-    Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
+    assertEquals(new File("doc/toto.txt"), r1);
+
+    File r2 =
+        FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"), new File(
+            "/usr/share/X11/data"));
+
+    assertEquals(new File("../../doc/toto.txt"), r2);
+
   }
 
 }

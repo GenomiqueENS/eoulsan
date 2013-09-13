@@ -22,25 +22,32 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan;
-
-import static fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime.newEoulsanRuntime;
+package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.InputStream;
 
-public class EoulsanRuntimeDebug {
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
-  public static void initDebugEoulsanRuntime() throws IOException,
-      EoulsanException {
+/**
+ * This class allow to compare two binary files.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
+public class BinaryCompareFile extends AbstractCompareFiles {
 
-    Logger.getLogger(Globals.APP_NAME).getParent().setLevel(Level.OFF);
+  @Override
+  public boolean compareNonOrderedFiles(InputStream inA, InputStream inB)
+      throws IOException {
 
-    if (!EoulsanRuntime.isRuntime())
-      newEoulsanRuntime(new Settings(true));
+    throw new UnsupportedOperationException();
+  }
 
-    Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
+  @Override
+  public boolean compareOrderedFiles(InputStream inA, InputStream inB)
+      throws IOException {
+
+    return FileUtils.compareFile(inA, inB);
   }
 
 }

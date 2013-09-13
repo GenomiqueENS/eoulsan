@@ -118,11 +118,7 @@ public final class CasavaDesignUtil {
       checkSampleId(sample.getSampleId(), sampleIds);
 
       // Check sample reference
-      if (isNullOrEmpty(sample.getSampleRef()))
-        throw new EoulsanException(
-            "Found a null or empty sample reference for sample: "
-                + sample.getSampleId() + ".");
-      checkCharset(sample.getSampleRef());
+      checkSampleRef(sample.getSampleId(), sample.getSampleRef());
 
       // Check index
       checkIndex(sample.getIndex());
@@ -131,11 +127,7 @@ public final class CasavaDesignUtil {
       checkSampleIndex(sample.getSampleId(), sample.getIndex(), samplesIndex);
 
       // Check the description
-      if (isNullOrEmpty(sample.getDescription()))
-        throw new EoulsanException(
-            "Found a null or empty description for sample: "
-                + sample.getSampleId() + ".");
-      checkCharset(sample.getDescription());
+      checkSampleDescription(sample.getSampleId(), sample.getDescription());
 
       // Check recipe
       if (isNullOrEmpty(sample.getRecipe()))
@@ -266,6 +258,28 @@ public final class CasavaDesignUtil {
     sampleIds.add(sampleId);
   }
 
+  private static void checkSampleRef(final String sampleId,
+      final String sampleRef) throws EoulsanException {
+
+    // Check if null of empty
+    if (isNullOrEmpty(sampleRef))
+      throw new EoulsanException(
+          "Found a null or empty sample reference for sample: "
+              + sampleId + ".");
+
+    // Check charset
+    checkCharset(sampleRef);
+
+    // Check for forbidden characters
+    for (int i = 0; i < sampleRef.length(); i++) {
+      final char c = sampleRef.charAt(i);
+      if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '-' || c == '_'))
+        throw new EoulsanException(
+            "Invalid sample reference, only letters, digits, ' ', '-' or '_' characters are allowed: "
+                + sampleRef + ".");
+    }
+  }
+
   private static void checkIndex(final String index) throws EoulsanException {
 
     if (index == null)
@@ -289,12 +303,34 @@ public final class CasavaDesignUtil {
       }
   }
 
+  private static void checkSampleDescription(final String sampleId,
+      final String sampleDescritpion) throws EoulsanException {
+
+    // Check if null of empty
+    if (isNullOrEmpty(sampleDescritpion))
+      throw new EoulsanException(
+          "Found a null or empty description for sample: " + sampleId);
+
+    // Check charset
+    checkCharset(sampleDescritpion);
+
+    // Check for forbidden characters
+    for (int i = 0; i < sampleDescritpion.length(); i++) {
+      final char c = sampleDescritpion.charAt(i);
+      if (c == '\'' || c == '\"')
+        throw new EoulsanException("Invalid sample description, '"
+            + c + "' character is not allowed: " + sampleDescritpion + ".");
+    }
+  }
+
   private static void checkSampleProject(final String sampleProject)
       throws EoulsanException {
 
+    // Check if null of empty
     if (isNullOrEmpty(sampleProject))
       throw new EoulsanException("Found a null or sample project.");
 
+    // Check for forbidden characters
     for (int i = 0; i < sampleProject.length(); i++) {
       final char c = sampleProject.charAt(i);
       if (!(Character.isLetterOrDigit(c) || c == '-' || c == '_'))
@@ -600,7 +636,7 @@ public final class CasavaDesignUtil {
 
     final String trimmed = s.trim();
 
-    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1)
+    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1 || s.indexOf('\'') != -1)
       return '\"' + trimmed + '\"';
     return trimmed;
   }
