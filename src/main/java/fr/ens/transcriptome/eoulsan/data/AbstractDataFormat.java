@@ -41,8 +41,6 @@ import fr.ens.transcriptome.eoulsan.core.Step;
  */
 abstract class AbstractDataFormat implements DataFormat {
 
-  private List<String> extensions;
-
   @Override
   public String getDescription() {
 
@@ -52,10 +50,7 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public List<String> getExtensions() {
 
-    if (this.extensions == null)
-      this.extensions = Collections.singletonList(getDefaultExtention());
-
-    return this.extensions;
+    return Collections.singletonList(getDefaultExtention());
   }
 
   @Override
@@ -127,7 +122,7 @@ abstract class AbstractDataFormat implements DataFormat {
   public int hashCode() {
 
     final Integer extensionsHashCode =
-        extensions == null ? null : extensions.hashCode();
+        getExtensions() == null ? null : getExtensions().hashCode();
     final Integer generatorHashCode =
         isGenerator() ? getGenerator().getClass().hashCode() : null;
     final Integer checkerHashCode =
