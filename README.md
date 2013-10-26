@@ -8,4 +8,3 @@ Eoulsan is available on the [Ecole Normale Supérieure Genomic platform website]
 Developers can visit the [Developer Wiki](http://code.google.com/p/eoulsan/wiki/MainPage) to get more information how to contribute to the Eoulsan project and develop plug-ins.
 
 Currently the Git reference repository is [https://code.google.com/p/eoulsan/](https://code.google.com/p/eoulsan/). **The GitHub repository is only for tests.** 
-
