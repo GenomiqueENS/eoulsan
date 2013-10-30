@@ -47,6 +47,8 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -1709,6 +1711,74 @@ public class FileUtils {
     final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
 
     return bigInt.toString(16);
+  }
+
+  /**
+   * Relativize a path from a base path.
+   * @param path path to relatize
+   * @param base base path (must be a directory)
+   * @return a File object with the relative path
+   */
+  public static final File relativizePath(final File path, final File base) {
+
+    if (path == null)
+      throw new NullPointerException("The path is null");
+
+    if (base == null)
+      return path;
+
+    final File absPath = path.getAbsoluteFile();
+    final File absBase = base.getAbsoluteFile();
+
+    List<String> pathNodes = new ArrayList<String>();
+    List<String> baseNodes = new ArrayList<String>();
+
+    File parent = absPath;
+    do {
+      pathNodes.add(parent.getName());
+    } while ((parent = parent.getParentFile()) != null);
+
+    parent = absBase;
+    do {
+      baseNodes.add(parent.getName());
+    } while ((parent = parent.getParentFile()) != null);
+
+    Collections.reverse(pathNodes);
+    Collections.reverse(baseNodes);
+
+    final int minSize = Math.min(pathNodes.size(), baseNodes.size());
+    int i = 0;
+
+    while (i < minSize && pathNodes.get(i).equals(baseNodes.get(i)))
+      i++;
+
+    final List<String> resultNodes = new ArrayList<String>();
+
+    if (i < baseNodes.size())
+      for (int j = 0; j < baseNodes.size() - i; j++)
+        resultNodes.add("..");
+
+    resultNodes.addAll(pathNodes.subList(i, pathNodes.size()));
+
+    return createFile(resultNodes);
+  }
+
+  /**
+   * Create a File object from a list of the node of the file path.
+   * @param pathNodes the list of the nodes of the path
+   * @return a new File object with the requested path
+   */
+  private static File createFile(List<String> pathNodes) {
+
+    File result = null;
+
+    for (String f : pathNodes)
+      if (result == null)
+        result = new File(f);
+      else
+        result = new File(result, f);
+
+    return result;
   }
 
 }
