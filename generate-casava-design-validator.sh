@@ -284,9 +284,12 @@ public class $PROJECT_NAME implements EntryPoint {
 
   private void retrieveGenomeList(final String genomesList, final String genomesURL) {
     
-    final String txt = genomesURL.trim().length() > 0 ? genomesURL.trim() : DEFAULT_GENOMES_MSG;
+    final String txt = genomesList == null || genomesList.trim().length() == 0 ? DEFAULT_GENOMES_MSG : genomesList.trim();
     
-    if (genomesURL.trim().length() > 0){
+    if (genomesURL == null || genomesURL.trim().length() == 0){
+      genomesTextarea.setText(txt);
+    
+    } else {
       try {
         
         loadGenomesFile(genomesURL);
@@ -296,9 +299,7 @@ public class $PROJECT_NAME implements EntryPoint {
         Window.alert("Couldn't retrieve Genome list: " + e.getMessage()); 
         genomesTextarea.setText(txt);
       }
-    
-    } else 
-        genomesTextarea.setText(txt);
+    }    
   }
   
   private void loadGenomesFile(final String url) throws Exception {
@@ -326,42 +327,48 @@ public class $PROJECT_NAME implements EntryPoint {
   
     
   private void retrieveIndexList(final String indexList, final String indexURL) {
+    Window.alert("call retrieve index list "+ indexList+ " url "+ indexURL+ "!");
     
-    final String txt = (indexList.trim().length() == 0 ? DEFAULT_INDEXES : indexList.trim());
+    final String txt = indexList == null || indexList.trim().length() == 0 ? DEFAULT_INDEXES : indexList.trim();
     
-    if (indexURL.trim().length() == 0)
+    if (indexURL == null || indexURL.trim().length() == 0)
       indexesTextarea.setText(txt);
     
     else {
-      
-      RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(indexURL));
-      
       try {
-        Request request = builder.sendRequest(null, new RequestCallback() {
-          
-          public void onError(Request request, Throwable exception) {
-            Window.alert("Couldn't retrieve index list url (" + indexURL + ")");
-            
-          }
-
-          public void onResponseReceived(Request request, Response response) {
-            if (200 == response.getStatusCode()) {
-              
-              indexesTextarea.setText(response.getText());
         
-            } else {
-              Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");
-              indexesTextarea.setText(txt);
-            }
-          }
-          
-        });
-        
-      } catch (RequestException e) {
+        loadIndexFile(indexURL);
+      
+      } catch(Exception e){
+        // Fail load file, used list send by param genomes
         Window.alert("Couldn't retrieve index list: " + e.getMessage()); 
         indexesTextarea.setText(txt);
       }
-    }
+    
+    } 
+  }
+  
+  private void loadIndexFile(final String url) throws Exception {
+  
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+    
+    Request request = builder.sendRequest(null, new RequestCallback() {
+      
+      public void onError(Request request, Throwable exception) {
+        Window.alert("Couldn't retrieve Genome list url (" + url + ")");
+        
+      }
+
+      public void onResponseReceived(Request request, Response response) {
+        if (200 == response.getStatusCode()) {
+          
+          indexesTextarea.setText(response.getText());
+    
+        } else {
+          Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");          
+        }
+      }
+    });
   }
   
   public void onModuleLoad() {
@@ -385,10 +392,10 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("tabsContainer").add(tp);
 
     
-    //retrieveIndexList(Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"));
+    retrieveIndexList(Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"));
     
     // Initialize widget values
-    indexesTextarea.setText(DEFAULT_INDEXES);
+    // indexesTextarea.setText(DEFAULT_INDEXES);
     indexesTextarea.setVisibleLines(40);
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
