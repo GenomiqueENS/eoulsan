@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GWT_PATH=~/Téléchargements/gwt-2.4.0
+GWT_PATH=/home/sperrin/Programmes/gwt-2.5.1
 PROJECT_NAME=DesignValidator
 GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
 
@@ -23,6 +23,17 @@ rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/client/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/server/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/shared/*
 
+cp $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml.ori
+head -n 20 $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml > $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml.tmp
+
+cat >> $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml.tmp << EOF
+  <inherits name='com.google.gwt.http.HTTP' />
+EOF
+
+tail -n +21 $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml >> $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml.tmp
+
+rm $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml
+mv $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml.tmp $PROJECT_NAME/src/fr/ens/transcriptome/cdv/$PROJECT_NAME.gwt.xml
 
 for f in `echo EoulsanException.java`
 do
@@ -48,8 +59,12 @@ package $PACKAGE.client;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
@@ -65,6 +80,14 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.core.client.GWT;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -107,9 +130,13 @@ public class $PROJECT_NAME implements EntryPoint {
 
 
   private static String DEFAULT_RESULT_MSG = "<pre>No valid design entered.</pre>";
+  // if none 
+  private static String DEFAULT_GENOMES_MSG = "[No genomes list received.]";
 
   private final TextArea inputTextarea = new TextArea();
   private final TextArea indexesTextarea = new TextArea();
+  private final TextArea genomesTextarea = new TextArea();
+  private final TextArea helpTextarea = new TextArea();
   private final HTML outputHTML = new HTML();
   private final TextBox flowcellTextBox = new TextBox();
   private final Button button = new Button("Check the Casava design");
@@ -142,6 +169,77 @@ public class $PROJECT_NAME implements EntryPoint {
         sample.setIndex(map.get(sample.getIndex()));
     }
 
+  }
+
+  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesFromForm) {
+    
+    if (genomesFromForm == null)
+      return Collections.emptyList();
+    
+    List<String> availablGenomes = new ArrayList<String>();
+    List<String> warnings = new ArrayList<String>();
+    boolean first = true;
+  
+    for (String line : genomesFromForm.trim().split("\n")) {
+      if (line.indexOf("=") > -1) {
+        String[] l = line.split("=");
+        availablGenomes.add(trimSpecificString(l[0]));
+        availablGenomes.add(trimSpecificString(l[1]));
+      }
+    }
+
+    Set<String> genomesDesign = new HashSet<String>();
+    for (CasavaSample sample : design) {
+      genomesDesign.add(sample.getSampleRef());
+    }
+    
+    for (String genomeSample : genomesDesign) {
+      if (!(availablGenomes.contains(trimSpecificString(genomeSample)))){
+        if (first)
+          warnings.add("\n");
+        warnings.add(genomeSample + " not available for detection contaminant.");
+        first = false;
+      }
+    }
+    
+    return warnings;
+  }
+
+  private static String trimSpecificString(final String s) {
+
+    StringBuilder rep = new StringBuilder();
+    String trimmed = s.trim().toLowerCase();
+    
+    String carToKeep = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (int i = 0; i < s.length(); i++) {
+      if (carToKeep.indexOf(trimmed.charAt(i)) != -1)
+        rep.append(trimmed.charAt(i));
+    }
+    return rep.toString();
+  }
+  
+  private String createListGenomes(final String genomesContentFile){
+    StringBuilder s = new StringBuilder();
+    // Header columns
+    s.append("#latin name, reference name\n");
+    for (String line : genomesContentFile.split("\n")) {
+    
+      if (! line.startsWith("#")){
+        String[] tab = line.split("\t");
+    
+        if (tab.length > 4) {
+          if (tab[4].trim().length() > 0){
+            s.append(tab[4].trim());
+            s.append("=");
+          }  
+          if (tab[2].trim().length() > 0)
+            s.append(tab[2].trim());
+            s.append("\n");
+        }
+      }
+    }
+
+    return s.toString();
   }
 
   private String getFlowcellId(final String s) {
@@ -184,13 +282,98 @@ public class $PROJECT_NAME implements EntryPoint {
     return sb.toString();
   }
 
+  private void retrieveGenomeList(final String genomesList, final String genomesURL) {
+    
+    final String txt = genomesURL.trim().length() > 0 ? genomesURL.trim() : DEFAULT_GENOMES_MSG;
+    
+    if (genomesURL.trim().length() > 0){
+      try {
+        
+        loadGenomesFile(genomesURL);
+      
+      } catch(Exception e){
+        // Fail load file, used list send by param genomes
+        Window.alert("Couldn't retrieve Genome list: " + e.getMessage()); 
+        genomesTextarea.setText(txt);
+      }
+    
+    } else 
+        genomesTextarea.setText(txt);
+  }
+  
+  private void loadGenomesFile(final String url) throws Exception {
+  
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+    
+    Request request = builder.sendRequest(null, new RequestCallback() {
+      
+      public void onError(Request request, Throwable exception) {
+        Window.alert("Couldn't retrieve Genome list url (" + url + ")");
+        
+      }
+
+      public void onResponseReceived(Request request, Response response) {
+        if (200 == response.getStatusCode()) {
+          
+          genomesTextarea.setText(createListGenomes(response.getText()));
+    
+        } else {
+          Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");          
+        }
+      }
+    });
+  }
+  
+    
+  private void retrieveIndexList(final String indexList, final String indexURL) {
+    
+    final String txt = (indexList.trim().length() == 0 ? DEFAULT_INDEXES : indexList.trim());
+    
+    if (indexURL.trim().length() == 0)
+      indexesTextarea.setText(txt);
+    
+    else {
+      
+      RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(indexURL));
+      
+      try {
+        Request request = builder.sendRequest(null, new RequestCallback() {
+          
+          public void onError(Request request, Throwable exception) {
+            Window.alert("Couldn't retrieve index list url (" + indexURL + ")");
+            
+          }
+
+          public void onResponseReceived(Request request, Response response) {
+            if (200 == response.getStatusCode()) {
+              
+              indexesTextarea.setText(response.getText());
+        
+            } else {
+              Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");
+              indexesTextarea.setText(txt);
+            }
+          }
+          
+        });
+        
+      } catch (RequestException e) {
+        Window.alert("Couldn't retrieve index list: " + e.getMessage()); 
+        indexesTextarea.setText(txt);
+      }
+    }
+  }
+  
   public void onModuleLoad() {
 
     // Set the layouts
     final TabLayoutPanel tp = new TabLayoutPanel(1.5, Unit.EM);
     tp.add(new ScrollPanel(inputTextarea), "[Input Casava design]");
     tp.add(outputHTML, "[CSV Casava design]");
-    tp.add(new ScrollPanel(indexesTextarea), "[The indexes]");
+    tp.add(new ScrollPanel(indexesTextarea), "[Indexes Alias]");
+    tp.add(new ScrollPanel(genomesTextarea), "[References Alias]");
+    tp.add(new ScrollPanel(helpTextarea), "[Help]");
+    
     tp.setHeight("100%");
     tp.setWidth("100%");
 
@@ -201,16 +384,34 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("sendButtonContainer").add(button);
     RootPanel.get("tabsContainer").add(tp);
 
+    
+    //retrieveIndexList(Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"));
+    
     // Initialize widget values
     indexesTextarea.setText(DEFAULT_INDEXES);
     indexesTextarea.setVisibleLines(40);
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
+    
+    retrieveGenomeList(Window.Location.getParameter("genomeslist"), Window.Location.getParameter("genomesurl"));
+    
+    genomesTextarea.setVisibleLines(40);
+    genomesTextarea.setSize("99%","100%");
+    //genomesTextarea.setCharacterWidth(150);
+    
+    
+    helpTextarea.setVisibleLines(40);
+    helpTextarea.setSize("99%","100%");
+    helpTextarea.setText("Help for the validator design file.");
+    
     flowcellTextBox.setText(Window.Location.getParameter("id"));
+    // loadDesignFile(Window.Location.getParameter("genomesurl"), flowcellTextBox.getText());
+    
     inputTextarea.setText("[Paste here your Casava design]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
     inputTextarea.setSize("99%","100%");
+    
     outputHTML.setHTML(DEFAULT_RESULT_MSG);
 
     // Set the action on button click
@@ -237,6 +438,8 @@ public class $PROJECT_NAME implements EntryPoint {
           updateDesignWithIndexes(design,
               indexesTextarea.getText());
 
+          
+              
           // Get the flowcell id
           final String flowcellId = getFlowcellId(flowcellTextBox.getText());
           //if (flowcellId == null)
@@ -245,7 +448,10 @@ public class $PROJECT_NAME implements EntryPoint {
           // Check Casava design
           final List<String> warnings = 
             CasavaDesignUtil.checkCasavaDesign(design, flowcellId);
-
+            
+          // Check genomes Casava design
+          warnings.addAll(checkGenomesCasavaDesign(design, genomesTextarea.getText()));
+  
           if (warnings.size()==0 || Window.confirm(createWarningMessage(warnings))) {
        
             outputHTML.setHTML("<pre>"
@@ -275,7 +481,6 @@ public class $PROJECT_NAME implements EntryPoint {
         }
       }
     });
-
   }
 }
 EOF
@@ -306,6 +511,9 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
+    <script language="javascript">
+      document.domain = "idunn.ens.fr";
+    </script>
     <script type="text/javascript" language="javascript" src="designvalidator/designvalidator.nocache.js"></script>
   </head>
 
@@ -372,7 +580,6 @@ sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > 
 rm $PROJECT_NAME/war/$PROJECT_NAME.html.tmp
 
 # Compile
-
 cd $PROJECT_NAME
 ant build
 
