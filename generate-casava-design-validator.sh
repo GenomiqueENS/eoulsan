@@ -1,8 +1,15 @@
 #!/bin/bash
 
+# Script can be used with GWT 2.4 or 2.5
 GWT_PATH=/home/sperrin/Programmes/gwt-2.5.1
 PROJECT_NAME=DesignValidator
 GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
+
+# Check environment variable
+if [ -z "$GWT_PATH" ]; then
+  echo "Error: GWT environment variable not set"
+  exit 1
+fi
 
 BASEDIR=`dirname $0`
 if [ ! -d $BASEDIR/target ]; then
@@ -171,77 +178,6 @@ public class $PROJECT_NAME implements EntryPoint {
 
   }
 
-  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesFromForm) {
-    
-    if (genomesFromForm == null)
-      return Collections.emptyList();
-    
-    List<String> availablGenomes = new ArrayList<String>();
-    List<String> warnings = new ArrayList<String>();
-    boolean first = true;
-  
-    for (String line : genomesFromForm.trim().split("\n")) {
-      if (line.indexOf("=") > -1) {
-        String[] l = line.split("=");
-        availablGenomes.add(trimSpecificString(l[0]));
-        availablGenomes.add(trimSpecificString(l[1]));
-      }
-    }
-
-    Set<String> genomesDesign = new HashSet<String>();
-    for (CasavaSample sample : design) {
-      genomesDesign.add(sample.getSampleRef());
-    }
-    
-    for (String genomeSample : genomesDesign) {
-      if (!(availablGenomes.contains(trimSpecificString(genomeSample)))){
-        if (first)
-          warnings.add("\n");
-        warnings.add(genomeSample + " not available for detection contaminant.");
-        first = false;
-      }
-    }
-    
-    return warnings;
-  }
-
-  private static String trimSpecificString(final String s) {
-
-    StringBuilder rep = new StringBuilder();
-    String trimmed = s.trim().toLowerCase();
-    
-    String carToKeep = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for (int i = 0; i < s.length(); i++) {
-      if (carToKeep.indexOf(trimmed.charAt(i)) != -1)
-        rep.append(trimmed.charAt(i));
-    }
-    return rep.toString();
-  }
-  
-  private String createListGenomes(final String genomesContentFile){
-    StringBuilder s = new StringBuilder();
-    // Header columns
-    s.append("#latin name, reference name\n");
-    for (String line : genomesContentFile.split("\n")) {
-    
-      if (! line.startsWith("#")){
-        String[] tab = line.split("\t");
-    
-        if (tab.length > 4) {
-          if (tab[4].trim().length() > 0){
-            s.append(tab[4].trim());
-            s.append("=");
-          }  
-          if (tab[2].trim().length() > 0)
-            s.append(tab[2].trim());
-            s.append("\n");
-        }
-      }
-    }
-
-    return s.toString();
-  }
-
   private String getFlowcellId(final String s) {
 
     if (s == null || s.trim().length() == 0)
@@ -265,6 +201,61 @@ public class $PROJECT_NAME implements EntryPoint {
 
     return flowcellId.substring(1);
   }
+  
+    public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
+    
+    if (genomesList == null)
+      return Collections.emptyList();
+    
+    List<String> availableGenomes = new ArrayList<String>();
+    List<String> warnings = new ArrayList<String>();
+    boolean first = true;
+  
+    for (String line : genomesList.trim().split("\n")) {
+      if (line.indexOf("=") > -1) {
+        String[] l = line.split("=");
+        availableGenomes.add(trimSpecificString(l[0]));
+        availableGenomes.add(trimSpecificString(l[1]));
+      }
+    }
+
+    Set<String> genomesDesign = new HashSet<String>();
+    for (CasavaSample sample : design) {
+      genomesDesign.add(sample.getSampleRef());
+    }
+    
+    for (String genomeSample : genomesDesign) {
+      if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
+        if (first)
+          warnings.add("\n");
+        warnings.add(genomeSample + " not available for detection contaminant.");
+        first = false;
+      }
+    }
+    
+    return warnings;
+  }
+
+  private static String trimSpecificString(final String s) {
+
+    StringBuilder rep = new StringBuilder();
+    String trimmed = s.trim().toLowerCase();
+    String carToReplace = ".,;:/-_'";
+    
+    //String carToKeep = "abcdefghijklmnopqrstuvwxyz0123456789";
+    //for (int i = 0; i < s.length(); i++) {
+    //  if (carToKeep.indexOf(trimmed.charAt(i)) != -1)
+    //    rep.append(trimmed.charAt(i));
+    //}
+    
+    for (int i = 0; i < carToReplace.length(); i++) {
+      // Check present character to replace by space
+      if (trimmed.indexOf(carToReplace.charAt(i)) != 1)
+        trimmed.replace(carToReplace.charAt(i),' ');
+    }
+    
+    return rep.toString();
+  }
 
   private String createWarningMessage(List<String> warnings) {
 
@@ -283,29 +274,80 @@ public class $PROJECT_NAME implements EntryPoint {
   }
 
   
-  private void retrieveList(final TextArea textArea, final String list, final String url, final String defaultMsg) {
+  private void retrieveGenomesList(final String list, final String url){
     
-    final String txt = list == null || list.trim().length() == 0 ? defaultMsg : list.trim();
+    final String txt = list == null || list.trim().length() == 0 ? DEFAULT_GENOMES_MSG : list.trim();
+    
+    Window.alert("GEN param list " + list + " param "+ url);
     
     if (url == null || url.trim().length() == 0){
-      textArea.setText(txt);
+      genomesTextarea.setText(txt);
     
     } else {
       try {
         
-        loadFile(textArea, url); 
+       loadGenomesFile(url);
        
       } catch(Exception e){
         // Fail load file, used list send by param genomes
         Window.alert("Couldn't retrieve list: " + e.getMessage()); 
-        textArea.setText(txt);
+        genomesTextarea.setText(txt);
       }
     }    
   }
   
-  private void loadFile(final TextArea textArea, final String url) throws Exception {
+  private void loadGenomesFile(final String url) throws Exception {
   
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+        
+    Request request = builder.sendRequest(null, new RequestCallback() {
+      
+      public void onError(Request request, Throwable exception) {
+        Window.alert("Couldn't retrieve list url (" + url + ")");
+        
+      }
+
+      public void onResponseReceived(Request request, Response response) {
+        if (200 == response.getStatusCode()) {
+          
+          String responseText = response.getText();
+          // EOF mark end of line
+          responseText = responseText.replaceAll("EOL", "\n");
+          genomesTextarea.setText(responseText);
+        
+        } else {
+          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
+        }
+      }
+    });
+  }
+
+  private void retrieveIndexesList(final String list, final String url){
+    
+    final String txt = list == null || list.trim().length() == 0 ? DEFAULT_INDEXES : list.trim();
+    
+    Window.alert("IN param list " + list + " param "+ url);
+    
+    if (url == null || url.trim().length() == 0){
+      indexesTextarea.setText(txt);
+    
+    } else {
+      try {
+        
+        loadIndexesFile(url); 
+        
+      } catch(Exception e){
+        // Fail load file, used list send by param genomes
+        Window.alert("Couldn't retrieve list: " + e.getMessage()); 
+        indexesTextarea.setText(txt);
+      }
+    }    
+  }
+  
+  private void loadIndexesFile(final String url) throws Exception {
+  
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+    final String responseText;
     
     Request request = builder.sendRequest(null, new RequestCallback() {
       
@@ -317,13 +359,8 @@ public class $PROJECT_NAME implements EntryPoint {
       public void onResponseReceived(Request request, Response response) {
         if (200 == response.getStatusCode()) {
           
-          String rep = response.getText();
-          
-          // EOF mark end of line
-          rep = rep.replaceAll("EOL", "\n");
-          
-          textArea.setText("#latin name, reference name\n"+rep);
-    
+          indexesTextarea.setText(response.getText());
+        
         } else {
           Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
         }
@@ -351,9 +388,8 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("flowcellidFieldContainer").add(flowcellTextBox);
     RootPanel.get("sendButtonContainer").add(button);
     RootPanel.get("tabsContainer").add(tp);
-
     
-    retrieveList(indexesTextarea, Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"), DEFAULT_INDEXES);
+    retrieveIndexesList(Window.Location.getParameter("indexeslist"), Window.Location.getParameter("indexesurl"));
     
     // Initialize widget values
     // indexesTextarea.setText(DEFAULT_INDEXES);
@@ -361,7 +397,8 @@ public class $PROJECT_NAME implements EntryPoint {
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
     
-    retrieveList(genomesTextarea, Window.Location.getParameter("genomeslist"),  Window.Location.getParameter("genomesurl"),DEFAULT_GENOMES_MSG);
+   
+    retrieveGenomesList(Window.Location.getParameter("genomeslist"), Window.Location.getParameter("genomesurl"));
     
     genomesTextarea.setVisibleLines(40);
     genomesTextarea.setSize("99%","100%");
@@ -373,8 +410,7 @@ public class $PROJECT_NAME implements EntryPoint {
     helpTextarea.setText("Help for the validator design file.");
     
     flowcellTextBox.setText(Window.Location.getParameter("id"));
-    // loadDesignFile(Window.Location.getParameter("genomesurl"), flowcellTextBox.getText());
-    
+        
     inputTextarea.setText("[Paste here your Casava design]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
