@@ -282,94 +282,55 @@ public class $PROJECT_NAME implements EntryPoint {
     return sb.toString();
   }
 
-  private void retrieveGenomeList(final String genomesList, final String genomesURL) {
+  
+  private void retrieveList(final TextArea textArea, final String list, final String url, final String defaultMsg) {
     
-    final String txt = genomesList == null || genomesList.trim().length() == 0 ? DEFAULT_GENOMES_MSG : genomesList.trim();
+    final String txt = list == null || list.trim().length() == 0 ? defaultMsg : list.trim();
     
-    if (genomesURL == null || genomesURL.trim().length() == 0){
-      genomesTextarea.setText(txt);
+    if (url == null || url.trim().length() == 0){
+      textArea.setText(txt);
     
     } else {
       try {
         
-        loadGenomesFile(genomesURL);
-      
+        loadFile(textArea, url); 
+       
       } catch(Exception e){
         // Fail load file, used list send by param genomes
-        Window.alert("Couldn't retrieve Genome list: " + e.getMessage()); 
-        genomesTextarea.setText(txt);
+        Window.alert("Couldn't retrieve list: " + e.getMessage()); 
+        textArea.setText(txt);
       }
     }    
   }
   
-  private void loadGenomesFile(final String url) throws Exception {
+  private void loadFile(final TextArea textArea, final String url) throws Exception {
   
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
     
     Request request = builder.sendRequest(null, new RequestCallback() {
       
       public void onError(Request request, Throwable exception) {
-        Window.alert("Couldn't retrieve Genome list url (" + url + ")");
+        Window.alert("Couldn't retrieve list url (" + url + ")");
         
       }
 
       public void onResponseReceived(Request request, Response response) {
         if (200 == response.getStatusCode()) {
           
-          genomesTextarea.setText(createListGenomes(response.getText()));
-    
-        } else {
-          Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");          
-        }
-      }
-    });
-  }
-  
-    
-  private void retrieveIndexList(final String indexList, final String indexURL) {
-    Window.alert("call retrieve index list "+ indexList+ " url "+ indexURL+ "!");
-    
-    final String txt = indexList == null || indexList.trim().length() == 0 ? DEFAULT_INDEXES : indexList.trim();
-    
-    if (indexURL == null || indexURL.trim().length() == 0)
-      indexesTextarea.setText(txt);
-    
-    else {
-      try {
-        
-        loadIndexFile(indexURL);
-      
-      } catch(Exception e){
-        // Fail load file, used list send by param genomes
-        Window.alert("Couldn't retrieve index list: " + e.getMessage()); 
-        indexesTextarea.setText(txt);
-      }
-    
-    } 
-  }
-  
-  private void loadIndexFile(final String url) throws Exception {
-  
-    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-    
-    Request request = builder.sendRequest(null, new RequestCallback() {
-      
-      public void onError(Request request, Throwable exception) {
-        Window.alert("Couldn't retrieve Genome list url (" + url + ")");
-        
-      }
-
-      public void onResponseReceived(Request request, Response response) {
-        if (200 == response.getStatusCode()) {
+          String rep = response.getText();
           
-          indexesTextarea.setText(response.getText());
+          // EOF mark end of line
+          rep = rep.replaceAll("EOL", "\n");
+          
+          textArea.setText("#latin name, reference name\n"+rep);
     
         } else {
-          Window.alert("Couldn't retrieve Genome list status (" + response.getStatusText() + ")");          
+          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
         }
       }
     });
   }
+  
   
   public void onModuleLoad() {
 
@@ -392,7 +353,7 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("tabsContainer").add(tp);
 
     
-    retrieveIndexList(Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"));
+    retrieveList(indexesTextarea, Window.Location.getParameter("indexlist"), Window.Location.getParameter("indexurl"), DEFAULT_INDEXES);
     
     // Initialize widget values
     // indexesTextarea.setText(DEFAULT_INDEXES);
@@ -400,7 +361,7 @@ public class $PROJECT_NAME implements EntryPoint {
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
     
-    retrieveGenomeList(Window.Location.getParameter("genomeslist"), Window.Location.getParameter("genomesurl"));
+    retrieveList(genomesTextarea, Window.Location.getParameter("genomeslist"),  Window.Location.getParameter("genomesurl"),DEFAULT_GENOMES_MSG);
     
     genomesTextarea.setVisibleLines(40);
     genomesTextarea.setSize("99%","100%");
@@ -544,7 +505,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 
 <h4 align="right">__VERSION__</h4>
 <h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
-
+    <a href="http://www.transcriptome.ens.fr" id="bannerLeft"><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre"/></a>
     <table align="center">
       <!--tr>
         <td colspan="2" style="font-weight:bold;">Please enter your name:</td>        
