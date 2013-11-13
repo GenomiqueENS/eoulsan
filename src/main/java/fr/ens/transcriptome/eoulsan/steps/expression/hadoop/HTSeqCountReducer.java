@@ -25,40 +25,32 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.util.Iterator;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
  * Reducer for the expression estimation with htseq-count.
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
+public class HTSeqCountReducer extends Reducer<Text, Long, Text, Long> {
 
-  /** Logger */
-  private static Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  /**
+   * This method allow to sum of the values of an Iterable of longs.
+   * @param values values to sum
+   * @return the sum of the values
+   */
+  private static long sum(final Iterable<Long> values) {
 
-  private String counterGroup;
+    final Iterator<Long> it = values.iterator();
+    long result = 0L;
 
-  @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+    while (it.hasNext())
+      result += it.next();
 
-    LOGGER.info("Start of setup()");
-
-    // Counter group
-    this.counterGroup =
-        context.getConfiguration().get(CommonHadoop.COUNTER_GROUP_KEY);
-    if (this.counterGroup == null) {
-      throw new IOException("No counter group defined");
-    }
-
-    LOGGER.info("End of setup()");
+    return result;
   }
 
   /**
@@ -67,17 +59,10 @@ public class HTSeqCountReducer extends Reducer<Text, Text, Text, Long> {
    * on the feature.
    */
   @Override
-  protected void reduce(final Text key, final Iterable<Text> values,
+  protected void reduce(final Text key, final Iterable<Long> values,
       final Context context) throws IOException, InterruptedException {
 
-    int counts = 0;
-
-    for (Text val : values) {
-      counts++;
-    }
-
-    // context.write(key, new Text(String.valueOf(counts)));
-    context.write(key, new Long(counts));
+    context.write(key, sum(values));
   }
 
 }
