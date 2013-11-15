@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Script can be used with GWT 2.4 or 2.5
-GWT_PATH=/home/sperrin/Programmes/gwt-2.5.1
+# GWT_HOME=/home/sperrin/Programmes/gwt-2.5.1
 PROJECT_NAME=DesignValidator
 GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
 
 # Check environment variable
-if [ -z "$GWT_PATH" ]; then
-  echo "Error: GWT environment variable not set"
+if [ -z "$GWT_HOME" ]; then
+  echo "Error: GWT_HOME environment variable is not set"
   exit 1
 fi
 
@@ -25,7 +25,7 @@ PACKAGE_PATH=`echo $PACKAGE | sed 's/\./\//g'`
 
 
 rm -rf $PROJECT_NAME
-$GWT_PATH/webAppCreator -out $PROJECT_NAME $PACKAGE.$PROJECT_NAME
+$GWT_HOME/webAppCreator -out $PROJECT_NAME $PACKAGE.$PROJECT_NAME
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/client/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/server/*
 rm  $PROJECT_NAME/src/fr/ens/transcriptome/cdv/shared/*
@@ -136,7 +136,7 @@ public class $PROJECT_NAME implements EntryPoint {
       + "M13=CGTAGA\n" + "M14=TCAGAG\n" + "M15=CACAGT\n" + "M16=TTGGCA\n";
 
 
-  private static String DEFAULT_RESULT_MSG = "<pre>No valid design entered.</pre>";
+  private static String DEFAULT_RESULT_MSG = "<pre>No valid samplesheet entered.</pre>";
   // if none 
   private static String DEFAULT_GENOMES_MSG = "[No genomes list received.]";
 
@@ -146,7 +146,7 @@ public class $PROJECT_NAME implements EntryPoint {
   private final TextArea helpTextarea = new TextArea();
   private final HTML outputHTML = new HTML();
   private final TextBox flowcellTextBox = new TextBox();
-  private final Button button = new Button("Check the Casava design");
+  private final Button button = new Button("Check the bcl2fastq samplesheet");
 
   private boolean first = true;
 
@@ -202,10 +202,11 @@ public class $PROJECT_NAME implements EntryPoint {
     return flowcellId.substring(1);
   }
   
-    public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
+  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
     
-    if (genomesList == null)
+    if (genomesList == null){
       return Collections.emptyList();
+    }
     
     List<String> availableGenomes = new ArrayList<String>();
     List<String> warnings = new ArrayList<String>();
@@ -224,11 +225,13 @@ public class $PROJECT_NAME implements EntryPoint {
       genomesDesign.add(sample.getSampleRef());
     }
     
+    
     for (String genomeSample : genomesDesign) {
       if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
         if (first)
-          warnings.add("\n");
-        warnings.add(genomeSample + " not available for detection contaminant.");
+          warnings.add("\nNot available in genomes aliases list for detection contaminant for this specie : ");
+        
+        warnings.add("\t"+genomeSample);
         first = false;
       }
     }
@@ -238,23 +241,16 @@ public class $PROJECT_NAME implements EntryPoint {
 
   private static String trimSpecificString(final String s) {
 
-    StringBuilder rep = new StringBuilder();
     String trimmed = s.trim().toLowerCase();
     String carToReplace = ".,;:/-_'";
     
-    //String carToKeep = "abcdefghijklmnopqrstuvwxyz0123456789";
-    //for (int i = 0; i < s.length(); i++) {
-    //  if (carToKeep.indexOf(trimmed.charAt(i)) != -1)
-    //    rep.append(trimmed.charAt(i));
-    //}
-    
     for (int i = 0; i < carToReplace.length(); i++) {
       // Check present character to replace by space
-      if (trimmed.indexOf(carToReplace.charAt(i)) != 1)
-        trimmed.replace(carToReplace.charAt(i),' ');
+      if (trimmed.indexOf(carToReplace.charAt(i)) != -1)
+        trimmed = trimmed.replace(carToReplace.charAt(i),' ');
     }
     
-    return rep.toString();
+    return trimmed.toString();
   }
 
   private String createWarningMessage(List<String> warnings) {
@@ -268,7 +264,7 @@ public class $PROJECT_NAME implements EntryPoint {
       sb.append('\n');
     } 
 
-    sb.append("\nAre you sure that your design is correct?");
+    sb.append("\nAre you sure that your samplesheet is correct?");
 
     return sb.toString();
   }
@@ -276,16 +272,14 @@ public class $PROJECT_NAME implements EntryPoint {
   
   private void retrieveGenomesList(final String list, final String url){
     
-    final String txt = list == null || list.trim().length() == 0 ? DEFAULT_GENOMES_MSG : list.trim();
-    
-    Window.alert("GEN param list " + list + " param "+ url);
+    final String txt = (list == null || list.trim().length() == 0) ? DEFAULT_GENOMES_MSG : list.trim();
     
     if (url == null || url.trim().length() == 0){
       genomesTextarea.setText(txt);
     
     } else {
       try {
-        
+       
        loadGenomesFile(url);
        
       } catch(Exception e){
@@ -309,11 +303,8 @@ public class $PROJECT_NAME implements EntryPoint {
 
       public void onResponseReceived(Request request, Response response) {
         if (200 == response.getStatusCode()) {
-          
-          String responseText = response.getText();
-          // EOF mark end of line
-          responseText = responseText.replaceAll("EOL", "\n");
-          genomesTextarea.setText(responseText);
+         
+          genomesTextarea.setText(response.getText());
         
         } else {
           Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
@@ -325,8 +316,6 @@ public class $PROJECT_NAME implements EntryPoint {
   private void retrieveIndexesList(final String list, final String url){
     
     final String txt = list == null || list.trim().length() == 0 ? DEFAULT_INDEXES : list.trim();
-    
-    Window.alert("IN param list " + list + " param "+ url);
     
     if (url == null || url.trim().length() == 0){
       indexesTextarea.setText(txt);
@@ -373,10 +362,10 @@ public class $PROJECT_NAME implements EntryPoint {
 
     // Set the layouts
     final TabLayoutPanel tp = new TabLayoutPanel(1.5, Unit.EM);
-    tp.add(new ScrollPanel(inputTextarea), "[Input Casava design]");
-    tp.add(outputHTML, "[CSV Casava design]");
-    tp.add(new ScrollPanel(indexesTextarea), "[Indexes Alias]");
-    tp.add(new ScrollPanel(genomesTextarea), "[References Alias]");
+    tp.add(new ScrollPanel(inputTextarea), "[Input bcl2fastq samplesheet]");
+    tp.add(outputHTML, "[CSV bcl2fastq samplesheet]");
+    tp.add(new ScrollPanel(indexesTextarea), "[Indexes Aliases]");
+    tp.add(new ScrollPanel(genomesTextarea), "[References Aliases]");
     tp.add(new ScrollPanel(helpTextarea), "[Help]");
     
     tp.setHeight("100%");
@@ -389,7 +378,7 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("sendButtonContainer").add(button);
     RootPanel.get("tabsContainer").add(tp);
     
-    retrieveIndexesList(Window.Location.getParameter("indexeslist"), Window.Location.getParameter("indexesurl"));
+    retrieveIndexesList(Window.Location.getParameter("indexesaliaseslist"), Window.Location.getParameter("indexesaliasesurl"));
     
     // Initialize widget values
     // indexesTextarea.setText(DEFAULT_INDEXES);
@@ -398,7 +387,7 @@ public class $PROJECT_NAME implements EntryPoint {
     //indexesTextarea.setCharacterWidth(150);
     
    
-    retrieveGenomesList(Window.Location.getParameter("genomeslist"), Window.Location.getParameter("genomesurl"));
+    retrieveGenomesList(Window.Location.getParameter("genomesaliaseslist"), Window.Location.getParameter("genomesaliasesurl"));
     
     genomesTextarea.setVisibleLines(40);
     genomesTextarea.setSize("99%","100%");
@@ -407,11 +396,11 @@ public class $PROJECT_NAME implements EntryPoint {
     
     helpTextarea.setVisibleLines(40);
     helpTextarea.setSize("99%","100%");
-    helpTextarea.setText("Help for the validator design file.");
+    helpTextarea.setText("Help for the validator samplesheet file.");
     
     flowcellTextBox.setText(Window.Location.getParameter("id"));
         
-    inputTextarea.setText("[Paste here your Casava design]");
+    inputTextarea.setText("[Paste here your bcl2fastq samplesheet]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
     inputTextarea.setSize("99%","100%");
@@ -463,9 +452,9 @@ public class $PROJECT_NAME implements EntryPoint {
             tp.selectTab(1);
           }
         } catch (IOException e) {
-          Window.alert("Invalid design: " + e.getMessage());
+          Window.alert("Invalid samplesheet: " + e.getMessage());
         } catch (EoulsanException e) {
-          Window.alert("Invalid design: " + e.getMessage());
+          Window.alert("Invalid samplesheet: " + e.getMessage());
         }
 
       }
@@ -540,8 +529,10 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     </noscript>
 
 <h4 align="right">__VERSION__</h4>
-<h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
-    <a href="http://www.transcriptome.ens.fr" id="bannerLeft"><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre"/></a>
+    <div>
+      <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" width=8% align="left"/></a>
+      <h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
+    </div>
     <table align="center">
       <!--tr>
         <td colspan="2" style="font-weight:bold;">Please enter your name:</td>        
