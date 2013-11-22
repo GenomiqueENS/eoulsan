@@ -71,7 +71,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -95,7 +95,6 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
   private final SAMParser parser = new SAMParser();
 
   private Text outKey = new Text();
-  private Text outValue = new Text();
 
   @Override
   public void setup(final Context context) throws IOException,
@@ -291,8 +290,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
       case 1:
         final String id1 = fs.iterator().next();
         this.outKey.set(id1);
-        this.outValue.set("1");
-        context.write(this.outKey, this.outValue);
+        context.write(this.outKey, 1L);
         break;
 
       default:
@@ -311,8 +309,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Text> {
 
           for (String id2 : fs) {
             this.outKey.set(id2);
-            this.outValue.set("1");
-            context.write(this.outKey, this.outValue);
+            context.write(this.outKey, 1L);
           }
         }
         break;
