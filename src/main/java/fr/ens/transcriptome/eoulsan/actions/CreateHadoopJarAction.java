@@ -59,7 +59,7 @@ public class CreateHadoopJarAction extends AbstractAction {
 
     return true;
   }
-  
+
   @Override
   public void action(final String[] arguments) {
 
@@ -79,8 +79,8 @@ public class CreateHadoopJarAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {

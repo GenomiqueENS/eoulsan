@@ -48,7 +48,8 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
   private final long[] pos = new long[4];
 
   private FastQLineRecordReader lrr;
-//  private LineRecordReader lrr;
+
+  // private LineRecordReader lrr;
 
   @Override
   public void close() throws IOException {
@@ -80,7 +81,7 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
       InterruptedException {
 
     this.lrr = new FastQLineRecordReader();
-//    this.lrr = new LineRecordReader();
+    // this.lrr = new LineRecordReader();
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }
 
@@ -92,10 +93,10 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
 
     while (!found) {
 
-      if (!this.lrr.nextKeyValue(count!=0))
+      if (!this.lrr.nextKeyValue(count != 0))
         return false;
-//      if (!this.lrr.nextKeyValue())
-//        return false;
+      // if (!this.lrr.nextKeyValue())
+      // return false;
 
       final String s = this.lrr.getCurrentValue().toString().trim();
 

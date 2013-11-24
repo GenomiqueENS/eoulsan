@@ -44,7 +44,7 @@ public class FastaWriter implements SequenceWriter {
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset.forName("ISO-8859-1");
-  
+
   private Writer writer;
 
   /**

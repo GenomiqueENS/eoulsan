@@ -32,15 +32,15 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class HTTPURLDataProtocol extends URLDataProtocol{
+public class HTTPURLDataProtocol extends URLDataProtocol {
 
   /** Protocol name. */
   public static final String PROTOCOL_NAME = "http";
 
   @Override
   public String getName() {
-    
+
     return PROTOCOL_NAME;
   }
-  
+
 }

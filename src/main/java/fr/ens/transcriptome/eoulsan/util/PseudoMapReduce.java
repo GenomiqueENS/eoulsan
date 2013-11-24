@@ -427,8 +427,8 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete())
-    LOGGER.warning("Can not delete sort output file: "
-        + this.sortOutputFile.getAbsolutePath());
+      LOGGER.warning("Can not delete sort output file: "
+          + this.sortOutputFile.getAbsolutePath());
   }
 
 }

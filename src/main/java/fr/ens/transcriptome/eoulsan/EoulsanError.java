@@ -42,7 +42,7 @@ public class EoulsanError extends Error {
   public EoulsanError(final String message) {
     super(message);
   }
-  
+
   /**
    * Create a new EoulsanError.
    */

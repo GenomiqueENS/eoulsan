@@ -76,8 +76,8 @@ public class RSConnectionNewImpl implements RSConnection {
 
     return rconnection;
   }
-  
-  public String getServerName(){
+
+  public String getServerName() {
     return this.serverName;
   }
 

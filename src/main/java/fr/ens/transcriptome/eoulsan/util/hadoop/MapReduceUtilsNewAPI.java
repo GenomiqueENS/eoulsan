@@ -34,7 +34,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
-
 /**
  * This class contains utility method to easily manipulate the new Hadoop
  * MapReduce API.

@@ -79,8 +79,7 @@ public class NormalizationLocalStep extends AbstractStep {
       String rServeName = null;
       boolean rServeEnable = context.getSettings().isRServeServerEnabled();
       if (rServeEnable)
-        rServeName =
-            context.getSettings().getRServeServername();
+        rServeName = context.getSettings().getRServeServername();
 
       final Normalization norm =
           new Normalization(design, new File("."), eDF.getType().getPrefix(),

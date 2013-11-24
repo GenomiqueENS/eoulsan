@@ -277,7 +277,7 @@ public class SequenceTest {
     s1.setAlphabet(Alphabets.UNAMBIGUOUS_DNA_ALPHABET);
     s3 = s1.concat(s2);
     assertEquals("AATT", s3.getSequence());
-    assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET,s3.getAlphabet());
+    assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s3.getAlphabet());
 
     s3 = s1.concat(null);
     assertEquals(s1.getId(), s3.getId());

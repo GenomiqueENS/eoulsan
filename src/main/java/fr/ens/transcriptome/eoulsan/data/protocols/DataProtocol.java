@@ -118,7 +118,7 @@ public interface DataProtocol {
    * @return true if the source is writable
    */
   boolean isWritable();
-  
+
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.
    * @return a File object or null if the protocol does not allow it

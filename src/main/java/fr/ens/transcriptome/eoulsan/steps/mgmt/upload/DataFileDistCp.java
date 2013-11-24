@@ -282,7 +282,7 @@ public class DataFileDistCp {
     try {
       if (!job.isSuccessful())
         throw new IOException("Unable to copy files using DataFileDistCp.");
-      
+
       // FIXME Remove once using Hadoop 2.0
       if (false)
         throw new InterruptedException();

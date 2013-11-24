@@ -49,58 +49,58 @@ public class CompressionTypeTest {
   @Test
   public void testGetCompressionTypeByContentEncoding() {
 
-    assertEquals(CompressionType.GZIP, CompressionType
-        .getCompressionTypeByContentEncoding("gzip"));
-    assertEquals(CompressionType.BZIP2, CompressionType
-        .getCompressionTypeByContentEncoding("bzip2"));
-    assertEquals(CompressionType.NONE, CompressionType
-        .getCompressionTypeByContentEncoding(""));
-    assertEquals(null, CompressionType
-        .getCompressionTypeByContentEncoding(null));
+    assertEquals(CompressionType.GZIP,
+        CompressionType.getCompressionTypeByContentEncoding("gzip"));
+    assertEquals(CompressionType.BZIP2,
+        CompressionType.getCompressionTypeByContentEncoding("bzip2"));
+    assertEquals(CompressionType.NONE,
+        CompressionType.getCompressionTypeByContentEncoding(""));
+    assertEquals(null,
+        CompressionType.getCompressionTypeByContentEncoding(null));
   }
 
   @Test
   public void testGetCompressionTypeByExtension() {
 
-    assertEquals(CompressionType.GZIP, CompressionType
-        .getCompressionTypeByExtension(".gz"));
-    assertEquals(CompressionType.BZIP2, CompressionType
-        .getCompressionTypeByExtension(".bz2"));
-    assertEquals(CompressionType.NONE, CompressionType
-        .getCompressionTypeByExtension(""));
+    assertEquals(CompressionType.GZIP,
+        CompressionType.getCompressionTypeByExtension(".gz"));
+    assertEquals(CompressionType.BZIP2,
+        CompressionType.getCompressionTypeByExtension(".bz2"));
+    assertEquals(CompressionType.NONE,
+        CompressionType.getCompressionTypeByExtension(""));
     assertEquals(null, CompressionType.getCompressionTypeByExtension(null));
   }
 
   @Test
   public void testGetCompressionTypeByFilename() {
 
-    assertEquals(CompressionType.GZIP, CompressionType
-        .getCompressionTypeByFilename("/home/toto/toto.gz"));
-    assertEquals(CompressionType.GZIP, CompressionType
-        .getCompressionTypeByFilename("toto.gz"));
-    assertEquals(CompressionType.GZIP, CompressionType
-        .getCompressionTypeByFilename("toto.txt.gz"));
-    assertEquals(CompressionType.BZIP2, CompressionType
-        .getCompressionTypeByFilename("titi.txt.bz2"));
-    assertEquals(CompressionType.NONE, CompressionType
-        .getCompressionTypeByFilename("titi.txt"));
-    assertEquals(CompressionType.NONE, CompressionType
-        .getCompressionTypeByFilename(""));
+    assertEquals(CompressionType.GZIP,
+        CompressionType.getCompressionTypeByFilename("/home/toto/toto.gz"));
+    assertEquals(CompressionType.GZIP,
+        CompressionType.getCompressionTypeByFilename("toto.gz"));
+    assertEquals(CompressionType.GZIP,
+        CompressionType.getCompressionTypeByFilename("toto.txt.gz"));
+    assertEquals(CompressionType.BZIP2,
+        CompressionType.getCompressionTypeByFilename("titi.txt.bz2"));
+    assertEquals(CompressionType.NONE,
+        CompressionType.getCompressionTypeByFilename("titi.txt"));
+    assertEquals(CompressionType.NONE,
+        CompressionType.getCompressionTypeByFilename(""));
     assertEquals(null, CompressionType.getCompressionTypeByFilename(null));
   }
 
   @Test
   public void testRemoveCompressionExtension() {
 
-    assertEquals("/home/toto/toto", CompressionType
-        .removeCompressionExtension("/home/toto/toto.gz"));
+    assertEquals("/home/toto/toto",
+        CompressionType.removeCompressionExtension("/home/toto/toto.gz"));
     assertEquals("toto", CompressionType.removeCompressionExtension("toto.gz"));
-    assertEquals("toto.txt", CompressionType
-        .removeCompressionExtension("toto.txt.gz"));
-    assertEquals("titi.txt", CompressionType
-        .removeCompressionExtension("titi.txt.bz2"));
-    assertEquals("titi.txt", CompressionType
-        .removeCompressionExtension("titi.txt"));
+    assertEquals("toto.txt",
+        CompressionType.removeCompressionExtension("toto.txt.gz"));
+    assertEquals("titi.txt",
+        CompressionType.removeCompressionExtension("titi.txt.bz2"));
+    assertEquals("titi.txt",
+        CompressionType.removeCompressionExtension("titi.txt"));
     assertEquals("", CompressionType.removeCompressionExtension(""));
     assertEquals(null, CompressionType.removeCompressionExtension(null));
 

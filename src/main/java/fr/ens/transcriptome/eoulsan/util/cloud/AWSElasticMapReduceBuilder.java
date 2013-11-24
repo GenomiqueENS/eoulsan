@@ -224,8 +224,7 @@ public class AWSElasticMapReduceBuilder {
    * Set if debugging must be enabled.
    * @param enableDebugging true if debugging is enabled
    */
-  public AWSElasticMapReduceBuilder withDebugging(
-      final boolean enableDebugging) {
+  public AWSElasticMapReduceBuilder withDebugging(final boolean enableDebugging) {
 
     if (this.created)
       throw new IllegalStateException();

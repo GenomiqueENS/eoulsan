@@ -132,8 +132,7 @@ public abstract class AbstractEoulsanRuntime {
    */
   public File createTempDir(final String prefix) throws IOException {
 
-    return FileUtils
-        .createTempDir(getTempDirectory(), prefix);
+    return FileUtils.createTempDir(getTempDirectory(), prefix);
   }
 
   /**
@@ -146,8 +145,7 @@ public abstract class AbstractEoulsanRuntime {
   public File createTempFile(final String prefix, final String suffix)
       throws IOException {
 
-    return FileUtils.createTempFile(getTempDirectory(),
-        prefix, suffix);
+    return FileUtils.createTempFile(getTempDirectory(), prefix, suffix);
   }
 
   /**

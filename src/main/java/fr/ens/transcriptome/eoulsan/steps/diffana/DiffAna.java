@@ -385,9 +385,10 @@ public class DiffAna extends Normalization {
               + cond + "\")\n");
           sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
           sb.append("@\n");
-          
+
           passedConditionName.add(cond);
-        } else {}
+        } else {
+        }
       }
     } else {
 
@@ -404,7 +405,8 @@ public class DiffAna extends Normalization {
     } else {
       anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
     }
-    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    anadiffPart =
+        anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
     sb.append(anadiffPart);
 
     // end document

@@ -45,7 +45,7 @@ public interface DataFormat {
    * @return the name of the format
    */
   String getDescription();
-  
+
   /**
    * Get the data type.
    * @return the DataType of this format

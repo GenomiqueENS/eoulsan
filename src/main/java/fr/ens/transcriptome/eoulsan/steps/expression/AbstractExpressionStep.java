@@ -48,7 +48,8 @@ import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
-  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME = "removeambiguouscases";
+  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+      "removeambiguouscases";
 
   private static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
 

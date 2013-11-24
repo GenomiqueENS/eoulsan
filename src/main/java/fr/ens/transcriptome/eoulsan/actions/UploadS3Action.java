@@ -70,8 +70,8 @@ public class UploadS3Action extends AbstractAction {
   /** Logger */
   private static Logger logger = Logger.getLogger(Globals.APP_NAME);
 
-  private static final Set<Parameter> EMPTY_PARAMEMETER_SET =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_PARAMEMETER_SET = Collections
+      .emptySet();
 
   @Override
   public String getName() {
@@ -108,8 +108,8 @@ public class UploadS3Action extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e, "Error while parsing parameter file: "
-          + e.getMessage());
+      Common.errorExit(e,
+          "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions + 3) {
@@ -198,7 +198,7 @@ public class UploadS3Action extends AbstractAction {
       pp.addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, designFile.getPath());
       pp.addConstant(PARAMETERS_FILE_PATH_CONSTANT_NAME, paramFile.getPath());
       pp.addConstant(OUTPUT_PATH_CONSTANT_NAME, s3Path.toString());
-      
+
       final Command c = new Command();
 
       // Add execution info to log Step

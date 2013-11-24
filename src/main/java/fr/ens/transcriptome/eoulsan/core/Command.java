@@ -43,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.Settings;
  */
 public class Command {
 
-  private static final Set<Parameter> EMPTY_SET_PARAMETER =
-      Collections.emptySet();
+  private static final Set<Parameter> EMPTY_SET_PARAMETER = Collections
+      .emptySet();
 
   private String name = "";
   private String description = "";

@@ -42,7 +42,7 @@ public class FastQFormatNew extends TextInputFormat {
   @Override
   public RecordReader<LongWritable, Text> createRecordReader(
       InputSplit inputSplit, TaskAttemptContext taskAttemptContext) {
-    
+
     return new FastQRecordReaderNew();
   }
 }

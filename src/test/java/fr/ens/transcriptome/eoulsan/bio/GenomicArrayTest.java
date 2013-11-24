@@ -375,7 +375,7 @@ public class GenomicArrayTest {
 
     assertTrue(r.containsKey(fgi.iv(36, 40)));
     assertEquals(1, r.get(fgi.iv(36, 40)).size());
-    
+
     /**
      * The first interval is included in the second one.
      */

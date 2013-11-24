@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
- * This class contains utility methods for Context class. 
+ * This class contains utility methods for Context class.
  * @since 1.0
  * @author Laurent Jourdren
  */

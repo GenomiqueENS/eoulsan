@@ -38,7 +38,6 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Job;
 
-
 /**
  * This class provide utility methods to run map reduce jobs.
  * @since 1.0
@@ -146,9 +145,10 @@ public class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static HadoopJobsResults submitAndWaitForJobs(final Collection<Job> jobs,
-      final int waitTimeInMillis, final String counterGroup)
-      throws IOException, InterruptedException, ClassNotFoundException {
+  public static HadoopJobsResults submitAndWaitForJobs(
+      final Collection<Job> jobs, final int waitTimeInMillis,
+      final String counterGroup) throws IOException, InterruptedException,
+      ClassNotFoundException {
 
     if (jobs == null)
       throw new NullPointerException("The list of jobs is null");

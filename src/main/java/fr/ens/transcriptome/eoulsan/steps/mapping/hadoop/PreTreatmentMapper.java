@@ -112,7 +112,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
-   * file. 'value': the TFQ record. 
+   * file. 'value': the TFQ record.
    */
   @Override
   protected void map(final LongWritable key, final Text value,

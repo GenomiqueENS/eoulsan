@@ -40,7 +40,6 @@ public class HadoopJobsResults {
 
   private String log;
   private List<String> failedJobname = new ArrayList<String>();
-  
 
   /**
    * Get the log
