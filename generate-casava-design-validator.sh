@@ -357,6 +357,12 @@ public class $PROJECT_NAME implements EntryPoint {
     });
   }
   
+  public String textHelp(){
+    
+    String txt = "Help for the validator samplesheet coming soon.";
+    
+    return txt;
+  }
   
   public void onModuleLoad() {
 
@@ -386,17 +392,15 @@ public class $PROJECT_NAME implements EntryPoint {
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
     
-   
     retrieveGenomesList(Window.Location.getParameter("genomesaliaseslist"), Window.Location.getParameter("genomesaliasesurl"));
     
     genomesTextarea.setVisibleLines(40);
     genomesTextarea.setSize("99%","100%");
     //genomesTextarea.setCharacterWidth(150);
     
-    
     helpTextarea.setVisibleLines(40);
     helpTextarea.setSize("99%","100%");
-    helpTextarea.setText("Help for the validator samplesheet file.");
+    helpTextarea.setText(textHelp());
     
     flowcellTextBox.setText(Window.Location.getParameter("id"));
         
@@ -431,8 +435,6 @@ public class $PROJECT_NAME implements EntryPoint {
           updateDesignWithIndexes(design,
               indexesTextarea.getText());
 
-          
-              
           // Get the flowcell id
           final String flowcellId = getFlowcellId(flowcellTextBox.getText());
           //if (flowcellId == null)
@@ -474,6 +476,7 @@ public class $PROJECT_NAME implements EntryPoint {
         }
       }
     });
+
   }
 }
 EOF
@@ -530,7 +533,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 
 <h4 align="right">__VERSION__</h4>
     <div>
-      <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" width=8% align="left"/></a>
+      <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" width=6% align="left"/></a>
       <h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
     </div>
     <table align="center">
@@ -575,6 +578,7 @@ sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > 
 rm $PROJECT_NAME/war/$PROJECT_NAME.html.tmp
 
 # Compile
+
 cd $PROJECT_NAME
 ant build
 
