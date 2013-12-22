@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
+  private static final String DEFAULT_PACKAGE_VERSION = "2.0.6";
   private static final String MAPPER_EXECUTABLE = "bowtie2";
   private static final String MAPPER_EXECUTABLE_BIN = "bowtie2-align";
   private static final String INDEXER_EXECUTABLE = "bowtie2-build";
@@ -50,6 +51,12 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   public String getMapperName() {
 
     return MAPPER_NAME;
+  }
+
+  @Override
+  protected String getPackageVersion() {
+
+    return DEFAULT_PACKAGE_VERSION;
   }
 
   @Override
@@ -70,7 +77,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String[] getMapperExecutables() {
-    return new String[] {MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN};
+    return new String[] { MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN };
   }
 
   @Override

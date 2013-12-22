@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -54,6 +53,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  private static final String DEFAULT_PACKAGE_VERSION = "0.6.2";
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
@@ -81,6 +81,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  protected String getPackageVersion() {
+
+    return DEFAULT_PACKAGE_VERSION;
+  }
+
+  @Override
   public boolean isSplitsAllowed() {
 
     return true;
@@ -93,9 +99,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath =
-            BinariesInstaller
-                .install(MAPPER_EXECUTABLE, getTempDirectoryPath());
+        execPath = install(MAPPER_EXECUTABLE);
       }
 
       final String cmd = execPath;

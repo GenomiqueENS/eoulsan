@@ -76,6 +76,13 @@ public abstract class AbstractSequenceReadsMapper implements
     return false;
   }
 
+  protected String getSoftwarePackage() {
+    
+    return getMapperName();
+  }
+  
+  protected abstract String getPackageVersion();
+  
   protected abstract String getIndexerExecutable();
 
   protected String[] getIndexerExecutables() {
