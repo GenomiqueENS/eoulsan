@@ -58,7 +58,7 @@ do
 done
 
 #
-# Add main class 
+# Add main class
 #
 
 cat > $PROJECT_NAME/src/$PACKAGE_PATH/client/$PROJECT_NAME.java << EOF
@@ -66,6 +66,7 @@ package $PACKAGE.client;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
@@ -137,7 +138,7 @@ public class $PROJECT_NAME implements EntryPoint {
 
 
   private static String DEFAULT_RESULT_MSG = "<pre>No valid samplesheet entered.</pre>";
-  // if none 
+  // if none
   private static String DEFAULT_GENOMES_MSG = "[No genomes list received.]";
 
   private final TextArea inputTextarea = new TextArea();
@@ -147,6 +148,8 @@ public class $PROJECT_NAME implements EntryPoint {
   private final HTML outputHTML = new HTML();
   private final TextBox flowcellTextBox = new TextBox();
   private final Button button = new Button("Check the bcl2fastq samplesheet");
+
+  private List<String> currentProjects = new ArrayList<String>();
 
   private boolean first = true;
 
@@ -201,17 +204,67 @@ public class $PROJECT_NAME implements EntryPoint {
 
     return flowcellId.substring(1);
   }
-  
-  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
-    
+
+  public final List<String> checkProjectCasavaDesign(final CasavaDesign design) {
+
+    if (currentProjects.isEmpty())
+      return Collections.EMPTY_LIST;
+
+    boolean firstLine = true;
+
+    List<String> warnings = new ArrayList<String>();
+
+    // Build second project list without case
+    Map<String, String> nameProjectsWithoutCase = new HashMap<String, String>();
+    for (String project : currentProjects){
+      nameProjectsWithoutCase.put(removeCaseNameProject(project), project);
+    }
+
+    // Build projects list from sample sheet
+    Set<String> projectsDesign = new HashSet<String>();
+    for (CasavaSample sample : design) {
+      projectsDesign.add(sample.getSampleProject());
+    }
+
+    // Compare each project to current projects
+    for (String projectDesign : projectsDesign) {
+      // Not found in current project
+      if (! currentProjects.contains(projectDesign)){
+
+        if (firstLine){
+          // Add type warnings
+          warnings.add("\nCheck name projects from samplesheet : ");
+          firstLine = false;
+        }
+
+        // Check in second list
+        String projectDesignWithoutCase = removeCaseNameProject(projectDesign);
+
+        if (nameProjectsWithoutCase.containsKey(projectDesignWithoutCase)){
+          warnings.add("\tProject "+ projectDesign + ": true name may be "+ nameProjectsWithoutCase.get(projectDesignWithoutCase) + " ?");
+        } else {
+          warnings.add("\tCheck project: " + projectDesign + " not found in current project");
+        }
+      }
+    }
+
+    return warnings;
+  }
+
+  private static String removeCaseNameProject(final String project){
+    return project.toLowerCase();
+  }
+
+  public final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
+
     if (genomesList == null){
       return Collections.emptyList();
     }
-    
+
     List<String> availableGenomes = new ArrayList<String>();
     List<String> warnings = new ArrayList<String>();
-    boolean first = true;
-  
+    boolean firstLine = true;
+
     for (String line : genomesList.trim().split("\n")) {
       if (line.indexOf("=") > -1) {
         String[] l = line.split("=");
@@ -224,18 +277,18 @@ public class $PROJECT_NAME implements EntryPoint {
     for (CasavaSample sample : design) {
       genomesDesign.add(sample.getSampleRef());
     }
-    
-    
+
+
     for (String genomeSample : genomesDesign) {
       if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
-        if (first)
+        if (firstLine)
           warnings.add("\nNot available in genomes aliases list for detection contaminant for this specie : ");
-        
+
         warnings.add("\t"+genomeSample);
-        first = false;
+        firstLine = false;
       }
     }
-    
+
     return warnings;
   }
 
@@ -243,13 +296,13 @@ public class $PROJECT_NAME implements EntryPoint {
 
     String trimmed = s.trim().toLowerCase();
     String carToReplace = ".,;:/-_'";
-    
+
     for (int i = 0; i < carToReplace.length(); i++) {
       // Check present character to replace by space
       if (trimmed.indexOf(carToReplace.charAt(i)) != -1)
         trimmed = trimmed.replace(carToReplace.charAt(i),' ');
     }
-    
+
     return trimmed.toString();
   }
 
@@ -262,108 +315,149 @@ public class $PROJECT_NAME implements EntryPoint {
       sb.append("  - ");
       sb.append(warn);
       sb.append('\n');
-    } 
+    }
 
     sb.append("\nAre you sure that your samplesheet is correct?");
 
     return sb.toString();
   }
 
-  
+
   private void retrieveGenomesList(final String list, final String url){
-    
+
     final String txt = (list == null || list.trim().length() == 0) ? DEFAULT_GENOMES_MSG : list.trim();
-    
+
     if (url == null || url.trim().length() == 0){
       genomesTextarea.setText(txt);
-    
+
     } else {
       try {
-       
+
        loadGenomesFile(url);
-       
+
       } catch(Exception e){
         // Fail load file, used list send by param genomes
-        Window.alert("Couldn't retrieve list: " + e.getMessage()); 
+        Window.alert("Couldn't retrieve list: " + e.getMessage());
         genomesTextarea.setText(txt);
       }
-    }    
+    }
   }
-  
+
+
   private void loadGenomesFile(final String url) throws Exception {
-  
+
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
-        
+
     Request request = builder.sendRequest(null, new RequestCallback() {
-      
+
       public void onError(Request request, Throwable exception) {
         Window.alert("Couldn't retrieve list url (" + url + ")");
-        
+
       }
 
       public void onResponseReceived(Request request, Response response) {
         if (200 == response.getStatusCode()) {
-         
+
           genomesTextarea.setText(response.getText());
-        
+
         } else {
-          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
+          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");
         }
       }
     });
   }
 
   private void retrieveIndexesList(final String list, final String url){
-    
+
     final String txt = list == null || list.trim().length() == 0 ? DEFAULT_INDEXES : list.trim();
-    
+
     if (url == null || url.trim().length() == 0){
       indexesTextarea.setText(txt);
-    
+
     } else {
       try {
-        
-        loadIndexesFile(url); 
-        
+
+        loadIndexesFile(url);
+
       } catch(Exception e){
         // Fail load file, used list send by param genomes
-        Window.alert("Couldn't retrieve list: " + e.getMessage()); 
+        Window.alert("Couldn't retrieve list: " + e.getMessage());
         indexesTextarea.setText(txt);
       }
-    }    
+    }
   }
-  
+
   private void loadIndexesFile(final String url) throws Exception {
-  
+
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
     final String responseText;
-    
+
     Request request = builder.sendRequest(null, new RequestCallback() {
-      
+
       public void onError(Request request, Throwable exception) {
         Window.alert("Couldn't retrieve list url (" + url + ")");
-        
+
       }
 
       public void onResponseReceived(Request request, Response response) {
         if (200 == response.getStatusCode()) {
-          
+
           indexesTextarea.setText(response.getText());
-        
+
         } else {
-          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");          
+          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");
         }
       }
     });
   }
-  
+
+
+  private void retrieveCurrentProjectList(final String url){
+
+    if (!(url == null || url.trim().length() == 0)){
+      try {
+       
+        loadProjectList(url);
+
+      } catch(Exception e){
+        // Fail load file, used list send by param genomes
+        Window.alert("Couldn't retrieve current project list: " + e.getMessage());
+      }
+    }
+  }
+
+  private void loadProjectList(final String url) throws Exception {
+
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+    final String responseText;
+
+    Request request = builder.sendRequest(null, new RequestCallback() {
+
+      public void onError(Request request, Throwable exception) {
+        Window.alert("Couldn't retrieve list url (" + url + ")");
+
+      }
+
+      public void onResponseReceived(Request request, Response response) {
+        if (200 == response.getStatusCode()) {
+          String s = response.getText();
+          if (s.length() > 0)
+            currentProjects = Arrays.asList(s.split(","));
+
+        } else {
+          Window.alert("Couldn't retrieve list status (" + response.getStatusText() + ")");
+        }
+      }
+    });
+  }
+
   public String textHelp(){
-    
+
     String txt = "Help for the validator samplesheet coming soon.";
-    
+
     return txt;
   }
-  
+
   public void onModuleLoad() {
 
     // Set the layouts
@@ -373,7 +467,7 @@ public class $PROJECT_NAME implements EntryPoint {
     tp.add(new ScrollPanel(indexesTextarea), "[Indexes Aliases]");
     tp.add(new ScrollPanel(genomesTextarea), "[References Aliases]");
     tp.add(new ScrollPanel(helpTextarea), "[Help]");
-    
+
     tp.setHeight("100%");
     tp.setWidth("100%");
 
@@ -383,32 +477,35 @@ public class $PROJECT_NAME implements EntryPoint {
     RootPanel.get("flowcellidFieldContainer").add(flowcellTextBox);
     RootPanel.get("sendButtonContainer").add(button);
     RootPanel.get("tabsContainer").add(tp);
-    
+
     retrieveIndexesList(Window.Location.getParameter("indexesaliaseslist"), Window.Location.getParameter("indexesaliasesurl"));
-    
+
     // Initialize widget values
     // indexesTextarea.setText(DEFAULT_INDEXES);
     indexesTextarea.setVisibleLines(40);
     indexesTextarea.setSize("99%","100%");
     //indexesTextarea.setCharacterWidth(150);
-    
+
     retrieveGenomesList(Window.Location.getParameter("genomesaliaseslist"), Window.Location.getParameter("genomesaliasesurl"));
-    
+
     genomesTextarea.setVisibleLines(40);
     genomesTextarea.setSize("99%","100%");
     //genomesTextarea.setCharacterWidth(150);
-    
+
+
+    retrieveCurrentProjectList(Window.Location.getParameter("projectnamesurl"));
+
     helpTextarea.setVisibleLines(40);
     helpTextarea.setSize("99%","100%");
     helpTextarea.setText(textHelp());
-    
+
     flowcellTextBox.setText(Window.Location.getParameter("id"));
-        
+
     inputTextarea.setText("[Paste here your bcl2fastq samplesheet]");
     //inputTextarea.setCharacterWidth(150);
     inputTextarea.setVisibleLines(40);
     inputTextarea.setSize("99%","100%");
-    
+
     outputHTML.setHTML(DEFAULT_RESULT_MSG);
 
     // Set the action on button click
@@ -441,14 +538,17 @@ public class $PROJECT_NAME implements EntryPoint {
           //  throw new EoulsanException("Invalid run id: " + flowcellTextBox.getText());
 
           // Check Casava design
-          final List<String> warnings = 
+          final List<String> warnings =
             CasavaDesignUtil.checkCasavaDesign(design, flowcellId);
-            
+
           // Check genomes Casava design
           warnings.addAll(checkGenomesCasavaDesign(design, genomesTextarea.getText()));
-  
+
+          // Check project names Casava design
+          warnings.addAll(checkProjectCasavaDesign(design));
+
           if (warnings.size()==0 || Window.confirm(createWarningMessage(warnings))) {
-       
+
             outputHTML.setHTML("<pre>"
                 + CasavaDesignUtil.toCSV(design) + "</pre>");
             tp.selectTab(1);
@@ -501,7 +601,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     <!-- Any title is fine                         -->
     <!--                                           -->
     <title>CASAVA/BCL2FASTQ samplesheet validator</title>
-    
+
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
@@ -522,7 +622,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 
     <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
-    
+
     <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
     <noscript>
       <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
@@ -538,7 +638,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     </div>
     <table align="center">
       <!--tr>
-        <td colspan="2" style="font-weight:bold;">Please enter your name:</td>        
+        <td colspan="2" style="font-weight:bold;">Please enter your name:</td>
       </tr-->
       <tr>
         <td>Flow cell id or run id (optional):</td>
@@ -550,21 +650,21 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
         <!td colspan="2" style="color:red;" id="errorLabelContainer"></td-->
       </tr>
     </table>
-   
-    <!--p/--> 
-  
+
+    <!--p/-->
+
     <table align="center" width="90%" >
       <tr><td id="tabsContainer" height="700px"/></tr>
     </table>
 
-    <!--p/--> 
-        
+    <!--p/-->
+
     <!--table align="center" >
       <tr><td id="sendButtonContainer/></tr>
     </table-->
 
 
- 
+
   </body>
 </html>
 EOF
@@ -574,7 +674,7 @@ if [ -z "$GIT_REVISION" ]; then
 else
 	GIT_REVISION="Revision $GIT_REVISION"
 fi
-sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > $PROJECT_NAME/war/$PROJECT_NAME.html 
+sed "s/__VERSION__/$GIT_REVISION/" $PROJECT_NAME/war/$PROJECT_NAME.html.tmp   > $PROJECT_NAME/war/$PROJECT_NAME.html
 rm $PROJECT_NAME/war/$PROJECT_NAME.html.tmp
 
 # Compile
