@@ -215,10 +215,13 @@ public class $PROJECT_NAME implements EntryPoint {
     List<String> warnings = new ArrayList<String>();
 
     // Build second project list without case
-    Map<String, String> nameProjectsWithoutCase = new HashMap<String, String>();
+    Map<String, String> projectsNameWithoutCase = new HashMap<String, String>();
+
     for (String project : currentProjects){
-      nameProjectsWithoutCase.put(removeCaseNameProject(project), project);
+      projectsNameWithoutCase.put(removeCaseNameProject(project), project);
     }
+
+    Window.alert("projects modif "+projectsNameWithoutCase);
 
     // Build projects list from sample sheet
     Set<String> projectsDesign = new HashSet<String>();
@@ -240,8 +243,8 @@ public class $PROJECT_NAME implements EntryPoint {
         // Check in second list
         String projectDesignWithoutCase = removeCaseNameProject(projectDesign);
 
-        if (nameProjectsWithoutCase.containsKey(projectDesignWithoutCase)){
-          warnings.add("\tProject "+ projectDesign + ": true name may be "+ nameProjectsWithoutCase.get(projectDesignWithoutCase) + " ?");
+        if (projectsNameWithoutCase.containsKey(projectDesignWithoutCase)){
+          warnings.add("\tProject "+ projectDesign + ": good name may be "+ projectsNameWithoutCase.get(projectDesignWithoutCase) + " ?");
         } else {
           warnings.add("\tCheck project: " + projectDesign + " not found in current project");
         }
@@ -252,7 +255,7 @@ public class $PROJECT_NAME implements EntryPoint {
   }
 
   private static String removeCaseNameProject(final String project){
-    return project.toLowerCase();
+    return project.replaceAll("-","_").trim().toLowerCase();
   }
 
   public final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
@@ -416,7 +419,7 @@ public class $PROJECT_NAME implements EntryPoint {
 
     if (!(url == null || url.trim().length() == 0)){
       try {
-       
+
         loadProjectList(url);
 
       } catch(Exception e){
