@@ -1,0 +1,188 @@
+package fr.ens.transcriptome.eoulsan.io;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+
+import com.google.common.base.Charsets;
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnel;
+import com.google.common.hash.PrimitiveSink;
+
+public class BloomFilterUtils implements Serializable {
+  private static final long serialVersionUID = 1L;
+
+  private static final double FALSE_POSITIVE_PROBABILITY_DEFAULT = 0.03;
+
+  private final BloomFilter<String> bf;
+  private int addedNumberOfElements;
+  private final int expectedNumberOfElements;
+  private final double falsePositiveProbability;
+
+  public void put(final String element) {
+    bf.put(element);
+    addedNumberOfElements++;
+  }
+
+  public boolean mightContain(final String element) {
+    return this.bf.mightContain(element);
+  }
+
+  /**
+   * Build or retrieve a bloomFilterUtils from a file used .
+   * @param fileSer filename to serialization
+   * @return BloomFilter completed
+   * @throws IOException if an error occurs during deserialization
+   */
+  public static BloomFilterUtils deserializationBloomFilter(final File fileSer)
+      throws IOException {
+
+    ObjectInputStream ois = null;
+    BloomFilterUtils bloomFilter = null;
+
+    try {
+
+      ois = new ObjectInputStream(new FileInputStream(fileSer));
+      bloomFilter = (BloomFilterUtils) ois.readObject();
+      ois.close();
+
+    } catch (Exception e) {
+      throw new IOException(e.getMessage());
+    }
+    return bloomFilter;
+  }
+
+  /**
+   * Build a serialization file with the instance of bloomFilterUtils
+   * @param fileSer filename to serialization
+   * @param bloomFilter bloomfilter to serialization
+   * @throws IOException if an error occurs during serialization
+   */
+  public static void serializationBloomFilter(final File fileSer,
+      final BloomFilterUtils bloomFilter) throws IOException {
+
+    if (bloomFilter == null)
+      throw new IOException("Bloom filter not exists");
+
+    // Serialization BloomFilter
+    ObjectOutputStream oos;
+    try {
+      oos = new ObjectOutputStream(new FileOutputStream(fileSer));
+      oos.writeObject(bloomFilter);
+      oos.flush();
+      oos.close();
+
+      //TODO
+      // change file permission
+      
+    } catch (FileNotFoundException e) {
+      throw new IOException(e.getMessage());
+    }
+
+  }
+
+  /**
+   * Compare parameters used to create bloom filter
+   * @param that bloom filter to compare
+   * @return same parameters true else false
+   */
+  public boolean sameConfigurationFilter(final BloomFilterUtils that) {
+    return getExpectedNumberOfElements() == that.getExpectedNumberOfElements()
+        && getFalsePositiveProbability() == that.getFalsePositiveProbability();
+  }
+
+  //
+  // Getter and Setter
+  //
+  /** Return the bloom filter */
+  public BloomFilter<String> getBf() {
+    return bf;
+  }
+
+  /** Return number of elements added in bloom filter */
+  public int getAddedNumberOfElements() {
+    return addedNumberOfElements;
+  }
+
+  /** Return parameter used to create bloom filter: expected number element */
+  public int getExpectedNumberOfElements() {
+    return expectedNumberOfElements;
+  }
+
+  /**
+   * Return parameter used to create bloom filter: false positive probability
+   * expected
+   */
+  public double getFalsePositiveProbability() {
+    return falsePositiveProbability;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    
+    sb.append("Bloom filter features");
+    sb.append("\n\tfalse positive probability "+ getFalsePositiveProbability()+"%");
+    sb.append("\n\tnumber elements expected "+ getExpectedNumberOfElements());
+    sb.append("\n\tnumber elements added "+ getAddedNumberOfElements());
+    
+    return sb.toString();
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor
+   * @param expectedNumberOfElements parameter to create bloom filter
+   */
+  public BloomFilterUtils(final int expectedNumberOfElements) {
+    this(expectedNumberOfElements, FALSE_POSITIVE_PROBABILITY_DEFAULT);
+  }
+
+  /**
+   * Public constructor
+   * @param expectedNumberOfElements parameter to create bloom filter, must be
+   *          positive
+   * @param falsePositiveProbability parameter to create bloom filter, must be
+   *          between 0 and 100%
+   */
+  public BloomFilterUtils(final int expectedNumberOfElements,
+      final double falsePositiveProbability) {
+
+    // Check parameter
+    if (expectedNumberOfElements <= 0)
+      throw new IllegalArgumentException(
+          "Parameter 'expectedNumberOfElements' to create bloom filter invalid "
+              + expectedNumberOfElements);
+
+    if (falsePositiveProbability <= 0 || falsePositiveProbability >= 1.0)
+      throw new IllegalArgumentException(
+          "Parameter 'falsePositiveProbability' to create bloom filter invalid "
+              + falsePositiveProbability);
+
+    this.addedNumberOfElements = 0;
+    this.expectedNumberOfElements = expectedNumberOfElements;
+    this.falsePositiveProbability = falsePositiveProbability;
+
+    this.bf = BloomFilter.create(new Funnel<String>() {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void funnel(String from, PrimitiveSink into) {
+        into.putString(from, Charsets.UTF_8);
+      }
+
+    }, expectedNumberOfElements, falsePositiveProbability);
+
+  }
+  
+}

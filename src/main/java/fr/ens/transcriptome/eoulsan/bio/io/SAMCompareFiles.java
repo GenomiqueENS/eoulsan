@@ -31,108 +31,84 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.io.AbstractCompareFiles;
-import fr.ens.transcriptome.eoulsan.io.BinaryCompareFile;
+import fr.ens.transcriptome.eoulsan.io.BloomFilterUtils;
 
 public class SAMCompareFiles extends AbstractCompareFiles {
 
-  private final Set<String> tagsToNotCompare;
+  public static final String NAME_COMPARE_FILES = "SAMCompare";
+  public static final List<String> EXTENSION_READED = Lists
+      .newArrayList(".sam");
+
+  final Set<String> tagsToNotCompare;
+
+  private double falsePositiveProba = 0.1;
+  private int expectedNumberOfElements = 30000000;
+
+  private int numberElementsCompared;
 
   @Override
-  protected boolean checkFileSize() {
-
-    return false;
+  public boolean compareFiles(InputStream isA, InputStream isB)
+      throws IOException {
+    return compareFiles(buildBloomFilter(isA), isB);
   }
 
   @Override
-  public boolean compareNonOrderedFiles(final InputStream inA,
-      final InputStream inB) throws IOException {
+  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
+      throws IOException {
+
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    String line = null;
+    numberElementsCompared = 0;
+    
+    while ((line = reader.readLine()) != null) {
+      numberElementsCompared++;
+
+      // Header
+      if (line.charAt(0) == '@') {
+        // Skip specified tag in header sam file
+        if (!this.tagsToNotCompare.contains(getTag(line))) {
+
+          if (!filter.mightContain(line)) {
+            reader.close();
+            return false;
+          }
+        }
+      } else {
+        // Line
+        if (!filter.mightContain(line)) {
+          reader.close();
+          return false;
+        }
+      }
+    }
+    reader.close();
+
+    // Check count element is the same between two files
+    if (numberElementsCompared != filter.getAddedNumberOfElements())
+      return false;
+
+    return true;
+  }
+
+  @Override
+  public BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
+    final BloomFilterUtils filter = initBloomFilter(expectedNumberOfElements);
+
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
     String line = null;
 
-    // SAM headers
-    final List<String> headers = Lists.newArrayList();
-
-    // Multiset where store hashcodes of the lines of the file
-    final Multiset<Integer> hashcodes = HashMultiset.create();
-
-    final BufferedReader reader1 =
-        new BufferedReader(new InputStreamReader(inA));
-
     // Read the first file and store hashcodes
-    while ((line = reader1.readLine()) != null) {
-
-      if (line.charAt(0) == '@') {
-
-        if (hashcodes.size() > 0)
-          throw new IOException(
-              "Invalid SAM format (header found after the first entry)");
-
-        headers.add(line);
-        continue;
-      }
-
-      hashcodes.add(line.hashCode());
+    while ((line = reader.readLine()) != null) {
+      filter.put(line);
     }
 
-    reader1.close();
-
-    final BufferedReader reader2 =
-        new BufferedReader(new InputStreamReader(inB));
-
-    int headerIndex = 0;
-    final int count1 = hashcodes.size();
-    int count2 = 0;
-
-    // Read the second file and check if ALL lines hashcode has been seen
-    while ((line = reader2.readLine()) != null) {
-
-      if (line.charAt(0) == '@') {
-
-        final String tag = getTag(line);
-
-        if (!this.tagsToNotCompare.contains(tag)) {
-
-          if (headerIndex >= headers.size())
-            return false;
-
-          if (!headers.get(headerIndex).equals(line))
-            return false;
-        }
-
-        headerIndex++;
-        continue;
-      }
-
-      if (headerIndex != headers.size())
-        return false;
-
-      final int hashcode = line.hashCode();
-
-      if (!hashcodes.contains(hashcode)) {
-        reader2.close();
-        return false;
-      }
-
-      hashcodes.remove(hashcode);
-      count2++;
-    }
-
-    reader2.close();
-
-    return count1 == count2;
-  }
-
-  @Override
-  public boolean compareOrderedFiles(final InputStream inA,
-      final InputStream inB) throws IOException {
-
-    return new BinaryCompareFile().compareOrderedFiles(inA, inB);
+    reader.close();
+    return filter;
   }
 
   //
@@ -150,6 +126,32 @@ public class SAMCompareFiles extends AbstractCompareFiles {
       return samHeaderLine.substring(1);
 
     return samHeaderLine.substring(1, pos);
+  }
+
+  @Override
+  public int getExpectedNumberOfElements() {
+    return this.expectedNumberOfElements;
+  }
+
+  @Override
+  public double getFalsePositiveProba() {
+    return this.falsePositiveProba;
+  }
+
+  @Override
+  public String getName() {
+
+    return NAME_COMPARE_FILES;
+  }
+
+  @Override
+  public List<String> getExtensionReaded() {
+    return EXTENSION_READED;
+  }
+
+  @Override
+  public int getNumberElementsCompared() {
+    return this.numberElementsCompared;
   }
 
   //
@@ -170,3 +172,5 @@ public class SAMCompareFiles extends AbstractCompareFiles {
   }
 
 }
+
+

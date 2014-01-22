@@ -26,72 +26,116 @@ package fr.ens.transcriptome.eoulsan.bio.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.io.AbstractCompareFiles;
-import fr.ens.transcriptome.eoulsan.io.BinaryCompareFile;
+import fr.ens.transcriptome.eoulsan.io.BloomFilterUtils;
 
-/**
- * This class allow to compare two fastq files.
- * @author Laurent Jourdren
- * @since 1.3
- */
 public class FastqCompareFiles extends AbstractCompareFiles {
 
+  public static final String NAME_COMPARE_FILES = "FastqCompare";
+  public static final List<String> EXTENSION_READED = Lists.newArrayList(
+      ".fastq", ".fq");
+
+  private static double falsePositiveProba = 0.1;
+  private static int expectedNumberOfElements = 30000000;
+
+  private int numberElementsCompared;
+
   @Override
-  public boolean compareNonOrderedFiles(final InputStream inA,
-      final InputStream inB) throws IOException {
-
-    // Multiset where store hashcodes of the lines of the file
-    final Multiset<Integer> hashcodes = HashMultiset.create();
-
-    final ReadSequenceReader reader1 = new FastqReader(inA);
-
-    // Read the first file and store hashcodes
-    for (ReadSequence read : reader1)
-      hashcodes.add(read.toFastQ().hashCode());
-
-    reader1.close();
-    // Throw an exception if an error has occurred while reading data
-    try {
-      reader1.throwException();
-    } catch (BadBioEntryException e) {
-      throw new IOException(e.getMessage());
-    }
-
-    final int count1 = hashcodes.size();
-    int count2 = 0;
-
-    final ReadSequenceReader reader2 = new FastqReader(inB);
-
-    // Read the second file and check if ALL lines hashcode has been seen
-    for (ReadSequence read : reader1) {
-
-      final int hashcode = read.toFastQ().hashCode();
-
-      if (!hashcodes.contains(hashcode)) {
-        reader2.close();
-        return false;
-      }
-
-      count2++;
-      hashcodes.remove(hashcode);
-    }
-
-    reader2.close();
-
-    return count1 == count2;
+  public boolean compareFiles(InputStream isA, InputStream isB)
+      throws IOException {
+    return compareFiles(buildBloomFilter(isA), isB);
   }
 
   @Override
-  public boolean compareOrderedFiles(final InputStream inA,
-      final InputStream inB) throws IOException {
+  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
+      throws IOException {
 
-    return new BinaryCompareFile().compareOrderedFiles(inA, inB);
+    final FastqReader fastqReader = new FastqReader(is);
+    numberElementsCompared = 0;
+    
+    // Search each ReadSequence in BFilter source
+    for (ReadSequence read : fastqReader) {
+      this.numberElementsCompared++;
+
+      if (!filter.mightContain(read.toFastQ())) {
+        fastqReader.close();
+        return false;
+      }
+    }
+    fastqReader.close();
+
+    // Check count element is the same between two files
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements())
+      return false;
+
+    return true;
+  }
+
+  public BloomFilterUtils buildBloomFilter(final InputStream is)
+      throws IOException {
+
+    final BloomFilterUtils filter = initBloomFilter(expectedNumberOfElements);
+
+    final FastqReader fastqReader = new FastqReader(is);
+
+    // Search each ReadSequence in BFilter source
+    for (ReadSequence read : fastqReader) {
+      filter.put(read.toFastQ());
+    }
+    fastqReader.close();
+
+    try {
+      fastqReader.throwException();
+    } catch (BadBioEntryException e) {
+      throw new IOException("Fail BadBioEntry exception: " + e.getMessage());
+    }
+
+    return filter;
+  }
+
+  //
+  // Getter and setters
+  //
+
+  @Override
+  public int getExpectedNumberOfElements() {
+    return expectedNumberOfElements;
+  }
+
+  @Override
+  public double getFalsePositiveProba() {
+    return falsePositiveProba;
+  }
+
+  @Override
+  public List<String> getExtensionReaded() {
+    return EXTENSION_READED;
+  }
+
+  @Override
+  public String getName() {
+
+    return NAME_COMPARE_FILES;
+  }
+
+  @Override
+  public int getNumberElementsCompared() {
+    return this.numberElementsCompared;
+  }
+
+  //
+  // Constructor
+  //
+
+  public FastqCompareFiles() {
+
   }
 
 }

@@ -24,55 +24,149 @@
 
 package fr.ens.transcriptome.eoulsan.io;
 
+import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByFilename;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-/**
- * This class define an abstract class that implements some methods of the
- * CompareFiles interface.
- * @author Laurent Jourdren
- * @since 1.3
- */
+import com.google.common.base.Stopwatch;
+
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
+
 public abstract class AbstractCompareFiles implements CompareFiles {
 
+  /** LOGGER */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+
   @Override
-  public boolean compareNonOrderedFiles(final String pathA, final String pathB)
+  public boolean compareFiles(final String pathA, final String pathB)
       throws IOException {
 
-    return compareNonOrderedFiles(new File(pathA), new File(pathB));
+    return compareFiles(new File(pathA), new File(pathB), false);
   }
 
   @Override
-  public boolean compareNonOrderedFiles(final File fileA, final File fileB)
-      throws IOException {
+  public boolean compareFiles(final String pathA, final String pathB,
+      final boolean useSerializeFile) throws IOException {
 
-    // Check input files
-    if (!checkFiles(fileA, fileB) && checkFileSize())
-      return false;
-
-    return compareNonOrderedFiles(new FileInputStream(fileA),
-        new FileInputStream(fileB));
+    return compareFiles(new File(pathA), new File(pathB), useSerializeFile);
   }
 
   @Override
-  public boolean compareOrderedFiles(final String pathA, final String pathB)
-      throws IOException {
-
-    return compareNonOrderedFiles(new File(pathA), new File(pathB));
-  }
-
-  @Override
-  public boolean compareOrderedFiles(final File fileA, final File fileB)
+  public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException {
+    return compareFiles(fileA, fileB, false);
+  }
+
+  @Override
+  public boolean compareFiles(final File fileA, final File fileB,
+      final boolean useSerializeFile) throws FileNotFoundException, IOException {
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize())
       return false;
 
-    return compareNonOrderedFiles(new FileInputStream(fileA),
-        new FileInputStream(fileB));
+    // The files are not equals
+    if (fileA.equals(fileB.length()))
+      return false;
+
+    // Check path file is same
+    if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
+      return true;
+    }
+
+    final InputStream isA =
+        getCompressionTypeByFilename(fileA.getAbsolutePath())
+            .createInputStream(new FileInputStream(fileA));
+
+    final InputStream isB =
+        getCompressionTypeByFilename(fileB.getAbsolutePath())
+            .createInputStream(new FileInputStream(fileB));
+
+    if (useSerializeFile)
+      return compareFiles(getBloomFilter(fileA), isB);
+
+    return compareFiles(isA, isB);
+  }
+
+  public abstract int getExpectedNumberOfElements();
+
+  public abstract double getFalsePositiveProba();
+
+  public abstract List<String> getExtensionReaded();
+
+  public abstract String getName();
+
+  /**
+   * @return
+   */
+  protected static BloomFilterUtils initBloomFilter(
+      final int expectedNumberOfElements) {
+
+    return new BloomFilterUtils(expectedNumberOfElements);
+  }
+
+  /**
+   * In case Serialization is asked, check if the file.ser exists : true
+   * retrieve the bloom filter else create the filter and file.Ser
+   * corresponding.
+   * @param file source to create bloom filter
+   * @return bloomFilter completed with the file
+   */
+  public BloomFilterUtils getBloomFilter(final File file) throws IOException {
+
+    // final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
+    final File bloomFilterSer = new File("/tmp/" + file.getName() + ".ser");
+
+    final BloomFilterUtils bloomFilter;
+    final Stopwatch timer = Stopwatch.createUnstarted();
+    timer.start();
+
+    if (bloomFilterSer.exists()) {
+      // Retrieve marshalling bloom filter
+
+      // TODO
+      // System.out.println("file " + bloomFilterSer.getAbsolutePath());
+      bloomFilter = BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
+
+      timer.stop();
+
+      LOGGER.info("Retrieve bloom filter serialized number elements "
+          + bloomFilter.getAddedNumberOfElements() + " in file "
+          + bloomFilterSer.getAbsolutePath() + " in "
+          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
+      return bloomFilter;
+
+    }
+
+    // TODO
+    // System.out.println("create file " + bloomFilterSer.getAbsolutePath());
+    // Create new filter and marshalling
+    final CompressionType zType =
+        getCompressionTypeByFilename(file.getAbsolutePath());
+
+    bloomFilter =
+        buildBloomFilter(zType.createInputStream(new FileInputStream(file)));
+
+    BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
+
+    timer.stop();
+
+    LOGGER.info("Create bloom filter serialized number elements "
+        + bloomFilter.getAddedNumberOfElements() + " in file "
+        + bloomFilterSer.getAbsolutePath() + " in "
+        + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
+    return bloomFilter;
   }
 
   /**
@@ -106,10 +200,6 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     if (fileA.equals(fileB))
       throw new IOException("Try to compare the same file: " + fileA);
 
-    // The files are not equals if size if not equals
-    if (fileA.length() != fileB.length())
-      return false;
-
     return true;
   }
 
@@ -132,4 +222,11 @@ public abstract class AbstractCompareFiles implements CompareFiles {
       throw new IOException("The " + argumentName + " is not a standard file");
   }
 
+  public String toString() {
+    return getName()
+        + " compares files with extensions " + getExtensionReaded()
+        + " use Bloom filter with parameters: expected numbers elements "
+        + getExpectedNumberOfElements() + " and false positif probability "
+        + getFalsePositiveProba();
+  }
 }

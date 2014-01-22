@@ -21,72 +21,102 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-
 package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.Lists;
 
-/**
- * This class allow to compare ordered or non ordered text file with one entry
- * by line.
- * @author Laurent Jourdren
- * @since 1.3
- */
 public class TextCompareFiles extends AbstractCompareFiles {
 
+  private static final String NAME_COMPARE_FILES = "TextCompare";
+  public static final List<String> EXTENSION_READED = Lists.newArrayList(
+      ".txt", ".tsv", ".csv", ".ebwt", ".xml", ".log");
+
+  private static double falsePositiveProba = 0.1;
+  private static int expectedNumberOfElements = 30000000;
+
+  private int numberElementsCompared;
+
   @Override
-  public boolean compareNonOrderedFiles(InputStream inA, InputStream inB)
+  public boolean compareFiles(InputStream isA, InputStream isB)
       throws IOException {
-
-    // Multiset where store hashcodes of the lines of the file
-    final Multiset<Integer> hashcodes = HashMultiset.create();
-    String line;
-
-    final BufferedReader reader1 =
-        new BufferedReader(new InputStreamReader(inA));
-
-    // Read the first file and store hashcodes
-    while ((line = reader1.readLine()) != null)
-      hashcodes.add(line.hashCode());
-
-    reader1.close();
-
-    final int count1 = hashcodes.size();
-    int count2 = 0;
-
-    final BufferedReader reader2 =
-        new BufferedReader(new InputStreamReader(inB));
-
-    // Read the second file and check if ALL lines hashcode has been seen
-    while ((line = reader2.readLine()) != null) {
-
-      final int hashcode = line.hashCode();
-
-      if (!hashcodes.contains(hashcode)) {
-        reader2.close();
-        return false;
-      }
-
-      count2++;
-      hashcodes.remove(hashcode);
-    }
-
-    reader2.close();
-
-    return count1 == count2;
+    return compareFiles(buildBloomFilter(isA), isB);
   }
 
   @Override
-  public boolean compareOrderedFiles(InputStream inA, InputStream inB)
+  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
 
-    return new BinaryCompareFile().compareOrderedFiles(inA, inB);
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    String line = null;
+    numberElementsCompared = 0;
+    
+    while ((line = reader.readLine()) != null) {
+      numberElementsCompared++;
+
+      if (!filter.mightContain(line)) {
+        reader.close();
+        return false;
+      }
+    }
+    reader.close();
+
+    // Check count element is the same between two files
+    if (numberElementsCompared != filter.getAddedNumberOfElements()) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
+    final BloomFilterUtils filter = initBloomFilter(expectedNumberOfElements);
+
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+    String line = null;
+
+    // Read the first file and store hashcodes
+    while ((line = reader.readLine()) != null) {
+      filter.put(line);
+    }
+
+    reader.close();
+    return filter;
+  }
+
+  //
+  // Getter
+  //
+
+  @Override
+  public int getExpectedNumberOfElements() {
+    return expectedNumberOfElements;
+  }
+
+  @Override
+  public double getFalsePositiveProba() {
+    return falsePositiveProba;
+  }
+
+  public List<String> getExtensionReaded() {
+    return EXTENSION_READED;
+  }
+
+  @Override
+  public String getName() {
+
+    return NAME_COMPARE_FILES;
+  }
+
+  @Override
+  public int getNumberElementsCompared() {
+    return this.numberElementsCompared;
   }
 
 }
