@@ -11,3 +11,6 @@ fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction
 
 # Fake actions
 fr.ens.transcriptome.eoulsan.actions.AWSExecAction
+
+# Validation Eoulsan version
+fr.ens.transcriptome.eoulsan.actions.ValidationAction
