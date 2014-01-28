@@ -221,7 +221,6 @@ public class $PROJECT_NAME implements EntryPoint {
       projectsNameWithoutCase.put(removeCaseNameProject(project), project);
     }
 
-    Window.alert("projects modif "+projectsNameWithoutCase);
 
     // Build projects list from sample sheet
     Set<String> projectsDesign = new HashSet<String>();
@@ -234,19 +233,17 @@ public class $PROJECT_NAME implements EntryPoint {
       // Not found in current project
       if (! currentProjects.contains(projectDesign)){
 
-        if (firstLine){
-          // Add type warnings
-          warnings.add("\nCheck name projects from samplesheet : ");
-          firstLine = false;
-        }
-
         // Check in second list
         String projectDesignWithoutCase = removeCaseNameProject(projectDesign);
 
+        // Skip PhiX control
+        if (projectDesignWithoutCase.startsWith("control"))
+          continue;
+
         if (projectsNameWithoutCase.containsKey(projectDesignWithoutCase)){
-          warnings.add("\tProject "+ projectDesign + ": good name may be "+ projectsNameWithoutCase.get(projectDesignWithoutCase) + " ?");
+          warnings.add("Project "+ projectDesign + ": good name may be "+ projectsNameWithoutCase.get(projectDesignWithoutCase) + " ?");
         } else {
-          warnings.add("\tCheck project: " + projectDesign + " not found in current project");
+          warnings.add("Check project: " + projectDesign + " not found in projects");
         }
       }
     }
@@ -284,11 +281,7 @@ public class $PROJECT_NAME implements EntryPoint {
 
     for (String genomeSample : genomesDesign) {
       if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
-        if (firstLine)
-          warnings.add("\nNot available in genomes aliases list for detection contaminant for this specie : ");
-
-        warnings.add("\t"+genomeSample);
-        firstLine = false;
+        warnings.add("No genome found for '" + genomeSample + "' (optional for Fastq Screen)");
       }
     }
 
