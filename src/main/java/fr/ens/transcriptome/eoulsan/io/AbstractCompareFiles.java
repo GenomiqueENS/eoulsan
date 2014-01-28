@@ -63,6 +63,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   @Override
   public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException {
+
     return compareFiles(fileA, fileB, false);
   }
 
@@ -78,7 +79,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     if (fileA.equals(fileB.length()))
       return false;
 
-    // Check path file is same
+    // Check path file (abstract and symbolic) is the same
     if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
       return true;
     }
@@ -91,19 +92,11 @@ public abstract class AbstractCompareFiles implements CompareFiles {
         getCompressionTypeByFilename(fileB.getAbsolutePath())
             .createInputStream(new FileInputStream(fileB));
 
-    if (useSerializeFile)
+    if (useSerializeFile && isUseBloomfilterAvailable())
       return compareFiles(getBloomFilter(fileA), isB);
 
     return compareFiles(isA, isB);
   }
-
-  public abstract int getExpectedNumberOfElements();
-
-  public abstract double getFalsePositiveProba();
-
-  public abstract List<String> getExtensionReaded();
-
-  public abstract String getName();
 
   /**
    * @return
@@ -127,30 +120,23 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     final File bloomFilterSer = new File("/tmp/" + file.getName() + ".ser");
 
     final BloomFilterUtils bloomFilter;
-    final Stopwatch timer = Stopwatch.createUnstarted();
-    timer.start();
+    final Stopwatch timer = Stopwatch.createStarted();
 
     if (bloomFilterSer.exists()) {
       // Retrieve marshalling bloom filter
-
-      // TODO
-      // System.out.println("file " + bloomFilterSer.getAbsolutePath());
       bloomFilter = BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
-
-      timer.stop();
 
       LOGGER.info("Retrieve bloom filter serialized number elements "
           + bloomFilter.getAddedNumberOfElements() + " in file "
-          + bloomFilterSer.getAbsolutePath() + " in "
-          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+          + bloomFilterSer.getAbsolutePath());
 
       return bloomFilter;
-
     }
 
     // TODO
     // System.out.println("create file " + bloomFilterSer.getAbsolutePath());
-    // Create new filter and marshalling
+
+    // Create new filter and marshaling
     final CompressionType zType =
         getCompressionTypeByFilename(file.getAbsolutePath());
 
@@ -222,11 +208,28 @@ public abstract class AbstractCompareFiles implements CompareFiles {
       throw new IOException("The " + argumentName + " is not a standard file");
   }
 
+  @Override
   public String toString() {
-    return getName()
-        + " compares files with extensions " + getExtensionReaded()
-        + " use Bloom filter with parameters: expected numbers elements "
-        + getExpectedNumberOfElements() + " and false positif probability "
-        + getFalsePositiveProba();
+
+    if (isUseBloomfilterAvailable())
+      return getName()
+          + " compares files with extensions " + getExtensionReaded()
+          + " use Bloom filter with parameters: expected numbers elements "
+          + getExpectedNumberOfElements() + " and false positif probability "
+          + getFalsePositiveProba();
+    
+    else
+      return getName()
+          + " compares files with extensions " + getExtensionReaded();
   }
+
+  public abstract int getExpectedNumberOfElements();
+
+  public abstract double getFalsePositiveProba();
+
+  public abstract List<String> getExtensionReaded();
+
+  public abstract String getName();
+
+  public abstract boolean isUseBloomfilterAvailable();
 }

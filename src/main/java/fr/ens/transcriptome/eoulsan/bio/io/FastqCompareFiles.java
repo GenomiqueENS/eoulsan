@@ -44,7 +44,8 @@ public class FastqCompareFiles extends AbstractCompareFiles {
 
   private static double falsePositiveProba = 0.1;
   private static int expectedNumberOfElements = 30000000;
-
+  private boolean useBloomfilterAvailable = true;
+  
   private int numberElementsCompared;
 
   @Override
@@ -130,6 +131,14 @@ public class FastqCompareFiles extends AbstractCompareFiles {
     return this.numberElementsCompared;
   }
 
+  @Override
+  public boolean isUseBloomfilterAvailable() {
+    return useBloomfilterAvailable;
+  }
+
+  public void setUseBloomfilterAvailable(boolean useBloomfilterAvailable) {
+    this.useBloomfilterAvailable = useBloomfilterAvailable;
+  }
   //
   // Constructor
   //

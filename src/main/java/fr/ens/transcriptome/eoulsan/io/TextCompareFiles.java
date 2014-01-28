@@ -35,10 +35,11 @@ public class TextCompareFiles extends AbstractCompareFiles {
 
   private static final String NAME_COMPARE_FILES = "TextCompare";
   public static final List<String> EXTENSION_READED = Lists.newArrayList(
-      ".txt", ".tsv", ".csv", ".ebwt", ".xml", ".log");
+      ".txt", ".tsv", ".csv", ".ebwt", ".xml");
 
   private static double falsePositiveProba = 0.1;
   private static int expectedNumberOfElements = 30000000;
+  private boolean useBloomfilterAvailable = true;
 
   private int numberElementsCompared;
 
@@ -55,7 +56,7 @@ public class TextCompareFiles extends AbstractCompareFiles {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line = null;
     numberElementsCompared = 0;
-    
+
     while ((line = reader.readLine()) != null) {
       numberElementsCompared++;
 
@@ -119,4 +120,12 @@ public class TextCompareFiles extends AbstractCompareFiles {
     return this.numberElementsCompared;
   }
 
+  @Override
+  public boolean isUseBloomfilterAvailable() {
+    return useBloomfilterAvailable;
+  }
+
+  public void setUseBloomfilterAvailable(boolean useBloomfilterAvailable) {
+    this.useBloomfilterAvailable = useBloomfilterAvailable;
+  }
 }

@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -37,17 +38,71 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class BinaryCompareFile extends AbstractCompareFiles {
 
   @Override
-  public boolean compareNonOrderedFiles(InputStream inA, InputStream inB)
+  public boolean compareFiles(InputStream isA, InputStream isB)
       throws IOException {
-
-    throw new UnsupportedOperationException();
+    // TODO Auto-generated method stub
+    return false;
   }
 
   @Override
-  public boolean compareOrderedFiles(InputStream inA, InputStream inB)
+  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
-
-    return FileUtils.compareFile(inA, inB);
+    // TODO Auto-generated method stub
+    return false;
   }
+
+  @Override
+  public BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int getNumberElementsCompared() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public int getExpectedNumberOfElements() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getFalsePositiveProba() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public List<String> getExtensionReaded() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public boolean isUseBloomfilterAvailable() {
+    return false;
+  }
+//  @Override
+//  public boolean compareNonOrderedFiles(InputStream inA, InputStream inB)
+//      throws IOException {
+//
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @Override
+//  public boolean compareOrderedFiles(InputStream inA, InputStream inB)
+//      throws IOException {
+//
+//    return FileUtils.compareFile(inA, inB);
+//  }
 
 }
