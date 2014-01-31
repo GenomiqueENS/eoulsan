@@ -1,13 +1,15 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -26,6 +28,8 @@ public class DataSetAnalysis {
   private DataFile paramFile;
   private DataFile eoulsanLog;
 
+  private Set<DataFile> allFiles;
+  private Map<String, DataFile> fileByName;
   private Map<String, Collection<DataFile>> allFilesInAnalysis;
 
   public void init() throws EoulsanException {
@@ -65,16 +69,18 @@ public class DataSetAnalysis {
   }
 
   private void parseDirectory(final File dir,
-      final Multimap<String, DataFile> allFiles) {
+      final Multimap<String, DataFile> files) {
 
     for (final File fileEntry : dir.listFiles()) {
       if (fileEntry.isDirectory()) {
-        parseDirectory(fileEntry, allFiles);
+        parseDirectory(fileEntry, files);
       } else {
 
         DataFile df = new DataFile(fileEntry);
         // Add entry in map
-        allFiles.put(df.getExtension(), df);
+        files.put(df.getExtension(), df);
+        allFiles.add(df);
+        fileByName.put(df.getName(), df);
 
       }
     }
@@ -172,15 +178,28 @@ public class DataSetAnalysis {
     return allFilesInAnalysis;
   }
 
+  public Set<DataFile> getAllFiles() {
+    return allFiles;
+  }
+
+  public Map<String, DataFile> getFileByName() {
+    return fileByName;
+  }
+
   //
   // Constructor
   //
 
   public DataSetAnalysis(final String dataSetPath, final boolean expected)
       throws EoulsanException {
+
     this.expected = expected;
     this.dataSetPath = dataSetPath;
     this.dataSet = new DataFile(dataSetPath);
+
+    this.allFilesInAnalysis = Maps.newHashMap();
+    this.fileByName = Maps.newHashMap();
+    this.allFiles = Sets.newHashSet();
 
     if (this.expected) {
       // Check dataset directory exists

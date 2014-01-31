@@ -34,8 +34,6 @@ public class ValidationAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final List<String> DATASETS_DEFAULT = Lists.newArrayList("",
-      "");
 
   private static final boolean USE_SERIALIZATION = true;
   private static final boolean CHECKING_SAME_NAME = true;
@@ -51,7 +49,7 @@ public class ValidationAction extends AbstractAction {
   }
 
   private void initLogger() {
-    
+
     Handler fh = null;
     try {
       fh = new FileHandler("eoulsan_validation.log");
@@ -60,9 +58,9 @@ public class ValidationAction extends AbstractAction {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
     fh.setFormatter(Globals.LOG_FORMATTER);
-    
+
     LOGGER.setLevel(Globals.LOG_LEVEL);
     LOGGER.setUseParentHandlers(false);
 
@@ -95,6 +93,7 @@ public class ValidationAction extends AbstractAction {
         help(options);
       }
 
+      // Description
       if (line.hasOption("d")) {
 
         jobDescription = line.getOptionValue("d");
@@ -125,9 +124,20 @@ public class ValidationAction extends AbstractAction {
           "Error while parsing parameter file: " + e.getMessage());
     }
 
+    // TODO
+    System.out.println(pathEoulsanNewVersion
+        + "," + listDatasets + "," + outputDirectory + "," + jobDescription);
+    System.out
+        .println("pathEoulsanNewVersion, listDatasets, outputDirectory, jobDescription");
+
+    System.out.println(arguments.length + " vs " + argsOptions);
+
     if (arguments.length != argsOptions + 2) {
       help(options);
     }
+
+    // TODO
+    System.out.println("end parse cmd line");
 
     // Execute program in local mode
     run(pathEoulsanNewVersion, listDatasets, outputDirectory, jobDescription);
@@ -161,7 +171,7 @@ public class ValidationAction extends AbstractAction {
         .create('s'));
 
     // Output option
-    options.addOption(OptionBuilder.withArgName("directory").hasArg()
+    options.addOption(OptionBuilder.withArgName("directory").hasArg(true)
         .withDescription("Output dir").withLongOpt("output").create('o'));
 
     return options;
@@ -214,6 +224,9 @@ public class ValidationAction extends AbstractAction {
 
     File eoulsanExecutable = new File(pathEoulsanNewVersion);
     File outputDirectory = new File(pathOutputDirectory);
+
+    // TODO
+    System.out.println("action run");
 
     try {
       // Check path Eoulsan new version
@@ -354,7 +367,9 @@ public class ValidationAction extends AbstractAction {
       // cmd.add(errFilename);
 
       LOGGER.info(StringUtils.join(cmd.toArray(), " "));
-
+      // TODO
+      System.out.println(StringUtils.join(cmd.toArray(), " "));
+      
       return cmd;
     }
 

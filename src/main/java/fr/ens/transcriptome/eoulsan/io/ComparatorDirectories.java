@@ -11,8 +11,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -45,8 +47,14 @@ public class ComparatorDirectories {
   private final StringBuilder report;
   private int numberComparaison = 0;
 
+  /**
+   * @param dataSetA
+   * @param dataSetB
+   * @throws EoulsanException
+   * @throws IOException
+   */
   public void compareDataSet(final DataSetAnalysis dataSetA,
-      final DataSetAnalysis dataSetB) throws EoulsanException {
+      final DataSetAnalysis dataSetB) throws EoulsanException, IOException {
 
     final DataSetAnalysis dataSetExpected;
     final DataSetAnalysis dataSetTested;
@@ -73,8 +81,122 @@ public class ComparatorDirectories {
    * comparison on each pair files.
    * @param expected DatasetAnalysis represents source directory analysis
    * @param tested DatasetAnalysis represents test directory analysis
+   * @throws IOException
    */
   private void parsingDataSet(final DataSetAnalysis expected,
+      final DataSetAnalysis tested) throws EoulsanException, IOException {
+
+    LOGGER.info("Start comparison between to result analysis");
+    final Stopwatch timer = Stopwatch.createStarted();
+
+    // Build pair files with same names
+    for (Map.Entry<String, DataFile> entry : expected.getFileByName()
+        .entrySet()) {
+      DataFile dfExpected = entry.getValue();
+
+      // Search file with same in test directory
+      DataFile dfTested = tested.getFileByName().get(entry.getKey());
+
+      if (isComparable(dfExpected, dfTested)) {
+
+        execute(dfExpected, dfTested);
+
+      } else {
+        // None comparison
+        LOGGER.info(entry.getKey()
+            + " \t " + (dfExpected == null) + " \t " + (dfTested == null)
+            + " \tNA");
+      }
+    }
+
+    // Case file present only in tested directory
+    Set<DataFile> filesOnlyInTestDir = Sets.newHashSet(tested.getAllFiles());
+    filesOnlyInTestDir.removeAll(expected.getAllFiles());
+
+    if (filesOnlyInTestDir.size() > 0) {
+      for (DataFile df : filesOnlyInTestDir) {
+        // None comparison
+        LOGGER.info(df.getName() + "\t false \t true \tNA");
+      }
+    }
+
+    timer.stop();
+    LOGGER.info("All comparison in  "
+        + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
+    // TODO
+    // bilan comparison
+  }
+
+  private boolean isComparable(final DataFile dfExpected,
+      final DataFile dfTested) {
+
+    if (dfExpected == null || dfTested == null)
+      return false;
+
+    String pathFileA = dfExpected.toFile().getAbsolutePath();
+    String pathFileB = dfTested.toFile().getAbsolutePath();
+
+    checkNotNull(pathFileA, "File " + pathFileA + "doesn't exist");
+    checkNotNull(pathFileB, "File " + pathFileB + "doesn't exist");
+
+    if (!dfExpected.getExtension().equals(dfTested.getExtension()))
+      return false;
+
+    if (isExtensionTreated(dfExpected.getExtension()))
+      return false;
+
+    // Check files must be skip
+    if (filesToNotCompare.contains(pathFileA)
+        || filesToNotCompare.contains(pathFileB))
+      return false;
+
+    return true;
+  }
+
+  /**
+   * Compare two files with corresponding CompareFiles from extension files.
+   * @param pathFileA first file to compare, it is the reference
+   * @param pathFileB second file to compare
+   * @throws EoulsanException it occurs if comparison fails
+   */
+  public void execute(final DataFile fileA, final DataFile fileB)
+      throws EoulsanException {
+
+    ComparatorPairFile comparePairFile = new ComparatorPairFile(fileA, fileB);
+
+    try {
+      // Check if extension file included in type list
+      if (comparePairFile.isComparable()) {
+
+        boolean result = comparePairFile.compare();
+
+        this.resultComparaison.put(result, comparePairFile);
+        this.numberComparaison++;
+      }
+    } catch (IOException io) {
+      LOGGER.severe("Compare pair file fail! " + io.getMessage());
+    }
+  }
+
+  // ----------------------------------------to delete
+
+  private void collectFiles(final Map<String, ComparatorPairFile> map,
+      final Set<DataFile> files) {
+
+    for (DataFile df : files) {
+      if (map.containsKey(df.getName())) {
+        map.get(df.getName()).setDataFileB(df);
+      } else {
+        ComparatorPairFile comp = new ComparatorPairFile(df.getName());
+        map.put(df.getName(), comp);
+        comp.setDataFileA(df);
+      }
+    }
+
+  }
+
+  private void parsingDataSet_byMap(final DataSetAnalysis expected,
       final DataSetAnalysis tested) throws EoulsanException {
 
     LOGGER.info("Start comparison between to result analysis");
@@ -87,9 +209,9 @@ public class ComparatorDirectories {
 
     // Compare size between map which contains all files include in directory
     if (mapExpected.size() != mapTested.size()) {
-
+      String diffExtension = diffExtension(mapExpected, mapTested);
       loggerReport("Not same count extension, difference is "
-          + (mapExpected.size() - mapTested.size()) + " relative expected");
+          + (mapExpected.size() - mapTested.size()) + " " + diffExtension);
     }
 
     // Compare per extension type
@@ -117,56 +239,22 @@ public class ComparatorDirectories {
                 + fileExpected.getName() + " is missing in test analysis.");
           else
             // Launch comparison
-            execute(fileExpected.toFile().getAbsolutePath(), fileTested
-                .toFile().getAbsolutePath());
+            execute(fileExpected, fileTested);
         }
       }
     }
 
     timer.stop();
-    loggerReport("all comparison in  "
+    loggerReport("All comparison in  "
         + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
   }
 
   /**
-   * Compare two files with corresponding CompareFiles from extension files.
-   * @param pathFileA first file to compare, it is the reference
-   * @param pathFileB second file to compare
-   * @throws EoulsanException it occurs if comparison fails
+   * 
    */
-  public void execute(final String pathFileA, final String pathFileB)
-      throws EoulsanException {
-
-    checkNotNull(pathFileA, "File " + pathFileA + "doesn't exist");
-    checkNotNull(pathFileB, "File " + pathFileB + "doesn't exist");
-
-    // Check files must be skip
-    if (filesToNotCompare.contains(pathFileA)
-        || filesToNotCompare.contains(pathFileA))
-      return;
-
-    ComparatorPairFile comparePairFile =
-        new ComparatorPairFile(pathFileA, pathFileB, this.useSerialization,
-            this.checkingFilename);
-
-    try {
-      // Check if extension file included in type list
-      if (comparePairFile.isComparable()) {
-
-        LOGGER.info("Add comparaison fileA "
-            + pathFileA + " with fileB " + pathFileB);
-
-        this.resultComparaison.put(comparePairFile.compare(), comparePairFile);
-        this.numberComparaison++;
-      }
-    } catch (IOException io) {
-      LOGGER.severe("Compare pair file fail! " + io.getMessage());
-    }
-  }
-
   public void computeReport() {
 
-    report.append("Comparator param: use serialization file "
+    report.append("\nComparator param: use serialization file "
         + useSerialization);
     report.append("\nComparator type files \n" + typeComparatorFiles);
 
@@ -189,16 +277,40 @@ public class ComparatorDirectories {
             + comp.getFileB().getParent());
         first = false;
       }
-
       report.append("\n\t" + comp.toString());
-      // TODO for debug
-      report
-          .append("\ndiff " + comp.getPathFileA() + " " + comp.getPathFileB());
     }
     report.append("\n\t ");
 
     LOGGER.info("final report \n " + report.toString());
 
+  }
+
+  /**
+   * @param first
+   * @param second
+   * @return
+   */
+  private String diffExtension(final Map<String, Collection<DataFile>> first,
+      final Map<String, Collection<DataFile>> second) {
+
+    StringBuilder s = new StringBuilder();
+    s.append("[");
+
+    // Extension only present in first
+    Set<String> diffFirst = Sets.newHashSet(first.keySet());
+    diffFirst.removeAll(second.keySet());
+    s.append(diffFirst.toString());
+
+    s.append(" ; ");
+
+    // Extension only present in first
+    Set<String> diffSecond = Sets.newHashSet(second.keySet());
+    diffSecond.removeAll(first.keySet());
+    s.append(diffSecond.toString());
+
+    s.append("]");
+
+    return s.toString();
   }
 
   /**
@@ -260,7 +372,8 @@ public class ComparatorDirectories {
 
     LOGGER.config("Comparator param: use serialization file "
         + useSerialization);
-    LOGGER.config("Comparator type files \n" + typeComparatorFiles);
+    LOGGER.config("Comparator type files \n"
+        + Joiner.on("\n\t").join(typeComparatorFiles));
   }
 
   //
@@ -269,29 +382,32 @@ public class ComparatorDirectories {
 
   class ComparatorPairFile {
 
-    private final DataFile dataFileA;
-    private final DataFile dataFileB;
+    private DataFile dataFileA;
+    private DataFile dataFileB;
 
     private CompareFiles compareFile = null;
-    private final boolean useSerialization;
+    // private final boolean useSerialization;
 
     private boolean result;
 
-    public boolean compare() throws IOException {
+    public boolean compare() throws IOException, EoulsanException {
 
       // Extension file not recognize in any comparator file
-      if (!isComparable())
-        return false;
+      if (!isComparable()) {
+        LOGGER.info(dataFileA.getName() + "\t true \t true \t NA");
 
+        return false;
+      }
+
+      // Launch compare
       final Stopwatch timer = Stopwatch.createStarted();
       result =
           this.compareFile.compareFiles(getPathFileA(), getPathFileB(),
-              this.useSerialization);
+              useSerialization);
 
-      LOGGER
-          .info(toString()
-              + "\tin "
-              + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+      LOGGER.info(dataFileA.getName()
+          + "\t true \t true \t" + result + "\tin "
+          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
       timer.stop();
 
@@ -325,6 +441,22 @@ public class ComparatorDirectories {
       return dataFileB.toFile();
     }
 
+    public DataFile getDataFileA() {
+      return dataFileA;
+    }
+
+    public void setDataFileA(DataFile dataFileA) {
+      this.dataFileA = dataFileA;
+    }
+
+    public DataFile getDataFileB() {
+      return dataFileB;
+    }
+
+    public void setDataFileB(DataFile dataFileB) {
+      this.dataFileB = dataFileB;
+    }
+
     @Override
     public String toString() {
       return "result: "
@@ -346,14 +478,11 @@ public class ComparatorDirectories {
     // Constructor
     //
 
-    public ComparatorPairFile(final DataFile dataFileA,
-        final DataFile dataFileB, final boolean useSerialization,
-        final boolean checkingFilename) throws EoulsanException {
+    public ComparatorPairFile(final DataFile dataFileA, final DataFile dataFileB)
+        throws EoulsanException {
 
       this.dataFileA = dataFileA;
       this.dataFileB = dataFileB;
-
-      this.useSerialization = useSerialization;
 
       if (checkingFilename) {
         if (!this.dataFileA.getName().equals(this.dataFileB.getName()))
@@ -371,21 +500,10 @@ public class ComparatorDirectories {
 
     }
 
-    public ComparatorPairFile(final String pathFileA, final String pathFileB,
-        final boolean useSerialization, final boolean checkingFilename)
-        throws EoulsanException {
-      this(new DataFile(pathFileA), new DataFile(pathFileB), useSerialization,
-          checkingFilename);
-    }
-
     public ComparatorPairFile(final String pathFileA, final String pathFileB)
         throws EoulsanException {
-      this(pathFileA, pathFileB, false, true);
+      this(new DataFile(pathFileA), new DataFile(pathFileB));
     }
 
-    public ComparatorPairFile(final String pathFileA, final String pathFileB,
-        final boolean useSerialization) throws EoulsanException {
-      this(pathFileA, pathFileB, useSerialization, true);
-    }
   }
 }
