@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.io.AbstractCompareFiles;
-import fr.ens.transcriptome.eoulsan.io.BloomFilterUtils;
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 public class SAMCompareFiles extends AbstractCompareFiles {
 

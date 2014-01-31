@@ -31,6 +31,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
+
 public class TextCompareFiles extends AbstractCompareFiles {
 
   private static final String NAME_COMPARE_FILES = "TextCompare";

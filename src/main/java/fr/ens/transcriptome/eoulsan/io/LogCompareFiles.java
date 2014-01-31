@@ -2,11 +2,11 @@ package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 public class LogCompareFiles extends AbstractCompareFiles {
@@ -26,7 +26,7 @@ public class LogCompareFiles extends AbstractCompareFiles {
     Reporter logExpected = new LogReader(isA).read();
     Reporter logTested = new LogReader(isB).read();
 
-    int numberElements = logExpected.getCounterGroups().size();
+    int numberElements = counterGroupCount(logTested);
 
     long diffExpectedTested;
 
@@ -39,18 +39,61 @@ public class LogCompareFiles extends AbstractCompareFiles {
 
         diffExpectedTested =
             logExpected.getCounterValue(counterGroup, counter)
-                - logTested.getCounterValue(counterGroup, counter);
+                - getCounterValue(logTested, counterGroup, counter);
 
-        if (Math.abs(diffExpectedTested) > 1)
+        if (Math.abs(diffExpectedTested) > 1) {
           return false;
+        }
       }
-
     }
 
     if (numberElements != numberElementsCompared)
       return false;
 
     return true;
+  }
+
+  /**
+   * Retrieve value for counterGroup and counter from a instance reporter, by
+   * using the prefix of the key counterGroup (string before the first virgule)
+   * @param logTested reporter contains values
+   * @param counterGroupExpected key of counterGroup
+   * @param counter key of counter
+   * @return value corresponding to counterGroup and counter
+   */
+  private long getCounterValue(final Reporter logTested,
+      final String counterGroupExpected, final String counter) {
+
+    int pos = counterGroupExpected.indexOf(",");
+    // Retrieve prefix of key CounterGroup, without file path
+    final String prefix = counterGroupExpected.substring(0, pos);
+
+    for (String counterGroup : logTested.getCounterGroups()) {
+      // Retrieve counterGroup corresponding to the same sample file that
+      // expected
+      if (counterGroup.startsWith(prefix))
+        return logTested.getCounterValue(counterGroup, counter);
+    }
+    return -1;
+  }
+
+  /**
+   * 
+   * @param reporter instance of Reporter
+   * @return number elements in reporter
+   */
+  private int counterGroupCount(final Reporter reporter) {
+
+    if (reporter == null)
+      return 0;
+
+    int n = 0;
+
+    for (String counterGroup : reporter.getCounterGroups()) {
+      n += reporter.getCounterGroup(counterGroup).size();
+    }
+
+    return n;
   }
 
   @Override
@@ -94,20 +137,5 @@ public class LogCompareFiles extends AbstractCompareFiles {
   public boolean isUseBloomfilterAvailable() {
     return false;
   }
-  
-  //
-  // Internal class
-  //
-  public class LongComparator implements Comparator {
-    // TODO in case it is necessary to compare 2 long
 
-    @Override
-    public int compare(Object obj1, Object obj2) {
-
-      return (obj1.toString()).compareTo(obj2.toString());
-    }
-
-  }
-
-  
 }

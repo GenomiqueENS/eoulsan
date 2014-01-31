@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByFilename;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
@@ -40,8 +41,12 @@ import com.google.common.base.Stopwatch;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 public abstract class AbstractCompareFiles implements CompareFiles {
+
+  private String pathFileA;
+  private String pathFileB;
 
   /** LOGGER */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -50,12 +55,16 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException {
 
+    checkAndInit(pathA, pathB);
+
     return compareFiles(new File(pathA), new File(pathB), false);
   }
 
   @Override
   public boolean compareFiles(final String pathA, final String pathB,
       final boolean useSerializeFile) throws IOException {
+
+    checkAndInit(pathA, pathB);
 
     return compareFiles(new File(pathA), new File(pathB), useSerializeFile);
   }
@@ -64,12 +73,16 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException {
 
+    checkAndInit(fileA.getAbsolutePath(), fileB.getAbsolutePath());
+
     return compareFiles(fileA, fileB, false);
   }
 
   @Override
   public boolean compareFiles(final File fileA, final File fileB,
       final boolean useSerializeFile) throws FileNotFoundException, IOException {
+
+    checkAndInit(fileA.getAbsolutePath(), fileB.getAbsolutePath());
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize())
@@ -116,8 +129,8 @@ public abstract class AbstractCompareFiles implements CompareFiles {
    */
   public BloomFilterUtils getBloomFilter(final File file) throws IOException {
 
-    // final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
-    final File bloomFilterSer = new File("/tmp/" + file.getName() + ".ser");
+    final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
+    // final File bloomFilterSer = new File("/tmp/" + file.getName() + ".ser");
 
     final BloomFilterUtils bloomFilter;
     final Stopwatch timer = Stopwatch.createStarted();
@@ -189,6 +202,18 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     return true;
   }
 
+  private void checkAndInit(final String pathA, final String pathB) {
+
+    checkNotNull(pathA, "File " + pathA + "doesn't exist");
+    checkNotNull(pathB, "File " + pathB + "doesn't exist");
+
+    // Set Pathfile
+    if (this.pathFileA == null) {
+      this.pathFileA = pathA;
+      this.pathFileB = pathB;
+    }
+  }
+
   /**
    * Check file argument of methods of the class.
    * @param file first file to check
@@ -217,7 +242,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
           + " use Bloom filter with parameters: expected numbers elements "
           + getExpectedNumberOfElements() + " and false positif probability "
           + getFalsePositiveProba();
-    
+
     else
       return getName()
           + " compares files with extensions " + getExtensionReaded();
@@ -232,4 +257,24 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public abstract String getName();
 
   public abstract boolean isUseBloomfilterAvailable();
+
+  //
+  // Getter
+  //
+
+  public String getPathFileA() {
+    return pathFileA;
+  }
+
+  public String getPathFileB() {
+    return pathFileB;
+  }
+
+  public String getPathDirectoryFileA() {
+    return new File(pathFileA).getParent();
+  }
+
+  public String getPathDirectoryFileB() {
+    return new File(pathFileB).getParent();
+  }
 }

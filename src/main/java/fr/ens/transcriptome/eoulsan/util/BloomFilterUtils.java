@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.io;
+package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.BloomFilter;
@@ -78,9 +77,12 @@ public class BloomFilterUtils implements Serializable {
       oos.flush();
       oos.close();
 
-      //TODO
-      // change file permission
-      
+      // Permission file, set readonly
+      boolean b = fileSer.setReadOnly();
+      // TODO
+      System.out.println("succes readonly for "
+          + fileSer.getAbsolutePath() + " : " + b);
+
     } catch (FileNotFoundException e) {
       throw new IOException(e.getMessage());
     }
@@ -126,12 +128,13 @@ public class BloomFilterUtils implements Serializable {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
-    
+
     sb.append("Bloom filter features");
-    sb.append("\n\tfalse positive probability "+ getFalsePositiveProbability()+"%");
-    sb.append("\n\tnumber elements expected "+ getExpectedNumberOfElements());
-    sb.append("\n\tnumber elements added "+ getAddedNumberOfElements());
-    
+    sb.append("\n\tfalse positive probability "
+        + getFalsePositiveProbability() + "%");
+    sb.append("\n\tnumber elements expected " + getExpectedNumberOfElements());
+    sb.append("\n\tnumber elements added " + getAddedNumberOfElements());
+
     return sb.toString();
   }
 
@@ -184,5 +187,5 @@ public class BloomFilterUtils implements Serializable {
     }, expectedNumberOfElements, falsePositiveProbability);
 
   }
-  
+
 }

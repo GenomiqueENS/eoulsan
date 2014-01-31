@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.io.AbstractCompareFiles;
-import fr.ens.transcriptome.eoulsan.io.BloomFilterUtils;
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 public class FastqCompareFiles extends AbstractCompareFiles {
 

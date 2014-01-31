@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
+
 public interface CompareFiles {
 
   public String getName();
