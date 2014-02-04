@@ -86,7 +86,7 @@ public class CreateDesignAction extends AbstractAction {
       final CommandLine line = parser.parse(options, arguments, true);
 
       // Pair-end option
-      if (line.hasOption("pair-end")) {
+      if (line.hasOption("paired-end")) {
         pairEndMode = true;
         argsOptions += 1;
       }
