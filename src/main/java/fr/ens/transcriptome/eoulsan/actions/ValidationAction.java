@@ -34,7 +34,6 @@ public class ValidationAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-
   private static final boolean USE_SERIALIZATION = true;
   private static final boolean CHECKING_SAME_NAME = true;
 
@@ -132,7 +131,7 @@ public class ValidationAction extends AbstractAction {
 
     System.out.println(arguments.length + " vs " + argsOptions);
 
-    if (arguments.length != argsOptions + 2) {
+    if (arguments.length != argsOptions) {
       help(options);
     }
 
@@ -301,7 +300,6 @@ public class ValidationAction extends AbstractAction {
           // Set not compare eoulsan.log
           comparator.setFilesToNotCompare(cmd.getLogFilename());
 
-          comparator.computeReport();
         }
       }
     } catch (IOException e) {
@@ -369,7 +367,7 @@ public class ValidationAction extends AbstractAction {
       LOGGER.info(StringUtils.join(cmd.toArray(), " "));
       // TODO
       System.out.println(StringUtils.join(cmd.toArray(), " "));
-      
+
       return cmd;
     }
 

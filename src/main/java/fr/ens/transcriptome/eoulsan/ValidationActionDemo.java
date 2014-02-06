@@ -21,18 +21,18 @@ public class ValidationActionDemo {
 
   public static void main(String[] args) throws EoulsanException {
 
-    // ValidationActionDemo.mainbis();
+     ValidationActionDemo.mainbis();
 
-    final DataSetAnalysis datasetExpected =
-        new DataSetAnalysis(
-            "/home/sperrin/Documents/test_eoulsan/dataset_source/expected",
-            true);
-
-    // Init data set tested
-    final DataSetAnalysis datasetTested =
-        new DataSetAnalysis(
-            "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/",
-            false);
+    // final DataSetAnalysis datasetExpected =
+    // new DataSetAnalysis(
+    // "/home/sperrin/Documents/test_eoulsan/dataset_source/expected",
+    // true);
+    //
+    // // Init data set tested
+    // final DataSetAnalysis datasetTested =
+    // new DataSetAnalysis(
+    // "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/",
+    // false);
   }
 
   public static void testLogCompare() {

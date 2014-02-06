@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -43,9 +42,6 @@ public class ComparatorDirectories {
   private final Set<String> filesToNotCompare = Sets.newHashSet();
   private final Multimap<Boolean, ComparatorDirectories.ComparatorPairFile> resultComparaison =
       HashMultimap.create();
-
-  private final StringBuilder report;
-  private int numberComparaison = 0;
 
   /**
    * @param dataSetA
@@ -103,9 +99,8 @@ public class ComparatorDirectories {
 
       } else {
         // None comparison
-        LOGGER.info(entry.getKey()
-            + " \t " + (dfExpected == null) + " \t " + (dfTested == null)
-            + " \tNA");
+        LOGGER.warning((dfExpected != null)
+            + "\t" + (dfTested != null) + "\tNA\t" + entry.getKey());
       }
     }
 
@@ -113,10 +108,14 @@ public class ComparatorDirectories {
     Set<DataFile> filesOnlyInTestDir = Sets.newHashSet(tested.getAllFiles());
     filesOnlyInTestDir.removeAll(expected.getAllFiles());
 
+    // TODO
+    System.out.println("only in test dir "
+        + Joiner.on("\t").join(filesOnlyInTestDir));
+
     if (filesOnlyInTestDir.size() > 0) {
       for (DataFile df : filesOnlyInTestDir) {
         // None comparison
-        LOGGER.info(df.getName() + "\t false \t true \tNA");
+        LOGGER.warning("false\ttrue\tNA\t" + df.getName());
       }
     }
 
@@ -125,7 +124,7 @@ public class ComparatorDirectories {
         + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
     // TODO
-    // bilan comparison
+    // report comparison
   }
 
   private boolean isComparable(final DataFile dfExpected,
@@ -170,158 +169,11 @@ public class ComparatorDirectories {
       if (comparePairFile.isComparable()) {
 
         boolean result = comparePairFile.compare();
-
         this.resultComparaison.put(result, comparePairFile);
-        this.numberComparaison++;
       }
     } catch (IOException io) {
       LOGGER.severe("Compare pair file fail! " + io.getMessage());
     }
-  }
-
-  // ----------------------------------------to delete
-
-  private void collectFiles(final Map<String, ComparatorPairFile> map,
-      final Set<DataFile> files) {
-
-    for (DataFile df : files) {
-      if (map.containsKey(df.getName())) {
-        map.get(df.getName()).setDataFileB(df);
-      } else {
-        ComparatorPairFile comp = new ComparatorPairFile(df.getName());
-        map.put(df.getName(), comp);
-        comp.setDataFileA(df);
-      }
-    }
-
-  }
-
-  private void parsingDataSet_byMap(final DataSetAnalysis expected,
-      final DataSetAnalysis tested) throws EoulsanException {
-
-    LOGGER.info("Start comparison between to result analysis");
-    final Stopwatch timer = Stopwatch.createStarted();
-
-    Map<String, Collection<DataFile>> mapExpected =
-        expected.getAllFilesInAnalysis();
-    Map<String, Collection<DataFile>> mapTested =
-        tested.getAllFilesInAnalysis();
-
-    // Compare size between map which contains all files include in directory
-    if (mapExpected.size() != mapTested.size()) {
-      String diffExtension = diffExtension(mapExpected, mapTested);
-      loggerReport("Not same count extension, difference is "
-          + (mapExpected.size() - mapTested.size()) + " " + diffExtension);
-    }
-
-    // Compare per extension type
-    for (Map.Entry<String, Collection<DataFile>> entry : mapExpected.entrySet()) {
-
-      String extension = entry.getKey();
-
-      // Check extension include in set extension treated
-      if (allExtensionsTreated.contains(extension)) {
-
-        Collection<DataFile> filesExpected = entry.getValue();
-        Collection<DataFile> filesTested = mapExpected.get(extension);
-
-        LOGGER.info("Comparison files with extension " + extension);
-
-        // Compare two lists size
-        if (filesExpected.size() != filesTested.size())
-          loggerReport("Not the same size for list files expected and tested");
-
-        for (DataFile fileExpected : filesExpected) {
-          DataFile fileTested = tested.getDataFileSameName(fileExpected);
-
-          if (fileTested == null)
-            loggerReport("File "
-                + fileExpected.getName() + " is missing in test analysis.");
-          else
-            // Launch comparison
-            execute(fileExpected, fileTested);
-        }
-      }
-    }
-
-    timer.stop();
-    loggerReport("All comparison in  "
-        + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
-  }
-
-  /**
-   * 
-   */
-  public void computeReport() {
-
-    report.append("\nComparator param: use serialization file "
-        + useSerialization);
-    report.append("\nComparator type files \n" + typeComparatorFiles);
-
-    report.append("\nnumber pair files compared " + this.numberComparaison);
-
-    report.append("\n\tnumber pair files idem "
-        + this.resultComparaison.get(true).size());
-    report.append("\n\tnumber pair files different "
-        + this.resultComparaison.get(false).size());
-
-    report.append(" detail false :");
-
-    boolean first = true;
-    for (ComparatorDirectories.ComparatorPairFile comp : resultComparaison
-        .get(false)) {
-
-      if (first) {
-        report.append("\ndir "
-            + comp.getFileA().getParent() + " vs "
-            + comp.getFileB().getParent());
-        first = false;
-      }
-      report.append("\n\t" + comp.toString());
-    }
-    report.append("\n\t ");
-
-    LOGGER.info("final report \n " + report.toString());
-
-  }
-
-  /**
-   * @param first
-   * @param second
-   * @return
-   */
-  private String diffExtension(final Map<String, Collection<DataFile>> first,
-      final Map<String, Collection<DataFile>> second) {
-
-    StringBuilder s = new StringBuilder();
-    s.append("[");
-
-    // Extension only present in first
-    Set<String> diffFirst = Sets.newHashSet(first.keySet());
-    diffFirst.removeAll(second.keySet());
-    s.append(diffFirst.toString());
-
-    s.append(" ; ");
-
-    // Extension only present in first
-    Set<String> diffSecond = Sets.newHashSet(second.keySet());
-    diffSecond.removeAll(first.keySet());
-    s.append(diffSecond.toString());
-
-    s.append("]");
-
-    return s.toString();
-  }
-
-  /**
-   * Add new entry in logger and save message for final report
-   * @param messag
-   */
-  private void loggerReport(final String messag) {
-    LOGGER.warning(messag);
-
-    report.append("\n");
-    report.append(messag);
   }
 
   public boolean isExtensionTreated(final String ext) {
@@ -358,8 +210,6 @@ public class ComparatorDirectories {
     this.useSerialization = useSerialization;
     this.checkingFilename = checkingFilename;
 
-    this.report = new StringBuilder();
-
     // Build map type files can been compare
     typeComparatorFiles.add(new FastqCompareFiles());
     typeComparatorFiles.add(new SAMCompareFiles("PG"));
@@ -394,7 +244,7 @@ public class ComparatorDirectories {
 
       // Extension file not recognize in any comparator file
       if (!isComparable()) {
-        LOGGER.info(dataFileA.getName() + "\t true \t true \t NA");
+        LOGGER.warning("true \t true \t NA\t" + dataFileA.getName());
 
         return false;
       }
@@ -406,7 +256,7 @@ public class ComparatorDirectories {
               useSerialization);
 
       LOGGER.info(dataFileA.getName()
-          + "\t true \t true \t" + result + "\tin "
+          + "\ttrue\ttrue\t" + result + "\tin "
           + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
       timer.stop();

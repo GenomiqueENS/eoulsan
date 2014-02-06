@@ -77,8 +77,11 @@ public class DataSetAnalysis {
       } else {
 
         DataFile df = new DataFile(fileEntry);
-        // Add entry in map
-        files.put(df.getExtension(), df);
+
+        // Skip serizalisation file for bloomFilter
+        if (!df.getExtension().equals(".ser"))
+          // Add entry in map
+          files.put(df.getExtension(), df);
         allFiles.add(df);
         fileByName.put(df.getName(), df);
 
