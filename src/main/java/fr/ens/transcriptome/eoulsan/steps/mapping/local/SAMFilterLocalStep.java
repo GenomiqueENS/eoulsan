@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.core.SampleStepException.reThrow;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
@@ -50,16 +51,17 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
-import fr.ens.transcriptome.eoulsan.core.MultithreadedSampleProcessing;
-import fr.ens.transcriptome.eoulsan.core.ProcessSample;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
+import fr.ens.transcriptome.eoulsan.core.SampleStep;
+import fr.ens.transcriptome.eoulsan.core.SampleStepContext;
+import fr.ens.transcriptome.eoulsan.core.SampleStepException;
+import fr.ens.transcriptome.eoulsan.core.SampleStepStatus;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -72,7 +74,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 @LocalOnly
 public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
-    MultithreadedSampleProcessing {
+    SampleStep {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
@@ -82,69 +84,60 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
       final StepStatus status) {
 
     return ProcessSampleExecutor.processAllSamples(context, design, status,
-        getLocalThreads(), getProcessSample());
+        getLocalThreads(), this);
   }
 
   @Override
-  public ProcessSample getProcessSample() {
+  public void processSample(final SampleStepContext context,
+      final SampleStepStatus status) throws SampleStepException {
 
-    return new ProcessSample() {
+    // Create the reporter
+    final Reporter reporter = new LocalReporter();
 
-      @Override
-      public void processSample(final StepContext context, final Sample sample,
-          final StepStatus status) throws ProcessSampleException {
+    try {
 
-        // Create the reporter
-        final Reporter reporter = new LocalReporter();
+      // Get the read filter
+      final MultiReadAlignmentsFilter filter =
+          getAlignmentsFilter(reporter, COUNTER_GROUP);
+      LOGGER.info("Read alignments filters to apply: "
+          + Joiner.on(", ").join(filter.getFilterNames()));
 
-        try {
+      filterSample(context, reporter, status, filter);
 
-          // Get the read filter
-          final MultiReadAlignmentsFilter filter =
-              getAlignmentsFilter(reporter, COUNTER_GROUP);
-          LOGGER.info("Read alignments filters to apply: "
-              + Joiner.on(", ").join(filter.getFilterNames()));
-
-          filterSample(context, sample, reporter, status, filter);
-
-        } catch (IOException e) {
-          throwException(e, "Error while filtering: " + e.getMessage());
-        } catch (EoulsanException e) {
-          throwException(e,
-              "Error while initializing filter: " + e.getMessage());
-        }
-      } // End of processSample()
-    };
+    } catch (IOException e) {
+      reThrow(e, "Error while filtering: " + e.getMessage());
+    } catch (EoulsanException e) {
+      reThrow(e, "Error while initializing filter: " + e.getMessage());
+    }
   }
 
   /**
    * Filter a sample data in single-end mode and in paired-end mode.
    * @param context Eoulsan context
-   * @param sample sample to process
    * @param reporter reporter to use
    * @param status step status
    * @param filter alignments filter to use
    * @param pairedEnd true if data are in paired-end mode
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void filterSample(final StepContext context,
-      final Sample sample, final Reporter reporter, final StepStatus status,
+  private static void filterSample(final SampleStepContext context,
+      final Reporter reporter, final SampleStepStatus status,
       final ReadAlignmentsFilter filter) throws IOException {
 
     // Get the source
     final DataFile inFile =
-        context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample);
+        context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM);
 
     // Get the dest
     final DataFile outFile =
-        context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample);
+        context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM);
 
     // filter alignments in single-end mode or in paired-end mode
     filterFile(inFile, outFile, reporter, status, filter);
 
     // Add counters for this sample to log file
-    status.setSampleCounters(sample, reporter, COUNTER_GROUP,
-        "Filter SAM file (" + sample.getName() + ", " + inFile.getName() + ")");
+    status.setCounters(reporter, COUNTER_GROUP, "Filter SAM file ("
+        + context.getSample().getName() + ", " + inFile.getName() + ")");
   }
 
   /**
@@ -157,7 +150,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final StepStatus status,
+      final Reporter reporter, final SampleStepStatus status,
       final ReadAlignmentsFilter filter) throws IOException {
 
     final List<SAMRecord> records = new ArrayList<SAMRecord>();

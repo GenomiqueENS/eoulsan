@@ -25,16 +25,19 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 /**
- * This class define an interface that allow step multithreading based on
- * independent sample processing.
+ * This interface define a step that can process sample independently.
+ * @since 1.3
  * @author Laurent Jourdren
  */
-public interface MultithreadedSampleProcessing {
+public interface SampleStep extends Step {
 
   /**
-   * Get the ProcessSample object for the step.
-   * @return a new ProcessSample object
+   * Process a sample.
+   * @param context context for the sample
+   * @param status status object for the process
+   * @throws SampleStepException if an error occurs while processing the sample
    */
-  ProcessSample getProcessSample();
+  void processSample(SampleStepContext context, SampleStepStatus status)
+      throws SampleStepException;
 
 }

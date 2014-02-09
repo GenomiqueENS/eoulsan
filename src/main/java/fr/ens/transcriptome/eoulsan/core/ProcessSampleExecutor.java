@@ -36,7 +36,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.core.ProcessSample.ProcessSampleException;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -60,7 +59,7 @@ public class ProcessSampleExecutor {
     private final StepContext context;
     private final Sample sample;
     private final StepStatus status;
-    private final ProcessSample ps;
+    private final SampleStep step;
 
     private Exception exception;
     private String errorMsg;
@@ -84,10 +83,19 @@ public class ProcessSampleExecutor {
     @Override
     public void run() {
 
+      // Create the context for the sample
+      final SampleStepContext sampleContext =
+          new SampleStepContext(this.context, this.sample);
+
+      // Create the status object for the sample
+      final SampleStepStatus sampleStatus =
+          new SampleStepStatus(this.status, this.sample);
+
       try {
-        this.ps.processSample(this.context, this.sample, this.status);
+        // Process the sample by the step
+        this.step.processSample(sampleContext, sampleStatus);
         this.success = true;
-      } catch (ProcessSampleException e) {
+      } catch (SampleStepException e) {
         this.exception = e.getException();
         this.errorMsg = e.getMessage();
       }
@@ -98,13 +106,13 @@ public class ProcessSampleExecutor {
     // Constructor
     //
 
-    public SampleThread(final StepContext context, final ProcessSample ps,
+    public SampleThread(final StepContext context, final SampleStep step,
         final Sample sample, final StepStatus status) {
 
       this.context = context;
       this.sample = sample;
       this.status = status;
-      this.ps = ps;
+      this.step = step;
 
     }
   }
@@ -113,14 +121,14 @@ public class ProcessSampleExecutor {
    * Process all the samples of a design.
    * @param context The Eouslan context of execution
    * @param design Design of to process
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final StepContext context,
-      final Design design, final StepStatus status, final ProcessSample ps) {
+      final Design design, final StepStatus status, final SampleStep step) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        status, EoulsanRuntime.getSettings().getLocalThreadsNumber(), ps);
+        status, EoulsanRuntime.getSettings().getLocalThreadsNumber(), step);
   }
 
   /**
@@ -129,15 +137,15 @@ public class ProcessSampleExecutor {
    * @param design Design of to process
    * @param localThreads number of threads
    * @param maxLocalThreads maximum number of threads
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final StepContext context,
       final Design design, final StepStatus status, final int localThreads,
-      final int maxLocalThreads, final ProcessSample ps) {
+      final int maxLocalThreads, final SampleStep step) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        status, getThreadsNumber(localThreads, maxLocalThreads), ps);
+        status, getThreadsNumber(localThreads, maxLocalThreads), step);
   }
 
   /**
@@ -145,15 +153,15 @@ public class ProcessSampleExecutor {
    * @param startTime the time of the start of step
    * @param context The Eouslan context of execution
    * @param design Design of to process
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
       final StepContext context, final Design design, final StepStatus status,
-      final ProcessSample ps) {
+      final SampleStep step) {
 
     return processAllSamples(startTime, context, design, status, EoulsanRuntime
-        .getSettings().getLocalThreadsNumber(), ps);
+        .getSettings().getLocalThreadsNumber(), step);
   }
 
   /**
@@ -161,15 +169,15 @@ public class ProcessSampleExecutor {
    * @param context The Eouslan context of execution
    * @param design Design of to process
    * @param threadNumber the number of threads to use
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final StepContext context,
       final Design design, final StepStatus status, final int threadNumber,
-      final ProcessSample ps) {
+      final SampleStep step) {
 
     return processAllSamples(System.currentTimeMillis(), context, design,
-        status, threadNumber, ps);
+        status, threadNumber, step);
   }
 
   /**
@@ -178,22 +186,23 @@ public class ProcessSampleExecutor {
    * @param context The Eouslan context of execution
    * @param design Design of to process
    * @param threadNumber the number of threads to use
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   public static final StepResult processAllSamples(final long startTime,
       final StepContext context, final Design design, final StepStatus status,
-      final int threadNumber, final ProcessSample ps) {
+      final int threadNumber, final SampleStep step) {
 
     if (threadNumber > 1) {
 
       LOGGER.info("Process step with " + threadNumber + " threads.");
       return processAllSamplesWithThreads(startTime, context, design, status,
-          ps, threadNumber);
+          step, threadNumber);
     }
 
     LOGGER.info("Process step without thread.");
-    return processAllSamplesWithNoThread(startTime, context, design, status, ps);
+    return processAllSamplesWithNoThread(startTime, context, design, status,
+        step);
   }
 
   /**
@@ -201,20 +210,31 @@ public class ProcessSampleExecutor {
    * @param startTime the time of the start of step
    * @param context The Eouslan context of execution
    * @param design Design of to process
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   private static final StepResult processAllSamplesWithNoThread(
       final long startTime, final StepContext context, final Design design,
-      final StepStatus status, final ProcessSample ps) {
+      final StepStatus status, final SampleStep step) {
 
     try {
 
       // Process all the samples
-      for (Sample sample : design.getSamples())
-        ps.processSample(context, sample, status);
+      for (Sample sample : design.getSamples()) {
 
-    } catch (ProcessSampleException e) {
+        // Create the context for the sample
+        final SampleStepContext sampleContext =
+            new SampleStepContext(context, sample);
+
+        // Create the status object for the sample
+        final SampleStepStatus sampleStatus =
+            new SampleStepStatus(status, sample);
+
+        // Process the sample by the step
+        step.processSample(sampleContext, sampleStatus);
+      }
+
+    } catch (SampleStepException e) {
       return status.createStepResult(e.getException(), e.getMessage());
     }
 
@@ -226,12 +246,12 @@ public class ProcessSampleExecutor {
    * @param startTime the time of the start of step
    * @param context The Eouslan context of execution
    * @param design Design of to process
-   * @param ps ProcessSample Object
+   * @param step a step that implements SampleStep
    * @return a StepResult object
    */
   private static final StepResult processAllSamplesWithThreads(
       final long startTime, final StepContext context, final Design design,
-      final StepStatus status, final ProcessSample ps, final int threadNumber) {
+      final StepStatus status, final SampleStep step, final int threadNumber) {
 
     // Create executor service
     ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
@@ -241,7 +261,7 @@ public class ProcessSampleExecutor {
     // Submit all the samples to process
     for (Sample sample : design.getSamples()) {
 
-      final SampleThread st = new SampleThread(context, ps, sample, status);
+      final SampleThread st = new SampleThread(context, step, sample, status);
       threads.add(executor.submit(st, st));
     }
 
