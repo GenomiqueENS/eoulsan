@@ -706,7 +706,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
               + getId() + " in "
               + StringUtils.toTimeHumanReadable(result.getDuration()) + " s.");
 
-    setState(StepState.DONE);
+    if (result.isSuccess())
+      setState(StepState.DONE);
+    else
+      setState(StepState.FAIL);
 
     this.result = result;
     return result;

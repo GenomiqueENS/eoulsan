@@ -110,7 +110,7 @@ public interface WorkflowStep extends Serializable {
    * @since 1.3
    */
   public static enum StepState {
-    CREATED, CONFIGURED, WAITING, READY, WORKING, DONE
+    CREATED, CONFIGURED, WAITING, READY, WORKING, DONE, FAIL
   };
 
   /**
