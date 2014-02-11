@@ -7,3 +7,5 @@
 /target/
 /.classpath
 /doc
+/.idea
+/eoulsan.iml
