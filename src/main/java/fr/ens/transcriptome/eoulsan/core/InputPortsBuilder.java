@@ -93,7 +93,7 @@ public class InputPortsBuilder {
 
   /**
    * Create the ports.
-   * @return a set with the ports
+   * @return a new InputPorts object
    */
   public InputPorts create() {
 
@@ -117,7 +117,7 @@ public class InputPortsBuilder {
 
   /**
    * Create the ports with no ports.
-   * @return a set with the ports
+   * @return a new InputPorts object
    */
   public static final InputPorts noInputPort() {
 
@@ -126,7 +126,7 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
-   * @return a set with the ports
+   * @return a new InputPorts object
    */
   public static final InputPorts singleInputPort(final DataFormat format) {
 
@@ -135,7 +135,7 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
-   * @return a set with the ports
+   * @return a new InputPorts object
    */
   public static final InputPorts singleInputPort(final String name,
       final DataFormat format) {
@@ -147,7 +147,7 @@ public class InputPortsBuilder {
    * Set all ports of an existing input ports to be required in working
    * directory.
    * @param inputPorts original input ports
-   * @return a new set of input ports that data are required in working
+   * @return a new InputPorts object that ports data are required in working
    *         directory
    */
   public static final InputPorts allPortsRequiredInWorkingDirectory(
@@ -160,6 +160,23 @@ public class InputPortsBuilder {
 
     for (InputPort port : inputPorts)
       builder.addPort(port.getName(), port.getFormat(), true);
+
+    return builder.create();
+  }
+
+  /**
+   * Convenient method to create a defensive copy of an InputPorts object.
+   * @param ports an existing OutputPorts object
+   * @return a new InputPorts object or null if the ports parameter is null
+   */
+  public static final InputPorts copy(final InputPorts ports) {
+
+    if (ports == null)
+      return null;
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+    for (InputPort port : ports)
+      builder.addPort(port);
 
     return builder.create();
   }
