@@ -83,6 +83,25 @@ public class OutputPortsBuilder {
     return Collections.emptySet();
   }
 
+  /**
+   * Convenient method to create the ports with only one port.
+   * @return a set with the ports
+   */
+  public static final Set<OutputPort> singleOutputPort(final DataFormat format) {
+
+    return new OutputPortsBuilder().addPort("output", format).create();
+  }
+
+  /**
+   * Convenient method to create the ports with only one port.
+   * @return a set with the ports
+   */
+  public static final Set<OutputPort> singleOutputPort(final String name,
+      final DataFormat format) {
+
+    return new OutputPortsBuilder().addPort(name, format).create();
+  }
+
   //
   // Other method
   //
