@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.util.Map;
@@ -36,10 +37,10 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -74,13 +75,13 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(READS_FASTQ);
+  public Set<InputPort> getInputFormats() {
+    return singleInputPort(READS_FASTQ);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(DataFormats.READS_FASTQ);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(READS_FASTQ);
   }
 
   @Override

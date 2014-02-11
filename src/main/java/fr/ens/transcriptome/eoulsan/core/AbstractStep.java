@@ -25,13 +25,10 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -60,33 +57,15 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
+  public Set<InputPort> getInputFormats() {
 
     return Collections.emptySet();
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
+  public Set<OutputPort> getOutputFormats() {
 
     return Collections.emptySet();
-  }
-
-  @Override
-  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
-
-    return Collections.emptySet();
-  }
-
-  @Override
-  public EnumSet<CompressionType> acceptInputFormatCompression(DataFormat format) {
-
-    return EnumSet.allOf(CompressionType.class);
-  }
-
-  @Override
-  public CompressionType getOutputFormatCompression(final DataFormat format) {
-
-    return CompressionType.NONE;
   }
 
   @Override

@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
@@ -38,11 +39,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.storages.GenomeDescStorage;
 import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeDescStorage;
@@ -72,13 +74,13 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(GENOME_FASTA);
+  public Set<InputPort> getInputFormats() {
+    return singleInputPort(GENOME_FASTA);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(GENOME_DESC_TXT);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(GENOME_DESC_TXT);
   }
 
   @Override

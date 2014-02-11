@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
@@ -48,11 +49,12 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -74,14 +76,14 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   //
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(READS_TFQ);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(READS_TFQ);
   }
 
   @Override
-  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
+  public Set<InputPort> getInputFormats() {
 
-    return getInputFormats();
+    return allPortsRequiredInWorkingDirectory(super.getInputFormats());
   }
 
   @Override

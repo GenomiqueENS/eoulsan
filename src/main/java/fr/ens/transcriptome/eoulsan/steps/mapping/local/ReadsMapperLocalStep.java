@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -44,6 +43,8 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.SampleStep;
 import fr.ens.transcriptome.eoulsan.core.SampleStepContext;
@@ -52,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.core.SampleStepStatus;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
@@ -80,9 +80,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
   private final SequenceReadsMapper mapper = getMapper();
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return Sets.newHashSet(READS_FASTQ, getMapper().getArchiveFormat(),
-        GENOME_DESC_TXT);
+  public Set<InputPort> getInputFormats() {
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+    builder.addPort("reads", READS_FASTQ);
+    builder.addPort("mapper_index", getMapper().getArchiveFormat());
+    builder.addPort("genome_description", GENOME_DESC_TXT);
+
+    return builder.create();
   }
 
   @Override

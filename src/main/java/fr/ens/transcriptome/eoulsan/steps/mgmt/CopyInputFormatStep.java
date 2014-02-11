@@ -24,9 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -34,6 +35,9 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -75,21 +79,16 @@ public class CopyInputFormatStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
+  public Set<InputPort> getInputFormats() {
 
-    return Collections.singleton(this.format);
+    return singleInputPort(this.format);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    //
-    return Collections.singleton(this.format);
-  }
+  public Set<OutputPort> getOutputFormats() {
 
-  @Override
-  public CompressionType getOutputFormatCompression(final DataFormat format) {
-
-    return this.outputCompression;
+    return new OutputPortsBuilder().addPort("output", this.format,
+        this.outputCompression).create();
   }
 
   @Override

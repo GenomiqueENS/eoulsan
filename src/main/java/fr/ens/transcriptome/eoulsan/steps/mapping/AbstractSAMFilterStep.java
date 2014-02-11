@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -36,9 +36,11 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -74,13 +76,18 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
+  public Set<InputPort> getInputFormats() {
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+    builder.addPort("alignments", MAPPER_RESULTS_SAM);
+    builder.addPort("genome_description", GENOME_DESC_TXT);
+
+    return builder.create();
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(MAPPER_RESULTS_SAM);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
   @Override

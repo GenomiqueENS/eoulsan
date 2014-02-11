@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
@@ -35,6 +34,8 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -72,9 +73,17 @@ public class CopyOutputFormatStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
+  public Set<InputPort> getInputFormats() {
 
-    return Collections.unmodifiableSet(this.formats);
+    // TODO This class will not work as the parameter only contains DataFormat
+    // and not the name of the ports
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    for (DataFormat format : this.formats)
+      builder.addPort(format.getName(), format);
+
+    return builder.create();
   }
 
   @Override

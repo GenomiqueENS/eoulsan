@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -40,8 +40,10 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define an abstract step for read filtering, mapping and alignments
@@ -143,14 +145,19 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(READS_FASTQ, this.mapper.getArchiveFormat(),
-        GENOME_DESC_TXT);
+  public Set<InputPort> getInputFormats() {
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+    builder.addPort("reads", READS_FASTQ);
+    builder.addPort("mapper_index", this.mapper.getArchiveFormat());
+    builder.addPort("genome_description", GENOME_DESC_TXT);
+
+    return builder.create();
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(MAPPER_RESULTS_SAM);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
   @Override

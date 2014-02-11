@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
@@ -43,10 +44,10 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -62,9 +63,9 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
   @Override
-  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
+  public Set<InputPort> getInputFormats() {
 
-    return getInputFormats();
+    return allPortsRequiredInWorkingDirectory(super.getInputFormats());
   }
 
   @Override

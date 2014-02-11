@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
@@ -35,9 +35,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define an abstract step for read mapping.
@@ -127,8 +127,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(MAPPER_RESULTS_SAM);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
   @Override

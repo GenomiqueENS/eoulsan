@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
@@ -40,11 +41,12 @@ import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceWriter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -72,13 +74,13 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(ANNOTATION_GFF);
+  public Set<InputPort> getInputFormats() {
+    return singleInputPort(ANNOTATION_GFF);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(GENOME_FASTA);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(GENOME_FASTA);
   }
 
   @Override

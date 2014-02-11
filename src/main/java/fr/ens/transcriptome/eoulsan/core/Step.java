@@ -24,13 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -69,39 +66,14 @@ public interface Step {
    * @return a set with DataFormat or null if the step does not any need input
    *         format
    */
-  Set<DataFormat> getInputFormats();
-
-  /**
-   * Test if the step accept a compressed input format.
-   * @param format the format
-   * @return a set with the compression type allowed by the step for the format
-   */
-  EnumSet<CompressionType> acceptInputFormatCompression(DataFormat format);
+  Set<InputPort> getInputFormats();
 
   /**
    * Get the output data format.
    * @return an set with DataFormat or null if the step does not produce any
    *         output data
    */
-  Set<DataFormat> getOutputFormats();
-
-  /**
-   * Get the input data format required in the working directory. This method
-   * allow to declare the input files that need to be copied in the working
-   * directory before starting the step. As an example, it is used to copy files
-   * from a local file system to a distributed file system like HDFS. After that
-   * mapreduce jobs can be efficiency launched.
-   * @return a set with DataFormat or null if the step does not need any input
-   *         format in the working directory.
-   */
-  Set<DataFormat> getInputFormatsRequieredInWorkingDirectory();
-
-  /**
-   * Get the compression format of an output file for a format.
-   * @param format the format
-   * @return the compression format.
-   */
-  CompressionType getOutputFormatCompression(DataFormat format);
+  Set<OutputPort> getOutputFormats();
 
   /**
    * Set the parameters of the step to configure the step.

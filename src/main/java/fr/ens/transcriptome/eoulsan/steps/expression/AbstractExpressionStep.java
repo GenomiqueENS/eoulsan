@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
@@ -41,8 +41,10 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterServ
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This abstract class define and parse arguments for the expression step.
@@ -169,13 +171,20 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(MAPPER_RESULTS_SAM, ANNOTATION_GFF, GENOME_DESC_TXT);
+  public Set<InputPort> getInputFormats() {
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    builder.addPort("alignments", MAPPER_RESULTS_SAM);
+    builder.addPort("features_annotation", ANNOTATION_GFF);
+    builder.addPort("genome_description", GENOME_DESC_TXT);
+
+    return builder.create();
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(EXPRESSION_RESULTS_TSV);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(EXPRESSION_RESULTS_TSV);
   }
 
   @Override

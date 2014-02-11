@@ -48,7 +48,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -65,12 +64,13 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
@@ -593,9 +593,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   //
 
   @Override
-  public Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
+  public Set<InputPort> getInputFormats() {
 
-    return Sets.newHashSet(MAPPER_RESULTS_SAM, GENOME_DESC_TXT);
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    builder.addPort("alignments", MAPPER_RESULTS_SAM, true);
+    builder.addPort("features_annotation", ANNOTATION_GFF);
+    builder.addPort("genome_description", GENOME_DESC_TXT, true);
+
+    return builder.create();
   }
 
   @Override

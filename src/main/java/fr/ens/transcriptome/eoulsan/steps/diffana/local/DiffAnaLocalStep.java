@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.DIFFANA_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
@@ -36,6 +37,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -92,13 +95,13 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public Set<DataFormat> getInputFormats() {
-    return newHashSet(EXPRESSION_RESULTS_TSV);
+  public Set<InputPort> getInputFormats() {
+    return singleInputPort(EXPRESSION_RESULTS_TSV);
   }
 
   @Override
-  public Set<DataFormat> getOutputFormats() {
-    return newHashSet(DIFFANA_RESULTS_TSV);
+  public Set<OutputPort> getOutputFormats() {
+    return singleOutputPort(DIFFANA_RESULTS_TSV);
   }
 
   @Override
