@@ -103,6 +103,26 @@ public class InputPortsBuilder {
     return Collections.unmodifiableSet(Sets.newHashSet(this.result));
   }
 
+  //
+  // Private instance methods
+  //
+
+  private InputPortsBuilder addPort(final InputPort port) {
+
+    if (this.portNames.contains(port.getName()))
+      throw new EoulsanRuntimeException("Two input ports had the same name: "
+          + port.getName());
+
+    this.result.add(port);
+    this.portNames.add(port.getName());
+
+    return this;
+  }
+
+  //
+  // Static methods
+  //
+
   /**
    * Create the ports with no ports.
    * @return a set with the ports
@@ -116,26 +136,40 @@ public class InputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a set with the ports
    */
-  public static final Set<InputPort> singlePort(final String name,
+  public static final Set<InputPort> singleInputPort(final DataFormat format) {
+
+    return new InputPortsBuilder().addPort("input", format).create();
+  }
+
+  /**
+   * Convenient method to create the ports with only one port.
+   * @return a set with the ports
+   */
+  public static final Set<InputPort> singleInputPort(final String name,
       final DataFormat format) {
 
     return new InputPortsBuilder().addPort(name, format).create();
   }
 
-  //
-  // Other method
-  //
+  /**
+   * Set all ports of an existing input ports to be required in working
+   * directory.
+   * @param inputPorts original input ports
+   * @return a new set of input ports that data are required in working
+   *         directory
+   */
+  public static final Set<InputPort> allPortsRequiredInWorkingDirectory(
+      final Set<InputPort> inputPorts) {
 
-  private InputPortsBuilder addPort(final InputPort port) {
+    if (inputPorts == null)
+      return null;
 
-    if (this.portNames.contains(port.getName()))
-      throw new EoulsanRuntimeException("Two input ports had the same name: "
-          + port.getName());
+    final InputPortsBuilder builder = new InputPortsBuilder();
 
-    this.result.add(port);
-    this.portNames.add(port.getName());
+    for (InputPort port : inputPorts)
+      builder.addPort(port.getName(), port.getFormat(), true);
 
-    return this;
+    return builder.create();
   }
 
 }
