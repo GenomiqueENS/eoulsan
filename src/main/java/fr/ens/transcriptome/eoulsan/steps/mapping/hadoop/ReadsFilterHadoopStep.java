@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -49,8 +48,8 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -76,12 +75,12 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   //
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return singleOutputPort(READS_TFQ);
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     return allPortsRequiredInWorkingDirectory(super.getInputFormats());
   }

@@ -31,7 +31,6 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -44,7 +43,7 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -63,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     return allPortsRequiredInWorkingDirectory(super.getInputFormats());
   }

@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.Collections;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -69,25 +68,25 @@ public class OutputPortsBuilder {
    * Create the ports.
    * @return a set with the ports
    */
-  public Set<OutputPort> create() {
+  public OutputPorts create() {
 
-    return Collections.unmodifiableSet(Sets.newHashSet(this.result));
+    return new SimpleOutputPorts(this.result);
   }
 
   /**
    * Create the ports with no ports.
    * @return a set with the ports
    */
-  public static final Set<OutputPort> noInputPort() {
+  public static final OutputPorts noOutputPort() {
 
-    return Collections.emptySet();
+    return new SimpleOutputPorts(null);
   }
 
   /**
    * Convenient method to create the ports with only one port.
    * @return a set with the ports
    */
-  public static final Set<OutputPort> singleOutputPort(final DataFormat format) {
+  public static final OutputPorts singleOutputPort(final DataFormat format) {
 
     return new OutputPortsBuilder().addPort("output", format).create();
   }
@@ -96,7 +95,7 @@ public class OutputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a set with the ports
    */
-  public static final Set<OutputPort> singleOutputPort(final String name,
+  public static final OutputPorts singleOutputPort(final String name,
       final DataFormat format) {
 
     return new OutputPortsBuilder().addPort(name, format).create();

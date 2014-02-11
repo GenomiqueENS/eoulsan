@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -39,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -74,12 +73,12 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
     return singleInputPort(GENOME_FASTA);
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return singleOutputPort(GENOME_DESC_TXT);
   }
 

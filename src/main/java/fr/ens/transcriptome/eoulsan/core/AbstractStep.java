@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.Collections;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
+
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -57,15 +58,15 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
-    return Collections.emptySet();
+    return noInputPort();
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
 
-    return Collections.emptySet();
+    return OutputPortsBuilder.noOutputPort();
   }
 
   @Override

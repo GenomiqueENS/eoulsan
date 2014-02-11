@@ -35,9 +35,9 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -69,13 +69,13 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
     return new InputPortsBuilder().addPort("genome", GENOME_FASTA)
         .addPort("genome_description", GENOME_DESC_TXT).create();
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return OutputPortsBuilder.singleOutputPort(this.mapper.getArchiveFormat());
   }
 

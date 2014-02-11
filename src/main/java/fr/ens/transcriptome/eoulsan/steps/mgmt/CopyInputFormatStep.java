@@ -35,8 +35,8 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -79,13 +79,13 @@ public class CopyInputFormatStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     return singleInputPort(this.format);
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
 
     return new OutputPortsBuilder().addPort("output", this.format,
         this.outputCompression).create();

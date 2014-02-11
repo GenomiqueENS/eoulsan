@@ -45,7 +45,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -66,7 +66,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_TFQ, true);

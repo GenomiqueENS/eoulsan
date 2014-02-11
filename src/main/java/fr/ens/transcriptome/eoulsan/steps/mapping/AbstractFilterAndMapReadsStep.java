@@ -40,9 +40,9 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 /**
@@ -145,7 +145,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_FASTQ);
@@ -156,7 +156,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 

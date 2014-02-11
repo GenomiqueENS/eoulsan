@@ -37,8 +37,8 @@ import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -75,12 +75,12 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
     return singleInputPort(READS_FASTQ);
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return singleOutputPort(READS_FASTQ);
   }
 

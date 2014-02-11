@@ -24,13 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
@@ -42,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 public class InputPortsBuilder {
 
   private Set<InputPort> result = Sets.newHashSet();
-  private Set<String> portNames = Sets.newHashSet();
 
   /**
    * Add an input port.
@@ -98,9 +95,9 @@ public class InputPortsBuilder {
    * Create the ports.
    * @return a set with the ports
    */
-  public Set<InputPort> create() {
+  public InputPorts create() {
 
-    return Collections.unmodifiableSet(Sets.newHashSet(this.result));
+    return new SimpleInputPorts(this.result);
   }
 
   //
@@ -109,12 +106,7 @@ public class InputPortsBuilder {
 
   private InputPortsBuilder addPort(final InputPort port) {
 
-    if (this.portNames.contains(port.getName()))
-      throw new EoulsanRuntimeException("Two input ports had the same name: "
-          + port.getName());
-
     this.result.add(port);
-    this.portNames.add(port.getName());
 
     return this;
   }
@@ -127,16 +119,16 @@ public class InputPortsBuilder {
    * Create the ports with no ports.
    * @return a set with the ports
    */
-  public static final Set<InputPort> noInputPort() {
+  public static final InputPorts noInputPort() {
 
-    return Collections.emptySet();
+    return new SimpleInputPorts(null);
   }
 
   /**
    * Convenient method to create the ports with only one port.
    * @return a set with the ports
    */
-  public static final Set<InputPort> singleInputPort(final DataFormat format) {
+  public static final InputPorts singleInputPort(final DataFormat format) {
 
     return new InputPortsBuilder().addPort("input", format).create();
   }
@@ -145,7 +137,7 @@ public class InputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a set with the ports
    */
-  public static final Set<InputPort> singleInputPort(final String name,
+  public static final InputPorts singleInputPort(final String name,
       final DataFormat format) {
 
     return new InputPortsBuilder().addPort(name, format).create();
@@ -158,8 +150,8 @@ public class InputPortsBuilder {
    * @return a new set of input ports that data are required in working
    *         directory
    */
-  public static final Set<InputPort> allPortsRequiredInWorkingDirectory(
-      final Set<InputPort> inputPorts) {
+  public static final InputPorts allPortsRequiredInWorkingDirectory(
+      final InputPorts inputPorts) {
 
     if (inputPorts == null)
       return null;

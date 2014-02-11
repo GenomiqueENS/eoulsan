@@ -33,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.io.Files;
@@ -43,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.core.SampleStep;
@@ -80,7 +79,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
   private final SequenceReadsMapper mapper = getMapper();
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_FASTQ);

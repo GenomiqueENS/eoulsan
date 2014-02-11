@@ -66,14 +66,14 @@ public interface Step {
    * @return a set with DataFormat or null if the step does not any need input
    *         format
    */
-  Set<InputPort> getInputFormats();
+  InputPorts getInputFormats();
 
   /**
    * Get the output data format.
    * @return an set with DataFormat or null if the step does not produce any
    *         output data
    */
-  Set<OutputPort> getOutputFormats();
+  OutputPorts getOutputFormats();
 
   /**
    * Set the parameters of the step to configure the step.

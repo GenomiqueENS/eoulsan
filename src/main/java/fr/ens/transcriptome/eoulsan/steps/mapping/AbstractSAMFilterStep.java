@@ -36,9 +36,9 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -76,7 +76,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   }
 
   @Override
-  public Set<InputPort> getInputFormats() {
+  public InputPorts getInputFormats() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
@@ -86,7 +86,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   }
 
   @Override
-  public Set<OutputPort> getOutputFormats() {
+  public OutputPorts getOutputFormats() {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
