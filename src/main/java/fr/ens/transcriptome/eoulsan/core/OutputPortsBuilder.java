@@ -66,7 +66,7 @@ public class OutputPortsBuilder {
 
   /**
    * Create the ports.
-   * @return a set with the ports
+   * @return new OutputPorts object
    */
   public OutputPorts create() {
 
@@ -75,7 +75,7 @@ public class OutputPortsBuilder {
 
   /**
    * Create the ports with no ports.
-   * @return a set with the ports
+   * @return a new OutputPorts object
    */
   public static final OutputPorts noOutputPort() {
 
@@ -84,7 +84,7 @@ public class OutputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
-   * @return a set with the ports
+   * @return a new OutputPorts object
    */
   public static final OutputPorts singleOutputPort(final DataFormat format) {
 
@@ -93,12 +93,29 @@ public class OutputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
-   * @return a set with the ports
+   * @return a new OutputPorts object
    */
   public static final OutputPorts singleOutputPort(final String name,
       final DataFormat format) {
 
     return new OutputPortsBuilder().addPort(name, format).create();
+  }
+
+  /**
+   * Convenient method to create a defensive copy of an OutputPorts object.
+   * @param ports an existing OutputPorts object
+   * @return a new OutputPorts object or null if the ports parameter is null
+   */
+  public static final OutputPorts copy(final OutputPorts ports) {
+
+    if (ports == null)
+      return null;
+
+    final OutputPortsBuilder builder = new OutputPortsBuilder();
+    for (OutputPort port : ports)
+      builder.addPort(port);
+
+    return builder.create();
   }
 
   //
