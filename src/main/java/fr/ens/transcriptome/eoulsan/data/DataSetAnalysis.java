@@ -2,18 +2,18 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetAnalysis {
 
@@ -28,62 +28,62 @@ public class DataSetAnalysis {
   private DataFile paramFile;
   private DataFile eoulsanLog;
 
-  private Set<DataFile> allFiles;
   private Map<String, DataFile> fileByName;
-  private Map<String, Collection<DataFile>> allFilesInAnalysis;
+
+  // private Set<DataFile> allFiles;
+  // private Map<String, Collection<DataFile>> allFilesInAnalysis;
 
   public void init() throws EoulsanException {
 
-    Multimap<String, DataFile> allFiles = ArrayListMultimap.create();
-    parseDirectory(new File(dataSetPath), allFiles);
+    parseDirectory(new File(dataSetPath));
 
-    allFilesInAnalysis = allFiles.asMap();
+    Collection<DataFile> files;
 
-    for (DataFile df : allFilesInAnalysis.get(".txt")) {
-      if (df.getName().startsWith("design")) {
-        this.designFile = df;
-      }
-    }
-
-    for (DataFile df : allFilesInAnalysis.get(".xml")) {
-      if (df.getName().startsWith("param"))
-        this.paramFile = df;
-    }
-
-    if (allFilesInAnalysis.containsKey(".log")) {
-      for (DataFile df : allFilesInAnalysis.get(".log")) {
-        if (df.getName().startsWith("eoulsan"))
-          this.eoulsanLog = df;
-      }
-    }
-
-    if (this.designFile == null) {
+    // Check design file
+    files = getDataFileStartwith("design");
+    if (files.isEmpty()) {
       LOGGER.warning("Design file doesn't exist");
       throw new EoulsanException("Design file doesn't exist");
     }
 
-    if (this.paramFile == null) {
+    this.designFile = files.iterator().next();
+
+    // Check parameter file
+    files = getDataFileStartwith("param");
+    if (files.isEmpty()) {
       LOGGER.warning("Parameter file doesn't exist");
       throw new EoulsanException("Parameter file doesn't exist");
     }
+
+    this.paramFile = files.iterator().next();
+
+    // Check log eoulsan file
+    // files = getDataFileStartwith("eoulsan", ".log");
+    // if (files.isEmpty()) {
+    // LOGGER.warning("Log file doesn't exist");
+    // throw new EoulsanException("Log file doesn't exist");
+    // }
+    // this.eoulsanLog = files.iterator().next();
   }
 
-  private void parseDirectory(final File dir,
-      final Multimap<String, DataFile> files) {
+  private void parseDirectory(final File dir) {
+
+    // // TODO
+    // System.out.println(dir.getAbsolutePath()
+    // + " dir " + StringUtils.join(dir.list(), "\n\t"));
 
     for (final File fileEntry : dir.listFiles()) {
       if (fileEntry.isDirectory()) {
-        parseDirectory(fileEntry, files);
+        parseDirectory(fileEntry);
       } else {
 
         DataFile df = new DataFile(fileEntry);
 
         // Skip serizalisation file for bloomFilter
-        if (!df.getExtension().equals(".ser"))
+        if (!df.getExtension().equals(".ser")) {
           // Add entry in map
-          files.put(df.getExtension(), df);
-        allFiles.add(df);
-        fileByName.put(df.getName(), df);
+          fileByName.put(df.getName(), df);
+        }
 
       }
     }
@@ -107,7 +107,7 @@ public class DataSetAnalysis {
     tmp.mkdir();
 
     // Create symbolic link to fastq files
-    for (DataFile df : datasetSource.getAllFilesInAnalysis().get(".fastq")) {
+    for (DataFile df : datasetSource.getDataFileWithExtension(".fastq")) {
 
       // Only for fastq at the root directory analysis
       if (df.toFile().getParent().equals(datasetSource.getDataSetPath()))
@@ -126,31 +126,68 @@ public class DataSetAnalysis {
     init();
   }
 
+  /**
+   * @return
+   */
   public String getRootPath() {
     return dataSet.getBasename();
   }
 
-  public DataFile getDataFileSameName(final DataFile df) {
-    return getDataFileSameName(df.getExtension(), df.getName());
-  }
+  private Collection<DataFile> getDataFileWithExtension(final String extension) {
+    Set<DataFile> files = Sets.newHashSet();
 
-  public DataFile getDataFileSameName(final String extension, final String name) {
-
-    if (extension == null || extension.length() < 3)
-      return null;
-
-    if (name == null || name.length() == 0)
-      return null;
-
-    if (!allFilesInAnalysis.containsKey(extension))
-      return null;
-
-    for (DataFile df : allFilesInAnalysis.get(extension)) {
-      if (df.getName().equals(name))
-        return df;
+    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
+      if (entry.getValue().getExtension().equals(extension))
+        files.add(entry.getValue());
     }
 
-    return null;
+    if (files.size() == 0)
+      return Collections.emptySet();
+
+    return Collections.unmodifiableSet(files);
+  }
+
+  private Collection<DataFile> getDataFileStartwith(final String prefix) {
+    Set<DataFile> files = Sets.newHashSet();
+
+    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
+      if (entry.getKey().startsWith(prefix))
+        files.add(entry.getValue());
+    }
+
+    if (files.size() == 0)
+      return Collections.emptySet();
+
+    return Collections.unmodifiableSet(files);
+  }
+
+  private Collection<DataFile> getDataFileStartwith(final String prefix,
+      final String extension) {
+
+    Set<DataFile> files = Sets.newHashSet();
+
+    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
+      if (entry.getKey().startsWith(prefix)
+          && entry.getValue().getExtension().equals(extension))
+        files.add(entry.getValue());
+    }
+
+    if (files.size() == 0)
+      return Collections.emptySet();
+
+    return Collections.unmodifiableSet(files);
+  }
+
+  /**
+   * @param df
+   * @return
+   */
+  public DataFile getDataFileByName(final String filename) {
+
+    if (filename == null || filename.length() == 0)
+      return null;
+
+    return fileByName.get(filename);
   }
 
   //
@@ -177,15 +214,15 @@ public class DataSetAnalysis {
     return eoulsanLog;
   }
 
-  public Map<String, Collection<DataFile>> getAllFilesInAnalysis() {
-    return allFilesInAnalysis;
-  }
+  // public Map<String, Collection<DataFile>> getAllFilesInAnalysis() {
+  // return allFilesInAnalysis;
+  // }
+  //
+  // public Set<DataFile> getAllFiles() {
+  // return allFiles;
+  // }
 
-  public Set<DataFile> getAllFiles() {
-    return allFiles;
-  }
-
-  public Map<String, DataFile> getFileByName() {
+  public Map<String, DataFile> getFilesByName() {
     return fileByName;
   }
 
@@ -200,9 +237,9 @@ public class DataSetAnalysis {
     this.dataSetPath = dataSetPath;
     this.dataSet = new DataFile(dataSetPath);
 
-    this.allFilesInAnalysis = Maps.newHashMap();
     this.fileByName = Maps.newHashMap();
-    this.allFiles = Sets.newHashSet();
+    // this.allFilesInAnalysis = Maps.newHashMap();
+    // this.allFiles = Sets.newHashSet();
 
     if (this.expected) {
       // Check dataset directory exists

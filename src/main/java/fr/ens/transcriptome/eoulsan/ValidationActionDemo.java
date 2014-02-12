@@ -1,5 +1,7 @@
 package fr.ens.transcriptome.eoulsan;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -11,6 +13,7 @@ import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
 import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
 import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
+import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
 import fr.ens.transcriptome.eoulsan.io.CompareFiles;
 import fr.ens.transcriptome.eoulsan.io.LogCompareFiles;
 
@@ -21,31 +24,33 @@ public class ValidationActionDemo {
 
   public static void main(String[] args) throws EoulsanException {
 
-     ValidationActionDemo.mainbis();
+    ValidationActionDemo.mainbis();
 
-    // final DataSetAnalysis datasetExpected =
-    // new DataSetAnalysis(
-    // "/home/sperrin/Documents/test_eoulsan/dataset_source/expected",
-    // true);
-    //
-    // // Init data set tested
-    // final DataSetAnalysis datasetTested =
-    // new DataSetAnalysis(
-    // "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/",
-    // false);
+    // testLogCompare();
   }
 
   public static void testLogCompare() {
-    Map<Object, Object> map = System.getProperties();
-    System.out.println("print properties \n"
-        + Joiner.on("\n").withKeyValueSeparator("\t").join(map));
-
-    System.exit(0);
+    // Map<Object, Object> map = System.getProperties();
+    // System.out.println("print properties \n"
+    // + Joiner.on("\n").withKeyValueSeparator("\t").join(map));
+    //
+    // System.exit(0);
 
     CompareFiles comp = new LogCompareFiles();
     // String
     // fileAFperrin/Documents/test_eoulsan/dataset_source/test_expected/eoulsan-20140128-160713/filtersam.log";
-    String dir = "eoulsan-20140129-110630";
+    String dir =
+        new File(
+            "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/")
+            .listFiles(new FileFilter() {
+
+              @Override
+              public boolean accept(final File pathname) {
+                return pathname.getName().startsWith("eoulsan-");
+              }
+            })[0].getAbsolutePath();
+
+    System.out.println("dir log " + dir);
 
     // String fileA =
     // "/home/sperrin/Documents/test_eoulsan/dataset_source/expected/eoulsan-20140124-112847/mapreads.log";
@@ -55,9 +60,7 @@ public class ValidationActionDemo {
 
     String fileA =
         "/home/sperrin/Documents/test_eoulsan/dataset_source/expected/eoulsan-20140124-112847/filtersam.log";
-    String fileB =
-        "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/"
-            + dir + "/filtersam.log";
+    String fileB = dir + "/filtersam.log";
     try {
       System.out.println("result " + comp.compareFiles(fileA, fileB));
 
@@ -123,9 +126,48 @@ public class ValidationActionDemo {
 
     }
 
-    // Run action
-    action.run(pathEoulsanNewVersion, listDatasets, pathOutputDirectory,
-        jobDescription);
-  }
+    boolean completed = false;
 
+    if (completed) {
+      // Run action
+      action.run(pathEoulsanNewVersion, listDatasets, pathOutputDirectory,
+          jobDescription);
+
+    } else {
+      try {
+        DataSetAnalysis datasetExpected;
+        datasetExpected =
+            new DataSetAnalysis(
+                "/home/sperrin/Documents/test_eoulsan/dataset_source/expected",
+                true);
+
+        // Init data set tested
+        final DataSetAnalysis datasetTested =
+            new DataSetAnalysis(
+                "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/",
+                false);
+        datasetTested.init();
+        System.out.println("expected size "
+            + datasetExpected.getFilesByName().size());
+
+        System.out.println("tested size "
+            + datasetTested.getFilesByName().size());
+
+        // Compare two directory
+        ComparatorDirectories comparator =
+            new ComparatorDirectories(ValidationAction.USE_SERIALIZATION,
+                ValidationAction.CHECKING_SAME_NAME);
+
+        // Launch comparison
+        comparator.compareDataSet(datasetExpected, datasetTested);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (EoulsanException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+
+    }
+  }
 }

@@ -55,7 +55,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException {
 
-    checkAndInit(pathA, pathB);
+    // checkAndInit(pathA, pathB);
 
     return compareFiles(new File(pathA), new File(pathB), false);
   }
@@ -64,7 +64,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public boolean compareFiles(final String pathA, final String pathB,
       final boolean useSerializeFile) throws IOException {
 
-    checkAndInit(pathA, pathB);
+    // checkAndInit(pathA, pathB);
 
     return compareFiles(new File(pathA), new File(pathB), useSerializeFile);
   }
@@ -73,7 +73,7 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException {
 
-    checkAndInit(fileA.getAbsolutePath(), fileB.getAbsolutePath());
+    // checkAndInit(fileA.getAbsolutePath(), fileB.getAbsolutePath());
 
     return compareFiles(fileA, fileB, false);
   }
@@ -192,8 +192,8 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   private static boolean checkFiles(final File fileA, final File fileB)
       throws IOException {
 
-    checkFile(fileA, "fileA");
-    checkFile(fileB, "fileB");
+    checkFile(fileA, fileA.getAbsolutePath());
+    checkFile(fileB, fileB.getAbsolutePath());
 
     // Check if try to compare the same file
     if (fileA.equals(fileB))

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -34,8 +35,8 @@ public class ValidationAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private static final boolean USE_SERIALIZATION = true;
-  private static final boolean CHECKING_SAME_NAME = true;
+  public static final boolean USE_SERIALIZATION = true;
+  public static final boolean CHECKING_SAME_NAME = true;
 
   @Override
   public String getName() {
@@ -47,6 +48,7 @@ public class ValidationAction extends AbstractAction {
     return "test " + Globals.APP_NAME + " version.";
   }
 
+  // TODO use for test into eclipse
   private void initLogger() {
 
     Handler fh = null;
@@ -60,7 +62,7 @@ public class ValidationAction extends AbstractAction {
 
     fh.setFormatter(Globals.LOG_FORMATTER);
 
-    LOGGER.setLevel(Globals.LOG_LEVEL);
+    LOGGER.setLevel(Level.ALL);
     LOGGER.setUseParentHandlers(false);
 
     LOGGER.addHandler(fh);
@@ -287,7 +289,7 @@ public class ValidationAction extends AbstractAction {
         }
 
         datasetTested.init();
-        if (datasetTested.getDataFileSameName(".wiki", "summary.wiki") == null)
+        if (datasetTested.getDataFileByName("summary.wiki") == null)
           LOGGER.severe("Fail Eoulsan analysis");
         else {
           // Compare two directory

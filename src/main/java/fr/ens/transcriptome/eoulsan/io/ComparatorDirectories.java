@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -85,13 +86,16 @@ public class ComparatorDirectories {
     LOGGER.info("Start comparison between to result analysis");
     final Stopwatch timer = Stopwatch.createStarted();
 
+    Map<String, DataFile> filesOnlyInTestDir =
+        Maps.newHashMap(tested.getFilesByName());
+
     // Build pair files with same names
-    for (Map.Entry<String, DataFile> entry : expected.getFileByName()
+    for (Map.Entry<String, DataFile> entry : expected.getFilesByName()
         .entrySet()) {
       DataFile dfExpected = entry.getValue();
 
       // Search file with same in test directory
-      DataFile dfTested = tested.getFileByName().get(entry.getKey());
+      DataFile dfTested = tested.getFilesByName().get(entry.getKey());
 
       if (isComparable(dfExpected, dfTested)) {
 
@@ -102,20 +106,20 @@ public class ComparatorDirectories {
         LOGGER.warning((dfExpected != null)
             + "\t" + (dfTested != null) + "\tNA\t" + entry.getKey());
       }
+
+      //
+      filesOnlyInTestDir.remove(entry.getKey());
     }
 
     // Case file present only in tested directory
-    Set<DataFile> filesOnlyInTestDir = Sets.newHashSet(tested.getAllFiles());
-    filesOnlyInTestDir.removeAll(expected.getAllFiles());
-
     // TODO
     System.out.println("only in test dir "
-        + Joiner.on("\t").join(filesOnlyInTestDir));
+        + Joiner.on("\n").withKeyValueSeparator("\t").join(filesOnlyInTestDir));
 
     if (filesOnlyInTestDir.size() > 0) {
-      for (DataFile df : filesOnlyInTestDir) {
+      for (Map.Entry<String, DataFile> entry : filesOnlyInTestDir.entrySet()) {
         // None comparison
-        LOGGER.warning("false\ttrue\tNA\t" + df.getName());
+        LOGGER.warning("false\ttrue\tNA\t" + entry.getKey());
       }
     }
 
@@ -142,7 +146,7 @@ public class ComparatorDirectories {
     if (!dfExpected.getExtension().equals(dfTested.getExtension()))
       return false;
 
-    if (isExtensionTreated(dfExpected.getExtension()))
+    if (!isExtensionTreated(dfExpected.getExtension()))
       return false;
 
     // Check files must be skip
@@ -255,8 +259,8 @@ public class ComparatorDirectories {
           this.compareFile.compareFiles(getPathFileA(), getPathFileB(),
               useSerialization);
 
-      LOGGER.info(dataFileA.getName()
-          + "\ttrue\ttrue\t" + result + "\tin "
+      LOGGER.info("true\ttrue\t"
+          + result + "\t" + dataFileA.getName() + "\tin "
           + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
       timer.stop();
