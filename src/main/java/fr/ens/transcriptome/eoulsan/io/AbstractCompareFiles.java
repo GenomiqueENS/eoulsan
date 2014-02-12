@@ -40,8 +40,8 @@ import java.util.logging.Logger;
 import com.google.common.base.Stopwatch;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public abstract class AbstractCompareFiles implements CompareFiles {
 
@@ -192,8 +192,8 @@ public abstract class AbstractCompareFiles implements CompareFiles {
   private static boolean checkFiles(final File fileA, final File fileB)
       throws IOException {
 
-    checkFile(fileA, fileA.getAbsolutePath());
-    checkFile(fileB, fileB.getAbsolutePath());
+    FileUtils.checkExistingFile(fileA, fileA.getAbsolutePath());
+    FileUtils.checkExistingFile(fileB, fileB.getAbsolutePath());
 
     // Check if try to compare the same file
     if (fileA.equals(fileB))
@@ -212,25 +212,6 @@ public abstract class AbstractCompareFiles implements CompareFiles {
       this.pathFileA = pathA;
       this.pathFileB = pathB;
     }
-  }
-
-  /**
-   * Check file argument of methods of the class.
-   * @param file first file to check
-   * @throws IOException
-   */
-  private static void checkFile(final File file, String argumentName)
-      throws IOException {
-
-    if (file == null)
-      throw new NullPointerException("The "
-          + argumentName + " argument is null");
-
-    if (!file.exists())
-      throw new IOException("The " + argumentName + " does not exist");
-
-    if (!file.isFile())
-      throw new IOException("The " + argumentName + " is not a standard file");
   }
 
   @Override

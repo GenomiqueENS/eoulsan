@@ -1,15 +1,24 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.io.FileFilter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,15 +27,20 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.compress.utils.Charsets;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
 import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -37,6 +51,33 @@ public class ValidationAction extends AbstractAction {
 
   public static final boolean USE_SERIALIZATION = true;
   public static final boolean CHECKING_SAME_NAME = true;
+
+  private final Splitter splitter = Splitter.on(',').trimResults()
+      .omitEmptyStrings();
+
+  private final Properties props;
+  private final ComparatorDirectories comparator;
+
+  private String eoulsanReferenceVersion;
+  private String eoulsanReferencePath;
+
+  private String eoulsanTestVersion;
+  private String eoulsanTestPath;
+
+  private File inputData;
+  private Map<String, File> paramtersFiles;
+  private File expectedAnalysisDirectory;
+  private File outputAnalysisDirectory;
+
+  private String commandLineArguments;
+  private Collection<File> inputDataProject;
+  private String typeDataSetUsed = "small";
+
+  // Optional
+  private String localScriptPretreatement;
+  private String localScriptPostreatement;
+  private String hadoopScriptPretreatement;
+  private String hadoopScriptPostreatement;
 
   @Override
   public String getName() {
@@ -76,10 +117,7 @@ public class ValidationAction extends AbstractAction {
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
-    String pathEoulsanNewVersion = null;
-    String listDatasets = null;
-    String outputDirectory = null;
-
+    String confPath = null;
     String jobDescription = null;
 
     int argsOptions = 0;
@@ -101,22 +139,10 @@ public class ValidationAction extends AbstractAction {
         argsOptions += 2;
       }
 
-      if (line.hasOption("p")) {
+      if (line.hasOption("c")) {
 
-        // Retrieve path to Eoulsan
-        pathEoulsanNewVersion = line.getOptionValue("p").trim();
-        argsOptions += 2;
-      }
-
-      if (line.hasOption("s")) {
-        // Retrieve list dataset for Eoulsan
-        listDatasets = line.getOptionValue("s");
-        argsOptions += 2;
-      }
-
-      if (line.hasOption("o")) {
-        // Retrieve path of output directory
-        outputDirectory = line.getOptionValue("o");
+        // Configuration test files
+        confPath = line.getOptionValue("c").trim();
         argsOptions += 2;
       }
 
@@ -125,23 +151,12 @@ public class ValidationAction extends AbstractAction {
           "Error while parsing parameter file: " + e.getMessage());
     }
 
-    // TODO
-    System.out.println(pathEoulsanNewVersion
-        + "," + listDatasets + "," + outputDirectory + "," + jobDescription);
-    System.out
-        .println("pathEoulsanNewVersion, listDatasets, outputDirectory, jobDescription");
-
-    System.out.println(arguments.length + " vs " + argsOptions);
-
     if (arguments.length != argsOptions) {
       help(options);
     }
 
-    // TODO
-    System.out.println("end parse cmd line");
-
     // Execute program in local mode
-    run(pathEoulsanNewVersion, listDatasets, outputDirectory, jobDescription);
+    run(confPath, jobDescription);
   }
 
   /**
@@ -162,18 +177,9 @@ public class ValidationAction extends AbstractAction {
         .withDescription("job description").withLongOpt("desc").create('d'));
 
     // Path to test Eoulsan version
-    options.addOption(OptionBuilder.withArgName("eoulsanPath").hasArg(true)
-        .withDescription("path to test Eoulsan version").withLongOpt("path")
-        .create('p'));
-
-    // Dataset(s) for Eoulsan
-    options.addOption(OptionBuilder.withArgName("dataset").hasArg(true)
-        .withDescription("dataset for Eoulsan").withLongOpt("dataset")
-        .create('s'));
-
-    // Output option
-    options.addOption(OptionBuilder.withArgName("directory").hasArg(true)
-        .withDescription("Output dir").withLongOpt("output").create('o'));
+    options.addOption(OptionBuilder.withArgName("confPath").hasArg(true)
+        .withDescription("configuration test file").withLongOpt("conf")
+        .create('c'));
 
     return options;
   }
@@ -205,13 +211,7 @@ public class ValidationAction extends AbstractAction {
    * @param outputDirectory
    * @param jobDescription
    */
-  public/* private */void run(final String pathEoulsanNewVersion,
-      final String listDatasets, final String pathOutputDirectory,
-      final String jobDescription) {
-
-    checkNotNull(pathEoulsanNewVersion, "paramFile is null");
-    checkNotNull(listDatasets, "designFile is null");
-    checkNotNull(pathOutputDirectory, "designFile is null");
+  public/* private */void run(final String confPath, final String jobDescription) {
 
     final String desc;
 
@@ -223,13 +223,16 @@ public class ValidationAction extends AbstractAction {
 
     LOGGER.info(Globals.WELCOME_MSG + " Local mode.");
 
-    File eoulsanExecutable = new File(pathEoulsanNewVersion);
-    File outputDirectory = new File(pathOutputDirectory);
-
-    // TODO
-    System.out.println("action run");
-
     try {
+      // Initialisation action from configuration test file
+      init(new File(confPath));
+
+      File eoulsanExecutable = new File(pathEoulsanNewVersion);
+      File outputDirectory = new File(pathOutputDirectory);
+
+      // TODO
+      System.out.println("action run");
+
       // Check path Eoulsan new version
       checkExistingFile(eoulsanExecutable, "Executable Eoulsan doesn't exist");
 
@@ -292,16 +295,11 @@ public class ValidationAction extends AbstractAction {
         if (datasetTested.getDataFileByName("summary.wiki") == null)
           LOGGER.severe("Fail Eoulsan analysis");
         else {
-          // Compare two directory
-          ComparatorDirectories comparator =
-              new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
 
           // Launch comparison
           comparator.compareDataSet(datasetExpected, datasetTested);
-
           // Set not compare eoulsan.log
           comparator.setFilesToNotCompare(cmd.getLogFilename());
-
         }
       }
     } catch (IOException e) {
@@ -313,11 +311,157 @@ public class ValidationAction extends AbstractAction {
 
   }
 
+  /**
+   * Initialisation properties with pa
+   * @param conf configuration file from Action
+   * @throws EoulsanException
+   * @throws IOException
+   */
+  private void init(final File conf) throws EoulsanException, IOException {
+
+    checkExistingFile(conf, " configuration file doesn't exist.");
+    BufferedReader br =
+        new BufferedReader(newReader(conf,
+            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+    String line = null;
+
+    try {
+      while ((line = br.readLine()) != null) {
+
+        final int pos = line.indexOf('=');
+        if (pos == -1)
+          continue;
+
+        final String key = line.substring(0, pos);
+        final String value = line.substring(pos + 1);
+
+        props.put(key, value);
+      }
+      br.close();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // Initialisation
+    this.inputData =
+        configureFileParameter("input_directory", " input data directory ",
+            false).iterator().next();
+
+    this.expectedAnalysisDirectory =
+        configureFileParameter("expected_analysis_directory",
+            " expected analysis directory ", false).iterator().next();
+
+    this.outputAnalysisDirectory =
+        configureFileParameter("output_analysis_directory",
+            " output analysis directory ", false).iterator().next();
+
+    this.typeDataSetUsed = props.getProperty("data_input_used");
+
+    Collection<File> parameterDirectories =
+        configureFileParameter("parameters_directory", "parameters directory ",
+            true);
+    collectParametersFiles(parameterDirectories);
+
+    collectInputData();
+
+    // Set not compare eoulsan.log
+    // comparator.setFilesToNotCompare(cmd.getLogFilename());
+  }
+
+  private Collection<File> configureFileParameter(final String propertyName,
+      final String exceptionMsg, final boolean asListValues)
+      throws EoulsanException, IOException {
+
+    Collection<File> values = Sets.newHashSet();
+
+    if (!props.containsKey(propertyName))
+      throw new EoulsanException(exceptionMsg
+          + " missing in configuration test.");
+
+    if (asListValues) {
+
+      for (String file : splitter.split(props.getProperty(propertyName))) {
+        File f = new File(file);
+        FileUtils.checkExistingFile(f, exceptionMsg + " doesn't exist");
+        values.add(f);
+      }
+
+    } else {
+
+      File f = new File(props.getProperty(propertyName));
+      FileUtils.checkExistingFile(f, exceptionMsg + " doesn't exist");
+      values.add(f);
+    }
+
+    return values;
+  }
+
+  private void collectInputData() throws EoulsanException, IOException {
+
+    for (String project : splitter.split(props.getProperty("input_data"))) {
+      File projectDir = new File(inputData, project);
+
+      checkExistingFile(
+          projectDir,
+          "Project directory doesn't exist in directory "
+              + inputData.getAbsolutePath());
+
+      // Check type file type data
+      File projectData = new File(projectDir, this.typeDataSetUsed);
+      checkExistingFile(projectData, "Input data doesn't exist in project "
+          + projectDir.getAbsolutePath());
+
+      this.inputDataProject.add(projectData);
+    }
+
+    if (this.inputDataProject.size() == 0)
+      throw new EoulsanException("None input data specified for test.");
+
+  }
+
+  private void collectParametersFiles(
+      final Collection<File> parameterDirectories) throws EoulsanException {
+    final String prefix = "param_";
+    final String suffix = ".xml";
+
+    // Collect all parameters files at the root of each directory
+
+    for (File paramDir : parameterDirectories) {
+
+      File[] params = paramDir.listFiles(new FileFilter() {
+
+        @Override
+        public boolean accept(File pathname) {
+          return pathname.getName().startsWith(prefix)
+              && pathname.getName().endsWith(suffix);
+        }
+      });
+
+      for (File param : params) {
+        int beginIndex = prefix.length();
+        int endIndex = param.getName().length() - suffix.length();
+
+        String name = param.getName().substring(beginIndex, endIndex);
+        paramtersFiles.put(name, param);
+      }
+    }
+
+    if (paramtersFiles.size() == 0)
+      throw new EoulsanException("None parameters files defined here ");
+  }
+
   //
-  //
+  // Constructor
   //
 
-  public ValidationAction() {
+  public ValidationAction() throws EoulsanException {
+    props = new Properties();
+
+    // Initialisation comparator
+    this.comparator =
+        new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
+
   }
 
   //
