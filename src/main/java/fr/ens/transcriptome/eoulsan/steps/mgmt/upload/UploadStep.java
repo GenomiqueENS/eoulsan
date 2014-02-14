@@ -215,31 +215,33 @@ public abstract class UploadStep extends AbstractStep {
    * Generate the DataFile Object for the uploaded DataFile
    * @param file DataFile to upload
    * @param step step that create the data
-   * @param format the DataFormat of the source
+   * @param format the format of the file to upload
+   * @param portName the port name
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
   private DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final DataFormat format)
-      throws IOException {
+      final WorkflowStep step, final Sample sample, final String portName,
+      final DataFormat format) throws IOException {
 
-    return getUploadedDataFile(file, step, sample, format, -1);
+    return getUploadedDataFile(file, step, sample, portName, format, -1);
   }
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
    * @param file DataFile to upload
-   * @param format the DataFormat of the source
+   * @param portName the port name
+   * @param format the format of the file to upload
    * @param sample the sample for the source
    * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
   protected abstract DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final DataFormat format,
-      final int fileIndex) throws IOException;
+      final WorkflowStep step, final Sample sample, final String portName,
+      final DataFormat format, final int fileIndex) throws IOException;
 
   /**
    * Copy files to destinations.
@@ -272,7 +274,7 @@ public abstract class UploadStep extends AbstractStep {
       final DataFile in = file.getDataFile();
       final DataFile out =
           getUploadedDataFile(in, file.getStep(), file.getSample(),
-              file.getFormat(), file.getFileIndex());
+              file.getPortName(), file.getFormat(), file.getFileIndex());
       result.put(in, out);
 
     }
@@ -326,9 +328,8 @@ public abstract class UploadStep extends AbstractStep {
           final DataFile inFile = new DataFile(oldValues.get(0));
           // final DataFormat format = inFile.getDataFormat();
 
-          DataFormat format = registry.getDataFormatFromExtension(
-
-          inFile.getExtension());
+          DataFormat format =
+              registry.getDataFormatFromExtension(inFile.getExtension());
 
           if (format == null)
             format = inFile.getMetaData().getDataFormat();
@@ -336,9 +337,13 @@ public abstract class UploadStep extends AbstractStep {
           final DataFile outFile;
 
           if (format.getMaxFilesCount() == 1)
-            outFile = getUploadedDataFile(inFile, designStep, s, format);
+            outFile =
+                getUploadedDataFile(inFile, designStep, s, format.getName(),
+                    format);
           else
-            outFile = getUploadedDataFile(inFile, designStep, s, format, 0);
+            outFile =
+                getUploadedDataFile(inFile, designStep, s, format.getName(),
+                    format, 0);
 
           filesToCopy.put(inFile, outFile);
           newValues.add(outFile.toString());
@@ -349,7 +354,8 @@ public abstract class UploadStep extends AbstractStep {
             final DataFile inFile = new DataFile(oldValues.get(i));
             final DataFormat format = inFile.getDataFormat();
             final DataFile outFile =
-                getUploadedDataFile(inFile, designStep, s, format, i);
+                getUploadedDataFile(inFile, designStep, s, format.getName(),
+                    format, i);
             filesToCopy.put(inFile, outFile);
             newValues.add(outFile.toString());
           }

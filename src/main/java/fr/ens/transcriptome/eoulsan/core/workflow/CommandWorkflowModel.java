@@ -38,9 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.StepOutputPort;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 
 /**
  * This class define the workflow model object of Eoulsan.
@@ -58,12 +57,25 @@ public class CommandWorkflowModel implements Serializable {
 
   private List<String> stepIdList = Lists.newArrayList();
   private Map<String, String> stepIdNames = Maps.newHashMap();
-  private final Map<String, Map<DataFormat, String>> stepInputs = Maps
+  private final Map<String, Map<String, StepPort>> stepInputs = Maps
       .newHashMap();
   private final Map<String, Set<Parameter>> stepParameters = Maps.newHashMap();
   private Map<String, Boolean> stepSkiped = Maps.newHashMap();
   private Map<String, Boolean> stepDiscardOutput = Maps.newHashMap();
   private final Set<Parameter> globalParameters = Sets.newHashSet();
+
+  static final class StepPort {
+
+    final String stepId;
+    final String portName;
+
+    private StepPort(final String stepId, final String portName) {
+
+      this.stepId = stepId;
+      this.portName = portName;
+    }
+
+  }
 
   //
   // Getters
@@ -156,9 +168,9 @@ public class CommandWorkflowModel implements Serializable {
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String stepName,
-      final Map<String, String> inputs, final Set<Parameter> parameters,
-      final boolean skipStep, final boolean discardOutput)
-      throws EoulsanException {
+      final Map<String, StepOutputPort> inputs,
+      final Set<Parameter> parameters, final boolean skipStep,
+      final boolean discardOutput) throws EoulsanException {
 
     if (stepName == null)
       throw new EoulsanException("The name of the step is null.");
@@ -188,28 +200,34 @@ public class CommandWorkflowModel implements Serializable {
       throw new EoulsanException("The inputs are null.");
 
     // Check input data formats
-    Map<DataFormat, String> inputsMap = Maps.newHashMap();
-    DataFormatRegistry registry = DataFormatRegistry.getInstance();
-    for (Map.Entry<String, String> e : inputs.entrySet()) {
+    Map<String, StepPort> inputsMap = Maps.newHashMap();
+    for (Map.Entry<String, StepOutputPort> e : inputs.entrySet()) {
 
-      final DataFormat inputFormat = registry.getDataFormatFromName(e.getKey());
-      final String inputStepId = e.getValue().toLowerCase().trim();
+      String toPortName = e.getKey();
+      String fromStep = e.getValue().stepId;
+      String fromPortName = e.getValue().outputPortName;
 
-      if (e.getValue() == null)
+      if (toPortName == null)
+        throw new EoulsanException(
+            "The input port name is null for input for step \"" + stepId);
+      if (fromStep == null)
+        throw new EoulsanException("The step name that generate \""
+            + toPortName + "\" for step \"" + stepId + "\" is null");
+      if (fromPortName == null)
+        throw new EoulsanException("The outport name is null for input "
+            + toPortName + " for step \"" + stepId);
+
+      toPortName = toPortName.trim().toLowerCase();
+      fromStep = fromStep.trim().toLowerCase();
+      fromPortName = fromPortName.trim().toLowerCase();
+
+      if (!StepType.DESIGN_STEP.getDefaultStepId().equals(fromStep)
+          && !this.stepIdNames.containsKey(fromStep))
         throw new EoulsanException("The step that generate \""
-            + inputFormat + "\" for step \"" + stepId + "\" is null");
-
-      if (inputFormat == null)
-        throw new EoulsanException("Unknown input format for the step \""
-            + stepId + "\": " + e.getKey());
-
-      if (!StepType.DESIGN_STEP.getDefaultStepId().equals(inputStepId)
-          && !this.stepIdNames.containsKey(inputStepId))
-        throw new EoulsanException("The step that generate \""
-            + inputFormat + "\" for step \"" + stepId
+            + toPortName + "\" for step \"" + stepId
             + "\" has not been yet declared");
 
-      inputsMap.put(inputFormat, inputStepId);
+      inputsMap.put(toPortName, new StepPort(fromStep, fromPortName));
     }
 
     this.stepIdList.add(stepIdLower);
@@ -244,9 +262,9 @@ public class CommandWorkflowModel implements Serializable {
    * @param stepId the id of the step
    * @return a Map of with the inputs of the step
    */
-  public Map<DataFormat, String> getStepInputs(final String stepId) {
+  public Map<String, StepPort> getStepInputs(final String stepId) {
 
-    Map<DataFormat, String> result = this.stepInputs.get(stepId);
+    Map<String, StepPort> result = this.stepInputs.get(stepId);
 
     if (result == null)
       result = Collections.emptyMap();

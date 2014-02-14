@@ -27,9 +27,11 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -179,66 +181,182 @@ public class WorkflowStepContext implements StepContext, Serializable {
   public String getInputDataFilename(final DataFormat format,
       final Sample sample) {
 
-    return this.step.getInputDataFile(format, sample).getSource();
+    return getInputDataFilename(getInputPortNameForFormat(format), sample);
   }
 
   @Override
   public String getInputDataFilename(final DataFormat format,
       final Sample sample, final int fileIndex) {
 
-    return this.step.getInputDataFile(format, sample, fileIndex).getSource();
+    return getInputDataFilename(getInputPortNameForFormat(format), sample,
+        fileIndex);
   }
 
   @Override
   public DataFile getInputDataFile(final DataFormat format, final Sample sample) {
 
-    return this.step.getInputDataFile(format, sample);
+    return getInputDataFile(getInputPortNameForFormat(format), sample);
   }
 
   @Override
   public DataFile getInputDataFile(final DataFormat format,
       final Sample sample, final int fileIndex) {
 
-    return this.step.getInputDataFile(format, sample, fileIndex);
+    return getInputDataFile(getInputPortNameForFormat(format), sample,
+        fileIndex);
   }
 
   @Override
   public int getInputDataFileCount(final DataFormat format, final Sample sample) {
 
-    return this.step.getInputDataFileCount(format, sample, true);
+    return getInputDataFileCount(getInputPortNameForFormat(format), sample);
   }
 
   @Override
   public String getOutputDataFilename(final DataFormat format,
       final Sample sample) {
 
-    return this.step.getOutputDataFile(format, sample).getSource();
+    return getOutputDataFilename(getOutputPortNameForFormat(format), sample);
   }
 
   @Override
   public String getOutputDataFilename(final DataFormat format,
       final Sample sample, final int fileIndex) {
 
-    return this.step.getOutputDataFile(format, sample, fileIndex).getSource();
+    return getOutputDataFilename(getOutputPortNameForFormat(format), sample,
+        fileIndex);
   }
 
   @Override
   public DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
 
-    return this.step.getOutputDataFile(format, sample);
+    return getOutputDataFile(getOutputPortNameForFormat(format), sample);
   }
 
   @Override
   public DataFile getOutputDataFile(final DataFormat format,
       final Sample sample, final int fileIndex) {
 
-    return this.step.getOutputDataFile(format, sample, fileIndex);
+    return getOutputDataFile(getOutputPortNameForFormat(format), sample,
+        fileIndex);
   }
 
   @Override
   public int getOutputDataFileCount(final DataFormat format, final Sample sample) {
 
-    return this.step.getOutputDataFileCount(format, sample, true);
+    return getOutputDataFileCount(getOutputPortNameForFormat(format), sample);
+  }
+
+  @Override
+  public String getInputDataFilename(final String portName, final Sample sample) {
+
+    return this.step.getInputDataFile(portName, sample).getSource();
+  }
+
+  @Override
+  public String getInputDataFilename(final String portName,
+      final Sample sample, final int fileIndex) {
+
+    return this.step.getInputDataFile(portName, sample, fileIndex).getSource();
+  }
+
+  @Override
+  public DataFile getInputDataFile(final String portName, final Sample sample) {
+
+    return this.step.getInputDataFile(portName, sample);
+  }
+
+  @Override
+  public DataFile getInputDataFile(final String portName, final Sample sample,
+      final int fileIndex) {
+
+    return this.step.getInputDataFile(portName, sample, fileIndex);
+  }
+
+  @Override
+  public int getInputDataFileCount(final String portName, final Sample sample) {
+
+    return this.step.getInputDataFileCount(portName, sample, true);
+  }
+
+  @Override
+  public String getOutputDataFilename(final String portName, final Sample sample) {
+
+    return this.step.getOutputDataFile(portName, sample).getSource();
+  }
+
+  @Override
+  public String getOutputDataFilename(final String portName,
+      final Sample sample, final int fileIndex) {
+
+    return this.step.getOutputDataFile(portName, sample, fileIndex).getSource();
+  }
+
+  @Override
+  public DataFile getOutputDataFile(final String portName, final Sample sample) {
+
+    return this.step.getOutputDataFile(portName, sample);
+  }
+
+  @Override
+  public DataFile getOutputDataFile(final String portName, final Sample sample,
+      final int fileIndex) {
+
+    return this.step.getOutputDataFile(portName, sample, fileIndex);
+  }
+
+  @Override
+  public int getOutputDataFileCount(final String portName, final Sample sample) {
+
+    return this.step.getOutputDataFileCount(portName, sample, true);
+  }
+
+  //
+  // Private methods
+  //
+
+  private final String getInputPortNameForFormat(final DataFormat format) {
+
+    checkNotNull(format, "The format is null");
+
+    final List<WorkflowInputPort> ports =
+        this.step.getInputPorts().getPortsWithDataFormat(format);
+
+    switch (ports.size()) {
+
+    case 0:
+      throw new EoulsanRuntimeException("The step "
+          + this.step.getId() + " do not provide an input port with format: "
+          + format);
+    case 1:
+      return ports.get(0).getName();
+    default:
+      throw new EoulsanRuntimeException("The step "
+          + this.step.getId()
+          + " provide more than one input port with format: " + format);
+    }
+  }
+
+  private final String getOutputPortNameForFormat(final DataFormat format) {
+
+    checkNotNull(format, "The format is null");
+
+    final List<WorkflowOutputPort> ports =
+        this.step.getOutputPorts().getPortsWithDataFormat(format);
+
+    switch (ports.size()) {
+
+    case 0:
+      throw new EoulsanRuntimeException("The step "
+          + this.step.getId() + " do not provide an output port with format: "
+          + format);
+    case 1:
+      return ports.get(0).getName();
+    default:
+      throw new EoulsanRuntimeException("The step "
+          + this.step.getId()
+          + " provide more than one output port with format: " + format);
+    }
   }
 
   //

@@ -62,7 +62,7 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
    * @param format format of the port
    * @param compression compression of the output
    */
-  SimpleOutputPort(final String name, final DataFormat format,
+  protected SimpleOutputPort(final String name, final DataFormat format,
       final CompressionType compression) {
 
     // Set the name and the format

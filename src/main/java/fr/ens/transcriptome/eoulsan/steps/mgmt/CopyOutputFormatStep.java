@@ -26,10 +26,11 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
@@ -56,9 +57,11 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class CopyOutputFormatStep extends AbstractStep {
 
   public static final String STEP_NAME = "_copyoutputformat";
-  public static final String FORMAT_PARAMETER = "format";
+  public static final String PORTS_PARAMETER = "ports";
+  public static final String FORMATS_PARAMETER = "formats";
 
-  private Set<DataFormat> formats = Sets.newHashSet();
+  private List<String> portNames = Lists.newArrayList();
+  private List<DataFormat> formats = Lists.newArrayList();
 
   @Override
   public String getName() {
@@ -75,13 +78,10 @@ public class CopyOutputFormatStep extends AbstractStep {
   @Override
   public InputPorts getInputFormats() {
 
-    // TODO This class will not work as the parameter only contains DataFormat
-    // and not the name of the ports
-
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    for (DataFormat format : this.formats)
-      builder.addPort(format.getName(), format);
+    for (int i = 0; i < this.portNames.size(); i++)
+      builder.addPort(this.portNames.get(i), this.formats.get(i));
 
     return builder.create();
   }
@@ -90,7 +90,7 @@ public class CopyOutputFormatStep extends AbstractStep {
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
     for (Parameter p : stepParameters) {
 
-      if (FORMAT_PARAMETER.equals(p.getName())) {
+      if (FORMATS_PARAMETER.equals(p.getName())) {
 
         final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
@@ -98,14 +98,25 @@ public class CopyOutputFormatStep extends AbstractStep {
 
           final DataFormat format = registry.getDataFormatFromName(formatName);
 
-          if (format != null)
-            this.formats.add(format);
+          if (format == null)
+            throw new EoulsanException("Unknown format: " + formatName);
+          this.formats.add(format);
         }
+      } else if (PORTS_PARAMETER.equals(p.getName())) {
+
+        for (String portName : Splitter.on(',').split(p.getValue()))
+          this.portNames.add(portName);
       }
+
     }
 
     if (this.formats.isEmpty())
       throw new EoulsanException("No format set.");
+
+    if (this.formats.size() != this.portNames.size())
+      throw new EoulsanException("The number of formats ("
+          + this.formats.size() + ") is not the same of the number of ports ("
+          + this.portNames.size() + ")");
 
   }
 

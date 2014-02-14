@@ -24,21 +24,24 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define a basic implementation of a Ports class.
  * @since 1.3
  * @author Laurent Jourdren
  */
-abstract class AbstractPorts<E extends Port> implements Ports<E> {
+public abstract class AbstractPorts<E extends Port> implements Ports<E> {
 
   private final Map<String, E> ports;
 
@@ -61,6 +64,15 @@ abstract class AbstractPorts<E extends Port> implements Ports<E> {
   }
 
   @Override
+  public boolean contains(final E port) {
+
+    if (port == null)
+      return false;
+
+    return this.ports.containsKey(port.getName());
+  }
+
+  @Override
   public Set<String> getPortNames() {
 
     return Collections.unmodifiableSet(this.ports.keySet());
@@ -78,6 +90,16 @@ abstract class AbstractPorts<E extends Port> implements Ports<E> {
     return size() == 0;
   }
 
+  @Override
+  public E getFirstPort() {
+
+    if (size() == 0) {
+      return null;
+    }
+
+    return iterator().next();
+  }
+
   //
   // Constructor
   //
@@ -86,7 +108,7 @@ abstract class AbstractPorts<E extends Port> implements Ports<E> {
    * Constructor.
    * @param ports ports of the object
    */
-  AbstractPorts(final Set<E> ports) {
+  protected AbstractPorts(final Set<E> ports) {
 
     // If ports is null
     if (ports == null) {
@@ -123,6 +145,36 @@ abstract class AbstractPorts<E extends Port> implements Ports<E> {
       this.ports = map;
     }
 
+  }
+
+  @Override
+  public int countDataFormat(final DataFormat format) {
+
+    if (format == null)
+      return 0;
+
+    int count = 0;
+
+    for (E e : this)
+      if (e.getFormat().equals(format))
+        count++;
+
+    return count;
+  }
+
+  @Override
+  public List<E> getPortsWithDataFormat(DataFormat format) {
+
+    if (format == null)
+      return Collections.emptyList();
+
+    final List<E> result = new ArrayList<E>();
+
+    for (E e : this)
+      if (e.getFormat().equals(format))
+        result.add(e);
+
+    return Collections.unmodifiableList(result);
   }
 
 }

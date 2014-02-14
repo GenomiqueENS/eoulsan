@@ -27,15 +27,10 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -43,6 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -50,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -85,93 +83,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
   private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
 
-  private final Map<DataFormat, CompressionType> outputFormats = Maps
-      .newHashMap();
-  private final Map<DataFormat, EnumSet<CompressionType>> inputFormats = Maps
-      .newHashMap();
-  private final Map<DataFormat, InputDataFileLocation> inputFormatLocations =
-      Maps.newHashMap();
+  private WorkflowOutputPorts outputPorts = WorkflowOutputPorts.noOutputPort();
+  private WorkflowInputPorts inputPorts = WorkflowInputPorts.noInputPort();
 
-  private final Set<DataFormat> requiredInputFormatsInWorkingDirectory = Sets
-      .newHashSet();
   private final DataFile workingDir;
 
   private StepState stepState = StepState.CREATED;
   private StepResult result;
-
-  //
-  // Internal class
-  //
-
-  /**
-   * This class allow to retrieve the DataFile that correspond to a input
-   * DataFormat of the Workflow step.
-   * @author Laurent Jourdren
-   */
-  private static final class InputDataFileLocation implements Serializable {
-
-    /** Serialization version UID. */
-    private static final long serialVersionUID = 5140719397219910909L;
-
-    private final DataFormat format;
-    private final AbstractWorkflowStep step;
-
-    //
-    // Other methods
-    //
-
-    /**
-     * Count the number for DataFile available for a multifile DataFormat and a
-     * Sample. This method works only for a multifile DataFormat.
-     * @param sample sample
-     * @return the DataFile for the sample
-     */
-    public int getDataFileCount(final Sample sample, final boolean existingFiles) {
-
-      return WorkflowStepOutputDataFile.dataFileCount(this.step, this.format,
-          sample, existingFiles);
-    }
-
-    /**
-     * Get the DataFile.
-     * @param sample sample
-     * @param fileIndex file index for multifile data. (-1 = no file index)
-     * @return the DataFile for the sample
-     */
-    public DataFile getDataFile(final Sample sample, final int fileIndex) {
-
-      Preconditions.checkNotNull(sample, "Sample cannot be null");
-
-      return this.step.getOutputDataFile(this.format, sample, fileIndex);
-    }
-
-    @Override
-    public String toString() {
-
-      return Objects.toStringHelper(this).add("format", format)
-          .add("Step", this.step.getId()).toString();
-    }
-
-    //
-    // Constructor
-    //
-
-    /**
-     * Constructor.
-     * @param step Workflow step
-     * @param format format
-     */
-    public InputDataFileLocation(final DataFormat format,
-        final AbstractWorkflowStep step) {
-
-      Preconditions.checkNotNull(step, "Format cannot be null");
-      Preconditions.checkNotNull(step, "Step cannot be null");
-
-      this.format = format;
-      this.step = step;
-    }
-
-  }
 
   //
   // Getters
@@ -262,69 +180,21 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   /**
-   * Get the input DataFormats.
-   * @return a unmodifiable set with DataFormats
+   * Get the input ports.
+   * @return the InputPorts object
    */
-  protected Set<DataFormat> getInputDataFormats() {
+  protected WorkflowInputPorts getInputPorts() {
 
-    return Collections.unmodifiableSet(this.inputFormats.keySet());
+    return this.inputPorts;
   }
 
   /**
-   * Get the output DataFormats.
-   * @return a unmodifiable set with DataFormats
+   * Get the output ports.
+   * @return the OutputPorts object
    */
-  protected Set<DataFormat> getOutputDataFormats() {
+  protected WorkflowOutputPorts getOutputPorts() {
 
-    return Collections.unmodifiableSet(this.outputFormats.keySet());
-  }
-
-  /**
-   * Get an output format compression.
-   * @param format the format
-   * @return the compression type
-   */
-  protected CompressionType getOutputDataFormatCompression(
-      final DataFormat format) {
-
-    Preconditions.checkNotNull(format, "the format cannot be null");
-
-    if (!this.outputFormats.containsKey(format))
-      throw new IllegalArgumentException(
-          "the format is not an output format of the step: " + format);
-
-    return this.outputFormats.get(format);
-  }
-
-  /**
-   * Get the compression allowed for an input format by the step.
-   * @param format the format
-   * @return an EnumSet with the compression types allowed
-   */
-  protected EnumSet<CompressionType> getInputDataFormatCompressionsAllowed(
-      final DataFormat format) {
-
-    Preconditions.checkNotNull(format, "the format cannot be null");
-
-    if (!this.inputFormats.containsKey(format))
-      throw new IllegalArgumentException(
-          "the format is not an input format of the step: " + format);
-
-    return EnumSet.copyOf(this.inputFormats.get(format));
-  }
-
-  /**
-   * Get the input data format required in the working directory. This method
-   * allow to declare the input files that need to be copied in the working
-   * directory before starting the step. As an example, it is used to copy files
-   * from a local file system to a distributed file system like HDFS. After that
-   * mapreduce jobs can be efficiency launched.
-   * @return a set with DataFormat or null if the step does not need any input
-   *         format in the working directory.
-   */
-  protected Set<DataFormat> getInputFormatsRequieredInWorkingDirectory() {
-
-    return this.requiredInputFormatsInWorkingDirectory;
+    return this.outputPorts;
   }
 
   @Override
@@ -392,52 +262,43 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     WorkflowStepEventRelay.getInstance().updateStepState(this);
   }
 
-  protected void registerInputAndOutputFormats(final Step step) {
+  protected void registerInputAndOutputPorts(final Step step) {
 
     Preconditions.checkNotNull(step, "step cannot be null");
 
-    // Get output formats
-    final Set<DataFormat> outputFormats = step.getOutputFormats();
-    if (outputFormats != null) {
-      for (DataFormat format : outputFormats) {
-        if (format != null) {
+    // Get output ports
+    final OutputPorts outputPorts = step.getOutputFormats();
+    if (outputPorts != null)
+      this.outputPorts = new WorkflowOutputPorts(this, outputPorts);
 
-          CompressionType compression = step.getOutputFormatCompression(format);
-          if (compression == null)
-            compression = CompressionType.NONE;
+    // Get input ports
+    final InputPorts inputPorts = step.getInputFormats();
+    if (inputPorts != null)
+      if (inputPorts != null)
+        this.inputPorts = new WorkflowInputPorts(this, inputPorts);
+  }
 
-          this.outputFormats.put(format, compression);
-        }
-      }
+  protected void registerDesignOutputPorts() {
+
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+    final Design design = getWorkflow().getDesign();
+
+    if (design.getSampleCount() == 0)
+      return;
+
+    final Sample firstSample = design.getSamples().get(0);
+    final Set<WorkflowOutputPort> ports = Sets.newHashSet();
+
+    for (String fieldName : firstSample.getMetadata().getFields()) {
+
+      final DataFormat format = registry.getDataFormatForDesignField(fieldName);
+
+      if (format != null)
+        ports.add(new WorkflowOutputPort(this, format.getName(), format,
+            CompressionType.NONE));
     }
 
-    // Get input formats
-    final Set<DataFormat> inputFormats = step.getInputFormats();
-    if (inputFormats != null) {
-      for (DataFormat format : inputFormats) {
-        if (format != null) {
-
-          EnumSet<CompressionType> compressionsAllowed =
-              step.acceptInputFormatCompression(format);
-          if (compressionsAllowed == null)
-            compressionsAllowed = EnumSet.allOf(CompressionType.class);
-
-          this.inputFormats.put(format, compressionsAllowed);
-        }
-      }
-    }
-
-    // Get input format required in working directory
-    Set<DataFormat> inputFormatRequired =
-        Sets.newHashSet(step.getInputFormatsRequieredInWorkingDirectory());
-    if (inputFormatRequired != null) {
-      // Put the values in a new HashSet
-      inputFormatRequired = Sets.newHashSet(inputFormatRequired);
-      // Keep only real input format of the step
-      inputFormatRequired.retainAll(getInputDataFormats());
-      this.requiredInputFormatsInWorkingDirectory.addAll(inputFormatRequired);
-    }
-
+    this.outputPorts = new WorkflowOutputPorts(ports);
   }
 
   //
@@ -446,144 +307,130 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Get an output file of the step.
-   * @param format DataFormat of the output file
+   * @param portName name of the output port that generate file
    * @param sample sample sample that correspond to the file
    * @return a DataFile object
    */
-  DataFile getOutputDataFile(final DataFormat format, final Sample sample) {
+  DataFile getOutputDataFile(final String portName, final Sample sample) {
 
-    return new WorkflowStepOutputDataFile(this, format, sample).getDataFile();
+    return new WorkflowStepOutputDataFile(this, portName, sample).getDataFile();
   }
 
   /**
    * Get an output file of the step.
-   * @param format DataFormat of the output file
+   * @param portName name of the output port that generate file
    * @param sample sample sample that correspond to the file
    * @param fileIndex file index
    * @return a DataFile object
    */
-  DataFile getOutputDataFile(final DataFormat format, final Sample sample,
+  DataFile getOutputDataFile(final String portName, final Sample sample,
       final int fileIndex) {
 
-    return new WorkflowStepOutputDataFile(this, format, sample, fileIndex)
+    return new WorkflowStepOutputDataFile(this, portName, sample, fileIndex)
         .getDataFile();
   }
 
   /**
    * Get the file count for an output step of the step.
-   * @param format DataFormat of the output file
+   * @param portName name of the output port that generate file
    * @param sample sample sample that correspond to the file
    * @param existingFiles if true return the number of files that really exists
    *          otherwise the maximum of files.
    * @return the count of output DataFiles
    */
-  int getOutputDataFileCount(final DataFormat format, final Sample sample,
+  int getOutputDataFileCount(final String portName, final Sample sample,
       final boolean existingFiles) {
 
-    return WorkflowStepOutputDataFile.dataFileCount(this, format, sample,
+    return WorkflowStepOutputDataFile.dataFileCount(this, portName, sample,
         existingFiles);
   }
 
   /**
-   * Get a DataFile that correspond to a DataFormat and a Sample for this step.
-   * @param format the input format
+   * Get a DataFile that correspond to a port and a Sample for this step.
+   * @param portName name of the output port that generate file
    * @param sample the sample
-   * @return a DataFormat or null if the DataFormat is not available
+   * @return a DataFile or null if the port is not available
    */
-  DataFile getInputDataFile(final DataFormat format, final Sample sample) {
+  DataFile getInputDataFile(final String portName, final Sample sample) {
 
-    return getInputDataFile(format, sample, -1);
+    return getInputDataFile(portName, sample, -1);
   }
 
   /**
-   * Get a DataFile that correspond to a DataFormat and a Sample for this step.
-   * @param format the input format
+   * Get a DataFile that correspond to a port and a Sample for this step.
+   * @param portName name of the output port that generate file
    * @param sample the sample
-   * @return a DataFormat or null if the DataFormat is not available
+   * @return a DataFile or null if the port is not available
    */
-  DataFile getInputDataFile(final DataFormat format, final Sample sample,
+  DataFile getInputDataFile(final String portName, final Sample sample,
       final int fileIndex) {
 
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(portName, "PortName argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
-    if (!this.inputFormatLocations.containsKey(format))
-      throw new EoulsanRuntimeException("The "
-          + format.getName() + " format is not an output format of the step "
-          + getId());
+    // Check if the port exists
+    if (!getInputPorts().contains(portName))
+      throw new EoulsanRuntimeException(
+          "the step does not contains input port named: " + portName);
 
-    return this.inputFormatLocations.get(format).getDataFile(sample, fileIndex);
+    final WorkflowInputPort port = getInputPorts().getPort(portName);
+
+    // Check if the port is linked
+    if (!port.isLinked())
+      throw new EoulsanRuntimeException("the port \""
+          + portName + "\" of the step \"" + getId() + "\" is not linked.");
+
+    return port.getLink().getDataFile(sample, fileIndex);
   }
 
   /**
    * Get the file count for an input step of the step.
-   * @param format DataFormat of the input file
+   * @param portName name of the output port that generate file
    * @param sample sample sample that correspond to the file
    * @param existingFiles if true return the number of files that really exists
    *          otherwise the maximum of files.
    * @return the count of intput DataFiles
    */
-  int getInputDataFileCount(final DataFormat format, final Sample sample,
+  int getInputDataFileCount(final String portName, final Sample sample,
       final boolean existingFiles) {
 
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(portName, "PortName argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
-    if (!this.inputFormatLocations.containsKey(format))
-      throw new EoulsanRuntimeException("The "
-          + format.getName() + " format is not an input format of the step "
-          + getId());
+    // Check if the port exists
+    if (!getInputPorts().contains(portName))
+      throw new EoulsanRuntimeException(
+          "the step does not contains input port named: " + portName);
 
-    return this.inputFormatLocations.get(format).getDataFileCount(sample,
-        existingFiles);
-  }
+    final WorkflowInputPort port = getInputPorts().getPort(portName);
 
-  /**
-   * Get the step that provided (as output) the input format of the step.
-   * @param format the format to search
-   * @return the step that provide the format as output
-   */
-  protected AbstractWorkflowStep getInputDataFormatStep(final DataFormat format) {
+    // Check if the port is linked
+    if (!port.isLinked())
+      throw new EoulsanRuntimeException("the port \""
+          + portName + "\" of the step \"" + getId() + "\" is not linked.");
 
-    Preconditions.checkNotNull(format, "format cannot be null");
-
-    if (!this.inputFormatLocations.containsKey(format))
-      return null;
-
-    return this.inputFormatLocations.get(format).step;
-  }
-
-  /**
-   * Test if a dependency is already set for an inputFormat.
-   * @param format input format
-   * @return true if the dependency is already set
-   */
-  protected boolean isDependencySet(DataFormat format) {
-
-    return this.inputFormatLocations.containsKey(format);
+    return port.getLink().getDataFileCount(sample, existingFiles);
   }
 
   /**
    * Add a dependency for this step.
-   * @param format input format provided by the dependency
+   * @param outputPortName name of the output port provided by the dependency
    * @param step the dependency
    */
-  protected void addDependency(DataFormat format,
-      final AbstractWorkflowStep step) {
+  protected void addDependency(final WorkflowInputPort inputPort,
+      final WorkflowOutputPort outputPort) {
 
-    Preconditions.checkNotNull(step, "step  argument cannot be null");
+    Preconditions.checkNotNull(inputPort, "inputPort argument cannot be null");
+    Preconditions
+        .checkNotNull(outputPort, "outputPort argument cannot be null");
+    Preconditions.checkArgument(inputPort.getStep() == this, "input port ("
+        + inputPort.getName() + ")is not a port of the step (" + getId() + ")");
 
-    if ((step.getType() != StepType.DESIGN_STEP
-        && step.getType() != StepType.GENERATOR_STEP && step.getType() != StepType.STANDARD_STEP)
-        || !this.inputFormats.containsKey(format))
-      throw new EoulsanRuntimeException("The dependency ("
-          + step.getId() + ") do not provide data (" + format.getName() + ")");
+    // Set the set link
+    inputPort.setLink(outputPort);
 
-    if (!this.inputFormatLocations.containsKey(format))
-      this.inputFormatLocations.put(format, new InputDataFileLocation(format,
-          step));
-
-    addDependency(step);
+    // Add the dependency
+    addDependency(outputPort.getStep());
   }
 
   /**
@@ -661,7 +508,37 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Configure the step.
    * @throws EoulsanException if an error occurs while configuring a step
    */
-  abstract void configure() throws EoulsanException;
+  protected void configure() throws EoulsanException {
+
+    if (getState() != StepState.CREATED)
+      throw new IllegalStateException("Illegal step state for configuration: "
+          + getState());
+
+    // Configure only standard steps and generator steps
+    if (getType() == StepType.STANDARD_STEP
+        || getType() == StepType.GENERATOR_STEP) {
+
+      getLogger().info(
+          "Configure "
+              + getId() + " step with step parameters: " + getParameters());
+
+      final Step step = getStep();
+      if (getType() == StepType.STANDARD_STEP)
+        step.configure(getParameters());
+
+      // Register input and output formats
+      registerInputAndOutputPorts(step);
+    }
+
+    // Create output port of design step
+    if (getType() == StepType.DESIGN_STEP) {
+
+      // Register output port
+      registerDesignOutputPorts();
+    }
+
+    setState(StepState.CONFIGURED);
+  }
 
   /**
    * Execute the step.

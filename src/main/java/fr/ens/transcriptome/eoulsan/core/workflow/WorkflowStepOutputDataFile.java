@@ -35,6 +35,7 @@ import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
@@ -56,6 +57,7 @@ public final class WorkflowStepOutputDataFile implements
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final AbstractWorkflowStep step;
+  private final String portName;
   private final DataFormat format;
   private final Sample sample;
   private final DataFile file;
@@ -69,6 +71,15 @@ public final class WorkflowStepOutputDataFile implements
   public AbstractWorkflowStep getStep() {
 
     return this.step;
+  }
+
+  /**
+   * Get the port name that produced the file.
+   * @return the port name
+   */
+  public String getPortName() {
+
+    return this.portName;
   }
 
   /**
@@ -119,13 +130,15 @@ public final class WorkflowStepOutputDataFile implements
   /**
    * Create a new DataFile object from the step, format, sample and file index.
    * @param step step of the file
+   * @param portName the port name
    * @param format format of the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
   private static final DataFile newDataFile(final AbstractWorkflowStep step,
-      final DataFormat format, final Sample sample, final int fileIndex) {
+      final String portName, final DataFormat format, final Sample sample,
+      final int fileIndex) {
 
     Preconditions.checkNotNull(format, "Format argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
@@ -135,15 +148,15 @@ public final class WorkflowStepOutputDataFile implements
     case STANDARD_STEP:
     case GENERATOR_STEP:
 
-      if (!step.getStep().getOutputFormats().contains(format))
+      if (!step.getStep().getOutputFormats().contains(portName))
         throw new EoulsanRuntimeException("The "
-            + format.getName()
-            + " format is not an output format of the step "
+            + format.getName() + " format is not an output format of the step "
             + step.getStep().getName());
 
       // Return a file created by a step
-      return newStandardDataFile(step.getContext(), step, format, sample,
-          fileIndex, step.getOutputDataFormatCompression(format));
+      return newStandardDataFile(step.getContext(), step, portName, format,
+          sample, fileIndex, step.getOutputPorts().getPort(portName)
+              .getCompression());
 
     case DESIGN_STEP:
 
@@ -213,14 +226,16 @@ public final class WorkflowStepOutputDataFile implements
    * Create a DataFile object that correspond to a standard Eoulsan output file.
    * @param context context object
    * @param step step that generated the file
+   * @param portName the port that generated the file
    * @param format format of the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
   private static final DataFile newStandardDataFile(final StepContext context,
-      final WorkflowStep step, final DataFormat format, final Sample sample,
-      final int fileIndex, final CompressionType compression) {
+      final WorkflowStep step, final String portName, final DataFormat format,
+      final Sample sample, final int fileIndex,
+      final CompressionType compression) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -231,7 +246,8 @@ public final class WorkflowStepOutputDataFile implements
       sb.append('/');
     }
 
-    sb.append(newStandardFilename(step, format, sample, fileIndex, compression));
+    sb.append(newStandardFilename(step, portName, format, sample, fileIndex,
+        compression));
 
     return new DataFile(sb.toString());
   }
@@ -306,10 +322,11 @@ public final class WorkflowStepOutputDataFile implements
   //
 
   public static final String newStandardFilename(final WorkflowStep step,
-      final DataFormat format, final Sample sample, final int fileIndex,
-      final CompressionType compression) {
+      final String portName, final DataFormat format, final Sample sample,
+      final int fileIndex, final CompressionType compression) {
 
     Preconditions.checkNotNull(step, "step argument cannot be null");
+    Preconditions.checkNotNull(portName, "portName argument cannot be null");
     Preconditions.checkNotNull(format, "format argument cannot be null");
     Preconditions.checkNotNull(sample, "sample argument cannot be null");
     Preconditions.checkNotNull(compression,
@@ -319,6 +336,10 @@ public final class WorkflowStepOutputDataFile implements
 
     // Set the name of the step that generated the file
     sb.append(step.getId());
+    sb.append('_');
+
+    // Set the port of the step that generated the file
+    sb.append(format.getName());
     sb.append('_');
 
     // Set the name of the format
@@ -355,10 +376,17 @@ public final class WorkflowStepOutputDataFile implements
    * @return the number of files
    */
   public static final int dataFileCount(final AbstractWorkflowStep step,
-      final DataFormat format, final Sample sample, final boolean existingFiles) {
+      final String portName, final Sample sample, final boolean existingFiles) {
 
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    Preconditions.checkNotNull(step, "Step argument cannot be null");
+    Preconditions.checkNotNull(portName, "Format argument cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+    Preconditions.checkArgument(step.getOutputPorts().contains(portName),
+        "The step " + step + " doe not contains output port: " + portName);
+
+    final OutputPort port = step.getOutputPorts().getPort(portName);
+    final DataFormat format = port.getFormat();
+    final CompressionType compression = port.getCompression();
 
     if (format.getMaxFilesCount() < 2)
       throw new EoulsanRuntimeException(
@@ -377,8 +405,8 @@ public final class WorkflowStepOutputDataFile implements
       do {
 
         final DataFile file =
-            newStandardDataFile(step.getContext(), step, format, sample, count,
-                step.getOutputDataFormatCompression(format));
+            newStandardDataFile(step.getContext(), step, portName, format,
+                sample, count, compression);
 
         found = file.exists();
         if (found)
@@ -405,28 +433,33 @@ public final class WorkflowStepOutputDataFile implements
   /**
    * Constructor.
    * @param step step that create the file
-   * @param format format of the file
+   * @param portName the port that create the file
    * @param sample sample of the file
    */
   public WorkflowStepOutputDataFile(final AbstractWorkflowStep step,
-      final DataFormat format, final Sample sample) {
+      final String portName, final Sample sample) {
 
-    this(step, format, sample, -1);
+    this(step, portName, sample, -1);
   }
 
   /**
    * Constructor.
    * @param step step that create the file
-   * @param format format of the file
+   * @param portName the port that create the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multifile data
    */
   public WorkflowStepOutputDataFile(final AbstractWorkflowStep step,
-      final DataFormat format, final Sample sample, final int fileIndex) {
+      final String portName, final Sample sample, final int fileIndex) {
 
     Preconditions.checkNotNull(step, "step cannot be null");
-    Preconditions.checkNotNull(format, "format cannot be null");
+    Preconditions.checkNotNull(portName, "portName cannot be null");
     Preconditions.checkNotNull(sample, "sample cannot be null");
+    Preconditions.checkArgument(step.getOutputPorts().contains(portName),
+        "The step " + step + " doe not contains output port: " + portName);
+
+    final OutputPort port = step.getOutputPorts().getPort(portName);
+    final DataFormat format = port.getFormat();
 
     if (format.getMaxFilesCount() == 1 && fileIndex != -1)
       throw new IllegalArgumentException(
@@ -439,9 +472,10 @@ public final class WorkflowStepOutputDataFile implements
           + format.getName() + ")");
 
     this.step = step;
+    this.portName = portName;
     this.format = format;
     this.sample = format.isOneFilePerAnalysis() ? null : sample;
-    this.file = newDataFile(step, format, sample, fileIndex);
+    this.file = newDataFile(step, portName, format, sample, fileIndex);
     this.fileIndex = fileIndex;
     this.mayNotExist = fileIndex > 0;
   }

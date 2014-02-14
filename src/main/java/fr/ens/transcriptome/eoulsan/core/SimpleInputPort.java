@@ -100,7 +100,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * @param compressionsAccepted compression accepted
    * @param requieredInWorkingDirectory if data is required in working directory
    */
-  SimpleInputPort(final String name, final DataFormat format,
+  protected SimpleInputPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       boolean requieredInWorkingDirectory) {
 
@@ -121,7 +121,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * Constructor.
    * @param inputport input port to clone
    */
-  public SimpleInputPort(final InputPort inputport) {
+  SimpleInputPort(final InputPort inputport) {
 
     this(inputport.getName(), inputport.getFormat(), inputport
         .getCompressionsAccepted(), inputport.isRequieredInWorkingDirectory());

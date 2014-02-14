@@ -62,12 +62,12 @@ public class HadoopUploadStep extends UploadStep {
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final DataFormat format,
-      final int fileIndex) throws IOException {
+      final WorkflowStep step, final Sample sample, final String portName,
+      final DataFormat format, final int fileIndex) throws IOException {
 
     final String filename;
 
-    if (sample == null || format == null) {
+    if (sample == null || portName == null) {
 
       if (file == null)
         throw new IOException("Input file is null.");
@@ -76,8 +76,8 @@ public class HadoopUploadStep extends UploadStep {
     } else {
 
       filename =
-          WorkflowStepOutputDataFile.newStandardFilename(step, format, sample,
-              fileIndex, CompressionType.NONE);
+          WorkflowStepOutputDataFile.newStandardFilename(step, portName,
+              format, sample, fileIndex, CompressionType.NONE);
     }
 
     return new DataFile(getDest(), filename);

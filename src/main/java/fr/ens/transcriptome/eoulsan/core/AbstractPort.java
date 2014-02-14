@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @since 1.3
  * @author Laurent Jourdren
  */
-abstract class AbstractPort implements Port, Serializable {
+public abstract class AbstractPort implements Port, Serializable {
 
   private static final long serialVersionUID = 1773398938012180465L;
 

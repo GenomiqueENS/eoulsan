@@ -62,6 +62,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
+import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -585,8 +586,10 @@ public abstract class AbstractWorkflow implements Workflow {
           || !stepDir.getProtocol().canSymlink() || outputDir.equals(stepDir))
         return;
 
-      for (DataFormat format : step.getOutputDataFormats()) {
+      for (OutputPort port : step.getOutputPorts()) {
         for (Sample sample : getDesign().getSamples()) {
+
+          final DataFormat format = port.getFormat();
 
           // Test the number of files by data
           if (format.getMaxFilesCount() == 1) {

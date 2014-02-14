@@ -101,6 +101,19 @@ public class CommandWorkflowParser {
 
   private Map<String, String> constants = initConstants();
 
+  public static final class StepOutputPort {
+
+    public final String stepId;
+    public final String outputPortName;
+
+    public StepOutputPort(final String stepId, final String outputPortName) {
+
+      this.stepId = stepId == null ? null : stepId.trim();
+      this.outputPortName =
+          outputPortName == null ? null : outputPortName.trim();
+    }
+  }
+
   /**
    * Parse the workflow file.
    * @throws EoulsanException if an error occurs while parsing file
@@ -208,7 +221,7 @@ public class CommandWorkflowParser {
                   throw new EoulsanException(
                       "Step name not found in workflow file.");
 
-                final Map<String, String> inputs =
+                final Map<String, StepOutputPort> inputs =
                     parseInputs(eStepElement, "".equals(stepId)
                         ? stepName : stepId);
 
@@ -248,10 +261,11 @@ public class CommandWorkflowParser {
    * @param stepId step id for the exception message
    * @throws EoulsanException if the tags of the parameter are not found
    */
-  private Map<String, String> parseInputs(final Element root,
+  private Map<String, StepOutputPort> parseInputs(final Element root,
       final String stepId) throws EoulsanException {
 
-    final Map<String, String> result = new HashMap<String, String>();
+    final Map<String, StepOutputPort> result =
+        new HashMap<String, StepOutputPort>();
 
     final NodeList nList = root.getElementsByTagName("inputs");
 
@@ -271,19 +285,52 @@ public class CommandWorkflowParser {
 
             Element eStepElement = (Element) nParameterNode;
 
-            final String inputFormatName = getTagValue("format", eStepElement);
-            final String inputStepId = getTagValue("stepId", eStepElement);
-
-            if (inputFormatName == null)
+            // Get and check the toInput attribute
+            final String portName = getTagValue("toInput", eStepElement);
+            if (portName == null)
               throw new EoulsanException(
-                  "<format> Tag not found in input section of step \""
+                  "the \"toInput\" attribute not exists in an input section of step \""
                       + stepId + "\" in workflow file.");
-            if (inputStepId == null)
+            if (portName.isEmpty())
               throw new EoulsanException(
-                  "<stepId> Tag not found in input section of step \""
+                  "the \"toInput\" attribute is empty in an input section of step \""
+                      + stepId + "\" in workflow file.");
+            if (result.containsKey(portName))
+              throw new EoulsanException(
+                  "an input for "
+                      + portName
+                      + " port has been already defined in the inputs section of step \""
                       + stepId + "\" in workflow file.");
 
-            result.put(inputFormatName, inputStepId);
+            final StepOutputPort input =
+                new StepOutputPort(getTagValue("fromStep", eStepElement),
+                    getTagValue("fromOutput", eStepElement));
+
+            // Check step ID
+            if (input.stepId == null)
+              throw new EoulsanException(
+                  "the \"fromStep\" attribute has not been defined for "
+                      + portName + " input in section of step \"" + stepId
+                      + "\" in workflow file.");
+            if (input.stepId.isEmpty())
+              throw new EoulsanException(
+                  "the \"fromStep\" attribute is empty for "
+                      + portName + " input in section of step \"" + stepId
+                      + "\" in workflow file.");
+
+            // Check port ID
+            if (input.outputPortName == null)
+              throw new EoulsanException(
+                  "the \"fromPort\" attribute has not been defined for "
+                      + portName + " input in section of step \"" + stepId
+                      + "\" in workflow file.");
+            if (input.outputPortName.isEmpty())
+              throw new EoulsanException(
+                  "the \"fromPort\" attribute is empty for "
+                      + portName + " input in section of step \"" + stepId
+                      + "\" in workflow file.");
+
+            result.put(portName, input);
           }
         }
       }

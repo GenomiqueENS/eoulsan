@@ -73,8 +73,8 @@ public class LocalUploadStep extends UploadStep {
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final DataFormat format,
-      final int fileIndex) throws IOException {
+      final WorkflowStep step, final Sample sample, final String portName,
+      final DataFormat format, final int fileIndex) throws IOException {
 
     final String filename;
 
@@ -87,8 +87,8 @@ public class LocalUploadStep extends UploadStep {
     } else {
 
       filename =
-          WorkflowStepOutputDataFile.newStandardFilename(step, format, sample,
-              fileIndex, CompressionType.NONE);
+          WorkflowStepOutputDataFile.newStandardFilename(step, portName,
+              format, sample, fileIndex, CompressionType.NONE);
     }
 
     // Don't compress ZIP files
