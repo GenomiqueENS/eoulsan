@@ -372,6 +372,123 @@ public class SampleStepContext {
     return this.context.getOutputDataFileCount(format, this.sample);
   }
 
+  /**
+   * Get the pathname for an input DataType and a Sample.
+   * @param portName the name of the port
+   * @return a String with the pathname
+   */
+  public String getInputDataFilename(final String portName) {
+
+    return this.context.getInputDataFilename(portName, this.sample);
+  }
+
+  /**
+   * Get the pathname for an input DataType and a Sample. This method works only
+   * for a multifile DataFormat.
+   * @param portName the name of the port
+   * @param fileIndex file index for multifile data
+   * @return a String with the pathname
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public String getInputDataFilename(final String portName, final int fileIndex) {
+
+    return this.context.getInputDataFilename(portName, this.sample, fileIndex);
+  }
+
+  /**
+   * Get the DataFile for an input DataType and a Sample.
+   * @param portName the name of the port
+   * @return a new DataFile object
+   */
+  public DataFile getInputDataFile(final String portName) {
+
+    return this.context.getInputDataFile(portName, this.sample);
+  }
+
+  /**
+   * Get the DataFile for an input DataType and a Sample. This method works only
+   * for a multifile DataFormat.
+   * @param portName the name of the port
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public DataFile getInputDataFile(final String portName, final int fileIndex) {
+
+    return this.context.getInputDataFile(portName, this.sample, fileIndex);
+  }
+
+  /**
+   * Get the pathname for an output DataType and a Sample.
+   * @param portName the name of the port
+   * @return a String with the pathname
+   */
+  public String getOutputDataFilename(final String portName) {
+
+    return this.context.getOutputDataFilename(portName, this.sample);
+  }
+
+  /**
+   * Get the pathname for an output DataType and a Sample. This method works
+   * only for a multifile DataFormat.
+   * @param portName the name of the port
+   * @param fileIndex file index for multifile data
+   * @return a String with the pathname
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public String getOutputDataFilename(final String portName, final int fileIndex) {
+
+    return this.context.getOutputDataFilename(portName, this.sample, fileIndex);
+  }
+
+  /**
+   * Get the DataFile for a DataType and a Sample.
+   * @param portName the name of the port
+   * @return a new DataFile object
+   */
+  public DataFile getOutputDataFile(final String portName) {
+
+    return this.context.getOutputDataFile(portName, this.sample);
+  }
+
+  /**
+   * Get the DataFile for an output DataType and a Sample. This method works
+   * only for a multifile DataFormat.
+   * @param portName the name of the port
+   * @param sample the sample for the source
+   * @param fileIndex file index for multifile data
+   * @return a new DataFile object
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public DataFile getOutputDataFile(final String portName, final int fileIndex) {
+
+    return this.context.getOutputDataFile(portName, this.sample, fileIndex);
+  }
+
+  /**
+   * Count the number for DataFile available for a multifile DataFormat and a
+   * Sample. This method works only for a multifile DataFormat.
+   * @param portName the name of the port
+   * @return the number of multifile for the DataFormat and the sample
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public int getInputDataFileCount(final String portName) {
+
+    return this.context.getInputDataFileCount(portName, this.sample);
+  }
+
+  /**
+   * Count the number for DataFile available for a multifile DataFormat and a
+   * Sample. This method works only for a multifile DataFormat.
+   * @param portName the name of the port
+   * @return the number of multifile for the DataFormat and the sample
+   * @throws EoulsanRuntimeException if the DataFormat is not multifile
+   */
+  public int getOutputDataFileCount(final String portName) {
+
+    return this.context.getOutputDataFileCount(portName, this.sample);
+  }
+
   //
   // Constructor
   //
