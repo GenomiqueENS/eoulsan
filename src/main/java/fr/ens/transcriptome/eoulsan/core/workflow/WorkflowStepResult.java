@@ -329,12 +329,12 @@ public class WorkflowStepResult implements StepResult {
   // Checker
   //
 
-  private final void checkState() {
+  private void checkState() {
 
     Preconditions.checkState(!this.immutable, "Step result has been created");
   }
 
-  private final void checkSample(final Sample sample) {
+  private void checkSample(final Sample sample) {
 
     checkNotNull(sample, "Sample is null");
     checkArgument(this.samples.contains(sample),
@@ -345,8 +345,7 @@ public class WorkflowStepResult implements StepResult {
   // JSON
   //
 
-  private static final String toJSON(final int level, final String key,
-      Object value) {
+  private static String toJSON(final int level, final String key, Object value) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -370,7 +369,7 @@ public class WorkflowStepResult implements StepResult {
     return sb.toString();
   }
 
-  private static final String toJSON(final int level, final String key,
+  private static String toJSON(final int level, final String key,
       final Map<String, ?> counters) {
 
     final StringBuilder sb = new StringBuilder();
@@ -461,8 +460,7 @@ public class WorkflowStepResult implements StepResult {
     return sb.toString();
   }
 
-  private static final Map<String, String> convert(
-      final Set<Parameter> parameters) {
+  private static Map<String, String> convert(final Set<Parameter> parameters) {
 
     if (parameters == null)
       return Collections.emptyMap();

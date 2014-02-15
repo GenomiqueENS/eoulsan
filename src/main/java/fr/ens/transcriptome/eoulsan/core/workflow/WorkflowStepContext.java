@@ -315,7 +315,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
   // Private methods
   //
 
-  private final String getInputPortNameForFormat(final DataFormat format) {
+  private String getInputPortNameForFormat(final DataFormat format) {
 
     checkNotNull(format, "The format is null");
 
@@ -337,7 +337,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
     }
   }
 
-  private final String getOutputPortNameForFormat(final DataFormat format) {
+  private String getOutputPortNameForFormat(final DataFormat format) {
 
     checkNotNull(format, "The format is null");
 
@@ -365,7 +365,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
 
   /**
    * Constructor.
-   * @param arguments arguments object
+   * @param step step related to the context
    */
   WorkflowStepContext(final WorkflowContext workflowContext,
       final AbstractWorkflowStep step) {

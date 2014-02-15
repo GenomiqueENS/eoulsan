@@ -491,10 +491,10 @@ public class CommandWorkflowParser {
   }
 
   /**
-   * Initialize the constants values
-   * @return
+   * Initialize the constants values.
+   * @return a map with the constants
    */
-  private static final Map<String, String> initConstants() {
+  private static Map<String, String> initConstants() {
 
     final Map<String, String> constants = new HashMap<String, String>();
 
@@ -556,7 +556,7 @@ public class CommandWorkflowParser {
       }
 
       // Command substitution
-      if (c0 == '`') {
+      if (c0 == '`' && allowExec) {
         final String expr = subStr(s, i + 1, '`');
         try {
           final String r =

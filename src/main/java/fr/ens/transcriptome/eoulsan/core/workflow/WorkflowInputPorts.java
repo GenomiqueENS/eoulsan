@@ -55,7 +55,7 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> {
    * @param ports ports to convert
    * @return a new set
    */
-  private static final Set<WorkflowInputPort> convert(
+  private static Set<WorkflowInputPort> convert(
       final AbstractWorkflowStep step, final InputPorts ports) {
 
     if (ports == null)

@@ -139,8 +139,7 @@ public class StepInstances {
    * @return a Step object
    * @throws EoulsanException if the step does not exits
    */
-  private final static Step loadStep(final String stepName)
-      throws EoulsanException {
+  private static Step loadStep(final String stepName) throws EoulsanException {
 
     if (stepName == null)
       throw new EoulsanException("Step name is null");

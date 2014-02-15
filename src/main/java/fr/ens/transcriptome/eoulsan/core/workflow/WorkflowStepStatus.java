@@ -310,20 +310,20 @@ public class WorkflowStepStatus implements StepStatus {
   // Check progress
   //
 
-  private final void checkState() {
+  private void checkState() {
 
     Preconditions.checkState(!this.result.isImmutable(),
         "Step result has been created");
   }
 
-  private final void checkSample(final Sample sample) {
+  private void checkSample(final Sample sample) {
 
     checkNotNull(sample, "Sample is null");
     checkArgument(this.design.contains(sample),
         "The design does not contains the sample");
   }
 
-  private static final void checkProgress(final double progress) {
+  private static void checkProgress(final double progress) {
 
     checkArgument(progress >= 0.0, "Progress is lower than 0: " + progress);
     checkArgument(progress <= 1.0, "Progress is greater than 1: " + progress);
@@ -331,7 +331,7 @@ public class WorkflowStepStatus implements StepStatus {
     checkArgument(!Double.isNaN(progress), "Progress is NaN");
   }
 
-  private static final void checkProgress(final int min, final int max,
+  private static void checkProgress(final int min, final int max,
       final int value) {
 
     checkArgument(min <= max, "Max is lower than min");

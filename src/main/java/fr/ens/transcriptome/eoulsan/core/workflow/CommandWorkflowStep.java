@@ -45,8 +45,6 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
   // Step lifetime methods
   //
 
-  
-
   //
   // Constructors
   //
@@ -65,8 +63,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
 
   /**
    * Create a Generator Workflow step.
-   * @param design design object
-   * @param context context object
+   * @param workflow the workflow object
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
@@ -80,7 +77,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
-   * @param step Step object
+   * @param stepName Step name
    * @param skip true to skip execution of the step
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
@@ -97,7 +94,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
-   * @param step Step object
+   * @param stepName Step name
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
    * @param parameters parameters of the step

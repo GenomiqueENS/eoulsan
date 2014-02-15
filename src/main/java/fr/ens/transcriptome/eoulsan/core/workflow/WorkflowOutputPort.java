@@ -58,8 +58,9 @@ class WorkflowOutputPort extends SimpleOutputPort {
   public String toString() {
 
     return Objects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("compression", getCompression())
-        .add("step", getStep().getId()).toString();
+        .add("format", getFormat().getName())
+        .add("compression", getCompression()).add("step", getStep().getId())
+        .toString();
   }
 
   //

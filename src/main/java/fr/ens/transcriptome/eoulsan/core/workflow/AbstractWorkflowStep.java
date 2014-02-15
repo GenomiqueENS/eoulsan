@@ -275,8 +275,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Get input ports
     final InputPorts inputPorts = step.getInputFormats();
     if (inputPorts != null)
-      if (inputPorts != null)
-        this.inputPorts = new WorkflowInputPorts(this, inputPorts);
+      this.inputPorts = new WorkflowInputPorts(this, inputPorts);
   }
 
   protected void registerDesignOutputPorts() {
@@ -430,8 +429,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Add a dependency for this step.
-   * @param outputPortName name of the output port provided by the dependency
-   * @param step the dependency
+   * @param inputPort the input port provided by the dependency
+   * @param outputPort the output port of the step
    */
   protected void addDependency(final WorkflowInputPort inputPort,
       final WorkflowOutputPort outputPort) {
@@ -481,7 +480,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param step step instance
    * @return the working directory of the step
    */
-  private static final DataFile defineWorkingDirectory(
+  private static DataFile defineWorkingDirectory(
       final AbstractWorkflow workflow, final Step step,
       final boolean copyResultsToOutput) {
 
@@ -588,7 +587,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
       // Checker can only be configured after execution of configure() on other
       // step.
-      configureCheckerStep(status);
+      configureCheckerStep();
 
     case STANDARD_STEP:
     case GENERATOR_STEP:
@@ -618,11 +617,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Run checker (runs only for Design step).
-   * @param status step status
    */
-  private void configureCheckerStep(final StepStatus status) {
+  private void configureCheckerStep() {
 
-    // This method can only works with design step
+    /* This method can only works with design step */
     if (getType() != CHECKER_STEP)
       return;
 
@@ -716,8 +714,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Create a Generator Workflow step.
-   * @param design design object
-   * @param stepContext context object
+   * @param workflow the workflow
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
@@ -758,7 +755,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
-   * @param step Step object
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
    * @param parameters parameters of the step
@@ -804,7 +800,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
-   * @param step Step object
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
    * @param parameters parameters of the step

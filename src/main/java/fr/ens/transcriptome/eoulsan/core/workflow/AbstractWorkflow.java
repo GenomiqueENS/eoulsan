@@ -569,8 +569,8 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   /**
-   * Create symbolic
-   * @param step
+   * Create symbolic for output of a step.
+   * @param step the step
    */
 
   private void createSymlinksInOutputDirectory(final AbstractWorkflowStep step) {
@@ -661,7 +661,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /**
    * Get the steps which has a step status. The step are ordered.
-   * @param states step status to retrieve
+   * @param state step status to retrieve
    * @return a sorted list with the steps
    */
   private List<AbstractWorkflowStep> getSortedStepsByState(final StepState state) {
@@ -685,7 +685,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Sort a list of step by priority and then by step number.
    * @param list the list of step to sort
    */
-  private static final void sortListSteps(final List<AbstractWorkflowStep> list) {
+  private static void sortListSteps(final List<AbstractWorkflowStep> list) {
 
     if (list == null)
       return;
@@ -712,7 +712,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return null if the path is null or a new DataFile object with the required
    *         path
    */
-  private static final DataFile newDataFile(final String path) {
+  private static DataFile newDataFile(final String path) {
 
     if (path == null)
       return null;
@@ -731,8 +731,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir }) {
+      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir}) {
 
         if (dir == null)
           continue;

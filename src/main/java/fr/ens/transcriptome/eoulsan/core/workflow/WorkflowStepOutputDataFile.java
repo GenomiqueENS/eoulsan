@@ -135,7 +135,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
-  private static final DataFile newDataFile(final AbstractWorkflowStep step,
+  private static DataFile newDataFile(final AbstractWorkflowStep step,
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex) {
 
@@ -178,7 +178,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param sample sample of the file
    * @return a list with the values in the design
    */
-  private static final List<String> getDesignValues(final Design design,
+  private static List<String> getDesignValues(final Design design,
       final DataFormat format, final Sample sample) {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
@@ -202,9 +202,8 @@ public final class WorkflowStepOutputDataFile implements
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
-  private static final DataFile newDesignDataFile(
-      final List<String> fieldValues, final DataFormat format,
-      final Sample sample, final int fileIndex) {
+  private static DataFile newDesignDataFile(final List<String> fieldValues,
+      final DataFormat format, final Sample sample, final int fileIndex) {
 
     if (fileIndex >= 0 && fileIndex > fieldValues.size())
       return null;
@@ -231,7 +230,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
-  private static final DataFile newStandardDataFile(final StepContext context,
+  private static DataFile newStandardDataFile(final StepContext context,
       final WorkflowStep step, final String portName, final DataFormat format,
       final Sample sample, final int fileIndex,
       final CompressionType compression) {
@@ -257,13 +256,13 @@ public final class WorkflowStepOutputDataFile implements
    * @param df the DataFormat
    * @return true if a DataFile from the design has a the good format
    */
-  private static final boolean isDesignDataFileValidFormat(final DataFile file,
+  private static boolean isDesignDataFileValidFormat(final DataFile file,
       final DataFormat df) {
 
     if (file == null || df == null)
       return false;
 
-    DataFileMetadata md = null;
+    DataFileMetadata md;
 
     try {
       md = file.getMetaData();
@@ -280,10 +279,7 @@ public final class WorkflowStepOutputDataFile implements
     final DataFormat sourceDf =
         dfr.getDataFormatFromExtension(file.getExtension());
 
-    if (sourceDf != null && sourceDf.equals(df))
-      return true;
-
-    return false;
+    return sourceDf != null && sourceDf.equals(df);
   }
 
   //
@@ -292,6 +288,8 @@ public final class WorkflowStepOutputDataFile implements
 
   @Override
   public int compareTo(final WorkflowStepOutputDataFile o) {
+
+    Preconditions.checkNotNull(o, "o is null");
 
     return this.file.compareTo(o.file);
   }
@@ -320,7 +318,17 @@ public final class WorkflowStepOutputDataFile implements
   // Static method
   //
 
-  public static final String newStandardFilename(final WorkflowStep step,
+  /**
+   * Create a standard filename.
+   * @param step the step that generated the file
+   * @param portName the port name that generated the file
+   * @param format the format of the file
+   * @param sample the sample of the file
+   * @param fileIndex file index of the file for multifile data
+   * @param compression the compression of the file
+   * @return a file name as a String
+   */
+  public static String newStandardFilename(final WorkflowStep step,
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex, final CompressionType compression) {
 
@@ -373,7 +381,7 @@ public final class WorkflowStepOutputDataFile implements
    *          return value will be the maximum number files
    * @return the number of files
    */
-  public static final int dataFileCount(final WorkflowOutputPort outputPort,
+  public static int dataFileCount(final WorkflowOutputPort outputPort,
       final Sample sample, final boolean existingFiles) {
 
     Preconditions.checkNotNull(outputPort, "outputPort cannot be null");
@@ -395,7 +403,7 @@ public final class WorkflowStepOutputDataFile implements
         return format.getMaxFilesCount();
 
       int count = 0;
-      boolean found = false;
+      boolean found;
 
       do {
 
@@ -427,7 +435,6 @@ public final class WorkflowStepOutputDataFile implements
 
   /**
    * Constructor.
-   * @param step step that create the file
    * @param outputPort output port that create the file
    * @param sample sample of the file
    */

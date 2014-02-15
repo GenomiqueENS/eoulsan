@@ -74,7 +74,7 @@ public interface WorkflowStep extends Serializable {
      * Return the available default step ids of the step types.
      * @return a set with the values
      */
-    public static final Set<String> getAllDefaultStepId() {
+    public static Set<String> getAllDefaultStepId() {
 
       final Set<String> result = Sets.newHashSet();
 
@@ -102,7 +102,7 @@ public interface WorkflowStep extends Serializable {
       this.priority = priority;
       this.defaultStepId = defaultStepId;
     }
-  };
+  }
 
   /**
    * This enum define the states of the steps.
@@ -111,7 +111,7 @@ public interface WorkflowStep extends Serializable {
    */
   public static enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, DONE, FAIL
-  };
+  }
 
   /**
    * Get the workflow of the step.

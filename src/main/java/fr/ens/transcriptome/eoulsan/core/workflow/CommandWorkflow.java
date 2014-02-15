@@ -262,14 +262,10 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Add a dependency. Add an additional step that copy/(un)compress data if
    * necessary.
-   * @param step the step
-   * @param format format provided by the dependency
-   * @param dependency the dependency
+   * @param port input port of the step
+   * @param depencencyPort output port the dependency
    * @throws EoulsanException if an error occurs while adding the dependency
    */
-  // private void addDependency(final AbstractWorkflowStep step,
-  // final InputPort port, final AbstractWorkflowStep dependency,
-  // final OutputPort dependencyPort) throws EoulsanException {
   private void addDependency(final WorkflowInputPort port,
       final WorkflowOutputPort depencencyPort) throws EoulsanException {
 
@@ -348,8 +344,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Create a new step that copy/(un)compress input data of a step.
    * @param workflow workflow where adding the step
-   * @param oriStepId id of the step that required copying data
-   * @param format format of the data
+   * @param port input port
    * @param inputCompression compression format of the data to read
    * @param outputCompressionAllowed compression formats allowed by the step
    * @return a new step
@@ -378,7 +373,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     } while (stepsIds.contains(stepId));
 
     // Find output compression
-    CompressionType comp = null;
+    final CompressionType comp;
     if (outputCompressionAllowed.contains(inputCompression))
       comp = inputCompression;
     else if (outputCompressionAllowed.contains(CompressionType.NONE))
@@ -407,8 +402,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Create a new step that copy output data of a step.
    * @param workflow workflow where adding the step
-   * @param oriStepId id of the step that required copying data
-   * @param format format of the data
+   * @param outputPorts output ports where data must be copied
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
@@ -485,7 +479,7 @@ public class CommandWorkflow extends AbstractWorkflow {
         // Check if fromStep step exists
         if (fromStep == null)
           throw new EoulsanException("No workflow step found with id: "
-              + fromStep);
+              + fromStepId);
 
         // Check if the fromPort exists
         if (!fromStep.getOutputPorts().contains(fromPortName))
@@ -843,7 +837,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Public constructor.
-   * @param context context of the workflow
+   * @param executionArguments execution arguments
    * @param workflowCommand Command object with the content of the parameter
    *          file
    * @param firstSteps optional steps to add at the beginning of the workflow
