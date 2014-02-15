@@ -467,7 +467,6 @@ public abstract class AbstractWorkflow implements Workflow {
       @Override
       public void run() {
         resultWrapper.add(step.execute());
-        System.out.println("coucou");
       }
     };
 
@@ -477,10 +476,9 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Start thread
       thread.start();
-      System.out.println("wait 1");
+
       // Wait the end of the thread
       thread.join();
-      System.out.println("wait 2");
 
     } catch (InterruptedException e) {
       throw new EoulsanException(e.getMessage());

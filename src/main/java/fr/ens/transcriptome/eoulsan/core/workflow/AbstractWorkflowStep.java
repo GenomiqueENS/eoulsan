@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
@@ -409,8 +410,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   int getInputDataFileCount(final String portName, final Sample sample,
       final boolean existingFiles) {
 
-    Preconditions.checkNotNull(portName, "PortName argument cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+    checkNotNull(portName, "PortName argument cannot be null");
+    checkNotNull(sample, "Sample argument cannot be null");
 
     // Check if the port exists
     if (!getInputPorts().contains(portName))
@@ -448,7 +449,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     inputPort.setLink(outputPort);
 
     // Add the dependency
-    addDependency(outputPort.getStep());
+    inputPort.getStep().addDependency(outputPort.getStep());
   }
 
   /**
@@ -457,8 +458,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   protected void addDependency(final AbstractWorkflowStep step) {
 
-    Preconditions.checkNotNull(step, "step  argument cannot be null");
+    checkNotNull(step, "step argument cannot be null");
 
+    // Check if try to link a step to itself
+    if (step == this)
+      throw new EoulsanRuntimeException("a step cannot depends on itself: "
+          + step.getId());
+
+    // Check if the step are in the same workflow
     if (this.getWorkflow() != step.getWorkflow())
       throw new EoulsanRuntimeException(
           "step dependency is not in the same workflow");
