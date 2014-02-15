@@ -286,7 +286,7 @@ public class CommandWorkflowParser {
             Element eStepElement = (Element) nParameterNode;
 
             // Get and check the toInput attribute
-            final String portName = getTagValue("toInput", eStepElement);
+            final String portName = getTagValue("port", eStepElement);
             if (portName == null)
               throw new EoulsanException(
                   "the \"toInput\" attribute not exists in an input section of step \""
@@ -304,7 +304,7 @@ public class CommandWorkflowParser {
 
             final StepOutputPort input =
                 new StepOutputPort(getTagValue("fromStep", eStepElement),
-                    getTagValue("fromOutput", eStepElement));
+                    getTagValue("fromPort", eStepElement));
 
             // Check step ID
             if (input.stepId == null)

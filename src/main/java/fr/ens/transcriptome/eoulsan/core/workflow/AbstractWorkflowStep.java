@@ -306,6 +306,20 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   //
 
   /**
+   * Get a WorkflowOutputPort from its name
+   * @param outputPortName the output port name
+   * @return a WorkflowOutputPort object
+   */
+  private WorkflowOutputPort getOutputPort(final String outputPortName) {
+
+    Preconditions.checkNotNull(outputPortName, "outputPortName cannot be null");
+    Preconditions.checkArgument(this.outputPorts.contains(outputPortName),
+        "Unknown output port for step \"" + getId() + ": " + outputPortName);
+
+    return this.outputPorts.getPort(outputPortName);
+  }
+
+  /**
    * Get an output file of the step.
    * @param portName name of the output port that generate file
    * @param sample sample sample that correspond to the file
@@ -313,7 +327,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   DataFile getOutputDataFile(final String portName, final Sample sample) {
 
-    return new WorkflowStepOutputDataFile(this, portName, sample).getDataFile();
+    return new WorkflowStepOutputDataFile(getOutputPort(portName), sample)
+        .getDataFile();
   }
 
   /**
@@ -326,8 +341,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   DataFile getOutputDataFile(final String portName, final Sample sample,
       final int fileIndex) {
 
-    return new WorkflowStepOutputDataFile(this, portName, sample, fileIndex)
-        .getDataFile();
+    return new WorkflowStepOutputDataFile(getOutputPort(portName), sample,
+        fileIndex).getDataFile();
   }
 
   /**
@@ -341,8 +356,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   int getOutputDataFileCount(final String portName, final Sample sample,
       final boolean existingFiles) {
 
-    return WorkflowStepOutputDataFile.dataFileCount(this, portName, sample,
-        existingFiles);
+    return WorkflowStepOutputDataFile.dataFileCount(getOutputPort(portName),
+        sample, existingFiles);
   }
 
   /**
@@ -423,8 +438,11 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(inputPort, "inputPort argument cannot be null");
     Preconditions
         .checkNotNull(outputPort, "outputPort argument cannot be null");
-    Preconditions.checkArgument(inputPort.getStep() == this, "input port ("
-        + inputPort.getName() + ")is not a port of the step (" + getId() + ")");
+    Preconditions
+        .checkArgument(outputPort.getStep() == this,
+            "input port ("
+                + inputPort.getName() + ") is not a port of the step ("
+                + getId() + ")");
 
     // Set the set link
     inputPort.setLink(outputPort);
@@ -571,23 +589,22 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final Step step = StepInstances.getInstance().getStep(this);
 
       result = step.execute(this.workflow.getDesign(), getContext(), status);
-      break;
 
-    default:
-      result = null;
-    }
-
-    if (result != null)
       getLogger().info(
           "Process step "
               + getId() + " in "
               + StringUtils.toTimeHumanReadable(result.getDuration()) + " s.");
 
-    if (result.isSuccess())
-      setState(StepState.DONE);
-    else
-      setState(StepState.FAIL);
+      setState(result.isSuccess() ? StepState.DONE : StepState.FAIL);
 
+      break;
+
+    default:
+      result = null;
+      setState(StepState.DONE);
+    }
+
+    getLogger().info("End " + getId() + " step.");
     this.result = result;
     return result;
   }

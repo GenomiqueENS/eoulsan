@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -295,8 +296,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
     for (WorkflowStepOutputDataFile file : files.getOutputFiles()) {
 
-      // Do not check output of skipped steps
-      if (file.getStep().isSkip())
+      // Do not check output of skipped steps and outputs of design step
+      if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
         continue;
 
       for (DataFile dir : directories) {
@@ -316,8 +317,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
     for (WorkflowStepOutputDataFile file : files.getReusedFiles()) {
 
-      // Do not check output of skipped steps
-      if (file.getStep().isSkip())
+      // Do not check output of skipped steps and outputs of design step
+      if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
         continue;
 
       for (DataFile dir : directories) {
@@ -466,6 +467,7 @@ public abstract class AbstractWorkflow implements Workflow {
       @Override
       public void run() {
         resultWrapper.add(step.execute());
+        System.out.println("coucou");
       }
     };
 
@@ -475,9 +477,10 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Start thread
       thread.start();
-
+      System.out.println("wait 1");
       // Wait the end of the thread
       thread.join();
+      System.out.println("wait 2");
 
     } catch (InterruptedException e) {
       throw new EoulsanException(e.getMessage());
@@ -730,8 +733,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir}) {
+      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir }) {
 
         if (dir == null)
           continue;

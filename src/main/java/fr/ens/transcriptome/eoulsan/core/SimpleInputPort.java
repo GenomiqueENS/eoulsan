@@ -27,6 +27,8 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.Serializable;
 import java.util.EnumSet;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
@@ -53,6 +55,16 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
   public boolean isRequieredInWorkingDirectory() {
 
     return this.requieredInWorkingDirectory;
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName())
+        .add("compressionsAccepted", getCompressionsAccepted())
+        .add("requieredInWorkingDirectory", isRequieredInWorkingDirectory())
+        .toString();
   }
 
   //

@@ -24,21 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define a step based on a Command object (workflow file).

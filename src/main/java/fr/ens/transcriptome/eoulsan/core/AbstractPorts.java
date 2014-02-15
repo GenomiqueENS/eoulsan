@@ -100,6 +100,12 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E> {
     return iterator().next();
   }
 
+  @Override
+  public String toString() {
+
+    return this.ports.toString();
+  }
+
   //
   // Constructor
   //

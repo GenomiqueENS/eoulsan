@@ -29,6 +29,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.EnumSet;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.SimpleInputPort;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
@@ -71,7 +73,7 @@ class WorkflowInputPort extends SimpleInputPort {
    */
   public boolean isLinked() {
 
-    return this.link == null;
+    return this.link != null;
   }
 
   /**
@@ -87,6 +89,12 @@ class WorkflowInputPort extends SimpleInputPort {
     checkArgument(outputPort.getStep() != this.step, "cannot link a step ("
         + this.step.getId() + ") to itself (input port: " + getName()
         + ", output port: " + outputPort.getName());
+
+    // Check if a link already exists
+    if (this.link != null)
+      throw new EoulsanRuntimeException("A link already exists for "
+          + getStep().getId() + "." + getName() + " ("
+          + this.link.getStep().getId() + "." + this.link.getName() + ")");
 
     // Check if format are compatible
     if (!getFormat().equals(outputPort.getFormat()))
@@ -107,6 +115,16 @@ class WorkflowInputPort extends SimpleInputPort {
           + ")");
 
     this.link = outputPort;
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName())
+        .add("compressionsAccepted", getCompressionsAccepted())
+        .add("requieredInWorkingDirectory", isRequieredInWorkingDirectory())
+        .add("step", getStep().getId()).add("link", getLink()).toString();
   }
 
   //

@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
@@ -40,6 +42,14 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
   public CompressionType getCompression() {
 
     return this.compression;
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName())
+        .add("compression", getCompression()).toString();
   }
 
   //

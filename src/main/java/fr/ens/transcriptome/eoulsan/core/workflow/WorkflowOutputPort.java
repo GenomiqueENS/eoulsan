@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.core.SimpleOutputPort;
@@ -51,6 +52,14 @@ class WorkflowOutputPort extends SimpleOutputPort {
   public AbstractWorkflowStep getStep() {
 
     return this.step;
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName()).add("compression", getCompression())
+        .add("step", getStep().getId()).toString();
   }
 
   //
