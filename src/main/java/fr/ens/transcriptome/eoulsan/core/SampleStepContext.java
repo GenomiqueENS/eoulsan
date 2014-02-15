@@ -345,7 +345,7 @@ public class SampleStepContext {
    */
   public DataFile getOutputDataFile(final DataFormat format, final int fileIndex) {
 
-    return this.context.getOutputDataFile(format, this.sample);
+    return this.context.getOutputDataFile(format, this.sample, fileIndex);
   }
 
   /**

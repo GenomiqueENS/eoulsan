@@ -280,7 +280,7 @@ public class WorkflowStepStatus implements StepStatus {
   @Override
   public WorkflowStepResult createStepResult(final Exception exception) {
 
-    return createStepResult(exception, null);
+    return createStepResult(exception, exception.getMessage());
   }
 
   //

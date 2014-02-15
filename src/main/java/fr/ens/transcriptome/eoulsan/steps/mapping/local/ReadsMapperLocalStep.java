@@ -76,7 +76,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
 
   private boolean firstSample = true;
   private GenomeDescription genomeDescription;
-  private final SequenceReadsMapper mapper = getMapper();
 
   @Override
   public InputPorts getInputFormats() {
@@ -113,6 +112,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
           genomeDescription = null;
         this.firstSample = false;
       }
+
+      // Get the mapper
+      final SequenceReadsMapper mapper = getMapper();
 
       // Create the reporter
       final Reporter reporter = new LocalReporter();

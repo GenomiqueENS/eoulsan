@@ -301,9 +301,11 @@ public class ProcessSampleExecutor {
             }
 
           } catch (InterruptedException e) {
-            LOGGER.warning("InterruptedException: " + e.getMessage());
+            LOGGER.severe("InterruptedException: " + e.getMessage());
+            return status.createStepResult(e);
           } catch (ExecutionException e) {
-            LOGGER.warning("ExecutionException: " + e.getMessage());
+            LOGGER.severe("ExecutionException: " + e.getMessage());
+            return status.createStepResult(e);
           }
 
         } else {
