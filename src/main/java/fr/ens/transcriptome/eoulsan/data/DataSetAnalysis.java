@@ -27,6 +27,7 @@ public class DataSetAnalysis {
   private DataFile designFile;
   private DataFile paramFile;
   private DataFile eoulsanLog;
+  private Collection<File> fastqFiles;
 
   private Map<String, DataFile> fileByName;
 
@@ -87,6 +88,41 @@ public class DataSetAnalysis {
 
       }
     }
+  }
+
+  public void buildDirectoryAnalysis(final File outputDirectory)
+      throws EoulsanException {
+    if (expected)
+      // Directory exists
+      return;
+
+    if (dataSet.toFile().exists())
+      throw new EoulsanException("Test directory already exists here "
+          + dataSetPath);
+
+    // Create directory and tmp
+    dataSet.toFile().mkdir();
+
+    // TODO fail Eoulsan for test
+    File tmp = new File(dataSetPath + "/tmp");
+    tmp.mkdir();
+
+    // Create symbolic link to fastq files
+    for (File fastq : fastqFiles) {
+
+      // Only for fastq at the root directory analysis
+      FileUtils.createSymbolicLink(fastq, dataSet.toFile());
+    }
+
+    // Create symbolic link to design file
+    FileUtils.createSymbolicLink(this.designFile.toFile(), dataSet.toFile());
+
+    // Create symbolic link to parameters file
+    FileUtils.createSymbolicLink(this.paramFile.toFile(),
+        dataSet.toFile());
+
+    // Initialization
+    init();
   }
 
   public void buildDirectoryAnalysis(final DataSetAnalysis datasetSource)
@@ -249,6 +285,17 @@ public class DataSetAnalysis {
       }
       init();
     }
+
+  }
+
+  public DataSetAnalysis(final File dataSetPath, final boolean expected,
+      final File param, final DataSetTest dst) throws EoulsanException {
+
+    this(dataSetPath.getAbsolutePath(), expected);
+
+    this.designFile = new DataFile(dst.getDesignFile());
+    this.paramFile = new DataFile(param);
+    this.fastqFiles = dst.getFastqFiles();
 
   }
 

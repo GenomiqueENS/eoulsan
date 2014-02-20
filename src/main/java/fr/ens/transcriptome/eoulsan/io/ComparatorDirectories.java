@@ -50,8 +50,11 @@ public class ComparatorDirectories {
    * @throws EoulsanException
    * @throws IOException
    */
-  public void compareDataSet(final DataSetAnalysis dataSetA,
-      final DataSetAnalysis dataSetB) throws EoulsanException, IOException {
+  public void compareDataSet(final String testName,
+      final DataSetAnalysis dataSetA, final DataSetAnalysis dataSetB)
+      throws EoulsanException, IOException {
+
+    clear();
 
     final DataSetAnalysis dataSetExpected;
     final DataSetAnalysis dataSetTested;
@@ -155,6 +158,10 @@ public class ComparatorDirectories {
       return false;
 
     return true;
+  }
+
+  private void clear() {
+    resultComparaison.clear();
   }
 
   /**

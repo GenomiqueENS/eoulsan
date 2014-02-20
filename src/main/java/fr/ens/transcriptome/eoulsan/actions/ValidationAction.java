@@ -1,14 +1,12 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +15,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import java.io.FileFilter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -32,16 +28,14 @@ import org.apache.commons.compress.utils.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
+import fr.ens.transcriptome.eoulsan.data.DataSetTest;
 import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class ValidationAction extends AbstractAction {
@@ -58,19 +52,12 @@ public class ValidationAction extends AbstractAction {
   private final Properties props;
   private final ComparatorDirectories comparator;
 
-  private String eoulsanReferenceVersion;
-  private String eoulsanReferencePath;
-
-  private String eoulsanTestVersion;
-  private String eoulsanTestPath;
-
   private File inputData;
   private Map<String, File> paramtersFiles;
   private File expectedAnalysisDirectory;
   private File outputAnalysisDirectory;
 
-  private String commandLineArguments;
-  private Collection<File> inputDataProject;
+  private Collection<File> inputDataProjects;
   private String typeDataSetUsed = "small";
 
   // Optional
@@ -224,84 +211,31 @@ public class ValidationAction extends AbstractAction {
     LOGGER.info(Globals.WELCOME_MSG + " Local mode.");
 
     try {
-      // Initialisation action from configuration test file
+      // Initialization action from configuration test file
       init(new File(confPath));
 
-      File eoulsanExecutable = new File(pathEoulsanNewVersion);
-      File outputDirectory = new File(pathOutputDirectory);
+      for (File project : inputDataProjects) {
 
-      // TODO
-      System.out.println("action run");
+        // Collect data expected for project
+        final DataSetTest dstExpected =
+            new DataSetTest(props, paramtersFiles, project, false);
 
-      // Check path Eoulsan new version
-      checkExistingFile(eoulsanExecutable, "Executable Eoulsan doesn't exist");
+        final Map<String, DataSetAnalysis> setExpected = dstExpected.execute();
 
-      // Check output directory doesn't exist
-      if (!(outputDirectory.exists() && outputDirectory.isDirectory())) {
-        LOGGER.severe("Analysis can't be launch, output directory "
-            + pathOutputDirectory + " doesn't exists");
-        throw new EoulsanException("Output directory "
-            + pathOutputDirectory + " doesn't exists");
-      }
+        // Collect data tested
+        final DataSetTest dstTested =
+            new DataSetTest(props, paramtersFiles, project, true);
 
-      // Set dataset
-      String trimmed = listDatasets.trim();
+        final Map<String, DataSetAnalysis> setTested = dstTested.execute();
 
-      if (trimmed == null || trimmed.length() == 0)
-        throw new EoulsanException("Dataset is empty.");
-
-      final Splitter s = Splitter.on(',').trimResults().omitEmptyStrings();
-      List<String> datasets = Lists.newArrayList(s.split(trimmed));
-
-      // Check free space on disk is enough for analysis
-      // final long freeSpaceOutputDisk = outputDirectory.getFreeSpace();
-      // final long neededSpaceOneAnalysis = new File(datasets.get(0)).length();
-      //
-      // if (neededSpaceOneAnalysis > (freeSpaceOutputDisk * 0.95)) {
-      // throw new EoulsanException("Not enough free space on disk.");
-      // }
-
-      for (String dataset : datasets) {
-        // Build data set expected
-        final DataSetAnalysis datasetExpected =
-            new DataSetAnalysis(dataset, true);
-
-        // Init data set tested
-        final DataSetAnalysis datasetTested =
-            new DataSetAnalysis(pathOutputDirectory
-                + "/test_" + datasetExpected.getRootPath(), false);
-
-        datasetTested.buildDirectoryAnalysis(datasetExpected);
-
-        // Launch Eoulsan
-        CommandLineEoulsan cmd =
-            new CommandLineEoulsan(pathEoulsanNewVersion, datasetTested
-                .getDesignFile().toFile().getName(), datasetTested
-                .getParamFile().toFile().getName());
-
-        // TODO
-        // Launch eoulsan
-        final int exitValue =
-            ProcessUtils.sh(cmd.buildCommandLine(),
-                new File(datasetTested.getDataSetPath()));
-
-        // Check exitvalue
-        if (exitValue != 0) {
-          throw new IOException("Bad error result for dataset "
-              + datasetTested.getDataSetPath() + " execution: " + exitValue);
-        }
-
-        datasetTested.init();
-        if (datasetTested.getDataFileByName("summary.wiki") == null)
-          LOGGER.severe("Fail Eoulsan analysis");
-        else {
-
+        // Comparison for each test
+        for (String testName : setExpected.keySet()) {
           // Launch comparison
-          comparator.compareDataSet(datasetExpected, datasetTested);
-          // Set not compare eoulsan.log
-          comparator.setFilesToNotCompare(cmd.getLogFilename());
+          comparator.compareDataSet(testName, setExpected.get(testName),
+              setTested.get(testName));
         }
       }
+
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -312,7 +246,7 @@ public class ValidationAction extends AbstractAction {
   }
 
   /**
-   * Initialisation properties with pa
+   * Initialization properties with pa
    * @param conf configuration file from Action
    * @throws EoulsanException
    * @throws IOException
@@ -343,35 +277,31 @@ public class ValidationAction extends AbstractAction {
       e.printStackTrace();
     }
 
-    // Initialisation
+    // Initialization
     this.inputData =
-        configureFileParameter("input_directory", " input data directory ",
-            false).iterator().next();
+        configureFileParameter("input_directory", " input data directory ")
+            .iterator().next();
 
     this.expectedAnalysisDirectory =
         configureFileParameter("expected_analysis_directory",
-            " expected analysis directory ", false).iterator().next();
+            " expected analysis directory ").iterator().next();
 
     this.outputAnalysisDirectory =
         configureFileParameter("output_analysis_directory",
-            " output analysis directory ", false).iterator().next();
-
-    this.typeDataSetUsed = props.getProperty("data_input_used");
+            " output analysis directory ").iterator().next();
 
     Collection<File> parameterDirectories =
-        configureFileParameter("parameters_directory", "parameters directory ",
-            true);
+        configureFileParameter("parameters_directory", "parameters directory ");
     collectParametersFiles(parameterDirectories);
 
-    collectInputData();
+    collectInputDataDirectories();
 
     // Set not compare eoulsan.log
     // comparator.setFilesToNotCompare(cmd.getLogFilename());
   }
 
   private Collection<File> configureFileParameter(final String propertyName,
-      final String exceptionMsg, final boolean asListValues)
-      throws EoulsanException, IOException {
+      final String exceptionMsg) throws EoulsanException, IOException {
 
     Collection<File> values = Sets.newHashSet();
 
@@ -379,17 +309,8 @@ public class ValidationAction extends AbstractAction {
       throw new EoulsanException(exceptionMsg
           + " missing in configuration test.");
 
-    if (asListValues) {
-
-      for (String file : splitter.split(props.getProperty(propertyName))) {
-        File f = new File(file);
-        FileUtils.checkExistingFile(f, exceptionMsg + " doesn't exist");
-        values.add(f);
-      }
-
-    } else {
-
-      File f = new File(props.getProperty(propertyName));
+    for (String file : splitter.split(props.getProperty(propertyName))) {
+      File f = new File(file);
       FileUtils.checkExistingFile(f, exceptionMsg + " doesn't exist");
       values.add(f);
     }
@@ -397,7 +318,8 @@ public class ValidationAction extends AbstractAction {
     return values;
   }
 
-  private void collectInputData() throws EoulsanException, IOException {
+  private void collectInputDataDirectories() throws EoulsanException,
+      IOException {
 
     for (String project : splitter.split(props.getProperty("input_data"))) {
       File projectDir = new File(inputData, project);
@@ -407,15 +329,10 @@ public class ValidationAction extends AbstractAction {
           "Project directory doesn't exist in directory "
               + inputData.getAbsolutePath());
 
-      // Check type file type data
-      File projectData = new File(projectDir, this.typeDataSetUsed);
-      checkExistingFile(projectData, "Input data doesn't exist in project "
-          + projectDir.getAbsolutePath());
-
-      this.inputDataProject.add(projectData);
+      this.inputDataProjects.add(projectDir);
     }
 
-    if (this.inputDataProject.size() == 0)
+    if (this.inputDataProjects.size() == 0)
       throw new EoulsanException("None input data specified for test.");
 
   }

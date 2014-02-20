@@ -23,8 +23,14 @@ public class ValidationActionDemo {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static void main(String[] args) throws EoulsanException {
+    File f = new File("/home/sperrin/param_toto.xml");
+    int beginIndex = "param_".length();
+    int endIndex = f.getName().length() - ".xml".length();
 
-    ValidationActionDemo.mainbis();
+    String name = f.getName().substring(beginIndex, endIndex);
+
+    System.out.println("name " + name);
+    // ValidationActionDemo.mainbis();
 
     // testLogCompare();
   }
@@ -91,6 +97,9 @@ public class ValidationActionDemo {
         "/home/sperrin/Documents/test_eoulsan/dataset_source";
     final String jobDescription = "validation_test";
 
+    
+    final String confpath = "/home/sperrin/Documents/test_eoulsan/dataset_source/test_fonctionnel.conf";
+
     // Set the default local for all the application
     Globals.setDefaultLocale();
 
@@ -130,8 +139,7 @@ public class ValidationActionDemo {
 
     if (completed) {
       // Run action
-      action.run(pathEoulsanNewVersion, listDatasets, pathOutputDirectory,
-          jobDescription);
+      action.run(confpath, jobDescription);
 
     } else {
       try {
@@ -159,7 +167,7 @@ public class ValidationActionDemo {
                 ValidationAction.CHECKING_SAME_NAME);
 
         // Launch comparison
-        comparator.compareDataSet(datasetExpected, datasetTested);
+        comparator.compareDataSet("testName", datasetExpected, datasetTested);
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
