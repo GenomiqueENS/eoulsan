@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -13,16 +14,14 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetAnalysis {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private final boolean expected;
-  private final String dataSetPath;
-  private final DataFile dataSet;
+  private final boolean exists;
+  private final File dataSet;
 
   private DataFile designFile;
   private DataFile paramFile;
@@ -36,7 +35,7 @@ public class DataSetAnalysis {
 
   public void init() throws EoulsanException {
 
-    parseDirectory(new File(dataSetPath));
+    parseDirectory(this.dataSet);
 
     Collection<DataFile> files;
 
@@ -67,13 +66,13 @@ public class DataSetAnalysis {
     // this.eoulsanLog = files.iterator().next();
   }
 
-  private void parseDirectory(final File dir) {
+  public void parseDirectory(final File directory) {
 
     // // TODO
     // System.out.println(dir.getAbsolutePath()
     // + " dir " + StringUtils.join(dir.list(), "\n\t"));
 
-    for (final File fileEntry : dir.listFiles()) {
+    for (final File fileEntry : directory.listFiles()) {
       if (fileEntry.isDirectory()) {
         parseDirectory(fileEntry);
       } else {
@@ -90,84 +89,82 @@ public class DataSetAnalysis {
     }
   }
 
-  public void buildDirectoryAnalysis(final File outputDirectory)
-      throws EoulsanException {
-    if (expected)
-      // Directory exists
+  public void buildDirectoryAnalysis() throws EoulsanException, IOException {
+    if (exists)
+      // Directory already exists
       return;
 
-    if (dataSet.toFile().exists())
-      throw new EoulsanException("Test directory already exists here "
-          + dataSetPath);
+    if (this.dataSet.exists())
+      throw new IOException("Test output directory already exists "
+          + this.dataSet.getAbsolutePath());
 
-    // Create directory and tmp
-    dataSet.toFile().mkdir();
+    // Create test directory
+    if (!this.dataSet.mkdirs())
+      throw new IOException("Cannot create test output directory "
+          + this.dataSet.getAbsolutePath());
 
-    // TODO fail Eoulsan for test
-    File tmp = new File(dataSetPath + "/tmp");
-    tmp.mkdir();
+    if (!new File(this.dataSet + "/tmp").mkdir())
+      throw new IOException(
+          "Cannot create tmp directory in test output directory "
+              + this.dataSet.getAbsolutePath());
 
     // Create symbolic link to fastq files
     for (File fastq : fastqFiles) {
 
       // Only for fastq at the root directory analysis
-      FileUtils.createSymbolicLink(fastq, dataSet.toFile());
+      FileUtils.createSymbolicLink(fastq, this.dataSet);
     }
 
     // Create symbolic link to design file
-    FileUtils.createSymbolicLink(this.designFile.toFile(), dataSet.toFile());
+    FileUtils.createSymbolicLink(this.designFile.toFile(), this.dataSet);
+    this.designFile =
+        new DataFile(new File(this.dataSet, this.designFile.getName()));
 
     // Create symbolic link to parameters file
-    FileUtils.createSymbolicLink(this.paramFile.toFile(),
-        dataSet.toFile());
+    FileUtils.createSymbolicLink(this.paramFile.toFile(), this.dataSet);
+    this.paramFile =
+        new DataFile(new File(this.dataSet, this.paramFile.getName()));
 
     // Initialization
-    init();
+    // init();
   }
 
-  public void buildDirectoryAnalysis(final DataSetAnalysis datasetSource)
-      throws EoulsanException {
-    if (expected)
-      // Directory exists
-      return;
-
-    if (dataSet.toFile().exists())
-      throw new EoulsanException("Test directory already exists here "
-          + dataSetPath);
-
-    // Create directory and tmp
-    dataSet.toFile().mkdir();
-
-    // TODO fail Eoulsan for test
-    File tmp = new File(dataSetPath + "/tmp");
-    tmp.mkdir();
-
-    // Create symbolic link to fastq files
-    for (DataFile df : datasetSource.getDataFileWithExtension(".fastq")) {
-
-      // Only for fastq at the root directory analysis
-      if (df.toFile().getParent().equals(datasetSource.getDataSetPath()))
-        FileUtils.createSymbolicLink(df.toFile(), dataSet.toFile());
-    }
-
-    // Create symbolic link to design file
-    FileUtils.createSymbolicLink(datasetSource.getDesignFile().toFile(),
-        dataSet.toFile());
-
-    // Create symbolic link to parameters file
-    FileUtils.createSymbolicLink(datasetSource.getParamFile().toFile(),
-        dataSet.toFile());
-
-    // Initialization
-    init();
-  }
-
-  /**
-   * @return
-   */
-  public String getRootPath() {
-    return dataSet.getBasename();
-  }
+  // public void buildDirectoryAnalysis(final DataSetAnalysis datasetSource)
+  // throws EoulsanException {
+  // if (expected)
+  // // Directory exists
+  // return;
+  //
+  // if (dataSet.exists())
+  // throw new EoulsanException("Test directory already exists here "
+  // + dataSet);
+  //
+  // // Create directory and tmp
+  // dataSet.mkdir();
+  //
+  // // TODO fail Eoulsan for test
+  // File tmp = new File(dataSet + "/tmp");
+  // tmp.mkdir();
+  //
+  // // Create symbolic link to fastq files
+  // for (DataFile df : datasetSource.getDataFileWithExtension(".fastq")) {
+  //
+  // // Only for fastq at the root directory analysis
+  // if (df.toFile().getParent().equals(datasetSource))
+  // FileUtils.createSymbolicLink(df.toFile(), dataSet);
+  // }
+  //
+  // // Create symbolic link to design file
+  // FileUtils.createSymbolicLink(datasetSource.getDesignFile().toFile(),
+  // dataSet);
+  //
+  // // Create symbolic link to parameters file
+  // FileUtils
+  // .createSymbolicLink(datasetSource.getParamFile().toFile(), dataSet);
+  //
+  // // Initialization
+  // init();
+  // }
 
   private Collection<DataFile> getDataFileWithExtension(final String extension) {
     Set<DataFile> files = Sets.newHashSet();
@@ -230,12 +227,8 @@ public class DataSetAnalysis {
   // Getter & Setter
   //
 
-  public boolean isExpected() {
-    return expected;
-  }
-
-  public String getDataSetPath() {
-    return dataSetPath;
+  public boolean exists() {
+    return exists;
   }
 
   public DataFile getDesignFile() {
@@ -266,32 +259,31 @@ public class DataSetAnalysis {
   // Constructor
   //
 
-  public DataSetAnalysis(final String dataSetPath, final boolean expected)
+  public DataSetAnalysis(final File dataSet, final boolean exists)
       throws EoulsanException {
 
-    this.expected = expected;
-    this.dataSetPath = dataSetPath;
-    this.dataSet = new DataFile(dataSetPath);
+    this.exists = exists;
+    this.dataSet = dataSet;
 
     this.fileByName = Maps.newHashMap();
     // this.allFilesInAnalysis = Maps.newHashMap();
     // this.allFiles = Sets.newHashSet();
 
-    if (this.expected) {
+    if (this.exists) {
       // Check dataset directory exists
-      if (!new File(this.dataSetPath).exists()) {
+      if (!this.dataSet.exists()) {
         throw new EoulsanException("Data set doesn't exist at this path "
-            + dataSetPath);
+            + dataSet.getAbsolutePath());
       }
       init();
     }
 
   }
 
-  public DataSetAnalysis(final File dataSetPath, final boolean expected,
+  public DataSetAnalysis(final File dataSet, final boolean expected,
       final File param, final DataSetTest dst) throws EoulsanException {
 
-    this(dataSetPath.getAbsolutePath(), expected);
+    this(dataSet, expected);
 
     this.designFile = new DataFile(dst.getDesignFile());
     this.paramFile = new DataFile(param);
