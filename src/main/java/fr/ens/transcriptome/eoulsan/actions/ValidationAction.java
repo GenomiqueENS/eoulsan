@@ -7,7 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -27,6 +30,7 @@ import org.apache.commons.compress.utils.Charsets;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
@@ -43,6 +47,9 @@ public class ValidationAction extends AbstractAction {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
+  public static DateFormat DATE_FORMAT = new SimpleDateFormat(
+      "yyyyMMdd-kkmmss", Globals.DEFAULT_LOCALE);
+
   public static final boolean USE_SERIALIZATION = true;
   public static final boolean CHECKING_SAME_NAME = true;
 
@@ -56,6 +63,7 @@ public class ValidationAction extends AbstractAction {
   private Map<String, File> paramtersFiles;
   private File expectedAnalysisDirectory;
   private File outputAnalysisDirectory;
+  private boolean isNewVersionEoulsan = false;
 
   private Collection<File> inputDataProjects;
   private String typeDataSetUsed = "small";
@@ -77,11 +85,14 @@ public class ValidationAction extends AbstractAction {
   }
 
   // TODO use for test into eclipse
-  private void initLogger() {
+  private void initLogger(final String logPath) {
+    String s = logPath + "/eoulsan_" + DATE_FORMAT.format(new Date()) + ".log";
+    System.out.println("log path " + s);
 
     Handler fh = null;
     try {
-      fh = new FileHandler("eoulsan_validation.log");
+      fh = new FileHandler(s);
+
     } catch (SecurityException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -91,15 +102,13 @@ public class ValidationAction extends AbstractAction {
     fh.setFormatter(Globals.LOG_FORMATTER);
 
     LOGGER.setLevel(Level.ALL);
-    LOGGER.setUseParentHandlers(false);
+    // LOGGER.setUseParentHandlers(false);
 
     LOGGER.addHandler(fh);
   }
 
   @Override
   public void action(String[] arguments) {
-
-    initLogger();
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -218,26 +227,38 @@ public class ValidationAction extends AbstractAction {
 
         // Collect data expected for project
         final DataSetTest dstExpected =
-            new DataSetTest(props, paramtersFiles, project, false);
+            new DataSetTest(props, paramtersFiles, project,
+                this.expectedAnalysisDirectory, isNewVersionEoulsan);
 
         final Map<String, DataSetAnalysis> setExpected = dstExpected.execute();
 
         // Collect data tested
         final DataSetTest dstTested =
-            new DataSetTest(props, paramtersFiles, project, true);
+            new DataSetTest(props, paramtersFiles, project,
+                this.outputAnalysisDirectory);
 
         final Map<String, DataSetAnalysis> setTested = dstTested.execute();
+
+        // TODO init map with the same size (from parameters list)
+        // Check same count test for the data set
+        if (setExpected.size() != setTested.size()) {
+          throw new EoulsanException(
+              "Different count test between expected directory and tested directory.");
+        }
 
         // Comparison for each test
         for (String testName : setExpected.keySet()) {
           // Launch comparison
-          comparator.compareDataSet(testName, setExpected.get(testName),
-              setTested.get(testName));
+          comparator.compareDataSet(setExpected.get(testName),
+              setTested.get(testName), project.getName(), testName);
+
         }
       }
 
-    } catch (IOException e) {
+      LOGGER.severe("Final report " + comparator.getReport());
+
       // TODO Auto-generated catch block
+    } catch (IOException e) {
       e.printStackTrace();
     } catch (EoulsanException ee) {
       ee.printStackTrace();
@@ -254,7 +275,8 @@ public class ValidationAction extends AbstractAction {
   private void init(final File conf) throws EoulsanException, IOException {
 
     checkExistingFile(conf, " configuration file doesn't exist.");
-    BufferedReader br =
+
+    final BufferedReader br =
         new BufferedReader(newReader(conf,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
     String line = null;
@@ -277,18 +299,61 @@ public class ValidationAction extends AbstractAction {
       e.printStackTrace();
     }
 
+    initLogger(this.props.getProperty("log_path"));
+
     // Initialization
     this.inputData =
         configureFileParameter("input_directory", " input data directory ")
             .iterator().next();
 
-    this.expectedAnalysisDirectory =
-        configureFileParameter("expected_analysis_directory",
-            " expected analysis directory ").iterator().next();
+    final File[] outputDataDirectory =
+        new File(this.props.getProperty("expected_analysis_directory"))
+            .listFiles(new FileFilter() {
 
+              @Override
+              public boolean accept(File pathname) {
+                return pathname.getName().startsWith(
+                    props.getProperty("eoulsan_reference_version_git"));
+              }
+            });
+
+    // Check outputData for reference Eoulsan version
+    if (outputDataDirectory.length == 1) {
+      // Doesn't exist, analysis must be launch
+      this.expectedAnalysisDirectory = outputDataDirectory[0];
+
+    } else if (outputDataDirectory.length == 0) {
+      // New version Eoulsan to test, create data_expected analysis
+      this.expectedAnalysisDirectory =
+          new File(this.props.getProperty("expected_analysis_directory")
+              + "/" + this.props.getProperty("eoulsan_reference_version_git")
+              + "_" + DATE_FORMAT.format(new Date()));
+
+      if (!expectedAnalysisDirectory.mkdirs())
+        throw new IOException("Cannot create output analysis directory "
+            + expectedAnalysisDirectory.getAbsolutePath());
+
+      this.isNewVersionEoulsan = true;
+
+      LOGGER.info("New version reference Eoulsan define in configuration test "
+          + this.props.getProperty("eoulsan_reference_version_git"));
+
+    } else {
+      throw new EoulsanException(
+          "Number data expected directory for version Eoulsan "
+              + props.getProperty("eoulsan_reference_version_git")
+              + " is invalid " + outputDataDirectory.length);
+    }
+
+    // Create new output test directory
     this.outputAnalysisDirectory =
-        configureFileParameter("output_analysis_directory",
-            " output analysis directory ").iterator().next();
+        new File(this.props.getProperty("output_analysis_directory")
+            + "/" + this.props.getProperty("eoulsan_test_version_git") + "_"
+            + DATE_FORMAT.format(new Date()));
+
+    if (!outputAnalysisDirectory.mkdirs())
+      throw new IOException("Cannot create output analysis directory "
+          + outputAnalysisDirectory.getAbsolutePath());
 
     Collection<File> parameterDirectories =
         configureFileParameter("parameters_directory", "parameters directory ");
@@ -297,7 +362,7 @@ public class ValidationAction extends AbstractAction {
     collectInputDataDirectories();
 
     // Set not compare eoulsan.log
-    // comparator.setFilesToNotCompare(cmd.getLogFilename());
+    comparator.setFilesToNotCompare("eoulsan.log");
   }
 
   private Collection<File> configureFileParameter(final String propertyName,
@@ -343,7 +408,6 @@ public class ValidationAction extends AbstractAction {
     final String suffix = ".xml";
 
     // Collect all parameters files at the root of each directory
-
     for (File paramDir : parameterDirectories) {
 
       File[] params = paramDir.listFiles(new FileFilter() {
@@ -355,11 +419,12 @@ public class ValidationAction extends AbstractAction {
         }
       });
 
+      String name;
       for (File param : params) {
         int beginIndex = prefix.length();
         int endIndex = param.getName().length() - suffix.length();
 
-        String name = param.getName().substring(beginIndex, endIndex);
+        name = param.getName().substring(beginIndex, endIndex);
         paramtersFiles.put(name, param);
       }
     }
@@ -378,6 +443,9 @@ public class ValidationAction extends AbstractAction {
     // Initialisation comparator
     this.comparator =
         new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
+
+    this.paramtersFiles = Maps.newHashMap();
+    this.inputDataProjects = Sets.newHashSet();
 
   }
 
