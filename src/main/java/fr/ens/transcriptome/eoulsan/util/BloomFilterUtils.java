@@ -79,10 +79,7 @@ public class BloomFilterUtils implements Serializable {
 
       // Permission file, set readonly
       boolean b = fileSer.setReadOnly();
-      // TODO
-      System.out.println("succes readonly for "
-          + fileSer.getAbsolutePath() + " : " + b);
-
+      
     } catch (FileNotFoundException e) {
       throw new IOException(e.getMessage());
     }
