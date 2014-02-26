@@ -30,9 +30,9 @@ public class DataSetAnalysis {
 
   private Map<String, DataFile> fileByName;
 
-  // private Set<DataFile> allFiles;
-  // private Map<String, Collection<DataFile>> allFilesInAnalysis;
-
+  /**
+   * @throws EoulsanException
+   */
   public void init() throws EoulsanException {
 
     parseDirectory(this.dataSet);
@@ -57,20 +57,9 @@ public class DataSetAnalysis {
 
     this.paramFile = files.iterator().next();
 
-    // Check log eoulsan file
-    // files = getDataFileStartwith("eoulsan", ".log");
-    // if (files.isEmpty()) {
-    // LOGGER.warning("Log file doesn't exist");
-    // throw new EoulsanException("Log file doesn't exist");
-    // }
-    // this.eoulsanLog = files.iterator().next();
   }
 
   public void parseDirectory(final File directory) {
-
-    // // TODO
-    // System.out.println(dir.getAbsolutePath()
-    // + " dir " + StringUtils.join(dir.list(), "\n\t"));
 
     for (final File fileEntry : directory.listFiles()) {
       if (fileEntry.isDirectory()) {
@@ -125,46 +114,11 @@ public class DataSetAnalysis {
     this.paramFile =
         new DataFile(new File(this.dataSet, this.paramFile.getName()));
 
-    // Initialization
-    // init();
   }
 
-  // public void buildDirectoryAnalysis(final DataSetAnalysis datasetSource)
-  // throws EoulsanException {
-  // if (expected)
-  // // Directory exists
-  // return;
   //
-  // if (dataSet.exists())
-  // throw new EoulsanException("Test directory already exists here "
-  // + dataSet);
+  // Useful methods
   //
-  // // Create directory and tmp
-  // dataSet.mkdir();
-  //
-  // // TODO fail Eoulsan for test
-  // File tmp = new File(dataSet + "/tmp");
-  // tmp.mkdir();
-  //
-  // // Create symbolic link to fastq files
-  // for (DataFile df : datasetSource.getDataFileWithExtension(".fastq")) {
-  //
-  // // Only for fastq at the root directory analysis
-  // if (df.toFile().getParent().equals(datasetSource))
-  // FileUtils.createSymbolicLink(df.toFile(), dataSet);
-  // }
-  //
-  // // Create symbolic link to design file
-  // FileUtils.createSymbolicLink(datasetSource.getDesignFile().toFile(),
-  // dataSet);
-  //
-  // // Create symbolic link to parameters file
-  // FileUtils
-  // .createSymbolicLink(datasetSource.getParamFile().toFile(), dataSet);
-  //
-  // // Initialization
-  // init();
-  // }
 
   private Collection<DataFile> getDataFileWithExtension(final String extension) {
     Set<DataFile> files = Sets.newHashSet();
@@ -215,7 +169,7 @@ public class DataSetAnalysis {
    * @param df
    * @return
    */
-  public DataFile getDataFileByName(final String filename) {
+  private DataFile getDataFileByName(final String filename) {
 
     if (filename == null || filename.length() == 0)
       return null;
@@ -243,14 +197,6 @@ public class DataSetAnalysis {
     return eoulsanLog;
   }
 
-  // public Map<String, Collection<DataFile>> getAllFilesInAnalysis() {
-  // return allFilesInAnalysis;
-  // }
-  //
-  // public Set<DataFile> getAllFiles() {
-  // return allFiles;
-  // }
-
   public Map<String, DataFile> getFilesByName() {
     return fileByName;
   }
@@ -266,8 +212,6 @@ public class DataSetAnalysis {
     this.dataSet = dataSet;
 
     this.fileByName = Maps.newHashMap();
-    // this.allFilesInAnalysis = Maps.newHashMap();
-    // this.allFiles = Sets.newHashSet();
 
     if (this.exists) {
       // Check dataset directory exists

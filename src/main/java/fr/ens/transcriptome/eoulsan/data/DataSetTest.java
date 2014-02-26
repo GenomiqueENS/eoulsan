@@ -22,6 +22,7 @@ import com.sun.org.apache.xml.internal.serializer.ToUnknownStream;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -37,7 +38,6 @@ public class DataSetTest {
   private final boolean expected;
 
   private final Properties props;
-  // type data input used (small or really)
 
   private File inputDataProject;
   private final File inputDataDirectory;
@@ -48,12 +48,13 @@ public class DataSetTest {
   private Collection<File> fastqFiles;
   private boolean toGenerateAnalysisResult = true;
 
+  // Data for execute Eoulsan
   private File eoulsanPath;
-  private String eoulsanVersionGit;
   private List<String> eoulsanArguments;
 
-  // Set test name with the data result
-  // private Map<String, DataSetAnalysis> dataSet;
+  // Optional scripts
+  private String preScriptPath;
+  private String postScriptPath;
 
   public Map<String, DataSetAnalysis> execute() throws EoulsanException,
       IOException {
@@ -99,19 +100,63 @@ public class DataSetTest {
 
   private void launchAnalysis(final DataSetAnalysis dsa, final File outputTest)
       throws IOException {
-    // Launch Eoulsan
-    CommandEoulsan cmd = new CommandEoulsan();
+
+    int exitValue;
+
+    // If exists, launch preScript analysis
+    if (this.preScriptPath != null) {
+      exitValue =
+          ProcessUtils.sh(Lists.newArrayList(this.preScriptPath), new File(
+              this.preScriptPath).getParentFile());
+
+      if (exitValue != 0) {
+        throw new IOException("Error during execution pre-script analysis "
+            + this.preScriptPath + " exitValue: " + exitValue);
+      }
+    }
 
     // TODO
     // Launch eoulsan
-    final int exitValue =
-        ProcessUtils.sh(cmd.buildCommandLine(dsa), outputTest);
+    exitValue = ProcessUtils.sh(buildCommandLine(dsa), outputTest);
 
     // Check exitvalue
     if (exitValue != 0) {
       throw new IOException("Bad error result for dataset "
           + outputTest.getAbsolutePath() + " execution: " + exitValue);
     }
+
+    // If exists, launch postScript analysis
+    if (this.postScriptPath != null) {
+      exitValue =
+          ProcessUtils.sh(Lists.newArrayList(this.postScriptPath), new File(
+              this.postScriptPath).getParentFile());
+
+      if (exitValue != 0) {
+        throw new IOException("Error during execution post-script analysis "
+            + this.postScriptPath + " exitValue: " + exitValue);
+      }
+    }
+  }
+
+  private List<String> buildCommandLine(final DataSetAnalysis dsa) {
+
+    List<String> cmd = Lists.newLinkedList();
+
+    // cmd.add("screen");
+    cmd.add(eoulsanPath + "/eoulsan.sh");
+    // cmd.add("-help");
+
+    // Add arguments from configuration file
+    cmd.addAll(eoulsanArguments);
+
+    cmd.add(dsa.getParamFile().toFile().getAbsolutePath());
+    cmd.add(dsa.getDesignFile().toFile().getAbsolutePath());
+
+    LOGGER.info(StringUtils.join(cmd.toArray(), " "));
+    // TODO
+    System.out.println(StringUtils.join(cmd.toArray(), " "));
+
+    return cmd;
   }
 
   private void init() throws IOException {
@@ -128,10 +173,12 @@ public class DataSetTest {
     // At the root of type input data directory
     this.designFile = filterFile(inputDataProject, ".txt")[0];
 
-    // TODO extension can be fastq and fq.bz2
-    this.fastqFiles = Arrays.asList(filterFile(inputDataProject, ".fastq.bz2"));
+    // Collect all fastq files for project
+    this.fastqFiles =
+        Arrays.asList(filterFile(inputDataProject, ".fastq.bz2", "fq.bz2",
+            "fastq", "fq"));
 
-    // TODO launch several time, change call
+    // Retrieve argument for command line eoulsan
     this.eoulsanArguments =
         Lists.newLinkedList(splitter.split(props
             .getProperty("command_line_argument_eoulsan")));
@@ -181,22 +228,46 @@ public class DataSetTest {
             + this.outputDataProject.getAbsolutePath());
 
     }
+
+    // Retrieve script pre- and post- analysis if exists
+    String path = props.getProperty("local_shell_script_pretreatment");
+    if (path != null)
+      if (new File(path).exists()) {
+        this.preScriptPath =
+            props.getProperty("local_shell_script_pretreatment");
+
+        LOGGER
+            .info("Configuration specified a pre-script to execute before analysis "
+                + this.preScriptPath);
+      } else {
+        throw new IOException("Pre-script analysis doesn't exist: " + path);
+      }
+
+    path = props.getProperty("local_shell_script_posttreatment");
+    if (path != null)
+      if (new File(path).exists()) {
+        this.postScriptPath =
+            props.getProperty("local_shell_script_posttreatment");
+
+        LOGGER
+            .info("configuration specified a post-script to execute after analysis "
+                + this.postScriptPath);
+
+      } else {
+        throw new IOException("Post-script analysis doesn't exist: " + path);
+      }
+
   }
 
-  // private String buildNameDirectory() {
-  //
-  // // Creation date, format (yyyyMMdd)
-  // return eoulsanVersionGit + "_" + DATE_FORMAT.format(new Date());
-  //
-  // }
-
-  private File[] filterFile(final File dir, final String extension) {
+  private File[] filterFile(final File dir, final String... suffixes) {
 
     return dir.listFiles(new FileFilter() {
 
       @Override
       public boolean accept(File pathname) {
-        return pathname.getName().contains(extension);
+        for (String suffix : suffixes)
+          return pathname.getName().contains(suffix);
+        return false;
       }
     });
   }
@@ -246,34 +317,4 @@ public class DataSetTest {
 
   }
 
-  //
-  // Internal class
-  //
-  class CommandEoulsan {
-
-    public List<String> buildCommandLine(final DataSetAnalysis dsa) {
-
-      List<String> cmd = Lists.newLinkedList();
-
-      // cmd.add("screen");
-      cmd.add(eoulsanPath + "/eoulsan.sh");
-      // cmd.add("-help");
-
-      // Add arguments from configuration file
-      cmd.addAll(eoulsanArguments);
-
-      cmd.add(dsa.getParamFile().toFile().getAbsolutePath());
-      cmd.add(dsa.getDesignFile().toFile().getAbsolutePath());
-      // cmd.add(">");
-      // cmd.add(outFilename);
-      // cmd.add("2>");
-      // cmd.add(errFilename);
-
-      LOGGER.info(StringUtils.join(cmd.toArray(), " "));
-      // TODO
-      System.out.println(StringUtils.join(cmd.toArray(), " "));
-
-      return cmd;
-    }
-  }
 }

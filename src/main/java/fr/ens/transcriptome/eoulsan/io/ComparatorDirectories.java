@@ -246,9 +246,9 @@ public class ComparatorDirectories {
     if (!isExtensionTreated(dfExpected.getExtension()))
       return false;
 
-    // Check files must be skip
-    if (filesToNotCompare.contains(pathFileA)
-        || filesToNotCompare.contains(pathFileB))
+    // Check files must be skipped
+    if (filesToNotCompare.contains(new File(pathFileA).getName())
+        || filesToNotCompare.contains(new File(pathFileB).getName()))
       return false;
 
     return true;

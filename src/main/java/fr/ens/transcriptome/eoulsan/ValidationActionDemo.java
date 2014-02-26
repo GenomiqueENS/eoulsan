@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Logger;
-
-import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
@@ -23,57 +20,10 @@ public class ValidationActionDemo {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static void main(String[] args) throws EoulsanException {
-    File f = new File("/home/sperrin/param_toto.xml");
-    int beginIndex = "param_".length();
-    int endIndex = f.getName().length() - ".xml".length();
 
-    String name = f.getName().substring(beginIndex, endIndex);
-
-    System.out.println("name " + name);
-    // ValidationActionDemo.mainbis();
+    ValidationActionDemo.mainbis();
 
     // testLogCompare();
-  }
-
-  public static void testLogCompare() {
-    // Map<Object, Object> map = System.getProperties();
-    // System.out.println("print properties \n"
-    // + Joiner.on("\n").withKeyValueSeparator("\t").join(map));
-    //
-    // System.exit(0);
-
-    CompareFiles comp = new LogCompareFiles();
-    // String
-    // fileAFperrin/Documents/test_eoulsan/dataset_source/test_expected/eoulsan-20140128-160713/filtersam.log";
-    String dir =
-        new File(
-            "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/")
-            .listFiles(new FileFilter() {
-
-              @Override
-              public boolean accept(final File pathname) {
-                return pathname.getName().startsWith("eoulsan-");
-              }
-            })[0].getAbsolutePath();
-
-    System.out.println("dir log " + dir);
-
-    // String fileA =
-    // "/home/sperrin/Documents/test_eoulsan/dataset_source/expected/eoulsan-20140124-112847/mapreads.log";
-    // String fileB =
-    // "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/"
-    // + dir + "/mapreads.log";
-
-    String fileA =
-        "/home/sperrin/Documents/test_eoulsan/dataset_source/expected/eoulsan-20140124-112847/filtersam.log";
-    String fileB = dir + "/filtersam.log";
-    try {
-      System.out.println("result " + comp.compareFiles(fileA, fileB));
-
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
   }
 
   public static void maintri() {
@@ -90,15 +40,9 @@ public class ValidationActionDemo {
 
   public static void mainbis() {
 
-    final String pathEoulsanNewVersion = "/home/sperrin/home-net/eoulsan";
-    final String listDatasets =
-        "/home/sperrin/Documents/test_eoulsan/dataset_source/expected";
-    final String pathOutputDirectory =
-        "/home/sperrin/Documents/test_eoulsan/dataset_source";
     final String jobDescription = "validation_test";
-
-    
-    final String confpath = "/home/sperrin/Documents/test_eoulsan/dataset_source/test_fonctionnel.conf";
+    final String confpath =
+        "/home/sperrin/Documents/test_eoulsan/dataset_source/test_fonctionnel.conf";
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
@@ -135,24 +79,26 @@ public class ValidationActionDemo {
 
     }
 
-    boolean completed = false;
+    boolean completed = true;
 
     if (completed) {
       // Run action
-      action.run(confpath, jobDescription);
+      action.action(new String[] {"-c", confpath, "-d", jobDescription});
 
     } else {
       try {
         DataSetAnalysis datasetExpected;
         datasetExpected =
             new DataSetAnalysis(
-                "/home/sperrin/Documents/test_eoulsan/dataset_source/expected",
+                new File(
+                    "/home/sperrin/Documents/test_eoulsan/dataset_source/expected"),
                 true);
 
         // Init data set tested
         final DataSetAnalysis datasetTested =
             new DataSetAnalysis(
-                "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/",
+                new File(
+                    "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/"),
                 false);
         datasetTested.init();
         System.out.println("expected size "
@@ -167,7 +113,8 @@ public class ValidationActionDemo {
                 ValidationAction.CHECKING_SAME_NAME);
 
         // Launch comparison
-        comparator.compareDataSet("testName", datasetExpected, datasetTested);
+        comparator.compareDataSet(datasetExpected, datasetTested, "essai",
+            "testName");
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -176,6 +123,33 @@ public class ValidationActionDemo {
         e1.printStackTrace();
       }
 
+    }
+  }
+
+  public static void testLogCompare() {
+
+    CompareFiles comp = new LogCompareFiles();
+    String dir =
+        new File(
+            "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/")
+            .listFiles(new FileFilter() {
+
+              @Override
+              public boolean accept(final File pathname) {
+                return pathname.getName().startsWith("eoulsan-");
+              }
+            })[0].getAbsolutePath();
+
+    System.out.println("dir log " + dir);
+
+    String fileA =
+        "/home/sperrin/Documents/test_eoulsan/dataset_source/expected/eoulsan-20140124-112847/filtersam.log";
+    String fileB = dir + "/filtersam.log";
+    try {
+      System.out.println("result " + comp.compareFiles(fileA, fileB));
+
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 }

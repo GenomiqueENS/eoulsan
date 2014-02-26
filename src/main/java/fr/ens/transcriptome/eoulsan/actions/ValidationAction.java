@@ -11,7 +11,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -29,7 +28,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.utils.Charsets;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -40,7 +38,6 @@ import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
 import fr.ens.transcriptome.eoulsan.data.DataSetTest;
 import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class ValidationAction extends AbstractAction {
 
@@ -66,7 +63,6 @@ public class ValidationAction extends AbstractAction {
   private boolean isNewVersionEoulsan = false;
 
   private Collection<File> inputDataProjects;
-  private String typeDataSetUsed = "small";
 
   // Optional
   private String localScriptPretreatement;
@@ -207,7 +203,7 @@ public class ValidationAction extends AbstractAction {
    * @param outputDirectory
    * @param jobDescription
    */
-  public/* private */void run(final String confPath, final String jobDescription) {
+  private void run(final String confPath, final String jobDescription) {
 
     final String desc;
 
@@ -449,132 +445,4 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  //
-  // Internal class
-  //
-
-  static class CommandLineEoulsan {
-
-    /** Logger */
-    private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-
-    private final String eoulsanExecutablePath;
-    private final String designFile;
-    private final String paramFile;
-
-    private String logFilename = "eoulsan.log";
-    private String errFilename = "eoulsan.err";
-    private String outFilename = "eoulsan.out";
-
-    // Parameters optional
-    private String logLevel = "all";
-    private String configurationFilePath = null;
-
-    public List<String> buildCommandLine() {
-      List<String> cmd = Lists.newArrayList();
-
-      // cmd.add("screen");
-      cmd.add(eoulsanExecutablePath + "/eoulsan.sh");
-      // cmd.add("-help");
-
-      cmd.add("-log");
-      cmd.add(logFilename);
-      cmd.add("-loglevel");
-      cmd.add(logLevel);
-
-      if (configurationFilePath != null) {
-        cmd.add("-conf");
-        cmd.add(configurationFilePath);
-      }
-
-      cmd.add("exec");
-      cmd.add(paramFile);
-      cmd.add(designFile);
-      // cmd.add(">");
-      // cmd.add(outFilename);
-      // cmd.add("2>");
-      // cmd.add(errFilename);
-
-      LOGGER.info(StringUtils.join(cmd.toArray(), " "));
-      // TODO
-      System.out.println(StringUtils.join(cmd.toArray(), " "));
-
-      return cmd;
-    }
-
-    //
-    // Getter & setter
-    //
-
-    public String getLogFilename() {
-      return logFilename;
-    }
-
-    public void setLogFilename(String logFilename) {
-      this.logFilename = logFilename;
-    }
-
-    public String getLogLevel() {
-      return logLevel;
-    }
-
-    public void setLogLevel(String logLevel) {
-      this.logLevel = logLevel;
-    }
-
-    public String getErrFilename() {
-      return errFilename;
-    }
-
-    public void setErrFilename(String errFilename) {
-      this.errFilename = errFilename;
-    }
-
-    public String getOutFilename() {
-      return outFilename;
-    }
-
-    public void setOutFilename(String outFilename) {
-      this.outFilename = outFilename;
-    }
-
-    public String getConfigurationFilePath() {
-      return configurationFilePath;
-    }
-
-    public void setConfigurationFilePath(String configurationFilePath) {
-      this.configurationFilePath = configurationFilePath;
-    }
-
-    public String getEoulsanExecutablePath() {
-      return eoulsanExecutablePath;
-    }
-
-    public String getDesignFile() {
-      return designFile;
-    }
-
-    public String getParamFile() {
-      return paramFile;
-    }
-
-    @Override
-    public String toString() {
-      return buildCommandLine().toString().replaceAll(",", " ");
-    }
-
-    //
-    // Constructor
-    //
-    public CommandLineEoulsan(final String pathExecutable,
-        final String designFile, final String paramFile) {
-
-      // TODO
-      // Check parameters
-      this.eoulsanExecutablePath = pathExecutable;
-      this.designFile = designFile;
-      this.paramFile = paramFile;
-    }
-
-  }
 }
