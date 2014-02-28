@@ -36,10 +36,6 @@ public class ComparatorDirectories {
 
   private final StringBuilder report;
   private int failComparisonCountGlobal = 0;
-  private int failComparisonCountPerProject = 0;
-
-  private String currentProject = "";
-  private boolean firstProject = true;
 
   private boolean useSerialization = false;
   private boolean checkingFilename = false;
@@ -58,20 +54,19 @@ public class ComparatorDirectories {
    * @throws IOException
    */
   public void compareDataSet(final DataSetAnalysis dataSetA,
-      final DataSetAnalysis dataSetB, final String projectName,
-      final String testName) throws EoulsanException, IOException {
+      final DataSetAnalysis dataSetB, final String testName)
+      throws EoulsanException, IOException {
 
-    LOGGER.info(projectName
-        + ": start comparison between to result analysis for " + testName);
+    LOGGER.info("Start comparison between to result analysis for " + testName);
 
     final DataSetAnalysis dataSetExpected;
     final DataSetAnalysis dataSetTested;
 
-    if (dataSetA.exists()) {
+    if (dataSetA.isResultsAnalysisExists()) {
       dataSetExpected = dataSetA;
       dataSetTested = dataSetB;
 
-    } else if (dataSetB.exists()) {
+    } else if (dataSetB.isResultsAnalysisExists()) {
       dataSetExpected = dataSetB;
       dataSetTested = dataSetA;
 
@@ -83,88 +78,28 @@ public class ComparatorDirectories {
     parsingDataSet(dataSetExpected, dataSetTested);
 
     // report comparison
-    buildReport(projectName, testName);
+    buildReport(testName);
   }
 
-  private void buildReport(final String projectName, final String testName) {
+  private void buildReport(final String testName) {
 
     failComparisonCountGlobal += this.resultComparaison.get(false).size();
 
-    if (projectName.equals(currentProject))
-      failComparisonCountPerProject += this.resultComparaison.get(false).size();
+    report.append("\nComparison for test " + testName);
 
-    else {
-
-      if (firstProject) {
-        firstProject = false;
-      } else {
-
-        // Synthesis project
-        if (failComparisonCountPerProject == 0)
-          report
-              .append("\n\tno regression found for project " + currentProject);
-        else
-          report.append("\n\t"
-              + failComparisonCountPerProject
-              + " comparison(s) are failed, check regression in code Eoulsan.");
-      }
-
-      // New Project
-      failComparisonCountPerProject = this.resultComparaison.get(false).size();
-      currentProject = projectName;
-
-      report.append("\n\nComparison for project " + projectName);
-    }
-
-    report.append("\n\tresult for test "
-        + testName + ": " + this.resultComparaison.get(true).size() + " T \t"
+    report.append("\t"
+        + this.resultComparaison.get(true).size() + " T \t"
         + this.resultComparaison.get(false).size() + " F");
 
     // Clean the map stored result comparison for a project
     clear();
 
-    // report.append("\n\tnumber pair files idem "
-    // + this.resultComparaison.get(true).size());
-    // report.append("\n\tnumber pair files different "
-    // + this.resultComparaison.get(false).size());
-
-    // if (this.resultComparaison.get(false).size() == 0)
-    // report.append("No regression identified for " + projectName + "");
-
-    // report.append(" detail false :");
-    //
-    // boolean first = true;
-    // for (ComparatorDirectories.ComparatorPairFile comp : resultComparaison
-    // .get(false)) {
-    //
-    // if (first) {
-    // report.append("\ndir "
-    // + comp.getFileA().getParent() + " vs "
-    // + comp.getFileB().getParent());
-    // first = false;
-    // }
-    //
-    // report.append("\n\t" + comp.toString());
-    // // TODO for debug
-    // report
-    // .append("\ndiff " + comp.getPathFileA() + " " + comp.getPathFileB());
-    // }
-    // report.append("\n\t ");
-    //
   }
 
   public String getReport() {
 
-    // Synthesis project
-    if (failComparisonCountPerProject == 0)
-      report.append("\n\tno regression found for project " + currentProject);
-    else
-      report.append("\n\t"
-          + failComparisonCountPerProject
-          + " comparison(s) are failed, check regression in code Eoulsan.");
-
     if (failComparisonCountGlobal == 0)
-      report.append("\nNo regression found for all projects.");
+      report.append("\nNo regression detected.");
     else
       report.append("\n"
           + failComparisonCountGlobal
@@ -186,15 +121,15 @@ public class ComparatorDirectories {
     final Stopwatch timer = Stopwatch.createStarted();
 
     Map<String, DataFile> filesOnlyInTestDir =
-        Maps.newHashMap(tested.getFilesByName());
+        Maps.newHashMap(tested.getAllFilesAnalysis());
 
     // Build pair files with same names
-    for (Map.Entry<String, DataFile> entry : expected.getFilesByName()
+    for (Map.Entry<String, DataFile> entry : expected.getAllFilesAnalysis()
         .entrySet()) {
       DataFile dfExpected = entry.getValue();
 
       // Search file with same in test directory
-      DataFile dfTested = tested.getFilesByName().get(entry.getKey());
+      DataFile dfTested = tested.searchFileByName(entry.getKey());
 
       if (isComparable(dfExpected, dfTested)) {
 
