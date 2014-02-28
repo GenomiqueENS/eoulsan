@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
 import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
-import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
-import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
 import fr.ens.transcriptome.eoulsan.io.CompareFiles;
 import fr.ens.transcriptome.eoulsan.io.LogCompareFiles;
 
@@ -20,7 +18,6 @@ public class ValidationActionDemo {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static void main(String[] args) throws EoulsanException {
-
     ValidationActionDemo.mainbis();
 
     // testLogCompare();
@@ -42,7 +39,7 @@ public class ValidationActionDemo {
 
     final String jobDescription = "validation_test";
     final String confpath =
-        "/home/sperrin/Documents/test_eoulsan/dataset_source/test_fonctionnel.conf";
+        "/home/sperrin/Documents/test_eoulsan/tests_fonctionnels/test_fonctionnel.conf";
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
@@ -79,51 +76,9 @@ public class ValidationActionDemo {
 
     }
 
-    boolean completed = true;
+    // Run action
+    action.action(new String[] {"-c", confpath, "-d", jobDescription});
 
-    if (completed) {
-      // Run action
-      action.action(new String[] {"-c", confpath, "-d", jobDescription});
-
-    } else {
-      try {
-        DataSetAnalysis datasetExpected;
-        datasetExpected =
-            new DataSetAnalysis(
-                new File(
-                    "/home/sperrin/Documents/test_eoulsan/dataset_source/expected"),
-                true);
-
-        // Init data set tested
-        final DataSetAnalysis datasetTested =
-            new DataSetAnalysis(
-                new File(
-                    "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/"),
-                false);
-        datasetTested.init();
-        System.out.println("expected size "
-            + datasetExpected.getFilesByName().size());
-
-        System.out.println("tested size "
-            + datasetTested.getFilesByName().size());
-
-        // Compare two directory
-        ComparatorDirectories comparator =
-            new ComparatorDirectories(ValidationAction.USE_SERIALIZATION,
-                ValidationAction.CHECKING_SAME_NAME);
-
-        // Launch comparison
-        comparator.compareDataSet(datasetExpected, datasetTested, "essai",
-            "testName");
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (EoulsanException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
-      }
-
-    }
   }
 
   public static void testLogCompare() {

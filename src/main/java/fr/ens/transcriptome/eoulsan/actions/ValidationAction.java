@@ -57,18 +57,10 @@ public class ValidationAction extends AbstractAction {
   private final ComparatorDirectories comparator;
 
   private File inputData;
-  private Map<String, File> paramtersFiles;
-  private File expectedAnalysisDirectory;
-  private File outputAnalysisDirectory;
-  private boolean isNewVersionEoulsan = false;
+  private File outputTestsDirectory;
+  private File testsData;
 
-  private Collection<File> inputDataProjects;
-
-  // Optional
-  private String localScriptPretreatement;
-  private String localScriptPostreatement;
-  private String hadoopScriptPretreatement;
-  private String hadoopScriptPostreatement;
+  private final Map<String, DataSetTest> tests;
 
   @Override
   public String getName() {
@@ -219,36 +211,24 @@ public class ValidationAction extends AbstractAction {
       // Initialization action from configuration test file
       init(new File(confPath));
 
-      for (File project : inputDataProjects) {
+      LOGGER.info("Number tests defined " + this.tests.size());
+
+      for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
+        final String testName = test.getKey();
+        final DataSetTest dsa = test.getValue();
+
+        LOGGER.info("Execute test " + testName);
+        dsa.executeTest();
 
         // Collect data expected for project
-        final DataSetTest dstExpected =
-            new DataSetTest(props, paramtersFiles, project,
-                this.expectedAnalysisDirectory, isNewVersionEoulsan);
-
-        final Map<String, DataSetAnalysis> setExpected = dstExpected.execute();
+        final DataSetAnalysis setExpected = dsa.getAnalysisExcepted();
 
         // Collect data tested
-        final DataSetTest dstTested =
-            new DataSetTest(props, paramtersFiles, project,
-                this.outputAnalysisDirectory);
+        final DataSetAnalysis setTested = dsa.getAnalysisTest();
 
-        final Map<String, DataSetAnalysis> setTested = dstTested.execute();
+        // Launch comparison
+        comparator.compareDataSet(setExpected, setTested, testName);
 
-        // TODO init map with the same size (from parameters list)
-        // Check same count test for the data set
-        if (setExpected.size() != setTested.size()) {
-          throw new EoulsanException(
-              "Different count test between expected directory and tested directory.");
-        }
-
-        // Comparison for each test
-        for (String testName : setExpected.keySet()) {
-          // Launch comparison
-          comparator.compareDataSet(setExpected.get(testName),
-              setTested.get(testName), project.getName(), testName);
-
-        }
       }
 
       LOGGER.severe("Final report " + comparator.getReport());
@@ -302,63 +282,27 @@ public class ValidationAction extends AbstractAction {
         configureFileParameter("input_directory", " input data directory ")
             .iterator().next();
 
-    final File[] outputDataDirectory =
-        new File(this.props.getProperty("expected_analysis_directory"))
-            .listFiles(new FileFilter() {
+    this.testsData =
+        configureFileParameter("tests_directory", " tests data directory ")
+            .iterator().next();
 
-              @Override
-              public boolean accept(File pathname) {
-                return pathname.getName().startsWith(
-                    props.getProperty("eoulsan_reference_version_git"));
-              }
-            });
+    final File output =
+        configureFileParameter("output_analysis_directory",
+            " output data directory ").iterator().next();
 
-    // Check outputData for reference Eoulsan version
-    if (outputDataDirectory.length == 1) {
-      // Doesn't exist, analysis must be launch
-      this.expectedAnalysisDirectory = outputDataDirectory[0];
+    this.outputTestsDirectory =
+        new File(output, props.getProperty("eoulsan_test_version_git")
+            + "_" + DATE_FORMAT.format(new Date()));
 
-    } else if (outputDataDirectory.length == 0) {
-      // New version Eoulsan to test, create data_expected analysis
-      this.expectedAnalysisDirectory =
-          new File(this.props.getProperty("expected_analysis_directory")
-              + "/" + this.props.getProperty("eoulsan_reference_version_git")
-              + "_" + DATE_FORMAT.format(new Date()));
+    if (!outputTestsDirectory.mkdir())
+      throw new EoulsanException("Cannot create output tests directory "
+          + outputTestsDirectory.getAbsolutePath());
 
-      if (!expectedAnalysisDirectory.mkdirs())
-        throw new IOException("Cannot create output analysis directory "
-            + expectedAnalysisDirectory.getAbsolutePath());
-
-      this.isNewVersionEoulsan = true;
-
-      LOGGER.info("New version reference Eoulsan define in configuration test "
-          + this.props.getProperty("eoulsan_reference_version_git"));
-
-    } else {
-      throw new EoulsanException(
-          "Number data expected directory for version Eoulsan "
-              + props.getProperty("eoulsan_reference_version_git")
-              + " is invalid " + outputDataDirectory.length);
-    }
-
-    // Create new output test directory
-    this.outputAnalysisDirectory =
-        new File(this.props.getProperty("output_analysis_directory")
-            + "/" + this.props.getProperty("eoulsan_test_version_git") + "_"
-            + DATE_FORMAT.format(new Date()));
-
-    if (!outputAnalysisDirectory.mkdirs())
-      throw new IOException("Cannot create output analysis directory "
-          + outputAnalysisDirectory.getAbsolutePath());
-
-    Collection<File> parameterDirectories =
-        configureFileParameter("parameters_directory", "parameters directory ");
-    collectParametersFiles(parameterDirectories);
-
-    collectInputDataDirectories();
+    collectTests();
 
     // Set not compare eoulsan.log
     comparator.setFilesToNotCompare("eoulsan.log");
+
   }
 
   private Collection<File> configureFileParameter(final String propertyName,
@@ -379,34 +323,15 @@ public class ValidationAction extends AbstractAction {
     return values;
   }
 
-  private void collectInputDataDirectories() throws EoulsanException,
-      IOException {
+  private void collectTests() throws EoulsanException, IOException {
+    final String prefix = "test";
+    final String suffix = ".txt";
 
-    for (String project : splitter.split(props.getProperty("input_data"))) {
-      File projectDir = new File(inputData, project);
+    // Parsing all directories test
+    for (File dir : this.testsData.listFiles()) {
 
-      checkExistingFile(
-          projectDir,
-          "Project directory doesn't exist in directory "
-              + inputData.getAbsolutePath());
-
-      this.inputDataProjects.add(projectDir);
-    }
-
-    if (this.inputDataProjects.size() == 0)
-      throw new EoulsanException("None input data specified for test.");
-
-  }
-
-  private void collectParametersFiles(
-      final Collection<File> parameterDirectories) throws EoulsanException {
-    final String prefix = "param_";
-    final String suffix = ".xml";
-
-    // Collect all parameters files at the root of each directory
-    for (File paramDir : parameterDirectories) {
-
-      File[] params = paramDir.listFiles(new FileFilter() {
+      // Collect test description file
+      final File[] files = dir.listFiles(new FileFilter() {
 
         @Override
         public boolean accept(File pathname) {
@@ -415,18 +340,18 @@ public class ValidationAction extends AbstractAction {
         }
       });
 
-      String name;
-      for (File param : params) {
-        int beginIndex = prefix.length();
-        int endIndex = param.getName().length() - suffix.length();
-
-        name = param.getName().substring(beginIndex, endIndex);
-        paramtersFiles.put(name, param);
+      if (files != null && files.length == 1) {
+        //
+        final DataSetTest dst =
+            new DataSetTest(props, files[0], dir, this.outputTestsDirectory);
+        this.tests.put(dir.getName(), dst);
       }
+
     }
 
-    if (paramtersFiles.size() == 0)
-      throw new EoulsanException("None parameters files defined here ");
+    if (this.tests.size() == 0)
+      throw new EoulsanException("None test specified in "
+          + this.testsData.getAbsolutePath());
   }
 
   //
@@ -436,13 +361,11 @@ public class ValidationAction extends AbstractAction {
   public ValidationAction() throws EoulsanException {
     props = new Properties();
 
-    // Initialisation comparator
+    // Initialization comparator
     this.comparator =
         new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
 
-    this.paramtersFiles = Maps.newHashMap();
-    this.inputDataProjects = Sets.newHashSet();
+    this.tests = Maps.newHashMap();
 
   }
-
 }

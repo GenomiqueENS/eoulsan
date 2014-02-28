@@ -1,65 +1,41 @@
 package fr.ens.transcriptome.eoulsan.data;
 
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
+
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.FileUtils.PrefixFilenameFilter;
 
 public class DataSetAnalysis {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  private final boolean exists;
-  private final File dataSet;
+  private final File inputDataDirectory;
+  private final File outputDataDirectory;
 
-  private DataFile designFile;
-  private DataFile paramFile;
-  private DataFile eoulsanLog;
-  private Collection<File> fastqFiles;
+  private boolean exists = true;
+  private File designFile;
+  private File paramFile;
+  private File eoulsanLog;
 
-  private Map<String, DataFile> fileByName;
+  private Map<String, DataFile> filesByName;
 
-  /**
-   * @throws EoulsanException
-   */
-  public void init() throws EoulsanException {
-
-    parseDirectory(this.dataSet);
-
-    Collection<DataFile> files;
-
-    // Check design file
-    files = getDataFileStartwith("design");
-    if (files.isEmpty()) {
-      LOGGER.warning("Design file doesn't exist");
-      throw new EoulsanException("Design file doesn't exist");
-    }
-
-    this.designFile = files.iterator().next();
-
-    // Check parameter file
-    files = getDataFileStartwith("param");
-    if (files.isEmpty()) {
-      LOGGER.warning("Parameter file doesn't exist");
-      throw new EoulsanException("Parameter file doesn't exist");
-    }
-
-    this.paramFile = files.iterator().next();
-
+  public void parseDirectory() throws IOException, EoulsanException {
+    parseDirectory(this.outputDataDirectory);
   }
 
-  public void parseDirectory(final File directory) {
+  private void parseDirectory(final File directory) throws IOException,
+      EoulsanException {
 
     for (final File fileEntry : directory.listFiles()) {
       if (fileEntry.isDirectory()) {
@@ -68,51 +44,63 @@ public class DataSetAnalysis {
 
         DataFile df = new DataFile(fileEntry);
 
-        // Skip serizalisation file for bloomFilter
-        if (!df.getExtension().equals(".ser")) {
-          // Add entry in map
-          fileByName.put(df.getName(), df);
-        }
+        if (filesByName.containsKey(df.getName())) {
+          // Check two paths with same filename linked the same file
+          File firstFile =
+              filesByName.get(df.getName()).toFile().getCanonicalFile();
+          File secondFile = df.toFile().getCanonicalFile();
 
+          if (!firstFile.equals(secondFile))
+            throw new EoulsanException(
+                "Fail parsing analysis directory, they are two differents files with the same filename");
+        }
+        // Skip serizalisation file created by bloomFilter
+        if (!df.getExtension().equals(".ser")) {
+
+          // Add entry in map
+          filesByName.put(df.getName(), df);
+        }
       }
     }
   }
 
-  public void buildDirectoryAnalysis() throws EoulsanException, IOException {
-    if (exists)
-      // Directory already exists
+  private void buildDirectoryAnalysis() throws EoulsanException, IOException {
+    if (this.exists)
+      // Analysis directory already exists
       return;
 
-    if (this.dataSet.exists())
+    if (this.outputDataDirectory.exists())
       throw new IOException("Test output directory already exists "
-          + this.dataSet.getAbsolutePath());
+          + this.outputDataDirectory.getAbsolutePath());
 
-    // Create test directory
-    if (!this.dataSet.mkdirs())
-      throw new IOException("Cannot create test output directory "
-          + this.dataSet.getAbsolutePath());
+    // Create analysis directory and temporary directory
+    if (!new File(this.outputDataDirectory + "/tmp").mkdirs())
+      throw new IOException("Cannot create analysis directory "
+          + this.outputDataDirectory.getAbsolutePath());
 
-    if (!new File(this.dataSet + "/tmp").mkdir())
-      throw new IOException(
-          "Cannot create tmp directory in test output directory "
-              + this.dataSet.getAbsolutePath());
+    // Create a symbolic link for each file from input data test directory
+    for (File file : this.inputDataDirectory.listFiles()) {
+      if (file.isFile())
+        createSymbolicLink(file, this.outputDataDirectory);
+    }
+  }
 
-    // Create symbolic link to fastq files
-    for (File fastq : fastqFiles) {
+  private void init() throws EoulsanException, IOException {
 
-      // Only for fastq at the root directory analysis
-      FileUtils.createSymbolicLink(fastq, this.dataSet);
+    if (!this.outputDataDirectory.exists()) {
+
+      // Build analysis Eoulsan directory
+      this.exists = false;
+      buildDirectoryAnalysis();
     }
 
-    // Create symbolic link to design file
-    FileUtils.createSymbolicLink(this.designFile.toFile(), this.dataSet);
     this.designFile =
-        new DataFile(new File(this.dataSet, this.designFile.getName()));
+        filterOneFileWithPrefix(this.outputDataDirectory, "design",
+            "design file");
 
-    // Create symbolic link to parameters file
-    FileUtils.createSymbolicLink(this.paramFile.toFile(), this.dataSet);
     this.paramFile =
-        new DataFile(new File(this.dataSet, this.paramFile.getName()));
+        filterOneFileWithPrefix(this.outputDataDirectory, "param",
+            "parameter file");
 
   }
 
@@ -120,118 +108,88 @@ public class DataSetAnalysis {
   // Useful methods
   //
 
-  private Collection<DataFile> getDataFileWithExtension(final String extension) {
-    Set<DataFile> files = Sets.newHashSet();
+  private File[] filterFile(final File dir, final String... suffixes) {
 
-    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
-      if (entry.getValue().getExtension().equals(extension))
-        files.add(entry.getValue());
-    }
+    return dir.listFiles(new FileFilter() {
 
-    if (files.size() == 0)
-      return Collections.emptySet();
-
-    return Collections.unmodifiableSet(files);
+      @Override
+      public boolean accept(File pathname) {
+        for (String suffix : suffixes)
+          return pathname.getName().contains(suffix);
+        return false;
+      }
+    });
   }
 
-  private Collection<DataFile> getDataFileStartwith(final String prefix) {
-    Set<DataFile> files = Sets.newHashSet();
+  private File filterOneFileWithPrefix(final File dir, final String prefix,
+      final String msg) throws EoulsanException {
 
-    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
-      if (entry.getKey().startsWith(prefix))
-        files.add(entry.getValue());
-    }
+    File[] files = dir.listFiles(new PrefixFilenameFilter(prefix, false));
 
-    if (files.size() == 0)
-      return Collections.emptySet();
+    if (files == null)
+      throw new EoulsanException("None file: "
+          + msg + " filtered in directory " + dir.getAbsolutePath());
 
-    return Collections.unmodifiableSet(files);
-  }
+    if (files.length != 1)
+      throw new EoulsanException(
+          "Doesn't have the good number of file searched for " + msg);
 
-  private Collection<DataFile> getDataFileStartwith(final String prefix,
-      final String extension) {
+    return files[0];
 
-    Set<DataFile> files = Sets.newHashSet();
-
-    for (Map.Entry<String, DataFile> entry : fileByName.entrySet()) {
-      if (entry.getKey().startsWith(prefix)
-          && entry.getValue().getExtension().equals(extension))
-        files.add(entry.getValue());
-    }
-
-    if (files.size() == 0)
-      return Collections.emptySet();
-
-    return Collections.unmodifiableSet(files);
   }
 
   /**
    * @param df
    * @return
    */
-  private DataFile getDataFileByName(final String filename) {
+  public DataFile searchFileByName(final String filename) {
 
     if (filename == null || filename.length() == 0)
       return null;
 
-    return fileByName.get(filename);
+    return filesByName.get(filename);
   }
 
   //
   // Getter & Setter
   //
 
-  public boolean exists() {
+  public boolean isResultsAnalysisExists() {
     return exists;
   }
 
-  public DataFile getDesignFile() {
+  public File getDesignFile() {
     return designFile;
   }
 
-  public DataFile getParamFile() {
+  public File getParamFile() {
     return paramFile;
   }
 
-  public DataFile getEoulsanLog() {
+  public File getEoulsanLog() {
     return eoulsanLog;
   }
 
-  public Map<String, DataFile> getFilesByName() {
-    return fileByName;
+  public Map<String, DataFile> getAllFilesAnalysis() {
+    return filesByName;
   }
 
   //
   // Constructor
   //
 
-  public DataSetAnalysis(final File dataSet, final boolean exists)
-      throws EoulsanException {
+  public DataSetAnalysis(final File inputDataDirectory,
+      final File outputDataDirectory) throws EoulsanException, IOException {
 
-    this.exists = exists;
-    this.dataSet = dataSet;
+    checkExistingFile(inputDataDirectory,
+        "Input data for analysis doesn't exists.");
 
-    this.fileByName = Maps.newHashMap();
+    this.inputDataDirectory = inputDataDirectory;
+    this.outputDataDirectory = outputDataDirectory;
 
-    if (this.exists) {
-      // Check dataset directory exists
-      if (!this.dataSet.exists()) {
-        throw new EoulsanException("Data set doesn't exist at this path "
-            + dataSet.getAbsolutePath());
-      }
-      init();
-    }
+    this.filesByName = Maps.newHashMap();
 
-  }
-
-  public DataSetAnalysis(final File dataSet, final boolean expected,
-      final File param, final DataSetTest dst) throws EoulsanException {
-
-    this(dataSet, expected);
-
-    this.designFile = new DataFile(dst.getDesignFile());
-    this.paramFile = new DataFile(param);
-    this.fastqFiles = dst.getFastqFiles();
+    init();
 
   }
 
