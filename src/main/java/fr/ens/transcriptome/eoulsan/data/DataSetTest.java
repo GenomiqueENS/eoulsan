@@ -37,6 +37,7 @@ public class DataSetTest {
       "check_existing_files_between_directories";
   private static final String FILES_IGNORED_FOR_COMPARISON_KEY =
       "files_ignored_for_comparison";
+  private static final String EOULSAN_CONF_FILE_KEY = "eoulsan_conf_file";
 
   private final static Splitter splitter = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
@@ -168,6 +169,12 @@ public class DataSetTest {
 
     cmd.add(eoulsanPath.getAbsolutePath() + "/eoulsan.sh");
 
+    // Set eoulsan configuration file path
+    if (this.props.getProperty(EOULSAN_CONF_FILE_KEY) != null) {
+      cmd.add("-conf");
+      cmd.add(this.props.getProperty(EOULSAN_CONF_FILE_KEY));
+    }
+
     // Add arguments from configuration file
     cmd.addAll(eoulsanArguments);
 
@@ -214,16 +221,22 @@ public class DataSetTest {
 
     try {
       while ((line = br.readLine()) != null) {
+        // Skip commentary
+        if (line.startsWith("#"))
+          continue;
 
         final int pos = line.indexOf('=');
         if (pos == -1)
           continue;
 
-        final String key = line.substring(0, pos);
+        final String key = line.substring(0, pos).trim();
         final String value = line.substring(pos + 1).trim();
 
-        this.props.put(key, value);
-        LOGGER_TEST.config(key + ": " + value);
+        // Save parameter with value
+        if (value.length() > 0) {
+          this.props.put(key, value);
+          LOGGER_TEST.config(key + ": " + value);
+        }
       }
       br.close();
 
