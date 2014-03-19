@@ -313,7 +313,6 @@ public class ValidationAction extends AbstractAction {
         // Collect data tested
         final DataSetAnalysis setTested = dst.getAnalysisTest();
 
-        
         final String filesToIgnoreCurrentTest =
             dst.getFilesToIngore()
                 + "," + loggerFilename + "," + loggerFilename + ".lck";
@@ -368,6 +367,9 @@ public class ValidationAction extends AbstractAction {
 
     try {
       while ((line = br.readLine()) != null) {
+        // Skip commentary
+        if (line.startsWith("#"))
+          continue;
 
         final int pos = line.indexOf('=');
         if (pos == -1)
