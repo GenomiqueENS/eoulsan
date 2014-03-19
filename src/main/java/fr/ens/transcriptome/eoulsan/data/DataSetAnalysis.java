@@ -13,12 +13,15 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
 import fr.ens.transcriptome.eoulsan.util.FileUtils.PrefixFilenameFilter;
 
 public class DataSetAnalysis {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER_GLOBAL = Logger
+      .getLogger(ValidationAction.LOGGER_TESTS_GLOBAL);
 
   private final File inputDataDirectory;
   private final File outputDataDirectory;
@@ -44,8 +47,8 @@ public class DataSetAnalysis {
 
         DataFile df = new DataFile(fileEntry);
 
+        // Check two paths with same filename linked the same file
         if (filesByName.containsKey(df.getName())) {
-          // Check two paths with same filename linked the same file
           File firstFile =
               filesByName.get(df.getName()).toFile().getCanonicalFile();
           File secondFile = df.toFile().getCanonicalFile();
@@ -54,7 +57,7 @@ public class DataSetAnalysis {
             throw new EoulsanException(
                 "Fail parsing analysis directory, they are two differents files with the same filename");
         }
-        // Skip serizalisation file created by bloomFilter
+        // Skip serialization file created by bloomFilter
         if (!df.getExtension().equals(".ser")) {
 
           // Add entry in map

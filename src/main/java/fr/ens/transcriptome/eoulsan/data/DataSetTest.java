@@ -24,13 +24,26 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class DataSetTest {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
+
+  /** Key for configuration test */
+  private static final String COMMAND_LINE_EOULSAN_KEY = "command_line_eoulsan";
+  private static final String SCRIPT_PRETREATMENT_KEY = "script_pretreatment";
+  private static final String SCRIPT_POSTTREATMENT_KEY = "script_posttreatment";
+  private static final String DESCRIPTION_KEY = "description";
+  private static final String SCRIPT_GENERATED_DATA_EXPECTED_KEY =
+      "script_generated_data_expected";
+  private static final String CHECKING_EXISTING_FILES_KEY =
+      "check_existing_files_between_directories";
+  private static final String FILES_IGNORED_FOR_COMPARISON_KEY =
+      "files_ignored_for_comparison";
 
   private final static Splitter splitter = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
   private final Properties props;
 
+  private final File testConfigurationFile;
   private final File expectedDirectory;
   private final File testedDirectory;
 
@@ -40,6 +53,11 @@ public class DataSetTest {
   private boolean isExecuted = false;
 
   public void executeTest() throws EoulsanException, IOException {
+
+    if (isExecuted)
+      return;
+
+    initProperties();
 
     if (!dsaExpected.isResultsAnalysisExists()) {
       // Analysis must be launch for expected result directory
@@ -62,16 +80,21 @@ public class DataSetTest {
 
   public DataSetAnalysis getAnalysisExcepted() throws EoulsanException,
       IOException {
-
+    // TODO check
     if (!isExecuted)
       executeTest();
     return this.dsaExpected;
   }
 
   public DataSetAnalysis getAnalysisTest() throws EoulsanException, IOException {
+    // TODO check
     if (!isExecuted)
       executeTest();
     return this.dsaTested;
+  }
+
+  public String getFilesToIngore() {
+    return this.props.getProperty(FILES_IGNORED_FOR_COMPARISON_KEY);
   }
 
   //
@@ -79,7 +102,7 @@ public class DataSetTest {
   //
 
   private void launchAnalysis(final DataSetAnalysis dsa,
-      final File eoulsanPath, final File outputTest,
+      final File eoulsanPath, final File outputDirectory,
       final boolean isDataSetExpected) throws IOException, EoulsanException {
 
     String script = this.props.getProperty("script_generated_data_expected");
@@ -87,28 +110,28 @@ public class DataSetTest {
     // Data expected must be generated
     if (isDataSetExpected && script != null && script.trim().length() > 0) {
       // Check if a script is define in test.txt
-      executeScript("script_generated_data_expected", outputTest);
+      executeScript(SCRIPT_GENERATED_DATA_EXPECTED_KEY, outputDirectory);
 
     } else {
       // Call Eoulsan
       checkExistingFile(eoulsanPath, "Eoulsan executable doesn't exists.");
 
       // Optional scripts
-      executeScript("script_pretreatment", outputTest);
+      executeScript(SCRIPT_PRETREATMENT_KEY, outputDirectory);
 
       // TODO
       // Launch eoulsan
       int exitValue =
-          ProcessUtils.sh(buildCommandLine(dsa, eoulsanPath), outputTest);
+          ProcessUtils.sh(buildCommandLine(dsa, eoulsanPath), outputDirectory);
 
       // Check exitvalue
       if (exitValue != 0) {
         throw new IOException("Bad error result for dataset "
-            + outputTest.getAbsolutePath() + " execution: " + exitValue);
+            + outputDirectory.getAbsolutePath() + " execution: " + exitValue);
       }
 
       // If exists, launch postScript analysis
-      executeScript("script_posttreatment", outputTest);
+      executeScript(SCRIPT_POSTTREATMENT_KEY, outputDirectory);
 
     }
   }
@@ -119,38 +142,36 @@ public class DataSetTest {
     // Data for execute Eoulsan
     final List<String> eoulsanArguments =
         Lists.newLinkedList(splitter.split(props
-            .getProperty("command_line_eoulsan")));
+            .getProperty(COMMAND_LINE_EOULSAN_KEY)));
+
+    if (eoulsanArguments == null || eoulsanArguments.isEmpty())
+      throw new EoulsanException("Eoulsan arguments for command line is empty.");
 
     // Check command line include param and design file
     if (eoulsanArguments.indexOf("{param}") == -1)
       throw new EoulsanException(
-          "Error in command line defined in test.txt file, no parameter include.");
+          "Error in Eoulsan command line: no parameter included.");
 
     if (eoulsanArguments.indexOf("{design}") == -1)
       throw new EoulsanException(
-          "Error in command line defined in test.txt file, no parameter include.");
+          "Error in Eoulsan command line: no design included.");
 
-    // Replace by file paths for parameter and design in command line
-    // Eoulsan
+    // Replace by parameter in command line Eoulsan
     eoulsanArguments.set(eoulsanArguments.indexOf("{param}"), dsa
         .getParamFile().getAbsolutePath());
+
+    // Replace by design in command line Eoulsan
     eoulsanArguments.set(eoulsanArguments.indexOf("{design}"), dsa
         .getDesignFile().getAbsolutePath());
 
     List<String> cmd = Lists.newLinkedList();
 
-    // cmd.add("screen");
     cmd.add(eoulsanPath.getAbsolutePath() + "/eoulsan.sh");
-    // cmd.add("-help");
-
-    // TODO add param conf
 
     // Add arguments from configuration file
     cmd.addAll(eoulsanArguments);
 
-    LOGGER.info(StringUtils.join(cmd.toArray(), " "));
-    // TODO
-    System.out.println(StringUtils.join(cmd.toArray(), " "));
+    LOGGER_TEST.info(StringUtils.join(cmd.toArray(), " "));
 
     return cmd;
   }
@@ -181,12 +202,13 @@ public class DataSetTest {
 
   }
 
-  private void initProperties(final File testFile) throws IOException {
+  private void initProperties() throws IOException {
 
-    checkExistingFile(testFile, " configuration file doesn't exist.");
+    checkExistingFile(testConfigurationFile,
+        " configuration file doesn't exist.");
 
     final BufferedReader br =
-        new BufferedReader(newReader(testFile,
+        new BufferedReader(newReader(testConfigurationFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
     String line = null;
 
@@ -198,9 +220,10 @@ public class DataSetTest {
           continue;
 
         final String key = line.substring(0, pos);
-        final String value = line.substring(pos + 1);
+        final String value = line.substring(pos + 1).trim();
 
-        props.put(key, value);
+        this.props.put(key, value);
+        LOGGER_TEST.config(key + ": " + value);
       }
       br.close();
 
@@ -208,6 +231,27 @@ public class DataSetTest {
       e.printStackTrace();
     }
 
+  }
+
+  //
+  // Getter and Setter
+  //
+
+  public File getExpectedDirectory() {
+    return this.expectedDirectory;
+  }
+
+  public File getTestedDirectory() {
+    return this.testedDirectory;
+  }
+
+  public boolean isCheckingExistingFiles() {
+
+    String s = this.props.getProperty(CHECKING_EXISTING_FILES_KEY);
+    if (s == null || s.length() == 0)
+      return false;
+
+    return s.toLowerCase().equals("true");
   }
 
   //
@@ -223,7 +267,7 @@ public class DataSetTest {
         new File(outputData, testFile.getParentFile().getName());
 
     this.props = new Properties(props);
-    initProperties(testFile);
+    this.testConfigurationFile = testFile;
 
     this.dsaExpected = new DataSetAnalysis(inputData, this.expectedDirectory);
     this.dsaTested = new DataSetAnalysis(inputData, this.testedDirectory);

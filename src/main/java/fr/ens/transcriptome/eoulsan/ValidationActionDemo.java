@@ -15,7 +15,7 @@ import fr.ens.transcriptome.eoulsan.io.LogCompareFiles;
 public class ValidationActionDemo {
 
   /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+  // private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static void main(String[] args) throws EoulsanException {
     ValidationActionDemo.mainbis();
@@ -45,8 +45,8 @@ public class ValidationActionDemo {
     Globals.setDefaultLocale();
 
     // Set default log level
-    LOGGER.setLevel(Globals.LOG_LEVEL);
-    LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
+    // LOGGER.setLevel(Globals.LOG_LEVEL);
+    // LOGGER.getParent().getHandlers()[0].setFormatter(Globals.LOG_FORMATTER);
 
     // Select the application execution mode
     final String eoulsanMode = System.getProperty(Globals.LAUNCH_MODE_PROPERTY);
@@ -83,6 +83,9 @@ public class ValidationActionDemo {
 
   public static void testLogCompare() {
 
+    // Map<Object, Object> map = System.getProperties();
+    // System.out.println("print properties \n"
+    // + Joiner.on("\n").withKeyValueSeparator("\t").join(map));
     CompareFiles comp = new LogCompareFiles();
     String dir =
         new File(
