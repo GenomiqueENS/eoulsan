@@ -60,7 +60,8 @@ public class ValidationAction extends AbstractAction {
   private File outputTestsDirectory;
   private String logGlobalPath;
   private String logTestPath;
-  private boolean noRegression = true;
+  private boolean noRegressionGlobal = true;
+  private boolean exceptionThrowGlobal = false;
 
   private final Map<String, DataSetTest> tests;
 
@@ -105,6 +106,7 @@ public class ValidationAction extends AbstractAction {
     fh.setFormatter(Globals.LOG_FORMATTER);
 
     LOGGER.setLevel(Level.ALL);
+    // TODO to remove after test
     LOGGER.setUseParentHandlers(false);
 
     LOGGER.addHandler(fh);
@@ -137,9 +139,10 @@ public class ValidationAction extends AbstractAction {
 
   private void closeLoggerGlobal() {
 
-    String suffix = "NOT_DEFINE";
+    final String suffix =
+        exceptionThrowGlobal ? "EXCEPTION" : (noRegressionGlobal
+            ? "SUCCES" : "FAIL");
 
-    suffix = noRegression ? "SUCCES" : "FAIL";
     // Add suffix to log global filename
     final File destFile =
         new File(StringUtils.filenameWithoutExtension(this.logGlobalPath)
@@ -154,10 +157,11 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  private void closeLoggerTest(final boolean isNoRegression) throws IOException {
-    String suffix = "NOT_DEFINE";
+  private void closeLoggerTest(final boolean noRegressionTest,
+      final boolean exceptionTest) {
+    final String suffix =
+        exceptionTest ? "EXCEPTION" : (noRegressionTest ? "SUCCES" : "FAIL");
 
-    suffix = isNoRegression ? "SUCCES" : "FAIL";
     // Add suffix to log global filename
     final File sourceFile =
         new File(StringUtils.filenameWithoutExtension(this.logTestPath)
@@ -298,11 +302,13 @@ public class ValidationAction extends AbstractAction {
     for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
       final String testName = test.getKey();
       final DataSetTest dst = test.getValue();
+      Exception exception = null;
+      String reportTest = "";
 
       try {
         initLogger(dst.getTestedDirectory().getAbsolutePath(), testName);
         String loggerFilename = new File(logTestPath).getName();
-
+        exception = null;
         LOGGER.info("Execute test " + testName);
 
         dst.executeTest();
@@ -321,31 +327,51 @@ public class ValidationAction extends AbstractAction {
         // Launch comparison
         comparator.compareDataSet(setExpected, setTested, testName);
 
-        String reportTest =
+        reportTest =
             comparator.buildReport(dst.isCheckingExistingFiles(), testName);
-        noRegression = noRegression && comparator.asNoRegression();
-
-        closeLoggerTest(comparator.asNoRegression());
+        noRegressionGlobal = noRegressionGlobal && comparator.asNoRegression();
 
         // Remove filename to ignore specific for this test
         this.comparator.removeFilesToNoCompare(filesToIgnoreCurrentTest);
 
-        if (comparator.asNoRegression()) {
-          LOGGER_GLOBAL.info(reportTest);
-        } else {
-          LOGGER_GLOBAL.severe(reportTest);
-        }
-
         // TODO Auto-generated catch block
       } catch (IOException e) {
+        exception = e;
         e.printStackTrace();
 
       } catch (EoulsanException ee) {
+        exception = ee;
         ee.printStackTrace();
+
+      } finally {
+
+        exceptionThrowGlobal = exceptionThrowGlobal || (exception != null);
+
+        // Add entry in logger for assessment test
+        if (exception == null) {
+          if (comparator.asNoRegression()) {
+            LOGGER_GLOBAL.info(reportTest);
+          } else {
+            LOGGER_GLOBAL.severe(reportTest);
+          }
+        } else {
+
+          // Exception throws
+          final String msg =
+              exception.getClass().getName()
+                  + ": " + exception.getMessage() + "\n"
+                  + StringUtils.join(exception.getStackTrace(), "\n\t");
+
+          LOGGER.severe(msg);
+
+          LOGGER_GLOBAL.severe("Exception throw with test:" + testName);
+          LOGGER_GLOBAL.severe(msg);
+        }
+        // End run current test
+        closeLoggerTest(comparator.asNoRegression(), (exception != null));
       }
-
     }
-
+    // End run all tests
     closeLoggerGlobal();
 
   }
