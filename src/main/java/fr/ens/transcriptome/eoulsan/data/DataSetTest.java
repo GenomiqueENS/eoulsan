@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -33,6 +34,7 @@ public class DataSetTest {
   private static final String DESCRIPTION_KEY = "description";
   private static final String SCRIPT_GENERATED_DATA_EXPECTED_KEY =
       "script_generated_data_expected";
+  private static final String EXTENSION_TO_COMPARE_KEY = "extension_to_compare";
   private static final String CHECKING_EXISTING_FILES_KEY =
       "check_existing_files_between_directories";
   private static final String FILES_IGNORED_FOR_COMPARISON_KEY =
@@ -64,6 +66,9 @@ public class DataSetTest {
 
     initProperties();
 
+    // Initialization expected directory
+    this.dsaExpected.init();
+
     if (!dsaExpected.isResultsAnalysisExists()) {
       // Analysis must be launch for expected result directory
       launchAnalysis(dsaExpected,
@@ -72,6 +77,9 @@ public class DataSetTest {
     }
 
     dsaExpected.parseDirectory();
+
+    // Initialization test directory
+    this.dsaTested.init();
 
     // Analysis for tested result directory
     launchAnalysis(dsaTested,
@@ -214,25 +222,27 @@ public class DataSetTest {
   private void executeScript(final String script_key, File outputDirectory)
       throws IOException {
 
-    final String scriptPath = this.props.getProperty(script_key);
-    if (scriptPath == null || scriptPath.trim().length() == 0)
+    if (this.props.getProperty(script_key) == null)
+      return;
+
+    final List<String> scriptCmdLine =
+        Lists.newLinkedList(splitter.split(this.props.getProperty(script_key)));
+
+    if (scriptCmdLine.isEmpty())
       return;
 
     // Execute script
-    File scriptFile = new File(scriptPath);
-
-    checkExistingFile(scriptFile, scriptFile.getAbsolutePath());
     checkExistingDirectoryFile(outputDirectory,
         outputDirectory.getAbsolutePath());
 
     // If exists, launch preScript analysis
     int exitValue =
-        ProcessUtils.sh(Lists.newArrayList(scriptFile.getAbsolutePath()),
-            outputDirectory);
+        ProcessUtils.sh(Lists.newArrayList(scriptCmdLine), outputDirectory);
 
     if (exitValue != 0) {
       throw new IOException("Error during script execution  "
-          + scriptFile.getAbsolutePath() + " exitValue: " + exitValue);
+          + Joiner.on(" ").join(scriptCmdLine) + " (exitValue: " + exitValue
+          + ")");
     }
 
   }
@@ -296,8 +306,16 @@ public class DataSetTest {
     return this.dsaTested;
   }
 
+  public String getExtensionsToCompare() {
+    return this.props.getProperty(EXTENSION_TO_COMPARE_KEY);
+  }
+
   public String getFilesToIngore() {
     return this.props.getProperty(FILES_IGNORED_FOR_COMPARISON_KEY);
+  }
+
+  public String getDescriptionTest() {
+    return this.props.getProperty(DESCRIPTION_KEY);
   }
 
   public File getExpectedDirectory() {
