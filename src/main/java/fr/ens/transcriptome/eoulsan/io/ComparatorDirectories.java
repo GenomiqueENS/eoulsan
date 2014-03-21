@@ -16,6 +16,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -41,7 +42,9 @@ public class ComparatorDirectories {
   private boolean useSerialization = false;
   private boolean checkingFilename = false;
 
-  private final Collection<String> allExtensionsTreated = Sets.newHashSet();
+  private Collection<String> extensionsToCompare = Lists.newArrayList();
+
+  private final Collection<String> allExtensionsTreated = Lists.newArrayList();
   private final Set<CompareFiles> typeComparatorFiles = Sets.newHashSet();
 
   private final Set<String> filesToNotCompare = Sets.newHashSet();
@@ -67,8 +70,11 @@ public class ComparatorDirectories {
 
     LOGGER.config("Comparator param: use serialization file "
         + useSerialization);
-    LOGGER.config("Comparison files with extensions: "
+    LOGGER.config("Extensions valids: "
         + Joiner.on(", ").join(allExtensionsTreated));
+
+    LOGGER.config("Extensions authrozised for test: "
+        + Joiner.on(", ").join(extensionsToCompare));
 
     LOGGER.info("Start comparison between to result analysis for " + testName);
 
@@ -103,8 +109,9 @@ public class ComparatorDirectories {
             ? (filesExistsExpectedDirCount == 0 && filesExistsTestedDirCount == 0)
             : true);
 
-    LOGGER.info("File(s) comparable(s) "
-        + filesComparables + " on " + filesTreatedCount + ":\t"
+    LOGGER.info("File(s) treated: "
+        + filesTreatedCount + ": " + filesComparables
+        + "file(s) comparable(s) on " + "\t"
         + this.resultComparaison.get(true).size() + " True \t"
         + this.resultComparaison.get(false).size() + " False");
 
@@ -115,9 +122,9 @@ public class ComparatorDirectories {
 
     String assessment =
         this.resultComparaison.get(false).size()
-            + " comparison(s) failed ; " + filesExistsExpectedDirCount
-            + " file(s) missing in directory ; " + filesExistsTestedDirCount
-            + " file(s) too many in directory.";
+            + " comparison(s) failed on " + filesComparables + "; "
+            + filesExistsExpectedDirCount + " file(s) missing in directory ; "
+            + filesExistsTestedDirCount + " file(s) too many in directory.";
 
     if (allComparisonsSuccessed && noDifferentsFilesBetweenDirectories) {
       assessment =
@@ -176,7 +183,7 @@ public class ComparatorDirectories {
 
       } else {
         // None comparison
-        LOGGER.warning("true"
+        LOGGER.fine("true"
             + "\t" + (dfTested != null) + "\tNA\t" + entry.getKey());
 
         if (dfTested == null) {
@@ -189,9 +196,9 @@ public class ComparatorDirectories {
     }
 
     // Case file present only in tested directory
-    // TODO
-    System.out.println("only in test dir "
-        + Joiner.on("\n").withKeyValueSeparator("\t").join(filesOnlyInTestDir));
+    // // TODO
+    // System.out.println("only in test dir "
+    // + Joiner.on("\n").withKeyValueSeparator("\t").join(filesOnlyInTestDir));
 
     if (filesOnlyInTestDir.size() > 0) {
 
@@ -205,7 +212,7 @@ public class ComparatorDirectories {
         filesExistsTestedDirCount++;
 
         // None comparison
-        LOGGER.warning("false\ttrue\tNA\t" + entry.getKey());
+        LOGGER.fine("false\ttrue\tNA\t" + entry.getKey());
       }
     }
 
@@ -228,7 +235,7 @@ public class ComparatorDirectories {
     checkNotNull(pathFileB, "File " + pathFileB + "doesn't exist");
 
     // Check extension files same
-    if (!dfExpected.getExtension().equals(dfTested.getExtension()))
+    if (!isExtensionTreated(dfExpected.getExtension()))
       return false;
 
     // Check files can be comparable
@@ -272,8 +279,39 @@ public class ComparatorDirectories {
     }
   }
 
-  public boolean isExtensionTreated(final String ext) {
-    return allExtensionsTreated.contains(ext);
+  private boolean isExtensionTreated(final String ext) {
+    // return allExtensionsTreated.contains(ext);
+    return extensionsToCompare.contains(ext);
+  }
+
+  //
+  // Set extension authorized
+  //
+
+  public void setExtensionsToCompare(final String extensions) {
+
+    if (extensions == null || extensions.trim().length() == 0) {
+      this.extensionsToCompare = Lists.newArrayList(this.allExtensionsTreated);
+
+    } else {
+      List<String> s = SPLITTER.splitToList(extensions);
+
+      if (s.isEmpty()) {
+        this.extensionsToCompare =
+            Lists.newArrayList(this.allExtensionsTreated);
+      } else {
+        this.extensionsToCompare.clear();
+
+        // Add extension in valid list to compare
+        for (String extension : s) {
+          if (extension.startsWith("."))
+            this.extensionsToCompare.add(extension);
+          else
+            // Add '.' if missing
+            this.extensionsToCompare.add("." + extension);
+        }
+      }
+    }
   }
 
   //
