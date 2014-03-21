@@ -88,7 +88,7 @@ public class DataSetAnalysis {
     }
   }
 
-  private void init() throws EoulsanException, IOException {
+  public void init() throws EoulsanException, IOException {
 
     if (!this.outputDataDirectory.exists()) {
 
@@ -192,7 +192,7 @@ public class DataSetAnalysis {
 
     this.filesByName = Maps.newHashMap();
 
-    init();
+    // init();
 
   }
 
