@@ -3,6 +3,7 @@ package fr.ens.transcriptome.eoulsan.actions;
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -28,6 +30,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.utils.Charsets;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.Common;
@@ -47,6 +50,8 @@ public class ValidationAction extends AbstractAction {
   private static final Logger LOGGER_GLOBAL = Logger
       .getLogger(LOGGER_TESTS_GLOBAL);
 
+  private final Stopwatch TIMER = Stopwatch.createUnstarted();
+
   public static DateFormat DATE_FORMAT = new SimpleDateFormat(
       "yyyyMMdd-kkmmss", Globals.DEFAULT_LOCALE);
 
@@ -58,6 +63,7 @@ public class ValidationAction extends AbstractAction {
 
   private File inputData;
   private File outputTestsDirectory;
+  private File tmpDir;
   private String logGlobalPath;
   private String logTestPath;
   private boolean noRegressionGlobal = true;
@@ -75,7 +81,7 @@ public class ValidationAction extends AbstractAction {
     return "test " + Globals.APP_NAME + " version.";
   }
 
-  private void initLogger(final String dirTestPath, final String nameTest) {
+  private void initLogger(final String nameTest) {
 
     // Close previous logger test file
     if (this.logTestPath != null) {
@@ -84,14 +90,14 @@ public class ValidationAction extends AbstractAction {
       }
 
       // Remove lock logger file
-      if (!new File(logTestPath + ".lck").delete())
+      if (!new File(this.logTestPath + ".lck").delete())
         // TODO
         System.out.println("Fail remove lock logger file: "
             + logTestPath + ".lck");
     }
 
     // Init new logger for a current test
-    logTestPath = dirTestPath + "/test_" + nameTest + ".log";
+    this.logTestPath = this.tmpDir + "/test_" + nameTest + ".log";
 
     Handler fh = null;
     try {
@@ -110,6 +116,7 @@ public class ValidationAction extends AbstractAction {
     LOGGER.setUseParentHandlers(false);
 
     LOGGER.addHandler(fh);
+
   }
 
   // TODO use for test into eclipse
@@ -143,6 +150,10 @@ public class ValidationAction extends AbstractAction {
         exceptionThrowGlobal ? "EXCEPTION" : (noRegressionGlobal
             ? "SUCCES" : "FAIL");
 
+    LOGGER_GLOBAL.fine(suffix
+        + " end execution in "
+        + toTimeHumanReadable(TIMER.elapsed(TimeUnit.MILLISECONDS)));
+
     // Add suffix to log global filename
     final File destFile =
         new File(StringUtils.filenameWithoutExtension(this.logGlobalPath)
@@ -157,22 +168,30 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  private void closeLoggerTest(final boolean noRegressionTest,
-      final boolean exceptionTest) {
+  private void closeLoggerTest(final File outputDir,
+      final boolean noRegressionTest, final boolean exceptionTest) {
+
+    final File srcFile = new File(this.logTestPath);
+
+    // Throw exception occurs during initialization test, no logger test exists
+    if (!srcFile.exists() || !outputDir.exists())
+      return;
+
     final String suffix =
         exceptionTest ? "EXCEPTION" : (noRegressionTest ? "SUCCES" : "FAIL");
 
     // Add suffix to log global filename
-    final File sourceFile =
-        new File(StringUtils.filenameWithoutExtension(this.logTestPath)
-            + "_" + suffix + ".log");
+    final File destFile =
+        new File(outputDir, StringUtils.filenameWithoutExtension(srcFile
+            .getName()) + "_" + suffix + ".log");
 
-    final File logFile = new File(logTestPath);
-
-    // Create a symbolic link
-    if (logFile.exists())
-      if (logFile.renameTo(sourceFile))
-        return;
+    // Copy and rename
+    try {
+      FileUtils.moveFile(srcFile, destFile);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -298,6 +317,7 @@ public class ValidationAction extends AbstractAction {
     }
 
     LOGGER_GLOBAL.info("Number tests defined " + this.tests.size());
+    TIMER.start();
 
     for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
       final String testName = test.getKey();
@@ -306,8 +326,7 @@ public class ValidationAction extends AbstractAction {
       String reportTest = "";
 
       try {
-        initLogger(dst.getTestedDirectory().getAbsolutePath(), testName);
-        String loggerFilename = new File(logTestPath).getName();
+        initLogger(testName);
         exception = null;
         LOGGER.info("Execute test " + testName);
 
@@ -319,22 +338,20 @@ public class ValidationAction extends AbstractAction {
         // Collect data tested
         final DataSetAnalysis setTested = dst.getAnalysisTest();
 
-        final String filesToIgnoreCurrentTest =
-            dst.getFilesToIngore()
-                + "," + loggerFilename + "," + loggerFilename + ".lck";
-        comparator.setFilesToNotCompare(filesToIgnoreCurrentTest);
+        // Add files to not compare
+        this.comparator.setFilesToNotCompare(dst.getFilesToIngore());
+        this.comparator.setExtensionsToCompare(dst.getExtensionsToCompare());
 
         // Launch comparison
-        comparator.compareDataSet(setExpected, setTested, testName);
+        this.comparator.compareDataSet(setExpected, setTested, testName);
 
         reportTest =
-            comparator.buildReport(dst.isCheckingExistingFiles(), testName);
-        noRegressionGlobal = noRegressionGlobal && comparator.asNoRegression();
+            this.comparator
+                .buildReport(dst.isCheckingExistingFiles(), testName);
 
         // Remove filename to ignore specific for this test
-        this.comparator.removeFilesToNoCompare(filesToIgnoreCurrentTest);
+        this.comparator.removeFilesToNoCompare(dst.getFilesToIngore());
 
-        // TODO Auto-generated catch block
       } catch (IOException e) {
         exception = e;
         e.printStackTrace();
@@ -344,10 +361,14 @@ public class ValidationAction extends AbstractAction {
         ee.printStackTrace();
 
       } finally {
-
+        // Summary assessment test
+        noRegressionGlobal = noRegressionGlobal && comparator.asNoRegression();
         exceptionThrowGlobal = exceptionThrowGlobal || (exception != null);
 
-        // Add entry in logger for assessment test
+        // Add description current test
+        LOGGER_GLOBAL.info(testName + ": " + dst.getDescriptionTest());
+
+        // Add assessment current test
         if (exception == null) {
           if (comparator.asNoRegression()) {
             LOGGER_GLOBAL.info(reportTest);
@@ -368,9 +389,12 @@ public class ValidationAction extends AbstractAction {
           LOGGER_GLOBAL.severe(msg);
         }
         // End run current test
-        closeLoggerTest(comparator.asNoRegression(), (exception != null));
+        closeLoggerTest(dst.getTestedDirectory(), comparator.asNoRegression(),
+            (exception != null));
       }
     }
+
+    TIMER.stop();
     // End run all tests
     closeLoggerGlobal();
 
@@ -437,6 +461,10 @@ public class ValidationAction extends AbstractAction {
     LOGGER_GLOBAL.config("Output tests directory: "
         + this.outputTestsDirectory.getAbsolutePath());
 
+    this.tmpDir = new File(this.props.getProperty("tmp_path"));
+    FileUtils.checkExistingFile(this.tmpDir, " tmp directory ");
+    LOGGER_GLOBAL.config("Tmp directory: " + tmpDir.getAbsoluteFile());
+
     if (!outputTestsDirectory.mkdir())
       throw new EoulsanException("Cannot create output tests directory "
           + outputTestsDirectory.getAbsolutePath());
@@ -502,7 +530,7 @@ public class ValidationAction extends AbstractAction {
     this.comparator =
         new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
 
-    this.tests = Maps.newHashMap();
+    this.tests = Maps.newTreeMap();
 
   }
 }
