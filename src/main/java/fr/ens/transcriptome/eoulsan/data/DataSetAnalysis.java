@@ -7,14 +7,18 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
 import fr.ens.transcriptome.eoulsan.util.FileUtils.PrefixFilenameFilter;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetAnalysis {
 
@@ -22,6 +26,12 @@ public class DataSetAnalysis {
   private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
   private static final Logger LOGGER_GLOBAL = Logger
       .getLogger(ValidationAction.LOGGER_TESTS_GLOBAL);
+
+  private final static Splitter splitter = Splitter.on(',').trimResults()
+      .omitEmptyStrings();
+  private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
+
+  private final Properties propsTest;
 
   private final File inputDataDirectory;
   private final File outputDataDirectory;
@@ -65,12 +75,16 @@ public class DataSetAnalysis {
         }
       }
     }
+
   }
 
   private void buildDirectoryAnalysis() throws EoulsanException, IOException {
-    if (this.exists)
-      // Analysis directory already exists
+
+    if (this.exists) {
+      // Check directory already exists
+      // checkInputFilesRequired();
       return;
+    }
 
     if (this.outputDataDirectory.exists())
       throw new IOException("Test output directory already exists "
@@ -86,6 +100,8 @@ public class DataSetAnalysis {
       if (file.isFile())
         createSymbolicLink(file, this.outputDataDirectory);
     }
+
+    // checkInputFilesRequired();
   }
 
   public void init() throws EoulsanException, IOException {
@@ -110,6 +126,33 @@ public class DataSetAnalysis {
   //
   // Useful methods
   //
+
+  private void checkInputFilesRequired() throws EoulsanException {
+    // Check input files required correspond to the patterns
+    final String patternsInputFiles =
+        this.propsTest.getProperty(PATTERNS_INPUT_FILES_KEY);
+
+    // Parse patterns
+    for (String pattern : splitter.split(patternsInputFiles)) {
+      boolean patternFound = false;
+
+      // Parse files in input directory
+      for (File file : this.inputDataDirectory.listFiles()) {
+        // TODO
+        System.out.println(pattern + "\t" + file.getName());
+        patternFound =
+            patternFound
+                || Pattern.matches(pattern, StringUtils
+                    .filenameWithoutCompressionExtension(file.getName()));
+      }
+
+      if (!patternFound)
+        throw new EoulsanException("Missing files required "
+            + pattern + " in input directory "
+            + this.inputDataDirectory.getAbsolutePath());
+    }
+
+  }
 
   private File[] filterFile(final File dir, final String... suffixes) {
 
@@ -181,12 +224,14 @@ public class DataSetAnalysis {
   // Constructor
   //
 
-  public DataSetAnalysis(final File inputDataDirectory,
-      final File outputDataDirectory) throws EoulsanException, IOException {
+  public DataSetAnalysis(final Properties propsTest,
+      final File inputDataDirectory, final File outputDataDirectory)
+      throws EoulsanException, IOException {
 
     checkExistingFile(inputDataDirectory,
         "Input data for analysis doesn't exists.");
 
+    this.propsTest = propsTest;
     this.inputDataDirectory = inputDataDirectory;
     this.outputDataDirectory = outputDataDirectory;
 
