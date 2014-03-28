@@ -144,17 +144,27 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  private void closeLoggerGlobal() {
+  private void closeLoggerGlobal(final Exception exception) {
 
-    final String suffix =
-        exceptionThrowGlobal ? "EXCEPTION" : (noRegressionGlobal
-            ? "SUCCES" : "FAIL");
+    final String suffix;
 
+    if (exception == null) {
+      suffix = (noRegressionGlobal ? "SUCCES" : "FAIL");
+
+    } else {
+      // exceptionThrowGlobal ? "EXCEPTION" : (noRegressionGlobal
+      // ? "SUCCES" : "FAIL");
+      suffix = "EXCEPTION";
+
+      LOGGER_GLOBAL.severe(exception.getClass().getName()
+          + ": " + exception.getMessage() + "\n"
+          + StringUtils.join(exception.getStackTrace(), "\n\t"));
+    }
+
+    // Add suffix to log global filename
     LOGGER_GLOBAL.fine(suffix
         + " end execution in "
         + toTimeHumanReadable(TIMER.elapsed(TimeUnit.MILLISECONDS)));
-
-    // Add suffix to log global filename
     final File destFile =
         new File(StringUtils.filenameWithoutExtension(this.logGlobalPath)
             + "_" + suffix + ".log");
@@ -168,8 +178,8 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  private void closeLoggerTest(final File outputDir,
-      final boolean noRegressionTest, final boolean exceptionTest) {
+  private void closeLoggerTest(final Exception exception, final File outputDir,
+      final boolean noRegressionTest) {
 
     final File srcFile = new File(this.logTestPath);
 
@@ -177,9 +187,17 @@ public class ValidationAction extends AbstractAction {
     if (!srcFile.exists() || !outputDir.exists())
       return;
 
-    final String suffix =
-        exceptionTest ? "EXCEPTION" : (noRegressionTest ? "SUCCES" : "FAIL");
+    final String suffix;
 
+    if (exception == null) {
+      suffix = noRegressionTest ? "SUCCES" : "FAIL";
+    } else {
+      suffix = "EXCEPTION";
+
+      LOGGER_GLOBAL.severe(exception.getClass().getName()
+          + ": " + exception.getMessage() + "\n"
+          + StringUtils.join(exception.getStackTrace(), "\n\t"));
+    }
     // Add suffix to log global filename
     final File destFile =
         new File(outputDir, StringUtils.filenameWithoutExtension(srcFile
@@ -202,6 +220,9 @@ public class ValidationAction extends AbstractAction {
 
     String confPath = null;
     String jobDescription = null;
+
+    // Optional, file
+    String testsFilePath = null;
 
     int argsOptions = 0;
 
@@ -229,6 +250,13 @@ public class ValidationAction extends AbstractAction {
         argsOptions += 2;
       }
 
+      if (line.hasOption("f")) {
+
+        // Configuration test files
+        testsFilePath = line.getOptionValue("f").trim();
+        argsOptions += 2;
+      }
+
     } catch (ParseException e) {
       Common.errorExit(e,
           "Error while parsing parameter file: " + e.getMessage());
@@ -239,7 +267,7 @@ public class ValidationAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    run(confPath, jobDescription);
+    run(confPath, jobDescription, testsFilePath);
   }
 
   /**
@@ -263,6 +291,11 @@ public class ValidationAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("confPath").hasArg(true)
         .withDescription("configuration test file").withLongOpt("conf")
         .create('c'));
+
+    // Optional, path to file with list name tests to treat
+    options.addOption(OptionBuilder.withArgName("fileTest").hasArg(true)
+        .withDescription("path to file with list name tests")
+        .withLongOpt("file").create('f'));
 
     return options;
   }
@@ -292,7 +325,8 @@ public class ValidationAction extends AbstractAction {
    * @param outputDirectory
    * @param jobDescription
    */
-  private void run(final String confPath, final String jobDescription) {
+  private void run(final String confPath, final String jobDescription,
+      final String testsFilesPath) {
 
     final String desc;
 
@@ -303,17 +337,25 @@ public class ValidationAction extends AbstractAction {
     }
 
     LOGGER_GLOBAL.info(desc);
-
+    Exception exception = null;
     // Initialization action from configuration test file
     try {
-      init(new File(confPath));
+      init(new File(confPath), testsFilesPath);
 
     } catch (EoulsanException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
+
+      exception = e1;
     } catch (IOException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
+
+      exception = e1;
+    } finally {
+      exceptionThrowGlobal = true;
+
+      closeLoggerGlobal(exception);
     }
 
     LOGGER_GLOBAL.info("Number tests defined " + this.tests.size());
@@ -322,12 +364,11 @@ public class ValidationAction extends AbstractAction {
     for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
       final String testName = test.getKey();
       final DataSetTest dst = test.getValue();
-      Exception exception = null;
+
       String reportTest = "";
 
       try {
         initLogger(testName);
-        exception = null;
         LOGGER.info("Execute test " + testName);
 
         dst.executeTest();
@@ -386,18 +427,15 @@ public class ValidationAction extends AbstractAction {
           LOGGER.severe(msg);
 
           LOGGER_GLOBAL.severe("Exception throw with test:" + testName);
-          LOGGER_GLOBAL.severe(msg);
         }
         // End run current test
-        closeLoggerTest(dst.getTestedDirectory(), comparator.asNoRegression(),
-            (exception != null));
+        closeLoggerTest(exception, dst.getTestedDirectory(),
+            comparator.asNoRegression());
       }
     }
-
     TIMER.stop();
     // End run all tests
-    closeLoggerGlobal();
-
+    closeLoggerGlobal(exception);
   }
 
   /**
@@ -406,7 +444,8 @@ public class ValidationAction extends AbstractAction {
    * @throws EoulsanException
    * @throws IOException
    */
-  private void init(final File conf) throws EoulsanException, IOException {
+  private void init(final File conf, final String testsSelectedPath)
+      throws EoulsanException, IOException {
 
     checkExistingFile(conf, " configuration file doesn't exist.");
 
@@ -415,30 +454,30 @@ public class ValidationAction extends AbstractAction {
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
     String line = null;
 
-    try {
-      while ((line = br.readLine()) != null) {
-        // Skip commentary
-        if (line.startsWith("#"))
-          continue;
+    while ((line = br.readLine()) != null) {
+      // Skip commentary
+      if (line.startsWith("#"))
+        continue;
 
-        final int pos = line.indexOf('=');
-        if (pos == -1)
-          continue;
+      final int pos = line.indexOf('=');
+      if (pos == -1)
+        continue;
 
-        final String key = line.substring(0, pos).trim();
-        final String value = line.substring(pos + 1).trim();
+      final String key = line.substring(0, pos).trim();
+      final String value = line.substring(pos + 1).trim();
 
-        props.put(key, value);
+      props.put(key, value);
 
-      }
-      br.close();
-
-    } catch (IOException e) {
-      e.printStackTrace();
     }
+    br.close();
 
     initLoggerGlobal(this.props.getProperty("log_path"));
 
+    configure(testsSelectedPath);
+  }
+
+  private void configure(final String testsSelectedPath)
+      throws EoulsanException, IOException {
     // Initialization
     this.inputData = new File(this.props.getProperty("input_directory"));
     FileUtils.checkExistingFile(this.inputData, " input data directory ");
@@ -475,7 +514,13 @@ public class ValidationAction extends AbstractAction {
         + Joiner.on(", ").join(comparator.getAllExtensionsTreated()));
 
     // Collect all test.txt describing test to launch
-    collectTests(testsData);
+    if (testsSelectedPath == null) {
+      // Collect all tests
+      collectTests(testsData);
+    } else {
+      // Collect tests from a file with names tests
+      collectTestsFromFile(testsData, testsSelectedPath);
+    }
 
     // TODO is useful ???
     // Set not compare eoulsan.log
@@ -486,6 +531,7 @@ public class ValidationAction extends AbstractAction {
 
   private void collectTests(final File testsDataDirectory)
       throws EoulsanException, IOException {
+
     final String prefix = "test";
     final String suffix = ".txt";
 
@@ -508,7 +554,8 @@ public class ValidationAction extends AbstractAction {
 
         //
         final DataSetTest dst =
-            new DataSetTest(props, files[0], dir, this.outputTestsDirectory);
+            new DataSetTest(this.props, files[0], dir,
+                this.outputTestsDirectory);
         this.tests.put(nameTest, dst);
       }
 
@@ -517,6 +564,38 @@ public class ValidationAction extends AbstractAction {
     if (this.tests.size() == 0)
       throw new EoulsanException("None test in "
           + testsDataDirectory.getAbsolutePath());
+  }
+
+  private void collectTestsFromFile(final File testsDataDirectory,
+      final String testsSelectedPath) throws IOException, EoulsanException {
+
+    final File testsSelectedFile = new File(testsSelectedPath);
+    checkExistingFile(testsSelectedFile, " tests selected file doesn't exist.");
+
+    final BufferedReader br =
+        new BufferedReader(newReader(testsSelectedFile,
+            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+
+    String line = null;
+    while ((line = br.readLine()) != null) {
+      // Skip commentary
+      if (line.startsWith("#") || line.trim().length() == 0)
+        continue;
+
+      // Add test
+      final File testPath = new File(testsDataDirectory, line);
+
+      checkExistingFile(new File(testPath, "test.txt"), "the 'test.txt' file ");
+
+      final DataSetTest dst =
+          new DataSetTest(this.props, new File(testPath, "test.txt"), testPath,
+              this.outputTestsDirectory);
+
+      this.tests.put(line, dst);
+
+    }
+    br.close();
+
   }
 
   //
