@@ -64,8 +64,6 @@ public class DataSetTest {
     if (isExecuted)
       return;
 
-    initProperties();
-
     // Initialization expected directory
     this.dsaExpected.init();
 
@@ -350,8 +348,12 @@ public class DataSetTest {
     this.props = new Properties(props);
     this.testConfigurationFile = testFile;
 
-    this.dsaExpected = new DataSetAnalysis(inputData, this.expectedDirectory);
-    this.dsaTested = new DataSetAnalysis(inputData, this.testedDirectory);
+    initProperties();
+
+    this.dsaExpected =
+        new DataSetAnalysis(this.props, inputData, this.expectedDirectory);
+    this.dsaTested =
+        new DataSetAnalysis(this.props, inputData, this.testedDirectory);
 
   }
 
