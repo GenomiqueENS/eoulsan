@@ -3,6 +3,7 @@ package fr.ens.transcriptome.eoulsan.data;
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.recursiveDelete;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +20,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -40,6 +42,8 @@ public class DataSetTest {
   private static final String FILES_IGNORED_FOR_COMPARISON_KEY =
       "files_ignored_for_comparison";
   private static final String EOULSAN_CONF_FILE_KEY = "eoulsan_conf_file";
+  private static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
+      "expected_data_generated_manually";
 
   private final static Splitter splitter = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
@@ -47,45 +51,90 @@ public class DataSetTest {
   private final Properties props;
 
   private final File testConfigurationFile;
+  private final File inputDataDirectory;
   private final File expectedDirectory;
   private final File testedDirectory;
 
-  private final DataSetAnalysis dsaExpected;
-  private final DataSetAnalysis dsaTested;
+  private DataSetAnalysis dsaExpected;
+  private DataSetAnalysis dsaTested;
 
-  private boolean isExecuted = false;
+  private boolean isExpectedGenerated = false;
+  private boolean isTestedGenerated = false;
 
   /**
    * @throws EoulsanException
    * @throws IOException
    */
-  public void executeTest() throws EoulsanException, IOException {
+  public void generateDataExpected(final boolean regenerateExpectedData)
+      throws EoulsanException, IOException {
 
-    if (isExecuted)
+    if (this.isExpectedGenerated || isGeneratedManually())
       return;
 
     // Initialization expected directory
-    this.dsaExpected.init();
+    this.dsaExpected =
+        new DataSetAnalysis(this.props, inputDataDirectory,
+            this.expectedDirectory);
 
-    if (!dsaExpected.isResultsAnalysisExists()) {
+
+    // TODO
+    // argument to regenerate all expected directory if build automatically
+    if (regenerateExpectedData || !dsaExpected.isResultsAnalysisExists()) {
+
+      if (regenerateExpectedData) {
+        recursiveDelete(getExpectedDirectory());
+        // Create empty directory
+        this.dsaExpected =
+            new DataSetAnalysis(this.props, inputDataDirectory,
+                this.expectedDirectory);
+      }
+
+      LOGGER_TEST.info("generate expected data");
+
       // Analysis must be launch for expected result directory
       launchAnalysis(dsaExpected,
           new File(this.props.getProperty("eoulsan_reference_path")),
           this.expectedDirectory, true);
     }
 
-    dsaExpected.parseDirectory();
+    this.dsaExpected.parseDirectory();
+
+    this.isExpectedGenerated = true;
+
+  }
+
+  /**
+   * @throws EoulsanException
+   * @throws IOException
+   */
+  public void generateDataTested() throws EoulsanException, IOException {
+
+    if (this.isTestedGenerated)
+      return;
 
     // Initialization test directory
-    this.dsaTested.init();
+    this.dsaTested =
+        new DataSetAnalysis(this.props, inputDataDirectory,
+            this.testedDirectory);
+
 
     // Analysis for tested result directory
     launchAnalysis(dsaTested,
         new File(this.props.getProperty("eoulsan_version_to_test_path")),
         this.testedDirectory, false);
-    dsaTested.parseDirectory();
 
-    isExecuted = true;
+    this.dsaTested.parseDirectory();
+
+    this.isTestedGenerated = true;
+
+    // Initialization expected directory
+    this.dsaExpected =
+        new DataSetAnalysis(this.props, inputDataDirectory,
+            this.expectedDirectory);
+    if (!dsaExpected.isResultsAnalysisExists())
+      throw new EoulsanException(
+          "Launch test analysis fail: expected data doesn't exists");
+    this.dsaExpected.parseDirectory();
 
   }
 
@@ -282,25 +331,25 @@ public class DataSetTest {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
   //
   // Getter and Setter
   //
 
+  private boolean isGeneratedManually() {
+    final String value =
+        this.props.getProperty(EXPECTED_DATA_GENERATED_MANUALLY_KEY);
+    return !value.toLowerCase(Globals.DEFAULT_LOCALE).equals("false");
+  }
+
   public DataSetAnalysis getAnalysisExcepted() throws EoulsanException,
       IOException {
-    // TODO check
-    if (!isExecuted)
-      executeTest();
+
     return this.dsaExpected;
   }
 
   public DataSetAnalysis getAnalysisTest() throws EoulsanException, IOException {
-    // TODO check
-    if (!isExecuted)
-      executeTest();
     return this.dsaTested;
   }
 
@@ -341,6 +390,7 @@ public class DataSetTest {
       final File inputData, final File outputData) throws IOException,
       EoulsanException {
 
+    this.inputDataDirectory = inputData;
     this.expectedDirectory = new File(inputData, "/expected");
     this.testedDirectory =
         new File(outputData, testFile.getParentFile().getName());
@@ -349,11 +399,6 @@ public class DataSetTest {
     this.testConfigurationFile = testFile;
 
     initProperties();
-
-    this.dsaExpected =
-        new DataSetAnalysis(this.props, inputData, this.expectedDirectory);
-    this.dsaTested =
-        new DataSetAnalysis(this.props, inputData, this.testedDirectory);
 
   }
 
