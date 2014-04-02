@@ -101,7 +101,7 @@ public class DataSetAnalysis {
         createSymbolicLink(file, this.outputDataDirectory);
     }
 
-    // checkInputFilesRequired();
+    checkInputFilesRequired();
   }
 
   private void init() throws EoulsanException, IOException {

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +29,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.utils.Charsets;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
@@ -60,7 +58,7 @@ public class ValidationAction extends AbstractAction {
   public static final boolean CHECKING_SAME_NAME = true;
 
   private final Properties props;
-  private final ComparatorDirectories comparator;
+  // private final ComparatorDirectories comparator;
 
   private File inputData;
   private File outputTestsDirectory;
@@ -267,6 +265,11 @@ public class ValidationAction extends AbstractAction {
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
           regenerateExpectedData = true;
+        else {
+          // Value equals new, regenerate expected directories doesn't exists
+          if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
+            regenerateExpectedData = false;
+        }
 
         argsOptions += 2;
       }
@@ -312,7 +315,6 @@ public class ValidationAction extends AbstractAction {
         .withLongOpt("file").create('f'));
 
     // Optional, force generated expected data
-    // options.addOption("generate", false, "force generated expected data");
     options.addOption(OptionBuilder.withArgName("type").hasArg()
         .withDescription("mode generate data expected").create("generate"));
 
@@ -356,7 +358,7 @@ public class ValidationAction extends AbstractAction {
     if (isCheckingAction) {
       runGenerateExpectedData(regenerateExpectedData);
     } else {
-      runTestComparison();
+      runTest();
     }
 
   }
@@ -374,9 +376,7 @@ public class ValidationAction extends AbstractAction {
         final String testName = test.getKey();
         final DataSetTest dst = test.getValue();
 
-        // initLoggerTest(testName);
         LOGGER_GLOBAL.info(testName + ": check expected data");
-
         dst.generateDataExpected(regenerateExpectedData);
       }
 
@@ -388,13 +388,15 @@ public class ValidationAction extends AbstractAction {
     }
   }
 
-  private void runTestComparison() {
+  private void runTest() {
     Exception exception = null;
 
     // Generate all
     for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
       final String testName = test.getKey();
       final DataSetTest dst = test.getValue();
+      final ComparatorDirectories comparator =
+          new ComparatorDirectories(USE_SERIALIZATION);
 
       String reportTest = "";
 
@@ -413,20 +415,14 @@ public class ValidationAction extends AbstractAction {
         // Collect data tested
         final DataSetAnalysis setTested = dst.getAnalysisTest();
 
-        // Add files to not compare
-        this.comparator.setFilesToNotCompare(dst.getFilesToIngore());
-        this.comparator.setExtensionsToCompare(dst.getExtensionsToCompare());
+        comparator.setPatternToCompare(dst.getPatternsToCompare());
 
         // Launch comparison
-        this.comparator.compareDataSet(setExpected, setTested, testName);
-
-        // Remove filename to ignore specific for this test
-        this.comparator.removeFilesToNoCompare(dst.getFilesToIngore());
+        comparator.compareDataSet(setExpected, setTested, testName);
 
         // Compile assessments for all tests
         reportTest =
-            this.comparator
-                .buildReport(dst.isCheckingExistingFiles(), testName);
+            comparator.buildReport(dst.isCheckingExistingFiles(), testName);
 
         if (comparator.asRegression()) {
           LOGGER_GLOBAL.severe(reportTest);
@@ -459,7 +455,7 @@ public class ValidationAction extends AbstractAction {
   }
 
   /**
-   * Initialization properties with pa
+   * Initialization properties from tests configuration
    * @param conf configuration file from Action
    * @throws EoulsanException
    * @throws IOException
@@ -508,18 +504,18 @@ public class ValidationAction extends AbstractAction {
       throws EoulsanException, IOException {
     // Initialization
     this.inputData = new File(this.props.getProperty("input_directory"));
-    FileUtils.checkExistingFile(this.inputData, " input data directory ");
+    checkExistingFile(this.inputData, " input data directory ");
     LOGGER_GLOBAL.config("Input data directory: "
         + this.inputData.getAbsolutePath());
 
     final File testsData = new File(this.props.getProperty("tests_directory"));
-    FileUtils.checkExistingFile(testsData, " tests data directory ");
+    checkExistingFile(testsData, " tests data directory ");
     LOGGER_GLOBAL
         .config("Tests data directory: " + testsData.getAbsolutePath());
 
     final File output =
         new File(this.props.getProperty("output_analysis_directory"));
-    FileUtils.checkExistingFile(output, " output data directory ");
+    checkExistingFile(output, " output data directory ");
     LOGGER_GLOBAL.config("Output data directory: " + output.getAbsoluteFile());
 
     this.outputTestsDirectory =
@@ -529,17 +525,12 @@ public class ValidationAction extends AbstractAction {
         + this.outputTestsDirectory.getAbsolutePath());
 
     this.tmpDir = new File(this.props.getProperty("tmp_path"));
-    FileUtils.checkExistingFile(this.tmpDir, " tmp directory ");
+    checkExistingFile(this.tmpDir, " tmp directory ");
     LOGGER_GLOBAL.config("Tmp directory: " + tmpDir.getAbsoluteFile());
 
     if (!outputTestsDirectory.mkdir())
       throw new EoulsanException("Cannot create output tests directory "
           + outputTestsDirectory.getAbsolutePath());
-
-    LOGGER_GLOBAL.config("Comparator param: use serialization file "
-        + USE_SERIALIZATION);
-    LOGGER_GLOBAL.config("Comparison files with extensions: "
-        + Joiner.on(", ").join(comparator.getAllExtensionsTreated()));
 
     // Collect all test.txt describing test to launch
     if (testsSelectedPath == null) {
@@ -550,13 +541,15 @@ public class ValidationAction extends AbstractAction {
       collectTestsFromFile(testsData, testsSelectedPath);
     }
 
-    // TODO is useful ???
-    // Set not compare eoulsan.log
-    comparator.setFilesToNotCompare(this.props
-        .getProperty("files_ignored_for_comparison"));
-
   }
 
+  /**
+   * Collect all tests present in test directory with a file configuration
+   * 'test.txt
+   * @param testsDataDirectory
+   * @throws EoulsanException
+   * @throws IOException
+   */
   private void collectTests(final File testsDataDirectory)
       throws EoulsanException, IOException {
 
@@ -594,6 +587,13 @@ public class ValidationAction extends AbstractAction {
           + testsDataDirectory.getAbsolutePath());
   }
 
+  /**
+   * Collect tests to launch from text files with name tests
+   * @param testsDataDirectory
+   * @param testsSelectedPath
+   * @throws IOException
+   * @throws EoulsanException
+   */
   private void collectTestsFromFile(final File testsDataDirectory,
       final String testsSelectedPath) throws IOException, EoulsanException {
 
@@ -632,10 +632,6 @@ public class ValidationAction extends AbstractAction {
 
   public ValidationAction() throws EoulsanException {
     props = new Properties();
-
-    // Initialization comparator
-    this.comparator =
-        new ComparatorDirectories(USE_SERIALIZATION, CHECKING_SAME_NAME);
 
     this.tests = Maps.newTreeMap();
 
