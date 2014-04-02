@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -36,11 +35,13 @@ public class DataSetTest {
   private static final String DESCRIPTION_KEY = "description";
   private static final String SCRIPT_GENERATED_DATA_EXPECTED_KEY =
       "script_generated_data_expected";
-  private static final String EXTENSION_TO_COMPARE_KEY = "extension_to_compare";
+
+  private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
+  private static final String PATTERNS_OUTPUT_FILES_KEY =
+      "patterns_output_files";
+
   private static final String CHECKING_EXISTING_FILES_KEY =
       "check_existing_files_between_directories";
-  private static final String FILES_IGNORED_FOR_COMPARISON_KEY =
-      "files_ignored_for_comparison";
   private static final String EOULSAN_CONF_FILE_KEY = "eoulsan_conf_file";
   private static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
       "expected_data_generated_manually";
@@ -75,7 +76,6 @@ public class DataSetTest {
     this.dsaExpected =
         new DataSetAnalysis(this.props, inputDataDirectory,
             this.expectedDirectory);
-
 
     // TODO
     // argument to regenerate all expected directory if build automatically
@@ -116,7 +116,6 @@ public class DataSetTest {
     this.dsaTested =
         new DataSetAnalysis(this.props, inputDataDirectory,
             this.testedDirectory);
-
 
     // Analysis for tested result directory
     launchAnalysis(dsaTested,
@@ -353,12 +352,16 @@ public class DataSetTest {
     return this.dsaTested;
   }
 
-  public String getExtensionsToCompare() {
-    return this.props.getProperty(EXTENSION_TO_COMPARE_KEY);
+  public String getPatternsToCompare() {
+    return getPatternsInputRequired() + "," + getPatternsOutputRequired();
   }
 
-  public String getFilesToIngore() {
-    return this.props.getProperty(FILES_IGNORED_FOR_COMPARISON_KEY);
+  public String getPatternsInputRequired() {
+    return this.props.getProperty(PATTERNS_INPUT_FILES_KEY);
+  }
+
+  public String getPatternsOutputRequired() {
+    return this.props.getProperty(PATTERNS_OUTPUT_FILES_KEY);
   }
 
   public String getDescriptionTest() {
