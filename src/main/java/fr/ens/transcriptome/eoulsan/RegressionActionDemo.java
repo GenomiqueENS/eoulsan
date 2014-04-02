@@ -6,11 +6,11 @@ import java.io.IOException;
 
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
-import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
+import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
 import fr.ens.transcriptome.eoulsan.io.CompareFiles;
 import fr.ens.transcriptome.eoulsan.io.LogCompareFiles;
 
-public class ValidationActionDemo {
+public class RegressionActionDemo {
 
   /**
    * Logger
@@ -19,7 +19,7 @@ public class ValidationActionDemo {
   // private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static void main(String[] args) throws EoulsanException, IOException {
-    ValidationActionDemo.mainbis();
+    RegressionActionDemo.mainbis();
 
   }
 
@@ -35,10 +35,10 @@ public class ValidationActionDemo {
     // Set the default local for all the application
     Globals.setDefaultLocale();
 
-    Main main = new MainCLI(new String[] {"validation"});
+    Main main = new MainCLI(new String[] {"regression"});
 
-    Action action0 = ActionService.getInstance().getAction("validation");
-    ValidationAction action = (ValidationAction) action0;
+    Action action0 = ActionService.getInstance().getAction("regression");
+    RegressionAction action = (RegressionAction) action0;
 
     // Get the Eoulsan settings
     final Settings settings = EoulsanRuntime.getSettings();

@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
-public class ValidationAction extends AbstractAction {
+public class RegressionAction extends AbstractAction {
 
   public static final String LOGGER_TESTS_GLOBAL = "tests_global";
   /** Logger */
@@ -72,7 +72,7 @@ public class ValidationAction extends AbstractAction {
 
   @Override
   public String getName() {
-    return "validation";
+    return "regression";
   }
 
   @Override
@@ -102,7 +102,6 @@ public class ValidationAction extends AbstractAction {
 
   }
 
-  // TODO use for test into eclipse
   public void initLoggerGlobal(final String logPath) throws EoulsanException {
     logGlobalPath =
         logPath + "/eoulsan_" + DATE_FORMAT.format(new Date()) + ".log";
@@ -630,7 +629,7 @@ public class ValidationAction extends AbstractAction {
   // Constructor
   //
 
-  public ValidationAction() throws EoulsanException {
+  public RegressionAction() throws EoulsanException {
     props = new Properties();
 
     this.tests = Maps.newTreeMap();

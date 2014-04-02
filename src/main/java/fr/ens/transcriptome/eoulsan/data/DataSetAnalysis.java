@@ -16,7 +16,7 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.actions.ValidationAction;
+import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
 import fr.ens.transcriptome.eoulsan.util.FileUtils.PrefixFilenameFilter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -25,7 +25,7 @@ public class DataSetAnalysis {
   /** Logger */
   private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
   private static final Logger LOGGER_GLOBAL = Logger
-      .getLogger(ValidationAction.LOGGER_TESTS_GLOBAL);
+      .getLogger(RegressionAction.LOGGER_TESTS_GLOBAL);
 
   public final static Splitter COMMA_SPLITTER = Splitter.on(',').trimResults()
       .omitEmptyStrings();
