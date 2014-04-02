@@ -27,7 +27,7 @@ public class DataSetAnalysis {
   private static final Logger LOGGER_GLOBAL = Logger
       .getLogger(ValidationAction.LOGGER_TESTS_GLOBAL);
 
-  private final static Splitter splitter = Splitter.on(',').trimResults()
+  public final static Splitter COMMA_SPLITTER = Splitter.on(',').trimResults()
       .omitEmptyStrings();
   private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
 
@@ -104,7 +104,7 @@ public class DataSetAnalysis {
     // checkInputFilesRequired();
   }
 
-  public void init() throws EoulsanException, IOException {
+  private void init() throws EoulsanException, IOException {
 
     if (!this.outputDataDirectory.exists()) {
 
@@ -133,13 +133,11 @@ public class DataSetAnalysis {
         this.propsTest.getProperty(PATTERNS_INPUT_FILES_KEY);
 
     // Parse patterns
-    for (String pattern : splitter.split(patternsInputFiles)) {
+    for (String pattern : COMMA_SPLITTER.split(patternsInputFiles)) {
       boolean patternFound = false;
 
       // Parse files in input directory
       for (File file : this.inputDataDirectory.listFiles()) {
-        // TODO
-        System.out.println(pattern + "\t" + file.getName());
         patternFound =
             patternFound
                 || Pattern.matches(pattern, StringUtils
@@ -237,7 +235,7 @@ public class DataSetAnalysis {
 
     this.filesByName = Maps.newHashMap();
 
-    // init();
+    init();
 
   }
 
