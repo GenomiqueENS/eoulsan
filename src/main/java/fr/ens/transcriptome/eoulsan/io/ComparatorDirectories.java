@@ -51,15 +51,9 @@ public class ComparatorDirectories {
 
   private boolean asRegression = false;
 
-  public String buildReport(final boolean isCheckingExistingFiles,
-      final String testName) {
+  public String buildReport(final String testName) {
 
     boolean allComparisonsSuccessed = this.comparisonFailCount == 0;
-
-    boolean noDifferentsFilesBetweenDirectories =
-        (isCheckingExistingFiles
-            ? (filesExistsExpectedDirCount == 0 && filesExistsTestedDirCount == 0)
-            : true);
 
     LOGGER.info("File(s) treated: "
         + ": " + filesComparables + " file(s) comparable(s) on "
@@ -77,7 +71,7 @@ public class ComparatorDirectories {
             + filesExistsExpectedDirCount + " file(s) missing in directory ; "
             + filesExistsTestedDirCount + " file(s) too many in directory.";
 
-    if (allComparisonsSuccessed && noDifferentsFilesBetweenDirectories) {
+    if (allComparisonsSuccessed) {
       assessment =
           "For test " + testName + ": no regression detected; " + assessment;
       LOGGER.info(assessment);
