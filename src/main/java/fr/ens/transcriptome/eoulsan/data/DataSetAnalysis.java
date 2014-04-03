@@ -30,6 +30,8 @@ public class DataSetAnalysis {
   public final static Splitter COMMA_SPLITTER = Splitter.on(',').trimResults()
       .omitEmptyStrings();
   private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
+  private static final String PATTERNS_OUTPUT_FILES_KEY =
+      "patterns_output_files";
 
   private final Properties propsTest;
 
@@ -39,7 +41,6 @@ public class DataSetAnalysis {
   private boolean exists = true;
   private File designFile;
   private File paramFile;
-  private File eoulsanLog;
 
   private Map<String, DataFile> filesByName;
 
@@ -101,7 +102,6 @@ public class DataSetAnalysis {
         createSymbolicLink(file, this.outputDataDirectory);
     }
 
-    checkInputFilesRequired();
   }
 
   private void init() throws EoulsanException, IOException {
@@ -121,35 +121,57 @@ public class DataSetAnalysis {
         filterOneFileWithPrefix(this.outputDataDirectory, "param",
             "parameter file");
 
+    // Check all files necessary
+    checkExpectedDirectory(false);
   }
 
   //
   // Useful methods
   //
 
-  private void checkInputFilesRequired() throws EoulsanException {
+  private void checkFilesRequired(final String pattern_key)
+      throws EoulsanException {
     // Check input files required correspond to the patterns
-    final String patternsInputFiles =
-        this.propsTest.getProperty(PATTERNS_INPUT_FILES_KEY);
+    final String patternsFiles = this.propsTest.getProperty(pattern_key);
 
     // Parse patterns
-    for (String pattern : COMMA_SPLITTER.split(patternsInputFiles)) {
+    for (String regex : COMMA_SPLITTER.split(patternsFiles)) {
       boolean patternFound = false;
 
       // Parse files in input directory
-      for (File file : this.inputDataDirectory.listFiles()) {
+      for (File file : this.outputDataDirectory.listFiles()) {
         patternFound =
             patternFound
-                || Pattern.matches(pattern, StringUtils
+                || Pattern.matches(regex, StringUtils
                     .filenameWithoutCompressionExtension(file.getName()));
       }
 
       if (!patternFound)
         throw new EoulsanException("Missing files required "
-            + pattern + " in input directory "
-            + this.inputDataDirectory.getAbsolutePath());
+            + regex + " in input directory "
+            + this.outputDataDirectory.getAbsolutePath());
     }
+  }
 
+  public void checkExpectedDirectory(final boolean asAnalysisExecute)
+      throws EoulsanException, IOException {
+
+    // Check test configuration file
+    checkExistingFile(getTestConfigurationFile(), "design file not found.");
+
+    // Check design file
+    checkExistingFile(getDesignFile(), "design file not found.");
+
+    // Check parameter file
+    checkExistingFile(getParamFile(), "parameter file not found.");
+
+    // Check input files requiered
+    checkFilesRequired(PATTERNS_INPUT_FILES_KEY);
+
+    if (asAnalysisExecute) {
+      // Check output files requiered
+      checkFilesRequired(PATTERNS_OUTPUT_FILES_KEY);
+    }
   }
 
   private File[] filterFile(final File dir, final String... suffixes) {
@@ -210,8 +232,8 @@ public class DataSetAnalysis {
     return paramFile;
   }
 
-  public File getEoulsanLog() {
-    return eoulsanLog;
+  public File getTestConfigurationFile() {
+    return new File(this.outputDataDirectory, "test.txt");
   }
 
   public Map<String, DataFile> getAllFilesAnalysis() {

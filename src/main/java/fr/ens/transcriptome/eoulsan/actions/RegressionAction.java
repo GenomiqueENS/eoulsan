@@ -264,11 +264,10 @@ public class RegressionAction extends AbstractAction {
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
           regenerateExpectedData = true;
-        else {
-          // Value equals new, regenerate expected directories doesn't exists
-          if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-            regenerateExpectedData = false;
-        }
+
+        // Value equals new, regenerate expected directories doesn't exists
+        else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
+          regenerateExpectedData = false;
 
         argsOptions += 2;
       }
@@ -375,7 +374,6 @@ public class RegressionAction extends AbstractAction {
         final String testName = test.getKey();
         final DataSetTest dst = test.getValue();
 
-        LOGGER_GLOBAL.info(testName + ": check expected data");
         dst.generateDataExpected(regenerateExpectedData);
       }
 
@@ -420,8 +418,7 @@ public class RegressionAction extends AbstractAction {
         comparator.compareDataSet(setExpected, setTested, testName);
 
         // Compile assessments for all tests
-        reportTest =
-            comparator.buildReport(dst.isCheckingExistingFiles(), testName);
+        reportTest = comparator.buildReport(testName);
 
         if (comparator.asRegression()) {
           LOGGER_GLOBAL.severe(reportTest);
@@ -575,7 +572,7 @@ public class RegressionAction extends AbstractAction {
         //
         final DataSetTest dst =
             new DataSetTest(this.props, files[0], dir,
-                this.outputTestsDirectory);
+                this.outputTestsDirectory, nameTest);
         this.tests.put(nameTest, dst);
       }
 
@@ -603,22 +600,22 @@ public class RegressionAction extends AbstractAction {
         new BufferedReader(newReader(testsSelectedFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-    String line = null;
-    while ((line = br.readLine()) != null) {
+    String nameTest = null;
+    while ((nameTest = br.readLine()) != null) {
       // Skip commentary
-      if (line.startsWith("#") || line.trim().length() == 0)
+      if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
         continue;
 
       // Add test
-      final File testPath = new File(testsDataDirectory, line);
+      final File testPath = new File(testsDataDirectory, nameTest);
 
       checkExistingFile(new File(testPath, "test.txt"), "the 'test.txt' file ");
 
       final DataSetTest dst =
           new DataSetTest(this.props, new File(testPath, "test.txt"), testPath,
-              this.outputTestsDirectory);
+              this.outputTestsDirectory, nameTest);
 
-      this.tests.put(line, dst);
+      this.tests.put(nameTest, dst);
 
     }
     br.close();
