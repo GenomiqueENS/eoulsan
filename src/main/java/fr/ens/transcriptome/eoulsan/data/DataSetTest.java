@@ -20,12 +20,15 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetTest {
 
   /** Logger */
+  private static final Logger LOGGER_GLOBAL = Logger
+      .getLogger(RegressionAction.LOGGER_TESTS_GLOBAL);
   private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
 
   /** Key for configuration test */
@@ -40,8 +43,6 @@ public class DataSetTest {
   private static final String PATTERNS_OUTPUT_FILES_KEY =
       "patterns_output_files";
 
-  private static final String CHECKING_EXISTING_FILES_KEY =
-      "check_existing_files_between_directories";
   private static final String EOULSAN_CONF_FILE_KEY = "eoulsan_conf_file";
   private static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
       "expected_data_generated_manually";
@@ -51,6 +52,7 @@ public class DataSetTest {
 
   private final Properties props;
 
+  private final String testName;
   private final File testConfigurationFile;
   private final File inputDataDirectory;
   private final File expectedDirectory;
@@ -69,8 +71,13 @@ public class DataSetTest {
   public void generateDataExpected(final boolean regenerateExpectedData)
       throws EoulsanException, IOException {
 
-    if (this.isExpectedGenerated || isGeneratedManually())
+    if (this.isExpectedGenerated || isGeneratedManually()) {
+
+      LOGGER_GLOBAL.fine(testName + ": check expected data");
+
+      this.dsaExpected.checkExpectedDirectory(true);
       return;
+    }
 
     // Initialization expected directory
     this.dsaExpected =
@@ -80,6 +87,7 @@ public class DataSetTest {
     // TODO
     // argument to regenerate all expected directory if build automatically
     if (regenerateExpectedData || !dsaExpected.isResultsAnalysisExists()) {
+      LOGGER_GLOBAL.info(testName + ": (re)generated expected data");
 
       if (regenerateExpectedData) {
         recursiveDelete(getExpectedDirectory());
@@ -95,6 +103,10 @@ public class DataSetTest {
       launchAnalysis(dsaExpected,
           new File(this.props.getProperty("eoulsan_reference_path")),
           this.expectedDirectory, true);
+    
+    } else {
+      LOGGER_GLOBAL.fine(testName + ": check expected data");
+      this.dsaExpected.checkExpectedDirectory(true);
     }
 
     this.dsaExpected.parseDirectory();
@@ -163,20 +175,20 @@ public class DataSetTest {
 
       } else {
         // Check if a script is define in test.txt
-        executeScript(SCRIPT_GENERATED_DATA_EXPECTED_KEY, outputDirectory);
+        executeScript(dsa, SCRIPT_GENERATED_DATA_EXPECTED_KEY, outputDirectory);
       }
 
     } else {
       // Generated test directory
       // Optional script, pre-treatment before launch Eoulsan
-      executeScript(SCRIPT_PRETREATMENT_KEY, outputDirectory);
+      executeScript(dsa, SCRIPT_PRETREATMENT_KEY, outputDirectory);
 
       // Execute Eoulsan
       executeEoulsan(dsa, eoulsanPath, outputDirectory);
 
       // Optional script, post-treatment after Eoulsan and before comparison
       // between directories
-      executeScript(SCRIPT_POSTTREATMENT_KEY, outputDirectory);
+      executeScript(dsa, SCRIPT_POSTTREATMENT_KEY, outputDirectory);
 
     }
   }
@@ -198,22 +210,8 @@ public class DataSetTest {
     if (eoulsanArguments == null || eoulsanArguments.isEmpty())
       throw new EoulsanException("Eoulsan arguments for command line is empty.");
 
-    // Check command line include param and design file
-    if (eoulsanArguments.indexOf("{param}") == -1)
-      throw new EoulsanException(
-          "Error in Eoulsan command line: no parameter included.");
-
-    if (eoulsanArguments.indexOf("{design}") == -1)
-      throw new EoulsanException(
-          "Error in Eoulsan command line: no design included.");
-
-    // Replace by parameter in command line Eoulsan
-    eoulsanArguments.set(eoulsanArguments.indexOf("{param}"), dsa
-        .getParamFile().getAbsolutePath());
-
-    // Replace by design in command line Eoulsan
-    eoulsanArguments.set(eoulsanArguments.indexOf("{design}"), dsa
-        .getDesignFile().getAbsolutePath());
+    // Replace variable by value in command line
+    replaceVariableByValue(dsa, eoulsanArguments, true);
 
     List<String> cmd = Lists.newLinkedList();
 
@@ -231,6 +229,33 @@ public class DataSetTest {
     LOGGER_TEST.info(StringUtils.join(cmd.toArray(), " "));
 
     return cmd;
+  }
+
+  private void replaceVariableByValue(final DataSetAnalysis dsa,
+      final List<String> eoulsanArguments, final boolean isEoulsanCmdLine)
+      throws EoulsanException {
+
+    // Check command line include param file
+    if (eoulsanArguments.indexOf("{param}") == -1) {
+      if (isEoulsanCmdLine)
+        throw new EoulsanException(
+            "Error in Eoulsan command line: no parameter included.");
+    } else {
+      // Replace by parameter in command line Eoulsan
+      eoulsanArguments.set(eoulsanArguments.indexOf("{param}"), dsa
+          .getParamFile().getAbsolutePath());
+    }
+
+    // Check command line include design file
+    if (eoulsanArguments.indexOf("{design}") == -1) {
+      if (isEoulsanCmdLine)
+        throw new EoulsanException(
+            "Error in Eoulsan command line: no design included.");
+    } else {
+      // Replace by design in command line Eoulsan
+      eoulsanArguments.set(eoulsanArguments.indexOf("{design}"), dsa
+          .getDesignFile().getAbsolutePath());
+    }
   }
 
   /**
@@ -265,8 +290,9 @@ public class DataSetTest {
    * @param outputDirectory
    * @throws IOException
    */
-  private void executeScript(final String script_key, File outputDirectory)
-      throws IOException {
+  private void executeScript(final DataSetAnalysis dsa,
+      final String script_key, File outputDirectory) throws EoulsanException,
+      IOException {
 
     if (this.props.getProperty(script_key) == null)
       return;
@@ -281,12 +307,18 @@ public class DataSetTest {
     checkExistingDirectoryFile(outputDirectory,
         outputDirectory.getAbsolutePath());
 
+    // Replace variable by value in command line
+    replaceVariableByValue(dsa, scriptCmdLine, false);
+
+    LOGGER_TEST.info("execute script with command line:"
+        + Joiner.on(' ').join(scriptCmdLine));
+
     // If exists, launch preScript analysis
     int exitValue =
         ProcessUtils.sh(Lists.newArrayList(scriptCmdLine), outputDirectory);
 
     if (exitValue != 0) {
-      throw new IOException("Error during script execution  "
+      throw new EoulsanException("Error during script execution  "
           + Joiner.on(" ").join(scriptCmdLine) + " (exitValue: " + exitValue
           + ")");
     }
@@ -376,27 +408,20 @@ public class DataSetTest {
     return this.testedDirectory;
   }
 
-  public boolean isCheckingExistingFiles() {
-
-    String s = this.props.getProperty(CHECKING_EXISTING_FILES_KEY);
-    if (s == null || s.length() == 0)
-      return false;
-
-    return s.toLowerCase().equals("true");
-  }
-
   //
   // Constructor
   //
 
   public DataSetTest(final Properties props, final File testFile,
-      final File inputData, final File outputData) throws IOException,
-      EoulsanException {
+      final File inputData, final File outputData, final String testName)
+      throws IOException, EoulsanException {
 
     this.inputDataDirectory = inputData;
     this.expectedDirectory = new File(inputData, "/expected");
     this.testedDirectory =
         new File(outputData, testFile.getParentFile().getName());
+
+    this.testName = testName;
 
     this.props = new Properties(props);
     this.testConfigurationFile = testFile;
