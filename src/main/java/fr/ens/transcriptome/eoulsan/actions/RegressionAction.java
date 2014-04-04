@@ -181,7 +181,7 @@ public class RegressionAction extends AbstractAction {
     final String suffix;
 
     if (exception == null) {
-      suffix = asRegressionTest ? "FAIL" : "SUCCES";
+      suffix = asRegressionTest ? "FAIL" : "SUCCESS";
 
     } else {
       suffix = "EXCEPTION";
@@ -196,6 +196,9 @@ public class RegressionAction extends AbstractAction {
     final File destFile =
         new File(outputDir, StringUtils.filenameWithoutExtension(srcFile
             .getName()) + "_" + suffix + ".log");
+
+    // Create empty with suffix name
+    new File(outputDir, suffix + ".out");
 
     // Copy and rename
     try {
@@ -387,6 +390,7 @@ public class RegressionAction extends AbstractAction {
 
   private void runTest() {
     Exception exception = null;
+    final Stopwatch timerTest = Stopwatch.createUnstarted();
 
     // Generate all
     for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
@@ -398,6 +402,9 @@ public class RegressionAction extends AbstractAction {
       String reportTest = "";
 
       try {
+
+        timerTest.start();
+
         initLoggerTest(testName);
         LOGGER.info(testName + ": execute test");
 
@@ -419,6 +426,11 @@ public class RegressionAction extends AbstractAction {
 
         // Compile assessments for all tests
         reportTest = comparator.buildReport(testName);
+
+        // End test and runtime
+        timerTest.reset();
+        LOGGER_GLOBAL.info("end test execution in "
+            + toTimeHumanReadable(timerTest.elapsed(TimeUnit.MILLISECONDS)));
 
         if (comparator.asRegression()) {
           LOGGER_GLOBAL.severe(reportTest);
