@@ -1,0 +1,9 @@
+
+<suite name="Suite1" verbose="1" >
+  <test name="EoulsanIT1">
+    <classes>
+       <class name="fr.ens.transcriptome.eoulsan.it.EoulsanITFactory" />
+    </classes>
+  </test>
+</suite>
+
