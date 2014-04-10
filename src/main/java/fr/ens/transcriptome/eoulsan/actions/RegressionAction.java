@@ -217,6 +217,7 @@ public class RegressionAction extends AbstractAction {
 
     String confPath = null;
     String jobDescription = null;
+    String applicationPath = null;
 
     // Optional, file
     String testsFilePath = null;
@@ -246,6 +247,13 @@ public class RegressionAction extends AbstractAction {
 
         // Configuration test files
         confPath = line.getOptionValue("c").trim();
+        argsOptions += 2;
+      }
+      
+      if (line.hasOption("exec")) {
+
+        // Path to application version
+        applicationPath = line.getOptionValue("exec").trim();
         argsOptions += 2;
       }
 
@@ -285,7 +293,7 @@ public class RegressionAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    run(confPath, testsFilePath, regenerateExpectedData, isCheckingAction);
+    run(confPath, testsFilePath, applicationPath, regenerateExpectedData, isCheckingAction);
   }
 
   /**
@@ -305,10 +313,14 @@ public class RegressionAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
 
-    // Path to test Eoulsan version
+    // Path to test configuration
     options.addOption(OptionBuilder.withArgName("confPath").hasArg(true)
         .withDescription("configuration test file").withLongOpt("conf")
         .create('c'));
+
+    // Path to application version to execute
+    options.addOption(OptionBuilder.withArgName("exec").hasArg()
+        .withDescription("path application version").create("exec"));
 
     // Optional, path to file with list name tests to treat
     options.addOption(OptionBuilder.withArgName("fileTest").hasArg(true)
@@ -347,17 +359,17 @@ public class RegressionAction extends AbstractAction {
    * @param outputDirectory
    * @param jobDescription
    */
-  private void run(final String confPath, final String testsFilesPath,
+  private void run(final String confPath, final String testsFilesPath, final String applicationPath,
       final boolean regenerateExpectedData, final boolean isCheckingAction) {
 
     // Initialization action from configuration test file
-    init(new File(confPath), testsFilesPath);
+    init(new File(confPath), testsFilesPath, applicationPath);
 
     LOGGER_GLOBAL.info("Tests found count: " + this.tests.size());
     TIMER.start();
 
     if (isCheckingAction) {
-      runGenerateExpectedData(regenerateExpectedData);
+      runGenerateExpectedData(applicationPath, regenerateExpectedData);
     } else {
       runTest();
     }
@@ -370,11 +382,10 @@ public class RegressionAction extends AbstractAction {
    * @param regenerateExpectedData if true generate all expected directories
    *          otherwise this missing
    */
-  private void runGenerateExpectedData(final boolean regenerateExpectedData) {
+  private void runGenerateExpectedData(final String applicationPath, final boolean regenerateExpectedData) {
     // Generate all expected data directory
     try {
       for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
-        final String testName = test.getKey();
         final DataSetTest dst = test.getValue();
 
         dst.generateDataExpected(regenerateExpectedData);
@@ -468,7 +479,7 @@ public class RegressionAction extends AbstractAction {
    * @throws EoulsanException
    * @throws IOException
    */
-  private void init(final File conf, final String testsSelectedPath) {
+  private void init(final File conf, final String testsSelectedPath, final String applicationPath) {
 
     try {
       checkExistingFile(conf, " configuration file doesn't exist.");
@@ -496,6 +507,9 @@ public class RegressionAction extends AbstractAction {
       br.close();
 
       initLoggerGlobal(this.props.getProperty("log_path"));
+      
+      final File  
+      
       configure(testsSelectedPath);
 
     } catch (Exception e1) {
@@ -527,14 +541,9 @@ public class RegressionAction extends AbstractAction {
     LOGGER_GLOBAL.config("Output data directory: " + output.getAbsoluteFile());
 
     this.outputTestsDirectory =
-        new File(output, props.getProperty("eoulsan_test_version_git")
-            + "_" + DATE_FORMAT.format(new Date()));
+        new File(output, +"_" + DATE_FORMAT.format(new Date()));
     LOGGER_GLOBAL.config("Output tests directory: "
         + this.outputTestsDirectory.getAbsolutePath());
-
-    this.tmpDir = new File(this.props.getProperty("tmp_path"));
-    checkExistingFile(this.tmpDir, " tmp directory ");
-    LOGGER_GLOBAL.config("Tmp directory: " + tmpDir.getAbsoluteFile());
 
     if (!outputTestsDirectory.mkdir())
       throw new EoulsanException("Cannot create output tests directory "
@@ -562,7 +571,7 @@ public class RegressionAction extends AbstractAction {
       throws EoulsanException, IOException {
 
     final String prefix = "test";
-    final String suffix = ".txt";
+    final String suffix = ".conf";
 
     // Parsing all directories test
     for (File dir : testsDataDirectory.listFiles()) {
@@ -621,11 +630,12 @@ public class RegressionAction extends AbstractAction {
       // Add test
       final File testPath = new File(testsDataDirectory, nameTest);
 
-      checkExistingFile(new File(testPath, "test.txt"), "the 'test.txt' file ");
+      checkExistingFile(new File(testPath, "test.conf"),
+          "the 'test.conf' file ");
 
       final DataSetTest dst =
-          new DataSetTest(this.props, new File(testPath, "test.txt"), testPath,
-              this.outputTestsDirectory, nameTest);
+          new DataSetTest(this.props, applicationPath, new File(testPath, "test.conf"),
+              testPath, this.outputTestsDirectory, nameTest);
 
       this.tests.put(nameTest, dst);
 

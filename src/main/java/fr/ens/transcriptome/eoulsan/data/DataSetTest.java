@@ -32,21 +32,28 @@ public class DataSetTest {
   private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
 
   /** Key for configuration test */
-  private static final String COMMAND_LINE_EOULSAN_KEY = "command_line_eoulsan";
-  private static final String SCRIPT_PRETREATMENT_KEY = "script_pretreatment";
-  private static final String SCRIPT_POSTTREATMENT_KEY = "script_posttreatment";
+  private static final String PRETEST_SCRIPT_KEY = "pretest_script";
+  private static final String POSTTEST_SCRIPT_KEY = "posttest_script";
   private static final String DESCRIPTION_KEY = "description";
-  private static final String SCRIPT_GENERATED_DATA_EXPECTED_KEY =
-      "script_generated_data_expected";
+
+  private static final String CMD_LINE_TO_REFERENCE_KEY =
+      "cmd_line_to_reference";
+
+  private static final String CMD_LINE_TO_TEST_KEY = "cmd_line_to_test";
+  private static final String CMD_LINE_TO_GET_VERSION_REFERENCE_KEY =
+      "cmd_line_to_get_version_reference";
+  private static final String CMD_LINE_TO_GET_VERSION_TEST_KEY =
+      "cmd_line_to_get_version_test";
 
   private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
   private static final String PATTERNS_OUTPUT_FILES_KEY =
       "patterns_output_files";
 
-  private static final String EOULSAN_CONF_FILE_KEY = "eoulsan_conf_file";
   private static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
       "expected_data_generated_manually";
-
+  
+  private static final String APPLI_PATH_KEY = "{appli.path}";
+  
   private final static Splitter splitter = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
@@ -103,7 +110,7 @@ public class DataSetTest {
       launchAnalysis(dsaExpected,
           new File(this.props.getProperty("eoulsan_reference_path")),
           this.expectedDirectory, true);
-    
+
     } else {
       LOGGER_GLOBAL.fine(testName + ": check expected data");
       this.dsaExpected.checkExpectedDirectory(true);
