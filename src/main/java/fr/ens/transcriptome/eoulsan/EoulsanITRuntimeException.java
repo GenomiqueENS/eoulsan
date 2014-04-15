@@ -22,9 +22,8 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.it;
+package fr.ens.transcriptome.eoulsan;
 
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 
 public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
