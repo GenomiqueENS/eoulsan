@@ -28,6 +28,9 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.compress.utils.Charsets;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
@@ -35,40 +38,12 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.data.DataSetAnalysis;
-import fr.ens.transcriptome.eoulsan.data.DataSetTest;
-import fr.ens.transcriptome.eoulsan.io.ComparatorDirectories;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.it.DataSetTest;
+import fr.ens.transcriptome.eoulsan.it.EoulsanITFactory;
+import fr.ens.transcriptome.eoulsan.it.ITActionFactory;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class RegressionAction extends AbstractAction {
-
-  public static final String LOGGER_TESTS_GLOBAL = "tests_global";
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
-  private static final Logger LOGGER_GLOBAL = Logger
-      .getLogger(LOGGER_TESTS_GLOBAL);
-
-  private final Stopwatch TIMER = Stopwatch.createUnstarted();
-
-  public static DateFormat DATE_FORMAT = new SimpleDateFormat(
-      "yyyyMMdd-kkmmss", Globals.DEFAULT_LOCALE);
-
-  public static final boolean USE_SERIALIZATION = true;
-  public static final boolean CHECKING_SAME_NAME = true;
-
-  private final Properties props;
-  // private final ComparatorDirectories comparator;
-
-  private File inputData;
-  private File outputTestsDirectory;
-  private File tmpDir;
-  private String logGlobalPath;
-  private String logTestPath;
-  private boolean asRegression = false;
-  private boolean exceptionThrowGlobal = false;
-
-  private final Map<String, DataSetTest> tests;
 
   @Override
   public String getName() {
@@ -80,149 +55,19 @@ public class RegressionAction extends AbstractAction {
     return "test " + Globals.APP_NAME + " version.";
   }
 
-  private void initLoggerTest(final String nameTest) throws EoulsanException {
-
-    // Close previous logger test file
-    if (this.logTestPath != null) {
-      for (Handler handler : LOGGER.getHandlers()) {
-        LOGGER.removeHandler(handler);
-      }
-
-      // Remove lock logger file
-      if (!new File(this.logTestPath + ".lck").delete())
-        // TODO
-        System.out.println("Fail remove lock logger file: "
-            + logTestPath + ".lck");
-    }
-
-    // Init new logger for a current test
-    this.logTestPath = this.tmpDir + "/test_" + nameTest + ".log";
-
-    initLogger(LOGGER, logTestPath);
-
-  }
-
-  public void initLoggerGlobal(final String logPath) throws EoulsanException {
-    logGlobalPath =
-        logPath + "/eoulsan_" + DATE_FORMAT.format(new Date()) + ".log";
-
-    initLogger(LOGGER_GLOBAL, logGlobalPath);
-
-  }
-
-  private void initLogger(final Logger logger, final String logPath)
-      throws EoulsanException {
-    Handler fh = null;
-    try {
-      fh = new FileHandler(logPath);
-
-    } catch (Exception e) {
-      throw new EoulsanException(e.getMessage());
-    }
-
-    fh.setFormatter(Globals.LOG_FORMATTER);
-
-    logger.setLevel(Level.ALL);
-    // LOGGER.setUseParentHandlers(false);
-    logger.addHandler(fh);
-    logger.info(Globals.WELCOME_MSG);
-
-  }
-
-  private void addExceptionMessageInLogger(final Logger logger,
-      final Exception exception) {
-
-    if (exception == null)
-      return;
-
-    final String msg =
-        exception.getClass().getName()
-            + ": " + exception.getMessage() + "\n"
-            + StringUtils.join(exception.getStackTrace(), "\n\t");
-    logger.severe(msg);
-  }
-
-  private void closeLoggerGlobal(final String suf) {
-
-    // Set suffix logger filename
-    final String suffix =
-        (suf != null ? suf : (exceptionThrowGlobal
-            ? "EXCEPTION" : (asRegression ? "FAIL" : "SUCCES")));
-
-    // Add suffix to log global filename
-    LOGGER_GLOBAL.fine(suffix
-        + " end execution in "
-        + toTimeHumanReadable(TIMER.elapsed(TimeUnit.MILLISECONDS)));
-
-    final File logFile = new File(logGlobalPath);
-
-    if (logFile.exists()) {
-
-      final File destFile =
-          new File(StringUtils.filenameWithoutExtension(this.logGlobalPath)
-              + "_" + suffix + ".log");
-
-      // Rename log file, add suffix
-      if (logFile.renameTo(destFile))
-        // Create a symbolic link
-        createSymbolicLink(destFile, this.outputTestsDirectory);
-    }
-  }
-
-  private void closeLoggerTest(final Exception exception, final File outputDir,
-      final boolean asRegressionTest) {
-
-    final File srcFile = new File(this.logTestPath);
-
-    // Throw exception occurs during initialization test, no logger test exists
-    if (!srcFile.exists())
-      return;
-
-    final String suffix;
-
-    if (exception == null) {
-      suffix = asRegressionTest ? "FAIL" : "SUCCESS";
-
-    } else {
-      suffix = "EXCEPTION";
-
-      addExceptionMessageInLogger(LOGGER, exception);
-      addExceptionMessageInLogger(LOGGER_GLOBAL, exception);
-    }
-
-    // srcFile.renameTo(destFile);
-
-    // Add suffix to log global filename
-    final File destFile =
-        new File(outputDir, StringUtils.filenameWithoutExtension(srcFile
-            .getName()) + "_" + suffix + ".log");
-
-    // Create empty with suffix name
-    new File(outputDir, suffix + ".out");
-
-    // Copy and rename
-    try {
-      FileUtils.moveFile(srcFile, destFile);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
   @Override
   public void action(String[] arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
-    String confPath = null;
-    String jobDescription = null;
-    String applicationPath = null;
+    // File confPath = null;
+    // String applicationPath = null;
 
     // Optional, file
-    String testsFilePath = null;
-    boolean regenerateExpectedData = false;
-    boolean isCheckingAction = false;
+    // File fileListAllTests = null;
+    // boolean regenerateAllExpectedData = false;
+    // boolean isCheckingExpectedDirAction = false;
 
     int argsOptions = 0;
 
@@ -236,24 +81,19 @@ public class RegressionAction extends AbstractAction {
         help(options);
       }
 
-      // Description
-      if (line.hasOption("d")) {
-
-        jobDescription = line.getOptionValue("d");
-        argsOptions += 2;
-      }
-
       if (line.hasOption("c")) {
 
         // Configuration test files
-        confPath = line.getOptionValue("c").trim();
+        System.setProperty(ITActionFactory.CONF_PATH_KEY,
+            line.getOptionValue("c").trim());
         argsOptions += 2;
       }
-      
+
       if (line.hasOption("exec")) {
 
         // Path to application version
-        applicationPath = line.getOptionValue("exec").trim();
+        System.setProperty(ITActionFactory.APPLI_PATH_KEY,
+            line.getOptionValue("exec").trim());
         argsOptions += 2;
       }
 
@@ -261,24 +101,26 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        testsFilePath = line.getOptionValue("f").trim();
+        System.setProperty(ITActionFactory.TESTS_FILE_PATH_KEY, line
+            .getOptionValue("f").trim());
         argsOptions += 2;
       }
 
       // Optional argument
       // TODO option name
       if (line.hasOption("generate")) {
-        isCheckingAction = true;
         final String s = line.getOptionValue("generate").trim();
 
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          regenerateExpectedData = true;
+          System.setProperty(ITActionFactory.GENERATE_ALL_EXPECTED_DATA_KEY,
+              "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          regenerateExpectedData = false;
+          System.setProperty(ITActionFactory.GENERATE_NEW_EXPECTED_DATA_KEY,
+              "true");
 
         argsOptions += 2;
       }
@@ -293,7 +135,7 @@ public class RegressionAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    run(confPath, testsFilePath, applicationPath, regenerateExpectedData, isCheckingAction);
+    run();
   }
 
   /**
@@ -308,10 +150,6 @@ public class RegressionAction extends AbstractAction {
 
     // Help option
     options.addOption("h", "help", false, "display this help");
-
-    // Description option
-    options.addOption(OptionBuilder.withArgName("description").hasArg()
-        .withDescription("job description").withLongOpt("desc").create('d'));
 
     // Path to test configuration
     options.addOption(OptionBuilder.withArgName("confPath").hasArg(true)
@@ -353,305 +191,43 @@ public class RegressionAction extends AbstractAction {
   //
 
   /**
-   * Launch Eoulsan on each dataset and if success compares result directory
-   * @param pathEoulsanNewVersion
-   * @param listDatasets
-   * @param outputDirectory
-   * @param jobDescription
    */
-  private void run(final String confPath, final String testsFilesPath, final String applicationPath,
-      final boolean regenerateExpectedData, final boolean isCheckingAction) {
+  private void run() {
 
-    // Initialization action from configuration test file
-    init(new File(confPath), testsFilesPath, applicationPath);
+    // Define a listener that print information about the results of the
+    // integration tests
+    TestListenerAdapter tla = new TestListenerAdapter() {
 
-    LOGGER_GLOBAL.info("Tests found count: " + this.tests.size());
-    TIMER.start();
+      @Override
+      public void onTestSuccess(final ITestResult tr) {
 
-    if (isCheckingAction) {
-      runGenerateExpectedData(applicationPath, regenerateExpectedData);
-    } else {
-      runTest();
-    }
-
-  }
-
-  /**
-   * TODO Value equals all, regenerate all expected directories generated
-   * automatically otherwise generated only expected directory doesn't exist
-   * @param regenerateExpectedData if true generate all expected directories
-   *          otherwise this missing
-   */
-  private void runGenerateExpectedData(final String applicationPath, final boolean regenerateExpectedData) {
-    // Generate all expected data directory
-    try {
-      for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
-        final DataSetTest dst = test.getValue();
-
-        dst.generateDataExpected(regenerateExpectedData);
+        super.onTestSuccess(tr);
+        System.out.println(tr);
       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+      @Override
+      public void onTestFailure(final ITestResult tr) {
 
-    } finally {
-      closeLoggerGlobal("CHECK");
-    }
-  }
-
-  private void runTest() {
-    Exception exception = null;
-    final Stopwatch timerTest = Stopwatch.createUnstarted();
-
-    // Generate all
-    for (Map.Entry<String, DataSetTest> test : this.tests.entrySet()) {
-      final String testName = test.getKey();
-      final DataSetTest dst = test.getValue();
-      final ComparatorDirectories comparator =
-          new ComparatorDirectories(USE_SERIALIZATION);
-
-      String reportTest = "";
-
-      try {
-
-        timerTest.start();
-
-        initLoggerTest(testName);
-        LOGGER.info(testName + ": execute test");
-
-        // Add description current test
-        LOGGER_GLOBAL.info(testName + ": " + dst.getDescriptionTest());
-
-        dst.generateDataTested();
-
-        // Collect data expected for project
-        final DataSetAnalysis setExpected = dst.getAnalysisExcepted();
-
-        // Collect data tested
-        final DataSetAnalysis setTested = dst.getAnalysisTest();
-
-        comparator.setPatternToCompare(dst.getPatternsToCompare());
-
-        // Launch comparison
-        comparator.compareDataSet(setExpected, setTested, testName);
-
-        // Compile assessments for all tests
-        reportTest = comparator.buildReport(testName);
-
-        // End test and runtime
-        timerTest.reset();
-        LOGGER_GLOBAL.info("end test execution in "
-            + toTimeHumanReadable(timerTest.elapsed(TimeUnit.MILLISECONDS)));
-
-        if (comparator.asRegression()) {
-          LOGGER_GLOBAL.severe(reportTest);
-          this.asRegression = true;
-
-        } else {
-          LOGGER_GLOBAL.info(reportTest);
-        }
-
-      } catch (Exception e) {
-        exception = e;
-        e.printStackTrace();
-
-      } finally {
-
-        // Add assessment current test
-        if (exception != null) {
-          exceptionThrowGlobal = true;
-          LOGGER_GLOBAL.severe("Exception throw with test:" + testName);
-        }
-
-        // End run current test
-        closeLoggerTest(exception, dst.getTestedDirectory(),
-            comparator.asRegression());
-      }
-    }
-    TIMER.stop();
-    // End run all tests
-    closeLoggerGlobal(null);
-  }
-
-  /**
-   * Initialization properties from tests configuration
-   * @param conf configuration file from Action
-   * @throws EoulsanException
-   * @throws IOException
-   */
-  private void init(final File conf, final String testsSelectedPath, final String applicationPath) {
-
-    try {
-      checkExistingFile(conf, " configuration file doesn't exist.");
-
-      final BufferedReader br =
-          new BufferedReader(newReader(conf,
-              Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
-      String line = null;
-
-      while ((line = br.readLine()) != null) {
-        // Skip commentary
-        if (line.startsWith("#"))
-          continue;
-
-        final int pos = line.indexOf('=');
-        if (pos == -1)
-          continue;
-
-        final String key = line.substring(0, pos).trim();
-        final String value = line.substring(pos + 1).trim();
-
-        props.put(key, value);
-
-      }
-      br.close();
-
-      initLoggerGlobal(this.props.getProperty("log_path"));
-      
-      final File  
-      
-      configure(testsSelectedPath);
-
-    } catch (Exception e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-
-      addExceptionMessageInLogger(LOGGER_GLOBAL, e1);
-      closeLoggerGlobal(null);
-    }
-
-  }
-
-  private void configure(final String testsSelectedPath)
-      throws EoulsanException, IOException {
-    // Initialization
-    this.inputData = new File(this.props.getProperty("input_directory"));
-    checkExistingFile(this.inputData, " input data directory ");
-    LOGGER_GLOBAL.config("Input data directory: "
-        + this.inputData.getAbsolutePath());
-
-    final File testsData = new File(this.props.getProperty("tests_directory"));
-    checkExistingFile(testsData, " tests data directory ");
-    LOGGER_GLOBAL
-        .config("Tests data directory: " + testsData.getAbsolutePath());
-
-    final File output =
-        new File(this.props.getProperty("output_analysis_directory"));
-    checkExistingFile(output, " output data directory ");
-    LOGGER_GLOBAL.config("Output data directory: " + output.getAbsoluteFile());
-
-    this.outputTestsDirectory =
-        new File(output, +"_" + DATE_FORMAT.format(new Date()));
-    LOGGER_GLOBAL.config("Output tests directory: "
-        + this.outputTestsDirectory.getAbsolutePath());
-
-    if (!outputTestsDirectory.mkdir())
-      throw new EoulsanException("Cannot create output tests directory "
-          + outputTestsDirectory.getAbsolutePath());
-
-    // Collect all test.txt describing test to launch
-    if (testsSelectedPath == null) {
-      // Collect all tests
-      collectTests(testsData);
-    } else {
-      // Collect tests from a file with names tests
-      collectTestsFromFile(testsData, testsSelectedPath);
-    }
-
-  }
-
-  /**
-   * Collect all tests present in test directory with a file configuration
-   * 'test.txt
-   * @param testsDataDirectory
-   * @throws EoulsanException
-   * @throws IOException
-   */
-  private void collectTests(final File testsDataDirectory)
-      throws EoulsanException, IOException {
-
-    final String prefix = "test";
-    final String suffix = ".conf";
-
-    // Parsing all directories test
-    for (File dir : testsDataDirectory.listFiles()) {
-
-      // Collect test description file
-      final File[] files = dir.listFiles(new FileFilter() {
-
-        @Override
-        public boolean accept(File pathname) {
-          return pathname.getName().startsWith(prefix)
-              && pathname.getName().endsWith(suffix);
-        }
-      });
-
-      if (files != null && files.length == 1) {
-        // Test name
-        String nameTest = dir.getName();
-
-        //
-        final DataSetTest dst =
-            new DataSetTest(this.props, files[0], dir,
-                this.outputTestsDirectory, nameTest);
-        this.tests.put(nameTest, dst);
+        super.onTestFailure(tr);
+        System.err.println(tr);
+        System.err.println(tr.getThrowable().getMessage());
       }
 
-    }
+    };
 
-    if (this.tests.size() == 0)
-      throw new EoulsanException("None test in "
-          + testsDataDirectory.getAbsolutePath());
-  }
+    // Create and configure TestNG
+    TestNG testng = new TestNG();
+    testng.setTestClasses(new Class[] {ITActionFactory.class});
+    testng.addListener(tla);
 
-  /**
-   * Collect tests to launch from text files with name tests
-   * @param testsDataDirectory
-   * @param testsSelectedPath
-   * @throws IOException
-   * @throws EoulsanException
-   */
-  private void collectTestsFromFile(final File testsDataDirectory,
-      final String testsSelectedPath) throws IOException, EoulsanException {
-
-    final File testsSelectedFile = new File(testsSelectedPath);
-    checkExistingFile(testsSelectedFile, " tests selected file doesn't exist.");
-
-    final BufferedReader br =
-        new BufferedReader(newReader(testsSelectedFile,
-            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
-
-    String nameTest = null;
-    while ((nameTest = br.readLine()) != null) {
-      // Skip commentary
-      if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
-        continue;
-
-      // Add test
-      final File testPath = new File(testsDataDirectory, nameTest);
-
-      checkExistingFile(new File(testPath, "test.conf"),
-          "the 'test.conf' file ");
-
-      final DataSetTest dst =
-          new DataSetTest(this.props, applicationPath, new File(testPath, "test.conf"),
-              testPath, this.outputTestsDirectory, nameTest);
-
-      this.tests.put(nameTest, dst);
-
-    }
-    br.close();
-
+    // Launch integration tests using TestNG
+    testng.run();
   }
 
   //
   // Constructor
   //
 
-  public RegressionAction() throws EoulsanException {
-    props = new Properties();
-
-    this.tests = Maps.newTreeMap();
-
+  public RegressionAction() {
   }
 }
