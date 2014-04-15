@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import org.testng.annotations.Test;
 
+import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
+
 /**
  * This class define an integration test.
  * @author Laurent Jourdren

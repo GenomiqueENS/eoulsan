@@ -7,8 +7,8 @@ import java.io.IOException;
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
 import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
-import fr.ens.transcriptome.eoulsan.io.CompareFiles;
-import fr.ens.transcriptome.eoulsan.io.LogCompareFiles;
+import fr.ens.transcriptome.eoulsan.io.comparator.Comparator;
+import fr.ens.transcriptome.eoulsan.io.comparator.LogComparator;
 
 public class RegressionActionDemo {
 
@@ -44,16 +44,15 @@ public class RegressionActionDemo {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Run action
-    // action.action(new String[] {"-c", confpath, "-generate", "new", "-d",
-    // jobDescription});
+    // action.action(new String[] {"-c", confpath, "-generate", "all", "-exec",
+    // "/home/sperrin/home-net/eoulsan-1.2.2"});
 
-    // action.action(new String[] {"-c", confpath, "-generate", "all", "-d",
-    // jobDescription});
+    // action.action(new String[] {"-c", confpath, "-generate", "all"});
 
-    // action.action(new String[] {"-c", confpath, "-f", fileTests, "-d",
-    // jobDescription});
+    // action.action(new String[] {"-c", confpath, "-f", fileTests, });
 
-    action.action(new String[] {"-c", confpath, "-d", jobDescription});
+    action.action(new String[] {"-c", confpath, "-exec",
+        "/home/sperrin/home-net/eoulsan_newReadsMappers"});
   }
 
   public static void testLogCompare() {
@@ -61,7 +60,7 @@ public class RegressionActionDemo {
     // Map<Object, Object> map = System.getProperties();
     // System.out.println("print properties \n"
     // + Joiner.on("\n").withKeyValueSeparator("\t").join(map));
-    CompareFiles comp = new LogCompareFiles();
+    Comparator comp = new LogComparator();
     String dir =
         new File(
             "/home/sperrin/Documents/test_eoulsan/dataset_source/test_expected/")
