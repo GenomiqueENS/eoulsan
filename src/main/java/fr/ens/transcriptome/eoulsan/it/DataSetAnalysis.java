@@ -1,48 +1,35 @@
-package fr.ens.transcriptome.eoulsan.data;
+package fr.ens.transcriptome.eoulsan.it;
 
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
-import fr.ens.transcriptome.eoulsan.util.FileUtils.PrefixFilenameFilter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetAnalysis {
 
-  /** Logger */
-  private static final Logger LOGGER_TEST = Logger.getLogger(Globals.APP_NAME);
-  private static final Logger LOGGER_GLOBAL = Logger
-      .getLogger(RegressionAction.LOGGER_TESTS_GLOBAL);
-
   public final static Splitter COMMA_SPLITTER = Splitter.on(',').trimResults()
       .omitEmptyStrings();
-  private static final String PATTERNS_INPUT_FILES_KEY = "patterns_input_files";
+  private static final String PATTERNS_INPUT_FILES_KEY = "patterns.input.files";
   private static final String PATTERNS_OUTPUT_FILES_KEY =
-      "patterns_output_files";
+      "patterns.output.files";
 
   private final Properties propsTest;
 
   private final File inputDataDirectory;
   private final File outputDataDirectory;
 
-  private boolean exists = true;
-  private File designFile;
-  private File paramFile;
-
-  private Map<String, DataFile> filesByName;
+  private boolean isExpectedDirectoryExists = false;
+  private Map<String, File> outputFilesAnalysis;
 
   public void parseDirectory() throws IOException, EoulsanException {
     parseDirectory(this.outputDataDirectory);
@@ -54,25 +41,24 @@ public class DataSetAnalysis {
     for (final File fileEntry : directory.listFiles()) {
       if (fileEntry.isDirectory()) {
         parseDirectory(fileEntry);
+
       } else {
-
-        DataFile df = new DataFile(fileEntry);
-
-        // Check two paths with same filename linked the same file
-        if (filesByName.containsKey(df.getName())) {
-          File firstFile =
-              filesByName.get(df.getName()).toFile().getCanonicalFile();
-          File secondFile = df.toFile().getCanonicalFile();
-
-          if (!firstFile.equals(secondFile))
-            throw new EoulsanException(
-                "Fail parsing analysis directory, they are two differents files with the same filename");
-        }
+        // entry is a file
         // Skip serialization file created by bloomFilter
-        if (!df.getExtension().equals(".ser")) {
+        if (!fileEntry.getName().endsWith(".ser")) {
 
-          // Add entry in map
-          filesByName.put(df.getName(), df);
+          // File match with pattern output file
+          if (isOutputFiles(fileEntry)) {
+
+            // Save all output files analysis
+            outputFilesAnalysis.put(fileEntry.getName(), fileEntry);
+
+          } else {
+            // Remove file
+            if (!fileEntry.delete())
+              new IOException("Fail to delete file "
+                  + fileEntry.getAbsolutePath());
+          }
         }
       }
     }
@@ -81,7 +67,7 @@ public class DataSetAnalysis {
 
   private void buildDirectoryAnalysis() throws EoulsanException, IOException {
 
-    if (this.exists) {
+    if (this.isExpectedDirectoryExists) {
       // Check directory already exists
       // checkInputFilesRequired();
       return;
@@ -109,17 +95,10 @@ public class DataSetAnalysis {
     if (!this.outputDataDirectory.exists()) {
 
       // Build analysis Eoulsan directory
-      this.exists = false;
       buildDirectoryAnalysis();
     }
 
-    this.designFile =
-        filterOneFileWithPrefix(this.outputDataDirectory, "design",
-            "design file");
-
-    this.paramFile =
-        filterOneFileWithPrefix(this.outputDataDirectory, "param",
-            "parameter file");
+    this.isExpectedDirectoryExists = true;
 
     // Check all files necessary
     checkExpectedDirectory(false);
@@ -129,7 +108,7 @@ public class DataSetAnalysis {
   // Useful methods
   //
 
-  private void checkFilesRequired(final String pattern_key)
+  private void checkFilesRequired(final String pattern_key, final File source)
       throws EoulsanException {
     // Check input files required correspond to the patterns
     final String patternsFiles = this.propsTest.getProperty(pattern_key);
@@ -139,7 +118,7 @@ public class DataSetAnalysis {
       boolean patternFound = false;
 
       // Parse files in input directory
-      for (File file : this.outputDataDirectory.listFiles()) {
+      for (File file : source.listFiles()) {
         patternFound =
             patternFound
                 || Pattern.matches(regex, StringUtils
@@ -153,67 +132,49 @@ public class DataSetAnalysis {
     }
   }
 
+  private boolean isOutputFiles(final File file) {
+
+    // Add test configuration file
+    final String patternsFiles =
+        this.propsTest.getProperty(PATTERNS_OUTPUT_FILES_KEY) + ", test.conf";
+
+    // Parse patterns
+    for (String regex : COMMA_SPLITTER.split(patternsFiles)) {
+
+      // Parse files in input directory
+      if (Pattern.matches(regex,
+          StringUtils.filenameWithoutCompressionExtension(file.getName())))
+        return true;
+    }
+
+    return false;
+  }
+
   public void checkExpectedDirectory(final boolean asAnalysisExecute)
       throws EoulsanException, IOException {
 
     // Check test configuration file
-    checkExistingFile(getTestConfigurationFile(), "design file not found.");
-
-    // Check design file
-    checkExistingFile(getDesignFile(), "design file not found.");
-
-    // Check parameter file
-    checkExistingFile(getParamFile(), "parameter file not found.");
+    checkExistingFile(getTestConfigurationFile(), "configuration test file");
 
     // Check input files requiered
-    checkFilesRequired(PATTERNS_INPUT_FILES_KEY);
+    checkFilesRequired(PATTERNS_INPUT_FILES_KEY, this.inputDataDirectory);
 
     if (asAnalysisExecute) {
       // Check output files requiered
-      checkFilesRequired(PATTERNS_OUTPUT_FILES_KEY);
+      checkFilesRequired(PATTERNS_OUTPUT_FILES_KEY, this.outputDataDirectory);
     }
-  }
-
-  private File[] filterFile(final File dir, final String... suffixes) {
-
-    return dir.listFiles(new FileFilter() {
-
-      @Override
-      public boolean accept(File pathname) {
-        for (String suffix : suffixes)
-          return pathname.getName().contains(suffix);
-        return false;
-      }
-    });
-  }
-
-  private File filterOneFileWithPrefix(final File dir, final String prefix,
-      final String msg) throws EoulsanException {
-
-    File[] files = dir.listFiles(new PrefixFilenameFilter(prefix, false));
-
-    if (files == null)
-      throw new EoulsanException("None file: "
-          + msg + " filtered in directory " + dir.getAbsolutePath());
-
-    if (files.length != 1)
-      throw new EoulsanException(
-          "Doesn't have the good number of file searched for " + msg);
-
-    return files[0];
-
   }
 
   /**
    * @param df
    * @return
    */
-  public DataFile searchFileByName(final String filename) {
+  public File searchFileByName(final String filename) {
 
     if (filename == null || filename.length() == 0)
       return null;
 
-    return filesByName.get(filename);
+    return outputFilesAnalysis.get(filename);
   }
 
   //
@@ -221,23 +182,15 @@ public class DataSetAnalysis {
   //
 
   public boolean isResultsAnalysisExists() {
-    return exists;
-  }
-
-  public File getDesignFile() {
-    return designFile;
-  }
-
-  public File getParamFile() {
-    return paramFile;
+    return isExpectedDirectoryExists;
   }
 
   public File getTestConfigurationFile() {
-    return new File(this.outputDataDirectory, "test.txt");
+    return new File(this.outputDataDirectory, "test.conf");
   }
 
-  public Map<String, DataFile> getAllFilesAnalysis() {
-    return filesByName;
+  public Map<String, File> getOutputFilesAnalysis() {
+    return outputFilesAnalysis;
   }
 
   //
@@ -255,7 +208,7 @@ public class DataSetAnalysis {
     this.inputDataDirectory = inputDataDirectory;
     this.outputDataDirectory = outputDataDirectory;
 
-    this.filesByName = Maps.newHashMap();
+    this.outputFilesAnalysis = Maps.newHashMap();
 
     init();
 
