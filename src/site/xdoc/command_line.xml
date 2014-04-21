@@ -111,5 +111,18 @@ Available commands:
     </subsection>
   </section>
 
+    <section name="Environment variables">
+
+        <p>In order to avoid modify the <tt>eoulsan.sh</tt> file, you use the following  environment variable to configure Eoulsan JVM and plugins path:</p>
+        <ul>
+            <li><b>EOULSAN_MEMORY</b>: The maximum size in MiB of the JVM memory allocation pool. Default value is 2048.</li>
+            <li><b>EOULSAN_JVM_OPTS</b>: The JVM options. Default value is "-server".</li>
+            <li><b>EOULSAN_PLUGINS</b>: The path to Eoulsan plugins. No default value is set.</li>
+        </ul>
+
+
+    </section>
+
+
 </body>
 </document>
