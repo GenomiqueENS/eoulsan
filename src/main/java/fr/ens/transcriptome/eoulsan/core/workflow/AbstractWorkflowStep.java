@@ -81,16 +81,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final boolean copyResultsToOutput;
   private final boolean createLogFiles;
 
-  private Set<AbstractWorkflowStep> requieredSteps = Sets.newHashSet();
-  private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
-
   private WorkflowOutputPorts outputPorts = WorkflowOutputPorts.noOutputPort();
   private WorkflowInputPorts inputPorts = WorkflowInputPorts.noInputPort();
 
+  private final WorkflowStepStateObserver observer;
+
   private final DataFile workingDir;
 
-  private StepState stepState = StepState.CREATED;
   private StepResult result;
+
 
   //
   // Getters
@@ -98,6 +97,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   @Override
   public Workflow getWorkflow() {
+
+    return this.workflow;
+  }
+
+  /**
+   * Get the abstract workflow object.
+   * @return the AbstractWorkflow object of the step
+   */
+  AbstractWorkflow getAbstractWorkflow() {
 
     return this.workflow;
   }
@@ -171,7 +179,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   @Override
   public StepState getState() {
 
-    return this.stepState;
+    return this.observer.getState();
   }
 
   @Override
@@ -232,6 +240,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.createLogFiles;
   }
 
+  /**
+   * Get the state observer object related to this step.
+   * @return a WorkflowStepStateObserver
+   */
+  WorkflowStepStateObserver getStepStateObserver() {
+
+    return this.observer;
+  }
+
   //
   // Setters
   //
@@ -242,25 +259,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   public void setState(final StepState state) {
 
-    if (state == null)
-      return;
-
-    // If is the root step, there is nothing to wait
-    if (this.type == StepType.ROOT_STEP && state == StepState.WAITING)
-      this.stepState = StepState.READY;
-    else
-      this.stepState = state;
-
-    // Inform step that depend of this step
-    if (this.stepState == StepState.DONE)
-      for (AbstractWorkflowStep step : this.stepsToInform)
-        step.updateStatus();
-
-    // Inform workflow object
-    this.workflow.updateStepState(this);
-
-    // Inform listeners
-    WorkflowStepEventRelay.getInstance().updateStepState(this);
+    this.observer.setState(state);
   }
 
   protected void registerInputAndOutputPorts(final Step step) {
@@ -470,8 +469,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
           "step dependency is not in the same workflow");
 
     // Add step dependency
-    this.requieredSteps.add(step);
-    step.stepsToInform.add(this);
+    this.observer.addDependency(step);
   }
 
   /**
@@ -514,19 +512,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   //
   // Step lifetime methods
   //
-
-  /**
-   * Update the status of the step to READY if all the dependency of this step
-   * are in DONE state.
-   */
-  private void updateStatus() {
-
-    for (AbstractWorkflowStep step : this.requieredSteps)
-      if (step.getState() != StepState.DONE)
-        return;
-
-    setState(StepState.READY);
-  }
 
   /**
    * Configure the step.
@@ -708,6 +693,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       break;
     }
 
+    // Set state observer
+    this.observer = new WorkflowStepStateObserver(this);
+
     // Register this step in the workflow
     this.workflow.register(this);
   }
@@ -746,6 +734,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Define working directory
     this.workingDir =
         defineWorkingDirectory(workflow, generator, copyResultsToOutput);
+
+    // Set state observer
+    this.observer = new WorkflowStepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -791,6 +782,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Define working directory
     this.workingDir =
         defineWorkingDirectory(workflow, step, copyResultsToOutput);
+
+    // Set state observer
+    this.observer = new WorkflowStepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -845,6 +839,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Define working directory
     this.workingDir = workingDir;
+
+    // Set state observer
+    this.observer = new WorkflowStepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);

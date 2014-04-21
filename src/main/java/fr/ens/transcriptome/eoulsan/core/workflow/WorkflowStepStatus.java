@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
@@ -59,6 +60,9 @@ public class WorkflowStepStatus implements StepStatus {
   private Date startDate;
   private Date endDate;
   private Stopwatch stopwatch = new Stopwatch();
+
+  private Set<WorkflowStepObserver> observers = WorkflowStepObserverRegistry
+      .getInstance().getObservers();
 
   //
   // Counters
@@ -214,11 +218,15 @@ public class WorkflowStepStatus implements StepStatus {
     checkSample(sample);
     checkProgress(progress);
 
+    // Inform observers that status has changed
+    progressSampleStatusUpdated(sample, progress);
+
+    // Save progress sample for step progress computation
     synchronized (this) {
       this.sampleProgress.put(sample, progress);
     }
 
-    // Inform listener that status has changed
+    // Inform observers that status has changed
     progressStatusUpdated();
   }
 
@@ -284,26 +292,37 @@ public class WorkflowStepStatus implements StepStatus {
   }
 
   //
-  // Listeners
+  // Observers
   //
 
   /**
-   * Inform listener that the status has been changed.
+   * Inform observers that the status has been changed.
+   */
+  private void progressSampleStatusUpdated(final Sample sample, final double progress) {
+
+    // Inform listeners
+    for (WorkflowStepObserver o : this.observers)
+      o.notifyStepState(this.step, sample, progress);
+  }
+
+  /**
+   * Inform observers that the status has been changed.
    */
   private void progressStatusUpdated() {
 
     // Inform listeners
-    WorkflowStepEventRelay.getInstance().updateStepState(this.step,
-        getProgress());
+    for (WorkflowStepObserver o : this.observers)
+      o.notifyStepState(this.step, getProgress());
   }
 
   /**
-   * Inform listener that the status has been changed.
+   * Inform observers that the status has been changed.
    */
   private void noteStatusUpdated() {
 
     // Inform listeners
-    WorkflowStepEventRelay.getInstance().updateStepState(this.step, this.note);
+    for (WorkflowStepObserver o : this.observers)
+      o.notifyStepState(this.step, this.note);
   }
 
   //

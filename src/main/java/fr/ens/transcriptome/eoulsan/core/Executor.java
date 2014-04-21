@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepEventRelay;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserverRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.ui.BasicUI;
@@ -130,7 +130,7 @@ public class Executor {
     final BasicUI ui = new BasicUI(workflow);
 
     // Enable listen workflow events by ui
-    WorkflowStepEventRelay.getInstance().addListener(ui);
+    WorkflowStepObserverRegistry.getInstance().addObserver(ui);
 
     LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
 

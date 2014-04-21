@@ -24,29 +24,38 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import fr.ens.transcriptome.eoulsan.design.Sample;
+
 /**
  * This interface define workflow step events
  * @author Laurent Jourdren
  * @since 1.3
  */
-public interface WorkflowStepEvent {
+public interface WorkflowStepObserver {
 
   /**
    * The status of the step has been changed.
    * @param step step that the status has been changed
    */
-  void updateStepState(final WorkflowStep step);
+  void notifyStepState(WorkflowStep step);
+
+  /**
+   * The progress of the step for a sample has been changed.
+   * @param step step that the progress has been changed
+   * @param sample sample witch progress has been changed
+   */
+  void notifyStepState(WorkflowStep step, Sample sample, double progress);
 
   /**
    * The progress of the step has been changed.
    * @param step step that the progress has been changed
    */
-  void updateStepState(final WorkflowStep step, final double progress);
+  void notifyStepState(WorkflowStep step, double progress);
 
   /**
    * The note of the step has been changed.
    * @param step step that the note has been changed
    */
-  void updateStepState(final WorkflowStep step, final String note);
+  void notifyStepState(WorkflowStep step, String note);
 
 }

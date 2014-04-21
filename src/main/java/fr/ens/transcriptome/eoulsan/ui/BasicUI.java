@@ -34,9 +34,10 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepEvent;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserver;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
-public class BasicUI implements WorkflowStepEvent {
+public class BasicUI implements WorkflowStepObserver {
 
   private final Workflow workflow;
   private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
@@ -44,11 +45,11 @@ public class BasicUI implements WorkflowStepEvent {
   private int lastMessageLength = 0;
 
   //
-  // WorkflowStepEvent methods
+  // WorkflowStepObserver methods
   //
 
   @Override
-  public void updateStepState(final WorkflowStep step) {
+  public void notifyStepState(final WorkflowStep step) {
 
     if (step == null || step.getWorkflow() != this.workflow)
       return;
@@ -58,12 +59,18 @@ public class BasicUI implements WorkflowStepEvent {
     // + step.getState());
 
     if (step.getState() == StepState.WORKING)
-      updateStepState(step, 0.0);
+      notifyStepState(step, 0.0);
 
   }
 
   @Override
-  public void updateStepState(final WorkflowStep step, double progress) {
+  public void notifyStepState(final WorkflowStep step, final Sample sample, final double progress) {
+
+    // DO nothing
+  }
+
+  @Override
+  public void notifyStepState(final WorkflowStep step, double progress) {
 
     if (step == null
         || step.getWorkflow() != this.workflow
@@ -100,7 +107,7 @@ public class BasicUI implements WorkflowStepEvent {
   }
 
   @Override
-  public void updateStepState(final WorkflowStep step, final String note) {
+  public void notifyStepState(final WorkflowStep step, final String note) {
 
     if (step == null || step.getWorkflow() != this.workflow)
       return;
