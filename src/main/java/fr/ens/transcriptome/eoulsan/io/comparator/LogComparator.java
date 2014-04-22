@@ -40,31 +40,14 @@ public class LogComparator extends AbstractComparator {
             logExpected.getCounterValue(counterGroup, counter)
                 - getCounterValue(logTested, counterGroup, counter);
 
-        // TODO
-        // LOGGER.fine("\t"
-        // + logExpected.getCounterValue(counterGroup, counter) + "\t"
-        // + getCounterValue(logTested, counterGroup, counter) + "\t"
-        // + Math.abs(diffExpectedTested) + "\t"
-        // + (Math.abs(diffExpectedTested) > 1));
-        // System.out.println("\t"
-        // + logExpected.getCounterValue(counterGroup, counter) + "\t"
-        // + getCounterValue(logTested, counterGroup, counter) + "\t"
-        // + Math.abs(diffExpectedTested) + "\t"
-        // + (Math.abs(diffExpectedTested) > 1));
-
-        if (Math.abs(diffExpectedTested) > 1) {
+        if (Math.abs(diffExpectedTested) >= 1) {
           return false;
         }
       }
     }
 
-    // // TODO
-    // LOGGER.fine("\n\t" + numberElements + "\t" + numberElementsCompared);
-    // System.out.println("\n\t" + numberElements + "\t" +
-    // numberElementsCompared);
-
-    // if (numberElements != numberElementsCompared)
-    // return false;
+    if (numberElements != numberElementsCompared)
+      return false;
 
     return true;
   }
