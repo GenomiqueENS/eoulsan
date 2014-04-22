@@ -69,8 +69,8 @@ public class FastqComparatorTest {
 
     String line = "";
     // Chose multi 4 corresponding to header fastq line
-    final int numberLine = 13; // reads3
-    int comp = 0;
+    final int numberLine = getRandomNumberLine();
+    int comp = 1;
 
     while ((line = br.readLine()) != null) {
 
@@ -157,7 +157,7 @@ public class FastqComparatorTest {
     assertFalse("files are different: duplicate read",
         comparator.compareFiles(fileA, fileC, true));
 
-    File ser = new File(dir, "illumina_1_8.fastq.ser");
+    File ser = new File(dir, fileA.getName() + ".ser");
     assertTrue("Check serialization exists ", ser.exists());
 
     // Use serialisation file
@@ -212,4 +212,12 @@ public class FastqComparatorTest {
       fileC.delete();
   }
 
+  private int getRandomNumberLine() {
+    // Choice read in 200 first read in file
+    final int max = 200;
+    final int readNumber = (int) (Math.random() * max);
+
+    // number line to header
+    return ((readNumber - 1) * 4 + 1);
+  }
 }
