@@ -42,6 +42,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Context;
@@ -181,6 +182,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // No JVM task resuse
     jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
 
+    // Set ZooKeeper client configuration
+    setZooKeeperJobConfiguration(jobConf, context);
+
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Map reads with "
@@ -214,6 +218,30 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
             .getSource()));
 
     return job;
+  }
+
+  /**
+   * Configure ZooKeeper client.
+   * @param jobConf job configuration
+   * @param context Eoulsan context
+   */
+  static void setZooKeeperJobConfiguration(final Configuration jobConf,
+      final Context context) {
+
+    final Settings settings = context.getSettings();
+
+    String connectString = settings.getZooKeeperConnectString();
+
+    if (connectString == null) {
+
+      connectString =
+          jobConf.get("mapred.job.tracker").split(":")[0]
+              + ":" + settings.getZooKeeperDefaultPort();
+    }
+
+    jobConf.set(ReadsMapperMapper.ZOOKEEPER_CONNECT_STRING_KEY, connectString);
+    jobConf.set(ReadsMapperMapper.ZOOKEEPER_SESSION_TIMEOUT_KEY,
+        "" + settings.getZooKeeperSessionTimeout());
   }
 
 }

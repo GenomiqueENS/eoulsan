@@ -193,6 +193,12 @@ public final class Globals {
   public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT =
       true;
 
+  /** ZooKeeper default port. */
+  public static final int ZOOKEEPER_DEFAULT_PORT_DEFAULT = 2181;
+
+  /** ZooKeeper default session timeout. */
+  public static final int ZOOKEEPER_SESSION_TIMEOUT_DEFAULT = 10000;
+
   //
   // Private constants
   //
