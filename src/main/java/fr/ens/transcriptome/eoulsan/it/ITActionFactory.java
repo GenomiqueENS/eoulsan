@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -31,20 +30,19 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class ITActionFactory {
 
   /** Key to java properties for Testng */
   public final static String CONF_PATH_KEY = "conf.path";
-  public final static String APPLI_PATH_KEY = "appli.path";
   public final static String TESTS_FILE_PATH_KEY = "tests.file.path";
   public final static String GENERATE_ALL_EXPECTED_DATA_KEY =
       "generate.all.expected.data";
   public final static String GENERATE_NEW_EXPECTED_DATA_KEY =
       "generate.new.expected.data";
+
+  public final static String APPLI_PATH_KEY = "appli.path";
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -62,7 +60,6 @@ public class ITActionFactory {
   private final boolean generateNewExpectedData;
 
   private File outputTestsDirectory;
-  private File tmpDir;
   private String logGlobalPath;
   private boolean exceptionThrowGlobal = false;
 
@@ -120,8 +117,8 @@ public class ITActionFactory {
       br.close();
 
       // Add command line property
-      this.props.put("GENERATE_ALL_EXPECTED_DATA_KEY", generateAllExpectedData);
-      this.props.put("GENERATE_NEW_EXPECTED_DATA_KEY", generateNewExpectedData);
+      this.props.put(GENERATE_ALL_EXPECTED_DATA_KEY, generateAllExpectedData);
+      this.props.put(GENERATE_NEW_EXPECTED_DATA_KEY, generateNewExpectedData);
 
       initLoggerGlobal(this.props.getProperty("log.path"));
 
@@ -129,8 +126,8 @@ public class ITActionFactory {
       // TODO Auto-generated catch block
       e1.printStackTrace();
 
-      addExceptionMessageInLogger(LOGGER, e1);
-      closeLoggerGlobal(null);
+      LOGGER.severe(e1.getMessage());
+      closeLoggerGlobal();
     }
 
   }
@@ -140,21 +137,25 @@ public class ITActionFactory {
 
     // Initializationthis.inputData, " input data directory ");
 
-    final File testsData = new File(this.props.getProperty("tests.directory"));
-    checkExistingFile(testsData, " tests data directory ");
-    LOGGER.config("Tests data directory: " + testsData.getAbsolutePath());
+    final File testsDataDirectory =
+        new File(this.props.getProperty("tests.directory"));
+    checkExistingFile(testsDataDirectory, " tests data directory ");
+    LOGGER.config("Tests data directory: "
+        + testsDataDirectory.getAbsolutePath());
 
     final File output =
         new File(this.props.getProperty("output.analysis.directory"));
     checkExistingFile(output, " output data directory ");
     LOGGER.config("Output data directory: " + output.getAbsoluteFile());
 
-    final String applicationVersion = retrieveVersionApplication();
+    final String versionAppliTest =
+        DataSetTest.retrieveVersionApplication(this.props,
+            DataSetTest.CMD_LINE_TO_GET_VERSION_TEST_KEY, applicationPath);
 
     // TODO retrieve application version test
     this.outputTestsDirectory =
-        new File(output, "eoulsan_"
-            + applicationVersion + "_" + DATE_FORMAT.format(new Date()));
+        new File(output, versionAppliTest
+            + "_" + DATE_FORMAT.format(new Date()));
     LOGGER.config("Output tests directory: "
         + this.outputTestsDirectory.getAbsolutePath());
 
@@ -162,20 +163,14 @@ public class ITActionFactory {
       throw new EoulsanException("Cannot create output tests directory "
           + outputTestsDirectory.getAbsolutePath());
 
-    this.tmpDir = new File(this.outputTestsDirectory, "tmp");
-
-    // create tmp directory
-    if (!this.tmpDir.mkdir())
-      throw new EoulsanException("Cannot create output tmp tests directory "
-          + this.tmpDir.getAbsolutePath());
-
     // Collect all test.txt describing test to launch
     if (fileListAllTests == null) {
       // Collect all tests
-      collectTests(testsData, applicationPath);
+      collectTests(testsDataDirectory, applicationPath);
     } else {
       // Collect tests from a file with names tests
-      collectTestsFromFile(testsData, applicationPath, fileListAllTests);
+      collectTestsFromFile(testsDataDirectory, applicationPath,
+          fileListAllTests);
     }
 
   }
@@ -194,10 +189,10 @@ public class ITActionFactory {
     final String suffix = ".conf";
 
     // Parsing all directories test
-    for (File dir : testsDataDirectory.listFiles()) {
+    for (File testDirectory : testsDataDirectory.listFiles()) {
 
       // Collect test description file
-      final File[] files = dir.listFiles(new FileFilter() {
+      final File[] files = testDirectory.listFiles(new FileFilter() {
 
         @Override
         public boolean accept(File pathname) {
@@ -208,12 +203,12 @@ public class ITActionFactory {
 
       if (files != null && files.length == 1) {
         // Test name
-        String nameTest = dir.getName();
+        String nameTest = testDirectory.getName();
 
         //
         final DataSetTest dst =
-            new DataSetTest(this.props, applicationPath, files[0], dir,
-                this.outputTestsDirectory, nameTest);
+            new DataSetTest(this.props, applicationPath, files[0],
+                testDirectory, this.outputTestsDirectory, nameTest);
         this.tests.put(nameTest, dst);
       }
 
@@ -264,33 +259,6 @@ public class ITActionFactory {
 
   }
 
-  private String retrieveVersionApplication() {
-    String value =
-        this.props.getProperty(DataSetTest.CMD_LINE_TO_GET_VERSION_TEST_KEY);
-    String version = "UNKOWN";
-
-    if (value == null || value.trim().length() == 0) {
-      // None command line to retrieve version application set in configuration
-      // file
-      return version;
-    }
-
-    String cmd = value;
-    if (value.indexOf(DataSetTest.APPLI_PATH_KEY) > -1) {
-      // Replace application path in command line
-      cmd = value.replace(APPLI_PATH_KEY, applicationPath);
-
-      // Execute command
-      try {
-        // Retrieve version
-        version = ProcessUtils.execToString(cmd);
-      } catch (IOException e) {
-      }
-    }
-
-    return version;
-  }
-
   //
   // Methods for logger
   //
@@ -316,25 +284,11 @@ public class ITActionFactory {
 
   }
 
-  private void addExceptionMessageInLogger(final Logger logger,
-      final Exception exception) {
-
-    if (exception == null)
-      return;
-
-    final String msg =
-        exception.getClass().getName()
-            + ": " + exception.getMessage() + "\n"
-            + StringUtils.join(exception.getStackTrace(), "\n\t");
-    logger.severe(msg);
-  }
-
-  private void closeLoggerGlobal(final String suf) {
+  private void closeLoggerGlobal() {
 
     // Set suffix logger filename
     final String suffix =
-        (suf != null ? suf : (exceptionThrowGlobal ? "EXCEPTION" : (false
-            ? "FAIL" : "SUCCES")));
+        (exceptionThrowGlobal ? "EXCEPTION" : (false ? "FAIL" : "SUCCES"));
 
     // Add suffix to log global filename
     LOGGER.fine(suffix
