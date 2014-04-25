@@ -1,11 +1,14 @@
 package fr.ens.transcriptome.eoulsan.io.comparator;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.io.Files.newWriter;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +16,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -21,6 +23,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.it.DataSetAnalysis;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -33,8 +37,7 @@ public class DirectoriesComparator {
 
   private final Collection<String> allExtensionsTreated = Lists.newArrayList();
   private final Set<Comparator> comparatorsFiles = Sets.newHashSet();
-  private final Map<Pattern, Comparator> pairPatternCompareFiles =
-      newHashMap();
+  private final Map<Pattern, Comparator> pairPatternCompareFiles = newHashMap();
 
   private int comparisonSuccesCount = 0;
   private int comparisonFailCount = 0;
@@ -42,18 +45,23 @@ public class DirectoriesComparator {
   private int filesComparables = 0;
   private int filesExistsExpectedDirCount = 0;
   private int filesExistsTestedDirCount = 0;
+  private String testName;
+  private File outputDirectory;
 
   private StringBuilder reportText = new StringBuilder();
 
   private boolean asRegression = false;
 
-  public String buildReport(final String testName) {
+  private void buildReport() throws IOException {
+
+    this.comparisonFailCount =
+        this.filesComparables - this.comparisonSuccesCount;
 
     boolean allComparisonsSuccessed = this.comparisonFailCount == 0;
 
     reportText.append("\nfile(s) treated: "
         + ": " + filesComparables + " file(s) comparable(s) on "
-        + filesTreatedCount + "\t" + this.comparisonSuccesCount + " True \t"
+        + filesTreatedCount + ":\t" + this.comparisonSuccesCount + " True \t"
         + this.comparisonFailCount + " False");
 
     reportText.append("\n"
@@ -70,7 +78,19 @@ public class DirectoriesComparator {
       asRegression = true;
     }
 
-    return reportText.toString();
+    final String fileName = (asRegression() ? "FAIL" : "SUCCESS");
+
+    // Build report file
+    final File reportFile = new File(this.outputDirectory, fileName);
+
+    final Writer fw =
+        newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
+
+    fw.write(reportText.toString());
+    fw.write("\n");
+
+    fw.flush();
+    fw.close();
   }
 
   /**
@@ -81,9 +101,12 @@ public class DirectoriesComparator {
    * @throws IOException
    */
   public void compareDataSet(final DataSetAnalysis dataSetExpected,
-      final DataSetAnalysis dataSetTested) throws EoulsanException, IOException {
+      final DataSetAnalysis dataSetTested, final String reportTestAnalysis)
+      throws EoulsanException, IOException {
 
     final Stopwatch timer = Stopwatch.createStarted();
+
+    this.reportText.append(reportTestAnalysis);
 
     // Map associates filename and path
     Map<String, File> filesOnlyInTestDir =
@@ -133,6 +156,7 @@ public class DirectoriesComparator {
     reportText.append("\nAll comparison in  "
         + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
+    buildReport();
   }
 
   private Comparator identifyCompareFile(final String filename) {
@@ -167,7 +191,8 @@ public class DirectoriesComparator {
    * @throws EoulsanException it occurs if comparison fails
    */
   public void execute(final File fileA, final File fileB,
-      final Comparator compareFileNeeded) throws EoulsanException {
+      final Comparator compareFileNeeded) throws EoulsanException,
+      EoulsanITRuntimeException {
 
     try {
 
@@ -177,8 +202,15 @@ public class DirectoriesComparator {
       if (comparePairFile.compare()) {
         this.comparisonSuccesCount++;
       } else {
-        this.comparisonFailCount++;
+        final String msg =
+            "Comparison failed for test "
+                + testName + "\n\t file " + fileB.getAbsolutePath();
+        this.reportText.append("\n" + msg);
+
+        buildReport();
+        throw new EoulsanITRuntimeException(msg);
       }
+
     } catch (IOException io) {
       throw new EoulsanException("Compare pair file file " + io.getMessage());
     }
@@ -235,9 +267,12 @@ public class DirectoriesComparator {
    * @param useSerialization use bloom filter serialized on one file
    * @throws EoulsanException
    */
-  public DirectoriesComparator(final boolean useSerialization) {
+  public DirectoriesComparator(final File outputDir, final String testName,
+      final boolean useSerialization) {
 
+    this.outputDirectory = outputDir;
     this.useSerialization = useSerialization;
+    this.testName = testName;
 
     // Build map type files can been compare
     comparatorsFiles.add(new FastqComparator());

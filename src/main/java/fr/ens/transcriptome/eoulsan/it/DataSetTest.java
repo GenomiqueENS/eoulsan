@@ -4,13 +4,16 @@ import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.recursiveDelete;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
@@ -18,12 +21,11 @@ import org.testng.annotations.Test;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.actions.RegressionAction;
 import fr.ens.transcriptome.eoulsan.io.comparator.DirectoriesComparator;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
@@ -58,7 +60,10 @@ public class DataSetTest {
   public static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
       "expected.data.generated.manually";
 
-  public static final String APPLI_PATH_KEY = "{appli.path}";
+  public static final String APPLI_PATH_VARIABLE = "{appli.path}";
+
+  public final static String GENERATE_ALL_EXPECTED_DATA_KEY =
+      "generate.all.expected.data";
 
   /** Variables */
   private final Properties props;
@@ -81,9 +86,35 @@ public class DataSetTest {
   @Test
   public void executeAnalysis() throws EoulsanException, IOException {
 
+    final Stopwatch timer = Stopwatch.createStarted();
+
+    LOGGER.info("start test " + this.testName);
+
     boolean regenerateAllExpectedData =
         Boolean.getBoolean(this.props
             .getProperty(ITActionFactory.GENERATE_ALL_EXPECTED_DATA_KEY));
+
+    // this.props.store(new FileWriter(new File("/tmp/props2.txt")), "ropr");
+
+    // TODO
+    for (Map.Entry<Object, Object> e : this.props.entrySet()) {
+
+      if (((String) e.getKey())
+          .equals(ITActionFactory.GENERATE_ALL_EXPECTED_DATA_KEY)) {
+
+        System.out.println(e.getKey()
+            + "\t\t"
+            + e.getValue()
+            + "\t:\t"
+            + ((String) e.getKey())
+                .equals(ITActionFactory.GENERATE_ALL_EXPECTED_DATA_KEY));
+
+        System.out.println("new "
+            + this.props.getProperty("generate.all.expected.data") + " vs "
+            + this.props.getProperty(GENERATE_ALL_EXPECTED_DATA_KEY) + " key "
+            + GENERATE_ALL_EXPECTED_DATA_KEY);
+      }
+    }
 
     boolean generateNewExpectedData =
         Boolean.getBoolean(this.props
@@ -91,12 +122,28 @@ public class DataSetTest {
 
     // Call for treated expected data directory
     if (regenerateAllExpectedData || generateNewExpectedData) {
+
       generateDataExpected(regenerateAllExpectedData);
+
+      LOGGER.info("Generated expected data in "
+          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
     } else {
 
       // Call for launch test
       generateDataTested();
+
+      // TODO
+      final boolean asRegression = comparisonDirectory(this.testedDirectory);
+
+      LOGGER.info((asRegression ? "FAIL" : "SUCCESS")
+          + ": analysis test and comparison in "
+          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
     }
+
+    timer.stop();
+
   }
 
   /**
@@ -114,14 +161,14 @@ public class DataSetTest {
       return;
     }
 
-    if (regenerateExpectedData) {
+    if (regenerateExpectedData && !isGeneratedManually()) {
       recursiveDelete(getExpectedDirectory());
     }
 
     // Initialization expected directory
     this.dsaExpected =
         new DataSetAnalysis(this.props, inputDataDirectory,
-            this.expectedDirectory);
+            this.expectedDirectory, this.testName);
 
     // TODO
     // argument to regenerate all expected directory if build automatically
@@ -154,7 +201,9 @@ public class DataSetTest {
     // Initialization test directory
     this.dsaTested =
         new DataSetAnalysis(this.props, inputDataDirectory,
-            this.testedDirectory);
+            this.testedDirectory, this.testName);
+
+    this.dsaTested.buildAnalysisDirectory();
 
     // Analysis for tested result directory
     launchAnalysis(dsaTested, this.testedDirectory, false);
@@ -166,14 +215,14 @@ public class DataSetTest {
     // Initialization expected directory
     this.dsaExpected =
         new DataSetAnalysis(this.props, inputDataDirectory,
-            this.expectedDirectory);
+            this.expectedDirectory, this.testName);
+
     if (!dsaExpected.isResultsAnalysisExists())
       throw new EoulsanException(
           "Launch test analysis fail: expected data doesn't exists");
+
     this.dsaExpected.parseDirectory();
 
-    // TODO
-    comparisonDirectory(this.testedDirectory);
   }
 
   //
@@ -212,55 +261,44 @@ public class DataSetTest {
     }
   }
 
-  private void comparisonDirectory(final File outputDirectory)
+  private boolean comparisonDirectory(final File outputDirectory)
       throws EoulsanException, IOException {
 
     final DirectoriesComparator comparator =
-        new DirectoriesComparator(USE_SERIALIZATION);
+        new DirectoriesComparator(outputDirectory, this.testName,
+            USE_SERIALIZATION);
 
     final DataSetAnalysis dsaExpected = getAnalysisExcepted();
     final DataSetAnalysis dsaTested = getAnalysisTest();
 
+    // Add pattern used for compare files after analysis
     comparator.setPatternToCompare(this.props
-        .getProperty(PATTERNS_OUTPUT_FILES_KEY));
+        .getProperty(PATTERNS_OUTPUT_FILES_KEY)
+        + ","
+        + this.props.getProperty(PATTERNS_INPUT_FILES_KEY));
 
-    comparator.compareDataSet(dsaExpected, dsaTested);
+    comparator.compareDataSet(dsaExpected, dsaTested,
+        this.reportText.toString());
 
-    String reportComparison = comparator.buildReport(testName);
-
-    String fileName = (comparator.asRegression() ? "FAIL" : "SUCCESS");
-
-    // Build report file
-    final File reportFile = new File(outputDirectory, fileName);
-
-    final Writer fw =
-        Files.asCharSink(reportFile,
-            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)).openStream();
-
-    fw.write(reportText.toString());
-    fw.write("\n");
-    fw.write(reportComparison);
-
-    fw.flush();
-    fw.close();
+    return comparator.asRegression();
   }
 
   /**
-   * @param script_key
+   * @param scriptKey
    * @param outputDirectory
    * @throws IOException
    */
-  private void executeScript(final String script_key, File outputDirectory)
+  private void executeScript(final String scriptKey, File outputDirectory)
       throws EoulsanException, IOException {
 
-    if (this.props.getProperty(script_key) == null)
+    if (this.props.getProperty(scriptKey) == null)
       return;
 
-    String value = this.props.getProperty(script_key);
+    String value = this.props.getProperty(scriptKey);
     String s = value;
-    if (value.indexOf(APPLI_PATH_KEY) > -1) {
+    if (value.indexOf(APPLI_PATH_VARIABLE) > -1) {
       // Replace application path in command line
-      s = value.replace(APPLI_PATH_KEY, applicationPath);
+      s = value.replace(APPLI_PATH_VARIABLE, applicationPath);
     }
 
     // Build list command line
@@ -277,8 +315,20 @@ public class DataSetTest {
     reportText.append("\nexecute script with command line:"
         + Joiner.on(' ').join(scriptCmdLine));
 
+    // Copy script in output directory
+    final List<String> copyScriptCmd =
+        Lists.newArrayList("cp", scriptCmdLine.get(0),
+            outputDirectory.getAbsolutePath());
+
+    int exitValue = ProcessUtils.sh(copyScriptCmd, outputDirectory);
+
+    if (exitValue != 0) {
+      LOGGER.warning("Fail copy script in directory "
+          + outputDirectory + " for " + this.testName);
+    }
+
     // If exists, launch preScript analysis
-    int exitValue =
+    exitValue =
         ProcessUtils.sh(Lists.newArrayList(scriptCmdLine), outputDirectory);
 
     if (exitValue != 0) {
@@ -287,6 +337,38 @@ public class DataSetTest {
           + ")");
     }
 
+  }
+
+  public static String retrieveVersionApplication(final Properties props,
+      final String key, final String applicationPath) {
+
+    String value = props.getProperty(key);
+    String version = "UNKOWN";
+
+    if (value == null || value.trim().length() == 0) {
+      // None command line to retrieve version application set in configuration
+      // file
+      return version;
+    }
+
+    String cmd = value;
+    if (value.indexOf(APPLI_PATH_VARIABLE) > -1) {
+      // Replace application path in command line
+      cmd = value.replace(APPLI_PATH_VARIABLE, applicationPath);
+    }
+
+    // Execute command
+    try {
+      // Retrieve version
+
+      String exitValue = ProcessUtils.execToString(cmd);
+      if (exitValue != null && exitValue.trim().length() > 0)
+        version = exitValue.trim();
+
+    } catch (IOException e) {
+    }
+
+    return version;
   }
 
   /**
@@ -318,7 +400,7 @@ public class DataSetTest {
         // Save parameter with value
         if (value.length() > 0) {
 
-          // Key pattern : add value for test to general value from
+          // Key pattern : add value for test to values from
           // configuration general
           if (key.toLowerCase().startsWith("pattern")
               && this.props.containsKey(key)) {
@@ -387,20 +469,30 @@ public class DataSetTest {
 
   public DataSetTest(final Properties props, final String applicationPath,
       final File testFile, final File inputData, final File outputData,
-      final String testName) throws IOException, EoulsanException {
+      final String testName) throws IOException,
+      EoulsanException {
+
+    this.props = new Properties();
+
+    // Load all default configuration properties
+    this.props.putAll(props);
 
     this.inputDataDirectory = inputData;
-    this.expectedDirectory = new File(inputData, "/expected");
     this.testedDirectory =
         new File(outputData, testFile.getParentFile().getName());
     this.applicationPath = applicationPath;
 
     this.testName = testName;
-
-    this.props = new Properties(props);
     this.testConfigurationFile = testFile;
 
     initProperties();
+
+    final String versionExpectedApplication =
+        retrieveVersionApplication(this.props,
+            CMD_LINE_TO_GET_VERSION_REFERENCE_KEY, applicationPath);
+
+    this.expectedDirectory =
+        new File(inputData, "/expected_" + versionExpectedApplication);
 
   }
 

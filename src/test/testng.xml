@@ -1,6 +1,7 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Suite1" verbose="1" >
-  <test name="EoulsanIT1">
+<suite name="SuiteIntegrationTest" verbose="1" >
+  <test name="EoulsanIT">
     <classes>
        <class name="fr.ens.transcriptome.eoulsan.it.EoulsanITFactory" />
     </classes>

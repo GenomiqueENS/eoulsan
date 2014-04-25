@@ -13,6 +13,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class DataSetAnalysis {
@@ -27,12 +28,19 @@ public class DataSetAnalysis {
 
   private final File inputDataDirectory;
   private final File outputDataDirectory;
+  private final String testName;
 
   private boolean isExpectedDirectoryExists = false;
   private Map<String, File> outputFilesAnalysis;
 
   public void parseDirectory() throws IOException, EoulsanException {
     parseDirectory(this.outputDataDirectory);
+
+    // Check no files founded
+    if (this.outputFilesAnalysis.size() == 0) {
+      throw new EoulsanITRuntimeException("Test "
+          + testName + " fail \n\tno file found after analysis");
+    }
   }
 
   private void parseDirectory(final File directory) throws IOException,
@@ -65,7 +73,7 @@ public class DataSetAnalysis {
 
   }
 
-  private void buildDirectoryAnalysis() throws EoulsanException, IOException {
+  public void buildAnalysisDirectory() throws EoulsanException, IOException {
 
     if (this.isExpectedDirectoryExists) {
       // Check directory already exists
@@ -95,7 +103,7 @@ public class DataSetAnalysis {
     if (!this.outputDataDirectory.exists()) {
 
       // Build analysis Eoulsan directory
-      buildDirectoryAnalysis();
+      buildAnalysisDirectory();
     }
 
     this.isExpectedDirectoryExists = true;
@@ -136,8 +144,11 @@ public class DataSetAnalysis {
 
     // Add test configuration file
     final String patternsFiles =
-        this.propsTest.getProperty(PATTERNS_OUTPUT_FILES_KEY) + ", test.conf";
+        this.propsTest.getProperty(PATTERNS_INPUT_FILES_KEY)
+            + " ," + this.propsTest.getProperty(PATTERNS_OUTPUT_FILES_KEY)
+            + ", test.conf";
 
+    
     // Parse patterns
     for (String regex : COMMA_SPLITTER.split(patternsFiles)) {
 
@@ -186,7 +197,7 @@ public class DataSetAnalysis {
   }
 
   public File getTestConfigurationFile() {
-    return new File(this.outputDataDirectory, "test.conf");
+    return new File(this.inputDataDirectory, "test.conf");
   }
 
   public Map<String, File> getOutputFilesAnalysis() {
@@ -198,8 +209,8 @@ public class DataSetAnalysis {
   //
 
   public DataSetAnalysis(final Properties propsTest,
-      final File inputDataDirectory, final File outputDataDirectory)
-      throws EoulsanException, IOException {
+      final File inputDataDirectory, final File outputDataDirectory,
+      final String testName) throws EoulsanException, IOException {
 
     checkExistingFile(inputDataDirectory,
         "Input data for analysis doesn't exists.");
@@ -207,6 +218,7 @@ public class DataSetAnalysis {
     this.propsTest = propsTest;
     this.inputDataDirectory = inputDataDirectory;
     this.outputDataDirectory = outputDataDirectory;
+    this.testName = testName;
 
     this.outputFilesAnalysis = Maps.newHashMap();
 
