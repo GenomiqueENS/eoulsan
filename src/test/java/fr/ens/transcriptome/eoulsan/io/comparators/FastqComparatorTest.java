@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.comparator;
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +36,9 @@ import java.io.FileWriter;
 import java.io.InputStream;
 
 import org.junit.Test;
+
+import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
+import fr.ens.transcriptome.eoulsan.io.comparators.FastqComparator;
 
 public class FastqComparatorTest {
 

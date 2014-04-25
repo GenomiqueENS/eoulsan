@@ -27,4 +27,4 @@
  * @author Laurent Jourdren
  * @since 1.3
  */
-package fr.ens.transcriptome.eoulsan.io.comparator;
+package fr.ens.transcriptome.eoulsan.io.comparators;

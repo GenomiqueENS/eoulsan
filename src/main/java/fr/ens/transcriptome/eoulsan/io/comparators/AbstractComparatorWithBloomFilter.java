@@ -1,4 +1,27 @@
-package fr.ens.transcriptome.eoulsan.io.comparator;
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByFilename;
 
@@ -13,7 +36,12 @@ import java.io.InputStreamReader;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
-abstract class AbstractComparatorWithBloomFilter extends AbstractComparator {
+/**
+ * This abstract class define methods to compare files with use BloomFilter.
+ * @since 1.3
+ * @author Sandrine Perrin
+ */
+public abstract class AbstractComparatorWithBloomFilter extends AbstractComparator {
 
   private double falsePositiveProba = 0.1;
   private int expectedNumberOfElements = 30000000;

@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.comparator;
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -21,79 +21,86 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.io.comparator;
 
-import java.io.BufferedReader;
+package fr.ens.transcriptome.eoulsan.io.comparators;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 
 import com.google.common.collect.Sets;
 
+import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
-public class TextComparator extends AbstractComparatorWithBloomFilter {
+/**
+ * This class allow compare two FastQ files with use BloomFilter.
+ * @since 1.3
+ * @author Sandrine Perrin
+ */
+public class FastqComparator extends AbstractComparatorWithBloomFilter {
 
-  private static final String NAME_COMPARATOR = "TextComparator";
-  private static final Collection<String> EXTENSIONS = Sets.newHashSet(".txt",
-      ".tsv", ".csv", ".xml");
+  public static final String COMPARATOR_NAME = "FastqComparator";
+  private static final Collection<String> EXTENSIONS = Sets.newHashSet(".fastq",
+      ".fq");
 
   private int numberElementsCompared;
-
-  // @Override
-  // public boolean compareFiles(InputStream isA, InputStream isB)
-  // throws IOException {
-  // return compareFiles(buildBloomFilter(isA), isB);
-  // }
 
   @Override
   public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    String line = null;
+    final FastqReader fastqReader = new FastqReader(is);
     numberElementsCompared = 0;
 
-    while ((line = reader.readLine()) != null) {
-      numberElementsCompared++;
+    // Search each ReadSequence in BFilter source
+    for (ReadSequence read : fastqReader) {
+      this.numberElementsCompared++;
 
-      if (!filter.mightContain(line)) {
-        reader.close();
+      if (!filter.mightContain(read.toFastQ())) {
+        fastqReader.close();
         return false;
       }
     }
-    reader.close();
+    fastqReader.close();
 
     // Check count element is the same between two files
-    if (numberElementsCompared != filter.getAddedNumberOfElements()) {
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements())
       return false;
-    }
+
     return true;
   }
 
-  // @Override
-  // public BloomFilterUtils buildBloomFilter(InputStream is) throws IOException
-  // {
-  // final BloomFilterUtils filter = initBloomFilter(expectedNumberOfElements);
-  //
-  // final BufferedReader reader = new BufferedReader(new
-  // InputStreamReader(is));
-  //
-  // String line = null;
-  //
-  // // Read the first file and store hashcodes
-  // while ((line = reader.readLine()) != null) {
-  // filter.put(line);
-  // }
-  //
-  // reader.close();
-  // return filter;
-  // }
+  @Override
+  public BloomFilterUtils buildBloomFilter(final InputStream is)
+      throws IOException {
+
+    final BloomFilterUtils filter =
+        initBloomFilter(getExpectedNumberOfElements());
+
+    final FastqReader fastqReader = new FastqReader(is);
+
+    // Search each ReadSequence in BFilter source
+    for (ReadSequence read : fastqReader) {
+      filter.put(read.toFastQ());
+    }
+    fastqReader.close();
+
+    try {
+      fastqReader.throwException();
+    } catch (BadBioEntryException e) {
+      throw new IOException("Fail BadBioEntry exception: " + e.getMessage());
+    }
+
+    return filter;
+  }
 
   //
-  // Getter
+  // Getter and setters
   //
+  @Override
   public Collection<String> getExtensions() {
     return EXTENSIONS;
   }
@@ -101,7 +108,7 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   @Override
   public String getName() {
 
-    return NAME_COMPARATOR;
+    return COMPARATOR_NAME;
   }
 
   @Override
@@ -114,23 +121,24 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   // return expectedNumberOfElements;
   // }
   //
-  // @Override
-  // public double getFalsePositiveProba() {
-  // return falsePositiveProba;
-  // }
-  //
+  
   //
   // @Override
   // public int getNumberElementsCompared() {
   // return this.numberElementsCompared;
   // }
   //
-  // @Override
-  // public boolean isUseBloomfilterAvailable() {
-  // return useBloomfilterAvailable;
-  // }
   //
   // public void setUseBloomfilterAvailable(boolean useBloomfilterAvailable) {
   // this.useBloomfilterAvailable = useBloomfilterAvailable;
   // }
+
+  //
+  // Constructor
+  //
+
+  public FastqComparator() {
+
+  }
+
 }

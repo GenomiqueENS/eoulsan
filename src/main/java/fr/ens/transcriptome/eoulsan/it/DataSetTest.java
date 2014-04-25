@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.io.comparator.DirectoriesComparator;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 public class DataSetTest {

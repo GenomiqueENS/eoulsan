@@ -21,7 +21,8 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.io.comparator;
+
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,31 +38,51 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-public class TextComparatorTest {
+import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
+import fr.ens.transcriptome.eoulsan.io.comparators.SAMComparator;
+
+public class SamComparatorTest {
+
   private File dir = new File(new File(".").getAbsolutePath()
       + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
 
-  private File fileA = new File(dir, "testdataformat.xml");
-  private File fileB = new File(dir, "testdatatype.xml");
+  private File fileA = new File(dir, "mapper_results_1_a.sam");
+  // Difference tag @PG
+  private File fileB = new File(dir, "mapper_results_1_b.sam");
   private File fileC;
 
-  private final AbstractComparatorWithBloomFilter comparator =
-      new TextComparator();
-
   @Test
-  public void testSameTextFiles() throws Exception {
+  public void testSameSAMFiles() throws Exception {
 
-    final InputStream isA1 = new FileInputStream(fileA);
-    final InputStream isA2 = new FileInputStream(fileA);
+    isA = new FileInputStream(fileA);
+    isB = new FileInputStream(fileB);
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator("PG");
+    assertTrue("files are same without tag header @PG",
+        comparator.compareFiles(isA, isB));
+
+    isA = new FileInputStream(fileA);
+    isB = new FileInputStream(fileB);
+
+    AbstractComparatorWithBloomFilter comparator2 = new SAMComparator();
+    assertFalse("files are different with all tag header",
+        comparator2.compareFiles(isA, isB));
+
+    isA = new FileInputStream(fileA);
+    isB = new FileInputStream(fileB);
+
+    AbstractComparatorWithBloomFilter comparator3 =
+        new SAMComparator("PG", "SQ");
+    assertTrue("files are same without all tags",
+        comparator3.compareFiles(isA, isB));
   }
 
   @Test
-  public void testDifferentTextFiles() throws Exception {
+  public void testDifferentSAMFilesWithTag() throws Exception {
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator();
 
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
@@ -70,7 +91,8 @@ public class TextComparatorTest {
   }
 
   @Test
-  public void testSameTextWithSerialization() throws Exception {
+  public void testSameSAMWithSerialization() throws Exception {
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator("PG");
 
     // First call with creation serialisation file for save BloomFilter from
     // FileA
@@ -107,19 +129,19 @@ public class TextComparatorTest {
   }
 
   @Test
-  public void testDivergentText() throws Exception {
+  public void testDivergentSAM() throws Exception {
     AbstractComparatorWithBloomFilter comparator = new SAMComparator("@PG");
 
     modifyFile(0);
-    assertFalse("files are different: duplicate line",
+    assertFalse("files are different: duplicate SAM line",
         comparator.compareFiles(fileA, fileC));
 
     modifyFile(1);
-    assertFalse("files are different: remove line",
+    assertFalse("files are different: remove SAM line",
         comparator.compareFiles(fileA, fileC));
 
     modifyFile(2);
-    assertFalse("files are different: add line",
+    assertFalse("files are different: add SAM line",
         comparator.compareFiles(fileA, fileC));
 
     modifyFile(3);
@@ -135,7 +157,7 @@ public class TextComparatorTest {
   }
 
   private void modifyFile(final int typeModification) throws IOException {
-    fileC = new File(dir, "modify.txt");
+    fileC = new File(dir, "modify.sam");
 
     if (fileC.exists()) {
       fileC.delete();
@@ -158,7 +180,7 @@ public class TextComparatorTest {
         switch (typeModification) {
 
         case 0:
-          // duplicate line
+          // duplicate SAMline, no header
           // first time
           bw.write(line + "\n");
           // second time
@@ -166,25 +188,25 @@ public class TextComparatorTest {
           break;
 
         case 1:
-          // Remove line
+          // Remove read
           // no write current line
           break;
 
         case 2:
-          // Add line
-          String newLine = "<!--totoformat -->\n";
+          // Add read
+          String newSAMline =
+              "HWI-1KL110:37:C0BE6ACXX:7:1101:1426:2207  147 chr17   35400811    40  101M    =   35400491    -421    GTTTCAGGCTGGGGGAGGGGAGACTACATCTCCTCNNNNCTCCTCTTCCATGCGGCGAAGGGTCTCACTGATGAAC   ##############################################EEE:E=<?5=?#BAAF=AFFEFFFDE?EEE   MD:Z:101    NH:i:1  HI:i:1  NM:i:0  SM:i:40 XQ:i:40 X2:i:0";
 
-          bw.write(newLine);
+          bw.write(newSAMline);
           bw.write(line + "\n");
           break;
 
         case 3:
           // remove a char in header line
           int pos = line.length() / 2;
-          String modifiedLine =
-              line.substring(0, pos) + line.substring(pos + 2);
+          String newLine = line.substring(0, pos) + line.substring(pos + 2);
 
-          bw.write(modifiedLine + "\n");
+          bw.write(newLine + "\n");
           break;
 
         case 4:
@@ -202,9 +224,9 @@ public class TextComparatorTest {
   }
 
   private int getRandomNumberLine() {
-    // choice line in the first 10
-
-    final int max = 10;
-    return (int) (Math.random() * max);
+    // SAM line in file A between line 25 and 45
+    final int min = 25;
+    final int max = 45;
+    return (int) (min + (Math.random() * (max - min)));
   }
 }

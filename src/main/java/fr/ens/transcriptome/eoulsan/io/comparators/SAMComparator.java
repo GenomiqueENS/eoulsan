@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.comparator;
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +35,11 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
+/**
+ * This class allow compare two SAM file with use BloomFilter.
+ * @since 1.3
+ * @author Sandrine Perrin
+ */
 public class SAMComparator extends AbstractComparatorWithBloomFilter {
 
   public static final String COMPARATOR_NAME = "SAMComparator";

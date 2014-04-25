@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io.comparator;
+package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByFilename;
 
@@ -35,6 +35,11 @@ import java.util.Collection;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
+/**
+ * This abstract class define methods to compare files.
+ * @since 1.3
+ * @author Sandrine Perrin
+ */
 public abstract class AbstractComparator implements Comparator {
 
   private String pathFileA;
