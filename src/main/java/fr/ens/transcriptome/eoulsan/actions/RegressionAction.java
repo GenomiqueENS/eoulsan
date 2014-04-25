@@ -1,25 +1,5 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
-import static com.google.common.io.Files.newReader;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -27,21 +7,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.compress.utils.Charsets;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Maps;
-
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.it.DataSetTest;
-import fr.ens.transcriptome.eoulsan.it.EoulsanITFactory;
 import fr.ens.transcriptome.eoulsan.it.ITActionFactory;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public class RegressionAction extends AbstractAction {
 
@@ -60,14 +32,6 @@ public class RegressionAction extends AbstractAction {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
-
-    // File confPath = null;
-    // String applicationPath = null;
-
-    // Optional, file
-    // File fileListAllTests = null;
-    // boolean regenerateAllExpectedData = false;
-    // boolean isCheckingExpectedDirAction = false;
 
     int argsOptions = 0;
 
@@ -135,7 +99,7 @@ public class RegressionAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    run();
+    runIT();
   }
 
   /**
@@ -192,7 +156,7 @@ public class RegressionAction extends AbstractAction {
 
   /**
    */
-  private void run() {
+  private void runIT() {
 
     // Define a listener that print information about the results of the
     // integration tests
