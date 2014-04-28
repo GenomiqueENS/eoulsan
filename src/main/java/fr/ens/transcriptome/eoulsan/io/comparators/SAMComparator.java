@@ -124,12 +124,26 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   // Constructor
   //
 
-  public SAMComparator() {
+  /**
+   * Public constructor public FastqComparator(final boolean useSerializeFile) {
+   * super(useSerializeFile); } /** Public constructor
+   * @param useSerializeFile true if it needed to save BloomFilter in file with
+   *          extension '.ser'
+   */
+  public SAMComparator(final boolean useSerializeFile) {
+    super(useSerializeFile);
 
     this.tagsToNotCompare = Sets.newHashSet();
   }
 
-  public SAMComparator(String... headersTags) {
+  /**
+   * Public constructor, specify all headers tags not used to compare.
+   * @param useSerializeFile true if it needed to save BloomFilter in file with
+   *          extension '.ser'
+   * @param headersTags all headers tags
+   */
+  public SAMComparator(boolean useSerializeFile, String... headersTags) {
+    super(useSerializeFile);
 
     if (headersTags == null)
       throw new NullPointerException("headersTags is null");

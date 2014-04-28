@@ -57,13 +57,16 @@ public class LogComparator extends AbstractComparator {
 
     long diffExpectedTested;
 
+    // Parse counter group in log file
     for (String counterGroup : logExpected.getCounterGroups()) {
 
       numberElements += logExpected.getCounterGroup(counterGroup).size();
 
+      // Parse counter
       for (String counter : logExpected.getCounterGroup(counterGroup)) {
         numberElementsCompared++;
 
+        // Compute difference between two reporter 
         diffExpectedTested =
             logExpected.getCounterValue(counterGroup, counter)
                 - getCounterValue(logTested, counterGroup, counter);
@@ -74,6 +77,7 @@ public class LogComparator extends AbstractComparator {
       }
     }
 
+    // Check all elements present in first log are compare from second log
     if (numberElements != numberElementsCompared)
       return false;
 

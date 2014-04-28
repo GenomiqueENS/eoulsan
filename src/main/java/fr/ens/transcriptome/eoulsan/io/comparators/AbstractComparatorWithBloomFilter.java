@@ -41,14 +41,16 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
  * @since 1.3
  * @author Sandrine Perrin
  */
-public abstract class AbstractComparatorWithBloomFilter extends AbstractComparator {
+public abstract class AbstractComparatorWithBloomFilter extends
+    AbstractComparator {
 
   private double falsePositiveProba = 0.1;
   private int expectedNumberOfElements = 30000000;
+  private boolean useSerializeFile = false;
 
   @Override
-  public boolean compareFiles(final File fileA, final File fileB,
-      final boolean useSerializeFile) throws FileNotFoundException, IOException {
+  public boolean compareFiles(final File fileA, final File fileB)
+      throws FileNotFoundException, IOException {
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize())
@@ -67,7 +69,7 @@ public abstract class AbstractComparatorWithBloomFilter extends AbstractComparat
         getCompressionTypeByFilename(fileB.getAbsolutePath())
             .createInputStream(new FileInputStream(fileB));
 
-    return compareFiles(getBloomFilter(fileA, useSerializeFile), isB);
+    return compareFiles(getBloomFilter(fileA), isB);
   }
 
   @Override
@@ -76,10 +78,19 @@ public abstract class AbstractComparatorWithBloomFilter extends AbstractComparat
     return compareFiles(buildBloomFilter(isA), isB);
   }
 
+  /**
+   * Compare two files no ordered, check if they are the same contents.
+   * @param filter from BloomFilterUtils represented the first file
+   * @param is the path to the second file,
+   * @return boolean true if files are same.
+   * @throws IOException if an error occurs while comparing the files.
+   */
   abstract public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException;
 
   /**
+   * Initialize BloomFilter with the expected number of elements.
+   * @param expectedNumberOfElements
    * @return
    */
   protected static BloomFilterUtils initBloomFilter(
@@ -95,13 +106,12 @@ public abstract class AbstractComparatorWithBloomFilter extends AbstractComparat
    * @param file source to create bloom filter
    * @return bloomFilter completed with the file
    */
-  public BloomFilterUtils getBloomFilter(final File file,
-      final boolean isSerializeBloomFilter) throws IOException {
+  public BloomFilterUtils getBloomFilter(final File file) throws IOException {
 
     final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
     final BloomFilterUtils bloomFilter;
 
-    if (isSerializeBloomFilter && bloomFilterSer.exists()) {
+    if (this.useSerializeFile && bloomFilterSer.exists()) {
       // Retrieve marshalling bloom filter
       bloomFilter = BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
 
@@ -115,15 +125,21 @@ public abstract class AbstractComparatorWithBloomFilter extends AbstractComparat
     bloomFilter =
         buildBloomFilter(zType.createInputStream(new FileInputStream(file)));
 
-    // If need serialize bloomFilter in file 
-    if (isSerializeBloomFilter) {
+    // If need serialize bloomFilter in file
+    if (this.useSerializeFile) {
       BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
     }
-    
+
     return bloomFilter;
   }
 
-  public BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
+  /**
+   * Build BloomFilter represented the input stream.
+   * @param is the input stream source
+   * @return BloomFilter corresponding to the input stream
+   * @throws IOException
+   */
+  protected BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
 
@@ -152,23 +168,43 @@ public abstract class AbstractComparatorWithBloomFilter extends AbstractComparat
   }
 
   //
-  // Getter & setter
+  // Getters & setters
   //
 
-  public int getExpectedNumberOfElements() {
+  public boolean isUseSerializeFile() {
+    return useSerializeFile;
+  }
+
+  public void setUseSerializeFile(boolean useSerializeFile) {
+    this.useSerializeFile = useSerializeFile;
+  }
+
+  protected int getExpectedNumberOfElements() {
     return expectedNumberOfElements;
   }
 
-  public void setExpectedNumberOfElements(int expectedNumberOfElements) {
+  protected void setExpectedNumberOfElements(int expectedNumberOfElements) {
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  public void setFalsePositiveProba(double falsePositiveProba) {
+  protected void setFalsePositiveProba(double falsePositiveProba) {
     this.falsePositiveProba = falsePositiveProba;
   }
 
-  public double getFalsePositiveProba() {
+  protected double getFalsePositiveProba() {
     return falsePositiveProba;
   }
 
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor
+   * @param useSerializeFile true if it needed to save BloomFilter in file with
+   *          extension '.ser'
+   */
+  public AbstractComparatorWithBloomFilter(final boolean useSerializeFile) {
+    this.useSerializeFile = useSerializeFile;
+  }
 }

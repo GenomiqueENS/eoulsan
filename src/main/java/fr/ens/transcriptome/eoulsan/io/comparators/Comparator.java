@@ -36,25 +36,52 @@ import java.util.Collection;
  */
 public interface Comparator {
 
+  /**
+   * Return collector name.
+   * @return collector name.
+   */
   public String getName();
 
+  /**
+   * Compare two files no ordered, check if they are the same contents.
+   * @param pathA the path to the first file, used like reference.
+   * @param pathB the path to the second file,
+   * @return boolean true if files are same.
+   * @throws IOException if an error occurs while comparing the files.
+   */
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException;
-
-  public boolean compareFiles(final String pathA, final String pathB,
-      final boolean useSerialize) throws IOException;
-
-  public boolean compareFiles(final File fileA, final File fileB,
-      final boolean useSerialize) throws FileNotFoundException, IOException;
-
+ 
+  /**
+   * Compare two files no ordered, check if they are the same contents.
+   * @param fileA the path to the first file, used like reference.
+   * @param fileB the path to the second file,
+   * @return boolean true if files are same.
+   * @throws IOException if an error occurs while comparing the files.
+   */
   public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException;
 
+  /**
+   * Compare two files no ordered, check if they are the same contents.
+   * @param streamA the path to the first file, used like reference.
+   * @param streamB the path to the second file,
+   * @return boolean true if files are same.
+   * @throws IOException if an error occurs while comparing the files.
+   */
   public boolean compareFiles(final InputStream isA, final InputStream isB)
       throws IOException;
 
+  /**
+   * Return all extensions treated by comparator files.
+   * @return list extensions.
+   */
   public Collection<String> getExtensions();
 
+  /**
+   * Return number elements compared by comparator.
+   * @return number elements compared
+   */
   public int getNumberElementsCompared();
 
 }

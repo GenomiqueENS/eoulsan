@@ -46,7 +46,6 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
 
   private int numberElementsCompared;
 
-
   @Override
   public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
@@ -90,4 +89,16 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
     return this.numberElementsCompared;
   }
 
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor
+   * @param useSerializeFile true if it needed to save BloomFilter in file with
+   *          extension '.ser'
+   */
+  public TextComparator(final boolean useSerializeFile) {
+    super(useSerializeFile);
+  }
 }

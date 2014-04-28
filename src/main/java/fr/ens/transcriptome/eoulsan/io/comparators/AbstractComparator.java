@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByFilename;
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This abstract class define methods to compare files.
@@ -49,32 +48,12 @@ public abstract class AbstractComparator implements Comparator {
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException {
 
-    // checkAndInit(pathA, pathB);
-
-    return compareFiles(new File(pathA), new File(pathB), false);
-  }
-
-  @Override
-  public boolean compareFiles(final String pathA, final String pathB,
-      final boolean useSerializeFile) throws IOException {
-
-    // checkAndInit(pathA, pathB);
-
-    return compareFiles(new File(pathA), new File(pathB), useSerializeFile);
+    return compareFiles(new File(pathA), new File(pathB));
   }
 
   @Override
   public boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException {
-
-    // checkAndInit(fileA.getAbsolutePath(), fileB.getAbsolutePath());
-
-    return compareFiles(fileA, fileB, false);
-  }
-
-  @Override
-  public boolean compareFiles(final File fileA, final File fileB,
-      final boolean useSerializeFile) throws FileNotFoundException, IOException {
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize())
@@ -106,7 +85,7 @@ public abstract class AbstractComparator implements Comparator {
    *         not the same
    */
   protected boolean checkFileSize() {
-
+    // TODO to verify interesting to implement
     return true;
   }
 
@@ -124,8 +103,8 @@ public abstract class AbstractComparator implements Comparator {
   protected static boolean checkFiles(final File fileA, final File fileB)
       throws IOException {
 
-    FileUtils.checkExistingFile(fileA, fileA.getAbsolutePath());
-    FileUtils.checkExistingFile(fileB, fileB.getAbsolutePath());
+    checkExistingStandardFile(fileA, fileA.getAbsolutePath());
+    checkExistingStandardFile(fileB, fileB.getAbsolutePath());
 
     // Check if try to compare the same file
     if (fileA.equals(fileB))
@@ -140,10 +119,10 @@ public abstract class AbstractComparator implements Comparator {
   }
 
   @Override
-  public abstract Collection<String> getExtensions();
+  abstract public Collection<String> getExtensions();
 
   @Override
-  public abstract String getName();
+  abstract public String getName();
 
   //
   // Getter

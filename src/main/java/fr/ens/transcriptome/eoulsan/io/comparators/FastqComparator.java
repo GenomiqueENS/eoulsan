@@ -43,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 public class FastqComparator extends AbstractComparatorWithBloomFilter {
 
   public static final String COMPARATOR_NAME = "FastqComparator";
-  private static final Collection<String> EXTENSIONS = Sets.newHashSet(".fastq",
-      ".fq");
+  private static final Collection<String> EXTENSIONS = Sets.newHashSet(
+      ".fastq", ".fq");
 
   private int numberElementsCompared;
 
@@ -74,7 +74,7 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
   }
 
   @Override
-  public BloomFilterUtils buildBloomFilter(final InputStream is)
+  protected BloomFilterUtils buildBloomFilter(final InputStream is)
       throws IOException {
 
     final BloomFilterUtils filter =
@@ -116,29 +116,16 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
     return this.numberElementsCompared;
   }
 
-  // @Override
-  // public int getExpectedNumberOfElements() {
-  // return expectedNumberOfElements;
-  // }
-  //
-  
-  //
-  // @Override
-  // public int getNumberElementsCompared() {
-  // return this.numberElementsCompared;
-  // }
-  //
-  //
-  // public void setUseBloomfilterAvailable(boolean useBloomfilterAvailable) {
-  // this.useBloomfilterAvailable = useBloomfilterAvailable;
-  // }
-
   //
   // Constructor
   //
 
-  public FastqComparator() {
-
+  /**
+   * Public constructor
+   * @param useSerializeFile true if it needed to save BloomFilter in file with
+   *          extension '.ser'
+   */
+  public FastqComparator(final boolean useSerializeFile) {
+    super(useSerializeFile);
   }
-
 }
