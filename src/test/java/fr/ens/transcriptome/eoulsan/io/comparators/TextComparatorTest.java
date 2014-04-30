@@ -52,15 +52,14 @@ public class TextComparatorTest {
   private File fileB = new File(dir, "testdatatype.xml");
   private File fileC;
 
-  private final AbstractComparatorWithBloomFilter comparator =
-      new TextComparator();
 
   @Test
   public void testSameTextFiles() throws Exception {
 
     final InputStream isA1 = new FileInputStream(fileA);
     final InputStream isA2 = new FileInputStream(fileA);
-
+    
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "@PG");
     assertTrue("files are same", comparator.compareFiles(isA1, isA2));
   }
 
@@ -69,18 +68,22 @@ public class TextComparatorTest {
 
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
-
+    
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "@PG");
     assertFalse("files are different", comparator.compareFiles(isA, isB));
   }
 
   @Test
   public void testSameTextWithSerialization() throws Exception {
 
+    final AbstractComparatorWithBloomFilter comparator =
+        new TextComparator(true);
+    
     // First call with creation serialisation file for save BloomFilter from
     // FileA
     modifyFile(0);
     assertFalse("files are different: duplicate SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     File ser = new File(dir, fileA.getName() + ".ser");
     assertTrue("Check serialization exists ", ser.exists());
@@ -88,19 +91,19 @@ public class TextComparatorTest {
     // Use serialisation file
     modifyFile(1);
     assertFalse("files are different: remove SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(2);
     assertFalse("files are different: add SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     // remove serialisation file
     if (ser.exists())
@@ -112,7 +115,7 @@ public class TextComparatorTest {
 
   @Test
   public void testDivergentText() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator("@PG");
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "@PG");
 
     modifyFile(0);
     assertFalse("files are different: duplicate line",

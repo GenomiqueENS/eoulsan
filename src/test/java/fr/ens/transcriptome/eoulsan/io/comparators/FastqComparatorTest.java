@@ -51,9 +51,7 @@ public class FastqComparatorTest {
   private File fileA = new File(dir, "illumina_1_8.fastq");
   private File fileB = new File(dir, "illumina_1_8.fastq");
   private File fileC;
-
-  private AbstractComparatorWithBloomFilter comparator = new FastqComparator();
-
+  
   private void readFiles() throws Exception {
 
     isA = new FileInputStream(fileA);
@@ -146,7 +144,8 @@ public class FastqComparatorTest {
 
   @Test
   public void testSameFastq() throws Exception {
-
+    AbstractComparatorWithBloomFilter comparator = new FastqComparator(false);
+    
     readFiles();
     assertTrue("files are same", comparator.compareFiles(isA, isB));
   }
@@ -154,11 +153,13 @@ public class FastqComparatorTest {
   @Test
   public void testSameFastqWithSerialization() throws Exception {
 
+    AbstractComparatorWithBloomFilter comparator = new FastqComparator(true);
+    
     // First call with creation serialisation file for save BloomFilter from
     // FileA
     modifyFile(0);
     assertFalse("files are different: duplicate read",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     File ser = new File(dir, fileA.getName() + ".ser");
     assertTrue("Check serialization exists ", ser.exists());
@@ -166,19 +167,19 @@ public class FastqComparatorTest {
     // Use serialisation file
     modifyFile(1);
     assertFalse("files are different: remove read",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(2);
     assertFalse("files are different: add read",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     // remove serialisation file
     if (ser.exists())
@@ -191,6 +192,8 @@ public class FastqComparatorTest {
   @Test
   public void testDivergentFastq() throws Exception {
 
+    AbstractComparatorWithBloomFilter comparator = new FastqComparator(false);
+    
     modifyFile(0);
     assertFalse("files are different: duplicate read",
         comparator.compareFiles(fileA, fileC));

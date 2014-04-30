@@ -60,14 +60,14 @@ public class SamComparatorTest {
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
 
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator("PG");
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "PG");
     assertTrue("files are same without tag header @PG",
         comparator.compareFiles(isA, isB));
 
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
 
-    AbstractComparatorWithBloomFilter comparator2 = new SAMComparator();
+    AbstractComparatorWithBloomFilter comparator2 = new SAMComparator(false);
     assertFalse("files are different with all tag header",
         comparator2.compareFiles(isA, isB));
 
@@ -75,14 +75,14 @@ public class SamComparatorTest {
     isB = new FileInputStream(fileB);
 
     AbstractComparatorWithBloomFilter comparator3 =
-        new SAMComparator("PG", "SQ");
+        new SAMComparator(false, "PG", "SQ");
     assertTrue("files are same without all tags",
         comparator3.compareFiles(isA, isB));
   }
 
   @Test
   public void testDifferentSAMFilesWithTag() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator();
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false);
 
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
@@ -92,13 +92,13 @@ public class SamComparatorTest {
 
   @Test
   public void testSameSAMWithSerialization() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator("PG");
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(true, "PG");
 
     // First call with creation serialisation file for save BloomFilter from
     // FileA
     modifyFile(0);
     assertFalse("files are different: duplicate SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     File ser = new File(dir, fileA.getName() + ".ser");
     assertTrue("Check serialization exists ", ser.exists());
@@ -106,19 +106,19 @@ public class SamComparatorTest {
     // Use serialisation file
     modifyFile(1);
     assertFalse("files are different: remove SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(2);
     assertFalse("files are different: add SAM line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC, true));
+        comparator.compareFiles(fileA, fileC));
 
     // remove serialisation file
     if (ser.exists())
@@ -130,7 +130,7 @@ public class SamComparatorTest {
 
   @Test
   public void testDivergentSAM() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator("@PG");
+    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "@PG");
 
     modifyFile(0);
     assertFalse("files are different: duplicate SAM line",
