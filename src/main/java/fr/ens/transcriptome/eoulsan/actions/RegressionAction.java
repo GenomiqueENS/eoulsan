@@ -1,3 +1,26 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.actions;
 
 import org.apache.commons.cli.CommandLine;
@@ -13,8 +36,14 @@ import org.testng.TestNG;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.it.ITActionFactory;
+import fr.ens.transcriptome.eoulsan.it.RegressionITFactory;
 
+/**
+ * This class launch integration test with Testng class.
+ * @since 1.3
+ * @author Laurent Jourdren
+ * @author Sandrine Perrin
+ */
 public class RegressionAction extends AbstractAction {
 
   @Override
@@ -48,7 +77,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("c")) {
 
         // Configuration test files
-        System.setProperty(ITActionFactory.CONF_PATH_KEY,
+        System.setProperty(RegressionITFactory.CONF_PATH_KEY,
             line.getOptionValue("c").trim());
         argsOptions += 2;
       }
@@ -56,7 +85,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(ITActionFactory.APPLI_PATH_KEY,
+        System.setProperty(RegressionITFactory.APPLI_PATH_KEY,
             line.getOptionValue("exec").trim());
         argsOptions += 2;
       }
@@ -65,7 +94,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITActionFactory.TESTS_FILE_PATH_KEY, line
+        System.setProperty(RegressionITFactory.TESTS_FILE_PATH_KEY, line
             .getOptionValue("f").trim());
         argsOptions += 2;
       }
@@ -78,12 +107,12 @@ public class RegressionAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          System.setProperty(ITActionFactory.GENERATE_ALL_EXPECTED_DATA_KEY,
+          System.setProperty(RegressionITFactory.GENERATE_ALL_EXPECTED_DATA_KEY,
               "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          System.setProperty(ITActionFactory.GENERATE_NEW_EXPECTED_DATA_KEY,
+          System.setProperty(RegressionITFactory.GENERATE_NEW_EXPECTED_DATA_KEY,
               "true");
 
         argsOptions += 2;
@@ -155,6 +184,7 @@ public class RegressionAction extends AbstractAction {
   //
 
   /**
+   * Run all integrated test
    */
   private void runIT() {
 
@@ -181,17 +211,11 @@ public class RegressionAction extends AbstractAction {
 
     // Create and configure TestNG
     TestNG testng = new TestNG();
-    testng.setTestClasses(new Class[] {ITActionFactory.class});
+    testng.setTestClasses(new Class[] {RegressionITFactory.class});
     testng.addListener(tla);
 
     // Launch integration tests using TestNG
     testng.run();
   }
 
-  //
-  // Constructor
-  //
-
-  public RegressionAction() {
-  }
 }
