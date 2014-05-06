@@ -34,16 +34,29 @@ public class RegressionActionDemo {
     RegressionAction action = (RegressionAction) action0;
 
     // Run action
-    action.action(new String[] {"-c", confpath, "-generate", "new", "-exec",
-        "/home/sperrin/home-net/eoulsan-1.2.2"});
+    int choice = 3;
 
-    // action.action(new String[] {"-c", confpath, "-generate", "all", "-exec",
-    // "/home/sperrin/home-net/eoulsan-1.2.2"});
+    switch (choice) {
+    case 0:
+      action.action(new String[] {"-c", confpath, "-expected", "new", "-exec",
+          "/home/sperrin/home-net/eoulsan-1.2.2"});
+      break;
 
-    // action.action(new String[] {"-c", confpath, "-exec",
-    // "/home/sperrin/home-net/eoulsan_newReadsMappers", "-f", fileTests,});
+    case 1:
+      action.action(new String[] {"-c", confpath, "-expected", "all", "-exec",
+          "/home/sperrin/home-net/eoulsan-1.2.2"});
+      break;
+    case 2:
 
-    // action.action(new String[] {"-c", confpath, "-exec",
-    // "/home/sperrin/home-net/eoulsan_newReadsMappers"});
+      action.action(new String[] {"-c", confpath, "-exec",
+          "/home/sperrin/home-net/eoulsan_newReadsMappers", "-f", fileTests,});
+      break;
+    case 3:
+      action.action(new String[] {"-c", confpath, "-exec",
+          "/home/sperrin/home-net/eoulsan_newReadsMappers"});
+      break;
+    default:
+      System.out.println("Choice INVALID");
+    }
   }
 }

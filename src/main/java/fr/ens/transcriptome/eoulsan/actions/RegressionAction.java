@@ -77,16 +77,16 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("c")) {
 
         // Configuration test files
-        System.setProperty(RegressionITFactory.CONF_PATH_KEY,
-            line.getOptionValue("c").trim());
+        System.setProperty(RegressionITFactory.CONF_PATH_KEY, line
+            .getOptionValue("c").trim());
         argsOptions += 2;
       }
 
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(RegressionITFactory.APPLI_PATH_KEY,
-            line.getOptionValue("exec").trim());
+        System.setProperty(RegressionITFactory.APPLI_PATH_KEY, line
+            .getOptionValue("exec").trim());
         argsOptions += 2;
       }
 
@@ -107,13 +107,13 @@ public class RegressionAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          System.setProperty(RegressionITFactory.GENERATE_ALL_EXPECTED_DATA_KEY,
-              "true");
+          System.setProperty(
+              RegressionITFactory.GENERATE_ALL_EXPECTED_DATA_KEY, "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          System.setProperty(RegressionITFactory.GENERATE_NEW_EXPECTED_DATA_KEY,
-              "true");
+          System.setProperty(
+              RegressionITFactory.GENERATE_NEW_EXPECTED_DATA_KEY, "true");
 
         argsOptions += 2;
       }
@@ -145,22 +145,28 @@ public class RegressionAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Path to test configuration
-    options.addOption(OptionBuilder.withArgName("confPath").hasArg(true)
-        .withDescription("configuration test file").withLongOpt("conf")
+    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
+        .withDescription("configuration file").withLongOpt("conf")
         .create('c'));
 
     // Path to application version to execute
-    options.addOption(OptionBuilder.withArgName("exec").hasArg()
-        .withDescription("path application version").create("exec"));
+    options.addOption(OptionBuilder.withArgName("appliPath").hasArg()
+        .withDescription("application path to launch").create("exec"));
 
     // Optional, path to file with list name tests to treat
-    options.addOption(OptionBuilder.withArgName("fileTest").hasArg(true)
-        .withDescription("path to file with list name tests")
+    options.addOption(OptionBuilder.withArgName("file")
+        .hasArg(true)
+        .withDescription("optional: files with tests name to launch")
         .withLongOpt("file").create('f'));
 
     // Optional, force generated expected data
-    options.addOption(OptionBuilder.withArgName("type").hasArg()
-        .withDescription("mode generate data expected").create("generate"));
+    options
+        .addOption(OptionBuilder
+            .withArgName("mode")
+            .hasArg()
+            .withDescription(
+                "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
+            .create("expected"));
 
     return options;
   }
@@ -174,7 +180,8 @@ public class RegressionAction extends AbstractAction {
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName() + " [options] configuration_tests_path", options);
+        + ".sh " + getName()
+        + " [options] configuration_file_path application_path", options);
 
     Common.exit(0);
   }
