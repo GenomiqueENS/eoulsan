@@ -168,12 +168,13 @@ public class RegressionProcessIT {
 
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
       status = false;
       throw new Exception();
     } finally {
 
-      final String suffix = status == null || status == false ? "FAIL" : "SUCCESS";
+      final String suffix =
+          status == null || status == false ? "FAIL" : "SUCCESS";
 
       // Create report file
       createReportFile(suffix);

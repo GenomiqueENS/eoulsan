@@ -358,10 +358,6 @@ public class RegressionResultIT {
         setPatternFilesToTreat(inputPatternsFiles + " " + outputPatternsFiles);
     this.listFiles = createListFiles(this.outputTestDirectory);
 
-    // TODO
-    System.out.println("list file for "
-        + this.outputTestDirectory + "\n"
-        + Joiner.on("\n\t").withKeyValueSeparator("\t").join(listFiles));
   }
 
   //

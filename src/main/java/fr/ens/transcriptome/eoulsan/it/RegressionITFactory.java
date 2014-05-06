@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
@@ -95,6 +96,10 @@ public class RegressionITFactory {
    */
   @Factory
   public Object[] createInstances() {
+
+    // If no test configuration path defined, do nothing
+    if (this.applicationPath == null)
+      return new Object[0];
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
@@ -195,8 +200,7 @@ public class RegressionITFactory {
 
     // Set directory contain all tests to execute
     this.outputTestsDirectory =
-        new File(output, versionApplication
-            + "_" + FORMATTED_DATE.toString());
+        new File(output, versionApplication + "_" + FORMATTED_DATE.toString());
     LOGGER.config("Output tests directory: "
         + this.outputTestsDirectory.getAbsolutePath());
 
@@ -339,7 +343,8 @@ public class RegressionITFactory {
     fh.setFormatter(Globals.LOG_FORMATTER);
 
     LOGGER.setLevel(Level.ALL);
-    // LOGGER.setUseParentHandlers(false);
+    // Remove output console
+    LOGGER.setUseParentHandlers(false);
     LOGGER.addHandler(fh);
     LOGGER.info(Globals.WELCOME_MSG);
 
@@ -373,18 +378,21 @@ public class RegressionITFactory {
    */
   public RegressionITFactory() throws EoulsanException {
 
-    if (System.getProperty(CONF_PATH_KEY) == null) {
-      throw new EoulsanException(
-          "Configuration file path not define in java properties");
+    if (System.getProperty(CONF_PATH_KEY) != null) {
+      this.confFile = new File(System.getProperty(CONF_PATH_KEY));
+      // throw new EoulsanException(
+      // "Configuration file path not define in java properties");
+    } else {
+      this.confFile = null;
     }
 
-    if (System.getProperty(APPLI_PATH_KEY) == null) {
-      throw new EoulsanException(
-          "Application path not define in java properties");
+    if (System.getProperty(APPLI_PATH_KEY) != null) {
+      this.applicationPath = System.getProperty(APPLI_PATH_KEY);
+      // throw new EoulsanException(
+      // "Application path not define in java properties");
+    } else {
+      this.applicationPath = null;
     }
-
-    this.confFile = new File(System.getProperty(CONF_PATH_KEY));
-    this.applicationPath = System.getProperty(APPLI_PATH_KEY);
 
     if (System.getProperty(TESTS_FILE_PATH_KEY) != null) {
       this.selectedTestsFile =
