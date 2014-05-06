@@ -6,5 +6,12 @@
        <class name="fr.ens.transcriptome.eoulsan.it.EoulsanITFactory" />
     </classes>
   </test>
+  
+  <test name="RegressionITAction">
+    <classes>
+       <class name="fr.ens.transcriptome.eoulsan.it.RegressionITFactory" />
+    </classes>
+  </test>
+  
 </suite>
 
