@@ -69,8 +69,8 @@ public class FastqComparatorTest {
     final BufferedWriter bw = new BufferedWriter(new FileWriter(fileC));
 
     String line = "";
-    // Chose multi 4 corresponding to header fastq line
-    final int numberLine = getRandomNumberLine();
+    // Number line for a header read
+    final int numberLine = 53;
     int comp = 1;
 
     while ((line = br.readLine()) != null) {
@@ -218,12 +218,4 @@ public class FastqComparatorTest {
       fileC.delete();
   }
 
-  private int getRandomNumberLine() {
-    // Choice read in 200 first read in file
-    final int max = 200;
-    final int readNumber = (int) (Math.random() * max);
-
-    // number line to header
-    return ((readNumber - 1) * 4 + 1);
-  }
 }

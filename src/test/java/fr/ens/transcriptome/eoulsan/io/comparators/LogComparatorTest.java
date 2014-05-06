@@ -58,6 +58,8 @@ public class LogComparatorTest {
         new ByteArrayInputStream(expressionLogText.getBytes());
 
     assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    
+    
   }
 
   @Test
@@ -67,6 +69,13 @@ public class LogComparatorTest {
 
     String newText = "";
     InputStream isB = null;
+
+    // Change sample name
+    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_091b");
+    isB = new ByteArrayInputStream(newText.getBytes());
+
+    assertFalse("filterreadsLog different, change sample name",
+        comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =
@@ -129,6 +138,13 @@ public class LogComparatorTest {
 
     String newText = "";
     InputStream isB = null;
+
+    // Change sample name
+    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_090a");
+    isB = new ByteArrayInputStream(newText.getBytes());
+
+    assertFalse("filterreadsLog different, change sample name",
+        comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =
@@ -218,6 +234,14 @@ public class LogComparatorTest {
     String newText = "";
     InputStream isB = null;
 
+    // Change sample name
+    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_0090b");
+    isB = new ByteArrayInputStream(newText.getBytes());
+
+    assertFalse("filterreadsLog different, change sample name",
+        comparator.compareFiles(isA, isB));
+
+    
     // Change first value
     newText =
         filtersamLogText.replaceFirst(
@@ -293,6 +317,13 @@ public class LogComparatorTest {
 
     String newText = "";
     InputStream isB = null;
+
+    // Change sample name
+    newText = filterreadsLogText.replaceFirst("2013_090b", "2014_090b");
+    isB = new ByteArrayInputStream(newText.getBytes());
+
+    assertFalse("filterreadsLog different, change sample name",
+        comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =

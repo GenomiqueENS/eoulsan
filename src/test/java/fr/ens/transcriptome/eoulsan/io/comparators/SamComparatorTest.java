@@ -167,8 +167,8 @@ public class SamComparatorTest {
     final BufferedWriter bw = new BufferedWriter(new FileWriter(fileC));
 
     String line = "";
-    // Chose multi 4 corresponding to header fastq line
-    final int numberLine = getRandomNumberLine();
+    // Chose no header line
+    final int numberLine = 33;
     int comp = 0;
 
     while ((line = br.readLine()) != null) {
@@ -222,11 +222,5 @@ public class SamComparatorTest {
     br.close();
     bw.close();
   }
-
-  private int getRandomNumberLine() {
-    // SAM line in file A between line 25 and 45
-    final int min = 25;
-    final int max = 45;
-    return (int) (min + (Math.random() * (max - min)));
-  }
+  
 }
