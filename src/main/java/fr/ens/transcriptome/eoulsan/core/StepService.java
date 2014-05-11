@@ -41,7 +41,6 @@ public class StepService extends ServiceNameLoader<Step> {
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
-  private final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
   private static StepService service;
 
   //
@@ -50,13 +49,12 @@ public class StepService extends ServiceNameLoader<Step> {
 
   /**
    * Retrieve the singleton static instance of StepService.
-   * @param hadoopMode true if this service must return hadoopCompatible Steps
    * @return A StepService instance
    */
-  public static synchronized StepService getInstance(final boolean hadoopMode) {
+  public static synchronized StepService getInstance() {
 
     if (service == null) {
-      service = new StepService(hadoopMode);
+      service = new StepService();
     }
 
     return service;
@@ -69,7 +67,8 @@ public class StepService extends ServiceNameLoader<Step> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return EoulsanMode.accept(clazz, this.hadoopMode);
+    return EoulsanMode
+        .accept(clazz, EoulsanRuntime.getRuntime().isHadoopMode());
   }
 
   @Override
@@ -84,10 +83,9 @@ public class StepService extends ServiceNameLoader<Step> {
 
   /**
    * Private constructor.
-   * @param hadoopMode true if this service must return hadoopCompatible Steps
    */
 
-  private StepService(final boolean hadoopMode) {
+  private StepService() {
 
     super(Step.class);
 

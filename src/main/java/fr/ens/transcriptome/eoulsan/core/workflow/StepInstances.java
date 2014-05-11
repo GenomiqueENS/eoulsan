@@ -31,7 +31,6 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepService;
@@ -145,9 +144,8 @@ public class StepInstances {
       throw new EoulsanException("Step name is null");
 
     final String lower = stepName.trim().toLowerCase();
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
-    final Step result = StepService.getInstance(hadoopMode).newService(lower);
+    final Step result = StepService.getInstance().newService(lower);
 
     if (result == null)
       throw new EoulsanException("Unknown step: " + lower);
