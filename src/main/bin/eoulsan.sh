@@ -89,4 +89,5 @@ $JAVA_CMD \
 		-Deoulsan.classpath=$APP_CLASSPATH \
 		-Deoulsan.launch.mode=local \
 		-Deoulsan.launch.script.path=$0 \
+		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \
 		fr.ens.transcriptome.eoulsan.Main "$@"
