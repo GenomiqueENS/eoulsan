@@ -297,13 +297,22 @@ public final class Globals {
       Class<?> clazz = Globals.class;
       String className = clazz.getSimpleName() + ".class";
       String classPath = clazz.getResource(className).toString();
+
+      final String manifestPath;
       if (!classPath.startsWith("jar")) {
         // Class not from JAR
-        return;
+
+        String basePath =
+            classPath.substring(0, classPath.length()
+                - clazz.getName().length() - ".class".length());
+        manifestPath = basePath + MANIFEST_FILE;
+
+      } else {
+        manifestPath =
+            classPath.substring(0, classPath.lastIndexOf("!") + 1)
+                + MANIFEST_FILE;
       }
-      String manifestPath =
-          classPath.substring(0, classPath.lastIndexOf("!") + 1)
-              + MANIFEST_FILE;
+
       Manifest manifest = new Manifest(new URL(manifestPath).openStream());
       manifestAttributes = manifest.getMainAttributes();
 
