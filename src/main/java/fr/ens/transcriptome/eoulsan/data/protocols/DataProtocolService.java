@@ -41,7 +41,6 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
 
   private static DataProtocolService service;
 
-  private final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
   private final FileDataProtocol defaultProtocol = new FileDataProtocol();
   private final String defaultProtocolName = defaultProtocol.getName();
 
@@ -128,7 +127,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return EoulsanMode.accept(clazz, this.hadoopMode);
+    return EoulsanMode.accept(clazz, EoulsanRuntime.getRuntime().isHadoopMode());
   }
 
   @Override

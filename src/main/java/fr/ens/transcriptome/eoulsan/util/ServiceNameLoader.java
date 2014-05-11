@@ -126,7 +126,7 @@ public abstract class ServiceNameLoader<S> {
 
     // Check if the class exists
     try {
-      clazz = Class.forName(className, true, this.loader);
+      clazz = Class.forName(className, false, this.loader);
 
     } catch (ClassNotFoundException e) {
       throw new ServiceConfigurationError(service.getName()
