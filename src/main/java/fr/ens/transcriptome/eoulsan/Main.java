@@ -266,7 +266,6 @@ public abstract class Main {
 
   /**
    * Parse the options of the command line
-   * @param args command line arguments
    * @return the number of options argument in the command line
    */
   private int parseCommandLine() {
@@ -414,9 +413,6 @@ public abstract class Main {
 
     // Log level
     LOGGER.info("Log level: " + LOGGER.getLevel());
-
-    // Log system information
-    sysInfoLog();
   }
 
   /**
@@ -620,6 +616,9 @@ public abstract class Main {
 
       // Initialize the runtime
       initializeRuntime(settings);
+
+      // Log system information
+      sysInfoLog();
 
     } catch (IOException e) {
       Common.errorExit(e, "Error while reading configuration file.");
