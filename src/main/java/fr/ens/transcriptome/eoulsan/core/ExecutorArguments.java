@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import com.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -268,6 +270,22 @@ public class ExecutorArguments {
   public InputStream openDesignFile() throws IOException {
 
     return new DataFile(getDesignPathname()).open();
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this)
+        .add("localWorkingPathname", getLocalWorkingPathname())
+        .add("hadoopWorkingPathname", getHadoopWorkingPathname())
+        .add("designPathname", getDesignPathname())
+        .add("workflowPathname", getWorkflowPathname())
+        .add("jobDescription", getJobDescription())
+        .add("jobEnvironment", getJobEnvironment())
+        .add("outputPathname", getOutputPathname())
+        .add("logPathname", getLogPathname()).add("jobId", getJobId())
+        .add("jobUUID", getJobUUID()).add("creationTime", getCreationTime())
+        .toString();
   }
 
   //

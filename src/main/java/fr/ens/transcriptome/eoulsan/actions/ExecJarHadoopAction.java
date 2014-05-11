@@ -76,7 +76,7 @@ public class ExecJarHadoopAction extends AbstractAction {
   private static class HadoopExecutorArguments extends ExecutorArguments {
 
     public HadoopExecutorArguments(final long millisSinceEpoch,
-        final Path designPath, final Path paramPath) {
+        final Path paramPath, final Path designPath, final Path destPath) {
       super(millisSinceEpoch);
 
       // Set base pathname
@@ -99,6 +99,12 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Set workflow file pathname
       setWorkflowPathname(paramPath.toString());
+
+      // Set the output path
+      setLocalWorkingPathname(new File(".").getAbsolutePath());
+
+      // Set Hadoop working pathname
+      setHadoopWorkingPathname(destPath.toString());
     }
 
   }
@@ -318,6 +324,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       final Path paramPath = new Path(paramURI.toString());
       final Path designPath = new Path(designURI.toString());
+      final Path destPath = new Path(destURI.toString());
 
       // Test if param file exists
       FileSystem paramFs = paramPath.getFileSystem(conf);
@@ -331,7 +338,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
-          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath);
+          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath, destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
