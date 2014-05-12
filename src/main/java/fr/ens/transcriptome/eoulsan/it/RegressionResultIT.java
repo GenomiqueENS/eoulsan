@@ -106,7 +106,9 @@ public class RegressionResultIT {
     this.report.append("SUCCESS: copy files to "
         + destinationDirectory.getAbsolutePath());
 
-    cleanDirectory();
+    // TODO active after test
+    // Clean directory
+    // cleanDirectory();
   }
 
   /**
@@ -168,8 +170,9 @@ public class RegressionResultIT {
     // Update result compare test
     this.resultComparison = this.resultComparison && true;
 
+    // TODO active after test
     // Remove all files not need to compare
-    this.cleanDirectory();
+    // this.cleanDirectory();
 
   }
 
