@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Joiner;
@@ -52,6 +53,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
@@ -129,20 +131,20 @@ public class RegressionProcessIT {
     LOGGER.info("start test " + this.testName);
 
     // Compile the result comparison from all tests
-    Boolean status = null;
+    Boolean status = true;
 
     try {
       if (asNeedToGenerateData()) {
         // Build output directory with source files
         buildOutputDirectory();
 
+        // Launch scripts
+        launchScriptsTest();
+
         if (this.expectedDataToGenerate) {
           // Build expected directory if necessary
           createExpectedDirectory();
         }
-
-        // Launch scripts
-        launchScriptsTest();
 
         // Treat result application directory
         final RegressionResultIT regressionResultIT =
@@ -167,10 +169,18 @@ public class RegressionProcessIT {
         }
 
       }
+    } catch (EoulsanITRuntimeException e) {
+      // e.printStackTrace();
+      status = false;
+      throw new Exception("Fail comparaison test "
+          + testName + ", reason: " + e.getMessage() + "\n");
+
     } catch (Exception e) {
       // e.printStackTrace();
       status = false;
-      throw new Exception();
+      throw new Exception("Fail test "
+          + testName + ", reason: " + e.getMessage() + "\n\t"
+          + e.getClass().getName() + "\n");
     } finally {
 
       final String suffix =
@@ -181,8 +191,7 @@ public class RegressionProcessIT {
 
       final String txt =
           (this.expectedDataToGenerate)
-              ? ": generate expected data"
-              : ": generate data to test and comparison";
+              ? ": generate expected data" : ": launch test and comparison";
 
       // End test
       timer.stop();
@@ -251,7 +260,7 @@ public class RegressionProcessIT {
       return true;
 
     // Generate only missing expected data directory
-    if (newTestsToGenerate && this.expectedTestDirectory.exists())
+    if (newTestsToGenerate && ! this.expectedTestDirectory.exists())
       return true;
 
     return false;
