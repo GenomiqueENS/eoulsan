@@ -217,7 +217,7 @@ public class RegressionITFactory {
     // Collect all test.txt describing test to launch
     if (this.selectedTestsFile == null) {
       // Collect all tests
-      return collectTestsFromDirectory();
+      return collectAllTests();
     }
     // Collect tests from a file with names tests
     return collectTestsFromFile();
@@ -230,7 +230,7 @@ public class RegressionITFactory {
    * @throws EoulsanException
    * @throws IOException
    */
-  private Map<String, RegressionProcessIT> collectTestsFromDirectory()
+  private Map<String, RegressionProcessIT> collectAllTests()
       throws EoulsanException, IOException {
 
     final Map<String, RegressionProcessIT> tests = Maps.newTreeMap();

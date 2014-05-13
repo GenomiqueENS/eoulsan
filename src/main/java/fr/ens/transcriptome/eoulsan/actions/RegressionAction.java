@@ -101,8 +101,8 @@ public class RegressionAction extends AbstractAction {
 
       // Optional argument
       // TODO option name
-      if (line.hasOption("generate")) {
-        final String s = line.getOptionValue("generate").trim();
+      if (line.hasOption("expected")) {
+        final String s = line.getOptionValue("expected").trim();
 
         // Value equals all, regenerate all expected directories generated
         // automatically
@@ -146,16 +146,14 @@ public class RegressionAction extends AbstractAction {
 
     // Path to test configuration
     options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("configuration file").withLongOpt("conf")
-        .create('c'));
+        .withDescription("configuration file").withLongOpt("conf").create('c'));
 
     // Path to application version to execute
     options.addOption(OptionBuilder.withArgName("appliPath").hasArg()
         .withDescription("application path to launch").create("exec"));
 
     // Optional, path to file with list name tests to treat
-    options.addOption(OptionBuilder.withArgName("file")
-        .hasArg(true)
+    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
         .withDescription("optional: files with tests name to launch")
         .withLongOpt("file").create('f'));
 
