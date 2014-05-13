@@ -1,12 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="SuiteIntegrationTest" verbose="1" >
-  <test name="EoulsanIT">
-    <classes>
-       <class name="fr.ens.transcriptome.eoulsan.it.EoulsanITFactory" />
-    </classes>
-  </test>
-  
   <test name="RegressionITAction">
     <classes>
        <class name="fr.ens.transcriptome.eoulsan.it.RegressionITFactory" />
