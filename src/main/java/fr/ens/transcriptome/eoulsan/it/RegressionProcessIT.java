@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Joiner;
@@ -133,42 +132,45 @@ public class RegressionProcessIT {
     // Compile the result comparison from all tests
     Boolean status = true;
 
+    RegressionResultIT regressionResultIT = null;
     try {
-      if (asNeedToGenerateData()) {
-        // Build output directory with source files
-        buildOutputDirectory();
+      // Check data to generate
+      if (!asNeedToGenerateData())
+        // Nothing to do
+        return;
 
-        // Launch scripts
-        launchScriptsTest();
+      // Build output directory with source files
+      buildOutputDirectory();
 
-        if (this.expectedDataToGenerate) {
-          // Build expected directory if necessary
-          createExpectedDirectory();
-        }
+      // Launch scripts
+      launchScriptsTest();
 
-        // Treat result application directory
-        final RegressionResultIT regressionResultIT =
-            new RegressionResultIT(this.outputTestDirectory,
-                this.testConf.getProperty(PATTERNS_INPUT_FILES_KEY),
-                this.testConf.getProperty(PATTERNS_OUTPUT_FILES_KEY));
-
-        // Check comparison used
-        if (this.expectedDataToGenerate) {
-          // Copy files corresponding to pattern in expected data directory
-          regressionResultIT.copyFiles(this.expectedTestDirectory);
-
-        } else {
-          // Case comparison between expected and output test directory
-          regressionResultIT.compareTo(new RegressionResultIT(
-              this.expectedTestDirectory.getParentFile(), this.testConf
-                  .getProperty(PATTERNS_INPUT_FILES_KEY), this.testConf
-                  .getProperty(PATTERNS_OUTPUT_FILES_KEY)));
-
-          status = regressionResultIT.getResultComparison();
-          this.reportText.append("\n" + regressionResultIT.getReport());
-        }
-
+      if (this.expectedDataToGenerate) {
+        // Build expected directory if necessary
+        createExpectedDirectory();
       }
+
+      // Treat result application directory
+      regressionResultIT =
+          new RegressionResultIT(this.outputTestDirectory,
+              this.testConf.getProperty(PATTERNS_INPUT_FILES_KEY),
+              this.testConf.getProperty(PATTERNS_OUTPUT_FILES_KEY));
+
+      // Check comparison used
+      if (this.expectedDataToGenerate) {
+        // Copy files corresponding to pattern in expected data directory
+        regressionResultIT.copyFiles(this.expectedTestDirectory);
+
+      } else {
+        // Case comparison between expected and output test directory
+        regressionResultIT.compareTo(new RegressionResultIT(
+            this.expectedTestDirectory.getParentFile(), this.testConf
+                .getProperty(PATTERNS_INPUT_FILES_KEY), this.testConf
+                .getProperty(PATTERNS_OUTPUT_FILES_KEY)));
+
+        status = regressionResultIT.getResultComparison();
+      }
+
     } catch (EoulsanITRuntimeException e) {
       // e.printStackTrace();
       status = false;
@@ -183,21 +185,20 @@ public class RegressionProcessIT {
           + e.getClass().getName() + "\n");
     } finally {
 
-      final String suffix =
-          status == null || status == false ? "FAIL" : "SUCCESS";
+      // Append in report
+      this.reportText.append("\n" + regressionResultIT.getReport());
+
+      final String reportFilename = (status ? "SUCCESS" : "FAIL");
 
       // Create report file
-      createReportFile(suffix);
-
-      final String txt =
-          (this.expectedDataToGenerate)
-              ? ": generate expected data" : ": launch test and comparison";
+      createReportFile(reportFilename);
 
       // End test
       timer.stop();
-      LOGGER.info(suffix
-          + txt + " in "
-          + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+      LOGGER.info(reportFilename
+          + ((this.expectedDataToGenerate)
+              ? ": generate expected data" : ": launch test and comparison")
+          + " in " + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
     }
   }
 
@@ -260,7 +261,7 @@ public class RegressionProcessIT {
       return true;
 
     // Generate only missing expected data directory
-    if (newTestsToGenerate && ! this.expectedTestDirectory.exists())
+    if (newTestsToGenerate && !this.expectedTestDirectory.exists())
       return true;
 
     return false;
@@ -380,19 +381,24 @@ public class RegressionProcessIT {
         + Joiner.on(' ').join(scriptCmdLine));
 
     // Copy script in output directory
-    final List<String> copyScriptCmd =
-        Lists.newArrayList("cp", scriptCmdLine.get(0),
-            this.outputTestDirectory.getAbsolutePath());
+    if (!new File(this.outputTestDirectory, scriptCmdLine.get(0)).exists()) {
+      final List<String> copyScriptCmd =
+          Lists.newArrayList("cp", scriptCmdLine.get(0),
+              this.outputTestDirectory.getAbsolutePath());
+
+      int exitValue = -1;
+      try {
+        exitValue = ProcessUtils.sh(copyScriptCmd, this.outputTestDirectory);
+      } catch (IOException e) {
+        if (exitValue != 0)
+          LOGGER.warning("Fail copy script in directory "
+              + this.outputTestDirectory + " for " + this.testName);
+      }
+
+    }
 
     int exitValue = -1;
-
     try {
-      exitValue = ProcessUtils.sh(copyScriptCmd, this.outputTestDirectory);
-
-      if (exitValue != 0) {
-        LOGGER.warning("Fail copy script in directory "
-            + this.outputTestDirectory + " for " + this.testName);
-      }
       exitValue =
           ProcessUtils.sh(Lists.newArrayList(scriptCmdLine),
               this.outputTestDirectory);
@@ -405,7 +411,7 @@ public class RegressionProcessIT {
     } catch (IOException e) {
       throw new EoulsanException("Script fail (cmd:"
           + Joiner.on(" ").join(scriptCmdLine) + ") with exit value "
-          + exitValue + ", msg" + e.getMessage());
+          + exitValue + ", msg " + e.getMessage());
     }
 
   }
