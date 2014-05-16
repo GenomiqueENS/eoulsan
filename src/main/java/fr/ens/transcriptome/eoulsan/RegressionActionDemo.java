@@ -21,10 +21,10 @@ public class RegressionActionDemo {
 
   public static void mainbis() {
 
-    final String confpath = "/home/sperrin/home-net/testsIT/test_fonctionnel.conf";
+    final String confpath =
+        "/home/sperrin/home-net/testsIT/test_fonctionnel.conf";
 
-    final String fileTests =
-        "/home/sperrin/home-net/testsIT/scripts/list_tests.txt";
+    final String fileTests = "/home/sperrin/home-net/testsIT/list_tests.txt";
 
     // Set the default local for all the application
     Globals.setDefaultLocale();

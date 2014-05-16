@@ -66,8 +66,9 @@ public class RegressionResultIT {
 
   private final File outputTestDirectory;
   private final Collection<PathMatcher> patternsFilesTreated;
+  private final Collection<PathMatcher> allPatternsFiles;
   private final Map<String, File> listFiles;
-  private boolean resultComparison;
+  private boolean resultComparison = true;
 
   // Text to report file for a test
   private final StringBuilder report;
@@ -77,8 +78,13 @@ public class RegressionResultIT {
    * clean directory. If no pattern defined, moving all files.
    * @param destinationDirectory destination directory
    * @throws IOException if an error occurs while moving file
+   * @throws EoulsanException if no file copy in destination directory
    */
-  public void copyFiles(final File destinationDirectory) throws IOException {
+  public void copyFiles(final File destinationDirectory) throws IOException,
+      EoulsanException {
+
+    // Check at least on file match with a pattern
+    boolean fileMatchPatternFounded = false;
 
     // Copy output files
     for (Map.Entry<String, File> e : listFiles.entrySet()) {
@@ -100,7 +106,19 @@ public class RegressionResultIT {
           throw new IOException("Error when moving file "
               + e.getKey() + " to " + destinationDirectory.getAbsolutePath()
               + ".");
+
+        fileMatchPatternFounded =
+            fileMatchPatternFounded
+                || isFilenameMatchWithPatterns(filename,
+                    this.patternsFilesTreated);
       }
+    }
+
+    if (!fileMatchPatternFounded) {
+      String msg =
+          "Fail: none file in source directory corresponding to pattern output file";
+      this.report.append(msg);
+      throw new EoulsanException(msg);
     }
 
     this.report.append("SUCCESS: copy files to "
@@ -145,7 +163,7 @@ public class RegressionResultIT {
       if (!res) {
         this.report.append("\nfile " + fileA.getName() + " comparison: false");
         this.resultComparison = false;
-        throw new EoulsanITRuntimeException("Fail comparison for file: "
+        throw new EoulsanITRuntimeException("Fail comparison with file: "
             + entry.getKey());
       }
 
@@ -166,9 +184,6 @@ public class RegressionResultIT {
           "Unexpected file in data to test directory: "
               + Joiner.on(" ").join(allFilesFromTest));
     }
-
-    // Update result compare test
-    this.resultComparison = this.resultComparison && true;
 
     // TODO active after test
     // Remove all files not need to compare
@@ -195,12 +210,9 @@ public class RegressionResultIT {
       if (file.isDirectory())
         files.putAll(createListFiles(file));
 
-      final String filename = file.getName();
-      final Path path = new File(filename).toPath();
-
       // Search file in all patterns
-      if (isMathFilenameWithPatterns(path)) {
-        files.put(filename, file);
+      if (isFilenameMatchWithPatterns(file.getName(), this.allPatternsFiles)) {
+        files.put(file.getName(), file);
       }
     }
 
@@ -210,18 +222,25 @@ public class RegressionResultIT {
   /**
    * Check a file matching to a pattern. If no pattern define, return always
    * true.
-   * @param path instance of path for a file
+   * @param filename the file name
+   * @param patterns patterns for filename
    * @return true if the path match to one pattern or none pattern otherwise
    *         false
    */
-  private boolean isMathFilenameWithPatterns(final Path path) {
+  private boolean isFilenameMatchWithPatterns(final String filename,
+      final Collection<PathMatcher> patterns) {
 
     // None pattern, keep all file
     if (this.patternsFilesTreated.isEmpty())
       return true;
 
+    // Ignore compression extension file
+    final String filenameWithoutCompressionExtension =
+        StringUtils.filenameWithoutCompressionExtension(filename);
+    final Path path = new File(filenameWithoutCompressionExtension).toPath();
+
     // Parse all patterns
-    for (PathMatcher matcher : this.patternsFilesTreated) {
+    for (PathMatcher matcher : patterns) {
       if (matcher.matches(path))
         return true;
     }
@@ -236,8 +255,7 @@ public class RegressionResultIT {
    * @param collectionPatternsFiles sequences of patterns files
    * @return collection of PathMatcher, one per pattern
    */
-  private Collection<PathMatcher> setPatternFilesToTreat(
-      final String patternsFiles) {
+  private Collection<PathMatcher> setPatternFiles(final String patternsFiles) {
 
     final String patternTestConfigurationFile = " test.conf";
 
@@ -277,9 +295,10 @@ public class RegressionResultIT {
    * pattern define, all files are keeping.
    * @throws EoulsanException if an error occurs while removing files
    */
+  @SuppressWarnings("unused")
   private void cleanDirectory() throws IOException {
     // None pattern files define
-    if (this.patternsFilesTreated.isEmpty())
+    if (this.allPatternsFiles.isEmpty())
       // Keep all files
       return;
 
@@ -357,8 +376,10 @@ public class RegressionResultIT {
     this.report = new StringBuilder();
 
     // Build list patterns
-    this.patternsFilesTreated =
-        setPatternFilesToTreat(inputPatternsFiles + " " + outputPatternsFiles);
+    this.patternsFilesTreated = setPatternFiles(outputPatternsFiles);
+    this.allPatternsFiles =
+        setPatternFiles(inputPatternsFiles + " " + outputPatternsFiles);
+
     this.listFiles = createListFiles(this.outputTestDirectory);
 
   }
