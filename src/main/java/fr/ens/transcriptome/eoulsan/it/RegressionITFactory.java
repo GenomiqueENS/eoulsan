@@ -31,11 +31,10 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.Map;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
@@ -46,9 +45,8 @@ import java.util.logging.Logger;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -72,23 +70,24 @@ public class RegressionITFactory {
   public final static String GENERATE_NEW_EXPECTED_DATA_KEY =
       "generate.new.expected.data";
 
-  public final static String APPLI_PATH_KEY = "appli.path";
+  public final static String APPLICATION_PATH_KEY = "application.path";
 
-  private static final Stopwatch TIMER = Stopwatch.createUnstarted();
+  private final static Stopwatch TIMER = Stopwatch.createUnstarted();
 
-  private static final Formatter FORMATTED_DATE = new Formatter().format(
+  private static Formatter FORMATTED_DATE = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$te_%1$tH%1$tM%1$tS", new Date());
 
   private final Properties globalsConf;
-  private final String applicationPath;
+  private final File applicationPath;
   private final File confFile;
 
   // File with tests name to execute
   private final File selectedTestsFile;
 
-  private File outputTestsDirectory;
-  private File testsDataDirectory;
-  private String loggerPath;
+  private final File testsDataDirectory;
+  private final String versionApplication;
+  private final File outputTestsDirectory;
+  private final String loggerPath;
 
   /**
    * Create all instance for integrated tests
@@ -103,16 +102,18 @@ public class RegressionITFactory {
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
-    Map<String, RegressionProcessIT> tests = null;
+    List<RegressionProcessIT> tests = null;
 
     try {
-      readConfigurationFile();
       init();
 
       tests = collectTests();
 
+      if (tests == null)
+        return new Object[0];
+
       // Return all tests
-      return tests.values().toArray(new Object[tests.size()]);
+      return tests.toArray(new Object[tests.size()]);
 
     } catch (Throwable e) {
       e.printStackTrace();
@@ -126,81 +127,25 @@ public class RegressionITFactory {
   }
 
   /**
-   * Retrieve properties from tests configuration
-   * @param confFile configuration file from Action
-   * @throws EoulsanException
-   * @throws IOException
-   */
-  private void readConfigurationFile() throws IOException {
-
-    checkExistingStandardFile(this.confFile, "configuration file");
-
-    final BufferedReader br =
-        new BufferedReader(newReader(this.confFile,
-            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
-    String line = null;
-
-    while ((line = br.readLine()) != null) {
-      // Skip commentary
-      if (line.startsWith("#"))
-        continue;
-
-      final int pos = line.indexOf('=');
-      if (pos == -1)
-        continue;
-
-      final String key = line.substring(0, pos).trim();
-      final String value = line.substring(pos + 1).trim();
-
-      this.globalsConf.put(key, value);
-
-    }
-    br.close();
-
-    // Add command line property, use by each execution test
-    boolean generateAll =
-        System.getProperty(GENERATE_ALL_EXPECTED_DATA_KEY) != null;
-    this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_KEY,
-        Boolean.toString(generateAll));
-
-    boolean generateNew =
-        System.getProperty(GENERATE_NEW_EXPECTED_DATA_KEY) != null;
-    this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_KEY,
-        Boolean.toString(generateNew));
-  }
-
-  /**
    * Initialization factory with principal needed directories
-   * @throws EoulsanException
-   * @throws IOException
+   * @throws IOException if a source file doesn't exist
    */
-  private void init() throws IOException, EoulsanException {
-
-    // Retrieve application version test
-    final String versionApplication =
-        RegressionProcessIT.retrieveVersionApplication(this.globalsConf
-            .getProperty(RegressionProcessIT.CMD_LINE_TO_GET_VERSION_TEST_KEY),
-            this.applicationPath);
+  private void init() throws IOException {
 
     // Init logger
-    initLogger(this.globalsConf.getProperty("log.path"), versionApplication);
+    initLogger();
 
     // Set source directory for tests to execute
-    this.testsDataDirectory =
-        new File(this.globalsConf.getProperty("tests.directory"));
+
     checkExistingDirectoryFile(this.testsDataDirectory, "tests data directory");
     LOGGER.config("Tests data directory: "
         + this.testsDataDirectory.getAbsolutePath());
 
     // Set output directory
-    final File output =
-        new File(this.globalsConf.getProperty("output.analysis.directory"));
-    checkExistingDirectoryFile(output, "output data directory");
-    LOGGER.config("Output data directory: " + output.getAbsoluteFile());
+    checkExistingDirectoryFile(this.outputTestsDirectory.getParentFile(),
+        "output data parent directory");
 
     // Set directory contain all tests to execute
-    this.outputTestsDirectory =
-        new File(output, versionApplication + "_" + FORMATTED_DATE.toString());
     LOGGER.config("Output tests directory: "
         + this.outputTestsDirectory.getAbsolutePath());
 
@@ -211,75 +156,65 @@ public class RegressionITFactory {
 
   }
 
-  private Map<String, RegressionProcessIT> collectTests()
-      throws EoulsanException, IOException {
+  /**
+   * Collect all tests to launch from parameter command : in one case all tests
+   * present in output test directory, in other case from a list with all name
+   * test directory. For each, it checks the file configuration 'test.txt'.
+   * @return collection of test directories
+   * @throws EoulsanException if an error occurs while create instance for each
+   *           test.
+   * @throws IOException if the source file doesn't exist
+   */
+  private List<RegressionProcessIT> collectTests() throws EoulsanException,
+      IOException {
+
+    final List<RegressionProcessIT> tests = Lists.newArrayList();
+    final List<File> allTestsDirectories;
 
     // Collect all test.txt describing test to launch
     if (this.selectedTestsFile == null) {
       // Collect all tests
-      return collectAllTests();
-    }
-    // Collect tests from a file with names tests
-    return collectTestsFromFile();
-  }
-
-  /**
-   * Collect all tests present in test directory with a file configuration
-   * 'test.txt
-   * @param testsDataDirectory
-   * @throws EoulsanException
-   * @throws IOException
-   */
-  private Map<String, RegressionProcessIT> collectAllTests()
-      throws EoulsanException, IOException {
-
-    final Map<String, RegressionProcessIT> tests = Maps.newTreeMap();
-
-    final String filename = "test.conf";
-
-    // Parsing all directories test
-    for (File testDirectory : this.testsDataDirectory.listFiles()) {
-
-      // Collect test description file
-      final File[] files = testDirectory.listFiles(new FileFilter() {
-
-        @Override
-        public boolean accept(File pathname) {
-          return pathname.getName().equals(filename);
-        }
-      });
-
-      if (files != null && files.length == 1) {
-        // Test name
-        String nameTest = testDirectory.getName();
-
-        //
-        final RegressionProcessIT dst =
-            new RegressionProcessIT(this.globalsConf, this.applicationPath,
-                files[0], this.outputTestsDirectory, nameTest);
-        tests.put(nameTest, dst);
-      }
-
+      allTestsDirectories =
+          Lists.newArrayList(this.testsDataDirectory.listFiles());
+    } else {
+      // Collect tests from a file with names tests
+      allTestsDirectories = readFileAsList();
     }
 
-    if (tests.size() == 0)
-      throw new EoulsanException("None test in "
+    if (allTestsDirectories.size() == 0)
+      throw new EoulsanException("None test in file "
           + testsDataDirectory.getAbsolutePath());
+
+    // Build map
+    for (File testDirectory : allTestsDirectories) {
+
+      // Add test
+      checkExistingDirectoryFile(testDirectory, "the test directory");
+      checkExistingStandardFile(new File(testDirectory, "test.conf"),
+          "the 'test.conf' file ");
+
+      // Create instance
+      final RegressionProcessIT processIT =
+          new RegressionProcessIT(this.globalsConf, this.applicationPath,
+              new File(testDirectory, "test.conf"), this.outputTestsDirectory,
+              testDirectory.getName());
+
+      // Add in map
+      tests.add(processIT);
+
+    }
 
     return tests;
   }
 
   /**
    * Collect tests to launch from text files with name tests
-   * @param testsDataDirectory
-   * @param testsSelectedPath
-   * @throws IOException
-   * @throws EoulsanException
+   * @return list all directories test found
+   * @throws IOException if an error occurs while read file
    */
-  private Map<String, RegressionProcessIT> collectTestsFromFile()
-      throws IOException, EoulsanException {
+  private List<File> readFileAsList() throws IOException {
 
-    final Map<String, RegressionProcessIT> tests = Maps.newTreeMap();
+    final List<File> allDirectoriesFound = Lists.newArrayList();
 
     checkExistingStandardFile(this.selectedTestsFile, "selected tests file");
 
@@ -287,33 +222,19 @@ public class RegressionITFactory {
         new BufferedReader(newReader(this.selectedTestsFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-    String nameTest = null;
+    String nameTest;
     while ((nameTest = br.readLine()) != null) {
       // Skip commentary
       if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
         continue;
 
-      // Add test
-      final File testPath = new File(testsDataDirectory, nameTest);
-
-      checkExistingStandardFile(new File(testPath, "test.conf"),
-          "the 'test.conf' file ");
-
-      final RegressionProcessIT processIT =
-          new RegressionProcessIT(this.globalsConf, this.applicationPath,
-              new File(testPath, "test.conf"), this.outputTestsDirectory,
-              nameTest);
-
-      tests.put(nameTest, processIT);
-
+      allDirectoriesFound.add(new File(this.testsDataDirectory, nameTest));
     }
+
+    // Close buffer
     br.close();
 
-    if (tests.size() == 0)
-      throw new EoulsanException("None test in file "
-          + testsDataDirectory.getAbsolutePath());
-
-    return tests;
+    return allDirectoriesFound;
   }
 
   //
@@ -322,15 +243,9 @@ public class RegressionITFactory {
 
   /**
    * Initialize logger.
-   * @param logPath file name logger
    * @throws IOException if an error occurs while create logger
    */
-  private void initLogger(final String logPath, final String applicationName)
-      throws IOException {
-
-    this.loggerPath =
-        logPath
-            + "/" + applicationName + "_" + FORMATTED_DATE.toString() + ".log";
+  private void initLogger() throws IOException {
 
     Handler fh = null;
     try {
@@ -376,33 +291,82 @@ public class RegressionITFactory {
    * Public constructor
    * @throws EoulsanException
    */
-  public RegressionITFactory() throws EoulsanException {
+  public RegressionITFactory() throws EoulsanException, IOException {
 
     if (System.getProperty(CONF_PATH_KEY) != null) {
       this.confFile = new File(System.getProperty(CONF_PATH_KEY));
-      // throw new EoulsanException(
-      // "Configuration file path not define in java properties");
     } else {
       this.confFile = null;
     }
 
-    if (System.getProperty(APPLI_PATH_KEY) != null) {
-      this.applicationPath = System.getProperty(APPLI_PATH_KEY);
-      // throw new EoulsanException(
-      // "Application path not define in java properties");
+    if (System.getProperty(APPLICATION_PATH_KEY) != null) {
+      this.applicationPath = new File(System.getProperty(APPLICATION_PATH_KEY));
     } else {
       this.applicationPath = null;
     }
 
-    if (System.getProperty(TESTS_FILE_PATH_KEY) != null) {
-      this.selectedTestsFile =
-          new File(System.getProperty(TESTS_FILE_PATH_KEY));
+    if (this.confFile != null && this.applicationPath != null) {
+
+      if (System.getProperty(TESTS_FILE_PATH_KEY) != null) {
+        this.selectedTestsFile =
+            new File(System.getProperty(TESTS_FILE_PATH_KEY));
+      } else {
+        this.selectedTestsFile = null;
+      }
+
+      // Load configuration file
+      this.globalsConf = new Properties();
+      try {
+        this.globalsConf.load(newReader(this.confFile,
+            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+      } catch (IOException e) {
+        throw new EoulsanException("Configuration is missing ("
+            + this.confFile.getAbsolutePath() + ")");
+      }
+
+      // Load command line properties
+      // Command generate all expected directories test
+      String val = System.getProperty(GENERATE_ALL_EXPECTED_DATA_KEY);
+      val = (val == null ? "false" : (val.trim().toLowerCase()));
+      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_KEY, val);
+
+      // Command generate new expected directories test
+      val = System.getProperty(GENERATE_NEW_EXPECTED_DATA_KEY);
+      val = (val == null ? "false" : (val.trim().toLowerCase()));
+      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_KEY, val);
+
+      // Retrieve application version test
+      this.versionApplication =
+          RegressionProcessIT
+              .retrieveVersionApplication(
+                  this.globalsConf
+                      .getProperty(RegressionProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
+                  this.applicationPath);
+
+      // Init logger path
+      this.loggerPath =
+          this.globalsConf.getProperty("log.path")
+              + "/" + this.versionApplication + "_" + FORMATTED_DATE.toString()
+              + ".log";
+
+      // Init test data source directory
+      this.testsDataDirectory =
+          new File(this.globalsConf.getProperty("tests.directory"));
+
+      // Init test data output directory
+      this.outputTestsDirectory =
+          new File(this.globalsConf.getProperty("output.analysis.directory"),
+              this.versionApplication + "_" + FORMATTED_DATE.toString());
+
     } else {
+      // Case no testng must be create when compile project with maven
+      this.globalsConf = null;
+      this.versionApplication = null;
+      this.testsDataDirectory = null;
+      this.outputTestsDirectory = null;
+      this.loggerPath = null;
       this.selectedTestsFile = null;
+
     }
-
-    this.globalsConf = new Properties();
-
   }
-
 }

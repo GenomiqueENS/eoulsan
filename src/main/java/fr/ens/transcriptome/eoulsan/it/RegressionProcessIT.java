@@ -74,45 +74,47 @@ public class RegressionProcessIT {
   public static final String SEPARATOR = " ";
 
   /** Key for configuration test */
-  public static final String PRETEST_SCRIPT_KEY = "pretest.script";
-  public static final String POSTTEST_SCRIPT_KEY = "posttest.script";
+  public static final String PRE_TEST_SCRIPT_KEY = "pre.test.script";
+  public static final String POST_TEST_SCRIPT_KEY = "post.test.script";
   public static final String DESCRIPTION_KEY = "description";
 
-  public static final String CMD_LINE_TO_REFERENCE_KEY =
-      "cmd.line.to.reference";
+  public static final String COMMAND_TO_LAUNCH_APPLICATION_KEY =
+      "command.to.launch.application";
+  public static final String COMMAND_TO_GENERATE_MANUALLY_KEY =
+      "command.to.generate.manually";
 
-  public static final String CMD_LINE_TO_TEST_KEY = "cmd.line.to.test";
-  public static final String CMD_LINE_TO_GET_VERSION_REFERENCE_KEY =
-      "cmd.line.to.get.version.reference";
-  public static final String CMD_LINE_TO_GET_VERSION_TEST_KEY =
-      "cmd.line.to.get.version.test";
+  public static final String COMMAND_TO_GET_VERSION_APPLICATION_KEY =
+      "command.to.get.version.application";
 
-  public static final String PATTERNS_INPUT_FILES_KEY = "patterns.input.files";
-  public static final String PATTERNS_OUTPUT_FILES_KEY =
-      "patterns.output.files";
+  public static final String INPUT_FILES_PATTERNS_KEY = "input.files.patterns";
+  public static final String OUTPUT_FILES_PATTERNS_KEY =
+      "output.files.patterns";
 
-  public static final String EXPECTED_DATA_GENERATED_MANUALLY_KEY =
-      "expected.data.generated.manually";
+  public static final String MANUAL_GENERATION_EXPECTED_DATA_KEY =
+      "manual.generation.expected.data";
   public final static String GENERATE_ALL_EXPECTED_DATA_KEY =
       "generate.all.expected.data";
 
-  public static final String APPLI_PATH_VARIABLE = "{appli.path}";
+  public static final String APPLICATION_PATH_VARIABLE = "{application.path}";
 
   /** Variables */
   private final Properties testConf;
-  private final String applicationPath;
   private final String testName;
+  private final File applicationPath;
   private final File inputTestDirectory;
   private final File outputTestDirectory;
   private final File expectedTestDirectory;
 
-  private final boolean allTestsToGenerate;
-  private final boolean newTestsToGenerate;
-  private final boolean manuallyGenerate;
+  private final String inputFilesPattern;
+  private final String outputFilesPattern;
 
-  private final boolean expectedDataToGenerate;
+  private final boolean generateExpectedData;
+  private final boolean generateAllTests;
+  private final boolean generateNewTests;
+  // Case the expected data was generate manually (not with testing application)
+  private final boolean noRegenerateDataTest;
 
-  private StringBuilder reportText = new StringBuilder();
+  private final StringBuilder reportText = new StringBuilder();
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -130,12 +132,15 @@ public class RegressionProcessIT {
     LOGGER.info("start test " + this.testName);
 
     // Compile the result comparison from all tests
-    Boolean status = true;
+    boolean status = true;
 
     RegressionResultIT regressionResultIT = null;
+    RegressionResultIT.OutputExecution outputComparison = null;
+    String msgException = null;
+
     try {
       // Check data to generate
-      if (!asNeedToGenerateData())
+      if (!isDataNeededToBeGenerated())
         // Nothing to do
         return;
 
@@ -145,48 +150,59 @@ public class RegressionProcessIT {
       // Launch scripts
       launchScriptsTest();
 
-      if (this.expectedDataToGenerate) {
-        // Build expected directory if necessary
-        createExpectedDirectory();
-      }
-
       // Treat result application directory
       regressionResultIT =
           new RegressionResultIT(this.outputTestDirectory,
-              this.testConf.getProperty(PATTERNS_INPUT_FILES_KEY),
-              this.testConf.getProperty(PATTERNS_OUTPUT_FILES_KEY));
+              this.inputFilesPattern, this.outputFilesPattern);
 
-      // Check comparison used
-      if (this.expectedDataToGenerate) {
+      if (this.generateExpectedData) {
+        // Build expected directory if necessary
+        createExpectedDirectory();
+
         // Copy files corresponding to pattern in expected data directory
         regressionResultIT.copyFiles(this.expectedTestDirectory);
 
+        this.reportText.append("\nSUCCESS: copy files to "
+            + expectedTestDirectory.getAbsolutePath());
+
       } else {
         // Case comparison between expected and output test directory
-        regressionResultIT.compareTo(new RegressionResultIT(
-            this.expectedTestDirectory.getParentFile(), this.testConf
-                .getProperty(PATTERNS_INPUT_FILES_KEY), this.testConf
-                .getProperty(PATTERNS_OUTPUT_FILES_KEY)));
+        outputComparison =
+            regressionResultIT.compareTo(new RegressionResultIT(
+                this.expectedTestDirectory.getParentFile(),
+                this.inputFilesPattern, this.outputFilesPattern));
 
-        status = regressionResultIT.getResultComparison();
+        // Comparison assessment
+        status = outputComparison.isResult();
       }
 
     } catch (EoulsanITRuntimeException e) {
-      // e.printStackTrace();
-      status = false;
-      throw new Exception("Fail comparaison test "
-          + testName + ", reason: " + e.getMessage() + "\n");
+      msgException =
+          "Fail comparaison test "
+              + testName + ", cause: " + e.getMessage() + "\n";
+      LOGGER.warning(msgException);
+      throw new Exception(msgException);
 
     } catch (Exception e) {
-      // e.printStackTrace();
-      status = false;
-      throw new Exception("Fail test "
-          + testName + ", reason: " + e.getMessage() + "\n\t"
-          + e.getClass().getName() + "\n");
+      msgException =
+          "Fail test "
+              + testName + ", cause: " + e.getMessage() + "\n\t"
+              + e.getClass().getName() + "\n";
+      LOGGER.warning(msgException);
+      throw new Exception(msgException);
+
     } finally {
 
-      // Append in report
-      this.reportText.append("\n" + regressionResultIT.getReport());
+      if (outputComparison != null) {
+        // Append in report
+        this.reportText.append("\n" + outputComparison.getReport());
+      }
+
+      // If throws an exception
+      if (msgException != null) {
+        status = false;
+        this.reportText.append("\n" + msgException);
+      }
 
       final String reportFilename = (status ? "SUCCESS" : "FAIL");
 
@@ -196,7 +212,9 @@ public class RegressionProcessIT {
       // End test
       timer.stop();
       LOGGER.info(reportFilename
-          + ((this.expectedDataToGenerate)
+          + " for "
+          + testName
+          + ((this.generateExpectedData)
               ? ": generate expected data" : ": launch test and comparison")
           + " in " + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
     }
@@ -210,9 +228,9 @@ public class RegressionProcessIT {
    * @return version name of application to test
    */
   public static String retrieveVersionApplication(final String commandLine,
-      final String applicationPath) {
+      final File applicationPath) {
 
-    String version = "UNKOWN";
+    String version = "UNKNOWN";
 
     if (commandLine == null || commandLine.trim().length() == 0) {
       // None command line to retrieve version application set in configuration
@@ -221,9 +239,11 @@ public class RegressionProcessIT {
     }
 
     String cmd = commandLine;
-    if (commandLine.indexOf(APPLI_PATH_VARIABLE) > -1) {
+    if (commandLine.indexOf(APPLICATION_PATH_VARIABLE) > -1) {
       // Replace application path in command line
-      cmd = commandLine.replace(APPLI_PATH_VARIABLE, applicationPath);
+      cmd =
+          commandLine.replace(APPLICATION_PATH_VARIABLE,
+              applicationPath.getAbsolutePath());
     }
 
     // Execute command
@@ -246,22 +266,22 @@ public class RegressionProcessIT {
    * @return true if data must be generated
    * @throws IOException if an error occurs while creating directory.
    */
-  private boolean asNeedToGenerateData() throws IOException {
+  private boolean isDataNeededToBeGenerated() throws IOException {
 
     // Command for generate data to test, in all case it is true
-    if (!this.expectedDataToGenerate)
+    if (!this.generateExpectedData)
       return true;
 
     // Command for generate expected data test
-    if (this.manuallyGenerate)
-      return false;
+    if (this.noRegenerateDataTest)
+      return !this.expectedTestDirectory.exists();
 
     // Regenerate all expected data directory, remove if always exists
-    if (allTestsToGenerate)
+    if (this.generateAllTests)
       return true;
 
     // Generate only missing expected data directory
-    if (newTestsToGenerate && !this.expectedTestDirectory.exists())
+    if (this.generateNewTests && !this.expectedTestDirectory.exists())
       return true;
 
     return false;
@@ -276,16 +296,17 @@ public class RegressionProcessIT {
   private void createExpectedDirectory() throws IOException {
 
     // Skip if data to test to generate
-    if (!this.expectedDataToGenerate || this.manuallyGenerate)
+    if (!this.generateExpectedData)
       return;
 
     // Check already exists
-    if (this.newTestsToGenerate && this.expectedTestDirectory.exists())
+    if ((this.noRegenerateDataTest || this.generateNewTests)
+        && this.expectedTestDirectory.exists())
       // Nothing to do
       return;
 
     // Regenerate existing expected data directory
-    if (this.allTestsToGenerate && this.expectedTestDirectory.exists()) {
+    if (this.generateAllTests && this.expectedTestDirectory.exists()) {
       // Remove existing directory
       recursiveDelete(this.expectedTestDirectory);
     }
@@ -316,15 +337,57 @@ public class RegressionProcessIT {
 
     // Create a symbolic link for each file from input data test directory
     for (File file : this.inputTestDirectory.listFiles()) {
-      if (file.isFile())
+      if (file.isFile()) {
         createSymbolicLink(file, this.outputTestDirectory);
-    }
 
+      }
+    }
   }
 
   //
   // Scripting methods
   //
+
+  private boolean createRelatifSymbolicLink(final File newLink,
+      final File target) {
+    boolean success = true;
+
+    System.getProperty("os.name");
+    Splitter splitterSlash = Splitter.on('/').trimResults().omitEmptyStrings();
+
+    try {
+      final List<String> newLinkPath =
+          Lists.newLinkedList(splitterSlash.split(newLink.getCanonicalPath()));
+      final List<String> targetPath =
+          Lists.newLinkedList(splitterSlash.split(target.getCanonicalPath()));
+
+      int index = 0;
+      // Remove common sub-directory between two path
+      for (String subDirectory : newLinkPath) {
+        if (subDirectory.equals(targetPath.get(index)))
+          index++;
+        else
+          break;
+      }
+      
+      // Build relative path with remove common sub-directory
+
+      // System.out.println("ln -s "
+      // + rel.getAbsolutePath() + " " + target.getAbsolutePath());
+      //
+      // // Create symbolic link
+      //
+      // executeCommandLine(
+      // Lists.newArrayList("ln", "-s ", rel.getAbsolutePath()), target,
+      // "create symbolic link");
+
+    } catch (Exception e) {
+
+      success = false;
+      e.printStackTrace();
+    }
+    return success;
+  }
 
   /**
    * Launch all scripts defined for the test.
@@ -337,18 +400,20 @@ public class RegressionProcessIT {
         "output test directory");
 
     // Generated test directory
-    // Optional script, pre-treatment before launch Eoulsan
-    executeScript(PRETEST_SCRIPT_KEY);
+    // Optional script, pre-treatment before launch application
+    executeScript(PRE_TEST_SCRIPT_KEY);
 
     // Execute application
-    if (this.expectedDataToGenerate)
-      executeScript(CMD_LINE_TO_REFERENCE_KEY);
+    if (this.generateExpectedData && this.noRegenerateDataTest)
+      // Case generate expected data manually only it doesn't exists
+      executeScript(COMMAND_TO_GENERATE_MANUALLY_KEY);
     else
-      executeScript(CMD_LINE_TO_TEST_KEY);
+      // Case execute testing application
+      executeScript(COMMAND_TO_LAUNCH_APPLICATION_KEY);
 
-    // Optional script, post-treatment after Eoulsan and before comparison
-    // between directories
-    executeScript(POSTTEST_SCRIPT_KEY);
+    // Optional script, post-treatment after execution application and before
+    // comparison between directories
+    executeScript(POST_TEST_SCRIPT_KEY);
   }
 
   /**
@@ -364,9 +429,11 @@ public class RegressionProcessIT {
 
     String value = this.testConf.getProperty(scriptConfKey);
     String s = value;
-    if (value.indexOf(APPLI_PATH_VARIABLE) > -1) {
+    if (value.indexOf(APPLICATION_PATH_VARIABLE) > -1) {
       // Replace application path in command line
-      s = value.replace(APPLI_PATH_VARIABLE, applicationPath);
+      s =
+          value.replace(APPLICATION_PATH_VARIABLE,
+              this.applicationPath.getAbsolutePath());
     }
 
     // Build list command line
@@ -377,7 +444,7 @@ public class RegressionProcessIT {
       return;
 
     // Execute script
-    reportText.append("\nexecute script with command line:"
+    this.reportText.append("\nexecute script with command line:"
         + Joiner.on(' ').join(scriptCmdLine));
 
     // Copy script in output directory
@@ -386,32 +453,58 @@ public class RegressionProcessIT {
           Lists.newArrayList("cp", scriptCmdLine.get(0),
               this.outputTestDirectory.getAbsolutePath());
 
-      int exitValue = -1;
-      try {
-        exitValue = ProcessUtils.sh(copyScriptCmd, this.outputTestDirectory);
-      } catch (IOException e) {
-        if (exitValue != 0)
-          LOGGER.warning("Fail copy script in directory "
-              + this.outputTestDirectory + " for " + this.testName);
-      }
+      executeCommandLine(copyScriptCmd, this.outputTestDirectory,
+          "copy script in directory");
+      // int exitValue = -1;
+      // try {
+      // exitValue = ProcessUtils.sh(copyScriptCmd, this.outputTestDirectory);
+      // } catch (IOException e) {
+      // if (exitValue != 0)
+      // LOGGER.warning("Fail copy script in directory "
+      // + this.outputTestDirectory + " for " + this.testName);
+      // }
 
     }
 
+    executeCommandLine(scriptCmdLine, this.outputTestDirectory,
+        "execution application");
+    // int exitValue = -1;
+    // try {
+    // // Execute script
+    // exitValue =
+    // ProcessUtils.sh(Lists.newArrayList(scriptCmdLine),
+    // this.outputTestDirectory);
+    //
+    // if (exitValue != 0) {
+    // throw new EoulsanException("Error during script execution  "
+    // + Joiner.on(" ").join(scriptCmdLine) + " (exitValue: " + exitValue
+    // + ")");
+    // }
+    // } catch (IOException e) {
+    // throw new EoulsanException("Script fail (cmd:"
+    // + Joiner.on(" ").join(scriptCmdLine) + ") with exit value "
+    // + exitValue + ", msg " + e.getMessage());
+    // }
+
+  }
+
+  private void executeCommandLine(final List<String> cmdLine,
+      final File directory, final String msg) throws EoulsanException {
+
     int exitValue = -1;
     try {
-      exitValue =
-          ProcessUtils.sh(Lists.newArrayList(scriptCmdLine),
-              this.outputTestDirectory);
+      // Execute script
+      exitValue = ProcessUtils.sh(Lists.newArrayList(cmdLine), directory);
 
       if (exitValue != 0) {
-        throw new EoulsanException("Error during script execution  "
-            + Joiner.on(" ").join(scriptCmdLine) + " (exitValue: " + exitValue
-            + ")");
+        throw new EoulsanException("Bad exit value "
+            + exitValue + " for script " + msg + ": "
+            + Joiner.on(" ").join(cmdLine));
       }
     } catch (IOException e) {
-      throw new EoulsanException("Script fail (cmd:"
-          + Joiner.on(" ").join(scriptCmdLine) + ") with exit value "
-          + exitValue + ", msg " + e.getMessage());
+      throw new EoulsanException("Error during execution script for  (cmd:"
+          + Joiner.on(" ").join(cmdLine) + ") with exit value " + exitValue
+          + ", msg " + e.getMessage());
     }
 
   }
@@ -419,6 +512,92 @@ public class RegressionProcessIT {
   //
   // Privates methods
   //
+
+  /**
+   * Create the expected data test directory
+   * @param inputTestDirectory source test directory with needed files
+   * @return expected data directory for the test
+   */
+  private File retrieveExpectedDirectory(final File inputTestDirectory)
+      throws EoulsanException {
+
+    // Find directory start with expected
+    final File[] expecteDirectories =
+        inputTestDirectory.listFiles(new FileFilter() {
+
+          @Override
+          public boolean accept(File pathname) {
+            return pathname.getName().startsWith("expected");
+          }
+        });
+
+    // Generation expected data manually
+    if (this.noRegenerateDataTest) {
+      if (expecteDirectories.length == 1)
+        return expecteDirectories[0];
+
+      // Build anonymous name
+      return new File(inputTestDirectory, "/expected_UNKNOWN");
+    }
+
+    // Build expected data directory name corresponding to application call in
+    // command line
+    if (this.generateExpectedData) {
+
+      // Retrieve command line from test configuration
+      final String value =
+          this.testConf.getProperty(COMMAND_TO_GET_VERSION_APPLICATION_KEY);
+
+      final String versionExpectedApplication =
+          retrieveVersionApplication(value, this.applicationPath);
+
+      return new File(inputTestDirectory, "/expected_"
+          + versionExpectedApplication);
+
+    } else {
+
+      if (expecteDirectories.length != 1)
+        throw new EoulsanException("More one expected file found in "
+            + inputTestDirectory.getAbsolutePath());
+
+      if (!expecteDirectories[0].isDirectory())
+        throw new EoulsanException("No found expected directory in "
+            + inputTestDirectory.getAbsolutePath());
+
+      // Return expected data directory
+      return expecteDirectories[0];
+    }
+  }
+
+  /**
+   * Create report of the test execution
+   * @param status result of test execution, use like filename
+   */
+  private void createReportFile(final String status) {
+    File directory = this.outputTestDirectory;
+
+    final File reportFile = new File(directory, status);
+    Writer fw;
+    try {
+      fw =
+          newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
+
+      fw.write(this.reportText.toString());
+      fw.write("\n");
+
+      fw.flush();
+      fw.close();
+
+    } catch (Exception e) {
+    }
+
+    if (this.generateExpectedData)
+      try {
+        Files.copy(reportFile, new File(this.expectedTestDirectory, status));
+      } catch (IOException e) {
+      }
+  }
+
   /**
    * Retrieve properties for the test, compile specific configuration with
    * global
@@ -426,14 +605,13 @@ public class RegressionProcessIT {
    * @param testConfFile file with the test configuration
    * @throws IOException if an error occurs while reading the file.
    */
-  private Properties readTestConfigurationFile(final Properties globalsConf,
+  private Properties loadConfigurationFile(final Properties globalsConf,
       final File testConfFile) throws IOException {
 
     checkExistingFile(testConfFile, "configuration file");
 
-    final Properties props = new Properties();
-
     // Add global configuration
+    final Properties props = new Properties();
     props.putAll(globalsConf);
 
     final BufferedReader br =
@@ -459,7 +637,7 @@ public class RegressionProcessIT {
 
         // Key pattern : add value for test to values from
         // configuration general
-        if (key.toLowerCase().startsWith("pattern") && props.containsKey(key)) {
+        if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
           // Concatenate values
           value = props.getProperty(key) + SEPARATOR + value;
         }
@@ -471,75 +649,6 @@ public class RegressionProcessIT {
 
     return props;
 
-  }
-
-  /**
-   * Create the expected data test directory
-   * @param inputTestDirectory source test directory with needed files
-   * @return expected data directory for the test
-   */
-  private File retrieveExpectedDirectory(final File inputTestDirectory)
-      throws EoulsanException {
-
-    // Build expected data directory name
-    if (this.expectedDataToGenerate) {
-
-      // Retrieve command line from test configuration
-      final String value =
-          this.testConf.getProperty(CMD_LINE_TO_GET_VERSION_REFERENCE_KEY);
-
-      final String versionExpectedApplication =
-          retrieveVersionApplication(value, this.applicationPath);
-
-      return new File(inputTestDirectory, "/expected_"
-          + versionExpectedApplication);
-
-    } else {
-      // Find directory start with expected
-      final File[] files = inputTestDirectory.listFiles(new FileFilter() {
-
-        @Override
-        public boolean accept(File pathname) {
-          return pathname.getName().startsWith("expected");
-        }
-      });
-
-      if (files.length != 1)
-        throw new EoulsanException("More one expected file found in "
-            + inputTestDirectory.getAbsolutePath());
-
-      if (!files[0].isDirectory())
-        throw new EoulsanException("No found expected directory in "
-            + inputTestDirectory.getAbsolutePath());
-
-      // Return expected data directory
-      return files[0];
-    }
-  }
-
-  private void createReportFile(final String status) {
-    File directory = this.outputTestDirectory;
-
-    final File reportFile = new File(directory, status);
-    Writer fw;
-    try {
-      fw =
-          newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
-
-      fw.write(reportText.toString());
-      fw.write("\n");
-
-      fw.flush();
-      fw.close();
-
-    } catch (Exception e) {
-    }
-
-    if (expectedDataToGenerate)
-      try {
-        Files.copy(reportFile, new File(this.expectedTestDirectory, status));
-      } catch (IOException e) {
-      }
   }
 
   //
@@ -560,34 +669,39 @@ public class RegressionProcessIT {
    *           of the test.
    */
   public RegressionProcessIT(final Properties globalsConf,
-      final String applicationPath, final File testConfFile,
+      final File applicationPath, final File testConfFile,
       final File testsDirectory, String testName) throws IOException,
       EoulsanException {
 
-    this.testConf = readTestConfigurationFile(globalsConf, testConfFile);
+    this.testConf = loadConfigurationFile(globalsConf, testConfFile);
 
     this.applicationPath = applicationPath;
     this.testName = testName;
 
     this.inputTestDirectory = testConfFile.getParentFile();
 
-    this.allTestsToGenerate =
-        Boolean.parseBoolean(this.testConf
+    this.generateAllTests =
+        Boolean.parseBoolean(globalsConf
             .getProperty(RegressionITFactory.GENERATE_ALL_EXPECTED_DATA_KEY));
 
-    this.newTestsToGenerate =
-        Boolean.parseBoolean(this.testConf
+    this.generateNewTests =
+        Boolean.parseBoolean(globalsConf
             .getProperty(RegressionITFactory.GENERATE_NEW_EXPECTED_DATA_KEY));
 
-    this.manuallyGenerate =
+    this.noRegenerateDataTest =
         Boolean.parseBoolean(this.testConf
-            .getProperty(EXPECTED_DATA_GENERATED_MANUALLY_KEY));
+            .getProperty(MANUAL_GENERATION_EXPECTED_DATA_KEY));
 
-    this.expectedDataToGenerate = allTestsToGenerate || newTestsToGenerate;
+    this.generateExpectedData = generateAllTests || generateNewTests;
     this.expectedTestDirectory =
         retrieveExpectedDirectory(this.inputTestDirectory);
 
     this.outputTestDirectory = new File(testsDirectory, this.testName);
+
+    this.inputFilesPattern =
+        this.testConf.getProperty(INPUT_FILES_PATTERNS_KEY);
+    this.outputFilesPattern =
+        this.testConf.getProperty(OUTPUT_FILES_PATTERNS_KEY);
 
   }
 }
