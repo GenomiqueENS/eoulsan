@@ -23,6 +23,10 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
+import static com.google.common.collect.Sets.newHashSet;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,12 +39,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.collections.Sets;
-
-import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
@@ -64,14 +64,10 @@ public class RegressionResultIT {
   public final static Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
-  private final File outputTestDirectory;
   private final Collection<PathMatcher> patternsFilesTreated;
   private final Collection<PathMatcher> allPatternsFiles;
-  private final Map<String, File> listFiles;
-  private boolean resultComparison = true;
-
-  // Text to report file for a test
-  private final StringBuilder report;
+  private final List<File> filesList;
+  private final File directory;
 
   /**
    * Move all files matching to a pattern in the destination directory, then
@@ -84,45 +80,43 @@ public class RegressionResultIT {
       EoulsanException {
 
     // Check at least on file match with a pattern
-    boolean fileMatchPatternFounded = false;
+    boolean noFileMatchPatterns = false;
 
     // Copy output files
-    for (Map.Entry<String, File> e : listFiles.entrySet()) {
+    for (File f : filesList) {
+
+      final String filename = f.getName();
 
       // Check file doesn't exist
-      if (!new File(destinationDirectory, e.getKey()).exists()) {
-        String filename = e.getKey();
-        File dest = new File(destinationDirectory, filename);
+      if (!new File(destinationDirectory, filename).exists()) {
+        final File dest = new File(destinationDirectory, filename);
 
         // Check not exist in parent directory (corresponding to the input
         // directory for a test)
-        File parent = new File(destinationDirectory.getParentFile(), filename);
+        final File parent =
+            new File(destinationDirectory.getParentFile(), filename);
+
         if (parent.exists()) {
           // No copy
           continue;
         }
 
-        if (!FileUtils.copyFile(e.getValue(), dest))
+        if (!FileUtils.copyFile(f, dest))
           throw new IOException("Error when moving file "
-              + e.getKey() + " to " + destinationDirectory.getAbsolutePath()
+              + filename + " to " + destinationDirectory.getAbsolutePath()
               + ".");
 
-        fileMatchPatternFounded =
-            fileMatchPatternFounded
-                || isFilenameMatchWithPatterns(filename,
-                    this.patternsFilesTreated);
+        noFileMatchPatterns =
+            noFileMatchPatterns
+                || isFilenameMatches(this.patternsFilesTreated, filename);
       }
     }
 
-    if (!fileMatchPatternFounded) {
+    if (!noFileMatchPatterns) {
       String msg =
-          "Fail: none file in source directory corresponding to pattern output file";
-      this.report.append(msg);
+          "Fail: none file in source directory corresponding to output file pattern";
       throw new EoulsanException(msg);
     }
-
-    this.report.append("SUCCESS: copy files to "
-        + destinationDirectory.getAbsolutePath());
 
     // TODO active after test
     // Clean directory
@@ -136,59 +130,68 @@ public class RegressionResultIT {
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */
-  public void compareTo(final RegressionResultIT expectedOutput)
+  public OutputExecution compareTo(final RegressionResultIT expectedOutput)
       throws IOException {
 
     // Copy list files
-    Collection<File> allFilesFromTest =
-        new ArrayList<File>(this.listFiles.values());
+    final List<File> allFilesFromTest = new ArrayList<File>(this.filesList);
+
+    Map<String, File> filesTestedMap =
+        newHashMapWithExpectedSize(expectedOutput.getFilesList().size());
+
+    // Build map filename with filepath
+    for (File f : this.filesList) {
+      filesTestedMap.put(f.getName(), f);
+    }
+
+    final OutputExecution comparison = new OutputExecution();
+    String msg;
 
     // Parse expected files
-    for (Map.Entry<String, File> entry : expectedOutput.getFiles().entrySet()) {
-      File fileA = entry.getValue();
-      File fileB = this.listFiles.get(entry.getKey());
+    for (File fileExpected : expectedOutput.getFilesList()) {
+      final String filename = fileExpected.getName();
+      final File fileTested = filesTestedMap.get(filename);
 
-      // retrieve pattern from file
+      if (fileTested == null) {
+        msg = "Missing file: " + filename + " in test directory";
+        comparison.appendComparison(msg, false);
 
-      if (fileB == null) {
-        this.resultComparison = false;
-        this.report.append("\nfile "
-            + fileA.getName() + " no exists in test directory.");
-        throw new EoulsanITRuntimeException("Missing file: "
-            + entry.getKey() + " in test directory");
+        throw new EoulsanITRuntimeException(msg);
       }
 
-      // Comparison
-      boolean res = new FilesComparator(fileA, fileB).compare();
+      // Comparison two files with same filename
+      boolean res = new FilesComparator(fileExpected, fileTested).compare();
+
       if (!res) {
-        this.report.append("\nfile " + fileA.getName() + " comparison: false");
-        this.resultComparison = false;
-        throw new EoulsanITRuntimeException("Fail comparison with file: "
-            + entry.getKey());
+        msg = "Fail comparison with file: " + filename;
+        comparison.appendComparison(msg, false);
+
+        throw new EoulsanITRuntimeException(msg);
       }
 
       // Remove file from list
-      allFilesFromTest.remove(fileB);
+      allFilesFromTest.remove(fileTested);
 
       // Add comparison in the report text
-      this.report.append("\nfile " + fileA.getName() + " comparison: true");
+      comparison.appendComparison("Success file comparison: " + filename, true);
     }
 
     // Check file from test are not compare
     if (!allFilesFromTest.isEmpty()) {
-      this.report.append("\nthis file(s) exists only in test directory: "
-          + Joiner.on(", ").join(allFilesFromTest));
-
-      this.resultComparison = false;
-      throw new EoulsanITRuntimeException(
+      msg =
           "Unexpected file in data to test directory: "
-              + Joiner.on(" ").join(allFilesFromTest));
+              + Joiner.on(" ").join(allFilesFromTest);
+      comparison.appendComparison(msg, false);
+
+      throw new EoulsanITRuntimeException(msg);
     }
 
     // TODO active after test
     // Remove all files not need to compare
     // this.cleanDirectory();
 
+    //
+    return comparison;
   }
 
   //
@@ -200,38 +203,39 @@ public class RegressionResultIT {
    * patterns files defined
    * @return a map with all files which match with pattern
    */
-  private Map<String, File> createListFiles(final File sourceDirectory) {
+  private List<File> createListFiles(final File sourceDirectory) {
 
-    final Map<String, File> files = Maps.newHashMap();
+    final List<File> files = newArrayList();
 
     for (File file : sourceDirectory.listFiles()) {
 
       // Treat directory
       if (file.isDirectory())
-        files.putAll(createListFiles(file));
+        files.addAll(createListFiles(file));
 
       // Search file in all patterns
-      if (isFilenameMatchWithPatterns(file.getName(), this.allPatternsFiles)) {
-        files.put(file.getName(), file);
+      if (isFilenameMatches(this.allPatternsFiles, file.getName())) {
+        files.add(file);
       }
     }
 
-    return Collections.unmodifiableMap(files);
+    // Return unmodifiable list
+    return Collections.unmodifiableList(files);
   }
 
   /**
    * Check a file matching to a pattern. If no pattern define, return always
    * true.
-   * @param filename the file name
    * @param patterns patterns for filename
+   * @param filename the file name
    * @return true if the path match to one pattern or none pattern otherwise
    *         false
    */
-  private boolean isFilenameMatchWithPatterns(final String filename,
-      final Collection<PathMatcher> patterns) {
+  private boolean isFilenameMatches(final Collection<PathMatcher> patterns,
+      final String filename) {
 
     // None pattern, keep all file
-    if (this.patternsFilesTreated.isEmpty())
+    if (patterns.isEmpty())
       return true;
 
     // Ignore compression extension file
@@ -257,14 +261,14 @@ public class RegressionResultIT {
    */
   private Collection<PathMatcher> setPatternFiles(final String patternsFiles) {
 
-    final String patternTestConfigurationFile = " test.conf";
+    final String patternTestConfigurationFile = "test.conf";
 
     // No pattern define
     if (patternsFiles == null)
       return Collections.emptySet();
 
     // Init collection
-    final Collection<PathMatcher> setPatterns = Sets.newHashSet();
+    final Collection<PathMatcher> setPatterns = newHashSet();
 
     // Parse patterns
     for (String globSyntax : COMMA_SPLITTER.split(patternsFiles)) {
@@ -303,10 +307,10 @@ public class RegressionResultIT {
       return;
 
     // Remove all files no keeping (no match with patterns)
-    cleanDirectory(this.outputTestDirectory);
+    cleanDirectory(this.directory);
 
     // Clean directory
-    removeEmptyDirectory(this.outputTestDirectory);
+    removeEmptyDirectory(this.directory);
   }
 
   /**
@@ -335,7 +339,7 @@ public class RegressionResultIT {
         cleanDirectory(file);
 
       // Check filename save in list files
-      if (!this.listFiles.containsKey(file.getName())) {
+      if (!this.filesList.contains(file)) {
         file.delete();
       }
     }
@@ -346,17 +350,8 @@ public class RegressionResultIT {
    * pattern. If no pattern define, all files of source directory
    * @return map with file name and instance of file
    */
-  public Map<String, File> getFiles() {
-    return this.listFiles;
-  }
-
-  // TODO remove after test
-  public boolean getResultComparison() {
-    return this.resultComparison;
-  }
-
-  public String getReport() {
-    return report.toString();
+  public List<File> getFilesList() {
+    return this.filesList;
   }
 
   //
@@ -371,16 +366,14 @@ public class RegressionResultIT {
    */
   public RegressionResultIT(final File outputTestDirectory,
       final String inputPatternsFiles, final String outputPatternsFiles) {
-    this.outputTestDirectory = outputTestDirectory;
-
-    this.report = new StringBuilder();
+    this.directory = outputTestDirectory;
 
     // Build list patterns
     this.patternsFilesTreated = setPatternFiles(outputPatternsFiles);
     this.allPatternsFiles =
         setPatternFiles(inputPatternsFiles + " " + outputPatternsFiles);
 
-    this.listFiles = createListFiles(this.outputTestDirectory);
+    this.filesList = createListFiles(this.directory);
 
   }
 
@@ -388,15 +381,45 @@ public class RegressionResultIT {
   // Internal class
   //
 
+  final class OutputExecution {
+
+    private StringBuilder report = new StringBuilder();
+    private boolean result = true;
+
+    public String getReport() {
+      return report.toString();
+    }
+
+    public boolean isResult() {
+      return result;
+    }
+
+    public void setResult(boolean result) {
+      this.result = result;
+    }
+
+    public void appendReport(final String msg) {
+      if (report.length() == 0)
+        this.report.append(msg);
+      else
+        this.report.append("\n" + msg);
+    }
+
+    public void appendComparison(final String msg, final boolean result) {
+      appendReport(msg);
+      setResult(result && isResult());
+    }
+  }
+
   /**
    * The internal class choice the comparator matching to filename and compare
    * two files.
    * @author Sandrine Perrin
    * @since 1.3
    */
-  final class FilesComparator {
+  static final class FilesComparator {
 
-    private final List<Comparator> comparators = Lists.newArrayList();
+    private final List<Comparator> comparators = newArrayList();
     private final static boolean useSerializationFile = true;
 
     private final File fileA;
