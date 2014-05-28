@@ -85,7 +85,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(RegressionITFactory.APPLI_PATH_KEY, line
+        System.setProperty(RegressionITFactory.APPLICATION_PATH_KEY, line
             .getOptionValue("exec").trim());
         argsOptions += 2;
       }
@@ -100,7 +100,6 @@ public class RegressionAction extends AbstractAction {
       }
 
       // Optional argument
-      // TODO option name
       if (line.hasOption("expected")) {
         final String s = line.getOptionValue("expected").trim();
 
@@ -120,7 +119,7 @@ public class RegressionAction extends AbstractAction {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+          "Error while parse parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {
