@@ -60,7 +60,8 @@ public class SamComparatorTest {
     isA = new FileInputStream(fileA);
     isB = new FileInputStream(fileB);
 
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "PG");
+    AbstractComparatorWithBloomFilter comparator =
+        new SAMComparator(false, "PG");
     assertTrue("files are same without tag header @PG",
         comparator.compareFiles(isA, isB));
 
@@ -91,46 +92,9 @@ public class SamComparatorTest {
   }
 
   @Test
-  public void testSameSAMWithSerialization() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator(true, "PG");
-
-    // First call with creation serialisation file for save BloomFilter from
-    // FileA
-    modifyFile(0);
-    assertFalse("files are different: duplicate SAM line",
-        comparator.compareFiles(fileA, fileC));
-
-    File ser = new File(dir, fileA.getName() + ".ser");
-    assertTrue("Check serialization exists ", ser.exists());
-
-    // Use serialisation file
-    modifyFile(1);
-    assertFalse("files are different: remove SAM line",
-        comparator.compareFiles(fileA, fileC));
-
-    modifyFile(2);
-    assertFalse("files are different: add SAM line",
-        comparator.compareFiles(fileA, fileC));
-
-    modifyFile(3);
-    assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC));
-
-    modifyFile(4);
-    assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC));
-
-    // remove serialisation file
-    if (ser.exists())
-      ser.delete();
-
-    if (fileC.exists())
-      fileC.delete();
-  }
-
-  @Test
   public void testDivergentSAM() throws Exception {
-    AbstractComparatorWithBloomFilter comparator = new SAMComparator(false, "@PG");
+    AbstractComparatorWithBloomFilter comparator =
+        new SAMComparator(false, "@PG");
 
     modifyFile(0);
     assertFalse("files are different: duplicate SAM line",
@@ -222,5 +186,5 @@ public class SamComparatorTest {
     br.close();
     bw.close();
   }
-  
+
 }
