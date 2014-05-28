@@ -44,7 +44,11 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 public abstract class AbstractComparatorWithBloomFilter extends
     AbstractComparator {
 
-  private double falsePositiveProba = 0.1;
+  // Limited create serialize bloomfilter file for size file inferior to
+  // size of serialize bloomfilter file 27369839 bytes with default parameters
+  private final long sizeMinimalCreateSerializeFile = 40000000;
+
+  private double falsePositiveProbability = 0.1;
   private int expectedNumberOfElements = 30000000;
   private boolean useSerializeFile = false;
 
@@ -54,10 +58,6 @@ public abstract class AbstractComparatorWithBloomFilter extends
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize())
-      return false;
-
-    // The files are not equals
-    if (fileA.equals(fileB.length()))
       return false;
 
     // Check path file (abstract and symbolic) is the same
@@ -125,8 +125,8 @@ public abstract class AbstractComparatorWithBloomFilter extends
     bloomFilter =
         buildBloomFilter(zType.createInputStream(new FileInputStream(file)));
 
-    // If need serialize bloomFilter in file
-    if (this.useSerializeFile) {
+    // If need serialize bloomFilter in file only for file
+    if (isCreateSerializeFile(file, zType)) {
       BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
     }
 
@@ -139,7 +139,8 @@ public abstract class AbstractComparatorWithBloomFilter extends
    * @return BloomFilter corresponding to the input stream
    * @throws IOException
    */
-  protected BloomFilterUtils buildBloomFilter(InputStream is) throws IOException {
+  protected BloomFilterUtils buildBloomFilter(InputStream is)
+      throws IOException {
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
 
@@ -163,8 +164,32 @@ public abstract class AbstractComparatorWithBloomFilter extends
         + " compares files with extensions " + getExtensions()
         + " use Bloom filter with parameters: expected numbers elements "
         + getExpectedNumberOfElements() + " and false positif probability "
-        + getFalsePositiveProba();
+        + getFalsePositiveProbability();
 
+  }
+
+  /**
+   * Define if serialization bloomfilter file is necessary according parameter
+   * useSerializeFile and size file.
+   * @param file file source for build bloomfilter
+   * @param zType compression type of file
+   * @return true if creating serialization file is necessary
+   */
+  private boolean isCreateSerializeFile(final File file,
+      final CompressionType zType) {
+
+    // No serialize file require
+    if (!this.useSerializeFile)
+      return false;
+
+    // Compressed file and serialize require
+    if (zType != CompressionType.NONE)
+      return true;
+
+    // File size in bytes
+    final long fileSize = file.length();
+    // Check to choice
+    return fileSize > this.sizeMinimalCreateSerializeFile;
   }
 
   //
@@ -187,12 +212,12 @@ public abstract class AbstractComparatorWithBloomFilter extends
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  protected void setFalsePositiveProba(double falsePositiveProba) {
-    this.falsePositiveProba = falsePositiveProba;
+  protected void setFalsePositiveProbability(double falsePositiveProba) {
+    this.falsePositiveProbability = falsePositiveProba;
   }
 
-  protected double getFalsePositiveProba() {
-    return falsePositiveProba;
+  protected double getFalsePositiveProbability() {
+    return falsePositiveProbability;
   }
 
   //
