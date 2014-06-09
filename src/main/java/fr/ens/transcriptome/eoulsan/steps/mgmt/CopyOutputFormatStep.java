@@ -76,7 +76,7 @@ public class CopyOutputFormatStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 

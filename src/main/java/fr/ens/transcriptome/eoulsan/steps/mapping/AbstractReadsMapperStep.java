@@ -127,7 +127,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 

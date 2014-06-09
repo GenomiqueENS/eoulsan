@@ -145,7 +145,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_FASTQ);
@@ -156,7 +156,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 

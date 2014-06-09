@@ -147,7 +147,7 @@ public final class WorkflowStepOutputDataFile implements
     case STANDARD_STEP:
     case GENERATOR_STEP:
 
-      if (!step.getStep().getOutputFormats().contains(portName))
+      if (!step.getStep().getOutputPorts().contains(portName))
         throw new EoulsanRuntimeException("The "
             + format.getName() + " format is not an output format of the step "
             + step.getStep().getName());

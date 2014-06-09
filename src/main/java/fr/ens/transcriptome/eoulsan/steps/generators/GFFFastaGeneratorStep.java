@@ -73,12 +73,12 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
     return singleInputPort(ANNOTATION_GFF);
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(GENOME_FASTA);
   }
 

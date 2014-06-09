@@ -66,7 +66,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_TFQ, true);

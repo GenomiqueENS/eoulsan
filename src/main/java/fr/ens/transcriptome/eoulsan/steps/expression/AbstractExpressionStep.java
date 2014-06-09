@@ -171,7 +171,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
@@ -183,7 +183,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(EXPRESSION_RESULTS_TSV);
   }
 

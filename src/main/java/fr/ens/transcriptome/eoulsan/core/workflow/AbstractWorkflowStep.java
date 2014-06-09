@@ -267,12 +267,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(step, "step cannot be null");
 
     // Get output ports
-    final OutputPorts outputPorts = step.getOutputFormats();
+    final OutputPorts outputPorts = step.getOutputPorts();
     if (outputPorts != null)
       this.outputPorts = new WorkflowOutputPorts(this, outputPorts);
 
     // Get input ports
-    final InputPorts inputPorts = step.getInputFormats();
+    final InputPorts inputPorts = step.getInputPorts();
     if (inputPorts != null)
       this.inputPorts = new WorkflowInputPorts(this, inputPorts);
   }

@@ -69,13 +69,13 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
     return new InputPortsBuilder().addPort("genome", GENOME_FASTA)
         .addPort("genome_description", GENOME_DESC_TXT).create();
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return OutputPortsBuilder.singleOutputPort(this.mapper.getArchiveFormat());
   }
 

@@ -75,14 +75,14 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   //
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(READS_TFQ);
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
-    return allPortsRequiredInWorkingDirectory(super.getInputFormats());
+    return allPortsRequiredInWorkingDirectory(super.getInputPorts());
   }
 
   @Override

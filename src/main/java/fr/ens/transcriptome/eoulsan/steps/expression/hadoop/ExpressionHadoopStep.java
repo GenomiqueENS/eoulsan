@@ -593,7 +593,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   //
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 

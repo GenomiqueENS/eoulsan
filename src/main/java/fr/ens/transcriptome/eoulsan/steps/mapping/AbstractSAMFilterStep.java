@@ -76,7 +76,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
@@ -86,7 +86,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 

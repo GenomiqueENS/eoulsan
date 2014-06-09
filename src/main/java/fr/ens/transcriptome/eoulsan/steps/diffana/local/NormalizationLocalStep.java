@@ -68,7 +68,7 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
     return singleInputPort(EXPRESSION_RESULTS_TSV);
   }
 

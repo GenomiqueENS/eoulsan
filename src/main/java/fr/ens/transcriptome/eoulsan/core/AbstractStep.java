@@ -58,13 +58,13 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     return noInputPort();
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
 
     return OutputPortsBuilder.noOutputPort();
   }

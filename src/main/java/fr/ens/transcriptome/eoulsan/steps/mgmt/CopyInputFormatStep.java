@@ -79,13 +79,13 @@ public class CopyInputFormatStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     return singleInputPort(this.format);
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
 
     return new OutputPortsBuilder().addPort("output", this.format,
         this.outputCompression).create();

@@ -78,7 +78,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
   private GenomeDescription genomeDescription;
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("reads", READS_FASTQ);

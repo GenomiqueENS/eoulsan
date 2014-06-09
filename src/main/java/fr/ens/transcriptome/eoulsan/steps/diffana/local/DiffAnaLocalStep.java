@@ -95,12 +95,12 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
     return singleInputPort(EXPRESSION_RESULTS_TSV);
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(DIFFANA_RESULTS_TSV);
   }
 

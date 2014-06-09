@@ -75,12 +75,12 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   }
 
   @Override
-  public InputPorts getInputFormats() {
+  public InputPorts getInputPorts() {
     return singleInputPort(READS_FASTQ);
   }
 
   @Override
-  public OutputPorts getOutputFormats() {
+  public OutputPorts getOutputPorts() {
     return singleOutputPort(READS_FASTQ);
   }
 
