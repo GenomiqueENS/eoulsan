@@ -38,8 +38,8 @@ public abstract class AbstractPort implements Port, Serializable {
   private static final long serialVersionUID = 1773398938012180465L;
 
   private final String name;
-  private final DataFormat format;
   private final boolean list;
+  private final DataFormat format;
 
   @Override
   public String getName() {
@@ -48,15 +48,15 @@ public abstract class AbstractPort implements Port, Serializable {
   }
 
   @Override
-  public DataFormat getFormat() {
-
-    return this.format;
-  }
-
-  @Override
   public boolean isList() {
 
     return this.list;
+  }
+
+  @Override
+  public DataFormat getFormat() {
+
+    return this.format;
   }
 
   //
@@ -66,10 +66,10 @@ public abstract class AbstractPort implements Port, Serializable {
   /**
    * Constructor.
    * @param name name of the port
-   * @param format format of the port
    * @param list true if the port requires a list as value
+   * @param format format of the port
    */
-  AbstractPort(final String name, final DataFormat format, final boolean list) {
+  AbstractPort(final String name, final boolean list, final DataFormat format) {
 
     if (name == null)
       throw new NullPointerException("The name of the port is null");
@@ -79,8 +79,8 @@ public abstract class AbstractPort implements Port, Serializable {
           + name + " is null");
 
     this.name = name.trim().toLowerCase();
-    this.format = format;
     this.list = list;
+    this.format = format;
   }
 
 }

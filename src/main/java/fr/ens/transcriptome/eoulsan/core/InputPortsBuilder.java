@@ -54,6 +54,17 @@ public class InputPortsBuilder {
   /**
    * Add an input port.
    * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   */
+  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format) {
+
+    return addPort(new SimpleInputPort(name, list, format));
+  }
+
+  /**
+   * Add an input port.
+   * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    */
@@ -61,6 +72,19 @@ public class InputPortsBuilder {
       final EnumSet<CompressionType> compressionsAccepted) {
 
     return addPort(new SimpleInputPort(name, format, compressionsAccepted));
+  }
+
+  /**
+   * Add an input port.
+   * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   * @param compressionsAccepted compression accepted
+   */
+  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
+                                   final EnumSet<CompressionType> compressionsAccepted) {
+
+    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted));
   }
 
   /**
@@ -79,16 +103,46 @@ public class InputPortsBuilder {
   /**
    * Add an input port.
    * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   * @param requiredInWorkingDirectory if data is required in working directory
+   */
+  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
+                                   boolean requiredInWorkingDirectory) {
+
+    return addPort(new SimpleInputPort(name, list, format,
+        requiredInWorkingDirectory));
+  }
+
+  /**
+   * Add an input port.
+   * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
-   * @param requieredInWorkingDirectory if data is required in working directory
+   * @param requiredInWorkingDirectory if data is required in working directory
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requieredInWorkingDirectory) {
+      boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, format, compressionsAccepted,
-        requieredInWorkingDirectory));
+        requiredInWorkingDirectory));
+  }
+
+  /**
+   * Add an input port.
+   * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   * @param compressionsAccepted compression accepted
+   * @param requiredInWorkingDirectory if data is required in working directory
+   */
+  public InputPortsBuilder addPort(final String name, final DataFormat format, final boolean list,
+                                   final EnumSet<CompressionType> compressionsAccepted,
+                                   boolean requiredInWorkingDirectory) {
+
+    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted,
+        requiredInWorkingDirectory));
   }
 
   /**

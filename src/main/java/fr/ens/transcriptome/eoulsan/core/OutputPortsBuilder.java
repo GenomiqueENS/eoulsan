@@ -55,6 +55,17 @@ public class OutputPortsBuilder {
   /**
    * Add an output port.
    * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   */
+  public OutputPortsBuilder addPort(final String name, final boolean list, final DataFormat format) {
+
+    return addPort(new SimpleOutputPort(name, list, format));
+  }
+
+  /**
+   * Add an output port.
+   * @param name name of the port
    * @param format format of the port
    * @param compression compression of the output
    */
@@ -62,6 +73,19 @@ public class OutputPortsBuilder {
       final CompressionType compression) {
 
     return addPort(new SimpleOutputPort(name, format, compression));
+  }
+
+  /**
+   * Add an output port.
+   * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   * @param compression compression of the output
+   */
+  public OutputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
+                                    final CompressionType compression) {
+
+    return addPort(new SimpleOutputPort(name, list, format, compression));
   }
 
   /**
