@@ -45,4 +45,10 @@ public interface Port {
    */
   DataFormat getFormat();
 
+  /**
+   * Test if the port requires a list as value.
+   * @return true if the the port requires a list as value
+   */
+  boolean isList();
+
 }

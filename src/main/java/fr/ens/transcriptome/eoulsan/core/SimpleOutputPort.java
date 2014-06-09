@@ -48,7 +48,7 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
   public String toString() {
 
     return Objects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName())
+        .add("format", getFormat().getName()).add("list", isList())
         .add("compression", getCompression()).toString();
   }
 
@@ -63,7 +63,19 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
    */
   SimpleOutputPort(final String name, final DataFormat format) {
 
-    this(name, format, null);
+    this(name, format, false, null);
+  }
+
+  /**
+   * Constructor.
+   * @param name name of the port
+   * @param format format of the port
+   * @param list true if a list is excepted as port value
+   */
+  SimpleOutputPort(final String name, final DataFormat format,
+      final boolean list) {
+
+    this(name, format, list, null);
   }
 
   /**
@@ -75,8 +87,21 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
   protected SimpleOutputPort(final String name, final DataFormat format,
       final CompressionType compression) {
 
+    this(name, format, false, compression);
+  }
+
+  /**
+   * Constructor.
+   * @param name name of the port
+   * @param format format of the port
+   * @param list true if a list is excepted as port value
+   * @param compression compression of the output
+   */
+  protected SimpleOutputPort(final String name, final DataFormat format,
+      final boolean list, final CompressionType compression) {
+
     // Set the name and the format
-    super(name, format);
+    super(name, format, list);
 
     // Set the compression
     if (compression == null)
@@ -91,8 +116,8 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
    */
   SimpleOutputPort(final OutputPort outputPort) {
 
-    this(outputPort.getName(), outputPort.getFormat(), outputPort
-        .getCompression());
+    this(outputPort.getName(), outputPort.getFormat(), outputPort.isList(),
+        outputPort.getCompression());
   }
 
 }

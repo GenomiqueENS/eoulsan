@@ -67,13 +67,13 @@ public class InputPortsBuilder {
    * Add an input port.
    * @param name name of the port
    * @param format format of the port
-   * @param requieredInWorkingDirectory if data is required in working directory
+   * @param requiredInWorkingDirectory if data is required in working directory
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
-      boolean requieredInWorkingDirectory) {
+      boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, format,
-        requieredInWorkingDirectory));
+        requiredInWorkingDirectory));
   }
 
   /**
