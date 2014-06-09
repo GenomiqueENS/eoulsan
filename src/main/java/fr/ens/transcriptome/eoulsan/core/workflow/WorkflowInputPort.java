@@ -123,7 +123,7 @@ class WorkflowInputPort extends SimpleInputPort {
     return Objects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
-        .add("requieredInWorkingDirectory", isRequieredInWorkingDirectory())
+        .add("requieredInWorkingDirectory", isRequiredInWorkingDirectory())
         .add("step", getStep().getId()).add("link", getLink()).toString();
   }
 

@@ -49,6 +49,6 @@ public interface InputPort extends Port {
    * After that mapreduce jobs can be efficiency launched.
    * @return true if the input data need to be copied in the working directory.
    */
-  boolean isRequieredInWorkingDirectory();
+  boolean isRequiredInWorkingDirectory();
 
 }

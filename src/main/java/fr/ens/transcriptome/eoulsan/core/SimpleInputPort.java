@@ -43,7 +43,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
   private static final long serialVersionUID = 4663590179211976634L;
 
   private final EnumSet<CompressionType> compressionsAccepted;
-  private final boolean requieredInWorkingDirectory;
+  private final boolean requiredInWorkingDirectory;
 
   @Override
   public EnumSet<CompressionType> getCompressionsAccepted() {
@@ -52,9 +52,9 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
   }
 
   @Override
-  public boolean isRequieredInWorkingDirectory() {
+  public boolean isRequiredInWorkingDirectory() {
 
-    return this.requieredInWorkingDirectory;
+    return this.requiredInWorkingDirectory;
   }
 
   @Override
@@ -63,7 +63,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
     return Objects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
-        .add("requieredInWorkingDirectory", isRequieredInWorkingDirectory())
+        .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())
         .toString();
   }
 
@@ -97,12 +97,12 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * Constructor.
    * @param name name of the port
    * @param format format of the port
-   * @param requieredInWorkingDirectory if data is required in working directory
+   * @param requiredInWorkingDirectory if data is required in working directory
    */
   SimpleInputPort(final String name, final DataFormat format,
-      boolean requieredInWorkingDirectory) {
+      boolean requiredInWorkingDirectory) {
 
-    this(name, format, null, requieredInWorkingDirectory);
+    this(name, format, null, requiredInWorkingDirectory);
   }
 
   /**
@@ -110,11 +110,11 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
-   * @param requieredInWorkingDirectory if data is required in working directory
+   * @param requiredInWorkingDirectory if data is required in working directory
    */
   protected SimpleInputPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requieredInWorkingDirectory) {
+      boolean requiredInWorkingDirectory) {
 
     // Set the name and the format
     super(name, format);
@@ -126,7 +126,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
       this.compressionsAccepted = compressionsAccepted;
 
     // Set if input data is required in working directory
-    this.requieredInWorkingDirectory = requieredInWorkingDirectory;
+    this.requiredInWorkingDirectory = requiredInWorkingDirectory;
   }
 
   /**
@@ -136,7 +136,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
   SimpleInputPort(final InputPort inputport) {
 
     this(inputport.getName(), inputport.getFormat(), inputport
-        .getCompressionsAccepted(), inputport.isRequieredInWorkingDirectory());
+        .getCompressionsAccepted(), inputport.isRequiredInWorkingDirectory());
   }
 
 }

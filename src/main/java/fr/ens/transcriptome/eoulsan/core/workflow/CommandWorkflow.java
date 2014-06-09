@@ -291,7 +291,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       // Check if copy is needed in the working directory
       if (fromStep.getType() == StepType.STANDARD_STEP
           && stepProtocol != depProtocol
-          && port.isRequieredInWorkingDirectory()) {
+          && port.isRequiredInWorkingDirectory()) {
         newStep =
             newInputFormatCopyStep(this, port, depOutputCompression,
                 stepCompressionsAllowed);
