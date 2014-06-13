@@ -126,11 +126,11 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
 
     // Get the source
     final DataFile inFile =
-        context.getInputDataFile(DataFormats.MAPPER_RESULTS_SAM);
+        context.getInputPortData(DataFormats.MAPPER_RESULTS_SAM).getDataFile();
 
     // Get the dest
     final DataFile outFile =
-        context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM);
+        context.getOutputPortData(DataFormats.MAPPER_RESULTS_SAM).getDataFile();
 
     // filter alignments in single-end mode or in paired-end mode
     filterFile(inFile, outFile, reporter, status, filter);

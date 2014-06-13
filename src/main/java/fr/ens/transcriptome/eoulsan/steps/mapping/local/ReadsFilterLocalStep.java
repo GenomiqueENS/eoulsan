@@ -93,7 +93,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
 
       // get input file count for the sample
       final int inFileCount =
-          context.getInputDataFileCount(DataFormats.READS_FASTQ);
+          context.getInputPortData(DataFormats.READS_FASTQ).getDataFileCount();
 
       if (inFileCount < 1)
         throw new IOException("No reads file found.");
@@ -138,10 +138,10 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
 
     // Get the source
     final DataFile inFile =
-        context.getInputDataFile(DataFormats.READS_FASTQ, 0);
+        context.getInputPortData(DataFormats.READS_FASTQ).getDataFile(0);
 
     // Get the dest
-    final DataFile outFile = context.getOutputDataFile(READS_FASTQ, 0);
+    final DataFile outFile = context.getOutputPortData(READS_FASTQ).getDataFile(0);
 
     // Filter reads
     filterFile(inFile, outFile, reporter, filter, context.getSample()
@@ -166,13 +166,13 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
 
     // Get the source
     final DataFile inFile1 =
-        context.getInputDataFile(DataFormats.READS_FASTQ, 0);
+        context.getInputPortData(DataFormats.READS_FASTQ).getDataFile(0);
     final DataFile inFile2 =
-        context.getInputDataFile(DataFormats.READS_FASTQ, 1);
+        context.getInputPortData(DataFormats.READS_FASTQ).getDataFile(1);
 
     // Get the dest
-    final DataFile outFile1 = context.getOutputDataFile(READS_FASTQ, 0);
-    final DataFile outFile2 = context.getOutputDataFile(READS_FASTQ, 1);
+    final DataFile outFile1 = context.getOutputPortData(READS_FASTQ).getDataFile(0);
+    final DataFile outFile2 = context.getOutputPortData(READS_FASTQ).getDataFile(1);
 
     // Filter reads
     filterFile(inFile1, inFile2, outFile1, outFile2, reporter, filter, context
