@@ -32,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
@@ -57,7 +58,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Laurent Jourdren
  * @author Sandrine Perrin
  */
-public class RegressionITFactory {
+public class ITFactory {
 
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
@@ -75,7 +76,7 @@ public class RegressionITFactory {
   private final static Stopwatch TIMER = Stopwatch.createUnstarted();
 
   private static Formatter FORMATTED_DATE = new Formatter().format(
-      Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$te_%1$tH%1$tM%1$tS", new Date());
+      Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
 
   private final Properties globalsConf;
   private final File applicationPath;
@@ -102,24 +103,24 @@ public class RegressionITFactory {
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
-    List<RegressionProcessIT> tests = null;
-
+    List<ProcessIT> tests = null;
+    int testsCount = 0;
     try {
       init();
 
       tests = collectTests();
-
-      if (tests == null)
+      testsCount = tests.size();
+      if (testsCount == 0)
         return new Object[0];
-
+      
       // Return all tests
       return tests.toArray(new Object[tests.size()]);
 
     } catch (Throwable e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
 
     } finally {
-      closeLogger(tests.size());
+      closeLogger(testsCount);
     }
 
     // Return none test
@@ -165,10 +166,10 @@ public class RegressionITFactory {
    *           test.
    * @throws IOException if the source file doesn't exist
    */
-  private List<RegressionProcessIT> collectTests() throws EoulsanException,
+  private List<ProcessIT> collectTests() throws EoulsanException,
       IOException {
 
-    final List<RegressionProcessIT> tests = Lists.newArrayList();
+    final List<ProcessIT> tests = Lists.newArrayList();
     final List<File> allTestsDirectories;
 
     // Collect all test.txt describing test to launch
@@ -188,14 +189,20 @@ public class RegressionITFactory {
     // Build map
     for (File testDirectory : allTestsDirectories) {
 
-      // Add test
+      // Ignore file
+      if (testDirectory.isFile())
+        continue;
+
       checkExistingDirectoryFile(testDirectory, "the test directory");
-      checkExistingStandardFile(new File(testDirectory, "test.conf"),
-          "the 'test.conf' file ");
+
+      if (!new File(testDirectory, "test.conf").exists())
+        continue;
+
+      // Add test
 
       // Create instance
-      final RegressionProcessIT processIT =
-          new RegressionProcessIT(this.globalsConf, this.applicationPath,
+      final ProcessIT processIT =
+          new ProcessIT(this.globalsConf, this.applicationPath,
               new File(testDirectory, "test.conf"), this.outputTestsDirectory,
               testDirectory.getName());
 
@@ -204,7 +211,7 @@ public class RegressionITFactory {
 
     }
 
-    return tests;
+    return Collections.unmodifiableList(tests);
   }
 
   /**
@@ -291,7 +298,7 @@ public class RegressionITFactory {
    * Public constructor
    * @throws EoulsanException
    */
-  public RegressionITFactory() throws EoulsanException, IOException {
+  public ITFactory() throws EoulsanException, IOException {
 
     if (System.getProperty(CONF_PATH_KEY) != null) {
       this.confFile = new File(System.getProperty(CONF_PATH_KEY));
@@ -337,15 +344,15 @@ public class RegressionITFactory {
 
       // Retrieve application version test
       this.versionApplication =
-          RegressionProcessIT
+          ProcessIT
               .retrieveVersionApplication(
                   this.globalsConf
-                      .getProperty(RegressionProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
+                      .getProperty(ProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
                   this.applicationPath);
 
       // Init logger path
       this.loggerPath =
-          this.globalsConf.getProperty("log.path")
+          this.globalsConf.getProperty("log.directory")
               + "/" + this.versionApplication + "_" + FORMATTED_DATE.toString()
               + ".log";
 

@@ -59,7 +59,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Sandrine Perrin
  * @since 1.3
  */
-public class RegressionResultIT {
+public class ResultIT {
 
   public final static Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
@@ -130,7 +130,7 @@ public class RegressionResultIT {
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */
-  public OutputExecution compareTo(final RegressionResultIT expectedOutput)
+  public OutputExecution compareTo(final ResultIT expectedOutput)
       throws IOException {
 
     // Copy list files
@@ -163,7 +163,10 @@ public class RegressionResultIT {
       boolean res = new FilesComparator(fileExpected, fileTested).compare();
 
       if (!res) {
-        msg = "Fail comparison with file: " + filename;
+        msg =
+            "Fail comparison with file: "
+                + fileExpected.getAbsolutePath() + " vs "
+                + fileTested.getAbsolutePath();
         comparison.appendComparison(msg, false);
 
         throw new EoulsanITRuntimeException(msg);
@@ -345,6 +348,10 @@ public class RegressionResultIT {
     }
   }
 
+  //
+  // Getter & setter
+  //
+
   /**
    * Return a map with file name and instance of file, only file matching to a
    * pattern. If no pattern define, all files of source directory
@@ -364,7 +371,7 @@ public class RegressionResultIT {
    * @param inputpatternsFiles sequences of patterns, separated by a space
    * @param outputpatternsFiles sequences of patterns, separated by a space
    */
-  public RegressionResultIT(final File outputTestDirectory,
+  public ResultIT(final File outputTestDirectory,
       final String inputPatternsFiles, final String outputPatternsFiles) {
     this.directory = outputTestDirectory;
 
@@ -374,13 +381,11 @@ public class RegressionResultIT {
         setPatternFiles(inputPatternsFiles + " " + outputPatternsFiles);
 
     this.filesList = createListFiles(this.directory);
-
   }
 
   //
   // Internal class
   //
-
   final class OutputExecution {
 
     private StringBuilder report = new StringBuilder();

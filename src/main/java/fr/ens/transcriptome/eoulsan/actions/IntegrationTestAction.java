@@ -23,6 +23,8 @@
  */
 package fr.ens.transcriptome.eoulsan.actions;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -36,7 +38,7 @@ import org.testng.TestNG;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.it.RegressionITFactory;
+import fr.ens.transcriptome.eoulsan.it.ITFactory;
 
 /**
  * This class launch integration test with Testng class.
@@ -44,16 +46,16 @@ import fr.ens.transcriptome.eoulsan.it.RegressionITFactory;
  * @author Laurent Jourdren
  * @author Sandrine Perrin
  */
-public class RegressionAction extends AbstractAction {
+public class IntegrationTestAction extends AbstractAction {
 
   @Override
   public String getName() {
-    return "regression";
+    return "it";
   }
 
   @Override
   public String getDescription() {
-    return "test " + Globals.APP_NAME + " version.";
+    return "integration test " + Globals.APP_NAME + " version.";
   }
 
   @Override
@@ -62,6 +64,7 @@ public class RegressionAction extends AbstractAction {
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
+    File testngReportDirectory = null;
     int argsOptions = 0;
 
     try {
@@ -77,7 +80,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("c")) {
 
         // Configuration test files
-        System.setProperty(RegressionITFactory.CONF_PATH_KEY, line
+        System.setProperty(ITFactory.CONF_PATH_KEY, line
             .getOptionValue("c").trim());
         argsOptions += 2;
       }
@@ -85,7 +88,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(RegressionITFactory.APPLICATION_PATH_KEY, line
+        System.setProperty(ITFactory.APPLICATION_PATH_KEY, line
             .getOptionValue("exec").trim());
         argsOptions += 2;
       }
@@ -94,7 +97,7 @@ public class RegressionAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(RegressionITFactory.TESTS_FILE_PATH_KEY, line
+        System.setProperty(ITFactory.TESTS_FILE_PATH_KEY, line
             .getOptionValue("f").trim());
         argsOptions += 2;
       }
@@ -107,19 +110,38 @@ public class RegressionAction extends AbstractAction {
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
           System.setProperty(
-              RegressionITFactory.GENERATE_ALL_EXPECTED_DATA_KEY, "true");
+              ITFactory.GENERATE_ALL_EXPECTED_DATA_KEY, "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
           System.setProperty(
-              RegressionITFactory.GENERATE_NEW_EXPECTED_DATA_KEY, "true");
+              ITFactory.GENERATE_NEW_EXPECTED_DATA_KEY, "true");
+
+        argsOptions += 2;
+      }
+
+      // Optional argument
+      if (line.hasOption("o")) {
+
+        // List all test to launch
+        testngReportDirectory = new File(line.getOptionValue("o").trim());
+
+        if (!testngReportDirectory.exists())
+          throw new ParseException(
+              "Output testng report directory doesn't exists: "
+                  + testngReportDirectory.getAbsolutePath());
+
+        if (!testngReportDirectory.isDirectory())
+          throw new ParseException(
+              "Output testng report argument is not a directory: "
+                  + testngReportDirectory.getAbsolutePath());
 
         argsOptions += 2;
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parse parameter file: " + e.getMessage());
+      Common
+          .errorExit(e, "Error while parse parameter file: " + e.getMessage());
     }
 
     if (arguments.length != argsOptions) {
@@ -127,7 +149,7 @@ public class RegressionAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    runIT();
+    runIT(testngReportDirectory);
   }
 
   /**
@@ -165,6 +187,10 @@ public class RegressionAction extends AbstractAction {
                 "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
             .create("expected"));
 
+    // Optional, path to testng report directory
+    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
+        .withDescription("testng report directory").create('o'));
+
     return options;
   }
 
@@ -189,8 +215,10 @@ public class RegressionAction extends AbstractAction {
 
   /**
    * Run all integrated test
+   * @param testngReportDirectory testng report directory, if it is null use the
+   *          default directory
    */
-  private void runIT() {
+  private void runIT(final File testngReportDirectory) {
 
     // Define a listener that print information about the results of the
     // integration tests
@@ -215,8 +243,13 @@ public class RegressionAction extends AbstractAction {
 
     // Create and configure TestNG
     TestNG testng = new TestNG();
-    testng.setTestClasses(new Class[] {RegressionITFactory.class});
+    testng.setTestClasses(new Class[] {ITFactory.class});
     testng.addListener(tla);
+
+    if (testngReportDirectory != null) {
+      // Replace default output directory
+      testng.setOutputDirectory(testngReportDirectory.getAbsolutePath());
+    }
 
     // Launch integration tests using TestNG
     testng.run();
