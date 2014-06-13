@@ -26,9 +26,9 @@ package fr.ens.transcriptome.eoulsan.it;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
 import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -127,6 +127,8 @@ public class ResultIT {
    * Compare all files matching to a pattern files.If no pattern defined, moving
    * all files.
    * @param expectedOutput instance of RegressionResultIT to compare with this.
+   * @return instance of {@link fr.ens.transcriptome.eoulsan.it.OutputExecution}
+   *         which summary result of directories comparison
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */
@@ -136,10 +138,10 @@ public class ResultIT {
     // Copy list files
     final List<File> allFilesFromTest = new ArrayList<File>(this.filesList);
 
+    // Build map filename with files path
     Map<String, File> filesTestedMap =
         newHashMapWithExpectedSize(expectedOutput.getFilesList().size());
 
-    // Build map filename with filepath
     for (File f : this.filesList) {
       filesTestedMap.put(f.getName(), f);
     }
@@ -205,8 +207,12 @@ public class ResultIT {
    * Listing recursively all files in the source directory which match with
    * patterns files defined
    * @return a map with all files which match with pattern
+   * @throws IOException if an error occurs while parsing input directory
    */
-  private List<File> createListFiles(final File sourceDirectory) {
+  private List<File> createListFiles(final File sourceDirectory)
+      throws IOException {
+
+    checkExistingDirectoryFile(sourceDirectory, "source directory");
 
     final List<File> files = newArrayList();
 
@@ -259,7 +265,7 @@ public class ResultIT {
    * Build collection of PathMatcher for selection files to tread according to a
    * pattern file define in test configuration. Patterns set in string with
    * space to separator. Get input and output patterns files.
-   * @param collectionPatternsFiles sequences of patterns files
+   * @param patternsFiles sequences of patterns files
    * @return collection of PathMatcher, one per pattern
    */
   private Collection<PathMatcher> setPatternFiles(final String patternsFiles) {
@@ -300,7 +306,7 @@ public class ResultIT {
   /**
    * Clean directory, remove all files do not matching to a pattern. If none
    * pattern define, all files are keeping.
-   * @throws EoulsanException if an error occurs while removing files
+   * @throws IOException if an error occurs while removing files
    */
   @SuppressWarnings("unused")
   private void cleanDirectory() throws IOException {
@@ -317,24 +323,15 @@ public class ResultIT {
   }
 
   /**
-   * Remove empty directories
-   * @param directory directory to treat
+   * Clean directory, remove all files do not matching to a pattern. If none
+   * pattern define, all files are keeping.
+   * @throws IOException if an error occurs while removing files
    */
-  private void removeEmptyDirectory(File directory) {
-
-    // Parse list files
-    for (File dir : directory.listFiles()) {
-
-      if (dir.isDirectory()) {
-        // Treat sub directories
-        removeEmptyDirectory(dir);
-        // Delete success only if directory is empty
-        dir.delete();
-      }
-    }
-  }
-
   private void cleanDirectory(final File directory) throws IOException {
+
+    if (directory == null || !directory.isDirectory())
+      return;
+
     // Parse list files
     for (File file : directory.listFiles()) {
 
@@ -344,6 +341,27 @@ public class ResultIT {
       // Check filename save in list files
       if (!this.filesList.contains(file)) {
         file.delete();
+      }
+    }
+  }
+
+  /**
+   * Remove empty directories
+   * @param directory directory to treat
+   */
+  private void removeEmptyDirectory(File directory) {
+
+    if (directory == null || !directory.isDirectory())
+      return;
+
+    // Parse list files
+    for (File dir : directory.listFiles()) {
+
+      if (dir.isDirectory()) {
+        // Treat sub directories
+        removeEmptyDirectory(dir);
+        // Delete success only if directory is empty
+        dir.delete();
       }
     }
   }
@@ -368,11 +386,13 @@ public class ResultIT {
    * Public constructor, it build list patterns and create list files from the
    * source directory.
    * @param outputTestDirectory source directory
-   * @param inputpatternsFiles sequences of patterns, separated by a space
-   * @param outputpatternsFiles sequences of patterns, separated by a space
+   * @param inputPatternsFiles sequences of patterns, separated by a space
+   * @param outputPatternsFiles sequences of patterns, separated by a space
+   * @throws IOException if an error occurs while parsing input directory
    */
   public ResultIT(final File outputTestDirectory,
-      final String inputPatternsFiles, final String outputPatternsFiles) {
+      final String inputPatternsFiles, final String outputPatternsFiles)
+      throws IOException {
     this.directory = outputTestDirectory;
 
     // Build list patterns
@@ -386,30 +406,61 @@ public class ResultIT {
   //
   // Internal class
   //
+
+  /**
+   * The internal class represents output result of directories comparison with
+   * boolean of the global result and a report text.
+   * @author Sandrine Perrin
+   * @since 1.3
+   */
   final class OutputExecution {
 
     private StringBuilder report = new StringBuilder();
     private boolean result = true;
 
+    /**
+     * Gets the report.
+     * @return the report
+     */
     public String getReport() {
       return report.toString();
     }
 
+    /**
+     * Checks if is result.
+     * @return true, if is result
+     */
     public boolean isResult() {
       return result;
     }
 
+    /**
+     * Sets the result.
+     * @param result the new result
+     */
     public void setResult(boolean result) {
       this.result = result;
     }
 
+    /**
+     * Update report to directories comparison
+     * @param msg message added to the report text
+     */
     public void appendReport(final String msg) {
       if (report.length() == 0)
         this.report.append(msg);
-      else
-        this.report.append("\n" + msg);
+      else {
+        this.report.append("\n");
+        this.report.append(msg);
+      }
     }
 
+    /**
+     * Update report and result to directories comparison
+     * @param msg message added to the report text
+     * @param result boolean result of comparison for a file between two
+     *          directories
+     */
     public void appendComparison(final String msg, final boolean result) {
       appendReport(msg);
       setResult(result && isResult());
@@ -434,10 +485,9 @@ public class ResultIT {
     /**
      * Compare two files
      * @return true if files are the same
-     * @throws FileNotFoundException if a file not found.
      * @throws IOException if an error occurs while reading file.
      */
-    public boolean compare() throws FileNotFoundException, IOException {
+    public boolean compare() throws IOException {
 
       return comparator.compareFiles(fileA, fileB);
     }

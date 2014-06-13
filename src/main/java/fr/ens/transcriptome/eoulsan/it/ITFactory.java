@@ -80,7 +80,7 @@ public class ITFactory {
 
   private final Properties globalsConf;
   private final File applicationPath;
-  private final File confFile;
+  private final File configurationFile;
 
   // File with tests name to execute
   private final File selectedTestsFile;
@@ -296,14 +296,14 @@ public class ITFactory {
 
   /**
    * Public constructor
-   * @throws EoulsanException
+   * @throws EoulsanException if an error occurs when reading configuration file.
    */
-  public ITFactory() throws EoulsanException, IOException {
+  public ITFactory() throws EoulsanException {
 
     if (System.getProperty(CONF_PATH_KEY) != null) {
-      this.confFile = new File(System.getProperty(CONF_PATH_KEY));
+      this.configurationFile = new File(System.getProperty(CONF_PATH_KEY));
     } else {
-      this.confFile = null;
+      this.configurationFile = null;
     }
 
     if (System.getProperty(APPLICATION_PATH_KEY) != null) {
@@ -312,7 +312,7 @@ public class ITFactory {
       this.applicationPath = null;
     }
 
-    if (this.confFile != null && this.applicationPath != null) {
+    if (this.configurationFile != null && this.applicationPath != null) {
 
       if (System.getProperty(TESTS_FILE_PATH_KEY) != null) {
         this.selectedTestsFile =
@@ -324,11 +324,11 @@ public class ITFactory {
       // Load configuration file
       this.globalsConf = new Properties();
       try {
-        this.globalsConf.load(newReader(this.confFile,
+        this.globalsConf.load(newReader(this.configurationFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
       } catch (IOException e) {
         throw new EoulsanException("Configuration is missing ("
-            + this.confFile.getAbsolutePath() + ")");
+            + this.configurationFile.getAbsolutePath() + ")");
       }
 
       // Load command line properties

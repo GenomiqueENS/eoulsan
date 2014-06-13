@@ -121,9 +121,8 @@ public class ProcessIT {
    * Launch test execution, first generate data directory corresponding to the
    * arguments: expected data or data to test.If it is data to test then launch
    * comparison
-   * @throws EoulsanException if an error occurs while execute script or
+   * @throws Exception if an error occurs while execute script or
    *           comparison
-   * @throws IOException if an error occurs while using the files.
    */
   @Test
   public void launchTest() throws Exception {
@@ -153,8 +152,8 @@ public class ProcessIT {
 
       // Treat result application directory
       regressionResultIT =
-          new ResultIT(this.outputTestDirectory,
-              this.inputFilesPattern, this.outputFilesPattern);
+          new ResultIT(this.outputTestDirectory, this.inputFilesPattern,
+              this.outputFilesPattern);
 
       if (this.generateExpectedData) {
         // Build expected directory if necessary
@@ -240,7 +239,7 @@ public class ProcessIT {
     }
 
     String cmd = commandLine;
-    if (commandLine.indexOf(APPLICATION_PATH_VARIABLE) > -1) {
+    if (commandLine.contains(APPLICATION_PATH_VARIABLE)) {
       // Replace application path in command line
       cmd =
           commandLine.replace(APPLICATION_PATH_VARIABLE,
@@ -283,10 +282,8 @@ public class ProcessIT {
       return true;
 
     // Generate only missing expected data directory
-    if (this.generateNewTests && !this.expectedTestDirectory.exists())
-      return true;
-
-    return false;
+    return this.generateNewTests && !this.expectedTestDirectory.exists();
+    
   }
 
   /**
@@ -337,6 +334,9 @@ public class ProcessIT {
     if (!new File(this.outputTestDirectory + "/tmp").mkdirs())
       throw new IOException("Cannot create analysis directory "
           + this.outputTestDirectory.getAbsolutePath());
+
+    // Check input test directory
+    checkExistingDirectoryFile(this.inputTestDirectory, "input test directory");
 
     // Create a symbolic link for each file from input data test directory
     for (File file : this.inputTestDirectory.listFiles()) {
@@ -389,7 +389,7 @@ public class ProcessIT {
 
     String value = this.testConf.getProperty(scriptConfKey);
     String s = value;
-    if (value.indexOf(APPLICATION_PATH_VARIABLE) > -1) {
+    if (value.contains(APPLICATION_PATH_VARIABLE)) {
       // Replace application path in command line
       s =
           value.replace(APPLICATION_PATH_VARIABLE,
@@ -603,18 +603,16 @@ public class ProcessIT {
    * @param globalsConf global configuration for tests
    * @param applicationPath path to the application to test
    * @param testConfFile file with the test configuration
-   * @param outputTestsDirectory output test directory with result execute
-   *          application
-   * @param nameTest name test
+   * @param testsDirectory output test directory with result execute application
+   * @param testName test name
    * @throws IOException if an error occurs while reading the configuration
    *           file.
    * @throws EoulsanException if an error occurs while search expected directory
    *           of the test.
    */
-  public ProcessIT(final Properties globalsConf,
-      final File applicationPath, final File testConfFile,
-      final File testsDirectory, String testName) throws IOException,
-      EoulsanException {
+  public ProcessIT(final Properties globalsConf, final File applicationPath,
+      final File testConfFile, final File testsDirectory, String testName)
+      throws IOException, EoulsanException {
 
     this.testConf = loadConfigurationFile(globalsConf, testConfFile);
 
