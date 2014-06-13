@@ -1,9 +1,9 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="SuiteIntegrationTest" verbose="1" thread-count="1">
-  <test name="RegressionITAction">
+  <test name="IntegrationTestAction">
     <classes>
-       <class name="fr.ens.transcriptome.eoulsan.it.RegressionITFactory" />
+       <class name="fr.ens.transcriptome.eoulsan.it.ITFactory" />
     </classes>
   </test>
   
