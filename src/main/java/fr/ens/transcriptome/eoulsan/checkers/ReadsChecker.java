@@ -75,7 +75,7 @@ public class ReadsChecker implements Checker {
 
     // get input file count for the sample
     final int inFileCount =
-        context.getOutputDataFileCount(DataFormats.READS_FASTQ, sample);
+        context.getOutputPortData(DataFormats.READS_FASTQ, sample).getDataFileCount();
 
     if (inFileCount < 1)
       throw new EoulsanException("No reads file found.");
@@ -90,7 +90,7 @@ public class ReadsChecker implements Checker {
     if (inFileCount == 1) {
 
       final DataFile file =
-          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 0);
+          context.getOutputPortData(DataFormats.READS_FASTQ, sample).getDataFile(0);
 
       checkReadFile(file, format);
     }
@@ -99,10 +99,10 @@ public class ReadsChecker implements Checker {
     if (inFileCount == 2) {
 
       final DataFile file1 =
-          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 0);
+          context.getOutputPortData(DataFormats.READS_FASTQ, sample).getDataFile(0);
 
       final DataFile file2 =
-          context.getOutputDataFile(DataFormats.READS_FASTQ, sample, 1);
+          context.getOutputPortData(DataFormats.READS_FASTQ, sample).getDataFile(1);
 
       checkReadFile(file1, format, true, 1);
       checkReadFile(file2, format, true, 2);

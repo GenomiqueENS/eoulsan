@@ -75,7 +75,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    */
   public int getDataFileCount(final Sample sample, final boolean existingFiles) {
 
-    return this.step.getOutputDataFileCount(getName(), sample, existingFiles);
+    return this.step.getOutputPortData(getName(), sample).getDataFileCount(existingFiles);
   }
 
   /**
@@ -88,7 +88,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
 
     Preconditions.checkNotNull(sample, "Sample cannot be null");
 
-    return this.step.getOutputDataFile(getName(), sample, fileIndex);
+    return this.step.getOutputPortData(getName(), sample).getDataFile(fileIndex);
   }
 
   //

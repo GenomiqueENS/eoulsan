@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -42,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.PortData;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -90,6 +92,137 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   private StepResult result;
 
+  private class InputPortData implements PortData {
+
+    final WorkflowInputPort port;
+    final Sample sample;
+
+    @Override
+    public DataFormat getFormat() {
+
+      return this.port.getFormat();
+    }
+
+    @Override
+    public String getDataFilename() {
+
+      return getDataFile().getSource();
+    }
+
+    @Override
+    public String getDataFilename(int fileIndex) {
+
+      return getDataFile(fileIndex).getSource();
+    }
+
+    @Override
+    public DataFile getDataFile() {
+      return port.getLink().getDataFile(sample, -1);
+    }
+
+    @Override
+    public DataFile getDataFile(int fileIndex) {
+
+      return port.getLink().getDataFile(sample, fileIndex);
+    }
+
+    @Override
+    public int getDataFileCount() {
+      return getDataFileCount(true);
+    }
+
+    @Override
+    public int getDataFileCount(final boolean existingFiles) {
+
+      return port.getLink().getDataFileCount(sample, existingFiles);
+    }
+
+    //
+    // Constructor
+    //
+
+    public InputPortData(final String portName, final Sample sample) {
+
+      Preconditions.checkNotNull(portName, "PortName argument cannot be null");
+      Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+
+      this.sample = sample;
+
+      // Check if the port exists
+      if (!getInputPorts().contains(portName))
+        throw new EoulsanRuntimeException(
+            "the step does not contains input port named: " + portName);
+
+      this.port = getInputPorts().getPort(portName);
+
+      // Check if the port is linked
+      if (!this.port.isLinked())
+        throw new EoulsanRuntimeException("the port \""
+            + portName + "\" of the step \"" + getId() + "\" is not linked.");
+    }
+  }
+
+  private class OutputPortData implements PortData {
+
+    final WorkflowOutputPort port;
+    final Sample sample;
+
+    @Override
+    public DataFormat getFormat() {
+
+      return this.port.getFormat();
+    }
+
+    @Override
+    public String getDataFilename() {
+
+      return getDataFile().getSource();
+    }
+
+    @Override
+    public String getDataFilename(int fileIndex) {
+
+      return getDataFile(fileIndex).getSource();
+    }
+
+    @Override
+    public DataFile getDataFile() {
+      return new WorkflowStepOutputDataFile(this.port, this.sample)
+          .getDataFile();
+    }
+
+    @Override
+    public DataFile getDataFile(int fileIndex) {
+
+      return new WorkflowStepOutputDataFile(this.port, this.sample, fileIndex)
+          .getDataFile();
+    }
+
+    @Override
+    public int getDataFileCount() {
+      return getDataFileCount(true);
+    }
+
+    @Override
+    public int getDataFileCount(final boolean existingFiles) {
+      return WorkflowStepOutputDataFile.dataFileCount(this.port, this.sample,
+          existingFiles);
+    }
+
+    //
+    // Constructor
+    //
+
+    public OutputPortData(final String portName, final Sample sample) {
+
+      Preconditions.checkNotNull(portName, "portName argument cannot be null");
+      Preconditions.checkArgument(outputPorts.contains(portName),
+          "Unknown output port for step \"" + getId() + ": " + portName);
+
+      this.port = outputPorts.getPort(portName);
+      this.sample = sample;
+    }
+  }
 
   //
   // Getters
@@ -304,126 +437,139 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   // DataFile methods
   //
 
-  /**
-   * Get a WorkflowOutputPort from its name
-   * @param outputPortName the output port name
-   * @return a WorkflowOutputPort object
-   */
-  private WorkflowOutputPort getOutputPort(final String outputPortName) {
+  // /**
+  // * Get a WorkflowOutputPort from its name
+  // * @param outputPortName the output port name
+  // * @return a WorkflowOutputPort object
+  // */
+  // private WorkflowOutputPort getOutputPort(final String outputPortName) {
+  //
+  // Preconditions.checkNotNull(outputPortName,
+  // "outputPortName cannot be null");
+  // Preconditions.checkArgument(this.outputPorts.contains(outputPortName),
+  // "Unknown output port for step \"" + getId() + ": " + outputPortName);
+  //
+  // return this.outputPorts.getPort(outputPortName);
+  // }
+  //
+  // /**
+  // * Get an output file of the step.
+  // * @param portName name of the output port that generate file
+  // * @param sample sample sample that correspond to the file
+  // * @return a DataFile object
+  // */
+  // DataFile getOutputDataFile(final String portName, final Sample sample) {
+  //
+  // return new WorkflowStepOutputDataFile(getOutputPort(portName), sample)
+  // .getDataFile();
+  // }
+  //
+  // /**
+  // * Get an output file of the step.
+  // * @param portName name of the output port that generate file
+  // * @param sample sample sample that correspond to the file
+  // * @param fileIndex file index
+  // * @return a DataFile object
+  // */
+  // DataFile getOutputDataFile(final String portName, final Sample sample,
+  // final int fileIndex) {
+  //
+  // return new WorkflowStepOutputDataFile(getOutputPort(portName), sample,
+  // fileIndex).getDataFile();
+  // }
+  //
+  // /**
+  // * Get the file count for an output step of the step.
+  // * @param portName name of the output port that generate file
+  // * @param sample sample sample that correspond to the file
+  // * @param existingFiles if true return the number of files that really
+  // exists
+  // * otherwise the maximum of files.
+  // * @return the count of output DataFiles
+  // */
+  // int getOutputDataFileCount(final String portName, final Sample sample,
+  // final boolean existingFiles) {
+  //
+  // return WorkflowStepOutputDataFile.dataFileCount(getOutputPort(portName),
+  // sample, existingFiles);
+  // }
+  //
+  // /**
+  // * Get a DataFile that correspond to a port and a Sample for this step.
+  // * @param portName name of the output port that generate file
+  // * @param sample the sample
+  // * @return a DataFile or null if the port is not available
+  // */
+  // DataFile getInputDataFile(final String portName, final Sample sample) {
+  //
+  // return getInputDataFile(portName, sample, -1);
+  // }
+  //
+  // /**
+  // * Get a DataFile that correspond to a port and a Sample for this step.
+  // * @param portName name of the output port that generate file
+  // * @param sample the sample
+  // * @return a DataFile or null if the port is not available
+  // */
+  // DataFile getInputDataFile(final String portName, final Sample sample,
+  // final int fileIndex) {
+  //
+  // Preconditions.checkNotNull(portName, "PortName argument cannot be null");
+  // Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+  //
+  // // Check if the port exists
+  // if (!getInputPorts().contains(portName))
+  // throw new EoulsanRuntimeException(
+  // "the step does not contains input port named: " + portName);
+  //
+  // final WorkflowInputPort port = getInputPorts().getPort(portName);
+  //
+  // // Check if the port is linked
+  // if (!port.isLinked())
+  // throw new EoulsanRuntimeException("the port \""
+  // + portName + "\" of the step \"" + getId() + "\" is not linked.");
+  //
+  // return port.getLink().getDataFile(sample, fileIndex);
+  // }
+  //
+  // /**
+  // * Get the file count for an input step of the step.
+  // * @param portName name of the output port that generate file
+  // * @param sample sample sample that correspond to the file
+  // * @param existingFiles if true return the number of files that really
+  // exists
+  // * otherwise the maximum of files.
+  // * @return the count of intput DataFiles
+  // */
+  // int getInputDataFileCount(final String portName, final Sample sample,
+  // final boolean existingFiles) {
+  //
+  // checkNotNull(portName, "PortName argument cannot be null");
+  // checkNotNull(sample, "Sample argument cannot be null");
+  //
+  // // Check if the port exists
+  // if (!getInputPorts().contains(portName))
+  // throw new EoulsanRuntimeException(
+  // "the step does not contains input port named: " + portName);
+  //
+  // final WorkflowInputPort port = getInputPorts().getPort(portName);
+  //
+  // // Check if the port is linked
+  // if (!port.isLinked())
+  // throw new EoulsanRuntimeException("the port \""
+  // + portName + "\" of the step \"" + getId() + "\" is not linked.");
+  //
+  // return port.getLink().getDataFileCount(sample, existingFiles);
+  // }
 
-    Preconditions.checkNotNull(outputPortName, "outputPortName cannot be null");
-    Preconditions.checkArgument(this.outputPorts.contains(outputPortName),
-        "Unknown output port for step \"" + getId() + ": " + outputPortName);
+  PortData getInputPortData(final String portName, final Sample sample) {
 
-    return this.outputPorts.getPort(outputPortName);
+    return new InputPortData(portName, sample);
   }
 
-  /**
-   * Get an output file of the step.
-   * @param portName name of the output port that generate file
-   * @param sample sample sample that correspond to the file
-   * @return a DataFile object
-   */
-  DataFile getOutputDataFile(final String portName, final Sample sample) {
+  PortData getOutputPortData(final String portName, final Sample sample) {
 
-    return new WorkflowStepOutputDataFile(getOutputPort(portName), sample)
-        .getDataFile();
-  }
-
-  /**
-   * Get an output file of the step.
-   * @param portName name of the output port that generate file
-   * @param sample sample sample that correspond to the file
-   * @param fileIndex file index
-   * @return a DataFile object
-   */
-  DataFile getOutputDataFile(final String portName, final Sample sample,
-      final int fileIndex) {
-
-    return new WorkflowStepOutputDataFile(getOutputPort(portName), sample,
-        fileIndex).getDataFile();
-  }
-
-  /**
-   * Get the file count for an output step of the step.
-   * @param portName name of the output port that generate file
-   * @param sample sample sample that correspond to the file
-   * @param existingFiles if true return the number of files that really exists
-   *          otherwise the maximum of files.
-   * @return the count of output DataFiles
-   */
-  int getOutputDataFileCount(final String portName, final Sample sample,
-      final boolean existingFiles) {
-
-    return WorkflowStepOutputDataFile.dataFileCount(getOutputPort(portName),
-        sample, existingFiles);
-  }
-
-  /**
-   * Get a DataFile that correspond to a port and a Sample for this step.
-   * @param portName name of the output port that generate file
-   * @param sample the sample
-   * @return a DataFile or null if the port is not available
-   */
-  DataFile getInputDataFile(final String portName, final Sample sample) {
-
-    return getInputDataFile(portName, sample, -1);
-  }
-
-  /**
-   * Get a DataFile that correspond to a port and a Sample for this step.
-   * @param portName name of the output port that generate file
-   * @param sample the sample
-   * @return a DataFile or null if the port is not available
-   */
-  DataFile getInputDataFile(final String portName, final Sample sample,
-      final int fileIndex) {
-
-    Preconditions.checkNotNull(portName, "PortName argument cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
-
-    // Check if the port exists
-    if (!getInputPorts().contains(portName))
-      throw new EoulsanRuntimeException(
-          "the step does not contains input port named: " + portName);
-
-    final WorkflowInputPort port = getInputPorts().getPort(portName);
-
-    // Check if the port is linked
-    if (!port.isLinked())
-      throw new EoulsanRuntimeException("the port \""
-          + portName + "\" of the step \"" + getId() + "\" is not linked.");
-
-    return port.getLink().getDataFile(sample, fileIndex);
-  }
-
-  /**
-   * Get the file count for an input step of the step.
-   * @param portName name of the output port that generate file
-   * @param sample sample sample that correspond to the file
-   * @param existingFiles if true return the number of files that really exists
-   *          otherwise the maximum of files.
-   * @return the count of intput DataFiles
-   */
-  int getInputDataFileCount(final String portName, final Sample sample,
-      final boolean existingFiles) {
-
-    checkNotNull(portName, "PortName argument cannot be null");
-    checkNotNull(sample, "Sample argument cannot be null");
-
-    // Check if the port exists
-    if (!getInputPorts().contains(portName))
-      throw new EoulsanRuntimeException(
-          "the step does not contains input port named: " + portName);
-
-    final WorkflowInputPort port = getInputPorts().getPort(portName);
-
-    // Check if the port is linked
-    if (!port.isLinked())
-      throw new EoulsanRuntimeException("the port \""
-          + portName + "\" of the step \"" + getId() + "\" is not linked.");
-
-    return port.getLink().getDataFileCount(sample, existingFiles);
+    return new OutputPortData(portName, sample);
   }
 
   /**

@@ -76,19 +76,19 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
         // Get annotation file
         final DataFile annotationFile =
-            context.getInputDataFile(ANNOTATION_GFF, s);
+            context.getInputPortData(ANNOTATION_GFF, s).getDataFile();
 
         // Get alignment file
         final DataFile alignmentFile =
-            context.getInputDataFile(MAPPER_RESULTS_SAM, s);
+            context.getInputPortData(MAPPER_RESULTS_SAM, s).getDataFile();
 
         // Get genome desc file
         final DataFile genomeDescFile =
-            context.getInputDataFile(DataFormats.GENOME_DESC_TXT, s);
+            context.getInputPortData(DataFormats.GENOME_DESC_TXT, s).getDataFile();
 
         // Get final expression file
         final DataFile expressionFile =
-            context.getOutputDataFile(EXPRESSION_RESULTS_TSV, s);
+            context.getOutputPortData(EXPRESSION_RESULTS_TSV, s).getDataFile();
 
         // Expression counting
         count(context, counter, annotationFile, alignmentFile, expressionFile,

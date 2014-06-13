@@ -150,22 +150,22 @@ public class CopyInputFormatStep extends AbstractStep {
     // Handle standard case
     if (format.getMaxFilesCount() == 1) {
 
-      final DataFile in = context.getInputDataFile(format, sample);
+      final DataFile in = context.getInputPortData(format, sample).getDataFile();
       if (!in.exists())
         throw new FileNotFoundException("input file not found: " + in);
 
-      copyDataFile(in, context.getOutputDataFile(format, sample));
+      copyDataFile(in, context.getOutputPortData(format, sample).getDataFile());
     } else {
 
       // Handle multi file format like fastq
-      final int count = context.getInputDataFileCount(format, sample);
+      final int count = context.getInputPortData(format, sample).getDataFileCount();
       for (int i = 0; i < count; i++) {
 
-        final DataFile in = context.getInputDataFile(format, sample, i);
+        final DataFile in = context.getInputPortData(format, sample).getDataFile(i);
         if (!in.exists())
           throw new FileNotFoundException("input file not found: " + in);
 
-        copyDataFile(in, context.getOutputDataFile(format, sample, i));
+        copyDataFile(in, context.getOutputPortData(format, sample).getDataFile(i));
       }
     }
   }

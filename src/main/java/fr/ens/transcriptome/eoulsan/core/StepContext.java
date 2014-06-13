@@ -176,195 +176,36 @@ public interface StepContext {
   WorkflowStep getCurrentStep();
 
   /**
-   * Get the pathname for an input DataType and a Sample.
+   * Get the input data for an input DataType and a Sample.
    * @param format the DataFormat of the source
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getInputDataFilename(DataFormat format, Sample sample);
+  PortData getInputPortData(DataFormat format, Sample sample);
 
   /**
-   * Get the pathname for an input DataType and a Sample. This method works only
-   * for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a String with the pathname
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  String getInputDataFilename(DataFormat format, Sample sample, int fileIndex);
-
-  /**
-   * Get the DataFile for an input DataType and a Sample.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @return a new DataFile object
-   */
-  DataFile getInputDataFile(DataFormat format, Sample sample);
-
-  /**
-   * Get the DataFile for an input DataType and a Sample. This method works only
-   * for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a new DataFile object
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  DataFile getInputDataFile(DataFormat format, Sample sample, int fileIndex);
-
-  /**
-   * Get the pathname for an output DataType and a Sample.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @return a String with the pathname
-   */
-  String getOutputDataFilename(DataFormat format, Sample sample);
-
-  /**
-   * Get the pathname for an output DataType and a Sample. This method works
-   * only for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a String with the pathname
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  String getOutputDataFilename(DataFormat format, Sample sample, int fileIndex);
-
-  /**
-   * Get the DataFile for a DataType and a Sample.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @return a new DataFile object
-   */
-  DataFile getOutputDataFile(DataFormat format, Sample sample);
-
-  /**
-   * Get the DataFile for an output DataType and a Sample. This method works
-   * only for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a new DataFile object
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  DataFile getOutputDataFile(DataFormat format, Sample sample, int fileIndex);
-
-  /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @return the number of multifile for the DataFormat and the sample
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  int getInputDataFileCount(final DataFormat format, final Sample sample);
-
-  /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @param format the DataFormat of the source
-   * @param sample the sample for the source
-   * @return the number of multifile for the DataFormat and the sample
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  int getOutputDataFileCount(final DataFormat format, final Sample sample);
-
-  /**
-   * Get the pathname for an input DataType and a Sample.
+   * Get the input data for a port name and a Sample.
    * @param portName the name of the port
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getInputDataFilename(String portName, Sample sample);
+  PortData getInputPortData(String portName, Sample sample);
 
   /**
-   * Get the pathname for an input DataType and a Sample. This method works only
-   * for a multifile DataFormat.
-   * @param portName the name of the port
+   * Get the output data for an input DataType and a Sample.
+   * @param format the DataFormat of the source
    * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
    */
-  String getInputDataFilename(String portName, Sample sample, int fileIndex);
+  PortData getOutputPortData(DataFormat format, Sample sample);
+
 
   /**
-   * Get the DataFile for an input DataType and a Sample.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @return a new DataFile object
-   */
-  DataFile getInputDataFile(String portName, Sample sample);
-
-  /**
-   * Get the DataFile for an input DataType and a Sample. This method works only
-   * for a multifile DataFormat.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a new DataFile object
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  DataFile getInputDataFile(String portName, Sample sample, int fileIndex);
-
-  /**
-   * Get the pathname for an output DataType and a Sample.
+   * Get the output data for a port name and a Sample.
    * @param portName the name of the port
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  String getOutputDataFilename(String portName, Sample sample);
-
-  /**
-   * Get the pathname for an output DataType and a Sample. This method works
-   * only for a multifile DataFormat.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a String with the pathname
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  String getOutputDataFilename(String portName, Sample sample, int fileIndex);
-
-  /**
-   * Get the DataFile for a DataType and a Sample.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @return a new DataFile object
-   */
-  DataFile getOutputDataFile(String portName, Sample sample);
-
-  /**
-   * Get the DataFile for an output DataType and a Sample. This method works
-   * only for a multifile DataFormat.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
-   * @return a new DataFile object
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  DataFile getOutputDataFile(String portName, Sample sample, int fileIndex);
-
-  /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @return the number of multifile for the DataFormat and the sample
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  int getInputDataFileCount(String portName, Sample sample);
-
-  /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @param portName the name of the port
-   * @param sample the sample for the source
-   * @return the number of multifile for the DataFormat and the sample
-   * @throws EoulsanRuntimeException if the DataFormat is not multifile
-   */
-  int getOutputDataFileCount(String portName, Sample sample);
+  PortData getOutputPortData(String portName, Sample sample);
 
 }

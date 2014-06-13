@@ -260,7 +260,7 @@ public class SampleStepContext {
    */
   public String getInputDataFilename(final DataFormat format) {
 
-    return this.context.getInputDataFilename(format, this.sample);
+    return this.context.getInputPortData(format, this.sample).getDataFilename();
   }
 
   /**
@@ -274,7 +274,7 @@ public class SampleStepContext {
   public String getInputDataFilename(final DataFormat format,
       final int fileIndex) {
 
-    return this.context.getInputDataFilename(format, this.sample, fileIndex);
+    return this.context.getInputPortData(format, this.sample).getDataFilename(fileIndex);
   }
 
   /**
@@ -284,7 +284,7 @@ public class SampleStepContext {
    */
   public DataFile getInputDataFile(final DataFormat format) {
 
-    return this.context.getInputDataFile(format, this.sample);
+    return this.context.getInputPortData(format, this.sample).getDataFile();
   }
 
   /**
@@ -297,7 +297,7 @@ public class SampleStepContext {
    */
   public DataFile getInputDataFile(final DataFormat format, final int fileIndex) {
 
-    return this.context.getInputDataFile(format, this.sample, fileIndex);
+    return this.context.getInputPortData(format, this.sample).getDataFile(fileIndex);
   }
 
   /**
@@ -307,7 +307,7 @@ public class SampleStepContext {
    */
   public String getOutputDataFilename(final DataFormat format) {
 
-    return this.context.getOutputDataFilename(format, this.sample);
+    return this.context.getOutputPortData(format, this.sample).getDataFilename();
   }
 
   /**
@@ -321,7 +321,7 @@ public class SampleStepContext {
   public String getOutputDataFilename(final DataFormat format,
       final int fileIndex) {
 
-    return this.context.getOutputDataFilename(format, this.sample, fileIndex);
+    return this.context.getOutputPortData(format, this.sample).getDataFilename(fileIndex);
   }
 
   /**
@@ -331,7 +331,7 @@ public class SampleStepContext {
    */
   public DataFile getOutputDataFile(final DataFormat format) {
 
-    return this.context.getOutputDataFile(format, this.sample);
+    return this.context.getOutputPortData(format, this.sample).getDataFile();
   }
 
   /**
@@ -345,7 +345,7 @@ public class SampleStepContext {
    */
   public DataFile getOutputDataFile(final DataFormat format, final int fileIndex) {
 
-    return this.context.getOutputDataFile(format, this.sample, fileIndex);
+    return this.context.getOutputPortData(format, this.sample).getDataFile(fileIndex);
   }
 
   /**
@@ -357,7 +357,7 @@ public class SampleStepContext {
    */
   public int getInputDataFileCount(final DataFormat format) {
 
-    return this.context.getInputDataFileCount(format, this.sample);
+    return this.context.getInputPortData(format, this.sample).getDataFileCount();
   }
 
   /**
@@ -369,7 +369,7 @@ public class SampleStepContext {
    */
   public int getOutputDataFileCount(final DataFormat format) {
 
-    return this.context.getOutputDataFileCount(format, this.sample);
+    return this.context.getOutputPortData(format, this.sample).getDataFileCount();
   }
 
   /**
@@ -379,7 +379,7 @@ public class SampleStepContext {
    */
   public String getInputDataFilename(final String portName) {
 
-    return this.context.getInputDataFilename(portName, this.sample);
+    return this.context.getInputPortData(portName, this.sample).getDataFilename();
   }
 
   /**
@@ -392,7 +392,7 @@ public class SampleStepContext {
    */
   public String getInputDataFilename(final String portName, final int fileIndex) {
 
-    return this.context.getInputDataFilename(portName, this.sample, fileIndex);
+    return this.context.getInputPortData(portName, this.sample).getDataFilename(fileIndex);
   }
 
   /**
@@ -402,7 +402,7 @@ public class SampleStepContext {
    */
   public DataFile getInputDataFile(final String portName) {
 
-    return this.context.getInputDataFile(portName, this.sample);
+    return this.context.getInputPortData(portName, this.sample).getDataFile();
   }
 
   /**
@@ -415,7 +415,7 @@ public class SampleStepContext {
    */
   public DataFile getInputDataFile(final String portName, final int fileIndex) {
 
-    return this.context.getInputDataFile(portName, this.sample, fileIndex);
+    return this.context.getInputPortData(portName, this.sample).getDataFile(fileIndex);
   }
 
   /**
@@ -425,7 +425,7 @@ public class SampleStepContext {
    */
   public String getOutputDataFilename(final String portName) {
 
-    return this.context.getOutputDataFilename(portName, this.sample);
+    return this.context.getOutputPortData(portName, this.sample).getDataFilename();
   }
 
   /**
@@ -438,7 +438,7 @@ public class SampleStepContext {
    */
   public String getOutputDataFilename(final String portName, final int fileIndex) {
 
-    return this.context.getOutputDataFilename(portName, this.sample, fileIndex);
+    return this.context.getOutputPortData(portName, this.sample).getDataFilename(fileIndex);
   }
 
   /**
@@ -448,7 +448,7 @@ public class SampleStepContext {
    */
   public DataFile getOutputDataFile(final String portName) {
 
-    return this.context.getOutputDataFile(portName, this.sample);
+    return this.context.getOutputPortData(portName, this.sample).getDataFile();
   }
 
   /**
@@ -462,7 +462,7 @@ public class SampleStepContext {
    */
   public DataFile getOutputDataFile(final String portName, final int fileIndex) {
 
-    return this.context.getOutputDataFile(portName, this.sample, fileIndex);
+    return this.context.getOutputPortData(portName, this.sample).getDataFile(fileIndex);
   }
 
   /**
@@ -474,7 +474,7 @@ public class SampleStepContext {
    */
   public int getInputDataFileCount(final String portName) {
 
-    return this.context.getInputDataFileCount(portName, this.sample);
+    return this.context.getInputPortData(portName, this.sample).getDataFileCount();
   }
 
   /**
@@ -486,7 +486,7 @@ public class SampleStepContext {
    */
   public int getOutputDataFileCount(final String portName) {
 
-    return this.context.getOutputDataFileCount(portName, this.sample);
+    return this.context.getOutputPortData(portName, this.sample).getDataFileCount();
   }
 
   //

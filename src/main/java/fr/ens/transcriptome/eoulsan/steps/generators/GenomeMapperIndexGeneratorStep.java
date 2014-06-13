@@ -120,17 +120,17 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
       // Get the genome DataFile
       final DataFile genomeDataFile =
-          context.getInputDataFile(GENOME_FASTA, s1);
+          context.getInputPortData(GENOME_FASTA, s1).getDataFile();
 
       // Get the genome description DataFile
       final DataFile descDataFile =
-          context.getInputDataFile(GENOME_DESC_TXT, s1);
+          context.getInputPortData(GENOME_DESC_TXT, s1).getDataFile();
       final GenomeDescription desc =
           GenomeDescription.load(descDataFile.open());
 
       // Get the output DataFile
       final DataFile mapperIndexDataFile =
-          context.getOutputDataFile(this.mapper.getArchiveFormat(), s1);
+          context.getOutputPortData(this.mapper.getArchiveFormat(), s1).getDataFile();
 
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());

@@ -96,7 +96,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getInputDataFileCount(READS_FASTQ, s) == 2)
+        if (context.getInputPortData(READS_FASTQ, s).getDataFileCount() == 2)
           jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
       }
 
@@ -144,9 +144,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Get input DataFile
     DataFile inputDataFile = null;
-    inputDataFile = context.getInputDataFile(READS_TFQ, sample);
+    inputDataFile = context.getInputPortData(READS_TFQ, sample).getDataFile();
     if (inputDataFile == null)
-      inputDataFile = context.getInputDataFile(READS_FASTQ, sample);
+      inputDataFile = context.getInputPortData(READS_FASTQ, sample).getDataFile();
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -195,8 +195,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputDataFile(DataFormats.READS_TFQ, sample)
-            .getSource()));
+        new Path(context.getOutputPortData(DataFormats.READS_TFQ, sample)
+            .getDataFilename()));
 
     return job;
   }
@@ -215,7 +215,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // get input file count for the sample
     final int inFileCount =
-        context.getInputDataFileCount(DataFormats.READS_FASTQ, sample);
+        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFileCount();
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -226,9 +226,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Get the source
     final DataFile inputDataFile1 =
-        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 0);
+        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFile(0);
     final DataFile inputDataFile2 =
-        context.getInputDataFile(DataFormats.READS_FASTQ, sample, 1);
+        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFile(1);
 
     // Set input path
     final Path inputPath1 = new Path(inputDataFile1.getSource());

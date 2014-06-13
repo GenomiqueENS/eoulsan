@@ -755,7 +755,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           } else {
             files = Lists.newArrayList();
             final int count =
-                step.getInputDataFileCount(inputPort.getName(), sample, false);
+                step.getInputPortData(inputPort.getName(), sample).getDataFileCount(false);
 
             for (int i = 0; i < count; i++) {
 

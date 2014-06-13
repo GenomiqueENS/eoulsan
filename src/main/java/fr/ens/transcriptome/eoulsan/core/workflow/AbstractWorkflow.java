@@ -594,7 +594,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
           // Test the number of files by data
           if (format.getMaxFilesCount() == 1) {
-            final DataFile file = context.getOutputDataFile(format, sample);
+            final DataFile file = context.getOutputPortData(format, sample).getDataFile();
             final DataFile link = new DataFile(getOutputDir(), file.getName());
 
             // Remove existing file/symlink
@@ -606,10 +606,10 @@ public abstract class AbstractWorkflow implements Workflow {
           } else {
 
             // Handle multi files
-            final int count = context.getOutputDataFileCount(format, sample);
+            final int count = context.getOutputPortData(format, sample).getDataFileCount();
             for (int i = 0; i < count; i++) {
               final DataFile file =
-                  context.getOutputDataFile(format, sample, i);
+                  context.getOutputPortData(format, sample).getDataFile(i);
               final DataFile link =
                   new DataFile(getOutputDir(), file.getName());
 
