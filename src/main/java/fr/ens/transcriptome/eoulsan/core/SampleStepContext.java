@@ -27,11 +27,9 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -258,9 +256,9 @@ public class SampleStepContext {
    * @param format the DataFormat of the source
    * @return a String with the pathname
    */
-  public PortData getInputPortData(DataFormat format) {
+  public Data getInputData(DataFormat format) {
 
-    return this.context.getInputPortData(format, this.sample);
+    return this.context.getInputData(format, this.sample);
   }
 
   /**
@@ -268,9 +266,9 @@ public class SampleStepContext {
    * @param portName the name of the port
    * @return a String with the pathname
    */
-  public PortData getInputPortData(String portName){
+  public Data getInputData(String portName){
 
-    return this.context.getInputPortData(portName, this.sample);
+    return this.context.getInputData(portName, this.sample);
   }
 
   /**
@@ -278,9 +276,9 @@ public class SampleStepContext {
    * @param format the DataFormat of the source
    * @return a String with the pathname
    */
-  public PortData getOutputPortData(DataFormat format) {
+  public Data getOutputData(DataFormat format) {
 
-    return this.context.getOutputPortData(format, this.sample);
+    return this.context.getOutputData(format, this.sample);
   }
 
 
@@ -289,9 +287,9 @@ public class SampleStepContext {
    * @param portName the name of the port
    * @return a String with the pathname
    */
-  public PortData getOutputPortData(String portName) {
+  public Data getOutputData(String portName) {
 
-    return this.context.getOutputPortData(portName, this.sample);
+    return this.context.getOutputData(portName, this.sample);
   }
 
 

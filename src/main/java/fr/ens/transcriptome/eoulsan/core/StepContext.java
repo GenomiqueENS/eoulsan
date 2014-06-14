@@ -27,11 +27,9 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -181,7 +179,7 @@ public interface StepContext {
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  PortData getInputPortData(DataFormat format, Sample sample);
+  Data getInputData(DataFormat format, Sample sample);
 
   /**
    * Get the input data for a port name and a Sample.
@@ -189,7 +187,7 @@ public interface StepContext {
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  PortData getInputPortData(String portName, Sample sample);
+  Data getInputData(String portName, Sample sample);
 
   /**
    * Get the output data for an input DataType and a Sample.
@@ -197,7 +195,7 @@ public interface StepContext {
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  PortData getOutputPortData(DataFormat format, Sample sample);
+  Data getOutputData(DataFormat format, Sample sample);
 
 
   /**
@@ -206,6 +204,6 @@ public interface StepContext {
    * @param sample the sample for the source
    * @return a String with the pathname
    */
-  PortData getOutputPortData(String portName, Sample sample);
+  Data getOutputData(String portName, Sample sample);
 
 }

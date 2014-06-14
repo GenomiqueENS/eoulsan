@@ -106,7 +106,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
       if (this.firstSample) {
         if (this.genomeDescription == null) {
           genomeDescription =
-              GenomeDescription.load(context.getInputPortData(
+              GenomeDescription.load(context.getInputData(
                   DataFormats.GENOME_DESC_TXT).getDataFile().open());
         } else
           genomeDescription = null;
@@ -120,7 +120,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
       final Reporter reporter = new LocalReporter();
 
       final File archiveIndexFile =
-          context.getInputPortData(getMapper().getArchiveFormat()).getDataFile().toFile();
+          context.getInputData(getMapper().getArchiveFormat()).getDataFile().toFile();
 
       final File indexDir =
           new File(StringUtils.filenameWithoutExtension(archiveIndexFile
@@ -128,7 +128,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
 
       // get input file count for the sample
       final int inFileCount =
-          context.getInputPortData(DataFormats.READS_FASTQ).getDataFileCount();
+          context.getInputData(DataFormats.READS_FASTQ).getDataFileCount();
 
       if (inFileCount < 1)
         throw new IOException("No reads file found.");
@@ -143,7 +143,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
       if (inFileCount == 1) {
 
         // Get the source
-        final File inFile = context.getInputPortData(READS_FASTQ).getDataFile(0).toFile();
+        final File inFile = context.getInputData(READS_FASTQ).getDataFile(0).toFile();
 
         // Single read mapping
         mapSingleEnd(context, mapper, inFile, archiveIndexFile, indexDir,
@@ -160,9 +160,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
       if (inFileCount == 2) {
 
         // Get the source
-        final File inFile1 = context.getInputPortData(READS_FASTQ).getDataFile(0).toFile();
+        final File inFile1 = context.getInputData(READS_FASTQ).getDataFile(0).toFile();
 
-        final File inFile2 = context.getInputPortData(READS_FASTQ).getDataFile(1).toFile();
+        final File inFile2 = context.getInputData(READS_FASTQ).getDataFile(1).toFile();
 
         // Single read mapping
         mapPairedEnd(context, mapper, inFile1, inFile2, archiveIndexFile,
@@ -185,7 +185,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep implements
 
       // define final output SAM file
       final File outFile =
-          context.getOutputPortData(MAPPER_RESULTS_SAM).getDataFile().toFile();
+          context.getOutputData(MAPPER_RESULTS_SAM).getDataFile().toFile();
 
       // Rename the output SAM file to its final name
       Files.move(samOutputFile, outFile);

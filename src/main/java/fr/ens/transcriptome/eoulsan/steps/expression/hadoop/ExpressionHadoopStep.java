@@ -118,11 +118,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     final Path inputPath =
-        new Path(context.getInputPortData(MAPPER_RESULTS_SAM, sample).getDataFilename());
+        new Path(context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFilename());
 
     // Get annotation DataFile
     final DataFile annotationDataFile =
-        context.getInputPortData(ANNOTATION_GFF, sample).getDataFile();
+        context.getInputData(ANNOTATION_GFF, sample).getDataFile();
 
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
@@ -136,7 +136,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputPortData(GENOME_DESC_TXT, sample).getDataFilename());
+        .getInputData(GENOME_DESC_TXT, sample).getDataFilename());
 
     final Path exonsIndexPath =
         getAnnotationIndexSerializedPath(context, sample);
@@ -184,7 +184,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
 
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputPortData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
+        new Path(context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
             .getSourceWithoutExtension() + ".tmp"));
 
     return job;
@@ -214,7 +214,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Get input DataFile
     DataFile inputDataFile =
-        context.getInputPortData(MAPPER_RESULTS_SAM, sample).getDataFile();
+        context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFile();
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -233,7 +233,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Get annotation DataFile
     final DataFile annotationDataFile =
-        context.getInputPortData(ANNOTATION_GFF, sample).getDataFile();
+        context.getInputData(ANNOTATION_GFF, sample).getDataFile();
 
     LOGGER.fine("sample: " + sample);
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
@@ -247,7 +247,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     final DataFile genomeDescDataFile =
-        context.getInputPortData(GENOME_DESC_TXT, sample).getDataFile();
+        context.getInputData(GENOME_DESC_TXT, sample).getDataFile();
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
         genomeDescDataFile.getSource());
 
@@ -306,7 +306,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set output path
 
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputPortData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
+        new Path(context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
             .getSourceWithoutExtension() + ".tmp"));
 
     return job;
@@ -330,7 +330,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Get the source
     final DataFile inputDataFile =
-        context.getInputPortData(MAPPER_RESULTS_SAM, sample).getDataFile();
+        context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFile();
 
     // Set input path
     final Path inputPath = new Path(inputDataFile.getSource());
@@ -340,7 +340,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set Genome description path
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputPortData(GENOME_DESC_TXT, sample).getDataFilename());
+        .getInputData(GENOME_DESC_TXT, sample).getDataFilename());
 
     // Create the job and its name
     final Job job =
@@ -520,14 +520,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Set the result path
       final Path resultPath =
           new Path(
-              context.getOutputPortData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
+              context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
 
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
       fetc.loadPreResults(
           new DataFile(context
-              .getOutputPortData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
+              .getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
               .getSourceWithoutExtension()
               + ".tmp").open(), readsUsed);
 
@@ -558,7 +558,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Set the result path
       final Path resultPath =
           new Path(
-              context.getOutputPortData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
+              context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
 
       fefc.initializeExpressionResults();
 
@@ -580,7 +580,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final StepContext context, final Sample sample) {
 
     // Get annotation DataFile
-    String filename = context.getInputPortData(ANNOTATION_GFF, sample).getDataFilename();
+    String filename = context.getInputData(ANNOTATION_GFF, sample).getDataFilename();
 
     filename = StringUtils.removeCompressedExtensionFromFilename(filename);
 

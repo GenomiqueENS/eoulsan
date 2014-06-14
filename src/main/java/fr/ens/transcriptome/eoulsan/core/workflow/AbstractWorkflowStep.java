@@ -29,7 +29,6 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -40,10 +39,10 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.PortData;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -92,7 +91,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   private StepResult result;
 
-  private class InputPortData implements PortData {
+  private class InputData implements Data {
 
     final WorkflowInputPort port;
     final Sample sample;
@@ -141,7 +140,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Constructor
     //
 
-    public InputPortData(final String portName, final Sample sample) {
+    public InputData(final String portName, final Sample sample) {
 
       Preconditions.checkNotNull(portName, "PortName argument cannot be null");
       Preconditions.checkNotNull(sample, "Sample argument cannot be null");
@@ -162,7 +161,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     }
   }
 
-  private class OutputPortData implements PortData {
+  private class OutputData implements Data {
 
     final WorkflowOutputPort port;
     final Sample sample;
@@ -213,7 +212,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Constructor
     //
 
-    public OutputPortData(final String portName, final Sample sample) {
+    public OutputData(final String portName, final Sample sample) {
 
       Preconditions.checkNotNull(portName, "portName argument cannot be null");
       Preconditions.checkArgument(outputPorts.contains(portName),
@@ -562,14 +561,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   // return port.getLink().getDataFileCount(sample, existingFiles);
   // }
 
-  PortData getInputPortData(final String portName, final Sample sample) {
+  Data getInputPortData(final String portName, final Sample sample) {
 
-    return new InputPortData(portName, sample);
+    return new InputData(portName, sample);
   }
 
-  PortData getOutputPortData(final String portName, final Sample sample) {
+  Data getOutputPortData(final String portName, final Sample sample) {
 
-    return new OutputPortData(portName, sample);
+    return new OutputData(portName, sample);
   }
 
   /**

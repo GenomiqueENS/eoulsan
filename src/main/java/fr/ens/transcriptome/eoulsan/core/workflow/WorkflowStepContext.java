@@ -33,9 +33,8 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.PortData;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -180,29 +179,29 @@ public class WorkflowStepContext implements StepContext, Serializable {
 
 
   @Override
-  public PortData getInputPortData(final String portName, final Sample sample) {
+  public Data getInputData(final String portName, final Sample sample) {
 
     return this.step.getInputPortData(portName, sample);
   }
 
 @Override
-  public PortData getInputPortData(final DataFormat format, final Sample sample) {
+  public Data getInputData(final DataFormat format, final Sample sample) {
 
-  return getInputPortData(getInputPortNameForFormat(format), sample);
+  return getInputData(getInputPortNameForFormat(format), sample);
 }
 
 
 
   @Override
-  public PortData getOutputPortData(final String portName, final Sample sample) {
+  public Data getOutputData(final String portName, final Sample sample) {
 
     return this.step.getOutputPortData(portName, sample);
   }
 
   @Override
-  public PortData getOutputPortData(final DataFormat format, final Sample sample) {
+  public Data getOutputData(final DataFormat format, final Sample sample) {
 
-    return getInputPortData(getOutputPortNameForFormat(format), sample);
+    return getInputData(getOutputPortNameForFormat(format), sample);
   }
 
 

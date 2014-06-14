@@ -103,7 +103,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       for (Sample s : design.getSamples()) {
-        if (context.getInputPortData(READS_FASTQ, s).getDataFileCount() == 2)
+        if (context.getInputData(READS_FASTQ, s).getDataFileCount() == 2)
           jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
       }
 
@@ -151,9 +151,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Get input DataFile
     DataFile inputDataFile = null;
-    inputDataFile = context.getInputPortData(READS_TFQ, sample).getDataFile();
+    inputDataFile = context.getInputData(READS_TFQ, sample).getDataFile();
     if (inputDataFile == null)
-      inputDataFile = context.getInputPortData(READS_FASTQ, sample).getDataFile();
+      inputDataFile = context.getInputData(READS_FASTQ, sample).getDataFile();
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -188,7 +188,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getInputPortData(getMapper().getArchiveFormat(),
+        new Path(context.getInputData(getMapper().getArchiveFormat(),
             sample).getDataFilename());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
@@ -197,7 +197,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getInputPortData(READS_FASTQ, sample).getDataFileCount() == 2)
+    if (context.getInputData(READS_FASTQ, sample).getDataFileCount() == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
@@ -227,7 +227,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getInputPortData(DataFormats.GENOME_DESC_TXT, sample).getDataFilename());
+        context.getInputData(DataFormats.GENOME_DESC_TXT, sample).getDataFilename());
 
     // Set Job name
     // Create the job and its name
@@ -266,7 +266,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputPortData(DataFormats.MAPPER_RESULTS_SAM,
+        new Path(context.getOutputData(DataFormats.MAPPER_RESULTS_SAM,
             sample).getDataFilename()));
 
     return job;
@@ -286,7 +286,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // get input file count for the sample
     final int inFileCount =
-        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFileCount();
+        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFileCount();
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -297,9 +297,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Get the source
     final DataFile inputDataFile1 =
-        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFile(0);
+        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
     final DataFile inputDataFile2 =
-        context.getInputPortData(DataFormats.READS_FASTQ, sample).getDataFile(1);
+        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
 
     // Set input path
     final Path inputPath1 = new Path(inputDataFile1.getSource());

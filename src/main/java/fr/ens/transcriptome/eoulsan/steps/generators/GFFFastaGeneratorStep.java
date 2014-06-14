@@ -95,11 +95,11 @@ public class GFFFastaGeneratorStep extends AbstractStep {
 
       // Get the annotation DataFile
       final DataFile annotationDataFile =
-          context.getInputPortData(GENOME_FASTA, s1).getDataFile();
+          context.getInputData(GENOME_FASTA, s1).getDataFile();
 
       // Get the output DataFile
       final DataFile genomeDataFile =
-          context.getOutputPortData(GENOME_FASTA, s1).getDataFile();
+          context.getOutputData(GENOME_FASTA, s1).getDataFile();
 
       LOGGER.info("Input annotation file: " + annotationDataFile);
       LOGGER.info("Output genome file: " + genomeDataFile);

@@ -96,11 +96,11 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
       // Get the genome DataFile
       final DataFile genomeDataFile =
-          context.getInputPortData(DataFormats.GENOME_FASTA, s1).getDataFile();
+          context.getInputData(DataFormats.GENOME_FASTA, s1).getDataFile();
 
       // Get the output DataFile
       final DataFile genomeDescriptionDataFile =
-          context.getOutputPortData(GENOME_DESC_TXT, s1).getDataFile();
+          context.getOutputData(GENOME_DESC_TXT, s1).getDataFile();
 
       LOGGER.fine("Input genome file: " + genomeDataFile);
       LOGGER.fine("Output genome description file: "

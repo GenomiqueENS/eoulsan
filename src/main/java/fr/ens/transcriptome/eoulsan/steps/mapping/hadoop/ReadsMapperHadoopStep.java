@@ -135,11 +135,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     final Path inputPath =
-        new Path(context.getInputPortData(DataFormats.READS_TFQ, sample).getDataFilename());
+        new Path(context.getInputData(DataFormats.READS_TFQ, sample).getDataFilename());
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getInputPortData(getMapper().getArchiveFormat(),
+        new Path(context.getInputData(getMapper().getArchiveFormat(),
             sample).getDataFilename());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
@@ -148,7 +148,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getInputPortData(READS_FASTQ, sample).getDataFileCount() == 2)
+    if (context.getInputData(READS_FASTQ, sample).getDataFileCount() == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
@@ -209,7 +209,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputPortData(MAPPER_RESULTS_SAM, sample)
+        new Path(context.getOutputData(MAPPER_RESULTS_SAM, sample)
             .getDataFilename()));
 
     return job;

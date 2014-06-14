@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
  * @since 1.3
  * @author Laurent Jourdren
  */
-public interface PortData {
+public interface Data {
 
   /**
    * Get the data format of the data.
