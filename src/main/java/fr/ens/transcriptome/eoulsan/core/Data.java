@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -40,6 +42,14 @@ public interface Data {
    * @return a DataFormat object
    */
   DataFormat getFormat();
+
+  boolean isList();
+
+  /**
+   * Get the the list of data.
+   * @return a list even if the data is not a list
+   */
+  List<Data> getList();
 
   /**
    * Get the pathname for the data.

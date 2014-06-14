@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -96,10 +97,22 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     final WorkflowInputPort port;
     final Sample sample;
 
+
+
     @Override
     public DataFormat getFormat() {
 
       return this.port.getFormat();
+    }
+
+    @Override
+    public boolean isList() {
+      return false;
+    }
+
+    @Override
+    public List<Data> getList() {
+      return Collections.singletonList((Data) this);
     }
 
     @Override
@@ -170,6 +183,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     public DataFormat getFormat() {
 
       return this.port.getFormat();
+    }
+
+    @Override
+    public boolean isList() {
+      return false;
+    }
+
+    @Override
+    public List<Data> getList() {
+      return Collections.singletonList((Data)this);
     }
 
     @Override
