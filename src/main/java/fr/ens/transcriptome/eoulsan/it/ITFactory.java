@@ -75,7 +75,7 @@ public class ITFactory {
 
   private final static Stopwatch TIMER = Stopwatch.createUnstarted();
 
-  private static Formatter FORMATTED_DATE = new Formatter().format(
+  private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
 
   private final Properties globalsConf;
@@ -353,7 +353,7 @@ public class ITFactory {
       // Init logger path
       this.loggerPath =
           this.globalsConf.getProperty("log.directory")
-              + "/" + this.versionApplication + "_" + FORMATTED_DATE.toString()
+              + "/" + this.versionApplication + "_" + DATE_FORMATTER.toString()
               + ".log";
 
       // Init test data source directory
@@ -363,7 +363,7 @@ public class ITFactory {
       // Init test data output directory
       this.outputTestsDirectory =
           new File(this.globalsConf.getProperty("output.analysis.directory"),
-              this.versionApplication + "_" + FORMATTED_DATE.toString());
+              this.versionApplication + "_" + DATE_FORMATTER.toString());
 
     } else {
       // Case no testng must be create when compile project with maven

@@ -35,7 +35,7 @@ public class RegressionActionDemo {
     IntegrationTestAction action = (IntegrationTestAction) action0;
 
     // Run action
-    int choice = 2;
+    int choice = 0;
 
     switch (choice) {
     case 0:
