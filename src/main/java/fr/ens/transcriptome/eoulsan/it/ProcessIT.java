@@ -178,7 +178,7 @@ public class ProcessIT {
 
     } catch (EoulsanITRuntimeException e) {
       msgException =
-          "Fail comparaison test "
+          "Fail comparison test "
               + testName + ", cause: " + e.getMessage() + "\n";
       LOGGER.warning(msgException);
       throw new Exception(msgException);
