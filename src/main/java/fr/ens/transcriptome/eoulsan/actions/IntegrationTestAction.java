@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -35,6 +36,8 @@ import org.apache.commons.cli.ParseException;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+
+import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -251,6 +254,26 @@ public class IntegrationTestAction extends AbstractAction {
 
     // Launch integration tests using TestNG
     testng.run();
+
+    // Make a copy testngReport in output test directory
+    final File reportDirectory = new File(testng.getOutputDirectory());
+
+    final File outputTestDirectory =
+        new File(ITFactory.getOutputTestDirectoryPath());
+
+    if (reportDirectory.exists() && outputTestDirectory.exists()) {
+      // Build destination directory to copy testng report
+      final File destinationDirectory =
+          new File(outputTestDirectory, reportDirectory.getName());
+
+      if (destinationDirectory.mkdir()) {
+        // Copy testng directory
+        try {
+          Files.copy(reportDirectory, destinationDirectory);
+        } catch (IOException e) {
+        }
+      }
+    }
   }
 
 }

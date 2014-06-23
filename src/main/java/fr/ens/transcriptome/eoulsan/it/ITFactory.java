@@ -77,6 +77,7 @@ public class ITFactory {
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
+  private static String outputTestsDirectoryPath;
 
   private final Properties globalsConf;
   private final File applicationPath;
@@ -112,7 +113,7 @@ public class ITFactory {
       testsCount = tests.size();
       if (testsCount == 0)
         return new Object[0];
-      
+
       // Return all tests
       return tests.toArray(new Object[tests.size()]);
 
@@ -166,8 +167,7 @@ public class ITFactory {
    *           test.
    * @throws IOException if the source file doesn't exist
    */
-  private List<ProcessIT> collectTests() throws EoulsanException,
-      IOException {
+  private List<ProcessIT> collectTests() throws EoulsanException, IOException {
 
     final List<ProcessIT> tests = Lists.newArrayList();
     final List<File> allTestsDirectories;
@@ -202,8 +202,8 @@ public class ITFactory {
 
       // Create instance
       final ProcessIT processIT =
-          new ProcessIT(this.globalsConf, this.applicationPath,
-              new File(testDirectory, "test.conf"), this.outputTestsDirectory,
+          new ProcessIT(this.globalsConf, this.applicationPath, new File(
+              testDirectory, "test.conf"), this.outputTestsDirectory,
               testDirectory.getName());
 
       // Add in map
@@ -291,12 +291,24 @@ public class ITFactory {
   }
 
   //
+  // Getter
+  //
+  /**
+   * Gets the output test directory path.
+   * @return the output test directory path
+   */
+  public static String getOutputTestDirectoryPath() {
+    return outputTestsDirectoryPath;
+  }
+
+  //
   // Constructor
   //
 
   /**
    * Public constructor
-   * @throws EoulsanException if an error occurs when reading configuration file.
+   * @throws EoulsanException if an error occurs when reading configuration
+   *           file.
    */
   public ITFactory() throws EoulsanException {
 
@@ -344,11 +356,9 @@ public class ITFactory {
 
       // Retrieve application version test
       this.versionApplication =
-          ProcessIT
-              .retrieveVersionApplication(
-                  this.globalsConf
-                      .getProperty(ProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
-                  this.applicationPath);
+          ProcessIT.retrieveVersionApplication(this.globalsConf
+              .getProperty(ProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
+              this.applicationPath);
 
       // Init logger path
       this.loggerPath =
@@ -364,6 +374,10 @@ public class ITFactory {
       this.outputTestsDirectory =
           new File(this.globalsConf.getProperty("output.analysis.directory"),
               this.versionApplication + "_" + DATE_FORMATTER.toString());
+
+      // Set output tests directory path to call by Testng instance in Action
+      // class
+      outputTestsDirectoryPath = this.outputTestsDirectory.getAbsolutePath();
 
     } else {
       // Case no testng must be create when compile project with maven
