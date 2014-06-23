@@ -21,12 +21,11 @@ public class RegressionActionDemo {
 
   public static void mainbis() {
 
-    final String confpath =
-        "/home/sperrin/home-net/testsIT/test_fonctionnel.conf";
+    final String confpath = "/import/mimir03/lib/it/it_global.conf";
 
-    final String fileTests = "/home/sperrin/home-net/testsIT/list_tests.txt";
+    final String fileTests = "import/mimir03/lib/it/list_tests.txt";
     final String reportDir =
-        "/import/mimir02/sgdb/sperrin/testsIT/output/testng-results";
+        "/import/geri02/it_eoulsan_results/output/testng-results";
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
