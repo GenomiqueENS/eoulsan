@@ -336,10 +336,13 @@ public class ITFactory {
       // Load configuration file
       this.globalsConf = new Properties();
       try {
+        
+        checkExistingStandardFile(configurationFile, "test configuration file");
+        
         this.globalsConf.load(newReader(this.configurationFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
       } catch (IOException e) {
-        throw new EoulsanException("Configuration is missing ("
+        throw new EoulsanException("Reading test configuration file fail ("
             + this.configurationFile.getAbsolutePath() + ")");
       }
 
