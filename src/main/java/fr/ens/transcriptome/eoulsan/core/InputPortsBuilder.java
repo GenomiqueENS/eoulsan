@@ -39,6 +39,9 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  */
 public class InputPortsBuilder {
 
+  /** Default single input port name. */
+  public static final String DEFAULT_SINGLE_INPUT_PORT_NAME = "input";
+
   private Set<InputPort> result = Sets.newHashSet();
 
   /**
@@ -57,7 +60,8 @@ public class InputPortsBuilder {
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format) {
+  public InputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format) {
 
     return addPort(new SimpleInputPort(name, list, format));
   }
@@ -81,8 +85,9 @@ public class InputPortsBuilder {
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    */
-  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
-                                   final EnumSet<CompressionType> compressionsAccepted) {
+  public InputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format,
+      final EnumSet<CompressionType> compressionsAccepted) {
 
     return addPort(new SimpleInputPort(name, list, format, compressionsAccepted));
   }
@@ -96,8 +101,7 @@ public class InputPortsBuilder {
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, format,
-        requiredInWorkingDirectory));
+    return addPort(new SimpleInputPort(name, format, requiredInWorkingDirectory));
   }
 
   /**
@@ -107,8 +111,8 @@ public class InputPortsBuilder {
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
-                                   boolean requiredInWorkingDirectory) {
+  public InputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format, boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, list, format,
         requiredInWorkingDirectory));
@@ -137,12 +141,12 @@ public class InputPortsBuilder {
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  public InputPortsBuilder addPort(final String name, final DataFormat format, final boolean list,
-                                   final EnumSet<CompressionType> compressionsAccepted,
-                                   boolean requiredInWorkingDirectory) {
+  public InputPortsBuilder addPort(final String name, final DataFormat format,
+      final boolean list, final EnumSet<CompressionType> compressionsAccepted,
+      boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted,
-        requiredInWorkingDirectory));
+    return addPort(new SimpleInputPort(name, list, format,
+        compressionsAccepted, requiredInWorkingDirectory));
   }
 
   /**
@@ -184,7 +188,8 @@ public class InputPortsBuilder {
    */
   public static final InputPorts singleInputPort(final DataFormat format) {
 
-    return new InputPortsBuilder().addPort("input", format).create();
+    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+        format).create();
   }
 
   /**

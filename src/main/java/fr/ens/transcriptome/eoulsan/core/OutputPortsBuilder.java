@@ -39,6 +39,9 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  */
 public class OutputPortsBuilder {
 
+  /** Default single output port name. */
+  public static final String DEFAULT_SINGLE_OUTPUT_PORT_NAME = "output";
+
   private Set<OutputPort> result = Sets.newHashSet();
   private Set<String> portNames = Sets.newHashSet();
 
@@ -58,7 +61,8 @@ public class OutputPortsBuilder {
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  public OutputPortsBuilder addPort(final String name, final boolean list, final DataFormat format) {
+  public OutputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format) {
 
     return addPort(new SimpleOutputPort(name, list, format));
   }
@@ -82,8 +86,8 @@ public class OutputPortsBuilder {
    * @param format format of the port
    * @param compression compression of the output
    */
-  public OutputPortsBuilder addPort(final String name, final boolean list, final DataFormat format,
-                                    final CompressionType compression) {
+  public OutputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format, final CompressionType compression) {
 
     return addPort(new SimpleOutputPort(name, list, format, compression));
   }
@@ -112,7 +116,8 @@ public class OutputPortsBuilder {
    */
   public static final OutputPorts singleOutputPort(final DataFormat format) {
 
-    return new OutputPortsBuilder().addPort("output", format).create();
+    return new OutputPortsBuilder().addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+        format).create();
   }
 
   /**
