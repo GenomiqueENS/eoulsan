@@ -57,7 +57,7 @@ class DataElement extends AbstractData {
   }
 
   @Override
-  public List<Data> getList() {
+  public List<Data> getListElements() {
     return Collections.singletonList((Data) this);
   }
 
@@ -106,7 +106,7 @@ class DataElement extends AbstractData {
     return this.files.get(0);
   }
 
-  public void setDataFile(final DataFile dataFile) {
+  void setDataFile(final DataFile dataFile) {
 
     Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
 
@@ -116,7 +116,7 @@ class DataElement extends AbstractData {
     this.files.set(0, dataFile);
   }
 
-  public void setDataFile(final int fileIndex, final DataFile dataFile) {
+  void setDataFile(final int fileIndex, final DataFile dataFile) {
 
     Preconditions.checkArgument(fileIndex>=0, "fileIndex argument must be >=0");
     Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
@@ -125,6 +125,11 @@ class DataElement extends AbstractData {
       throw new IllegalStateException("Cannot set a DataFile if not already exists");
 
     this.files.set(fileIndex, dataFile);
+  }
+
+  List<DataFile> getDataFiles() {
+
+    return Collections.unmodifiableList(Lists.newArrayList(this.files));
   }
 
   @Override

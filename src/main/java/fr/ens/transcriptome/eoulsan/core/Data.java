@@ -72,7 +72,7 @@ public interface Data {
    * Get the the list of data.
    * @return a list even if the data is not a list
    */
-  List<Data> getList();
+  List<Data> getListElements();
 
   /**
    * Add a data to the list of data.

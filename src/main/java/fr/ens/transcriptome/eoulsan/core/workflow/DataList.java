@@ -10,6 +10,11 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
+/**
+ * This class define a data list.
+ * @since 1.3
+ * @author Laurent Jourdren
+ */
 public class DataList extends AbstractData {
 
   private static int instanceCount;
@@ -42,7 +47,7 @@ public class DataList extends AbstractData {
   }
 
   @Override
-  public List<Data> getList() {
+  public List<Data> getListElements() {
     return Collections.unmodifiableList(this.list);
   }
 
@@ -93,6 +98,10 @@ public class DataList extends AbstractData {
   // Constructors
   //
 
+  /**
+   * Constructor.
+   * @param port input port
+   */
   DataList(final WorkflowInputPort port) {
 
     super("list" + (instanceCount++), port.getFormat());
@@ -101,6 +110,10 @@ public class DataList extends AbstractData {
     this.stepWorkingPathname = port.getStep().getStepWorkingDir();
   }
 
+  /**
+   * Constructor.
+   * @param port output port
+   */
   DataList(final WorkflowOutputPort port) {
 
     super("list" + (instanceCount++), port.getFormat());
