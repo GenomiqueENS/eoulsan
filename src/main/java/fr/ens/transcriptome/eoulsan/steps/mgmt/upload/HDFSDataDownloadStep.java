@@ -51,7 +51,6 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
@@ -105,7 +104,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
@@ -289,7 +288,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       argsList.add(e.getKey().toString());
 
       // Convert arguments in a n array
-      final String[] args = argsList.toArray(new String[0]);
+      final String[] args = argsList.toArray(new String[argsList.size()]);
 
       // Run distcp
       distcp.runWithException(args);

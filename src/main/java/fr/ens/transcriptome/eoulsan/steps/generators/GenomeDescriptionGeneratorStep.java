@@ -32,23 +32,20 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.data.storages.GenomeDescStorage;
 import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeDescStorage;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class implements a genome description generator step.
@@ -83,24 +80,19 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
+
+    // Get input and output data
+    final Data inData = context.getInputData(GENOME_FASTA);
+    final Data outData = context.getOutputData(GENOME_DESC_TXT, inData);
 
     try {
 
-      if (design.getSampleCount() == 0)
-        throw new EoulsanException("No sample found in design file.");
-
-      // Get the first sample
-      final Sample s1 = design.getSamples().get(0);
-
       // Get the genome DataFile
-      final DataFile genomeDataFile =
-          context.getInputData(DataFormats.GENOME_FASTA, s1).getDataFile();
+      final DataFile genomeDataFile = inData.getDataFile();
 
       // Get the output DataFile
-      final DataFile genomeDescriptionDataFile =
-          context.getOutputData(GENOME_DESC_TXT, s1).getDataFile();
+      final DataFile genomeDescriptionDataFile = outData.getDataFile();
 
       LOGGER.fine("Input genome file: " + genomeDataFile);
       LOGGER.fine("Output genome description file: "
@@ -117,9 +109,6 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       LOGGER.fine("Genome description object: " + desc.toString());
 
     } catch (BadBioEntryException e) {
-
-      return status.createStepResult(e);
-    } catch (EoulsanException e) {
 
       return status.createStepResult(e);
     } catch (IOException e) {

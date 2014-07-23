@@ -32,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
@@ -40,14 +39,13 @@ import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceWriter;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This generator allow to generate a genome fasta file from the fasta section
@@ -83,23 +81,19 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
-      if (design.getSampleCount() == 0)
-        throw new EoulsanException("No sample found in design file.");
-
-      final Sample s1 = design.getSamples().get(0);
+      // Get input and output data
+      final Data inData = context.getInputData(ANNOTATION_GFF);
+      final Data outData = context.getOutputData(GENOME_FASTA, inData);
 
       // Get the annotation DataFile
-      final DataFile annotationDataFile =
-          context.getInputData(GENOME_FASTA, s1).getDataFile();
+      final DataFile annotationDataFile = inData.getDataFile();
 
       // Get the output DataFile
-      final DataFile genomeDataFile =
-          context.getOutputData(GENOME_FASTA, s1).getDataFile();
+      final DataFile genomeDataFile = outData.getDataFile();
 
       LOGGER.info("Input annotation file: " + annotationDataFile);
       LOGGER.info("Output genome file: " + genomeDataFile);
@@ -115,9 +109,6 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       reader.close();
       writer.close();
 
-    } catch (EoulsanException e) {
-
-      return status.createStepResult(e);
     } catch (IOException e) {
 
       return status.createStepResult(e);

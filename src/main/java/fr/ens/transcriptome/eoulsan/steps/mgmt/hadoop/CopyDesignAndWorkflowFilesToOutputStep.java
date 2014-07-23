@@ -87,7 +87,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     final Configuration conf = this.conf;
@@ -106,6 +106,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
 
         final FileSystem outputDesignFs = outputDesignPath.getFileSystem(conf);
 
+        final Design design = context.getWorkflow().getDesign();
         new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
             .write(design);
       }

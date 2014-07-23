@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.core.SampleStepException.reThrow;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
@@ -46,17 +45,11 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
-import fr.ens.transcriptome.eoulsan.core.SampleStep;
-import fr.ens.transcriptome.eoulsan.core.SampleStepContext;
-import fr.ens.transcriptome.eoulsan.core.SampleStepException;
-import fr.ens.transcriptome.eoulsan.core.SampleStepStatus;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
 import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -68,32 +61,30 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Maria Bernard
  */
 @LocalOnly
-public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
-    SampleStep {
+public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
-
-    return ProcessSampleExecutor.processAllSamples(context, design, status,
-        getLocalThreads(), this);
-  }
-
-  @Override
-  public void processSample(final SampleStepContext context,
-      final SampleStepStatus status) throws SampleStepException {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
 
     try {
 
+      // Get input and output data
+      final Data inData = context.getInputData(READS_FASTQ);
+      final Data outData = context.getOutputData(READS_FASTQ, inData);
+
+      // Get FASTQ format
+      // TODO Use metadata
+      final FastqFormat fastqFormat =
+          FastqFormat.valueOf(inData.getMetadata().get("fastq.format"));
+
       // get input file count for the sample
-      final int inFileCount =
-          context.getInputData(DataFormats.READS_FASTQ).getDataFileCount();
+      final int inFileCount = inData.getDataFileCount();
 
       if (inFileCount < 1)
         throw new IOException("No reads file found.");
@@ -108,80 +99,76 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep implements
           + Joiner.on(", ").join(filter.getFilterNames()));
 
       // Run the filter in single or pair-end mode
-      if (inFileCount == 1)
-
-        singleEnd(context, reporter, status, filter);
-      else
-
-        pairedEnd(context, reporter, status, filter);
+      if (inFileCount == 1) {
+        singleEnd(inData, outData, fastqFormat, reporter, status, filter);
+      } else {
+        pairedEnd(inData, outData, fastqFormat, reporter, status, filter);
+      }
 
     } catch (FileNotFoundException e) {
-      reThrow(e, "File not found: " + e.getMessage());
+      return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      reThrow(e, "Error while filtering: " + e.getMessage());
+      return status.createStepResult(e,
+          "Error while filtering: " + e.getMessage());
     } catch (EoulsanException e) {
-      reThrow(e, "Error while initializing filter: " + e.getMessage());
+      return status.createStepResult(e,
+          "Error while initializing filter: " + e.getMessage());
     }
+
+    return status.createStepResult();
   }
 
   /**
    * Filter a sample data in single end mode.
-   * @param context Eoulsan context
+   * @param inData input Data
+   * @param outData output Data
+   * @param fastqFormat FASTQ format
    * @param reporter reporter to use
    * @param status step status
    * @param filter reads filter to use
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void singleEnd(final SampleStepContext context,
-      final Reporter reporter, final SampleStepStatus status,
-      final ReadFilter filter) throws IOException {
+  private static void singleEnd(final Data inData, final Data outData,
+      final FastqFormat fastqFormat, final Reporter reporter,
+      final StepStatus status, final ReadFilter filter) throws IOException {
 
     // Get the source
-    final DataFile inFile =
-        context.getInputData(DataFormats.READS_FASTQ).getDataFile(0);
+    final DataFile inFile = inData.getDataFile(0);
 
     // Get the dest
-    final DataFile outFile = context.getOutputData(READS_FASTQ).getDataFile(0);
+    final DataFile outFile = outData.getDataFile(0);
 
     // Filter reads
-    filterFile(inFile, outFile, reporter, filter, context.getSample()
-        .getMetadata().getFastqFormat());
+    filterFile(inFile, outFile, reporter, filter, fastqFormat);
 
     // Add counters for this sample to log file
-    status.setCounters(reporter, COUNTER_GROUP, "Filter reads ("
-        + context.getSample().getName() + ", " + inFile.getName() + ")");
+    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+        "Filter reads (" + inData.getName() + ", " + inFile.getName() + ")");
   }
 
   /**
    * Filter a sample data in paired-end mode.
-   * @param context Eoulsan context
+   * @param inData input Data
+   * @param outData output Data
+   * @param fastqFormat FASTQ formatt
    * @param reporter reporter to use
    * @param filter reads filter to use
-   * @return a string with information to log
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void pairedEnd(final SampleStepContext context,
-      final Reporter reporter, final SampleStepStatus status,
-      final ReadFilter filter) throws IOException {
-
-    // Get the source
-    final DataFile inFile1 =
-        context.getInputData(DataFormats.READS_FASTQ).getDataFile(0);
-    final DataFile inFile2 =
-        context.getInputData(DataFormats.READS_FASTQ).getDataFile(1);
-
-    // Get the dest
-    final DataFile outFile1 = context.getOutputData(READS_FASTQ).getDataFile(0);
-    final DataFile outFile2 = context.getOutputData(READS_FASTQ).getDataFile(1);
+  private static void pairedEnd(final Data inData, final Data outData,
+      final FastqFormat fastqFormat, final Reporter reporter,
+      final StepStatus status, final ReadFilter filter) throws IOException {
 
     // Filter reads
-    filterFile(inFile1, inFile2, outFile1, outFile2, reporter, filter, context
-        .getSample().getMetadata().getFastqFormat());
+    filterFile(inData.getDataFile(0), inData.getDataFile(1),
+        outData.getDataFile(0), outData.getDataFile(1), reporter, filter,
+        fastqFormat);
 
     // Add counters for this sample to log file
-    status.setCounters(reporter, COUNTER_GROUP, "Filter reads ("
-        + context.getSample().getName() + ", " + inFile1.getName() + ", "
-        + inFile2.getName() + ")");
+    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+        "Filter reads ("
+            + inData.getName() + ", " + inData.getDataFile(0).getName() + ", "
+            + inData.getDataFile(1).getName() + ")");
   }
 
   /**

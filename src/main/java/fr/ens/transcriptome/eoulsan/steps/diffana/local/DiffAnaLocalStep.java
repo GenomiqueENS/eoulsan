@@ -105,7 +105,7 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute( final StepContext context,
       final StepStatus status) {
 
     try {
@@ -117,8 +117,8 @@ public class DiffAnaLocalStep extends AbstractStep {
       if (rServeEnable)
         rServeName = context.getSettings().getRServeServername();
 
+      final Design design = context.getWorkflow().getDesign();
       final DiffAna ad =
-
           new DiffAna(design, new File("."), eDF.getPrefix(),
               eDF.getDefaultExtention(), new File("."), this.dispEstMethod,
               this.dispEstSharingMode, this.dispEstFitType, rServeName,

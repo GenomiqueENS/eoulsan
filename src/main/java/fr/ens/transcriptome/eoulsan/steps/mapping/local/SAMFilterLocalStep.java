@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
-import static fr.ens.transcriptome.eoulsan.core.SampleStepException.reThrow;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
@@ -51,17 +50,12 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
-import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
-import fr.ens.transcriptome.eoulsan.core.SampleStep;
-import fr.ens.transcriptome.eoulsan.core.SampleStepContext;
-import fr.ens.transcriptome.eoulsan.core.SampleStepException;
-import fr.ens.transcriptome.eoulsan.core.SampleStepStatus;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -73,23 +67,13 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Claire Wallon
  */
 @LocalOnly
-public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
-    SampleStep {
+public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
-
-    return ProcessSampleExecutor.processAllSamples(context, design, status,
-        getLocalThreads(), this);
-  }
-
-  @Override
-  public void processSample(final SampleStepContext context,
-      final SampleStepStatus status) throws SampleStepException {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -105,10 +89,13 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      reThrow(e, "Error while filtering: " + e.getMessage());
+      status.createStepResult(e, "Error while filtering: " + e.getMessage());
     } catch (EoulsanException e) {
-      reThrow(e, "Error while initializing filter: " + e.getMessage());
+      status.createStepResult(e,
+          "Error while initializing filter: " + e.getMessage());
     }
+
+    return status.createStepResult();
   }
 
   /**
@@ -117,27 +104,29 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
    * @param reporter reporter to use
    * @param status step status
    * @param filter alignments filter to use
-   * @param pairedEnd true if data are in paired-end mode
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void filterSample(final SampleStepContext context,
-      final Reporter reporter, final SampleStepStatus status,
+  private static void filterSample(final StepContext context,
+      final Reporter reporter, final StepStatus status,
       final ReadAlignmentsFilter filter) throws IOException {
 
+    // Get input and output data
+    final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
+    final Data outData =
+        context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
+
     // Get the source
-    final DataFile inFile =
-        context.getInputData(DataFormats.MAPPER_RESULTS_SAM).getDataFile();
+    final DataFile inFile = inData.getDataFile();
 
     // Get the dest
-    final DataFile outFile =
-        context.getOutputData(DataFormats.MAPPER_RESULTS_SAM).getDataFile();
+    final DataFile outFile = outData.getDataFile();
 
     // filter alignments in single-end mode or in paired-end mode
-    filterFile(inFile, outFile, reporter, status, filter);
+    filterFile(inFile, outFile, reporter, filter);
 
     // Add counters for this sample to log file
-    status.setCounters(reporter, COUNTER_GROUP, "Filter SAM file ("
-        + context.getSample().getName() + ", " + inFile.getName() + ")");
+    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+        "Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
   }
 
   /**
@@ -146,12 +135,11 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep implements
    * @param outFile output file
    * @param reporter reporter to use
    * @param filter alignments filter to use
-   * @param pairedEnd true if data are in paired-end mode
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final SampleStepStatus status,
-      final ReadAlignmentsFilter filter) throws IOException {
+      final Reporter reporter, final ReadAlignmentsFilter filter)
+      throws IOException {
 
     final List<SAMRecord> records = new ArrayList<SAMRecord>();
     int counterInput = 0;

@@ -74,8 +74,9 @@ public class ReadsChecker implements Checker {
       throw new NullPointerException("The check info info is null");
 
     // get input file count for the sample
-    final int inFileCount =
-        context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFileCount();
+    // TODO uncomment the following code when checker will be adapted to Data objects
+    final int inFileCount = 0;
+    //    context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFileCount();
 
     if (inFileCount < 1)
       throw new EoulsanException("No reads file found.");
@@ -89,23 +90,25 @@ public class ReadsChecker implements Checker {
     // Single end mode
     if (inFileCount == 1) {
 
-      final DataFile file =
-          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-
-      checkReadFile(file, format);
+      // TODO uncomment the following code when checker will be adapted to Data objects
+      //final DataFile file =
+      //    context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
+      //
+      //checkReadFile(file, format);
     }
 
     // Paired end mode
     if (inFileCount == 2) {
 
-      final DataFile file1 =
-          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-
-      final DataFile file2 =
-          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
-
-      checkReadFile(file1, format, true, 1);
-      checkReadFile(file2, format, true, 2);
+      // TODO uncomment the following code when checker will be adapted to Data objects
+//      final DataFile file1 =
+//          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
+//
+//      final DataFile file2 =
+//          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
+//
+//      checkReadFile(file1, format, true, 1);
+//      checkReadFile(file2, format, true, 2);
     }
 
     return true;

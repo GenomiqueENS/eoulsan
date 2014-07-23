@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 
 import java.io.FileNotFoundException;
@@ -35,6 +36,7 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -45,8 +47,6 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -111,22 +111,16 @@ public class CopyInputFormatStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
-      // Test if there is only one file per analysis for the format
-      if (this.format.isOneFilePerAnalysis()) {
-        copyFormat(context, format, design.getSamples().get(0));
-      } else {
+      final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
+      final Data outData = context.getOutputData("output", inData);
 
-        // Copy files for each sample
-        for (Sample sample : design.getSamples()) {
-          copyFormat(context, format, sample);
-          status.setSampleProgress(sample, 1.0);
-        }
-      }
+      copyFormat(inData, outData);
+      status.setSampleProgress(inData.getName(), 1.0);
+
     } catch (IOException e) {
       return status.createStepResult(e);
     }
@@ -139,33 +133,38 @@ public class CopyInputFormatStep extends AbstractStep {
 
   /**
    * Copy files for a format and a samples.
-   * @param context step context
-   * @param format the format
-   * @param sample the sample
+   * @param inData input data
+   * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyFormat(final StepContext context, final DataFormat format,
-      final Sample sample) throws IOException {
+  private void copyFormat(final Data inData, final Data outData)
+      throws IOException {
+
+    final int count = inData.getDataFileCount();
 
     // Handle standard case
-    if (format.getMaxFilesCount() == 1) {
+    if (inData.getFormat().getMaxFilesCount() == 1) {
 
-      final DataFile in = context.getInputData(format, sample).getDataFile();
+      final DataFile in = inData.getDataFile();
+      final DataFile out = outData.getDataFile();
+
       if (!in.exists())
         throw new FileNotFoundException("input file not found: " + in);
 
-      copyDataFile(in, context.getOutputData(format, sample).getDataFile());
+      copyDataFile(in, out);
     } else {
 
       // Handle multi file format like fastq
-      final int count = context.getInputData(format, sample).getDataFileCount();
+
       for (int i = 0; i < count; i++) {
 
-        final DataFile in = context.getInputData(format, sample).getDataFile(i);
+        final DataFile in = inData.getDataFile(i);
+        final DataFile out = outData.getDataFile(i);
+
         if (!in.exists())
           throw new FileNotFoundException("input file not found: " + in);
 
-        copyDataFile(in, context.getOutputData(format, sample).getDataFile(i));
+        copyDataFile(in, out);
       }
     }
   }

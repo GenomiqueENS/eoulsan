@@ -64,6 +64,7 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -102,31 +103,27 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * Create JobConf object for the Eoulsan counter.
-   * @param basePath base path
-   * @param sample sample of the job
    * @param genomicType genomic type
-   * @param attributeIg GFF attribute Id
    * @throws IOException if an error occurs while creating job
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final Job createJobEoulsanCounter(
       final Configuration parentConf, final StepContext context,
-      final Sample sample, final String genomicType, final String attributeId)
+      final Data alignmentsData, final Data featureAnnotationData,
+      final Data outData, final String genomicType, final String attributeId)
       throws IOException, BadBioEntryException {
 
     // Create JobConf
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath =
-        new Path(context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFilename());
+    final Path inputPath = new Path(alignmentsData.getDataFilename());
 
     // Get annotation DataFile
-    final DataFile annotationDataFile =
-        context.getInputData(ANNOTATION_GFF, sample).getDataFile();
+    final DataFile annotationDataFile = featureAnnotationData.getDataFile();
 
-    LOGGER.fine("sample: " + sample);
-    LOGGER.fine("inputPath.getName(): " + inputPath.getName());
-    LOGGER.fine("sample.getMetadata(): " + sample.getMetadata());
+    LOGGER.fine("sample: " + alignmentsData.getName());
+    LOGGER.fine("inputPath.getName(): "
+        + alignmentsData.getDataFile().getName());
     LOGGER.fine("annotationDataFile: " + annotationDataFile.getSource());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
@@ -135,11 +132,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputData(GENOME_DESC_TXT, sample).getDataFilename());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        context.getInputData(GENOME_DESC_TXT).getDataFilename());
 
     final Path exonsIndexPath =
-        getAnnotationIndexSerializedPath(context, sample);
+        getAnnotationIndexSerializedPath(context, featureAnnotationData);
 
     LOGGER.info("exonsIndexPath: " + exonsIndexPath);
 
@@ -156,7 +153,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Expression computation with Eoulsan counter ("
-            + sample.getName() + ", " + inputPath.getName() + ", "
+            + alignmentsData.getName() + ", " + inputPath.getName() + ", "
             + annotationDataFile.getSource() + ", " + genomicType + ","
             + attributeId + ")");
 
@@ -183,17 +180,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set output path
 
-    FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
-            .getSourceWithoutExtension() + ".tmp"));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
+        .getSourceWithoutExtension() + ".tmp"));
 
     return job;
   }
 
   /**
    * Create JobConf object for HTSeq-count.
-   * @param basePath base path
-   * @param sample sample of the job
    * @param genomicType genomic type
    * @param attributeId attributeId
    * @param stranded stranded mode
@@ -205,7 +199,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    */
   private static final Job createJobHTSeqCounter(
       final Configuration parentConf, final StepContext context,
-      final Sample sample, final String genomicType, final String attributeId,
+      final Data alignmentsData, final Data featureAnnotationData,
+      final Data genomeDescriptionData, final Data outData,
+      final String genomicType, final String attributeId,
       final StrandUsage stranded, final OverlapMode overlapMode,
       final boolean removeAmbiguousCases, final boolean tsamFormat)
       throws IOException, BadBioEntryException, EoulsanException {
@@ -213,8 +209,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // Get input DataFile
-    DataFile inputDataFile =
-        context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFile();
+    DataFile inputDataFile = alignmentsData.getDataFile();
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -232,12 +227,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Path inputPath = new Path(dataFileSource);
 
     // Get annotation DataFile
-    final DataFile annotationDataFile =
-        context.getInputData(ANNOTATION_GFF, sample).getDataFile();
+    final DataFile annotationDataFile = featureAnnotationData.getDataFile();
 
-    LOGGER.fine("sample: " + sample);
+    LOGGER.fine("sample: " + alignmentsData.getName());
     LOGGER.fine("inputPath.getName(): " + inputPath.getName());
-    LOGGER.fine("sample.getMetadata(): " + sample.getMetadata());
     LOGGER.fine("annotationDataFile: " + annotationDataFile.getSource());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
@@ -246,8 +239,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    final DataFile genomeDescDataFile =
-        context.getInputData(GENOME_DESC_TXT, sample).getDataFile();
+    final DataFile genomeDescDataFile = genomeDescriptionData.getDataFile();
     jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
         genomeDescDataFile.getSource());
 
@@ -262,7 +254,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         removeAmbiguousCases);
 
     final Path featuresIndexPath =
-        getAnnotationIndexSerializedPath(context, sample);
+        getAnnotationIndexSerializedPath(context, featureAnnotationData);
 
     LOGGER.info("featuresIndexPath: " + featuresIndexPath);
 
@@ -277,7 +269,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Expression computation with htseq-count ("
-            + sample.getName() + ", " + inputPath.getName() + ", "
+            + alignmentsData.getName() + ", " + inputPath.getName() + ", "
             + annotationDataFile.getSource() + ", " + genomicType + ", "
             + attributeId + ", stranded: " + stranded
             + ", removeAmbiguousCases: " + removeAmbiguousCases + ")");
@@ -305,32 +297,21 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set output path
 
-    FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
-            .getSourceWithoutExtension() + ".tmp"));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
+        .getSourceWithoutExtension() + ".tmp"));
 
     return job;
   }
 
   private static final Job createJobPairedEnd(final Configuration parentConf,
-      final StepContext context, final Sample sample) throws IOException,
-      BadBioEntryException {
+      final StepContext context, final Data alignmentsData,
+      final Data featureAnnotationData, final Data genomeDescriptionData)
+      throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    // get input file count for the sample
-    final int inFileCount = sample.getMetadata().getReads().size();
-
-    if (inFileCount < 1)
-      throw new IOException("No input file found.");
-
-    if (inFileCount > 2)
-      throw new IOException(
-          "Cannot handle more than 2 reads files at the same time.");
-
     // Get the source
-    final DataFile inputDataFile =
-        context.getInputData(MAPPER_RESULTS_SAM, sample).getDataFile();
+    final DataFile inputDataFile = alignmentsData.getDataFile();
 
     // Set input path
     final Path inputPath = new Path(inputDataFile.getSource());
@@ -339,13 +320,13 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set Genome description path
-    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY, context
-        .getInputData(GENOME_DESC_TXT, sample).getDataFilename());
+    jobConf.set(ExpressionMapper.GENOME_DESC_PATH_KEY,
+        genomeDescriptionData.getDataFilename());
 
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Pretreatment for the expression estimation step ("
-            + sample.getName() + ", " + inputDataFile.getSource() + ")");
+            + alignmentsData.getName() + ", " + inputDataFile.getSource() + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);
@@ -496,40 +477,37 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionTranscriptsFile(
-      final StepContext context, final Map<Job, Sample> jobconfs,
-      final Configuration conf) throws IOException, InterruptedException {
+      final StepContext context, final Data alignmentsData,
+      final Data featureAnnotationData, final Data outData,
+      final Map<Job, String> jobconfs, final Configuration conf)
+      throws IOException, InterruptedException {
 
     FinalExpressionTranscriptsCreator fetc = null;
 
-    for (Map.Entry<Job, Sample> e : jobconfs.entrySet()) {
+    for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final Sample sample = e.getValue();
+      final String sampleId = e.getValue();
 
       final long readsUsed =
           rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
 
       // Load the annotation index
       final Path exonsIndexPath =
-          getAnnotationIndexSerializedPath(context, sample);
+          getAnnotationIndexSerializedPath(context, featureAnnotationData);
 
       final FileSystem fs = exonsIndexPath.getFileSystem(conf);
 
       fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
       // Set the result path
-      final Path resultPath =
-          new Path(
-              context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
+      final Path resultPath = new Path(outData.getDataFilename());
 
       fetc.initializeExpressionResults();
 
       // Load map-reduce results
-      fetc.loadPreResults(
-          new DataFile(context
-              .getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFile()
-              .getSourceWithoutExtension()
-              + ".tmp").open(), readsUsed);
+      fetc.loadPreResults(new DataFile(outData.getDataFile()
+          .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
 
       fetc.saveFinalResults(fs.create(resultPath));
     }
@@ -537,28 +515,27 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionFeaturesFile(
-      final StepContext context, final Map<Job, Sample> jobconfs,
+      final StepContext context, final Data featureAnnotationData,
+      final Data outData, final Map<Job, String> jobconfs,
       final Configuration conf) throws IOException {
 
     FinalExpressionFeaturesCreator fefc = null;
 
-    for (Map.Entry<Job, Sample> e : jobconfs.entrySet()) {
+    for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final Sample sample = e.getValue();
+      final String sampleId = e.getValue();
 
       // Load the annotation index
       final Path featuresIndexPath =
-          getAnnotationIndexSerializedPath(context, sample);
+          getAnnotationIndexSerializedPath(context, featureAnnotationData);
 
       final FileSystem fs = featuresIndexPath.getFileSystem(conf);
 
       fefc = new FinalExpressionFeaturesCreator(fs.open(featuresIndexPath));
 
       // Set the result path
-      final Path resultPath =
-          new Path(
-              context.getOutputData(EXPRESSION_RESULTS_TSV, sample).getDataFilename());
+      final Path resultPath = new Path(outData.getDataFilename());
 
       fefc.initializeExpressionResults();
 
@@ -573,14 +550,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   /**
    * Create the path to the serialized annotation index.
    * @param context Eoulsan context
-   * @param sample sample to process
+   * @param featureAnnotationData feature annotation data
    * @return an Hadoop path with the path of the serialized annotation
    */
   private static Path getAnnotationIndexSerializedPath(
-      final StepContext context, final Sample sample) {
+      final StepContext context, final Data featureAnnotationData) {
 
     // Get annotation DataFile
-    String filename = context.getInputData(ANNOTATION_GFF, sample).getDataFilename();
+    String filename = featureAnnotationData.getDataFilename();
 
     filename = StringUtils.removeCompressedExtensionFromFilename(filename);
 
@@ -612,13 +589,20 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
+
+    final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
+    final Data featureAnnotationData = context.getInputData(ANNOTATION_GFF);
+    final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
+    final Data outData =
+        context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);
 
     if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME))
-      return executeJobEoulsanCounter(design, context, status);
+      return executeJobEoulsanCounter(context, alignmentsData,
+          featureAnnotationData, outData, status);
     else if (getCounter().getCounterName().equals(HTSeqCounter.COUNTER_NAME))
-      return executeJobHTSeqCounter(design, context, status);
+      return executeJobHTSeqCounter(context, alignmentsData,
+          featureAnnotationData, genomeDescriptionData, outData, status);
 
     return status.createStepResult(new EoulsanException("Unknown counter: "
         + getCounter().getCounterName()), "Unknown counter: "
@@ -627,19 +611,19 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * Execute Eoulsan counter as an Hadoop job.
-   * @param design design object
    * @param context Eoulsan context
    * @param status Eoulsan status
    * @return a StepResult object
    */
-  private StepResult executeJobEoulsanCounter(final Design design,
-      final StepContext context, final StepStatus status) {
+  private StepResult executeJobEoulsanCounter(final StepContext context,
+      final Data alignmentsData, final Data featureAnnotationData,
+      final Data outData, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Job, Sample> jobsRunning = Maps.newHashMap();
+    final Map<Job, String> jobsRunning = Maps.newHashMap();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -647,15 +631,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       LOGGER.info("Genomic type: " + getGenomicType());
 
       // Create the list of jobs to run
-      for (Sample sample : design.getSamples()) {
 
-        final Job job =
-            createJobEoulsanCounter(conf, context, sample, getGenomicType(),
-                getAttributeId());
+      final Job job =
+          createJobEoulsanCounter(conf, context, alignmentsData,
+              featureAnnotationData, outData, getGenomicType(),
+              getAttributeId());
 
-        job.submit();
-        jobsRunning.put(job, sample);
-      }
+      job.submit();
+      jobsRunning.put(job, alignmentsData.getName());
 
       // Compute map-reduce part of the expression computation
       MapReduceUtils.submitAndWaitForJobs(jobsRunning,
@@ -666,7 +649,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
       // Create the final expression files
-      createFinalExpressionTranscriptsFile(context, jobsRunning, this.conf);
+      createFinalExpressionTranscriptsFile(context, alignmentsData,
+          featureAnnotationData, outData, jobsRunning, this.conf);
 
       LOGGER.info("Finish the create of the final expression files in "
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
@@ -693,19 +677,20 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * Execute HTSeq-count counter as an Hadoop job.
-   * @param design design object
    * @param context Eoulsan context
    * @param status Eoulsan status
    * @return a StepResult object
    */
-  private StepResult executeJobHTSeqCounter(final Design design,
-      final StepContext context, final StepStatus status) {
+  private StepResult executeJobHTSeqCounter(final StepContext context,
+      final Data alignmentsData, final Data featureAnnotationData,
+      final Data genomeDescriptionData, final Data outData,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Job, Sample> jobsRunning = Maps.newHashMap();
+    final Map<Job, String> jobsRunning = Maps.newHashMap();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -714,11 +699,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Create the list of paired-end jobs to run
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
-      for (Sample s : design.getSamples()) {
 
-        if (s.getMetadata().getReads().size() == 2)
-          jobsPairedEnd.add(createJobPairedEnd(conf, context, s));
-      }
+      // TODO use metadata, this code do not work
+      boolean pairedEnd =
+          Boolean.parseBoolean(alignmentsData.getMetadata().get("paired.end"));
+
+      if (pairedEnd)
+        jobsPairedEnd.add(createJobPairedEnd(conf, context, alignmentsData,
+            featureAnnotationData, genomeDescriptionData));
 
       // Paired-end preprocessing
       if (jobsPairedEnd.size() > 0)
@@ -726,18 +714,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
             CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      for (Sample sample : design.getSamples()) {
 
-        final boolean tsamFormat = sample.getMetadata().getReads().size() == 2;
+      final boolean tsamFormat = pairedEnd;
 
-        final Job job =
-            createJobHTSeqCounter(conf, context, sample, getGenomicType(),
-                getAttributeId(), getStranded(), getOverlapMode(),
-                isRemoveAmbiguousCases(), tsamFormat);
+      final Job job =
+          createJobHTSeqCounter(conf, context, alignmentsData,
+              featureAnnotationData, genomeDescriptionData, outData,
+              getGenomicType(), getAttributeId(), getStranded(),
+              getOverlapMode(), isRemoveAmbiguousCases(), tsamFormat);
 
-        job.submit();
-        jobsRunning.put(job, sample);
-      }
+      job.submit();
+      jobsRunning.put(job, alignmentsData.getName());
 
       // Compute map-reduce part of the expression computation
       MapReduceUtils.submitAndWaitForJobs(jobsRunning,
@@ -748,7 +735,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
       // Create the final expression files
-      createFinalExpressionFeaturesFile(context, jobsRunning, this.conf);
+      createFinalExpressionFeaturesFile(context, featureAnnotationData,
+          outData, jobsRunning, this.conf);
 
       LOGGER.info("Finish the create of the final expression files in "
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)

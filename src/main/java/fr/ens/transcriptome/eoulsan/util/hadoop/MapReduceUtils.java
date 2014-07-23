@@ -154,7 +154,7 @@ public final class MapReduceUtils {
    * @throws ClassNotFoundException if a class needed for map reduce execution
    *           is not found
    */
-  public static void submitAndWaitForJobs(final Map<Job, Sample> jobs,
+  public static void submitAndWaitForJobs(final Map<Job, String> jobs,
       final int waitTimeInMillis, final StepStatus status,
       final String counterGroup) throws InterruptedException, IOException {
 
@@ -172,10 +172,10 @@ public final class MapReduceUtils {
       Thread.sleep(waitTimeInMillis);
       completedJobs = 0;
 
-      for (Map.Entry<Job, Sample> e : jobs.entrySet()) {
+      for (Map.Entry<Job, String> e : jobs.entrySet()) {
 
         final Job job = e.getKey();
-        final Sample sample = e.getValue();
+        final String sample = e.getValue();
 
         if (job.isComplete()) {
           completedJobs++;

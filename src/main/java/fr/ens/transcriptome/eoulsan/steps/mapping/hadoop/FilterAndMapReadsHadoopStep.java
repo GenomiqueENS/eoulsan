@@ -25,8 +25,8 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
@@ -50,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -57,8 +58,6 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
@@ -93,7 +92,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public StepResult execute(Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Create configuration object
@@ -102,9 +101,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     try {
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
-      for (Sample s : design.getSamples()) {
-        if (context.getInputData(READS_FASTQ, s).getDataFileCount() == 2)
-          jobsPairedEnd.add(createJobConfPairedEnd(conf, context, s));
+      final Data readData = context.getInputData(READS_PORT_NAME);
+
+      if (readData.getDataFileCount() == 2) {
+          jobsPairedEnd.add(createJobConfPairedEnd(conf, context));
       }
 
       // Submit job paired end if needed
@@ -112,11 +112,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      final Map<Job, Sample> jobs = Maps.newHashMap();
-      for (Sample sample : design.getSamples())
-        jobs.put(createJobConf(conf, context, sample), sample);
+      final Map<Job, String> jobs = Maps.newHashMap();
+      jobs.put(createJobConf(conf, context), readData.getName());
 
       // Submit filter and map job
+      // TODO Remove usage of the next method as there now only one element to process
       MapReduceUtils.submitAndWaitForJobs(jobs,
           CommonHadoop.CHECK_COMPLETION_TIME, status, getCounterGroup());
 
@@ -139,21 +139,17 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
   /**
    * Create a filter reads job
-   * @param basePath bas epath
-   * @param sample Sample to filter
    * @return a JobConf object
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final Sample sample) throws IOException {
+      final StepContext context) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Get input DataFile
-    DataFile inputDataFile = null;
-    inputDataFile = context.getInputData(READS_TFQ, sample).getDataFile();
-    if (inputDataFile == null)
-      inputDataFile = context.getInputData(READS_FASTQ, sample).getDataFile();
+    final Data readsData = context.getInputData(READS_PORT_NAME);
+    DataFile inputDataFile = readsData.getDataFile();
 
     if (inputDataFile == null)
       throw new IOException("No input file found.");
@@ -175,8 +171,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Set reads filter fastq format
-    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, ""
-        + sample.getMetadata().getFastqFormat());
+    // TODO implements metadata for design values
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, "" + readsData.getMetadata().get("fastq.format"));
 
     // Set read filters parameters
     addParametersToJobConf(getReadFilterParameters(),
@@ -188,8 +184,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getInputData(getMapper().getArchiveFormat(),
-            sample).getDataFilename());
+        new Path(context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFilename());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
 
@@ -197,7 +192,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getInputData(READS_FASTQ, sample).getDataFileCount() == 2)
+    if (readsData.getDataFileCount() == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
@@ -215,7 +210,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper fastq format
     jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
-        + sample.getMetadata().getFastqFormat());
+        + readsData.getMetadata().get("fastq.format"));
 
     //
     // Alignment filtering
@@ -227,13 +222,13 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getInputData(DataFormats.GENOME_DESC_TXT, sample).getDataFilename());
+        context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFilename());
 
     // Set Job name
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Filter and map reads ("
-            + sample.getName() + ", " + inputDataFile.getSource() + ")");
+            + readsData.getName() + ", " + inputDataFile.getSource() + ")");
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
@@ -266,27 +261,25 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputData(DataFormats.MAPPER_RESULTS_SAM,
-            sample).getDataFilename()));
+        new Path(context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, readsData).getDataFilename()));
 
     return job;
   }
 
   /**
    * Create a job for the pretreatment step in case of paired-end data.
-   * @param basePath base path
-   * @param sample Sample to filter
    * @return a JobConf object
    * @throws IOException
    */
   private Job createJobConfPairedEnd(final Configuration parentConf,
-      final StepContext context, final Sample sample) throws IOException {
+      final StepContext context) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // get input file count for the sample
+    final Data readsData = context.getInputData(DataFormats.READS_FASTQ);
     final int inFileCount =
-        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFileCount();
+        readsData.getDataFileCount();
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -296,10 +289,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           "Cannot handle more than 2 reads files at the same time.");
 
     // Get the source
-    final DataFile inputDataFile1 =
-        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-    final DataFile inputDataFile2 =
-        context.getInputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
+    final DataFile inputDataFile1 = readsData.getDataFile(0);
+    final DataFile inputDataFile2 = readsData.getDataFile(1);
 
     // Set input path
     final Path inputPath1 = new Path(inputDataFile1.getSource());
@@ -309,14 +300,14 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
 
     // Set fastq format
-    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, sample.getMetadata()
-        .getFastqFormat().getName());
+    // TODO Use metadata
+    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, readsData.getMetadata().get("fastq.format"));
 
     // Set Job name
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Pretreatment ("
-            + sample.getName() + ", " + inputDataFile1.getSource() + ", "
+            + readsData.getName() + ", " + inputDataFile1.getSource() + ", "
             + inputDataFile2.getSource() + ")");
 
     // Set the jar

@@ -76,7 +76,7 @@ public class GenomeChecker implements Checker {
     }
 
     final DataFile genomeFile =
-        context.getOutputData(DataFormats.GENOME_FASTA, sample).getDataFile();
+        context.getInputData(DataFormats.GENOME_FASTA).getDataFile();
 
     try {
 

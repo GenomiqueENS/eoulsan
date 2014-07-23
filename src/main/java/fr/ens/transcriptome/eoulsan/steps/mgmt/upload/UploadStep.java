@@ -84,7 +84,7 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     final StringBuilder log = new StringBuilder();
@@ -97,7 +97,7 @@ public abstract class UploadStep extends AbstractStep {
     File repackagedJarFile = null;
 
     try {
-
+      final Design design = context.getWorkflow().getDesign();
       for (Sample sample : design.getSamples())
         filesToCopy.putAll(findDataFilesInWorkflow(sample, context));
 
@@ -218,7 +218,6 @@ public abstract class UploadStep extends AbstractStep {
    * @param format the format of the file to upload
    * @param portName the port name
    * @param sample the sample for the source
-   * @param fileIndex file index for multifile data
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */

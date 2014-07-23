@@ -44,16 +44,15 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -91,7 +90,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Create configuration object
@@ -99,10 +98,19 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     try {
 
+      // Get input and output data
+      final Data readsData = context.getInputData(READS_FASTQ);
+      final Data mapperIndexData = context.getInputData(getMapper().getArchiveFormat());
+      final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, readsData);
+
+      // Get FASTQ format
+      // TODO Use metadata
+      final FastqFormat fastqFormat =
+          FastqFormat.valueOf(readsData.getMetadata().get("fastq.format"));
+
       // Create the list of jobs to run
-      final Map<Job, Sample> jobs = Maps.newHashMap();
-      for (Sample sample : design.getSamples())
-        jobs.put(createJobConf(conf, context, sample), sample);
+      final Map<Job, String> jobs = Maps.newHashMap();
+      jobs.put(createJobConf(conf, readsData, fastqFormat,  mapperIndexData, outData), readsData.getName());
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJobs(jobs,
@@ -124,23 +132,24 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   /**
    * Create the JobConf object for a sample
-   * @param basePath base path of data
-   * @param sample sample to process
+   * @param readsData reads data
+   * @param fastqFormat FASTQ format
+   * @param mapperIndexData mapper index data
+   * @param outData output data
    * @return a new JobConf object
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final Sample sample) throws IOException {
+     final Data readsData, final FastqFormat fastqFormat, final Data mapperIndexData, final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     final Path inputPath =
-        new Path(context.getInputData(DataFormats.READS_TFQ, sample).getDataFilename());
+        new Path(readsData.getDataFilename());
 
     // Set genome index reference path
     final Path genomeIndex =
-        new Path(context.getInputData(getMapper().getArchiveFormat(),
-            sample).getDataFilename());
+        new Path(mapperIndexData.getDataFilename());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
 
@@ -148,7 +157,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (context.getInputData(READS_FASTQ, sample).getDataFileCount() == 2)
+    if (readsData.getDataFileCount() == 2)
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
     else
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
@@ -166,7 +175,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set Mapper fastq format
     jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
-        + sample.getMetadata().getFastqFormat());
+        + fastqFormat);
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -183,7 +192,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Map reads with "
-            + getMapperName() + " (" + sample.getName() + ", "
+            + getMapperName() + " (" + readsData.getName() + ", "
             + inputPath.getName() + ")");
 
     // Set the jar
@@ -209,8 +218,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set output path
     FileOutputFormat.setOutputPath(job,
-        new Path(context.getOutputData(MAPPER_RESULTS_SAM, sample)
-            .getDataFilename()));
+        new Path(outData.getDataFilename()));
 
     return job;
   }

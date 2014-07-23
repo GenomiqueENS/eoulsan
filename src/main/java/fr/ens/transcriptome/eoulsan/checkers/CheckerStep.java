@@ -58,7 +58,7 @@ public class CheckerStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Get the checkstore
@@ -69,8 +69,13 @@ public class CheckerStep extends AbstractStep {
     try {
 
       for (Checker checker : this.checkers) {
-        for (Sample sample : design.getSamples())
-          checker.check(context, sample, checkStore);
+
+        // TODO implement checker launch with Data object
+        //for (Sample sample : design.getSamples())
+        //  checker.check(context, sample, checkStore);
+        // TODO remove this
+        if (false)
+          throw new EoulsanException();
 
         count++;
 

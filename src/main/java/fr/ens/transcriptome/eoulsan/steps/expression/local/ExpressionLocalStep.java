@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.FileNotFoundException;
@@ -38,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -62,60 +64,58 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
   private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
+      final Data featuresAnnotationData = context.getInputData(ANNOTATION_GFF);
+      final Data alignmentData = context.getInputData(MAPPER_RESULTS_SAM);
+      final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
+      final Data expressionData =
+          context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentData);
+
       final ExpressionCounter counter = getCounter();
 
-      for (Sample s : design.getSamples()) {
+      // Create the reporter
+      final Reporter reporter = new LocalReporter();
 
-        // Create the reporter
-        final Reporter reporter = new LocalReporter();
+      // Get annotation file
+      final DataFile annotationFile = featuresAnnotationData.getDataFile();
 
-        // Get annotation file
-        final DataFile annotationFile =
-            context.getInputData(ANNOTATION_GFF, s).getDataFile();
+      // Get alignment file
+      final DataFile alignmentFile = alignmentData.getDataFile();
 
-        // Get alignment file
-        final DataFile alignmentFile =
-            context.getInputData(MAPPER_RESULTS_SAM, s).getDataFile();
+      // Get genome desc file
+      final DataFile genomeDescFile = genomeDescriptionData.getDataFile();
 
-        // Get genome desc file
-        final DataFile genomeDescFile =
-            context.getInputData(DataFormats.GENOME_DESC_TXT, s).getDataFile();
+      // Get final expression file
+      final DataFile expressionFile = expressionData.getDataFile();
 
-        // Get final expression file
-        final DataFile expressionFile =
-            context.getOutputData(EXPRESSION_RESULTS_TSV, s).getDataFile();
+      // Expression counting
+      count(context, counter, annotationFile, alignmentFile, expressionFile,
+          genomeDescFile, reporter);
 
-        // Expression counting
-        count(context, counter, annotationFile, alignmentFile, expressionFile,
-            genomeDescFile, reporter);
+      final String htSeqArgsLog =
+          ", "
+              + getAttributeId() + ", stranded: " + getStranded()
+              + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
 
-        final String htSeqArgsLog =
-            ", "
-                + getAttributeId() + ", stranded: " + getStranded()
-                + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
+      final String sampleCounterHeader =
+          "Expression computation with "
+              + counter.getCounterName() + " ("
+              + alignmentData.getName()
+              + ", "
+              + alignmentFile.getName()
+              + ", "
+              + annotationFile.getName()
+              + ", "
+              + getGenomicType()
+              // If counter is HTSeq-count add additional parameters to log
+              + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
+                  ? htSeqArgsLog : "") + ")";
 
-        final String sampleCounterHeader =
-            "Expression computation with "
-                + counter.getCounterName() + " ("
-                + s.getName()
-                + ", "
-                + alignmentFile.getName()
-                + ", "
-                + annotationFile.getName()
-                + ", "
-                + getGenomicType()
-                // If counter is HTSeq-count add additional parameters to log
-                + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
-                    ? htSeqArgsLog : "") + ")";
-
-        status.setSampleCounters(s, reporter, COUNTER_GROUP,
-            sampleCounterHeader);
-      }
+      status.setSampleCounters(alignmentData.getName(), reporter,
+          COUNTER_GROUP, sampleCounterHeader);
 
       // Write log file
       return status.createStepResult();
@@ -135,11 +135,11 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
   }
 
-  private void count(final StepContext context, final ExpressionCounter counter,
-      final DataFile annotationFile, final DataFile alignmentFile,
-      final DataFile expressionFile, final DataFile genomeDescFile,
-      final Reporter reporter) throws IOException, EoulsanException,
-      BadBioEntryException {
+  private void count(final StepContext context,
+      final ExpressionCounter counter, final DataFile annotationFile,
+      final DataFile alignmentFile, final DataFile expressionFile,
+      final DataFile genomeDescFile, final Reporter reporter)
+      throws IOException, EoulsanException, BadBioEntryException {
 
     // Init expression counter
     counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);

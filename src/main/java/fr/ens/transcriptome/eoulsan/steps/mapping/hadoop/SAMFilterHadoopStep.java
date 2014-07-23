@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
@@ -43,13 +44,11 @@ import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -68,7 +67,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Create configuration object
@@ -76,10 +75,13 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     try {
 
+      final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
+      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
+      final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, inData);
+
       // Create the list of jobs to run
-      final Map<Job, Sample> jobs = Maps.newHashMap();
-      for (Sample sample : design.getSamples())
-        jobs.put(createJob(conf, context, sample), sample);
+      final Map<Job, String> jobs = Maps.newHashMap();
+        jobs.put(createJob(conf, inData, genomeDescData, outData), inData.getName());
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJobs(jobs,
@@ -100,25 +102,24 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
   /**
    * Create the JobConf object for a sample
-   * @param basePath base path of data
-   * @param sample sample to process
+   * @param inData input data
+   * @param genomeDescData genome description data
+   * @param outData output data
    * @return a new JobConf object
    * @throws IOException
    */
   private Job createJob(final Configuration parentConf,
-      final StepContext context, final Sample sample) throws IOException {
+       final Data inData, final Data genomeDescData, final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Set input path
     final Path inputPath =
-        new Path(context.getInputData(MAPPER_RESULTS_SAM, sample)
-            .getDataFilename());
+        new Path(inData.getDataFilename());
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        context.getInputData(DataFormats.GENOME_DESC_TXT, sample)
-            .getDataFilename());
+        genomeDescData.getDataFilename());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -133,7 +134,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Filter SAM files ("
-            + sample.getName() + ", " + inputPath.getName() + ")");
+            + inData.getName() + ", " + inputPath.getName() + ")");
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);
@@ -160,8 +161,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputData(DataFormats.MAPPER_RESULTS_SAM,
-            sample).getDataFilename()));
+        new Path(outData.getDataFilename()));
 
     return job;
   }

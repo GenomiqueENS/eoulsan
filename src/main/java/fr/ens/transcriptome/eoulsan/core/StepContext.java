@@ -176,34 +176,48 @@ public interface StepContext {
   /**
    * Get the input data for an input DataType and a Sample.
    * @param format the DataFormat of the source
-   * @param sample the sample for the source
    * @return a String with the pathname
    */
-  Data getInputData(DataFormat format, Sample sample);
+  Data getInputData(DataFormat format);
 
   /**
    * Get the input data for a port name and a Sample.
    * @param portName the name of the port
-   * @param sample the sample for the source
    * @return a String with the pathname
    */
-  Data getInputData(String portName, Sample sample);
+  Data getInputData(String portName);
 
   /**
    * Get the output data for an input DataType and a Sample.
    * @param format the DataFormat of the source
-   * @param sample the sample for the source
+   * @param dataName the name of the data
    * @return a String with the pathname
    */
-  Data getOutputData(DataFormat format, Sample sample);
+  Data getOutputData(DataFormat format, String dataName);
+
+  /**
+   * Get the output data for an input DataType and a Sample.
+   * @param format the DataFormat of the source
+   * @param origin origin of the new data
+   * @return a String with the pathname
+   */
+  Data getOutputData(DataFormat format, Data origin);
 
 
   /**
    * Get the output data for a port name and a Sample.
    * @param portName the name of the port
-   * @param sample the sample for the source
+   * @param dataName the name of the data
    * @return a String with the pathname
    */
-  Data getOutputData(String portName, Sample sample);
+  Data getOutputData(String portName, String dataName);
+
+  /**
+   * Get the output data for a port name and a Sample.
+   * @param portName the name of the port
+   * @param origin origin of the new data
+   * @return a String with the pathname
+   */
+  Data getOutputData(String portName, Data origin);
 
 }

@@ -59,6 +59,10 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private static final String STEP_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
+  protected static final String READS_PORT_NAME ="reads";
+  protected static final String MAPPER_INDEX_PORT_NAME ="mapper_index";
+  protected static final String GENOME_DESCRIPTION_PORT_NAME ="genome_description";
+
   protected static final int HADOOP_TIMEOUT =
       AbstractReadsMapperStep.HADOOP_TIMEOUT;
 
@@ -148,9 +152,9 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("reads", READS_FASTQ);
-    builder.addPort("mapper_index", this.mapper.getArchiveFormat());
-    builder.addPort("genome_description", GENOME_DESC_TXT);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, this.mapper.getArchiveFormat());
+    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
 
     return builder.create();
   }

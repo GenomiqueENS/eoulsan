@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -51,17 +50,17 @@ public interface StepStatus {
 
   /**
    * Get sample message.
-   * @param sample sample
+   * @param sampleId sample
    * @return the message for the sample
    */
-  String getSampleMessage(Sample sample);
+  String getSampleMessage(String sampleId);
 
   /**
    * Get the sample counters.
-   * @param sample sample
+   * @param sampleId sample
    * @return the sample counters as a map
    */
-  Map<String, Long> getSampleCounters(Sample sample);
+  Map<String, Long> getSampleCounters(String sampleId);
 
   /**
    * Set the step message.
@@ -80,19 +79,19 @@ public interface StepStatus {
 
   /**
    * Set the sample message.
-   * @param sample the sample
+   * @param sampleId the sample
    * @param message the message to set
    */
-  void setSampleMessage(Sample sample, String message);
+  void setSampleMessage(String sampleId, String message);
 
   /**
    * Set the sample counters
-   * @param sample the sample
+   * @param sampleId the sample
    * @param reporter the reporter
    * @param counterGroup counter group to use with the reporter
    * @param sampleCounterHeader header for the sample (optional)
    */
-  void setSampleCounters(Sample sample, Reporter reporter, String counterGroup,
+  void setSampleCounters(String sampleId, Reporter reporter, String counterGroup,
       String sampleCounterHeader);
 
   /**
@@ -109,11 +108,11 @@ public interface StepStatus {
 
   /**
    * Get the progress of a sample processing.
-   * @param sample sample to process
+   * @param sampleId sample to process
    * @return the progress of the processing of the sample as percent (between
    *         0.0 and 1.0)
    */
-  double getSampleProgress(Sample sample);
+  double getSampleProgress(String sampleId);
 
   /**
    * Set a note in step progress
@@ -138,20 +137,20 @@ public interface StepStatus {
 
   /**
    * Set the progress of the processing of a sample by the step.
-   * @param sample the sample to process
+   * @param sampleId the sample to process
    * @param min minimal value of the progress
    * @param max maximal value of the progress
    * @param value current value of the progress
    */
-  void setSampleProgress(Sample sample, int min, int max, int value);
+  void setSampleProgress(String sampleId, int min, int max, int value);
 
   /**
    * Set the progress of the processing of a sample by the step.
-   * @param sample the sample to process
+   * @param sampleId the sample to process
    * @param progress value of the progress. This value must be greater or equals
    *          to 0 and lower or equals to 1.0
    */
-  void setSampleProgress(Sample sample, double progress);
+  void setSampleProgress(String sampleId, double progress);
 
   /**
    * Create a StepResult object for a successful result.
@@ -161,15 +160,13 @@ public interface StepStatus {
   /**
    * Create a StepResult object.
    * @param success true if the step is successful
-   * @param logMsg log message
    */
   WorkflowStepResult createStepResult(boolean success);
 
   /**
    * Create a StepResult object.
    * @param exception exception of the error
-   * @param errorMsg Error message
-   * @param logMsg log message
+   * @param exceptionMessage Error message
    */
   WorkflowStepResult createStepResult(Exception exception, String exceptionMessage);
 

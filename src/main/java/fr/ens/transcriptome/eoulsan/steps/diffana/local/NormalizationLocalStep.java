@@ -73,7 +73,7 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     try {
@@ -85,6 +85,7 @@ public class NormalizationLocalStep extends AbstractStep {
       if (rServeEnable)
         rServeName = context.getSettings().getRServeServername();
 
+      final Design design = context.getWorkflow().getDesign();
       final Normalization norm =
           new Normalization(design, new File("."), eDF.getPrefix(),
               eDF.getDefaultExtention(), new File("."), rServeName,

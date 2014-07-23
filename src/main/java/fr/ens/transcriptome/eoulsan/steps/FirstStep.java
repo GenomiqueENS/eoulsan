@@ -48,7 +48,7 @@ public final class FirstStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(Design design, StepContext context,
+  public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps

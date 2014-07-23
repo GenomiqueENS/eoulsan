@@ -35,12 +35,18 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
+import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.StepElementOutputData;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
@@ -87,6 +93,17 @@ public class CopyOutputFormatStep extends AbstractStep {
   }
 
   @Override
+  public OutputPorts getOutputPorts() {
+
+    final OutputPortsBuilder builder = new OutputPortsBuilder();
+
+    for (int i = 0; i < this.portNames.size(); i++)
+      builder.addPort(this.portNames.get(i), this.formats.get(i));
+
+    return builder.create();
+  }
+
+  @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
     for (Parameter p : stepParameters) {
 
@@ -121,25 +138,24 @@ public class CopyOutputFormatStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
-      // Copy files for each sample
-      for (Sample sample : design.getSamples()) {
+      final InputPorts inputPorts = context.getCurrentStep().getInputPorts();
 
-        for (DataFormat format : this.formats) {
+      for (String portName : inputPorts.getPortNames()) {
 
-          // Test if there is only one file per analysis for the format
-          if (format.isOneFilePerAnalysis()) {
-            copyFormat(context, format, design.getSamples().get(0));
-          } else {
-            copyFormat(context, format, sample);
-          }
-        }
-        status.setSampleProgress(sample, 1.0);
+        final InputPort inputPort = inputPorts.getPort(portName);
+
+        final Data inData = context.getInputData(portName);
+        final Data outData = context.getOutputData(portName, inData);
+
+        copyFormat(context, inData, outData);
+
+        status.setSampleProgress(inData.getName(), 1.0);
       }
+
     } catch (IOException e) {
       return status.createStepResult(e);
     }
@@ -153,39 +169,49 @@ public class CopyOutputFormatStep extends AbstractStep {
   /**
    * Copy files for a format and a samples.
    * @param context step context
-   * @param format the format
-   * @param sample the sample
+   * @param inData input data
+   * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyFormat(final StepContext context, final DataFormat format,
-      final Sample sample) throws IOException {
+  private void copyFormat(final StepContext context, final Data inData,
+      final Data outData) throws IOException {
 
     final DataFile outputDir = new DataFile(context.getStepWorkingPathname());
 
     // Handle standard case
-    if (format.getMaxFilesCount() == 1) {
+    if (inData.getFormat().getMaxFilesCount() == 1) {
 
-      final DataFile in = context.getInputData(format, sample).getDataFile();
+      final DataFile in = inData.getDataFile();
+      final DataFile out = new DataFile(outputDir, in.getName());
+
       if (!in.exists())
         throw new FileNotFoundException("input file not found: " + in);
 
       // Copy file
-      FileUtils.copy(in.rawOpen(),
-          new DataFile(outputDir, in.getName()).rawCreate());
+      FileUtils.copy(in.rawOpen(), out.rawCreate());
+
+      // Set the DataFile in the output data object
+      DataUtils.setDataFile(outData, out);
+
     } else {
 
+      final int count = inData.getDataFileCount();
+
       // Handle multi file format like fastq
-      final int count = context.getInputData(format, sample).getDataFileCount();
       for (int i = 0; i < count; i++) {
 
-        final DataFile in = context.getInputData(format, sample).getDataFile(i);
+        final DataFile in = inData.getDataFile(i);
+        final DataFile out = new DataFile(outputDir, in.getName());
         if (!in.exists())
           throw new FileNotFoundException("input file not found: " + in);
 
         // Copy file
-        FileUtils.copy(in.rawOpen(),
-            new DataFile(outputDir, in.getName()).rawCreate());
+        FileUtils.copy(in.rawOpen(), out.rawCreate());
+
+        // Set the DataFile in the output data object
+        DataUtils.setDataFile(outData, i, out);
       }
+
     }
   }
 

@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -44,8 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define a step that generate a genome mapper index.
@@ -108,29 +107,26 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final Design design, final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
-      if (design.getSampleCount() == 0)
-        throw new EoulsanException("No sample found in design file.");
-
-      final Sample s1 = design.getSamples().get(0);
+      // Get input and output data
+      final Data genomeData = context.getInputData(GENOME_FASTA);
+      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
+      final Data outData =
+          context.getOutputData(this.mapper.getArchiveFormat(), genomeData);
 
       // Get the genome DataFile
-      final DataFile genomeDataFile =
-          context.getInputData(GENOME_FASTA, s1).getDataFile();
+      final DataFile genomeDataFile = genomeData.getDataFile();
 
       // Get the genome description DataFile
-      final DataFile descDataFile =
-          context.getInputData(GENOME_DESC_TXT, s1).getDataFile();
+      final DataFile descDataFile = genomeDescData.getDataFile();
       final GenomeDescription desc =
           GenomeDescription.load(descDataFile.open());
 
       // Get the output DataFile
-      final DataFile mapperIndexDataFile =
-          context.getOutputData(this.mapper.getArchiveFormat(), s1).getDataFile();
+      final DataFile mapperIndexDataFile = outData.getDataFile();
 
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
@@ -141,9 +137,6 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       // Create index
       indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
 
-    } catch (EoulsanException e) {
-
-      return status.createStepResult(e);
     } catch (IOException e) {
 
       return status.createStepResult(e);
