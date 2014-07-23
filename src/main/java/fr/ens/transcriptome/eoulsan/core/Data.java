@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -38,11 +40,32 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 public interface Data {
 
   /**
+   * Get data name.
+   * @return the name of the data
+   */
+  String getName();
+
+  /**
    * Get the data format of the data.
    * @return a DataFormat object
    */
   DataFormat getFormat();
 
+
+  /**
+   * Get metadata about the data.
+   * @return a map with the metadata entries
+   */
+  Map<String,String> getMetadata();
+
+  //
+  // List methods
+  //
+
+  /**
+   * Test if the data is a list.
+   * @return true if the data is a list
+   */
   boolean isList();
 
   /**
@@ -50,6 +73,18 @@ public interface Data {
    * @return a list even if the data is not a list
    */
   List<Data> getList();
+
+  /**
+   * Add a data to the list of data.
+   * @param name name of the data
+   * @return the data object added to the list
+   */
+  Data addDataToList(String name);
+
+
+  //
+  // Files methods
+  //
 
   /**
    * Get the pathname for the data.
