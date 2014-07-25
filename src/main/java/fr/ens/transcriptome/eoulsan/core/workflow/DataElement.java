@@ -18,7 +18,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 class DataElement extends AbstractData {
 
-  private static int instanceCount;
+
 
   private final Map<String, String> metadata = Maps.newHashMap();
   protected final List<DataFile> files;
@@ -214,7 +214,7 @@ class DataElement extends AbstractData {
 
   DataElement(final DataFormat format, final List<DataFile> files) {
 
-    super("data" + (instanceCount++), format);
+    super(format);
 
     Preconditions.checkNotNull(format, "format argument cannot be null");
     Preconditions.checkNotNull(files, "files argument cannot be null");
@@ -239,7 +239,7 @@ class DataElement extends AbstractData {
   DataElement(final DataFile stepWorkingPathname,
               final WorkflowOutputPort port) {
 
-    super("data" + (instanceCount++), port.getFormat());
+    super(port.getFormat());
 
     Preconditions.checkNotNull(port,
         "stepWorkingPathname argument cannot be null");

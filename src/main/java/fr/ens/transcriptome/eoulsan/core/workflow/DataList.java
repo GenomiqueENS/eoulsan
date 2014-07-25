@@ -17,8 +17,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  */
 public class DataList extends AbstractData {
 
-  private static int instanceCount;
-
   private final List<Data> list = Lists.newArrayList();
 
   // Field required for multi-files Data creation
@@ -104,7 +102,7 @@ public class DataList extends AbstractData {
    */
   DataList(final WorkflowInputPort port) {
 
-    super("list" + (instanceCount++), port.getFormat());
+    super(port.getFormat());
 
     this.port = null;
     this.stepWorkingPathname = port.getStep().getStepWorkingDir();
@@ -116,7 +114,7 @@ public class DataList extends AbstractData {
    */
   DataList(final WorkflowOutputPort port) {
 
-    super("list" + (instanceCount++), port.getFormat());
+    super(port.getFormat());
 
     this.port = port;
     this.stepWorkingPathname = port.getStep().getStepWorkingDir();
