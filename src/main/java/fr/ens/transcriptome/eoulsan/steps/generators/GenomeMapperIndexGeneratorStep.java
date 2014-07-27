@@ -142,7 +142,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setStepMessage(this.mapper.getMapperName() + " index creation");
+    status.setMessage(this.mapper.getMapperName() + " index creation");
     return status.createStepResult();
   }
 

@@ -229,6 +229,26 @@ public final class Common {
 
   }
 
+  /**
+   * Get the number of threads to use from localThreads, maxLocalThreads and
+   * global threads number.
+   * @param localThreads number of threads
+   * @param maxLocalThreads maximum number of threads
+   * @return the number of threads to use
+   */
+  public static final int getThreadsNumber(final int localThreads,
+                                           final int maxLocalThreads) {
+    int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
+
+    if (localThreads > 0)
+      threads = localThreads;
+
+    if (maxLocalThreads > 0)
+      threads = Math.min(threads, maxLocalThreads);
+
+    return threads;
+  }
+
   //
   // Constructor
   //

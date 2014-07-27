@@ -184,7 +184,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       Files.move(samOutputFile, outFile);
 
       // Add counters for this sample to log file
-      status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+      status.setCounters(reporter, COUNTER_GROUP,
           logMsg);
 
     } catch (FileNotFoundException e) {

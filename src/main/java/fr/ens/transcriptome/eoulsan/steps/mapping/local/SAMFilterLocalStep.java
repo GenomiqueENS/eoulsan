@@ -125,7 +125,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     filterFile(inFile, outFile, reporter, filter);
 
     // Add counters for this sample to log file
-    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+    status.setCounters(reporter, COUNTER_GROUP,
         "Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
   }
 

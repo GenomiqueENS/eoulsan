@@ -142,7 +142,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     filterFile(inFile, outFile, reporter, filter, fastqFormat);
 
     // Add counters for this sample to log file
-    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+    status.setCounters(reporter, COUNTER_GROUP,
         "Filter reads (" + inData.getName() + ", " + inFile.getName() + ")");
   }
 
@@ -165,7 +165,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         fastqFormat);
 
     // Add counters for this sample to log file
-    status.setSampleCounters(inData.getName(), reporter, COUNTER_GROUP,
+    status.setCounters( reporter, COUNTER_GROUP,
         "Filter reads ("
             + inData.getName() + ", " + inData.getDataFile(0).getName() + ", "
             + inData.getDataFile(1).getName() + ")");

@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -37,7 +38,6 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 
 /**
  * This class define an abstract step for read mapping.
@@ -92,7 +92,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    */
   protected int getMapperLocalThreads() {
 
-    return ProcessSampleExecutor.getThreadsNumber(this.localThreads,
+    return Common.getThreadsNumber(this.localThreads,
         this.maxLocalThreads);
   }
 

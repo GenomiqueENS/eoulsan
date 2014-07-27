@@ -150,7 +150,7 @@ public class CopyOutputFormatStep extends AbstractStep {
 
         copyFormat(context, inData, outData);
 
-        status.setSampleProgress(inData.getName(), 1.0);
+        status.setProgress(1.0);
       }
 
     } catch (IOException e) {

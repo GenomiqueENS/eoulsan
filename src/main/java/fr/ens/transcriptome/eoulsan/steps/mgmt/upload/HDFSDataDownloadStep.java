@@ -113,7 +113,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
     if (noDownloadValue != null
         && "true".equals(noDownloadValue.trim().toLowerCase())) {
 
-      status.setStepMessage("Download step skipped in settings.");
+      status.setMessage("Download step skipped in settings.");
       return status.createStepResult();
     }
 
@@ -224,7 +224,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
         logMsg.append('\n');
       }
 
-      status.setStepMessage(logMsg.toString());
+      status.setMessage(logMsg.toString());
       return status.createStepResult();
 
     } catch (EoulsanException e) {

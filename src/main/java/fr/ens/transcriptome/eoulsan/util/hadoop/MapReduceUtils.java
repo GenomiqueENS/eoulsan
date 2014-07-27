@@ -186,12 +186,11 @@ public final class MapReduceUtils {
 
             if (!job.isSuccessful()) {
 
-              status.setSampleMessage(sample, "FAILED");
+              status.setMessage("FAILED");
 
             } else {
 
-              status.setSampleCounters(jobs.get(job),
-                  new HadoopReporter(job.getCounters()), counterGroup,
+              status.setCounters(new HadoopReporter(job.getCounters()), counterGroup,
                   job.getJobName());
 
             }

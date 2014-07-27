@@ -116,7 +116,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setStepMessage("Genome description creation");
+    status.setMessage("Genome description creation");
     return status.createStepResult();
   }
 

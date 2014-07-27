@@ -114,7 +114,7 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setStepMessage("Genome fasta creation");
+    status.setMessage("Genome fasta creation");
     return status.createStepResult();
   }
 

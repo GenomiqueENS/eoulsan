@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import java.util.Map;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
@@ -40,7 +41,6 @@ import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.ProcessSampleExecutor;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -158,7 +158,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    */
   protected int getLocalThreads() {
 
-    return ProcessSampleExecutor.getThreadsNumber(this.localThreads,
+    return Common.getThreadsNumber(this.localThreads,
         this.maxLocalThreads);
   }
 
