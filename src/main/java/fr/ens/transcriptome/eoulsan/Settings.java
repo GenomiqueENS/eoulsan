@@ -110,6 +110,14 @@ public final class Settings {
   private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
       + ".mail.smtp.host";
 
+  private static final String ZOOKEEPER_CONNECT_STRING_KEY =
+      "zookeeper.connect.string";
+
+  private static final String ZOOKEEPER_DEFAULT_PORT_KEY = "zookeeper.default.port";
+
+  private static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
+      "zookeeper.session.timeout";
+
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -335,6 +343,36 @@ public final class Settings {
   public String getSMTPHost() {
 
     return this.properties.getProperty(SMTP_HOST_KEY);
+  }
+
+  /**
+   * Get the ZooKeeper connect string.
+   * @return the ZooKeeper connect string
+   */
+  public String getZooKeeperConnectString() {
+
+    return this.properties.getProperty(ZOOKEEPER_CONNECT_STRING_KEY);
+  }
+
+  /**
+   * Get the ZooKeeper default port.
+   * @return the ZooKeeper default port
+   */
+  public int getZooKeeperDefaultPort() {
+
+    return Integer.parseInt(this.properties.getProperty(ZOOKEEPER_DEFAULT_PORT_KEY, ""
+        + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
+  }
+
+  /**
+   * Get the ZooKeeper session timeout.
+   * @return the ZooKeeper session timeout
+   */
+  public int getZooKeeperSessionTimeout() {
+
+    return Integer.parseInt(this.properties.getProperty(
+        ZOOKEEPER_SESSION_TIMEOUT_KEY, ""
+            + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
   }
 
   /**
@@ -647,6 +685,33 @@ public final class Settings {
   public void setSMTPHost(final String smtpHost) {
 
     this.properties.setProperty(SMTP_HOST_KEY, smtpHost);
+  }
+
+  /**
+   * Set the ZooKeeper connect string.
+   * @param connectString the ZooKeeper connect string
+   */
+  public void setZooKeeperConnectString(final String connectString) {
+
+    this.properties.setProperty(ZOOKEEPER_CONNECT_STRING_KEY, connectString);
+  }
+
+  /**
+   * Set the ZooKeeper default port.
+   * @param port the ZooKeeper default port
+   */
+  public void setZooKeeperDefaultPort(final int port) {
+
+    this.properties.setProperty(ZOOKEEPER_DEFAULT_PORT_KEY, "" + port);
+  }
+
+  /**
+   * Set the ZooKeeper session timeout.
+   * @param timeout the ZooKeeper session timeout
+   */
+  public void setZooKeeperSessionTimeout(final int timeout) {
+
+    this.properties.setProperty(ZOOKEEPER_SESSION_TIMEOUT_KEY, "" + timeout);
   }
 
   /**

@@ -427,5 +427,12 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
+         <release version="1.3" description="Eoulsan 1.3 release" date="TBD">
+            <action dev="jourdren" type="ADD">
+                A new locker for the reads mapping step in Hadoop mode is now used. It is
+                based on Zookeeper and is very stable.
+            </action>
+         </release>
+
 	</body>
 </document>
