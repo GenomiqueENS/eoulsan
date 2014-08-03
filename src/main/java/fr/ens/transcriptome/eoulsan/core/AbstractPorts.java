@@ -54,13 +54,21 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E> {
   @Override
   public E getPort(final String name) {
 
-    return this.ports.get(name);
+    if (name==null) {
+      return null;
+    }
+
+    return this.ports.get(name.trim().toLowerCase());
   }
 
   @Override
   public boolean contains(final String name) {
 
-    return this.ports.containsKey(name);
+    if (name==null) {
+      return false;
+    }
+
+    return this.ports.containsKey(name.trim().toLowerCase());
   }
 
   @Override
