@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -88,6 +89,14 @@ public class DataList extends AbstractData {
   @Override
   public int getDataFileCount(boolean existingFiles) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName()).add("metadata", getMetadata())
+        .add("list", isList()).add("elements", this.list).toString();
   }
 
   //

@@ -1,7 +1,6 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.core.Data;
@@ -52,14 +51,6 @@ public abstract class AbstractData implements Data {
    */
   boolean isDefaultName() {
     return this.defaultName;
-  }
-
-  @Override
-  public String toString() {
-
-    return Objects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("metadata", getMetadata())
-        .add("list", isList()).add("elements", getListElements()).toString();
   }
 
   //
