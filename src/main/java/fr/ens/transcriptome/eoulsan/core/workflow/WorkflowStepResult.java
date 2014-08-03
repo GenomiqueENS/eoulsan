@@ -47,6 +47,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
+/**
+ * This class define a step result.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public class WorkflowStepResult {
 
   private static final String TAB = "  ";

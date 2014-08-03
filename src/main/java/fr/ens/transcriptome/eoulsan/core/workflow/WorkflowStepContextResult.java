@@ -37,7 +37,9 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * Created by jourdren on 27/07/14.
+ * This class define a result for a step context.
+ * @author Laurent Jourdren
+ * @since 1.3
  */
 public class WorkflowStepContextResult implements StepResult {
 

@@ -32,7 +32,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 /**
- * Created by jourdren on 16/02/14.
+ * This class define an observer for step states.
+ * @author Laurent Jourdren
+ * @since 1.3
  */
 public class WorkflowStepStateObserver {
 

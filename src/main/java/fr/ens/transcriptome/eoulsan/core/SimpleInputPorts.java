@@ -26,6 +26,11 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.Set;
 
+/**
+ * This class define a class that handles a set of input ports.
+ * @author Laurent Jourdren
+ * @since 1.3
+ */
 public class SimpleInputPorts extends AbstractPorts<InputPort> implements
     InputPorts {
 
