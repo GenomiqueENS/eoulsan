@@ -2,6 +2,7 @@
   <name>annotation_gff</name>
   <description>gff annotation format</description>
   <prefix>annotation_</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
   <designfieldname>Annotation</designfieldname>
   <generator/>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker
   <extensions>
