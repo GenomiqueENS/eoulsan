@@ -125,7 +125,7 @@ public final class Common {
    * @param e Exception
    * @param message message to show to the use
    */
-  public static void errorExit(final Exception e, final String message) {
+  public static void errorExit(final Throwable e, final String message) {
 
     errorExit(e, message, true);
   }
@@ -136,7 +136,7 @@ public final class Common {
    * @param message message to show to the use
    * @param logMessage true if message must be logged
    */
-  public static void errorExit(final Exception e, final String message,
+  public static void errorExit(final Throwable e, final String message,
       final boolean logMessage) {
 
     if (logMessage) {
@@ -158,7 +158,7 @@ public final class Common {
    * Print the stack trace for an exception.
    * @param e Exception
    */
-  private static void printStackTrace(final Exception e) {
+  private static void printStackTrace(final Throwable e) {
 
     System.err.println("\n=== " + Globals.APP_NAME + " Debug Stack Trace ===");
     e.printStackTrace();
