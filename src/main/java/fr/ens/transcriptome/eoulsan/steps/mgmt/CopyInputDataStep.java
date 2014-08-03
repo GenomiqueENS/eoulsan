@@ -24,47 +24,47 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.Data;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
-import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * Copy output files of a step with a specified format to the output directory.
+ * Copy input files of a format in another location or in different compression
+ * format.
  * @author Laurent Jourdren
  * @since 2.0
  */
 @HadoopCompatible
-public class CopyOutputFormatStep extends AbstractStep {
+public class CopyInputDataStep extends AbstractStep {
 
-  public static final String STEP_NAME = "_copyoutputformat";
-  public static final String PORTS_PARAMETER = "ports";
-  public static final String FORMATS_PARAMETER = "formats";
+  public static final String STEP_NAME = "_copyinputformat";
+  public static final String FORMAT_PARAMETER = "format";
+  public static final String OUTPUT_COMPRESSION_PARAMETER = "compression";
 
-  private List<String> portNames = Lists.newArrayList();
-  private List<DataFormat> formats = Lists.newArrayList();
+  private DataFormat format;
+  private CompressionType outputCompression;
 
   @Override
   public String getName() {
@@ -81,57 +81,33 @@ public class CopyOutputFormatStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-
-    for (int i = 0; i < this.portNames.size(); i++)
-      builder.addPort(this.portNames.get(i), this.formats.get(i));
-
-    return builder.create();
+    return singleInputPort(this.format);
   }
 
   @Override
   public OutputPorts getOutputPorts() {
 
-    final OutputPortsBuilder builder = new OutputPortsBuilder();
-
-    for (int i = 0; i < this.portNames.size(); i++)
-      builder.addPort(this.portNames.get(i), this.formats.get(i));
-
-    return builder.create();
+    return new OutputPortsBuilder().addPort("output", this.format,
+        this.outputCompression).create();
   }
 
   @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
     for (Parameter p : stepParameters) {
 
-      if (FORMATS_PARAMETER.equals(p.getName())) {
-
-        final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-
-        for (String formatName : Splitter.on(',').split(p.getValue())) {
-
-          final DataFormat format = registry.getDataFormatFromName(formatName);
-
-          if (format == null)
-            throw new EoulsanException("Unknown format: " + formatName);
-          this.formats.add(format);
-        }
-      } else if (PORTS_PARAMETER.equals(p.getName())) {
-
-        for (String portName : Splitter.on(',').split(p.getValue()))
-          this.portNames.add(portName);
-      }
-
+      if (FORMAT_PARAMETER.equals(p.getName()))
+        this.format =
+            DataFormatRegistry.getInstance()
+                .getDataFormatFromName(p.getValue());
+      else if (OUTPUT_COMPRESSION_PARAMETER.equals(p.getName()))
+        this.outputCompression = CompressionType.valueOf(p.getValue());
     }
 
-    if (this.formats.isEmpty())
+    if (this.format == null)
       throw new EoulsanException("No format set.");
 
-    if (this.formats.size() != this.portNames.size())
-      throw new EoulsanException("The number of formats ("
-          + this.formats.size() + ") is not the same of the number of ports ("
-          + this.portNames.size() + ")");
-
+    if (this.outputCompression == null)
+      throw new EoulsanException("No output compression set.");
   }
 
   @Override
@@ -139,19 +115,11 @@ public class CopyOutputFormatStep extends AbstractStep {
 
     try {
 
-      final InputPorts inputPorts = context.getCurrentStep().getInputPorts();
+      final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
+      final Data outData = context.getOutputData("output", inData);
 
-      for (String portName : inputPorts.getPortNames()) {
-
-        final InputPort inputPort = inputPorts.getPort(portName);
-
-        final Data inData = context.getInputData(portName);
-        final Data outData = context.getOutputData(portName, inData);
-
-        copyFormat(context, inData, outData);
-
-        status.setProgress(1.0);
-      }
+      copyFormat(inData, outData);
+      status.setProgress(1.0);
 
     } catch (IOException e) {
       return status.createStepResult(e);
@@ -165,51 +133,66 @@ public class CopyOutputFormatStep extends AbstractStep {
 
   /**
    * Copy files for a format and a samples.
-   * @param context step context
    * @param inData input data
    * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyFormat(final StepContext context, final Data inData,
-      final Data outData) throws IOException {
+  private void copyFormat(final Data inData, final Data outData)
+      throws IOException {
 
-    final DataFile outputDir = new DataFile(context.getStepWorkingPathname());
+    final int count = inData.getDataFileCount();
 
     // Handle standard case
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
       final DataFile in = inData.getDataFile();
-      final DataFile out = new DataFile(outputDir, in.getName());
+      final DataFile out = outData.getDataFile();
 
       if (!in.exists())
         throw new FileNotFoundException("input file not found: " + in);
 
-      // Copy file
-      FileUtils.copy(in.rawOpen(), out.rawCreate());
-
-      // Set the DataFile in the output data object
-      DataUtils.setDataFile(outData, out);
-
+      copyDataFile(in, out);
     } else {
 
-      final int count = inData.getDataFileCount();
-
       // Handle multi file format like fastq
+
       for (int i = 0; i < count; i++) {
 
         final DataFile in = inData.getDataFile(i);
-        final DataFile out = new DataFile(outputDir, in.getName());
+        final DataFile out = outData.getDataFile(i);
+
         if (!in.exists())
           throw new FileNotFoundException("input file not found: " + in);
 
-        // Copy file
-        FileUtils.copy(in.rawOpen(), out.rawCreate());
-
-        // Set the DataFile in the output data object
-        DataUtils.setDataFile(outData, i, out);
+        copyDataFile(in, out);
       }
-
     }
+  }
+
+  /**
+   * Copy a file.
+   * @param in input file
+   * @param out ouput file
+   * @throws IOException if an error occurs while copying
+   */
+  private static void copyDataFile(final DataFile in, final DataFile out)
+      throws IOException {
+
+    Preconditions.checkNotNull(in, "input file is null");
+    Preconditions.checkNotNull(out, "output file is null");
+
+    final CompressionType inType =
+        CompressionType.getCompressionTypeByFilename(in.getName());
+    final CompressionType outType =
+        CompressionType.getCompressionTypeByFilename(out.getName());
+
+    if (inType == outType) {
+
+      FileUtils.copy(in.rawOpen(), out.rawCreate());
+      return;
+    }
+
+    FileUtils.copy(in.open(), out.create());
   }
 
 }

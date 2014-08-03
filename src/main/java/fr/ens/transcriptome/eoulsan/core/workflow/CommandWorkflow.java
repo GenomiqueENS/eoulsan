@@ -56,8 +56,8 @@ import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputFormatStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputFormatStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputDataStep;
+import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputDataStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -357,7 +357,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       throws EoulsanException {
 
     // Set the step name
-    final String stepName = CopyInputFormatStep.STEP_NAME;
+    final String stepName = CopyInputDataStep.STEP_NAME;
 
     // Search a non used step id
     final Set<String> stepsIds = Sets.newHashSet();
@@ -383,10 +383,10 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = Sets.newHashSet();
-    parameters.add(new Parameter(CopyInputFormatStep.FORMAT_PARAMETER, port
+    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, port
         .getFormat().getName()));
     parameters.add(new Parameter(
-        CopyInputFormatStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+        CopyInputDataStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
 
     // Create step
     CommandWorkflowStep step =
@@ -411,7 +411,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       throws EoulsanException {
 
     // Set the step name
-    final String stepName = CopyOutputFormatStep.STEP_NAME;
+    final String stepName = CopyOutputDataStep.STEP_NAME;
 
     // Search a non used step id
     final Set<String> stepsIds = Sets.newHashSet();
@@ -435,9 +435,9 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = Sets.newHashSet();
-    parameters.add(new Parameter(CopyOutputFormatStep.PORTS_PARAMETER, Joiner
+    parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner
         .on(',').join(portsList)));
-    parameters.add(new Parameter(CopyOutputFormatStep.FORMATS_PARAMETER, Joiner
+    parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER, Joiner
         .on(',').join(formatsList)));
 
     // Create step

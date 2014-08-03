@@ -37,6 +37,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserver;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
+/**
+ * This class define a basic UI for Eoulsan.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class BasicUI implements WorkflowStepObserver {
 
   private final Workflow workflow;

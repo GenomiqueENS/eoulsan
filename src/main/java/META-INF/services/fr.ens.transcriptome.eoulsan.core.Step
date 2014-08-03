@@ -28,5 +28,5 @@ fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep
 
-fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputFormatStep
-fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputFormatStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputDataStep
+fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputDataStep
