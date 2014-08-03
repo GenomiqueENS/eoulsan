@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define a basic implementation of a Ports class.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractPorts<E extends Port> implements Ports<E> {

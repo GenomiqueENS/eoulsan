@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.core.StepService;
  * This class store step instances and avoid storing this instance in
  * WorkflowStep objects that are serialized.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class StepInstances {
 

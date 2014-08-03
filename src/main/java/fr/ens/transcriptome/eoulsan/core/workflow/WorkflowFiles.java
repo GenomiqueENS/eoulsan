@@ -33,7 +33,7 @@ import com.google.common.collect.Sets;
  * This class define objects that contains the input files, the output files and
  * the reused files of a Workflow.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public final class WorkflowFiles {
 

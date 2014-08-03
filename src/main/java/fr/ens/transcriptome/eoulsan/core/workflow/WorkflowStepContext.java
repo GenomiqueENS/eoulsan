@@ -46,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 /**
  * This class define a step context.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepContext implements StepContext, Serializable {
 

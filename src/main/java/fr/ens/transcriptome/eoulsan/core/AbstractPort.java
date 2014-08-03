@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * Abstract class that define a port.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractPort implements Port, Serializable {

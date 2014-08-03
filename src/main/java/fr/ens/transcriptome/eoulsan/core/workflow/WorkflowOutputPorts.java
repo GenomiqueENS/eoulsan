@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 
 /**
  * This class define a group of Workflow output ports.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort> {

@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 /**
  * Copy output files of a step with a specified format to the output directory.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 @HadoopCompatible
 public class CopyOutputFormatStep extends AbstractStep {

@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This interface define data used by ports.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface Data {

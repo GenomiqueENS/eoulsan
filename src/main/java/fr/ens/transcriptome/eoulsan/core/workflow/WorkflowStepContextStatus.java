@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 /**
  * This class define a step status.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepContextStatus implements StepStatus {
 

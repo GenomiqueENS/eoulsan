@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define a data list.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class DataList extends AbstractData {

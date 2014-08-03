@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 /**
  * This class define a workflow output port. It is like a standard OutputPort
  * but it contains also the step of the port.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 class WorkflowOutputPort extends SimpleOutputPort {

@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 /**
  * This class allow to execute step context in mono or multi-thread mode.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepContextExecutors {
 

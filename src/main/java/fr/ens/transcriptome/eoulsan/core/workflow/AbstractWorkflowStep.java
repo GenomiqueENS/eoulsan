@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.steps.FakeStep;
  * This class define a step of the workflow. This class must be extended by a
  * class to be able to work with a specific worklow file format.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public abstract class AbstractWorkflowStep implements WorkflowStep {
 

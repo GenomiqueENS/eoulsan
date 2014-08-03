@@ -38,7 +38,7 @@ import com.google.common.collect.Maps;
 /**
  * This class define a step status.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepStatus {
 

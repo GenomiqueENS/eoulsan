@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
  * This interface allow to process the result of a step while executing the
  * workflow.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public interface WorkflowStepResultProcessor {
 

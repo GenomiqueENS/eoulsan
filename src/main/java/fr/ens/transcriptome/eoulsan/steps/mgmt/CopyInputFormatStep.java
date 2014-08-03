@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * Copy input files of a format in another location or in different compression
  * format.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 @HadoopCompatible
 public class CopyInputFormatStep extends AbstractStep {

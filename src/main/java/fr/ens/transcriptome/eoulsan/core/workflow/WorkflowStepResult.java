@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 /**
  * This class define a step result.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepResult {
 

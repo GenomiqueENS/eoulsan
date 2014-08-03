@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class allow to easily create input ports for a step.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class OutputPortsBuilder {

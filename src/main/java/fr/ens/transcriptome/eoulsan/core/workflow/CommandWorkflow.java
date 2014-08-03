@@ -64,7 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 /**
  * This class define a workflow based on a Command object (workflow file).
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class CommandWorkflow extends AbstractWorkflow {
 

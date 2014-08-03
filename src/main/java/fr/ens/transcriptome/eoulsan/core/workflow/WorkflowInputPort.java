@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 /**
  * This class define a workflow input port. It is like a standard InputPort but
  * it contains also the step of the port.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 class WorkflowInputPort extends SimpleInputPort {

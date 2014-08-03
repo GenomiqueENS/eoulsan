@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 /**
  * This class contains arguments for the Executor.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class ExecutorArguments {
 

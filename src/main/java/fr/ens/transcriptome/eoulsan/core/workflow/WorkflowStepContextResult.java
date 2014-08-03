@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 /**
  * This class define a result for a step context.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepContextResult implements StepResult {
 

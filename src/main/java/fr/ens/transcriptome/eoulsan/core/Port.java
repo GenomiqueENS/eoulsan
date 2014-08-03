@@ -28,7 +28,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This interface define a port of a step.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface Port {

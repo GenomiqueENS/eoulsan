@@ -31,7 +31,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This interface define a group of ports.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface Ports<E extends Port> extends Iterable<E> {

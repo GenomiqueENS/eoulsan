@@ -28,7 +28,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This interface define an output port of a step.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface OutputPort extends Port {

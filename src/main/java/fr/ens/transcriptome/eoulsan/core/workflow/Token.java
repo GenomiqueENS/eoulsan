@@ -31,7 +31,7 @@ import fr.ens.transcriptome.eoulsan.core.Data;
 /**
  * This class define a token of the workflow.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 class Token {
 

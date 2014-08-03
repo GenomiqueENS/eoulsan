@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 /**
  * This class allow to execute a step context.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 class WorkflowStepContextExecutor {
 

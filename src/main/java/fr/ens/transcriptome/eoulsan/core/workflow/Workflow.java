@@ -32,7 +32,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 /**
  * This interface define a Workflow.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public interface Workflow extends Serializable {
 

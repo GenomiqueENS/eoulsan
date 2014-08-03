@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 /**
  * This interface define workflow step events
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public interface WorkflowStepObserver {
 

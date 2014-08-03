@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define an unmodifiable data
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class UnmodifiableData implements Data {

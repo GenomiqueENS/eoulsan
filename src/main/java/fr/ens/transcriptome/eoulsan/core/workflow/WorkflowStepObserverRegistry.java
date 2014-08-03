@@ -33,7 +33,7 @@ import com.google.common.collect.Sets;
  * This class allow to relay workflow step events to other observers. This class
  * avoid storing observers WorkflowStep objects that are serialized.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepObserverRegistry {
 

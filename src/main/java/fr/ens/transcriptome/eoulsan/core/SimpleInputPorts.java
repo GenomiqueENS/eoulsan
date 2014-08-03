@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * This class define a class that handles a set of input ports.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class SimpleInputPorts extends AbstractPorts<InputPort> implements
     InputPorts {

@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 /**
  * This class define a step based on a Command object (workflow file).
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class CommandWorkflowStep extends AbstractWorkflowStep {
 

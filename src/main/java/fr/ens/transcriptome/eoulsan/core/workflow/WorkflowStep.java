@@ -37,14 +37,14 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 /**
  * This interface define a step of the workflow.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public interface WorkflowStep extends Serializable {
 
   /**
    * This enum define the type of step.
    * @author Laurent Jourdren
-   * @since 1.3
+   * @since 2.0
    */
   public static enum StepType {
     ROOT_STEP(0, "root"), DESIGN_STEP(1, "design"), CHECKER_STEP(2, "checker"),
@@ -108,7 +108,7 @@ public interface WorkflowStep extends Serializable {
   /**
    * This enum define the states of the steps.
    * @author Laurent Jourdren
-   * @since 1.3
+   * @since 2.0
    */
   public static enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, DONE, FAIL

@@ -26,7 +26,7 @@ package fr.ens.transcriptome.eoulsan.core;
 
 /**
  * This interface define a group of input ports.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface InputPorts extends Ports<InputPort> {

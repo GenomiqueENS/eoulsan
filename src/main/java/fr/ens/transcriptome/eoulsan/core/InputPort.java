@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This interface define an input port of a step.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface InputPort extends Port {

@@ -32,7 +32,7 @@ import com.google.common.collect.Maps;
 /**
  * This class store all the TokenManager instances.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class TokenManagerRegistry {
 

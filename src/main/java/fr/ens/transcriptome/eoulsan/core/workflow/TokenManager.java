@@ -53,7 +53,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 /**
  * This class define a token manager for a step.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class TokenManager implements Runnable {
 

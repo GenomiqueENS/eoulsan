@@ -32,7 +32,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define an abstract data.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractData implements Data {

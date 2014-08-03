@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 /**
  * This class define an output file of workflow set.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public final class WorkflowStepOutputDataFile implements
     Comparable<WorkflowStepOutputDataFile> {

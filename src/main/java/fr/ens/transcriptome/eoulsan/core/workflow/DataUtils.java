@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define an utility on data object.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public final class DataUtils {

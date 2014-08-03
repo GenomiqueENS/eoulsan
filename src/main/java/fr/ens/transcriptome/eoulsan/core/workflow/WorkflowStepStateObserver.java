@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 /**
  * This class define an observer for step states.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class WorkflowStepStateObserver {
 

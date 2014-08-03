@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define a data element.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 class DataElement extends AbstractData {
