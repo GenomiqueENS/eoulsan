@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,10 +117,10 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
             + "\tMD:Z:101\tNH:i:1\tHI:i:1\tNM:i:0\tSM:i:40\tXQ:i:40\tX2:i:0";
     // recordPE6 : clipping ok, NM ok
     recordPE6 =
-        "HWI-1KL110:37:C0BE6ACXX:7:1101:1426:2207\t147\tchr1\t35400811\t40\t101M\t=\t35400491\t-421" +
-        "\tGCTGTGACTTGGGGTCGGACTGGCGCCTCCTCCGCGGGTACCTGCAGTTCGCCTATGAAGGCCGCGATTACATCGCCCTGAACGAAGACCTGAAAACGTGG" +
-        "\tDDDDEDCDDDDDDDDDDDDDDDDDDDDDDDBDDDDDDDDBDDDDDDDDFHEHHJIJJJJJJJJJJJJJIHJJIIIIHIJIJIJJJJIHHHHHHFFFFFCCC" +
-        "\tMD:Z:101\tNH:i:1\tHI:i:1\tNM:i:0\tSM:i:40\tXQ:i:40\tX2:i:0";
+        "HWI-1KL110:37:C0BE6ACXX:7:1101:1426:2207\t147\tchr1\t35400811\t40\t101M\t=\t35400491\t-421"
+            + "\tGCTGTGACTTGGGGTCGGACTGGCGCCTCCTCCGCGGGTACCTGCAGTTCGCCTATGAAGGCCGCGATTACATCGCCCTGAACGAAGACCTGAAAACGTGG"
+            + "\tDDDDEDCDDDDDDDDDDDDDDDDDDDDDDDBDDDDDDDDBDDDDDDDDFHEHHJIJJJJJJJJJJJJJIHJJIIIIHIJIJIJJJJIHHHHHHFFFFFCCC"
+            + "\tMD:Z:101\tNH:i:1\tHI:i:1\tNM:i:0\tSM:i:40\tXQ:i:40\tX2:i:0";
 
     final GenomeDescription desc = new GenomeDescription();
     desc.addSequence("chr1", 197195432);
@@ -197,7 +199,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
 
   @Test
   public void testFilterReadAlignments() {
-    
+
     // single-end mode
     records.add(samRecordSE1);
     assertEquals(1, records.size());
@@ -213,7 +215,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
     assertEquals(1, records.size());
     filter.filterReadAlignments(records);
     assertEquals(1, records.size());
-    
+
     records.add(samRecordSE1);
     records.add(samRecordSE3);
     assertEquals(3, records.size());
@@ -221,7 +223,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
     assertEquals(1, records.size());
 
     records.clear();
-    
+
     // paired-end mode
     records.add(samRecordPE1);
     records.add(samRecordPE2);
@@ -240,7 +242,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
     assertEquals(2, records.size());
     filter.filterReadAlignments(records);
     assertEquals(2, records.size());
-    
+
     records.add(samRecordPE3);
     records.add(samRecordPE4);
     records.add(samRecordPE1);
@@ -248,7 +250,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
     assertEquals(6, records.size());
     filter.filterReadAlignments(records);
     assertEquals(2, records.size());
-    
+
   }
 
 }

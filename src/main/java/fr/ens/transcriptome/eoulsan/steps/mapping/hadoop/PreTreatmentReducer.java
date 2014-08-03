@@ -64,8 +64,8 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
 
   /**
    * 'key': the identifier of the read without the integer indicating the member
-   * of the pair. 'values': the rest of the paired TFQ lines (the member '1'
-   * and then the member '2').
+   * of the pair. 'values': the rest of the paired TFQ lines (the member '1' and
+   * then the member '2').
    */
   @Override
   protected void reduce(final Text key, final Iterable<Text> values,

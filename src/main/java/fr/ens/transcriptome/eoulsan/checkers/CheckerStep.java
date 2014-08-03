@@ -38,8 +38,6 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class is a step that launch checkers.
@@ -55,7 +53,8 @@ public class CheckerStep extends AbstractStep {
 
   public void configureInputPorts(final OutputPorts designOutputPorts) {
 
-    Preconditions.checkState(!this.inputPortsConfigured, "inputPorts has been already configured");
+    Preconditions.checkState(!this.inputPortsConfigured,
+        "inputPorts has been already configured");
 
     // TODO configure the inputPorts
 
@@ -73,8 +72,7 @@ public class CheckerStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Get the checkstore
     final CheckStore checkStore = CheckStore.getCheckStore();
@@ -86,8 +84,8 @@ public class CheckerStep extends AbstractStep {
       for (Checker checker : this.checkers) {
 
         // TODO implement checker launch with Data object
-        //for (Sample sample : design.getSamples())
-        //  checker.check(context, sample, checkStore);
+        // for (Sample sample : design.getSamples())
+        // checker.check(context, sample, checkStore);
         // TODO remove this
         if (false)
           throw new EoulsanException();

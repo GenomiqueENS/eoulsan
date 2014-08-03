@@ -125,7 +125,8 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
           READ_FILTER_PARAMETER_KEY_PREFIX));
 
       this.filter =
-          mrfb.getReadFilter(new HadoopReporterIncrementer(context), this.counterGroup);
+          mrfb.getReadFilter(new HadoopReporterIncrementer(context),
+              this.counterGroup);
 
       LOGGER.info("Reads filters to apply: "
           + Joiner.on(", ").join(this.filter.getFilterNames()));

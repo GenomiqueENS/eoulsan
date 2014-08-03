@@ -90,8 +90,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);
@@ -100,7 +99,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       // Get input and output data
       final Data readsData = context.getInputData(READS_FASTQ);
-      final Data mapperIndexData = context.getInputData(getMapper().getArchiveFormat());
+      final Data mapperIndexData =
+          context.getInputData(getMapper().getArchiveFormat());
       final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, readsData);
 
       // Get FASTQ format
@@ -110,7 +110,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       // Create the list of jobs to run
       final Map<Job, String> jobs = Maps.newHashMap();
-      jobs.put(createJobConf(conf, readsData, fastqFormat,  mapperIndexData, outData), readsData.getName());
+      jobs.put(
+          createJobConf(conf, readsData, fastqFormat, mapperIndexData, outData),
+          readsData.getName());
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJobs(jobs,
@@ -140,16 +142,15 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-     final Data readsData, final FastqFormat fastqFormat, final Data mapperIndexData, final Data outData) throws IOException {
+      final Data readsData, final FastqFormat fastqFormat,
+      final Data mapperIndexData, final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath =
-        new Path(readsData.getDataFilename());
+    final Path inputPath = new Path(readsData.getDataFilename());
 
     // Set genome index reference path
-    final Path genomeIndex =
-        new Path(mapperIndexData.getDataFilename());
+    final Path genomeIndex = new Path(mapperIndexData.getDataFilename());
 
     DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
 
@@ -174,8 +175,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     }
 
     // Set Mapper fastq format
-    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
-        + fastqFormat);
+    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, "" + fastqFormat);
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -217,8 +217,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(outData.getDataFilename()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFilename()));
 
     return job;
   }

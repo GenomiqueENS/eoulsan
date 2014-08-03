@@ -77,8 +77,8 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  SimpleOutputPort(final String name,
-                   final boolean list, final DataFormat format) {
+  SimpleOutputPort(final String name, final boolean list,
+      final DataFormat format) {
 
     this(name, list, format, null);
   }
@@ -102,7 +102,8 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
    * @param list true if a list is excepted as port value
    * @param compression compression of the output
    */
-  protected SimpleOutputPort(final String name, final boolean list, final DataFormat format, final CompressionType compression) {
+  protected SimpleOutputPort(final String name, final boolean list,
+      final DataFormat format, final CompressionType compression) {
 
     // Set the name and the format
     super(name, list, format);

@@ -52,7 +52,8 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     if (!checkFiles(fileA, fileB) && checkFileSize())
       return false;
 
-    return compareNonOrderedFiles(new FileInputStream(fileA), new FileInputStream(fileB));
+    return compareNonOrderedFiles(new FileInputStream(fileA),
+        new FileInputStream(fileB));
   }
 
   @Override
@@ -70,7 +71,8 @@ public abstract class AbstractCompareFiles implements CompareFiles {
     if (!checkFiles(fileA, fileB) && checkFileSize())
       return false;
 
-    return compareNonOrderedFiles(new FileInputStream(fileA), new FileInputStream(fileB));
+    return compareNonOrderedFiles(new FileInputStream(fileA),
+        new FileInputStream(fileB));
   }
 
   /**

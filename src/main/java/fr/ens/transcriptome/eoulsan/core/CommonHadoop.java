@@ -52,8 +52,8 @@ public class CommonHadoop {
   public static final int CHECK_COMPLETION_TIME = 5000;
   public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
 
-  public static final String COUNTER_GROUP_KEY =
-      Globals.PARAMETER_PREFIX + ".counter.group";
+  public static final String COUNTER_GROUP_KEY = Globals.PARAMETER_PREFIX
+      + ".counter.group";
 
   /**
    * Retrieve the genome file name from the files of a directory

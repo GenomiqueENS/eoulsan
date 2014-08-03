@@ -41,14 +41,13 @@ public class WorkflowStepObserverRegistry {
 
   private Set<WorkflowStepObserver> observers = Sets.newHashSet();
 
-
   /**
    * Add a listener.
    * @param observer listener to add
    */
   public void addObserver(final WorkflowStepObserver observer) {
 
-    if (observer == null || this.observers.contains(observer) )
+    if (observer == null || this.observers.contains(observer))
       return;
 
     this.observers.add(observer);

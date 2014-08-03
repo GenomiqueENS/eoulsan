@@ -105,8 +105,7 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute( final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
       final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;

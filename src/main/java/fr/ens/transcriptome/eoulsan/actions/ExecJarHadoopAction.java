@@ -338,7 +338,8 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
-          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath, destPath);
+          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath,
+              destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 

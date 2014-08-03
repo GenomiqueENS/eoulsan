@@ -67,8 +67,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration(false);// this.conf;
@@ -81,7 +80,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
       // Create the list of jobs to run
       final Map<Job, String> jobs = Maps.newHashMap();
-        jobs.put(createJob(conf, inData, genomeDescData, outData), inData.getName());
+      jobs.put(createJob(conf, inData, genomeDescData, outData),
+          inData.getName());
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJobs(jobs,
@@ -108,14 +108,13 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
    * @return a new JobConf object
    * @throws IOException
    */
-  private Job createJob(final Configuration parentConf,
-       final Data inData, final Data genomeDescData, final Data outData) throws IOException {
+  private Job createJob(final Configuration parentConf, final Data inData,
+      final Data genomeDescData, final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Set input path
-    final Path inputPath =
-        new Path(inData.getDataFilename());
+    final Path inputPath = new Path(inData.getDataFilename());
 
     // Set Genome description path
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
@@ -159,9 +158,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(
-        job,
-        new Path(outData.getDataFilename()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFilename()));
 
     return job;
   }

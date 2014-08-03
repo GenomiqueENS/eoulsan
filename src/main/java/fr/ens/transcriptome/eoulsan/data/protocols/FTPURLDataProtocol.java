@@ -32,14 +32,14 @@ import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
  * @author Laurent Jourdren
  */
 @LocalOnly
-public class FTPURLDataProtocol extends URLDataProtocol{
+public class FTPURLDataProtocol extends URLDataProtocol {
 
   /** Protocol name. */
   public static final String PROTOCOL_NAME = "ftp";
 
   @Override
   public String getName() {
-    
+
     return PROTOCOL_NAME;
   }
 

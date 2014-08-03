@@ -70,16 +70,15 @@ public class CasavaDesign implements Iterable<CasavaSample> {
     return result;
   }
 
-  
   /**
    * Get the number of samples in the design.
    * @return the number of samples in the design
    */
   public int size() {
-    
+
     return this.samples.size();
   }
-  
+
   @Override
   public String toString() {
 

@@ -59,9 +59,10 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private static final String STEP_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
-  protected static final String READS_PORT_NAME ="reads";
-  protected static final String MAPPER_INDEX_PORT_NAME ="mapper_index";
-  protected static final String GENOME_DESCRIPTION_PORT_NAME ="genome_description";
+  protected static final String READS_PORT_NAME = "reads";
+  protected static final String MAPPER_INDEX_PORT_NAME = "mapper_index";
+  protected static final String GENOME_DESCRIPTION_PORT_NAME =
+      "genome_description";
 
   protected static final int HADOOP_TIMEOUT =
       AbstractReadsMapperStep.HADOOP_TIMEOUT;

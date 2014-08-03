@@ -158,8 +158,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    */
   protected int getLocalThreads() {
 
-    return Common.getThreadsNumber(this.localThreads,
-        this.maxLocalThreads);
+    return Common.getThreadsNumber(this.localThreads, this.maxLocalThreads);
   }
 
 }

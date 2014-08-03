@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
+
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**

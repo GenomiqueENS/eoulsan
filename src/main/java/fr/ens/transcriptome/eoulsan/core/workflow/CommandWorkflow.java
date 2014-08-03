@@ -435,8 +435,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = Sets.newHashSet();
-    parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner
-        .on(',').join(portsList)));
+    parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner.on(
+        ',').join(portsList)));
     parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER, Joiner
         .on(',').join(formatsList)));
 

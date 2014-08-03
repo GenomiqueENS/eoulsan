@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.Set;
@@ -375,7 +375,7 @@ public class GenomicArrayTest {
 
     assertTrue(r.containsKey(fgi.iv(36, 40)));
     assertEquals(1, r.get(fgi.iv(36, 40)).size());
-    
+
     /**
      * The first interval is included in the second one.
      */

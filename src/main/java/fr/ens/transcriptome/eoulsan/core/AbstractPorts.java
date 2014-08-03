@@ -54,7 +54,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E> {
   @Override
   public E getPort(final String name) {
 
-    if (name==null) {
+    if (name == null) {
       return null;
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E> {
   @Override
   public boolean contains(final String name) {
 
-    if (name==null) {
+    if (name == null) {
       return false;
     }
 

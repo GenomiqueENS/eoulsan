@@ -43,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.io.BinaryCompareFile;
 public class FastqCompareFiles extends AbstractCompareFiles {
 
   @Override
-  public boolean compareNonOrderedFiles(final InputStream inA, final InputStream inB)
-      throws IOException {
+  public boolean compareNonOrderedFiles(final InputStream inA,
+      final InputStream inB) throws IOException {
 
     // Multiset where store hashcodes of the lines of the file
     final Multiset<Integer> hashcodes = HashMultiset.create();

@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.actions;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**

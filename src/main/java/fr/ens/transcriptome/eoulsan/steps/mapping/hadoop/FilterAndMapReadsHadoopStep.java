@@ -92,8 +92,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration();// this.conf;
@@ -104,7 +103,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final Data readData = context.getInputData(READS_PORT_NAME);
 
       if (readData.getDataFileCount() == 2) {
-          jobsPairedEnd.add(createJobConfPairedEnd(conf, context));
+        jobsPairedEnd.add(createJobConfPairedEnd(conf, context));
       }
 
       // Submit job paired end if needed
@@ -116,7 +115,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       jobs.put(createJobConf(conf, context), readData.getName());
 
       // Submit filter and map job
-      // TODO Remove usage of the next method as there now only one element to process
+      // TODO Remove usage of the next method as there now only one element to
+      // process
       MapReduceUtils.submitAndWaitForJobs(jobs,
           CommonHadoop.CHECK_COMPLETION_TIME, status, getCounterGroup());
 
@@ -172,7 +172,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set reads filter fastq format
     // TODO implements metadata for design values
-    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, "" + readsData.getMetadata().get("fastq.format"));
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, ""
+        + readsData.getMetadata().get("fastq.format"));
 
     // Set read filters parameters
     addParametersToJobConf(getReadFilterParameters(),
@@ -261,7 +262,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set output path
     FileOutputFormat.setOutputPath(
         job,
-        new Path(context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, readsData).getDataFilename()));
+        new Path(context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+            readsData).getDataFilename()));
 
     return job;
   }
@@ -278,8 +280,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // get input file count for the sample
     final Data readsData = context.getInputData(DataFormats.READS_FASTQ);
-    final int inFileCount =
-        readsData.getDataFileCount();
+    final int inFileCount = readsData.getDataFileCount();
 
     if (inFileCount < 1)
       throw new IOException("No input file found.");
@@ -301,7 +302,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set fastq format
     // TODO Use metadata
-    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, readsData.getMetadata().get("fastq.format"));
+    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, readsData.getMetadata()
+        .get("fastq.format"));
 
     // Set Job name
     // Create the job and its name

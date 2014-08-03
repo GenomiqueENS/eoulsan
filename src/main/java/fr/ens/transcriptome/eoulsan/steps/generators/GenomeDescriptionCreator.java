@@ -57,7 +57,8 @@ public class GenomeDescriptionCreator {
    *           description
    */
   public GenomeDescription createGenomeDescriptionFromAnnotation(
-      final DataFile annotationDataFile) throws BadBioEntryException, IOException {
+      final DataFile annotationDataFile) throws BadBioEntryException,
+      IOException {
 
     return createGenomeDescription(annotationDataFile, true);
   }

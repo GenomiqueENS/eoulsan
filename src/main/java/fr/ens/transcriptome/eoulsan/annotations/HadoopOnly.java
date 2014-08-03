@@ -27,9 +27,9 @@ package fr.ens.transcriptome.eoulsan.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
 /**
- * This annotation is used to mark a plug-in class as usable in hadoop mode only.
+ * This annotation is used to mark a plug-in class as usable in hadoop mode
+ * only.
  * @since 1.0
  * @author Laurent Jourdren
  */

@@ -26,11 +26,9 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This interface define data used by ports.
@@ -51,12 +49,11 @@ public interface Data {
    */
   DataFormat getFormat();
 
-
   /**
    * Get metadata about the data.
    * @return a map with the metadata entries
    */
-  Map<String,String> getMetadata();
+  Map<String, String> getMetadata();
 
   //
   // List methods
@@ -81,7 +78,6 @@ public interface Data {
    */
   Data addDataToList(String name);
 
-
   //
   // Files methods
   //
@@ -93,11 +89,12 @@ public interface Data {
   String getDataFilename();
 
   /**
-   * Get the pathname for the data. This method works only
-   * for a multifile DataFormat.
+   * Get the pathname for the data. This method works only for a multifile
+   * DataFormat.
    * @param fileIndex file index for multifile data
    * @return a String with the pathname
-   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
+   *           DataFormat is not multifile
    */
   String getDataFilename(int fileIndex);
 
@@ -112,7 +109,8 @@ public interface Data {
    * for a multifile DataFormat.
    * @param fileIndex file index for multifile data
    * @return a new DataFile object
-   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
+   *           DataFormat is not multifile
    */
   DataFile getDataFile(int fileIndex);
 
@@ -120,16 +118,18 @@ public interface Data {
    * Count the number for DataFile available for a multifile DataFormat and a
    * Sample. This method works only for a multifile DataFormat.
    * @return the number of multifile for the DataFormat and the sample
-   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
+   *           DataFormat is not multifile
    */
   int getDataFileCount();
 
   /**
    * Count the number for DataFile available for a multifile DataFormat and a
    * Sample. This method works only for a multifile DataFormat.
-   *  @param existingFiles if true return the number of files that really exists
+   * @param existingFiles if true return the number of files that really exists
    * @return the number of multifile for the DataFormat and the sample
-   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the DataFormat is not multifile
+   * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
+   *           DataFormat is not multifile
    */
   int getDataFileCount(boolean existingFiles);
 

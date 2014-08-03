@@ -34,10 +34,9 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -74,9 +73,11 @@ public class ReadsChecker implements Checker {
       throw new NullPointerException("The check info info is null");
 
     // get input file count for the sample
-    // TODO uncomment the following code when checker will be adapted to Data objects
+    // TODO uncomment the following code when checker will be adapted to Data
+    // objects
     final int inFileCount = 0;
-    //    context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFileCount();
+    // context.getOutputData(DataFormats.READS_FASTQ,
+    // sample).getDataFileCount();
 
     if (inFileCount < 1)
       throw new EoulsanException("No reads file found.");
@@ -90,25 +91,27 @@ public class ReadsChecker implements Checker {
     // Single end mode
     if (inFileCount == 1) {
 
-      // TODO uncomment the following code when checker will be adapted to Data objects
-      //final DataFile file =
-      //    context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
+      // TODO uncomment the following code when checker will be adapted to Data
+      // objects
+      // final DataFile file =
+      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
       //
-      //checkReadFile(file, format);
+      // checkReadFile(file, format);
     }
 
     // Paired end mode
     if (inFileCount == 2) {
 
-      // TODO uncomment the following code when checker will be adapted to Data objects
-//      final DataFile file1 =
-//          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-//
-//      final DataFile file2 =
-//          context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
-//
-//      checkReadFile(file1, format, true, 1);
-//      checkReadFile(file2, format, true, 2);
+      // TODO uncomment the following code when checker will be adapted to Data
+      // objects
+      // final DataFile file1 =
+      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
+      //
+      // final DataFile file2 =
+      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
+      //
+      // checkReadFile(file1, format, true, 1);
+      // checkReadFile(file2, format, true, 2);
     }
 
     return true;

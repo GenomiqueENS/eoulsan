@@ -60,49 +60,48 @@ public class ReadNameRegexReadFilterTest {
     assertFalse(filter.accept(new ReadSequence(0, ids[2], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[3], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[4], "", "")));
-    
+
     filter = new ReadNameRegexReadFilter();
     filter.setParameter("allowed.regex", "1176");
     filter.init();
-    
+
     assertFalse(filter.accept(new ReadSequence(0, ids[0], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[1], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[2], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[3], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[4], "", "")));
 
-    
     filter = new ReadNameRegexReadFilter();
     filter.setParameter("allowed.regex", "B0866ABXX\\:.\\:1101\\:1176");
     filter.init();
-    
+
     assertFalse(filter.accept(new ReadSequence(0, ids[0], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[1], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[2], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[3], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[4], "", "")));
-    
+
     filter = new ReadNameRegexReadFilter();
     filter.setParameter("forbidden.regex", "B0866ABXX\\:.\\:1101\\:1176");
     filter.init();
-    
+
     assertTrue(filter.accept(new ReadSequence(0, ids[0], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[1], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[2], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[3], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[4], "", "")));
-    
+
     filter = new ReadNameRegexReadFilter();
     filter.setParameter("allowed.regex", "1101");
     filter.setParameter("forbidden.regex", "AEGIR");
     filter.init();
-    
+
     assertFalse(filter.accept(new ReadSequence(0, ids[0], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[1], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[2], "", "")));
     assertFalse(filter.accept(new ReadSequence(0, ids[3], "", "")));
     assertTrue(filter.accept(new ReadSequence(0, ids[4], "", "")));
-    
+
   }
 
 }

@@ -27,9 +27,8 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-
 import net.sf.samtools.SAMRecord;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
  * This alignments filter keep alignments of a read according to the distance of

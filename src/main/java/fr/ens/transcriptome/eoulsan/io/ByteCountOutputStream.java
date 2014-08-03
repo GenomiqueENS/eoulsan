@@ -55,7 +55,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
     currentWrite = true;
 
     super.write(b, off, len);
-    
+
     if (add && b != null) {
       nWritten += len;
       currentWrite = false;

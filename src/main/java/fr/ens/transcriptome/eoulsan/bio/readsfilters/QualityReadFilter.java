@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import static fr.ens.transcriptome.eoulsan.util.StatUtils.mean;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 

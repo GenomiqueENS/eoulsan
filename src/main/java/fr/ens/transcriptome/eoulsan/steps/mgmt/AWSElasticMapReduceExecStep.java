@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceBuilder;
@@ -155,8 +155,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Envrionment argument
     final StringBuilder sb = new StringBuilder();
@@ -192,7 +191,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add(context.getDesignPathname());
     eoulsanArgsList.add("hdfs:///test");
 
-    final String[] eoulsanArgs = eoulsanArgsList.toArray(new String[eoulsanArgsList.size()]);
+    final String[] eoulsanArgs =
+        eoulsanArgsList.toArray(new String[eoulsanArgsList.size()]);
 
     // AWS builder
     final AWSElasticMapReduceBuilder builder = new AWSElasticMapReduceBuilder();

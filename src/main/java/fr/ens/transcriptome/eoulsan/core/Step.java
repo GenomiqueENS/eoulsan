@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**

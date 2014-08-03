@@ -165,8 +165,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    */
   protected int getLocalThreads() {
 
-    return Common.getThreadsNumber(this.localThreads,
-        this.maxLocalThreads);
+    return Common.getThreadsNumber(this.localThreads, this.maxLocalThreads);
   }
 
 }

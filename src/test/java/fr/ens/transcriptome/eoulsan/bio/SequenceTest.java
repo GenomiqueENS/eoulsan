@@ -24,7 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -277,7 +282,7 @@ public class SequenceTest {
     s1.setAlphabet(Alphabets.UNAMBIGUOUS_DNA_ALPHABET);
     s3 = s1.concat(s2);
     assertEquals("AATT", s3.getSequence());
-    assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET,s3.getAlphabet());
+    assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s3.getAlphabet());
 
     s3 = s1.concat(null);
     assertEquals(s1.getId(), s3.getId());

@@ -33,9 +33,9 @@ import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.convertSolexaScoreToP
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.getFormatFromName;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.identifyFormat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.io.InputStream;

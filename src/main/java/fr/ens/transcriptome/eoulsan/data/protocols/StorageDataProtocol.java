@@ -102,7 +102,8 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
    * Get the underlying Data.
    * @param src source to use
    * @return a the underlying DataFile
-   * @throws IOException if an error occurs while getting the underlying DataFile
+   * @throws IOException if an error occurs while getting the underlying
+   *           DataFile
    */
   public DataFile getUnderLyingData(final DataFile src) throws IOException {
 

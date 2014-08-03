@@ -44,9 +44,6 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.util.LocalReporter;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -114,8 +111,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
               + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
                   ? htSeqArgsLog : "") + ")";
 
-      status.setCounters(reporter,
-          COUNTER_GROUP, sampleCounterHeader);
+      status.setCounters(reporter, COUNTER_GROUP, sampleCounterHeader);
 
       // Write log file
       return status.createStepResult();
