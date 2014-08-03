@@ -26,11 +26,15 @@ package fr.ens.transcriptome.eoulsan.checkers;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -46,6 +50,17 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 public class CheckerStep extends AbstractStep {
 
   private List<Checker> checkers = Lists.newArrayList();
+  private InputPorts inputPorts = InputPortsBuilder.noInputPort();
+  private boolean inputPortsConfigured;
+
+  public void configureInputPorts(final OutputPorts designOutputPorts) {
+
+    Preconditions.checkState(!this.inputPortsConfigured, "inputPorts has been already configured");
+
+    // TODO configure the inputPorts
+
+    this.inputPortsConfigured = true;
+  }
 
   //
   // Step methods
