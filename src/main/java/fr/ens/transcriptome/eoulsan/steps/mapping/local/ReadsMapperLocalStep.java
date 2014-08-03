@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -116,9 +117,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final Data inData = context.getInputData(DataFormats.READS_FASTQ);
 
       // Get FASTQ format
-      // TODO Use metadata
-      final FastqFormat fastqFormat =
-          FastqFormat.valueOf(inData.getMetadata().get("fastq.format"));
+      // TODO create a DataMetaData class that contains standard methods like
+      // SampleMeData
+      FastqFormat fastqFormat =
+          FastqFormat.getFormatFromName(inData.getMetadata().get(
+              FASTQ_FORMAT_FIELD));
+      if (fastqFormat == null) {
+        fastqFormat = FastqFormat.FASTQ_ILLUMINA;
+      }
 
       if (inData.getDataFileCount() < 1)
         throw new IOException("No reads file found.");
@@ -184,8 +190,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       Files.move(samOutputFile, outFile);
 
       // Add counters for this sample to log file
-      status.setCounters(reporter, COUNTER_GROUP,
-          logMsg);
+      status.setCounters(reporter, COUNTER_GROUP, logMsg);
 
     } catch (FileNotFoundException e) {
 
