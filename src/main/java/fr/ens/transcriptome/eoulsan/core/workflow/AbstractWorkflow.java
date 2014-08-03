@@ -28,9 +28,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
@@ -58,20 +55,15 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.OutputPort;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -287,54 +279,54 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void checkExistingOutputFiles() throws EoulsanException {
 
-    final WorkflowFiles files = getWorkflowFilesAtRootStep();
-
-    // Location where find files, null means the expected outputFile
-    final List<DataFile> directories =
-        Lists.newArrayList(getLocalWorkingDir(), getHadoopWorkingDir(),
-            getOutputDir(), null);
-
-    for (WorkflowStepOutputDataFile file : files.getOutputFiles()) {
-
-      // Do not check output of skipped steps and outputs of design step
-      if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
-        continue;
-
-      for (DataFile dir : directories) {
-
-        // Set the file to test
-        final DataFile test =
-            dir == null ? file.getDataFile() : new DataFile(dir, file
-                .getDataFile().getName());
-
-        if (test.exists())
-          throw new EoulsanException("For sample "
-              + file.getSample().getId() + ", generated \""
-              + file.getFormat().getName() + "\" already exists (" + test
-              + ").");
-      }
-    }
-
-    for (WorkflowStepOutputDataFile file : files.getReusedFiles()) {
-
-      // Do not check output of skipped steps and outputs of design step
-      if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
-        continue;
-
-      for (DataFile dir : directories) {
-
-        // Set the file to test
-        final DataFile test =
-            dir == null ? file.getDataFile() : new DataFile(dir, file
-                .getDataFile().getName());
-
-        if (test.exists())
-          throw new EoulsanException("For sample "
-              + file.getSample().getId() + " in step " + file.getStep().getId()
-              + ", generated \"" + file.getFormat().getName()
-              + "\" already exists (" + test + ").");
-      }
-    }
+    // final WorkflowFiles files = getWorkflowFilesAtRootStep();
+    //
+    // // Location where find files, null means the expected outputFile
+    // final List<DataFile> directories =
+    // Lists.newArrayList(getLocalWorkingDir(), getHadoopWorkingDir(),
+    // getOutputDir(), null);
+    //
+    // for (WorkflowStepOutputDataFile file : files.getOutputFiles()) {
+    //
+    // // Do not check output of skipped steps and outputs of design step
+    // if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
+    // continue;
+    //
+    // for (DataFile dir : directories) {
+    //
+    // // Set the file to test
+    // final DataFile test =
+    // dir == null ? file.getDataFile() : new DataFile(dir, file
+    // .getDataFile().getName());
+    //
+    // if (test.exists())
+    // throw new EoulsanException("For sample "
+    // + file.getSample().getId() + ", generated \""
+    // + file.getFormat().getName() + "\" already exists (" + test
+    // + ").");
+    // }
+    // }
+    //
+    // for (WorkflowStepOutputDataFile file : files.getReusedFiles()) {
+    //
+    // // Do not check output of skipped steps and outputs of design step
+    // if (file.getStep().isSkip() || file.getStep().getType() == DESIGN_STEP)
+    // continue;
+    //
+    // for (DataFile dir : directories) {
+    //
+    // // Set the file to test
+    // final DataFile test =
+    // dir == null ? file.getDataFile() : new DataFile(dir, file
+    // .getDataFile().getName());
+    //
+    // if (test.exists())
+    // throw new EoulsanException("For sample "
+    // + file.getSample().getId() + " in step " + file.getStep().getId()
+    // + ", generated \"" + file.getFormat().getName()
+    // + "\" already exists (" + test + ").");
+    // }
+    // }
   }
 
   /**
@@ -343,17 +335,17 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void checkExistingInputFiles() throws EoulsanException {
 
-    final WorkflowFiles files = getWorkflowFilesAtRootStep();
-
-    for (WorkflowStepOutputDataFile file : files.getInputFiles()) {
-      if (!file.getStep().isSkip()
-          && !file.isMayNotExist() && !file.getDataFile().exists()) {
-        throw new EoulsanException("For sample "
-            + file.getSample().getId() + " in step " + file.getStep().getId()
-            + ", input file for " + file.getFormat().getName()
-            + " not exists (" + file.getDataFile() + ").");
-      }
-    }
+    // final WorkflowFiles files = getWorkflowFilesAtRootStep();
+    //
+    // for (WorkflowStepOutputDataFile file : files.getInputFiles()) {
+    // if (!file.getStep().isSkip()
+    // && !file.isMayNotExist() && !file.getDataFile().exists()) {
+    // throw new EoulsanException("For sample "
+    // + file.getSample().getId() + " in step " + file.getStep().getId()
+    // + ", input file for " + file.getFormat().getName()
+    // + " not exists (" + file.getDataFile() + ").");
+    // }
+    // }
   }
 
   //
@@ -373,133 +365,76 @@ public abstract class AbstractWorkflow implements Workflow {
     checkExistingInputFiles();
 
     // Set Steps to WAITING state
-    for (AbstractWorkflowStep step : this.steps.keySet())
-      step.setState(WAITING);
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+
+    for (AbstractWorkflowStep step : this.steps.keySet()) {
+
+      // Create Token manager of each step and start dedicated thread
+      registry.getTokenManager(step);
+
+      // Set steps state
+      if (step.getInputPorts().size() == 0) {
+        step.setState(READY);
+      } else {
+        step.setState(WAITING);
+      }
+    }
 
     final Stopwatch stopwatch = new Stopwatch();
     stopwatch.start();
 
     while (!getSortedStepsByState(READY, WAITING).isEmpty()) {
 
-      final List<AbstractWorkflowStep> stepsToExecute =
-          getSortedStepsByState(READY);
-
-      if (!stepsToExecute.isEmpty()) {
-
-        final AbstractWorkflowStep step = stepsToExecute.get(0);
-
-        // Skip step is necessary
-        if (step.isSkip()) {
-          step.setState(StepState.DONE);
-          continue;
-        }
-
-        getLogger().info("Execute step: " + step.getId());
-
-        // Execute step
-        final StepResult result = executeStep(step);
-
-        if (step.getType() == GENERATOR_STEP || step.getType() == STANDARD_STEP) {
-
-          // Write step result in a file
-          if (step.isCreateLogFiles())
-            writeStepResult(step, result);
-
-          // Create symlink in output directory
-          createSymlinksInOutputDirectory(step);
-
-          // End of the analysis if the analysis fail
-          if (!result.isSuccess()) {
-
-            getLogger().severe(
-                "Fail of the analysis: " + result.getErrorMessage());
-            logEndAnalysis(false, stopwatch);
-
-            if (result.getException() != null)
-              Common.errorExit(result.getException(), result.getErrorMessage());
-            else
-              Common.errorExit(new EoulsanException("Fail of the analysis."),
-                  result.getErrorMessage());
-          }
-        }
-
-        // If the step is terminal step, end of the execution of the workflow
-        if (step.getStep() != null && step.getStep().isTerminalStep())
-          break;
-
+      try {
+        // TODO 2000 must be a constant
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
 
+      // Get the step that had failed
+      final List<AbstractWorkflowStep> failedSteps =
+          getSortedStepsByState(StepState.FAIL);
+
+      if (!failedSteps.isEmpty()) {
+
+        WorkflowStepResult firstResult = null;
+
+        // Log error messages
+        for (AbstractWorkflowStep failedStep : failedSteps) {
+
+          final WorkflowStepResult result =
+              registry.getTokenManager(failedStep).getStepResult();
+          getLogger().severe(
+              "Fail of the analysis: " + result.getErrorMessage());
+
+          if (firstResult == null) {
+            firstResult = result;
+          }
+
+        }
+
+        // Log end of analysis
+        logEndAnalysis(false, stopwatch);
+
+        // Stop all other steps
+        for (AbstractWorkflowStep step : this.steps.keySet()) {
+          final TokenManager receiver = registry.getTokenManager(step);
+          receiver.stop();
+        }
+
+        if (firstResult.getException() != null)
+          Common.errorExit(firstResult.getException(),
+              firstResult.getErrorMessage());
+        else
+          Common.errorExit(new EoulsanException("Fail of the analysis."),
+              firstResult.getErrorMessage());
+
+        break;
+      }
     }
     logEndAnalysis(true, stopwatch);
 
-  }
-
-  /**
-   * Launch the step and create a log file for each step.
-   * @param step step
-   * @return the step result object
-   * @throws EoulsanException if an Interrupted exception occurs
-   */
-  private StepResult executeStep(final AbstractWorkflowStep step)
-      throws EoulsanException {
-
-    // Thread group name
-    final String threadGroupName = "eoulsan-step-#" + step.getNumber();
-
-    // Define thread group
-    final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
-
-    // Create Log handler and register it
-    final Logger logger =
-        step.isCreateLogFiles()
-            ? createStepLogger(step, threadGroupName) : null;
-
-    // Register the logger
-    if (logger != null)
-      EoulsanLogger.registerThreadGroupLogger(threadGroup, logger);
-
-    // Wrapper for step result
-    final List<StepResult> resultWrapper = Lists.newArrayList();
-
-    // Runnable object
-    final Runnable r = new Runnable() {
-
-      @Override
-      public void run() {
-        resultWrapper.add(step.execute());
-      }
-    };
-
-    try {
-      // Create thread
-      final Thread thread = new Thread(threadGroup, r);
-
-      // Start thread
-      thread.start();
-
-      // Wait the end of the thread
-      thread.join();
-
-    } catch (InterruptedException e) {
-      throw new EoulsanException(e.getMessage());
-    } finally {
-
-      if (logger != null) {
-
-        Handler handler = logger.getHandlers()[0];
-
-        // Close handler
-        handler.close();
-
-        // Remove logger from EoulsanLogger registry
-        EoulsanLogger.removeThreadGroupLogger(threadGroup);
-
-        // Remove handler
-        logger.removeHandler(handler);
-      }
-    }
-
-    return resultWrapper.get(0);
   }
 
   /**
@@ -565,72 +500,6 @@ public abstract class AbstractWorkflow implements Workflow {
 
       Common.showAndLogErrorMessage("Unable to create log file for "
           + step.getId() + " step.");
-    }
-  }
-
-  /**
-   * Create symbolic for output of a step.
-   * @param step the step
-   */
-
-  private void createSymlinksInOutputDirectory(final AbstractWorkflowStep step) {
-
-    if (step == null)
-      return;
-
-    final DataFile stepDir = step.getStepWorkingDir();
-    final DataFile outputDir = getOutputDir();
-    final StepContext context = step.getContext();
-
-    try {
-      if (!outputDir.getProtocol().canSymlink()
-          || !stepDir.getProtocol().canSymlink() || outputDir.equals(stepDir))
-        return;
-
-      for (OutputPort port : step.getOutputPorts()) {
-        for (Sample sample : getDesign().getSamples()) {
-
-          final DataFormat format = port.getFormat();
-
-          // Test the number of files by data
-          if (format.getMaxFilesCount() == 1) {
-            final DataFile file = context.getOutputData(format, sample).getDataFile();
-            final DataFile link = new DataFile(getOutputDir(), file.getName());
-
-            // Remove existing file/symlink
-            if (link.exists())
-              link.delete();
-
-            // Create symbolic link
-            file.symlink(link);
-          } else {
-
-            // Handle multi files
-            final int count = context.getOutputData(format, sample).getDataFileCount();
-            for (int i = 0; i < count; i++) {
-              final DataFile file =
-                  context.getOutputData(format, sample).getDataFile(i);
-              final DataFile link =
-                  new DataFile(getOutputDir(), file.getName());
-
-              // Remove existing file/symlink
-              if (link.exists())
-                link.delete();
-
-              // Create symbolic link
-              file.symlink(link);
-            }
-          }
-          // if one file per analysis for the format, there only one symlink to
-          // create
-          if (format.isOneFilePerAnalysis())
-            break;
-        }
-      }
-    } catch (IOException e) {
-      getLogger().warning(
-          "Error while creating symlink of output step ("
-              + step.getId() + ") file: " + e.getMessage());
     }
   }
 

@@ -69,8 +69,8 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort> {
 
     for (OutputPort port : ports) {
       if (port != null)
-        result.add(new WorkflowOutputPort(step, port.getName(), port
-            .getFormat(), port.getCompression()));
+        result.add(new WorkflowOutputPort(step, port.getName(), port.isList(),
+            port.getFormat(), port.getCompression()));
 
     }
 

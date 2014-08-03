@@ -26,10 +26,11 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -40,21 +41,16 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
-import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.steps.DesignStep;
+import fr.ens.transcriptome.eoulsan.steps.FakeStep;
 
 /**
  * This class define a step of the workflow. This class must be extended by a
@@ -70,12 +66,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private static int instanceCounter;
 
   private final AbstractWorkflow workflow;
-  private final WorkflowStepContext stepContext;
+  // private final WorkflowStepContext stepContext;
 
   private final int number;
   private final String id;
   private final StepType type;
   private final Set<Parameter> parameters;
+  private InputPorts inputPortsParameter = noInputPort();
+  private OutputPorts outputPortsParameter = noOutputPort();
+
   private final String stepName;
   private final EoulsanMode mode;
   private final boolean skip;
@@ -91,160 +90,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final DataFile workingDir;
 
   private StepResult result;
-
-  private class InputData implements Data {
-
-    final WorkflowInputPort port;
-    final Sample sample;
-
-
-
-    @Override
-    public DataFormat getFormat() {
-
-      return this.port.getFormat();
-    }
-
-    @Override
-    public boolean isList() {
-      return false;
-    }
-
-    @Override
-    public List<Data> getList() {
-      return Collections.singletonList((Data) this);
-    }
-
-    @Override
-    public String getDataFilename() {
-
-      return getDataFile().getSource();
-    }
-
-    @Override
-    public String getDataFilename(int fileIndex) {
-
-      return getDataFile(fileIndex).getSource();
-    }
-
-    @Override
-    public DataFile getDataFile() {
-      return port.getLink().getDataFile(sample, -1);
-    }
-
-    @Override
-    public DataFile getDataFile(int fileIndex) {
-
-      return port.getLink().getDataFile(sample, fileIndex);
-    }
-
-    @Override
-    public int getDataFileCount() {
-      return getDataFileCount(true);
-    }
-
-    @Override
-    public int getDataFileCount(final boolean existingFiles) {
-
-      return port.getLink().getDataFileCount(sample, existingFiles);
-    }
-
-    //
-    // Constructor
-    //
-
-    public InputData(final String portName, final Sample sample) {
-
-      Preconditions.checkNotNull(portName, "PortName argument cannot be null");
-      Preconditions.checkNotNull(sample, "Sample argument cannot be null");
-
-      this.sample = sample;
-
-      // Check if the port exists
-      if (!getInputPorts().contains(portName))
-        throw new EoulsanRuntimeException(
-            "the step does not contains input port named: " + portName);
-
-      this.port = getInputPorts().getPort(portName);
-
-      // Check if the port is linked
-      if (!this.port.isLinked())
-        throw new EoulsanRuntimeException("the port \""
-            + portName + "\" of the step \"" + getId() + "\" is not linked.");
-    }
-  }
-
-  private class OutputData implements Data {
-
-    final WorkflowOutputPort port;
-    final Sample sample;
-
-    @Override
-    public DataFormat getFormat() {
-
-      return this.port.getFormat();
-    }
-
-    @Override
-    public boolean isList() {
-      return false;
-    }
-
-    @Override
-    public List<Data> getList() {
-      return Collections.singletonList((Data)this);
-    }
-
-    @Override
-    public String getDataFilename() {
-
-      return getDataFile().getSource();
-    }
-
-    @Override
-    public String getDataFilename(int fileIndex) {
-
-      return getDataFile(fileIndex).getSource();
-    }
-
-    @Override
-    public DataFile getDataFile() {
-      return new WorkflowStepOutputDataFile(this.port, this.sample)
-          .getDataFile();
-    }
-
-    @Override
-    public DataFile getDataFile(int fileIndex) {
-
-      return new WorkflowStepOutputDataFile(this.port, this.sample, fileIndex)
-          .getDataFile();
-    }
-
-    @Override
-    public int getDataFileCount() {
-      return getDataFileCount(true);
-    }
-
-    @Override
-    public int getDataFileCount(final boolean existingFiles) {
-      return WorkflowStepOutputDataFile.dataFileCount(this.port, this.sample,
-          existingFiles);
-    }
-
-    //
-    // Constructor
-    //
-
-    public OutputData(final String portName, final Sample sample) {
-
-      Preconditions.checkNotNull(portName, "portName argument cannot be null");
-      Preconditions.checkArgument(outputPorts.contains(portName),
-          "Unknown output port for step \"" + getId() + ": " + portName);
-
-      this.port = outputPorts.getPort(portName);
-      this.sample = sample;
-    }
-  }
 
   //
   // Getters
@@ -265,11 +110,11 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.workflow;
   }
 
-  @Override
-  public StepContext getContext() {
-
-    return this.stepContext;
-  }
+  // @Override
+  // public StepContext getContext() {
+  //
+  // return this.stepContext;
+  // }
 
   @Override
   public int getNumber() {
@@ -343,11 +188,23 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return Collections.unmodifiableSet(this.parameters);
   }
 
+  @Override
+  public InputPorts getInputPorts() {
+
+    return this.inputPortsParameter;
+  }
+
+  @Override
+  public OutputPorts getOutputPorts() {
+
+    return this.outputPortsParameter;
+  }
+
   /**
    * Get the input ports.
    * @return the InputPorts object
    */
-  protected WorkflowInputPorts getInputPorts() {
+  WorkflowInputPorts getWorkflowInputPorts() {
 
     return this.inputPorts;
   }
@@ -356,7 +213,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Get the output ports.
    * @return the OutputPorts object
    */
-  protected WorkflowOutputPorts getOutputPorts() {
+  WorkflowOutputPorts getWorkflowOutputPorts() {
 
     return this.outputPorts;
   }
@@ -422,176 +279,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(step, "step cannot be null");
 
     // Get output ports
-    final OutputPorts outputPorts = step.getOutputPorts();
+    this.outputPortsParameter = step.getOutputPorts();
     if (outputPorts != null)
-      this.outputPorts = new WorkflowOutputPorts(this, outputPorts);
+      this.outputPorts = new WorkflowOutputPorts(this, outputPortsParameter);
 
     // Get input ports
-    final InputPorts inputPorts = step.getInputPorts();
+    this.inputPortsParameter = step.getInputPorts();
     if (inputPorts != null)
-      this.inputPorts = new WorkflowInputPorts(this, inputPorts);
-  }
-
-  protected void registerDesignOutputPorts() {
-
-    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-    final Design design = getWorkflow().getDesign();
-
-    if (design.getSampleCount() == 0)
-      return;
-
-    final Sample firstSample = design.getSamples().get(0);
-    final Set<WorkflowOutputPort> ports = Sets.newHashSet();
-
-    for (String fieldName : firstSample.getMetadata().getFields()) {
-
-      final DataFormat format = registry.getDataFormatForDesignField(fieldName);
-
-      if (format != null)
-        ports.add(new WorkflowOutputPort(this, format.getName(), format,
-            CompressionType.NONE));
-    }
-
-    this.outputPorts = new WorkflowOutputPorts(ports);
-  }
-
-  //
-  // DataFile methods
-  //
-
-  // /**
-  // * Get a WorkflowOutputPort from its name
-  // * @param outputPortName the output port name
-  // * @return a WorkflowOutputPort object
-  // */
-  // private WorkflowOutputPort getOutputPort(final String outputPortName) {
-  //
-  // Preconditions.checkNotNull(outputPortName,
-  // "outputPortName cannot be null");
-  // Preconditions.checkArgument(this.outputPorts.contains(outputPortName),
-  // "Unknown output port for step \"" + getId() + ": " + outputPortName);
-  //
-  // return this.outputPorts.getPort(outputPortName);
-  // }
-  //
-  // /**
-  // * Get an output file of the step.
-  // * @param portName name of the output port that generate file
-  // * @param sample sample sample that correspond to the file
-  // * @return a DataFile object
-  // */
-  // DataFile getOutputDataFile(final String portName, final Sample sample) {
-  //
-  // return new WorkflowStepOutputDataFile(getOutputPort(portName), sample)
-  // .getDataFile();
-  // }
-  //
-  // /**
-  // * Get an output file of the step.
-  // * @param portName name of the output port that generate file
-  // * @param sample sample sample that correspond to the file
-  // * @param fileIndex file index
-  // * @return a DataFile object
-  // */
-  // DataFile getOutputDataFile(final String portName, final Sample sample,
-  // final int fileIndex) {
-  //
-  // return new WorkflowStepOutputDataFile(getOutputPort(portName), sample,
-  // fileIndex).getDataFile();
-  // }
-  //
-  // /**
-  // * Get the file count for an output step of the step.
-  // * @param portName name of the output port that generate file
-  // * @param sample sample sample that correspond to the file
-  // * @param existingFiles if true return the number of files that really
-  // exists
-  // * otherwise the maximum of files.
-  // * @return the count of output DataFiles
-  // */
-  // int getOutputDataFileCount(final String portName, final Sample sample,
-  // final boolean existingFiles) {
-  //
-  // return WorkflowStepOutputDataFile.dataFileCount(getOutputPort(portName),
-  // sample, existingFiles);
-  // }
-  //
-  // /**
-  // * Get a DataFile that correspond to a port and a Sample for this step.
-  // * @param portName name of the output port that generate file
-  // * @param sample the sample
-  // * @return a DataFile or null if the port is not available
-  // */
-  // DataFile getInputDataFile(final String portName, final Sample sample) {
-  //
-  // return getInputDataFile(portName, sample, -1);
-  // }
-  //
-  // /**
-  // * Get a DataFile that correspond to a port and a Sample for this step.
-  // * @param portName name of the output port that generate file
-  // * @param sample the sample
-  // * @return a DataFile or null if the port is not available
-  // */
-  // DataFile getInputDataFile(final String portName, final Sample sample,
-  // final int fileIndex) {
-  //
-  // Preconditions.checkNotNull(portName, "PortName argument cannot be null");
-  // Preconditions.checkNotNull(sample, "Sample argument cannot be null");
-  //
-  // // Check if the port exists
-  // if (!getInputPorts().contains(portName))
-  // throw new EoulsanRuntimeException(
-  // "the step does not contains input port named: " + portName);
-  //
-  // final WorkflowInputPort port = getInputPorts().getPort(portName);
-  //
-  // // Check if the port is linked
-  // if (!port.isLinked())
-  // throw new EoulsanRuntimeException("the port \""
-  // + portName + "\" of the step \"" + getId() + "\" is not linked.");
-  //
-  // return port.getLink().getDataFile(sample, fileIndex);
-  // }
-  //
-  // /**
-  // * Get the file count for an input step of the step.
-  // * @param portName name of the output port that generate file
-  // * @param sample sample sample that correspond to the file
-  // * @param existingFiles if true return the number of files that really
-  // exists
-  // * otherwise the maximum of files.
-  // * @return the count of intput DataFiles
-  // */
-  // int getInputDataFileCount(final String portName, final Sample sample,
-  // final boolean existingFiles) {
-  //
-  // checkNotNull(portName, "PortName argument cannot be null");
-  // checkNotNull(sample, "Sample argument cannot be null");
-  //
-  // // Check if the port exists
-  // if (!getInputPorts().contains(portName))
-  // throw new EoulsanRuntimeException(
-  // "the step does not contains input port named: " + portName);
-  //
-  // final WorkflowInputPort port = getInputPorts().getPort(portName);
-  //
-  // // Check if the port is linked
-  // if (!port.isLinked())
-  // throw new EoulsanRuntimeException("the port \""
-  // + portName + "\" of the step \"" + getId() + "\" is not linked.");
-  //
-  // return port.getLink().getDataFileCount(sample, existingFiles);
-  // }
-
-  Data getInputPortData(final String portName, final Sample sample) {
-
-    return new InputData(portName, sample);
-  }
-
-  Data getOutputPortData(final String portName, final Sample sample) {
-
-    return new OutputData(portName, sample);
+      this.inputPorts = new WorkflowInputPorts(this, inputPortsParameter);
   }
 
   /**
@@ -611,8 +306,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
                 + inputPort.getName() + ") is not a port of the step ("
                 + getId() + ")");
 
-    // Set the set link
+    // Set the link
     inputPort.setLink(outputPort);
+    outputPort.addLink(inputPort);
 
     // Add the dependency
     inputPort.getStep().addDependency(outputPort.getStep());
@@ -693,85 +389,33 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Configure only standard steps and generator steps
     if (getType() == StepType.STANDARD_STEP
-        || getType() == StepType.GENERATOR_STEP) {
+        || getType() == StepType.DESIGN_STEP
+        || getType() == StepType.GENERATOR_STEP
+        || getType() == StepType.DESIGN_STEP) {
 
       getLogger().info(
           "Configure "
               + getId() + " step with step parameters: " + getParameters());
 
       final Step step = getStep();
-      if (getType() == StepType.STANDARD_STEP)
+      if (getType() == StepType.STANDARD_STEP
+          || getType() == StepType.DESIGN_STEP) {
         step.configure(getParameters());
+      }
 
       // Register input and output formats
       registerInputAndOutputPorts(step);
-    }
-
-    // Create output port of design step
-    if (getType() == StepType.DESIGN_STEP) {
-
-      // Register output port
-      registerDesignOutputPorts();
     }
 
     setState(StepState.CONFIGURED);
   }
 
   /**
-   * Execute the step.
-   * @return a StepResult object
-   */
-  StepResult execute() {
-
-    if (getState() != StepState.READY)
-      throw new IllegalStateException("Illegal step state for execution: "
-          + getState());
-
-    getLogger().info("Start " + getId() + " step.");
-
-    setState(StepState.WORKING);
-
-    final StepStatus status = new WorkflowStepStatus(this);
-    final StepResult result;
-
-    switch (getType()) {
-
-    case CHECKER_STEP:
-
-      // Checker can only be configured after execution of configure() on other
-      // step.
-      configureCheckerStep();
-
-    case STANDARD_STEP:
-    case GENERATOR_STEP:
-
-      final Step step = StepInstances.getInstance().getStep(this);
-
-      result = step.execute(this.workflow.getDesign(), getContext(), status);
-
-      getLogger().info(
-          "Process step "
-              + getId() + " in "
-              + StringUtils.toTimeHumanReadable(result.getDuration()) + " s.");
-
-      setState(result.isSuccess() ? StepState.DONE : StepState.FAIL);
-
-      break;
-
-    default:
-      result = null;
-      setState(StepState.DONE);
-    }
-
-    getLogger().info("End " + getId() + " step.");
-    this.result = result;
-    return result;
-  }
-
-  /**
    * Run checker (runs only for Design step).
    */
   private void configureCheckerStep() {
+
+    // TODO modify design step to configure also the checker step
 
     /* This method can only works with design step */
     if (getType() != CHECKER_STEP)
@@ -782,8 +426,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         (CheckerStep) StepInstances.getInstance().getStep(this);
 
     // Get the input files of the workflow
-    final Set<WorkflowStepOutputDataFile> files =
-        getWorkflow().getWorkflowFilesAtRootStep().getInputFiles();
+    // final Set<WorkflowStepOutputDataFile> files =
+    // getWorkflow().getWorkflowFilesAtRootStep().getInputFiles();
 
     // Get design
     final Design design = this.getWorkflow().getDesign();
@@ -793,13 +437,48 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       return;
 
     // Search to format to check
-    for (WorkflowStepOutputDataFile file : files)
-      if (file.getFormat().isChecker()) {
+    // for (WorkflowStepOutputDataFile file : files)
+    // if (file.getFormat().isChecker()) {
+    //
+    // // Add the checker to the list of checkers to launch
+    // checkerStep.addChecker(file.getFormat().getChecker());
+    // }
 
-        // Add the checker to the list of checkers to launch
-        checkerStep.addChecker(file.getFormat().getChecker());
-      }
+  }
 
+  //
+  // Token handling
+  //
+
+  /**
+   * Send a token to the next steps.
+   * @param token token to send
+   */
+  void sendToken(final Token token) {
+
+    Preconditions.checkNotNull(token, "token cannot be null");
+
+    final String outputPortName = token.getOrigin().getName();
+
+    for (WorkflowInputPort inputPort : this.outputPorts.getPort(outputPortName)
+        .getLinks()) {
+
+      inputPort.getStep().postToken(inputPort, token);
+    }
+  }
+
+  /**
+   * Receive a token.
+   * @param inputPort destination of the token
+   * @param token the token
+   */
+  private void postToken(final WorkflowInputPort inputPort, final Token token) {
+
+    Preconditions.checkNotNull(inputPort, "inputPort cannot be null");
+    Preconditions.checkNotNull(token, "token cannot be null");
+
+    TokenManagerRegistry.getInstance().getTokenManager(this)
+        .postToken(inputPort, token);
   }
 
   //
@@ -824,8 +503,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(type, "Type argument cannot be null");
 
     this.workflow = workflow;
-    this.stepContext =
-        new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.number = instanceCounter++;
     this.id = type.getDefaultStepId();
     this.skip = false;
@@ -851,8 +528,29 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
               this.copyResultsToOutput);
       break;
 
+    case DESIGN_STEP:
+
+      // Create and register checker step
+      final Step checkerStep2 =
+          StepInstances.getInstance().getStep(this.workflow.getCheckerStep());
+      final Step designStep =
+          new DesignStep(this.workflow.getDesign(), (CheckerStep) checkerStep2);
+      StepInstances.getInstance().registerStep(this, designStep);
+
+      this.stepName = designStep.getName();
+      this.mode = EoulsanMode.getEoulsanMode(designStep.getClass());
+
+      // Define working directory
+      this.workingDir =
+          defineWorkingDirectory(workflow, designStep, this.copyResultsToOutput);
+
+      break;
+
     default:
-      this.stepName = null;
+
+      StepInstances.getInstance().registerStep(this, new FakeStep());
+
+      this.stepName = type.name();
       this.mode = EoulsanMode.NONE;
 
       // Define working directory
@@ -886,8 +584,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     Preconditions.checkNotNull(generator, "The generator step is null");
 
     this.workflow = workflow;
-    this.stepContext =
-        new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.number = instanceCounter++;
     this.id = generator.getName();
     this.skip = false;
@@ -931,8 +627,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         "Step arguments argument cannot be null");
 
     this.workflow = workflow;
-    this.stepContext =
-        new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.number = instanceCounter++;
     this.id = id;
     this.skip = skip;
@@ -989,8 +683,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     }
 
     this.workflow = workflow;
-    this.stepContext =
-        new WorkflowStepContext(workflow.getWorkflowContext(), this);
     this.number = instanceCounter++;
     this.id = id;
     this.skip = skip;

@@ -147,15 +147,15 @@ public final class WorkflowStepOutputDataFile implements
     case STANDARD_STEP:
     case GENERATOR_STEP:
 
-      if (!step.getStep().getOutputPorts().contains(portName))
-        throw new EoulsanRuntimeException("The "
-            + format.getName() + " format is not an output format of the step "
-            + step.getStep().getName());
-
-      // Return a file created by a step
-      return newStandardDataFile(step.getContext(), step, portName, format,
-          sample, fileIndex, step.getOutputPorts().getPort(portName)
-              .getCompression());
+      // if (!step.getStep().getOutputFormats().contains(portName))
+      // throw new EoulsanRuntimeException("The "
+      // + format.getName() + " format is not an output format of the step "
+      // + step.getStep().getName());
+      //
+      // // Return a file created by a step
+      // return newStandardDataFile(step.getContext(), step, portName, format,
+      // sample, fileIndex, step.getOutputPorts().getPort(portName)
+      // .getCompression());
 
     case DESIGN_STEP:
 
@@ -407,9 +407,9 @@ public final class WorkflowStepOutputDataFile implements
 
       do {
 
-        final DataFile file =
-            newStandardDataFile(step.getContext(), step, outputPort.getName(),
-                format, sample, count, compression);
+        final DataFile file = null;
+        // newStandardDataFile(step.getContext(), step, outputPort.getName(),
+        // format, sample, count, compression);
 
         found = file.exists();
         if (found)

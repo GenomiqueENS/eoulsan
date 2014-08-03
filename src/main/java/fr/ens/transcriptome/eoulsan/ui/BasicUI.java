@@ -64,7 +64,7 @@ public class BasicUI implements WorkflowStepObserver {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final Sample sample, final double progress) {
+  public void notifyStepState(final WorkflowStep step, final String contextName, final double progress) {
 
     // DO nothing
   }

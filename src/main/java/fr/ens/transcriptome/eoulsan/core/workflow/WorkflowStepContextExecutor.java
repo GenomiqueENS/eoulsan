@@ -1,0 +1,319 @@
+package fr.ens.transcriptome.eoulsan.core.workflow;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
+import fr.ens.transcriptome.eoulsan.core.Data;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+
+/**
+ * Created by jourdren on 25/07/14.
+ */
+class WorkflowStepContextExecutor {
+
+  private final WorkflowStepContext context;
+  private final Step step;
+  private final WorkflowStepContextStatus status;
+  private StepResult result;
+
+  //
+  // Getter
+  //
+
+  WorkflowStepContextResult getResult() {
+    return (WorkflowStepContextResult) this.result;
+  }
+
+  //
+  // Execute methods
+  //
+
+  WorkflowStepContextResult execute() {
+
+    // check if input files exists
+    // checkExistingInputFiles();
+
+    // Thread group name
+    final String threadGroupName = "eoulsan-step-#" + this.context.getId();
+
+    // Define thread group
+    final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
+
+    // Create Log handler and register it
+    final Logger logger =
+        step.isCreateLogFiles() ? createStepLogger(this.context.getStep(),
+            threadGroupName) : null;
+
+    // Register the logger
+    if (logger != null)
+      EoulsanLogger.registerThreadGroupLogger(threadGroup, logger);
+
+    // We use here a thread to execute the step
+    // This allow to save log of step in distinct files
+    final Runnable r = new Runnable() {
+
+      @Override
+      public void run() {
+
+        try {
+          result = step.execute(context, status);
+        } catch (Throwable t) {
+
+          // Handle exception not catch by step code
+          result = status.createStepResult(t);
+        }
+      }
+    };
+
+    try {
+      // Create thread
+      final Thread thread = new Thread(threadGroup, r);
+
+      // Start the time watch
+      this.status.durationStart();
+
+      // Start thread
+      thread.start();
+
+      // Wait the end of the thread
+      thread.join();
+
+    } catch (InterruptedException e) {
+      EoulsanLogger.getLogger().severe(e.getMessage());
+    } finally {
+
+      if (logger != null) {
+
+        Handler handler = logger.getHandlers()[0];
+
+        // Close handler
+        handler.close();
+
+        // Remove logger from EoulsanLogger registry
+        EoulsanLogger.removeThreadGroupLogger(threadGroup);
+
+        // Remove handler
+        logger.removeHandler(handler);
+      }
+    }
+
+    if (this.result == null) {
+
+      this.result =
+          this.status.createStepResult(new EoulsanException("The step "
+              + this.context.getStep().getId()
+              + " has not generate a result object"));
+    }
+
+    // Send the tokens
+    sendTokens();
+
+    return (WorkflowStepContextResult) this.result;
+  }
+
+  private void sendTokens() {
+
+    if (this.result == null)
+      throw new IllegalStateException(
+          "Cannot send tokens of a null result step");
+
+    // Do not send data if the step has not been successful
+    if (!this.result.isSuccess()) {
+      return;
+    }
+
+    // For all output ports
+    for (String portName : context.getCurrentStep().getOutputPorts()
+        .getPortNames()) {
+
+      // Get data required for token creation
+      final WorkflowOutputPort port =
+          context.getStep().getWorkflowOutputPorts().getPort(portName);
+      final Data data = context.getOutputData(port);
+
+      // Create symbolic links
+      // TODO enable symlink creation
+      // createSymlinksInOutputDirectory(data);
+
+      // Send the token
+      context.getStep().sendToken(new Token(port, data));
+    }
+  }
+
+  private String createContextName() {
+
+    final List<String> namedData = Lists.newArrayList();
+    final List<String> fileNames = Lists.newArrayList();
+    final List<String> otherDataNames = Lists.newArrayList();
+
+    // Collect the names of the data and files names
+    for (String inputPortName : this.context.getCurrentStep().getInputPorts()
+        .getPortNames()) {
+
+      final AbstractData data =
+          ((UnmodifiableData) this.context.getInputData(inputPortName))
+              .getData();
+
+      if (!data.isList()) {
+
+        if (!data.isDefaultName()) {
+          namedData.add(data.getName());
+        } else {
+
+          for (DataFile file : DataUtils.getDataFiles(data)) {
+            fileNames.add(file.getName());
+          }
+        }
+
+      } else {
+        otherDataNames.add(data.getName());
+      }
+    }
+
+    // Choose the name of the context
+    if (namedData.size() > 0) {
+      return Joiner.on('-').join(namedData);
+    } else if (fileNames.size() > 0) {
+      return Joiner.on('-').join(fileNames);
+    } else
+      return Joiner.on('-').join(otherDataNames);
+  }
+
+  private List<DataFile> getInputDataFile() {
+
+    final List<DataFile> result = Lists.newArrayList();
+
+    for (String inputPortName : this.context.getCurrentStep().getInputPorts()
+        .getPortNames()) {
+
+      result.addAll(DataUtils.getDataFiles(this.context
+          .getInputData(inputPortName)));
+    }
+
+    return result;
+  }
+
+  /**
+   * Create the logger for a step.
+   * @param step the step
+   * @param threadGroupName the name of the thread group
+   * @return a Logger instance
+   */
+  private Logger createStepLogger(final AbstractWorkflowStep step,
+      final String threadGroupName) {
+
+    // Define the log file for the step
+    final DataFile logDir =
+        this.context.getStep().getAbstractWorkflow().getLogDir();
+    final DataFile logFile =
+        new DataFile(logDir, step.getId() + "-" + this.context.getId() + ".log");
+    OutputStream logOut;
+    try {
+
+      logOut = logFile.create();
+
+    } catch (IOException e) {
+      return null;
+    }
+
+    // Get the logger for the step
+    final Logger logger = Logger.getLogger(threadGroupName);
+
+    final Handler handler = new StreamHandler(logOut, Globals.LOG_FORMATTER);
+
+    // Disable parent Handler
+    logger.setUseParentHandlers(false);
+
+    // Set log level to all before setting the real log level
+    logger.setLevel(Level.ALL);
+
+    // Set the Handler
+    logger.addHandler(handler);
+
+    // Set log level
+    handler.setLevel(Level.parse(Main.getInstance().getLogLevelArgument()
+        .toUpperCase()));
+
+    return logger;
+  }
+
+  private void checkExistingInputFiles() throws EoulsanException {
+
+    for (DataFile file : getInputDataFile()) {
+
+      if (!file.exists()) {
+        throw new EoulsanException("A file required by the "
+            + context.getCurrentStep().getId() + " step does not exists ("
+            + file + ")");
+      }
+    }
+  }
+
+  private void createSymlinksInOutputDirectory(final Data outData) {
+
+    Preconditions.checkNotNull(outData, "outData argument cannot be null");
+
+    final DataFile outputDir =
+        this.context.getStep().getAbstractWorkflow().getOutputDir();
+
+    for (Data data : outData.getListElements()) {
+      for (DataFile file : DataUtils.getDataFiles(data)) {
+
+        final DataFile link = new DataFile(outputDir, file.getName());
+
+        try {
+          // Remove existing file/symlink
+          if (link.exists())
+            link.delete();
+
+          // Create symbolic link
+          file.symlink(link);
+        } catch (IOException e) {
+          EoulsanLogger.getLogger().severe(
+              "Cannot create symbolic link: " + link);
+        }
+      }
+    }
+
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Constructor.
+   * @param stepContext stepContext to execute
+   */
+  WorkflowStepContextExecutor(final WorkflowStepContext stepContext,
+      final WorkflowStepStatus stepStatus) {
+
+    Preconditions.checkNotNull(stepContext, "stepContext cannot be null");
+
+    this.context = stepContext;
+    this.step =
+        StepInstances.getInstance().getStep(stepContext.getCurrentStep());
+
+    this.status = new WorkflowStepContextStatus(stepContext, stepStatus);
+    final StepResult result;
+
+    // Set the stepContext name for the status
+    this.context.setContextName(createContextName());
+  }
+
+}

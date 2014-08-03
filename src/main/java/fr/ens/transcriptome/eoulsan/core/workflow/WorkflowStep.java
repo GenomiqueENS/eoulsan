@@ -29,7 +29,8 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 
@@ -120,12 +121,6 @@ public interface WorkflowStep extends Serializable {
   Workflow getWorkflow();
 
   /**
-   * Get the context used by the workflow.
-   * @return a Context object
-   */
-  StepContext getContext();
-
-  /**
    * Get the unique numerical identifier of the step.
    * @return the number of the setp
    */
@@ -160,6 +155,18 @@ public interface WorkflowStep extends Serializable {
    * @return a Set with the parameters of the step
    */
   Set<Parameter> getParameters();
+
+  /**
+   * Get the input ports of the step.
+   * @return the input ports of the step
+   */
+  InputPorts getInputPorts();
+
+  /**
+   * Get the output ports of the step.
+   * @return the output ports of the step
+   */
+  OutputPorts getOutputPorts();
 
   /**
    * Get the state of the step.

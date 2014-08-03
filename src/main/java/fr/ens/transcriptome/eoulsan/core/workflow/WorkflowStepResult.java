@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedWriter;
@@ -34,29 +34,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
-public class WorkflowStepResult implements StepResult {
+public class WorkflowStepResult {
 
   private static final String TAB = "  ";
-
-  private List<Sample> samples = Lists.newArrayList();
 
   private String jobId;
   private String jobUUID;
@@ -71,17 +64,19 @@ public class WorkflowStepResult implements StepResult {
   private long duration;
   private Set<Parameter> parameters;
 
-  private final Map<Sample, Map<String, Long>> sampleCounters = Maps
+  private final Set<String> contextNames = Sets.newHashSet();
+  private final Map<String, Map<String, Long>> contextCounters = Maps
       .newHashMap();
-  private final Map<Sample, String> sampleCountersHeader = Maps.newHashMap();
-  private final Map<Sample, String> sampleMessages = Maps.newHashMap();
+  private final Map<String, String> contextDescriptions = Maps.newHashMap();
+  private final Map<String, String> contextMessages = Maps.newHashMap();
   private final Map<String, Long> stepCounters = Maps.newHashMap();
   private String stepMessage;
 
-  private boolean success;
-  private Exception exception;
+  private boolean success = true;
+  private Throwable exception;
   private String errorMessage;
 
+  private Set<String> contextIds = Sets.newHashSet();
   private boolean immutable;
 
   //
@@ -107,27 +102,23 @@ public class WorkflowStepResult implements StepResult {
   }
 
   /**
-   * Get sample message.
-   * @param sample sample
-   * @return the message for the sample
+   * Get a context message.
+   * @param contextName context name
+   * @return the message for the context
    */
-  public String getSampleMessage(final Sample sample) {
+  public String getContextMessage(final String contextName) {
 
-    checkSample(sample);
-
-    return this.sampleMessages.get(sample);
+    return this.contextMessages.get(contextName);
   }
 
   /**
-   * Get the sample counters.
-   * @param sample sample
-   * @return the sample counters as a map
+   * Get the contextName counters.
+   * @param contextName contextName
+   * @return the contextName counters as a map
    */
-  public Map<String, Long> getSampleCounters(final Sample sample) {
+  public Map<String, Long> getContextCounters(final String contextName) {
 
-    checkSample(sample);
-
-    final Map<String, Long> result = this.sampleCounters.get(sample);
+    final Map<String, Long> result = this.contextCounters.get(contextName);
 
     return Collections.unmodifiableMap(result);
   }
@@ -155,7 +146,7 @@ public class WorkflowStepResult implements StepResult {
    * @return an Exception object or null if the step has not returned an
    *         Exception
    */
-  public Exception getException() {
+  public Throwable getException() {
 
     return this.exception;
   }
@@ -178,122 +169,6 @@ public class WorkflowStepResult implements StepResult {
     return this.duration;
   }
 
-  //
-  // Setters
-  //
-
-  /**
-   * Set the start date.
-   * @param date the start date
-   */
-  public void setStartTime(final Date date) {
-
-    checkNotNull(date, "date is null");
-
-    this.startTime = new Date(date.getTime());
-  }
-
-  /**
-   * Set the end date.
-   * @param date the end date
-   */
-  public void setEndTime(final Date date) {
-
-    checkNotNull(date, "date is null");
-
-    this.endTime = new Date(date.getTime());
-  }
-
-  /**
-   * Set the duration of the step.
-   * @param millis duration in milliseconds
-   */
-  public void setDuration(final long millis) {
-
-    this.duration = millis;
-  }
-
-  /**
-   * Set the step message.
-   * @param message message to set
-   */
-  public void setStepMessage(final String message) {
-
-    checkState();
-
-    if (message != null)
-      this.stepMessage = message;
-  }
-
-  /**
-   * Set the step counters.
-   * @param reporter the reporter
-   * @param counterGroup counter group to use with the reporter
-   * @param sampleCounterHeader header for the sample (optional)
-   */
-  public void setStepCounters(final Reporter reporter,
-      final String counterGroup, final String sampleCounterHeader) {
-
-    checkState();
-
-    checkNotNull(reporter, "Reporter is null");
-    checkNotNull(counterGroup, "Counter group is null");
-
-    // Add all counters
-    for (String counterName : reporter.getCounterNames(counterGroup))
-      this.stepCounters.put(counterName,
-          reporter.getCounterValue(counterGroup, counterName));
-  }
-
-  /**
-   * Set the sample message.
-   * @param sample the sample
-   * @param message the message to set
-   */
-  public void setSampleMessage(final Sample sample, final String message) {
-
-    checkState();
-    checkSample(sample);
-
-    if (message != null)
-      this.sampleMessages.put(sample, message);
-
-  }
-
-  /**
-   * Set the sample counters
-   * @param sample the sample
-   * @param reporter the reporter
-   * @param counterGroup counter group to use with the reporter
-   * @param sampleCounterHeader header for the sample (optional)
-   */
-  public void setSampleCounters(final Sample sample, final Reporter reporter,
-      final String counterGroup, final String sampleCounterHeader) {
-
-    checkState();
-    checkSample(sample);
-
-    checkNotNull(reporter, "Reporter is null");
-    checkNotNull(counterGroup, "Counter group is null");
-
-    // Check if sample counter has been already set
-    if (this.sampleCounters.containsKey(sample))
-      throw new IllegalStateException("result for sample "
-          + sample.getName() + " has already set");
-
-    if (sampleCounterHeader != null)
-      this.sampleCountersHeader.put(sample, sampleCounterHeader);
-
-    // Create map for sample counter
-    final Map<String, Long> values = Maps.newHashMap();
-    this.sampleCounters.put(sample, values);
-
-    // Add all counters
-    for (String counterName : reporter.getCounterNames(counterGroup))
-      values.put(counterName,
-          reporter.getCounterValue(counterGroup, counterName));
-  }
-
   /**
    * Set the object immutable.
    */
@@ -302,27 +177,48 @@ public class WorkflowStepResult implements StepResult {
     this.immutable = true;
   }
 
-  /**
-   * Set if the step result is a success.
-   * @param success the step result
-   */
-  public void setSuccess(final boolean success) {
+  void addResult(final WorkflowStepContextResult result) {
 
     checkState();
 
-    this.success = success;
-  }
+    Preconditions.checkNotNull(result, "result cannot be null");
 
-  public void setException(final Exception exception, final String errorMessage) {
+    // Set start time
+    if (this.contextIds.isEmpty()) {
+      this.startTime = result.getStartTime();
+    }
 
-    checkState();
+    // Set end time
+    if (this.endTime == null) {
+      this.endTime = result.getEndTime();
+    } else {
+      if (result.getEndTime().after(this.endTime)) {
+        this.endTime = result.getEndTime();
+      }
+    }
 
-    checkNotNull(exception, "exception is null");
+    final String contextName = result.getContext().getContextName();
+    this.contextNames.add(contextName);
 
-    this.success = false;
-    this.exception = exception;
-    this.errorMessage = errorMessage;
+    // Set counters information
+    this.contextCounters.put(contextName, result.getCounters());
+    this.contextDescriptions.put(contextName, result.getDescription());
 
+    // Set success (Keep only the first error)
+    if (this.success) {
+      if (!result.isSuccess()) {
+        this.success = false;
+        this.errorMessage = result.getErrorMessage();
+
+        if (this.exception == null && result.getException() != null) {
+          this.exception = result.getException();
+        }
+
+        // Set the state of the step as fail
+        result.getContext().getStep().setState(FAIL);
+      }
+
+    }
   }
 
   //
@@ -332,13 +228,6 @@ public class WorkflowStepResult implements StepResult {
   private void checkState() {
 
     Preconditions.checkState(!this.immutable, "Step result has been created");
-  }
-
-  private void checkSample(final Sample sample) {
-
-    checkNotNull(sample, "Sample is null");
-    checkArgument(this.samples.contains(sample),
-        "The design does not contains the sample");
   }
 
   //
@@ -425,11 +314,11 @@ public class WorkflowStepResult implements StepResult {
     sb.append(Strings.repeat(TAB, 1));
     sb.append("\"Samples\" : [");
     boolean sampleProcessed = false;
-    for (Sample sample : this.samples) {
+    for (String contextName : this.contextNames) {
 
       // Do not log non processed samples
-      if (!this.sampleCounters.containsKey(sample)
-          && !this.sampleMessages.containsKey(sample))
+      if (!this.contextCounters.containsKey(contextName)
+          && !this.contextMessages.containsKey(contextName))
         continue;
 
       if (!sampleProcessed) {
@@ -439,13 +328,15 @@ public class WorkflowStepResult implements StepResult {
 
       sb.append(Strings.repeat(TAB, 2));
       sb.append("{\n");
-      sb.append(toJSON(4, "Sample id", sample.getId()));
-      sb.append(toJSON(4, "Sample name", sample.getName()));
-      sb.append(toJSON(4, "Sample info", this.sampleCountersHeader.get(sample)));
-      sb.append(toJSON(4, "Sample message", this.sampleMessages.get(sample)));
+      sb.append(toJSON(4, "Context name", contextName));
+      sb.append(toJSON(4, "Context description",
+          this.contextDescriptions.get(contextName)));
+      sb.append(toJSON(4, "Context message",
+          this.contextMessages.get(contextName)));
 
-      // sample counters
-      sb.append(toJSON(4, "Sample counters", this.sampleCounters.get(sample)));
+      // contextName counters
+      sb.append(toJSON(4, "Sample counters",
+          this.contextCounters.get(contextName)));
       sb.append(Strings.repeat(TAB, 2));
       sb.append("}\n");
     }
@@ -516,15 +407,17 @@ public class WorkflowStepResult implements StepResult {
 
   }
 
-  WorkflowStepResult(final StepContext context, final AbstractWorkflowStep step) {
+  WorkflowStepResult(final AbstractWorkflowStep step) {
 
-    Preconditions.checkNotNull(context, "context is null");
     Preconditions.checkNotNull(step, "step is null");
 
-    this.jobId = context.getJobId();
-    this.jobUUID = context.getJobUUID();
-    this.jobDescription = context.getJobDescription();
-    this.jobEnvironment = context.getJobEnvironment();
+    final WorkflowContext workflowContext =
+        step.getAbstractWorkflow().getWorkflowContext();
+
+    this.jobId = workflowContext.getJobId();
+    this.jobUUID = workflowContext.getJobUUID();
+    this.jobDescription = workflowContext.getJobDescription();
+    this.jobEnvironment = workflowContext.getJobEnvironment();
 
     this.stepId = step.getId();
     this.stepName = step.getStepName();
@@ -533,7 +426,6 @@ public class WorkflowStepResult implements StepResult {
     this.stepVersion =
         step.getStep() == null ? null : step.getStep().getVersion();
     this.parameters = step.getParameters();
-    this.samples = context.getWorkflow().getDesign().getSamples();
   }
 
 }

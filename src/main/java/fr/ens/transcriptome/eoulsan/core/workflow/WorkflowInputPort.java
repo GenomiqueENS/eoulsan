@@ -136,14 +136,14 @@ class WorkflowInputPort extends SimpleInputPort {
    * @param step the step related to the port * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
-   * @param requieredInWorkingDirectory if data is required in working directory
+   * @param requiredInWorkingDirectory if data is required in working directory
    */
   public WorkflowInputPort(final AbstractWorkflowStep step, final String name,
-      final DataFormat format,
+      final boolean list, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requieredInWorkingDirectory) {
+      boolean requiredInWorkingDirectory) {
 
-    super(name, format, compressionsAccepted, requieredInWorkingDirectory);
+    super(name, list, format, compressionsAccepted, requiredInWorkingDirectory);
 
     if (step == null)
       throw new NullPointerException("Step is null");

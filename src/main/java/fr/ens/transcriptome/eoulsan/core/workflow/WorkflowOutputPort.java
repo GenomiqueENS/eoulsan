@@ -24,13 +24,18 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Collections;
+import java.util.Set;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
+
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.SimpleOutputPort;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
@@ -43,7 +48,8 @@ class WorkflowOutputPort extends SimpleOutputPort {
 
   private static final long serialVersionUID = -7857426034202971843L;
 
-  private AbstractWorkflowStep step;
+  private final AbstractWorkflowStep step;
+  private Set<WorkflowInputPort> links = Sets.newHashSet();
 
   /**
    * Get the step related to the port.
@@ -54,6 +60,51 @@ class WorkflowOutputPort extends SimpleOutputPort {
     return this.step;
   }
 
+  /**
+   * Get the output port linked to this input port.
+   * @return the linked output port if exists or null
+   */
+  public Set<WorkflowInputPort> getLinks() {
+    return Collections.unmodifiableSet(this.links);
+  }
+
+  /**
+   * Test if the port is linked.
+   * @return true if the port is linked
+   */
+  public boolean isLinked() {
+
+    return this.links.size() > 0;
+  }
+
+  /**
+   * Set the link for the port.
+   * @param inputPort the output of the link
+   */
+  public void addLink(final WorkflowInputPort inputPort) {
+
+    // Check if argument is null
+    checkNotNull(inputPort, "inputPort argument cannot be null");
+
+    // Check the ports are not on the same step
+    checkArgument(inputPort.getStep() != this.step, "cannot link a step ("
+        + this.step.getId() + ") to itself (input port: " + inputPort.getName()
+        + ", output port: " + getName());
+
+    // Check if a link already exists
+    if (this.links.contains(inputPort))
+      return;
+
+    // Check if format are compatible
+    if (!getFormat().equals(inputPort.getFormat()))
+      throw new EoulsanRuntimeException("Incompatible format: "
+          + inputPort.getStep().getId() + "." + inputPort.getName() + " -> "
+          + inputPort.getFormat().getName() + " and " + getStep().getId() + "."
+          + getName() + " <- " + getFormat().getName());
+
+    this.links.add(inputPort);
+  }
+
   @Override
   public String toString() {
 
@@ -61,34 +112,6 @@ class WorkflowOutputPort extends SimpleOutputPort {
         .add("format", getFormat().getName())
         .add("compression", getCompression()).add("step", getStep().getId())
         .toString();
-  }
-
-  //
-  // Other methods
-  //
-
-  /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @param sample sample
-   * @return the DataFile for the sample
-   */
-  public int getDataFileCount(final Sample sample, final boolean existingFiles) {
-
-    return this.step.getOutputPortData(getName(), sample).getDataFileCount(existingFiles);
-  }
-
-  /**
-   * Get the DataFile.
-   * @param sample sample
-   * @param fileIndex file index for multifile data. (-1 = no file index)
-   * @return the DataFile for the sample
-   */
-  public DataFile getDataFile(final Sample sample, final int fileIndex) {
-
-    Preconditions.checkNotNull(sample, "Sample cannot be null");
-
-    return this.step.getOutputPortData(getName(), sample).getDataFile(fileIndex);
   }
 
   //
@@ -103,9 +126,10 @@ class WorkflowOutputPort extends SimpleOutputPort {
    * @param compression compression of the output
    */
   public WorkflowOutputPort(final AbstractWorkflowStep step, final String name,
-      final DataFormat format, final CompressionType compression) {
+      final boolean list, final DataFormat format,
+      final CompressionType compression) {
 
-    super(name, format, compression);
+    super(name, list, format, compression);
 
     if (step == null)
       throw new NullPointerException("Step is null");

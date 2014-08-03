@@ -65,7 +65,7 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> {
 
     for (InputPort port : ports) {
       if (port != null)
-        result.add(new WorkflowInputPort(step, port.getName(),
+        result.add(new WorkflowInputPort(step, port.getName(), port.isList(),
             port.getFormat(), port.getCompressionsAccepted(), port
                 .isRequiredInWorkingDirectory()));
 

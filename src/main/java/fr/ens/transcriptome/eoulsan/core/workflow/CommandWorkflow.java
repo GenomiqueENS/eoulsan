@@ -290,8 +290,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Check if copy is needed in the working directory
       if (fromStep.getType() == StepType.STANDARD_STEP
-          && stepProtocol != depProtocol
-          && port.isRequiredInWorkingDirectory()) {
+          && stepProtocol != depProtocol && port.isRequiredInWorkingDirectory()) {
         newStep =
             newInputFormatCopyStep(this, port, depOutputCompression,
                 stepCompressionsAllowed);
@@ -326,11 +325,12 @@ public class CommandWorkflow extends AbstractWorkflow {
         addStep(indexOfStep(toStep), newStep);
 
         // Add the copy dependency
-        newStep.addDependency(newStep.getInputPorts().getFirstPort(),
+        newStep.addDependency(newStep.getWorkflowInputPorts().getFirstPort(),
             depencencyPort);
 
         // Add the step dependency
-        toStep.addDependency(port, newStep.getOutputPorts().getFirstPort());
+        toStep.addDependency(port, newStep.getWorkflowOutputPorts()
+            .getFirstPort());
       } else {
 
         // Add the step dependency
@@ -435,7 +435,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = Sets.newHashSet();
-    parameters.add(new Parameter(CopyOutputFormatStep.FORMATS_PARAMETER, Joiner
+    parameters.add(new Parameter(CopyOutputFormatStep.PORTS_PARAMETER, Joiner
         .on(',').join(portsList)));
     parameters.add(new Parameter(CopyOutputFormatStep.FORMATS_PARAMETER, Joiner
         .on(',').join(formatsList)));
@@ -482,19 +482,19 @@ public class CommandWorkflow extends AbstractWorkflow {
               + fromStepId);
 
         // Check if the fromPort exists
-        if (!fromStep.getOutputPorts().contains(fromPortName))
+        if (!fromStep.getWorkflowOutputPorts().contains(fromPortName))
           throw new EoulsanException("No port with name \""
               + fromPortName + "\" found for step with id: " + fromStep.getId());
 
         // Check if the toPort exists
-        if (!toStep.getInputPorts().contains(toPortName))
+        if (!toStep.getWorkflowInputPorts().contains(toPortName))
           throw new EoulsanException("No port with name \""
               + toPortName + "\" found for step with id: " + toStep.getId());
 
         final WorkflowOutputPort fromPort =
-            fromStep.getOutputPorts().getPort(fromPortName);
+            fromStep.getWorkflowOutputPorts().getPort(fromPortName);
         final WorkflowInputPort toPort =
-            toStep.getInputPorts().getPort(toPortName);
+            toStep.getWorkflowInputPorts().getPort(toPortName);
 
         addDependency(toPort, fromPort);
       }
@@ -507,20 +507,31 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void searchDependencies() throws EoulsanException {
 
-    final Set<DataFormat> dataFormatsFromDesign = getDesignDataFormats();
-    final List<CommandWorkflowStep> steps = this.steps;
     final Map<DataFormat, CommandWorkflowStep> generatorAdded =
         Maps.newHashMap();
+    searchDependencies(generatorAdded);
+  }
+
+  /**
+   * Search dependency between steps.
+   * @throws EoulsanException if an error occurs while search dependencies
+   */
+  private void searchDependencies(
+      final Map<DataFormat, CommandWorkflowStep> generatorAdded)
+      throws EoulsanException {
+
+    // final Set<DataFormat> dataFormatsFromDesign = getDesignDataFormats();
+    final List<CommandWorkflowStep> steps = this.steps;
 
     for (int i = steps.size() - 1; i >= 0; i--) {
 
       final CommandWorkflowStep step = steps.get(i);
 
       // If step need no data, the step depends from the previous step
-      if (step.getInputPorts().isEmpty() && i > 0)
+      if (step.getWorkflowInputPorts().isEmpty() && i > 0)
         step.addDependency(steps.get(i - 1));
 
-      for (WorkflowInputPort inputPort : step.getInputPorts()) {
+      for (WorkflowInputPort inputPort : step.getWorkflowInputPorts()) {
 
         // Do not search dependency for the format if already has been manually
         // set
@@ -531,8 +542,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Check if more than one input have the same type
         int formatCount = 0;
-        for (WorkflowInputPort p : step.getInputPorts().getPortsWithDataFormat(
-            format))
+        for (WorkflowInputPort p : step.getWorkflowInputPorts()
+            .getPortsWithDataFormat(format))
           if (!p.isLinked())
             formatCount++;
         if (formatCount > 1)
@@ -549,12 +560,13 @@ public class CommandWorkflow extends AbstractWorkflow {
           final CommandWorkflowStep stepTested = steps.get(j);
 
           // Test each port
-          for (WorkflowOutputPort outputPort : stepTested.getOutputPorts()
-              .getPortsWithDataFormat(format)) {
+          for (WorkflowOutputPort outputPort : stepTested
+              .getWorkflowOutputPorts().getPortsWithDataFormat(format)) {
 
             // The tested step is a standard/generator step
             if (stepTested.getType() == StepType.STANDARD_STEP
-                || stepTested.getType() == StepType.GENERATOR_STEP) {
+                || stepTested.getType() == StepType.GENERATOR_STEP
+                || stepTested.getType() == StepType.DESIGN_STEP) {
 
               addDependency(inputPort, outputPort);
 
@@ -563,14 +575,14 @@ public class CommandWorkflow extends AbstractWorkflow {
             }
 
             // The tested step is the design step
-            if (stepTested.getType() == StepType.DESIGN_STEP
-                && dataFormatsFromDesign.contains(format)) {
-
-              addDependency(inputPort, outputPort);
-
-              found = true;
-              break;
-            }
+            // if (stepTested.getType() == StepType.DESIGN_STEP
+            // && dataFormatsFromDesign.contains(format)) {
+            //
+            // addDependency(inputPort, outputPort);
+            //
+            // found = true;
+            // break;
+            // }
           }
 
           // Dependency found, do not search in other steps
@@ -592,9 +604,9 @@ public class CommandWorkflow extends AbstractWorkflow {
 
               // Add after checker
               addStep(indexOfStep(getCheckerStep()) + 1, generatorStep);
-
               generatorAdded.put(format, generatorStep);
 
+              // Rerun search dependencies
               searchDependencies();
               return;
             }
@@ -616,9 +628,6 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
     }
 
-    // Clear map of generators used
-    generatorAdded.clear();
-
     // Add dependencies for terminal steps
     final List<CommandWorkflowStep> terminalSteps = Lists.newArrayList();
     for (CommandWorkflowStep step : this.steps) {
@@ -636,32 +645,30 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       if (step.isCopyResultsToOutput()
           && !step.getStepWorkingDir().equals(getOutputDir())
-          && !step.getOutputPorts().isEmpty()) {
+          && !step.getWorkflowOutputPorts().isEmpty()) {
 
         CommandWorkflowStep newStep =
-            newOutputFormatCopyStep(this, step.getOutputPorts());
+            newOutputFormatCopyStep(this, step.getWorkflowOutputPorts());
 
         // Add the copy step in the list of steps just before the step given as
         // method argument
         addStep(indexOfStep(step) + 1, newStep);
 
         // Add the copy dependencies
-        for (WorkflowOutputPort outputPort : step.getOutputPorts())
-          newStep
-              .addDependency(
-                  newStep.getInputPorts().getPort(outputPort.getName()),
-                  outputPort);
+        for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts())
+          newStep.addDependency(
+              newStep.getWorkflowInputPorts().getPort(outputPort.getName()),
+              outputPort);
       }
     }
 
     // Check if all input port are linked
     for (CommandWorkflowStep step : this.steps)
-      for (WorkflowInputPort inputPort : step.getInputPorts())
+      for (WorkflowInputPort inputPort : step.getWorkflowInputPorts())
         if (!inputPort.isLinked())
           throw new EoulsanException("The \""
               + inputPort.getName() + "\" of step \""
               + inputPort.getStep().getId() + "\" is not linked");
-
   }
 
   //
@@ -712,107 +719,109 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private WorkflowFiles listStepsFiles(final WorkflowStep originStep) {
 
-    final Set<WorkflowStepOutputDataFile> inFiles = Sets.newHashSet();
-    final Set<WorkflowStepOutputDataFile> reusedFiles = Sets.newHashSet();
-    final Set<WorkflowStepOutputDataFile> outFiles = Sets.newHashSet();
+    // final Set<WorkflowStepOutputDataFile> inFiles = Sets.newHashSet();
+    // final Set<WorkflowStepOutputDataFile> reusedFiles = Sets.newHashSet();
+    // final Set<WorkflowStepOutputDataFile> outFiles = Sets.newHashSet();
+    //
+    // boolean firstStepFound = false;
+    //
+    // for (CommandWorkflowStep step : this.steps) {
+    //
+    // if (!firstStepFound) {
+    //
+    // if (step == originStep)
+    // firstStepFound = true;
+    // else
+    // continue;
+    // }
+    //
+    // if (step.getType() == STANDARD_STEP && !step.isSkip()) {
+    //
+    // // If a terminal step exist don't go further
+    // if (step.getStep().isTerminalStep())
+    // return new WorkflowFiles(inFiles, reusedFiles, outFiles);
+    // }
+    //
+    // for (Sample sample : getDesign().getSamples()) {
+    // for (WorkflowInputPort inputPort : step.getWorkflowInputPorts()) {
+    //
+    // // Nothing to do if port is not linked
+    // if (!inputPort.isLinked())
+    // continue;
+    //
+    // final DataFormat format = inputPort.getFormat();
+    //
+    // final List<WorkflowStepOutputDataFile> files;
+    //
+    // if (format.getMaxFilesCount() == 1) {
+    //
+    // WorkflowStepOutputDataFile f =
+    // new WorkflowStepOutputDataFile(inputPort.getLink(), sample);
+    //
+    // files = Collections.singletonList(f);
+    // } else {
+    // files = Lists.newArrayList();
+    // final int count =
+    // step.getInputPortData(inputPort.getName()).getDataFileCount(false);
+    //
+    // for (int i = 0; i < count; i++) {
+    //
+    // WorkflowStepOutputDataFile f =
+    // new WorkflowStepOutputDataFile(inputPort.getLink(), sample, i);
+    //
+    // files.add(f);
+    // }
+    // }
+    //
+    // for (WorkflowStepOutputDataFile file : files) {
+    //
+    // if (reusedFiles.contains(file))
+    // continue;
+    //
+    // if (outFiles.contains(file)) {
+    // outFiles.remove(file);
+    // reusedFiles.add(file);
+    // continue;
+    // }
+    //
+    // inFiles.add(file);
+    // }
+    // }
+    // }
+    //
+    // // Add output files of the step
+    // if (!step.isSkip()) {
+    // for (Sample sample : getDesign().getSamples()) {
+    // for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
+    // // for (DataFormat format : step.getWorkflowOutputPorts()) {
+    //
+    // final DataFormat format = outputPort.getFormat();
+    //
+    // if (format.getMaxFilesCount() == 1) {
+    //
+    // WorkflowStepOutputDataFile f =
+    // new WorkflowStepOutputDataFile(outputPort, sample);
+    //
+    // outFiles.add(f);
+    // } else {
+    // final int count =
+    // WorkflowStepOutputDataFile.dataFileCount(outputPort, sample,
+    // false);
+    //
+    // for (int i = 0; i < count; i++) {
+    // WorkflowStepOutputDataFile f =
+    // new WorkflowStepOutputDataFile(outputPort, sample, i);
+    // outFiles.add(f);
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    //
+    // return new WorkflowFiles(inFiles, reusedFiles, outFiles);
 
-    boolean firstStepFound = false;
-
-    for (CommandWorkflowStep step : this.steps) {
-
-      if (!firstStepFound) {
-
-        if (step == originStep)
-          firstStepFound = true;
-        else
-          continue;
-      }
-
-      if (step.getType() == STANDARD_STEP && !step.isSkip()) {
-
-        // If a terminal step exist don't go further
-        if (step.getStep().isTerminalStep())
-          return new WorkflowFiles(inFiles, reusedFiles, outFiles);
-      }
-
-      for (Sample sample : getDesign().getSamples()) {
-        for (WorkflowInputPort inputPort : step.getInputPorts()) {
-
-          // Nothing to do if port is not linked
-          if (!inputPort.isLinked())
-            continue;
-
-          final DataFormat format = inputPort.getFormat();
-
-          final List<WorkflowStepOutputDataFile> files;
-
-          if (format.getMaxFilesCount() == 1) {
-
-            WorkflowStepOutputDataFile f =
-                new WorkflowStepOutputDataFile(inputPort.getLink(), sample);
-
-            files = Collections.singletonList(f);
-          } else {
-            files = Lists.newArrayList();
-            final int count =
-                step.getInputPortData(inputPort.getName(), sample).getDataFileCount(false);
-
-            for (int i = 0; i < count; i++) {
-
-              WorkflowStepOutputDataFile f =
-                  new WorkflowStepOutputDataFile(inputPort.getLink(), sample, i);
-
-              files.add(f);
-            }
-          }
-
-          for (WorkflowStepOutputDataFile file : files) {
-
-            if (reusedFiles.contains(file))
-              continue;
-
-            if (outFiles.contains(file)) {
-              outFiles.remove(file);
-              reusedFiles.add(file);
-              continue;
-            }
-
-            inFiles.add(file);
-          }
-        }
-      }
-
-      // Add output files of the step
-      if (!step.isSkip()) {
-        for (Sample sample : getDesign().getSamples()) {
-          for (WorkflowOutputPort outputPort : step.getOutputPorts()) {
-            // for (DataFormat format : step.getOutputPorts()) {
-
-            final DataFormat format = outputPort.getFormat();
-
-            if (format.getMaxFilesCount() == 1) {
-
-              WorkflowStepOutputDataFile f =
-                  new WorkflowStepOutputDataFile(outputPort, sample);
-
-              outFiles.add(f);
-            } else {
-              final int count =
-                  WorkflowStepOutputDataFile.dataFileCount(outputPort, sample,
-                      false);
-
-              for (int i = 0; i < count; i++) {
-                WorkflowStepOutputDataFile f =
-                    new WorkflowStepOutputDataFile(outputPort, sample, i);
-                outFiles.add(f);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return new WorkflowFiles(inFiles, reusedFiles, outFiles);
+    return null;
   }
 
   //
