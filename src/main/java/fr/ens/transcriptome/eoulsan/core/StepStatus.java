@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.Map;
 
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
@@ -35,20 +34,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @since 1.3
  */
 public interface StepStatus {
-
-
-  /**
-   * Get the context name.
-   * @return a String with the context name
-   */
-  String getContextName();
-
-  /**
-   * Set the context name.
-   * @param contextName the name of the context
-   */
-  void setContextName(String contextName);
-
 
   /**
    * Get sample message.
@@ -66,7 +51,7 @@ public interface StepStatus {
    * Get the counters header.
    * @return a String with the counter header
    */
-  String getCountersHeader();
+  String getContextDescription();
 
   /**
    * Get the progress of a sample processing.
@@ -87,8 +72,7 @@ public interface StepStatus {
    * @param counterGroup counter group to use with the reporter
    * @param counterHeader header for the counters
    */
-  void setCounters(Reporter reporter, String counterGroup,
-                   String counterHeader);
+  void setCounters(Reporter reporter, String counterGroup, String counterHeader);
 
   /**
    * Set the progress of the processing of a sample by the step.
@@ -121,12 +105,12 @@ public interface StepStatus {
    * @param exception exception of the error
    * @param exceptionMessage Error message
    */
-  StepResult createStepResult(Exception exception, String exceptionMessage);
+  StepResult createStepResult(Throwable exception, String exceptionMessage);
 
   /**
    * Create a StepResult object.
    * @param exception exception of the error
    */
-  StepResult createStepResult(Exception exception);
+  StepResult createStepResult(Throwable exception);
 
 }

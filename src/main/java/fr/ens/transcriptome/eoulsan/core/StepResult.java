@@ -56,7 +56,7 @@ public interface StepResult {
    * Get the exception.
    * @return Returns the exception
    */
-  Exception getException();
+  Throwable getException();
 
   /**
    * Get the error message.

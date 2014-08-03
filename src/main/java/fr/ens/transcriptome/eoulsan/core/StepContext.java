@@ -31,7 +31,6 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This interface define the context of a step.
@@ -39,6 +38,18 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
  * @author Laurent Jourdren
  */
 public interface StepContext {
+
+  /**
+   * Get the context name.
+   * @return a String with the context name
+   */
+  String getContextName();
+
+  /**
+   * Set the context name.
+   * @param contextName the name of the context
+   */
+  void setContextName(String contextName);
 
   /**
    * Get the command name.
@@ -202,7 +213,6 @@ public interface StepContext {
    * @return a String with the pathname
    */
   Data getOutputData(DataFormat format, Data origin);
-
 
   /**
    * Get the output data for a port name and a Sample.
