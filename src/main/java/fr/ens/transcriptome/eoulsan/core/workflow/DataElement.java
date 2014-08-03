@@ -16,9 +16,12 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
+/**
+ * This class define a data element.
+ * @since 1.3
+ * @author Laurent Jourdren
+ */
 class DataElement extends AbstractData {
-
-
 
   private final Map<String, String> metadata = Maps.newHashMap();
   protected final List<DataFile> files;
@@ -63,7 +66,7 @@ class DataElement extends AbstractData {
 
   @Override
   public Map<String, String> getMetadata() {
-    return Collections.unmodifiableMap(this.metadata);
+    return this.metadata;
   }
 
   /**
@@ -110,19 +113,22 @@ class DataElement extends AbstractData {
 
     Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
 
-    if (this.files.size()==0)
-      throw new IllegalStateException("Cannot set a DataFile if not already exists");
+    if (this.files.size() == 0)
+      throw new IllegalStateException(
+          "Cannot set a DataFile if not already exists");
 
     this.files.set(0, dataFile);
   }
 
   void setDataFile(final int fileIndex, final DataFile dataFile) {
 
-    Preconditions.checkArgument(fileIndex>=0, "fileIndex argument must be >=0");
+    Preconditions.checkArgument(fileIndex >= 0,
+        "fileIndex argument must be >=0");
     Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
 
-    if (fileIndex>=this.files.size())
-      throw new IllegalStateException("Cannot set a DataFile if not already exists");
+    if (fileIndex >= this.files.size())
+      throw new IllegalStateException(
+          "Cannot set a DataFile if not already exists");
 
     this.files.set(fileIndex, dataFile);
   }
@@ -236,8 +242,7 @@ class DataElement extends AbstractData {
     this(format, Collections.singletonList(file));
   }
 
-  DataElement(final DataFile stepWorkingPathname,
-              final WorkflowOutputPort port) {
+  DataElement(final WorkflowOutputPort port) {
 
     super(port.getFormat());
 
@@ -245,7 +250,7 @@ class DataElement extends AbstractData {
         "stepWorkingPathname argument cannot be null");
     Preconditions.checkNotNull(port, "port argument cannot be null");
 
-    this.stepWorkingPathname = stepWorkingPathname;
+    this.stepWorkingPathname = port.getStep().getStepWorkingDir();
     this.stepId = port.getStep().getId();
     this.portName = port.getName();
     this.compression = port.getCompression();

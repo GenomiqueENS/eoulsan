@@ -20,7 +20,6 @@ public class DataList extends AbstractData {
   private final List<Data> list = Lists.newArrayList();
 
   // Field required for multi-files Data creation
-  private final DataFile stepWorkingPathname;
   private final WorkflowOutputPort port;
 
   @Override
@@ -31,8 +30,7 @@ public class DataList extends AbstractData {
     if (this.port == null)
       throw new UnsupportedOperationException();
 
-    final AbstractData result =
-        new DataElement(this.stepWorkingPathname, this.port);
+    final AbstractData result = new DataElement(this.port);
     result.setName(name);
     this.list.add(result);
 
@@ -105,7 +103,6 @@ public class DataList extends AbstractData {
     super(port.getFormat());
 
     this.port = null;
-    this.stepWorkingPathname = port.getStep().getStepWorkingDir();
   }
 
   /**
@@ -117,7 +114,6 @@ public class DataList extends AbstractData {
     super(port.getFormat());
 
     this.port = port;
-    this.stepWorkingPathname = port.getStep().getStepWorkingDir();
   }
 
 }
