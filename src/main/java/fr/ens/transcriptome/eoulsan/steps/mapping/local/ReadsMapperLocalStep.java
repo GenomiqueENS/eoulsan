@@ -189,8 +189,11 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       // Rename the output SAM file to its final name
       Files.move(samOutputFile, outFile);
 
+      // Set the description of the context
+      status.setDescription(logMsg);
+
       // Add counters for this sample to log file
-      status.setCounters(reporter, COUNTER_GROUP, logMsg);
+      status.setCounters(reporter, COUNTER_GROUP);
 
     } catch (FileNotFoundException e) {
 

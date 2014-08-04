@@ -78,7 +78,7 @@ public class WorkflowStepContextStatus implements StepStatus {
   }
 
   @Override
-  public String getContextDescription() {
+  public String getDescription() {
 
     return this.contextDescription;
   }
@@ -100,8 +100,15 @@ public class WorkflowStepContextStatus implements StepStatus {
   }
 
   @Override
-  public void setCounters(Reporter reporter, String counterGroup,
-      String counterHeader) {
+  public void setDescription(final String description) {
+
+    checkNotNull(description, "the description argument cannot be null");
+
+    this.contextDescription = description;
+  }
+
+  @Override
+  public void setCounters(final Reporter reporter, final String counterGroup) {
 
     checkNotNull(reporter, "Reporter is null");
     checkNotNull(counterGroup, "Counter group is null");
@@ -110,13 +117,10 @@ public class WorkflowStepContextStatus implements StepStatus {
     for (String counterName : reporter.getCounterNames(counterGroup))
       this.counters.put(counterName,
           reporter.getCounterValue(counterGroup, counterName));
-
-    this.contextDescription = counterHeader;
-
   }
 
   @Override
-  public void setProgress(int min, int max, int value) {
+  public void setProgress(final int min, final int max, final int value) {
 
     checkProgress(min, max, value);
 
@@ -127,7 +131,7 @@ public class WorkflowStepContextStatus implements StepStatus {
   }
 
   @Override
-  public void setProgress(double progress) {
+  public void setProgress(final double progress) {
 
     // Check context status
     checkState();

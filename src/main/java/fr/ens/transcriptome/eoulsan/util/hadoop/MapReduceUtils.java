@@ -38,7 +38,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class contains utility method to easily manipulate the new Hadoop
@@ -190,8 +189,12 @@ public final class MapReduceUtils {
 
             } else {
 
-              status.setCounters(new HadoopReporter(job.getCounters()), counterGroup,
-                  job.getJobName());
+              // Set the description of the context
+              status.setDescription(job.getJobName());
+
+              // Set the counters
+              status.setCounters(new HadoopReporter(job.getCounters()),
+                  counterGroup);
 
             }
           }

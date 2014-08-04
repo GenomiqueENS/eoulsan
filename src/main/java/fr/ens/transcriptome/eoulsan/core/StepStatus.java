@@ -37,7 +37,7 @@ public interface StepStatus {
 
   /**
    * Get sample message.
-   * @return the message for the sample
+   * @return the message for the context
    */
   String getMessage();
 
@@ -48,34 +48,39 @@ public interface StepStatus {
   Map<String, Long> getCounters();
 
   /**
-   * Get the counters header.
-   * @return a String with the counter header
+   * Get the context description.
+   * @return a String with the context description
    */
-  String getContextDescription();
+  String getDescription();
 
   /**
-   * Get the progress of a sample processing.
+   * Get the progress of the context processing.
    * @return the progress of the processing of the sample as percent (between
    *         0.0 and 1.0)
    */
   double getProgress();
 
   /**
-   * Set the sample message.
+   * Set the context message.
    * @param message the message to set
    */
   void setMessage(String message);
 
   /**
-   * Set the sample counters
-   * @param reporter the reporter
-   * @param counterGroup counter group to use with the reporter
-   * @param counterHeader header for the counters
+   * Set the context description.
+   * @param description the description to set
    */
-  void setCounters(Reporter reporter, String counterGroup, String counterHeader);
+  void setDescription(String description);
 
   /**
-   * Set the progress of the processing of a sample by the step.
+   * Set the context counters.
+   * @param reporter the reporter
+   * @param counterGroup counter group to use with the reporter
+   */
+  void setCounters(Reporter reporter, String counterGroup);
+
+  /**
+   * Set the progress of the processing of the context.
    * @param min minimal value of the progress
    * @param max maximal value of the progress
    * @param value current value of the progress
@@ -83,7 +88,7 @@ public interface StepStatus {
   void setProgress(int min, int max, int value);
 
   /**
-   * Set the progress of the processing of a sample by the step.
+   * Set the progress of the processing of the context.
    * @param progress value of the progress. This value must be greater or equals
    *          to 0 and lower or equals to 1.0
    */

@@ -111,7 +111,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
               + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
                   ? htSeqArgsLog : "") + ")";
 
-      status.setCounters(reporter, COUNTER_GROUP, sampleCounterHeader);
+      status.setDescription(sampleCounterHeader);
+      status.setCounters(reporter, COUNTER_GROUP);
 
       // Write log file
       return status.createStepResult();

@@ -121,12 +121,15 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     // Get the dest
     final DataFile outFile = outData.getDataFile();
 
-    // filter alignments in single-end mode or in paired-end mode
+    // Filter alignments in single-end mode or in paired-end mode
     filterFile(inFile, outFile, reporter, filter);
 
+    // Set the description of the context
+    status.setDescription("Filter SAM file ("
+        + inData.getName() + ", " + inFile.getName() + ")");
+
     // Add counters for this sample to log file
-    status.setCounters(reporter, COUNTER_GROUP,
-        "Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
+    status.setCounters(reporter, COUNTER_GROUP);
   }
 
   /**
