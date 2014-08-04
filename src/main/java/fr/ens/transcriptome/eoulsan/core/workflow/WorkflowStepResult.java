@@ -188,19 +188,23 @@ public class WorkflowStepResult {
 
     Preconditions.checkNotNull(result, "result cannot be null");
 
-    // Set start time
+    // Set start and end times
     if (this.contextIds.isEmpty()) {
       this.startTime = result.getStartTime();
-    }
-
-    // Set end time
-    if (this.endTime == null) {
       this.endTime = result.getEndTime();
     } else {
+
+      if (result.getStartTime().before(this.startTime)) {
+        this.startTime = result.getStartTime();
+      }
+
       if (result.getEndTime().after(this.endTime)) {
         this.endTime = result.getEndTime();
       }
     }
+
+    // Compute duration
+    this.duration = this.endTime.getTime() - this.startTime.getTime();
 
     final String contextName = result.getContext().getContextName();
     this.contextNames.add(contextName);
@@ -317,7 +321,7 @@ public class WorkflowStepResult {
     sb.append(toJSON(1, "Step parameters", convert(this.parameters)));
 
     sb.append(Strings.repeat(TAB, 1));
-    sb.append("\"Samples\" : [");
+    sb.append("\"Contexts\" : [");
     boolean sampleProcessed = false;
     for (String contextName : this.contextNames) {
 
@@ -340,7 +344,7 @@ public class WorkflowStepResult {
           this.contextMessages.get(contextName)));
 
       // contextName counters
-      sb.append(toJSON(4, "Sample counters",
+      sb.append(toJSON(4, "Context counters",
           this.contextCounters.get(contextName)));
       sb.append(Strings.repeat(TAB, 2));
       sb.append("}\n");
@@ -398,6 +402,8 @@ public class WorkflowStepResult {
   public void write(final OutputStream out) throws IOException {
 
     checkNotNull(out, "output stream is null");
+    Preconditions.checkState(this.immutable,
+        "Cannot write non immutable object");
 
     BufferedWriter writer = FileUtils.createBufferedWriter(out);
     writer.write(toJSON());
@@ -409,7 +415,6 @@ public class WorkflowStepResult {
   //
 
   WorkflowStepResult() {
-
   }
 
   WorkflowStepResult(final AbstractWorkflowStep step) {

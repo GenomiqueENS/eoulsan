@@ -467,6 +467,9 @@ public class TokenManager implements Runnable {
         // Wait end of all context
         this.executors.waitEndOfThreads();
 
+        // Set the result immutable
+        this.executors.getStepResult().setImmutable();
+
         // Write step result
         if (this.step.isCreateLogFiles()) {
           writeStepResult();
