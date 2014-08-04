@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
@@ -31,10 +32,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
@@ -56,9 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 @LocalOnly
 public class ExpressionLocalStep extends AbstractExpressionStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
@@ -144,8 +140,9 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     // Set counter arguments
     initCounterArguments(counter, context.getSettings().getTempDirectory());
 
-    LOGGER.info("Expression computation in SAM file: "
-        + alignmentFile + ", use " + counter.getCounterName());
+    getLogger().info(
+        "Expression computation in SAM file: "
+            + alignmentFile + ", use " + counter.getCounterName());
 
     // Process to counting
     counter

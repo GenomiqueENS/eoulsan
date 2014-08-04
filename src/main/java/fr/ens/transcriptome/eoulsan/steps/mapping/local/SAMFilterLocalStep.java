@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMComparator;
 import net.sf.samtools.SAMFileReader;
@@ -45,7 +45,6 @@ import net.sf.samtools.SAMRecord;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
@@ -69,9 +68,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 @LocalOnly
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
-
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
@@ -83,8 +79,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       // Get the read filter
       final MultiReadAlignmentsFilter filter =
           getAlignmentsFilter(reporter, COUNTER_GROUP);
-      LOGGER.info("Read alignments filters to apply: "
-          + Joiner.on(", ").join(filter.getFilterNames()));
+      getLogger().info(
+          "Read alignments filters to apply: "
+              + Joiner.on(", ").join(filter.getFilterNames()));
 
       filterSample(context, reporter, status, filter);
 
@@ -154,7 +151,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     final ReadAlignmentsFilterBuffer rafb =
         new ReadAlignmentsFilterBuffer(filter);
 
-    LOGGER.info("Filter SAM file: " + inFile);
+    getLogger().info("Filter SAM file: " + inFile);
 
     // Get reader
     final SAMFileReader inputSam = new SAMFileReader(inFile.open());

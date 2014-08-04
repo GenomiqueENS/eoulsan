@@ -75,7 +75,7 @@ class WorkflowStepContextExecutor {
     // checkExistingInputFiles();
 
     // Thread group name
-    final String threadGroupName = "eoulsan-step-#" + this.context.getId();
+    final String threadGroupName = "eoulsan-context-#" + this.context.getId();
 
     // Define thread group
     final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
@@ -247,7 +247,8 @@ class WorkflowStepContextExecutor {
     final DataFile logDir =
         this.context.getStep().getAbstractWorkflow().getLogDir();
     final DataFile logFile =
-        new DataFile(logDir, step.getId() + "-" + this.context.getId() + ".log");
+        new DataFile(logDir, step.getId()
+            + "_context#" + this.context.getId() + ".log");
     OutputStream logOut;
     try {
 

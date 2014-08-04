@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -33,11 +34,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import com.google.common.io.Files;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -64,9 +63,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 @LocalOnly
 public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private boolean firstSample = true;
   private GenomeDescription genomeDescription;
@@ -233,8 +229,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         initMapperArguments(mapper, context.getSettings()
             .getTempDirectoryFile());
 
-    LOGGER
-        .info("Map file: "
+    getLogger().info(
+        "Map file: "
             + inData.getDataFile() + ", Fastq format: " + fastqFormat
             + ", use " + mapper.getMapperName() + " with " + mapperThreads
             + " threads option");
@@ -270,10 +266,12 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         initMapperArguments(mapper, context.getSettings()
             .getTempDirectoryFile());
 
-    LOGGER.info("Map files: "
-        + inData.getDataFile(0) + "," + inData.getDataFile(1)
-        + ", Fastq format: " + fastqFormat + ", use " + mapper.getMapperName()
-        + " with " + mapperThreads + " threads option");
+    getLogger().info(
+        "Map files: "
+            + inData.getDataFile(0) + "," + inData.getDataFile(1)
+            + ", Fastq format: " + fastqFormat + ", use "
+            + mapper.getMapperName() + " with " + mapperThreads
+            + " threads option");
 
     // Process to mapping
     mapper.map(inData.getDataFile(0).toFile(), inData.getDataFile(1).toFile());
@@ -346,8 +344,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     readerResults.close();
 
-    LOGGER.info(entriesParsed
-        + " entries parsed in " + getMapperName() + " output file");
+    getLogger().info(
+        entriesParsed
+            + " entries parsed in " + getMapperName() + " output file");
   }
 
 }

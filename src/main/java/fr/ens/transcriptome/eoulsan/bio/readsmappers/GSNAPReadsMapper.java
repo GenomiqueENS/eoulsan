@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -47,12 +47,9 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
-
   private static final String MAPPER_EXECUTABLE = "gsnap";
   private static final String[] INDEXER_EXECUTABLES = new String[] {
-      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
+      "fa_coords", "gmap_process", "gmapindex", "gmap_build" };
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -211,7 +208,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     // + readsFile1.getAbsolutePath() + " " + readsFile2.getAbsolutePath()
     // + " > " + outputFile.getAbsolutePath() + " 2> /dev/null";
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = ProcessUtils.sh(cmd);
 
@@ -264,7 +261,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     // + readsFile.getAbsolutePath() + " > "
     // + outputFile.getAbsolutePath() + " 2> /dev/null";
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = ProcessUtils.sh(cmd);
 

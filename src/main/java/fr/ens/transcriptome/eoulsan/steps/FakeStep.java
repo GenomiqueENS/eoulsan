@@ -53,6 +53,11 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
+  public boolean isCreateLogFiles() {
+    return false;
+  }
+
+  @Override
   public void configure(Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters)

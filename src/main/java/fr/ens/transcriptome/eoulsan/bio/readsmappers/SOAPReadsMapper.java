@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -46,9 +46,6 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * @author Laurent Jourdren
  */
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAPPER_EXECUTABLE = "soap";
   private static final String INDEXER_EXECUTABLE = "2bwt-builder";
@@ -158,7 +155,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("-u");
     cmd.add(unmapFile.getAbsolutePath());
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -209,7 +206,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("-2");
     cmd.add(unpairedFile.getAbsolutePath());
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd);
 

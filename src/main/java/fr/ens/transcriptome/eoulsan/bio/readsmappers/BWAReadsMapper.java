@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 
@@ -31,9 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -50,9 +49,6 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * @author Laurent Jourdren
  */
 public class BWAReadsMapper extends AbstractSequenceReadsMapper {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
@@ -196,7 +192,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    LOGGER.fine("first pair member alignement");
+    getLogger().fine("first pair member alignement");
 
     this.outputFile1 =
         FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
@@ -206,7 +202,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
         readsFile1.getAbsolutePath());
 
-    LOGGER.fine("first second member alignement");
+    getLogger().fine("first second member alignement");
 
     this.outputFile2 =
         FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
@@ -253,7 +249,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add(indexPathname);
     cmd.add(readsFilename);
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd);
 
@@ -311,7 +307,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     }
 
     System.out.println("cmd: " + cmd);
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd);
 

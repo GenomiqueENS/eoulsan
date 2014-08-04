@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
@@ -32,12 +33,10 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_R
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -63,9 +62,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  */
 @LocalOnly
 public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
@@ -101,8 +97,9 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
       // Get the read filter
       final MultiReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
-      LOGGER.info("Reads filters to apply: "
-          + Joiner.on(", ").join(filter.getFilterNames()));
+      getLogger().info(
+          "Reads filters to apply: "
+              + Joiner.on(", ").join(filter.getFilterNames()));
 
       // Run the filter in single or pair-end mode
       if (inFileCount == 1) {
@@ -195,8 +192,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       final Reporter reporter, final ReadFilter filter,
       final FastqFormat fastqFormat) throws IOException {
 
-    LOGGER.info("Filter file: " + inFile);
-    LOGGER.info("FastqFormat: " + fastqFormat);
+    getLogger().info("Filter file: " + inFile);
+    getLogger().info("FastqFormat: " + fastqFormat);
 
     final FastqReader reader = new FastqReader(inFile.open());
     final FastqWriter writer = new FastqWriter(outFile.create());
@@ -250,8 +247,9 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       final Reporter reporter, final ReadFilter filter,
       final FastqFormat fastqFormat) throws IOException {
 
-    LOGGER.info("Filter files: "
-        + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
+    getLogger().info(
+        "Filter files: "
+            + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
 
     final FastqReader reader1 = new FastqReader(inFile1.open());
     final FastqReader reader2 = new FastqReader(inFile2.open());

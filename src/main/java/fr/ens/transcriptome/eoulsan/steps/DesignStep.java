@@ -69,6 +69,11 @@ public class DesignStep extends AbstractStep {
   }
 
   @Override
+  public boolean isCreateLogFiles() {
+    return false;
+  }
+
+  @Override
   public OutputPorts getOutputPorts() {
 
     return this.outputPorts;

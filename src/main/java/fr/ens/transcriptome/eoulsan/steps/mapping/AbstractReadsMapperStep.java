@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
@@ -45,9 +44,6 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
  * @author Laurent Jourdren
  */
 public abstract class AbstractReadsMapperStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   protected static final String STEP_NAME = "mapreads";
 
@@ -178,11 +174,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     }
 
     // Log Step parameters
-    LOGGER.info("In "
-        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
-        + mapper.getMapperVersion() + ")");
-    LOGGER
-        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info(
+        "In "
+            + getName() + ", mapper=" + this.mapper.getMapperName()
+            + " (version: " + mapper.getMapperVersion() + ")");
+    getLogger().info(
+        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
   }
 

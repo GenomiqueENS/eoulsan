@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
@@ -46,9 +46,6 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public abstract class AbstractBowtieReadsMapper extends
     AbstractSequenceReadsMapper {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String SYNC = AbstractBowtieReadsMapper.class.getName();
 
@@ -155,7 +152,7 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("-S");
     cmd.add(outputFile.getAbsolutePath());
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir);
 
@@ -203,7 +200,7 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("-S");
     cmd.add(outputFile.getAbsolutePath());
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir);
 
@@ -254,7 +251,7 @@ public abstract class AbstractBowtieReadsMapper extends
     // TODO to remove
     System.out.println("cmd bowtie : " + cmd);
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir, parserLine);
 
@@ -308,7 +305,7 @@ public abstract class AbstractBowtieReadsMapper extends
     // TODO to remove
     System.out.println("cmd bowtie : " + cmd.toString().replace(',', ' '));
 
-    LOGGER.info(cmd.toString());
+    getLogger().info(cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir, parserLine);
 
