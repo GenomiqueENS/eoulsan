@@ -232,6 +232,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         context.getInputDataFile(DataFormats.GENOME_DESC_TXT, sample)
             .getSource());
 
+    // Set ZooKeeper client configuration
+    ReadsMapperHadoopStep.setZooKeeperJobConfiguration(jobConf, context);
+
     // Set Job name
     // Create the job and its name
     final Job job =

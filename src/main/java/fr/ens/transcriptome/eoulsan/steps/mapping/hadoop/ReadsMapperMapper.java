@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -61,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.locker.Locker;
-import fr.ens.transcriptome.eoulsan.util.locker.TicketLocker;
+import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -86,6 +87,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".mapper.nb.threads";
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.fastq.format";
+  static final String ZOOKEEPER_CONNECT_STRING_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.zookeeper.connect.string";
+  static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.zookeeper.session.timeout";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
 
@@ -144,8 +149,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     // Get mapper name
-    final String mapperName =
-        conf.get(Globals.PARAMETER_PREFIX + ".mapper.name");
+    final String mapperName = conf.get(MAPPER_NAME_KEY);
 
     if (mapperName == null) {
       throw new IOException("No mapper set");
@@ -197,10 +201,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     LOGGER.info("Fastq format: " + fastqFormat);
 
-    // Set lock
     this.lock =
-        new TicketLocker(this.mapper.getMapperName().toLowerCase(), 9999,
-            context.getTaskAttemptID().toString());
+        new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
+            Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
+            "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
+            "mapper-lock-");
 
     // Get Mapper arguments
     final String mapperArguments = conf.get(MAPPER_ARGS_KEY);

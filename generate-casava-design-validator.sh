@@ -629,7 +629,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 
 <h4 align="right">__VERSION__</h4>
     <div>
-      <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" width=6% align="left"/></a>
+      <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" align="left"/></a>
       <h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
     </div>
     <table align="center">
