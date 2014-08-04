@@ -293,7 +293,6 @@ public class TokenManager implements Runnable {
         Sets.cartesianProduct(sets);
 
     // Now convert result of cartesianProduct() to final result
-    final int len = portsList.size();
     for (List<CartesianProductEntry> l : cartesianProduct) {
 
       final ImmutableMap.Builder<InputPort, Data> imb = ImmutableMap.builder();

@@ -336,7 +336,6 @@ class WorkflowStepContextExecutor {
         StepInstances.getInstance().getStep(stepContext.getCurrentStep());
 
     this.status = new WorkflowStepContextStatus(stepContext, stepStatus);
-    final StepResult result;
 
     // Set the stepContext name for the status
     this.context.setContextName(createContextName());
