@@ -58,7 +58,6 @@ class DataElement extends AbstractData {
   private final CompressionType compression;
 
   private boolean canRename = true;
-  private boolean modifiable = false;
 
   @Override
   public void setName(final String name) {
@@ -234,11 +233,6 @@ class DataElement extends AbstractData {
     return new DataFile(this.stepWorkingPathname, sb.toString());
   }
 
-  public void setUnmodifiable() {
-
-    this.modifiable = true;
-  }
-
   @Override
   public String toString() {
 
@@ -292,7 +286,6 @@ class DataElement extends AbstractData {
       this.files = Lists.newArrayList(createDataFile(-1));
     } else {
       this.files = Lists.newArrayList(createDataFile(0));
-      this.modifiable = true;
     }
   }
 

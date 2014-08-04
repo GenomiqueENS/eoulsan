@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -89,7 +88,6 @@ public final class DataUtils {
       return Collections.emptyList();
     }
 
-    final List<Data> result = Lists.newArrayList();
     return ((DataElement) data).getDataFiles();
   }
 
