@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 
-import fr.ens.transcriptome.eoulsan.core.Data;
+import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**

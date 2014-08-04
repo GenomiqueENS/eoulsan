@@ -26,7 +26,8 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import fr.ens.transcriptome.eoulsan.core.Data;
+
+import fr.ens.transcriptome.eoulsan.data.Data;
 
 /**
  * This class define a token of the workflow.

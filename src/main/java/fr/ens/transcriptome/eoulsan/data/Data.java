@@ -22,13 +22,10 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.data;
 
 import java.util.List;
 import java.util.Map;
-
-import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This interface define data used by ports.
