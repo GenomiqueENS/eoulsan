@@ -58,17 +58,12 @@ public class BasicUI implements WorkflowStepObserver {
     if (step == null || step.getWorkflow() != this.workflow)
       return;
 
-    // System.out.println("Step "
-    // + step.getId() + " (" + step.getNumber() + ") status changed to "
-    // + step.getState());
-
     if (step.getState() == StepState.WORKING)
       notifyStepState(step, 0.0);
-
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step,
+  public void notifyStepState(final WorkflowStep step, final int contextId,
       final String contextName, final double progress) {
 
     // DO nothing

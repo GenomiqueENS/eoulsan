@@ -106,12 +106,12 @@ class WorkflowStepContextExecutor {
       }
     };
 
+    // Start the time watch
+    this.status.durationStart();
+
     try {
       // Create thread
       final Thread thread = new Thread(threadGroup, r);
-
-      // Start the time watch
-      this.status.durationStart();
 
       // Start thread
       thread.start();

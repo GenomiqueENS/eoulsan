@@ -144,7 +144,8 @@ public class WorkflowStepContextStatus implements StepStatus {
 
     // If a status for the step exist, inform the step status
     if (this.status != null) {
-      this.status.setContextProgress(this.context.getContextName(), progress);
+      this.status.setContextProgress(this.context.getId(),
+          context.getContextName(), progress);
     }
   }
 
@@ -223,12 +224,19 @@ public class WorkflowStepContextStatus implements StepStatus {
   // Utility methods
   //
 
+  /**
+   * Check the state of the result creation.
+   */
   private void checkState() {
 
     Preconditions.checkState(this.result == null,
         "Step result has been created");
   }
 
+  /**
+   * Check progress value.
+   * @param progress the progress value to test
+   */
   private static void checkProgress(final double progress) {
 
     checkArgument(progress >= 0.0, "Progress is lower than 0: " + progress);
@@ -237,6 +245,12 @@ public class WorkflowStepContextStatus implements StepStatus {
     checkArgument(!Double.isNaN(progress), "Progress is NaN");
   }
 
+  /**
+   * Check progress value.
+   * @param min minimal value
+   * @param max maximal value
+   * @param value value to test
+   */
   private static void checkProgress(final int min, final int max,
       final int value) {
 
@@ -249,6 +263,9 @@ public class WorkflowStepContextStatus implements StepStatus {
   // Other methods
   //
 
+  /**
+   * Start the timer.
+   */
   void durationStart() {
 
     // Get the start date
@@ -262,15 +279,18 @@ public class WorkflowStepContextStatus implements StepStatus {
   // Constructors
   //
 
-  public WorkflowStepContextStatus(final WorkflowStepContext context,
+  /**
+   * Constructor.
+   * @param context the context object
+   * @param status the status object
+   */
+  WorkflowStepContextStatus(final WorkflowStepContext context,
       final WorkflowStepStatus status) {
 
     Preconditions.checkNotNull(context, "context cannot be null");
 
     this.context = context;
     this.status = status;
-
-    this.result = null; // new WorkflowStepResult(step.getContext(), step);
   }
 
 }

@@ -27,12 +27,10 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
 /**
@@ -44,13 +42,10 @@ public class WorkflowStepStatus {
 
   private final AbstractWorkflowStep step;
 
-  private final Map<String, Double> contextProgress = Maps.newHashMap();
+  private final Map<Integer, Double> contextProgress = Maps.newHashMap();
+  private final Map<Integer, String> contextNames = Maps.newHashMap();
   private double progress = Double.NaN;
   private String note;
-
-  private Date startDate;
-  private Date endDate;
-  private Stopwatch stopwatch = new Stopwatch();
 
   private Set<WorkflowStepObserver> observers = WorkflowStepObserverRegistry
       .getInstance().getObservers();
@@ -59,11 +54,19 @@ public class WorkflowStepStatus {
   // Progress Methods
   //
 
+  /**
+   * Get the note.
+   * @return the note
+   */
   public String getNote() {
 
     return this.note;
   }
 
+  /**
+   * Get the progress of the step.
+   * @return a double between O and 1
+   */
   public double getProgress() {
 
     if (Double.isNaN(this.progress)) {
@@ -80,13 +83,35 @@ public class WorkflowStepStatus {
     return this.progress;
   }
 
-  public double getContextProgress(final String contextName) {
+  /**
+   * Get the name of a context of the step.
+   * @param contextId the id of the context
+   * @return a String with the name of the context or null if the context not
+   *         exists
+   */
+  public String getContextName(final int contextId) {
 
-    checkContextName(contextName);
-
-    return this.contextProgress.get(contextName);
+    return this.contextNames.get(contextId);
   }
 
+  /**
+   * Get the progress of a context of the step.
+   * @param contextId the id of the context
+   * @return a double between O and 1
+   */
+  public double getContextProgress(final int contextId) {
+
+    return this.contextProgress.get(contextId);
+  }
+
+  //
+  // Setters
+  //
+
+  /**
+   * Set the note.
+   * @param note the note to set
+   */
   public void setNote(final String note) {
 
     this.note = note;
@@ -95,6 +120,12 @@ public class WorkflowStepStatus {
     noteStatusUpdated();
   }
 
+  /**
+   * Set the progress of a step.
+   * @param min minimal value
+   * @param max maximal value
+   * @param value value to set
+   */
   public void setProgress(final int min, final int max, final int value) {
 
     checkProgress(min, max, value);
@@ -105,6 +136,10 @@ public class WorkflowStepStatus {
       setProgress(((double) (value - min)) / (max - min));
   }
 
+  /**
+   * Set the progress of a step.
+   * @param value value to set
+   */
   public void setProgress(final double progress) {
 
     checkProgress(progress);
@@ -117,49 +152,54 @@ public class WorkflowStepStatus {
     progressStatusUpdated();
   }
 
-  public void setContextProgress(final String contextName, final int min,
-      final int max, final int value) {
+  /**
+   * Set the progress of a context of the step.
+   * @param contextId id of the context
+   * @param contextName name of the context
+   * @param min minimal value
+   * @param max maximal value
+   * @param value value to set
+   */
+  public void setContextProgress(final int contextId, final String contextName,
+      final int min, final int max, final int value) {
 
     checkProgress(min, max, value);
 
     if (min == max)
-      setContextProgress(contextName, 1.0);
+      setContextProgress(contextId, contextName, 1.0);
     else
-      setContextProgress(contextName, ((double) (value - min)) / (max - min));
-
+      setContextProgress(contextId, contextName, ((double) (value - min))
+          / (max - min));
   }
 
-  public void setContextProgress(final String contextName, final double progress) {
+  /**
+   * Set the progress of a context of the step.
+   * @param contextId id of the context
+   * @param contextName name of the context
+   * @param value value to set
+   */
+  public void setContextProgress(final int contextId, final String contextName,
+      final double progress) {
 
-    checkContextName(contextName);
+    checkContext(contextId, contextName);
     checkProgress(progress);
 
     // Inform observers that status has changed
-    progressContextStatusUpdated(contextName, progress);
+    progressContextStatusUpdated(contextId, contextName, progress);
 
     // Save progress contextName for step progress computation
     synchronized (this) {
-      this.contextProgress.put(contextName, progress);
+      this.contextProgress.put(contextId, progress);
+
+      // Update context name if needed
+      if (!this.contextNames.containsKey(contextId)
+          || !this.contextNames.get(contextId).equals(contextName)) {
+        this.contextNames.put(contextId, contextName);
+      }
     }
 
     // Inform observers that status has changed
     progressStatusUpdated();
-  }
-
-  //
-  // Step result creation
-  //
-
-  private void endOfStep() {
-
-    // Stop the stopwatch
-    this.stopwatch.stop();
-
-    // Get the end Date
-    this.endDate = new Date(System.currentTimeMillis());
-
-    // The step is completed
-    setProgress(1.0);
   }
 
   //
@@ -168,13 +208,16 @@ public class WorkflowStepStatus {
 
   /**
    * Inform observers that the status has been changed.
+   * @param contextId id of the context
+   * @param contextName name of the context
+   * @param progress progress value
    */
-  private void progressContextStatusUpdated(final String contextName,
-      final double progress) {
+  private void progressContextStatusUpdated(final int contextId,
+      final String contextName, final double progress) {
 
     // Inform listeners
     for (WorkflowStepObserver o : this.observers)
-      o.notifyStepState(this.step, contextName, progress);
+      o.notifyStepState(this.step, contextId, contextName, progress);
   }
 
   /**
@@ -201,11 +244,9 @@ public class WorkflowStepStatus {
   // Check progress
   //
 
-  private void checkContextName(final String contextName) {
+  private static void checkContext(final int contextId, final String contextName) {
 
-    checkNotNull(contextName, "contextName is null");
-
-    // TODO check if context name exists
+    checkNotNull(contextName, "contextName cannot be null");
   }
 
   private static void checkProgress(final double progress) {
