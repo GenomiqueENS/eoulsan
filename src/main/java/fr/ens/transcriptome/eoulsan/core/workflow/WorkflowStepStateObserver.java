@@ -65,11 +65,13 @@ public class WorkflowStepStateObserver {
       return;
 
     // If is the root step, there is nothing to wait
-    if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
-        && state == StepState.WAITING)
-      this.stepState = StepState.READY;
-    else
-      this.stepState = state;
+    synchronized (this) {
+      if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
+          && state == StepState.WAITING)
+        this.stepState = StepState.READY;
+      else
+        this.stepState = state;
+    }
 
     // Inform step that depend of this step
     if (this.stepState == StepState.DONE)

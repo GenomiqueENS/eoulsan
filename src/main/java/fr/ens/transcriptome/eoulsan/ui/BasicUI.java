@@ -35,7 +35,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserver;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define a basic UI for Eoulsan.
@@ -69,7 +68,8 @@ public class BasicUI implements WorkflowStepObserver {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final String contextName, final double progress) {
+  public void notifyStepState(final WorkflowStep step,
+      final String contextName, final double progress) {
 
     // DO nothing
   }

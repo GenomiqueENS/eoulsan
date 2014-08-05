@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -47,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -105,7 +107,7 @@ public class TokenManager implements Runnable {
    * @return the number of context created by the token manager
    */
   public int getContextCount() {
-    return this.cartesianProductsUsed.size();
+    return this.inputPorts.size() == 0 ? 1 : this.cartesianProductsUsed.size();
   }
 
   /**
@@ -435,8 +437,14 @@ public class TokenManager implements Runnable {
       }
 
       // Do nothing until the step is not ready
-      if (this.step.getState() != READY) {
+      final StepState state = this.step.getState();
+      if (!(state == READY || state == WORKING)) {
         continue;
+      }
+
+      // Set the step to the workng state
+      if (state == READY) {
+        this.step.setState(WORKING);
       }
 
       // Create new contexts to submit
