@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
@@ -40,7 +41,6 @@ import java.util.Set;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -69,11 +69,11 @@ public class WorkflowStepResult {
   private long duration;
   private Set<Parameter> parameters;
 
-  private final Set<String> contextNames = Sets.newHashSet();
-  private final Map<String, Map<String, Long>> contextCounters = Maps
+  private final Map<Integer, String> contextNames = Maps.newHashMap();
+  private final Map<Integer, Map<String, Long>> contextCounters = Maps
       .newHashMap();
-  private final Map<String, String> contextDescriptions = Maps.newHashMap();
-  private final Map<String, String> contextMessages = Maps.newHashMap();
+  private final Map<Integer, String> contextDescriptions = Maps.newHashMap();
+  private final Map<Integer, String> contextMessages = Maps.newHashMap();
   private final Map<String, Long> stepCounters = Maps.newHashMap();
   private String stepMessage;
 
@@ -81,7 +81,6 @@ public class WorkflowStepResult {
   private Throwable exception;
   private String errorMessage;
 
-  private Set<String> contextIds = Sets.newHashSet();
   private boolean immutable;
 
   //
@@ -179,17 +178,32 @@ public class WorkflowStepResult {
    */
   public void setImmutable() {
 
+    // Check immutable state
+    checkImmutableState();
+
+    // Check if at least one context result has been added to the step result
+    Preconditions.checkState(!this.contextNames.isEmpty(),
+        "No context result has been added for step " + this.stepId);
+
     this.immutable = true;
   }
 
   public void addResult(final WorkflowStepContextResult result) {
 
-    checkState();
+    checkNotNull(result, "result cannot be null");
 
-    Preconditions.checkNotNull(result, "result cannot be null");
+    // Check immutable state
+    checkImmutableState();
+
+    // Check if result has been already added
+    final int contextId = result.getContext().getId();
+    Preconditions.checkState(!this.contextNames.containsKey(contextId),
+        "Context #"
+            + contextId + " has already been added to result of step "
+            + this.stepId);
 
     // Set start and end times
-    if (this.contextIds.isEmpty()) {
+    if (this.contextNames.isEmpty()) {
       this.startTime = result.getStartTime();
       this.endTime = result.getEndTime();
     } else {
@@ -206,12 +220,11 @@ public class WorkflowStepResult {
     // Compute duration
     this.duration = this.endTime.getTime() - this.startTime.getTime();
 
-    final String contextName = result.getContext().getContextName();
-    this.contextNames.add(contextName);
+    this.contextNames.put(contextId, result.getContext().getContextName());
 
     // Set counters information
-    this.contextCounters.put(contextName, result.getCounters());
-    this.contextDescriptions.put(contextName, result.getDescription());
+    this.contextCounters.put(contextId, result.getCounters());
+    this.contextDescriptions.put(contextId, result.getDescription());
 
     // Set success (Keep only the first error)
     if (this.success) {
@@ -234,9 +247,10 @@ public class WorkflowStepResult {
   // Checker
   //
 
-  private void checkState() {
+  private void checkImmutableState() {
 
-    Preconditions.checkState(!this.immutable, "Step result has been created");
+    checkState(!this.immutable,
+        "Step result has been already created for step " + this.stepId);
   }
 
   //
@@ -323,11 +337,11 @@ public class WorkflowStepResult {
     sb.append(Strings.repeat(TAB, 1));
     sb.append("\"Contexts\" : [");
     boolean sampleProcessed = false;
-    for (String contextName : this.contextNames) {
+    for (int contextId : this.contextNames.keySet()) {
 
       // Do not log non processed samples
-      if (!this.contextCounters.containsKey(contextName)
-          && !this.contextMessages.containsKey(contextName))
+      if (!this.contextCounters.containsKey(contextId)
+          && !this.contextMessages.containsKey(contextId))
         continue;
 
       if (!sampleProcessed) {
@@ -337,15 +351,16 @@ public class WorkflowStepResult {
 
       sb.append(Strings.repeat(TAB, 2));
       sb.append("{\n");
-      sb.append(toJSON(4, "Context name", contextName));
+      sb.append(toJSON(4, "Context id", contextId));
+      sb.append(toJSON(4, "Context name", this.contextNames.get(contextId)));
       sb.append(toJSON(4, "Context description",
-          this.contextDescriptions.get(contextName)));
+          this.contextDescriptions.get(contextId)));
       sb.append(toJSON(4, "Context message",
-          this.contextMessages.get(contextName)));
+          this.contextMessages.get(contextId)));
 
       // contextName counters
       sb.append(toJSON(4, "Context counters",
-          this.contextCounters.get(contextName)));
+          this.contextCounters.get(contextId)));
       sb.append(Strings.repeat(TAB, 2));
       sb.append("}\n");
     }
@@ -386,7 +401,7 @@ public class WorkflowStepResult {
   public void read(InputStream in) {
 
     checkNotNull(in);
-    checkState();
+    checkImmutableState();
 
     // TODO implement this method
     throw new UnsupportedOperationException();
