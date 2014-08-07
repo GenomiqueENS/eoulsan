@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextExecutor;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
@@ -155,18 +155,18 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     // Get the step of the context
     final WorkflowStep step = getStep(context.getId());
 
-    // Create context executor
-    final WorkflowStepContextExecutor contextExecutor =
-        new WorkflowStepContextExecutor(context, getStatus(step));
+    // Create context runner
+    final WorkflowStepContextRunner contextRunner =
+        new WorkflowStepContextRunner(context, getStatus(step));
 
     // Update counters
     addRunningContext(context);
 
-    // Execute the context
-    contextExecutor.execute();
+    // Run the step context
+    contextRunner.run();
 
     // Get the context result
-    final WorkflowStepContextResult contextResult = contextExecutor.getResult();
+    final WorkflowStepContextResult contextResult = contextRunner.getResult();
 
     // Add the context result to the step result
     addResult(step, contextResult);

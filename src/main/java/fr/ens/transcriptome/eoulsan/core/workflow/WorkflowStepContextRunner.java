@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -46,11 +48,11 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * This class allow to execute a step context.
+ * This class allow to run a step context.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContextExecutor {
+public class WorkflowStepContextRunner {
 
   private final WorkflowStepContext context;
   private final Step step;
@@ -61,7 +63,14 @@ public class WorkflowStepContextExecutor {
   // Getter
   //
 
+  /**
+   * Get the context result.
+   * @return a WorkflowStepContextResult object
+   */
   public WorkflowStepContextResult getResult() {
+
+    checkState(this.result != null, "The context has not been run");
+
     return (WorkflowStepContextResult) this.result;
   }
 
@@ -69,7 +78,11 @@ public class WorkflowStepContextExecutor {
   // Execute methods
   //
 
-  public WorkflowStepContextResult execute() {
+  /**
+   * Run the context.
+   * @return a context result object
+   */
+  public WorkflowStepContextResult run() {
 
     // check if input files exists
     // checkExistingInputFiles();
@@ -152,6 +165,9 @@ public class WorkflowStepContextExecutor {
     return (WorkflowStepContextResult) this.result;
   }
 
+  /**
+   * Send token.
+   */
   private void sendTokens() {
 
     if (this.result == null)
@@ -181,7 +197,11 @@ public class WorkflowStepContextExecutor {
     }
   }
 
-  private String createContextName() {
+  /**
+   * Create default context name.
+   * @return a string with the default context name
+   */
+  private String createDefaultContextName() {
 
     final List<String> namedData = Lists.newArrayList();
     final List<String> fileNames = Lists.newArrayList();
@@ -220,6 +240,10 @@ public class WorkflowStepContextExecutor {
       return Joiner.on('-').join(otherDataNames);
   }
 
+  /**
+   * Get the input data files.
+   * @return a list a DataFile
+   */
   private List<DataFile> getInputDataFile() {
 
     final List<DataFile> result = Lists.newArrayList();
@@ -279,6 +303,10 @@ public class WorkflowStepContextExecutor {
     return logger;
   }
 
+  /**
+   * Check if the input files exists.
+   * @throws EoulsanException if the input files does not exists
+   */
   private void checkExistingInputFiles() throws EoulsanException {
 
     for (DataFile file : getInputDataFile()) {
@@ -291,6 +319,10 @@ public class WorkflowStepContextExecutor {
     }
   }
 
+  /**
+   * Check if the the output data exists.
+   * @param outData data to test
+   */
   private void createSymlinksInOutputDirectory(final Data outData) {
 
     Preconditions.checkNotNull(outData, "outData argument cannot be null");
@@ -327,7 +359,7 @@ public class WorkflowStepContextExecutor {
    * Constructor.
    * @param stepContext stepContext to execute
    */
-  public WorkflowStepContextExecutor(final WorkflowStepContext stepContext,
+  public WorkflowStepContextRunner(final WorkflowStepContext stepContext,
       final WorkflowStepStatus stepStatus) {
 
     Preconditions.checkNotNull(stepContext, "stepContext cannot be null");
@@ -339,7 +371,7 @@ public class WorkflowStepContextExecutor {
     this.status = new WorkflowStepContextStatus(stepContext, stepStatus);
 
     // Set the stepContext name for the status
-    this.context.setContextName(createContextName());
+    this.context.setContextName(createDefaultContextName());
   }
 
 }
