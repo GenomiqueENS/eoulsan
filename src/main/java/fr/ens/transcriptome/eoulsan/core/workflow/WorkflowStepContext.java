@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -55,9 +56,9 @@ public class WorkflowStepContext implements StepContext, Serializable {
 
   private static int instanceCounter;
 
-  private final int id = (++instanceCounter);
+  private final int id;
   private final WorkflowContext workflowContext;
-  private String contextName = "context" + id;
+  private String contextName;
   private final AbstractWorkflowStep step;
 
   private final Map<String, Data> inputData = Maps.newHashMap();
@@ -360,6 +361,17 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   //
+  // Other methods
+  //
+
+  @Override
+  public String toString() {
+    return Objects.toStringHelper(this).add("id", this.id)
+        .add("step", this.step.getId()).add("contextName", this.contextName)
+        .toString();
+  }
+
+  //
   // Constructor
   //
 
@@ -373,6 +385,11 @@ public class WorkflowStepContext implements StepContext, Serializable {
 
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
+
+    synchronized (this.getClass()) {
+      this.id = (++instanceCounter);
+    }
+    this.contextName = "context" + id;
 
     this.workflowContext = workflowContext;
     this.step = step;
