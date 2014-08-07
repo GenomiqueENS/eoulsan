@@ -49,7 +49,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.MonoThreadContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -392,9 +391,7 @@ public class TokenManager implements Runnable {
   /**
    * This method write the step result in a file.
    */
-  private void writeStepResult() {
-
-    final WorkflowStepResult result = this.executor.getResult(this.step);
+  private void writeStepResult(final WorkflowStepResult result) {
 
     if (result == null)
       return;
@@ -475,19 +472,23 @@ public class TokenManager implements Runnable {
       if (isNoTokenToReceive()) {
 
         // Wait end of all context
-        this.executor.waitEndOfContexts();
+        this.executor.waitEndOfContexts(this.step);
+
+        // Get the result
+        final WorkflowStepResult result = this.executor.getResult(this.step);
 
         // Set the result immutable
-        this.executor.getResult(this.step).setImmutable();
-
-        // Write step result
-        if (this.step.isCreateLogFiles()) {
-          writeStepResult();
-        }
+        result.setImmutable();
 
         // Change Step state
-        if (this.executor.getResult(this.step).isSuccess()) {
+        if (result.isSuccess()) {
           this.step.setState(DONE);
+
+          // Write step result
+          if (this.step.isCreateLogFiles()) {
+            writeStepResult(result);
+          }
+
         } else {
           this.step.setState(FAIL);
         }
@@ -499,8 +500,6 @@ public class TokenManager implements Runnable {
       }
 
     } while (!this.endOfStep);
-
-    this.executor.stop();
   }
 
   //
@@ -519,11 +518,8 @@ public class TokenManager implements Runnable {
     this.inputPorts = step.getWorkflowInputPorts();
     this.outputPorts = step.getWorkflowOutputPorts();
 
-    // Create context executors
-    this.executor = new MonoThreadContextExecutor();
-
-    // Start executor
-    this.executor.start();
+    // Get the executor
+    this.executor = step.getAbstractWorkflow().getExecutor();
 
     // Start tokenManager thread
     new Thread(this).start();

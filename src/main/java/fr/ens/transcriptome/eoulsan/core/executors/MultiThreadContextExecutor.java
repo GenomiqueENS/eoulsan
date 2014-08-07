@@ -92,15 +92,8 @@ public class MultiThreadContextExecutor extends AbstractContextExecutor {
   }
 
   @Override
-  public void pause() {
-
-    this.executor.pause();
-  }
-
-  @Override
-  public void resume() {
-
-    this.executor.resume();
+  public void start() {
+    super.start();
   }
 
   @Override
@@ -120,44 +113,51 @@ public class MultiThreadContextExecutor extends AbstractContextExecutor {
   }
 
   @Override
-  public void waitEndOfContexts() {
+  public void pause() {
 
-    // Do nothing if threads are not used
-    if (this.executor == null) {
-      return;
-    }
-
-    int contextNotProcessed;
-
-    // Wait until all contexts are processed
-    do {
-
-      // Wait
-      try {
-        Thread.sleep(CHECKING_DELAY_MS);
-      } catch (InterruptedException e) {
-        getLogger().warning("InterruptedException: " + e.getMessage());
-      }
-
-      // Count contexts not processed
-      contextNotProcessed = 0;
-      for (Future<ContextThread> fst : this.threads) {
-        if (!fst.isDone()) {
-          contextNotProcessed++;
-        }
-      }
-
-    } while (contextNotProcessed > 0);
-
-    // Close the thread pool
-    executor.shutdown();
-
+    this.executor.pause();
   }
 
   @Override
-  public void start() {
-    // Do nothing
+  public void resume() {
+
+    this.executor.resume();
   }
+
+  // @Override
+  // public void waitEndOfContexts() {
+  //
+  // // Do nothing if threads are not used
+  // if (this.executor == null) {
+  // return;
+  // }
+  //
+  // int contextNotProcessed;
+  //
+  // // Wait until all contexts are processed
+  // do {
+  //
+  // // Wait
+  // try {
+  // Thread.sleep(CHECKING_DELAY_MS);
+  // } catch (InterruptedException e) {
+  // getLogger().warning("InterruptedException: " + e.getMessage());
+  // }
+  //
+  // // Count contexts not processed
+  // contextNotProcessed = 0;
+  // for (Future<ContextThread> fst : this.threads) {
+  // if (!fst.isDone()) {
+  // contextNotProcessed++;
+  // }
+  // }
+  //
+  // } while (contextNotProcessed > 0);
+  //
+  // // Close the thread pool
+  // executor.shutdown();
+  //
+  // }
 
   //
   // Constructor

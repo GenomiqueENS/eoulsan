@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
@@ -60,6 +61,9 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
+import fr.ens.transcriptome.eoulsan.core.executors.MonoThreadContextExecutor;
+import fr.ens.transcriptome.eoulsan.core.executors.MultiThreadContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -95,6 +99,8 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractWorkflowStep designStep;
   private AbstractWorkflowStep checkerStep;
   private AbstractWorkflowStep firstStep;
+
+  private final ContextExecutor executor;
 
   //
   // Getters
@@ -182,6 +188,14 @@ public abstract class AbstractWorkflow implements Workflow {
   public WorkflowContext getWorkflowContext() {
 
     return this.workflowContext;
+  }
+
+  /**
+   * Get the executor for the workflow.
+   * @return a ContextExecutor object
+   */
+  ContextExecutor getExecutor() {
+    return this.executor;
   }
 
   //
@@ -372,18 +386,19 @@ public abstract class AbstractWorkflow implements Workflow {
       // Create Token manager of each step and start dedicated thread
       registry.getTokenManager(step);
 
-      // Set steps state
-      if (step.getInputPorts().size() == 0) {
-        step.setState(READY);
-      } else {
-        step.setState(WAITING);
-      }
+      // TODO start TokenManager thread only when the state of the step change
+      // to WORKING
+
+      step.setState(WAITING);
     }
+
+    // Set root step ready for running
+    this.rootStep.setState(READY);
 
     final Stopwatch stopwatch = new Stopwatch();
     stopwatch.start();
 
-    while (!getSortedStepsByState(READY, WAITING).isEmpty()) {
+    while (!getSortedStepsByState(READY, WAITING, WORKING).isEmpty()) {
 
       try {
         // TODO 2000 must be a constant
@@ -411,7 +426,6 @@ public abstract class AbstractWorkflow implements Workflow {
           if (firstResult == null) {
             firstResult = result;
           }
-
         }
 
         // Log end of analysis
@@ -419,9 +433,12 @@ public abstract class AbstractWorkflow implements Workflow {
 
         // Stop all other steps
         for (AbstractWorkflowStep step : this.steps.keySet()) {
-          final TokenManager receiver = registry.getTokenManager(step);
-          receiver.stop();
+          final TokenManager tokenManager = registry.getTokenManager(step);
+          tokenManager.stop();
         }
+
+        // Stop the workflow
+        stop();
 
         if (firstResult.getException() != null)
           Common.errorExit(firstResult.getException(),
@@ -433,8 +450,24 @@ public abstract class AbstractWorkflow implements Workflow {
         break;
       }
     }
-    logEndAnalysis(true, stopwatch);
 
+    // Stop the workflow
+    stop();
+
+    logEndAnalysis(true, stopwatch);
+  }
+
+  private void stop() {
+
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+    for (AbstractWorkflowStep step : this.steps.keySet()) {
+
+      // Stop Token manager dedicated thread
+      registry.getTokenManager(step).stop();
+    }
+
+    // Stop executor
+    this.executor.stop();
   }
 
   /**
@@ -600,8 +633,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir}) {
+      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir }) {
 
         if (dir == null)
           continue;
@@ -727,5 +760,11 @@ public abstract class AbstractWorkflow implements Workflow {
     this.hadoopWorkingDir =
         newDataFile(executionArguments.getHadoopWorkingPathname());
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
+
+    // Set the context executor
+    this.executor = new MonoThreadContextExecutor();
+
+    // Start executor
+    this.executor.start();
   }
 }

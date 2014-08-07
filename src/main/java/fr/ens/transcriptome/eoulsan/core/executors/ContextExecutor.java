@@ -88,6 +88,12 @@ public interface ContextExecutor {
   int getContextDoneCount(WorkflowStep step);
 
   /**
+   * Wait the end of the contexts.
+   * @param step a workflow step
+   */
+  void waitEndOfContexts(WorkflowStep step);
+
+  /**
    * Get the count of submitted contexts for the wokflow.
    * @return the count of submitted contexts
    */
@@ -124,10 +130,5 @@ public interface ContextExecutor {
    * Resume the executor.
    */
   void resume();
-
-  /**
-   * Wait the end of the contexts.
-   */
-  void waitEndOfContexts();
 
 }

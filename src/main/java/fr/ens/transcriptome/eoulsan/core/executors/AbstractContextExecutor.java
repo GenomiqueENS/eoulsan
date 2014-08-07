@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextResult;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
@@ -59,14 +59,14 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   private Multimap<WorkflowStep, Integer> doneContexts = HashMultimap.create();
   private Map<Integer, WorkflowStep> contexts = Maps.newHashMap();
 
-  // private int submitedContextCount;
-  // private int runningContextCount;
-  // private int doneContextCount;
-
   private final Map<WorkflowStep, WorkflowStepStatus> status = Maps
       .newHashMap();
   private final Map<WorkflowStep, WorkflowStepResult> results = Maps
       .newHashMap();
+
+  boolean isStarted;
+  boolean isStopped;
+  boolean isPaused;
 
   //
   // Protected methods
@@ -103,6 +103,9 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
 
   private void addRunningContext(final int contextId) {
 
+    // Check execution state
+    checkExecutionState();
+
     // Test if the contextId has been submitted
     checkState(this.contexts.containsKey(contextId), "The context ("
         + contextId + ") has never been submitted");
@@ -129,6 +132,9 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
 
   private void addDoneContext(final int contextId) {
 
+    // Check execution state
+    checkExecutionState();
+
     // Test if the contextId has been submitted
     checkState(this.contexts.containsKey(contextId), "The context ("
         + contextId + ") has never been submitted");
@@ -152,6 +158,9 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
 
     checkNotNull(context, "context argument is null");
 
+    // Check execution state
+    checkExecutionState();
+
     // Get the step of the context
     final WorkflowStep step = getStep(context.getId());
 
@@ -165,19 +174,11 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     // Run the step context
     contextRunner.run();
 
-    // Get the context result
-    final WorkflowStepContextResult contextResult = contextRunner.getResult();
-
     // Add the context result to the step result
-    addResult(step, contextResult);
+    addResult(step, contextRunner.getResult());
 
     // Update counters
     addDoneContext(context);
-
-    // If context result is not a success do not process other contexts
-    if (!contextResult.isSuccess()) {
-      stop();
-    }
   }
 
   //
@@ -197,6 +198,9 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
 
   @Override
   public void submit(final WorkflowStep step, final WorkflowStepContext context) {
+
+    // Check execution state
+    checkExecutionState();
 
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(context, "context argument cannot be null");
@@ -246,7 +250,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getContextRunningCount(WorkflowStep step) {
+  public int getContextRunningCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -259,7 +263,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getContextDoneCount(WorkflowStep step) {
+  public int getContextDoneCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -290,10 +294,13 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public void waitEndOfContexts() {
+  public void waitEndOfContexts(final WorkflowStep step) {
 
-    while (this.runningContexts.size() > 0
-        || this.submittedContexts.size() > this.doneContexts.size()) {
+    // Check execution state
+    checkExecutionState();
+
+    while (!isStopped()
+        && (getContextRunningCount(step) > 0 || getContextSubmitedCount(step) > getContextDoneCount(step))) {
 
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);
@@ -301,14 +308,72 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
         EoulsanLogger.getLogger().severe(e.getMessage());
       }
     }
-
-    // Stop the executor
-    stop();
   }
 
   @Override
   public void start() {
-    // Do nothing
+
+    // Check execution state
+    checkState(!this.isStopped, "The executor is stopped");
+
+    synchronized (this) {
+      this.isStarted = true;
+    }
+  }
+
+  protected boolean isStarted() {
+    return this.isStarted;
+  }
+
+  @Override
+  public void stop() {
+
+    // Check execution state
+    checkExecutionState();
+
+    synchronized (this) {
+      this.isStopped = true;
+    }
+  }
+
+  protected boolean isStopped() {
+    return this.isStopped;
+  }
+
+  @Override
+  public void pause() {
+
+    // Check execution state
+    checkExecutionState();
+
+    checkState(!this.isPaused, "The execution is already paused");
+
+    synchronized (this) {
+      this.isPaused = true;
+    }
+  }
+
+  @Override
+  public void resume() {
+
+    // Check execution state
+    checkExecutionState();
+
+    checkState(this.isPaused, "The execution is not paused");
+
+    synchronized (this) {
+      this.isPaused = false;
+    }
+  }
+
+  protected boolean isPaused() {
+    return this.isPaused;
+  }
+
+  private void checkExecutionState() {
+
+    checkState(this.isStarted, "The executor is not started");
+    checkState(!this.isStopped, "The executor is stopped");
   }
 
 }

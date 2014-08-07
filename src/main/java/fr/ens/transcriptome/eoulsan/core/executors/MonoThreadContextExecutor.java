@@ -40,11 +40,8 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
 public class MonoThreadContextExecutor extends AbstractContextExecutor
     implements Runnable {
 
-  private static final int SLEEP_TIME_IN_MS = 500;
+  private static final int SLEEP_TIME_IN_MS = 100;
   private Queue<WorkflowStepContext> queue = Queues.newLinkedBlockingQueue();
-
-  private boolean stop;
-  private boolean isPaused;
 
   //
   // ContextExcutor methods
@@ -61,29 +58,8 @@ public class MonoThreadContextExecutor extends AbstractContextExecutor
   @Override
   public void start() {
 
+    super.start();
     new Thread(this).start();
-  }
-
-  @Override
-  public void stop() {
-
-    this.stop = true;
-  }
-
-  @Override
-  public void pause() {
-
-    synchronized (this) {
-      this.isPaused = true;
-    }
-  }
-
-  @Override
-  public void resume() {
-
-    synchronized (this) {
-      this.isPaused = false;
-    }
   }
 
   //
@@ -93,10 +69,10 @@ public class MonoThreadContextExecutor extends AbstractContextExecutor
   @Override
   public void run() {
 
-    while (!this.stop) {
+    while (!this.isStopped()) {
 
       // Do nothing if the queue is empty or the executor paused
-      if (!this.isPaused && !this.queue.isEmpty()) {
+      if (!this.isPaused() && !this.queue.isEmpty()) {
         execute(this.queue.remove());
       }
 
