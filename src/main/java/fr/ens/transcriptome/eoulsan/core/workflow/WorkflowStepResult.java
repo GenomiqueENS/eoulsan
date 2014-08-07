@@ -182,7 +182,7 @@ public class WorkflowStepResult {
     this.immutable = true;
   }
 
-  void addResult(final WorkflowStepContextResult result) {
+  public void addResult(final WorkflowStepContextResult result) {
 
     checkState();
 
@@ -417,7 +417,7 @@ public class WorkflowStepResult {
   WorkflowStepResult() {
   }
 
-  WorkflowStepResult(final AbstractWorkflowStep step) {
+  public WorkflowStepResult(final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(step, "step is null");
 

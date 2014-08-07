@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-class WorkflowStepContextExecutor {
+public class WorkflowStepContextExecutor {
 
   private final WorkflowStepContext context;
   private final Step step;
@@ -61,7 +61,7 @@ class WorkflowStepContextExecutor {
   // Getter
   //
 
-  WorkflowStepContextResult getResult() {
+  public WorkflowStepContextResult getResult() {
     return (WorkflowStepContextResult) this.result;
   }
 
@@ -69,7 +69,7 @@ class WorkflowStepContextExecutor {
   // Execute methods
   //
 
-  WorkflowStepContextResult execute() {
+  public WorkflowStepContextResult execute() {
 
     // check if input files exists
     // checkExistingInputFiles();
@@ -327,7 +327,7 @@ class WorkflowStepContextExecutor {
    * Constructor.
    * @param stepContext stepContext to execute
    */
-  WorkflowStepContextExecutor(final WorkflowStepContext stepContext,
+  public WorkflowStepContextExecutor(final WorkflowStepContext stepContext,
       final WorkflowStepStatus stepStatus) {
 
     Preconditions.checkNotNull(stepContext, "stepContext cannot be null");

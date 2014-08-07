@@ -67,7 +67,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
   // Getters
   //
 
-  int getId() {
+  public int getId() {
     return this.id;
   }
 
