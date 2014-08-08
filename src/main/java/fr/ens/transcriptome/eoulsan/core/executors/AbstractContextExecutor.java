@@ -64,9 +64,9 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   private final Map<WorkflowStep, WorkflowStepResult> results = Maps
       .newHashMap();
 
-  boolean isStarted;
-  boolean isStopped;
-  boolean isPaused;
+  private boolean isStarted;
+  private boolean isStopped;
+  private boolean isPaused;
 
   //
   // Protected methods
@@ -293,6 +293,12 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     return this.doneContexts.size();
   }
 
+  int getTotalWaitingCount() {
+
+    return getTotalContextSubmitedCount()
+        - getTotalContextRunningCount() - getTotalContextDoneCount();
+  }
+
   @Override
   public void waitEndOfContexts(final WorkflowStep step) {
 
@@ -340,8 +346,10 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     return this.isStopped;
   }
 
-  @Override
-  public void pause() {
+  /**
+   * Pause the executor.
+   */
+  void pause() {
 
     // Check execution state
     checkExecutionState();
@@ -353,8 +361,10 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     }
   }
 
-  @Override
-  public void resume() {
+  /**
+   * Resume the executor.
+   */
+  void resume() {
 
     // Check execution state
     checkExecutionState();
@@ -366,7 +376,11 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     }
   }
 
-  protected boolean isPaused() {
+  /**
+   * Test if the executor is paused.
+   * @return true if the executor is paused
+   */
+  boolean isPaused() {
     return this.isPaused;
   }
 

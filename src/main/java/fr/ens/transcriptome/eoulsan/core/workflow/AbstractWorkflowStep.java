@@ -28,6 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.NOT_NEEDED;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
@@ -43,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -72,6 +75,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final String id;
   private final StepType type;
   private final Set<Parameter> parameters;
+  private final ParallelizationMode parallelizationMode;
   private InputPorts inputPortsParameter = noInputPort();
   private OutputPorts outputPortsParameter = noOutputPort();
 
@@ -259,6 +263,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   WorkflowStepStateObserver getStepStateObserver() {
 
     return this.observer;
+  }
+
+  /**
+   * Get the parallelization mode of the step.
+   * @return a ParalellizationMode enum
+   */
+  public ParallelizationMode getParallelizationMode() {
+
+    return this.parallelizationMode;
   }
 
   //
@@ -511,6 +524,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.type = type;
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
+    this.parallelizationMode = NOT_NEEDED;
 
     switch (type) {
     case CHECKER_STEP:
@@ -594,6 +608,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
+    this.parallelizationMode =
+        generator.getParallelizationMode() == null ? STANDARD : generator
+            .getParallelizationMode();
 
     // Define working directory
     this.workingDir =
@@ -640,6 +657,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
     this.createLogFiles = step.isCreateLogFiles();
+    this.parallelizationMode =
+        step.getParallelizationMode() == null ? STANDARD : step
+            .getParallelizationMode();
 
     // Define working directory
     this.workingDir =
@@ -696,6 +716,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
     this.createLogFiles = step.isCreateLogFiles();
+    this.parallelizationMode =
+        step.getParallelizationMode() == null ? STANDARD : step
+            .getParallelizationMode();
 
     // Define working directory
     this.workingDir = workingDir;

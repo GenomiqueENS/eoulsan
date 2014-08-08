@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.executors.CombinedContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.executors.MonoThreadContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -757,7 +758,9 @@ public abstract class AbstractWorkflow implements Workflow {
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
     // Set the context executor
-    this.executor = new MonoThreadContextExecutor();
+    this.executor =
+        new CombinedContextExecutor(EoulsanRuntime.getSettings()
+            .getLocalThreadsNumber());
 
     // Start executor
     this.executor.start();

@@ -84,4 +84,9 @@ public abstract class AbstractStep implements Step {
     return true;
   }
 
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+    return ParallelizationMode.STANDARD;
+  }
+
 }

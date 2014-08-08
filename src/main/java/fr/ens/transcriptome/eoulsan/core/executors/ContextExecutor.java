@@ -121,14 +121,4 @@ public interface ContextExecutor {
    */
   void stop();
 
-  /**
-   * Pause the executor.
-   */
-  void pause();
-
-  /**
-   * Resume the executor.
-   */
-  void resume();
-
 }
