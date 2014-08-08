@@ -37,18 +37,18 @@ import com.google.common.collect.Multimap;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextResult;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextRunner;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This class define an abstract context executor.
+ * This class define an abstract task executor.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractContextExecutor implements ContextExecutor {
+public abstract class AbstractTaskExecutor implements TaskExecutor {
 
   private static final int SLEEP_TIME_IN_MS = 500;
 
@@ -73,12 +73,12 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   //
 
   private void addResult(final WorkflowStep step,
-      final WorkflowStepContextResult result) {
+      final TaskResult result) {
 
     this.results.get(step).addResult(result);
   }
 
-  protected WorkflowStep getStep(final WorkflowStepContext context) {
+  protected WorkflowStep getStep(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -94,7 +94,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     return this.contexts.get(contextId);
   }
 
-  private void addRunningContext(final WorkflowStepContext context) {
+  private void addRunningContext(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -123,7 +123,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     }
   }
 
-  private void addDoneContext(final WorkflowStepContext context) {
+  private void addDoneContext(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -154,7 +154,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     }
   }
 
-  protected void execute(final WorkflowStepContext context) {
+  protected void execute(final TaskContext context) {
 
     checkNotNull(context, "context argument is null");
 
@@ -165,8 +165,8 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
     final WorkflowStep step = getStep(context.getId());
 
     // Create context runner
-    final WorkflowStepContextRunner contextRunner =
-        new WorkflowStepContextRunner(context, getStatus(step));
+    final TaskRunner contextRunner =
+        new TaskRunner(context, getStatus(step));
 
     // Update counters
     addRunningContext(context);
@@ -182,22 +182,22 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   //
-  // ContextExecutor interface
+  // TaskExecutor interface
   //
 
   @Override
   public void submit(final WorkflowStep step,
-      final Set<WorkflowStepContext> contexts) {
+      final Set<TaskContext> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
-    for (WorkflowStepContext context : contexts) {
+    for (TaskContext context : contexts) {
       submit(step, context);
     }
   }
 
   @Override
-  public void submit(final WorkflowStep step, final WorkflowStepContext context) {
+  public void submit(final WorkflowStep step, final TaskContext context) {
 
     // Check execution state
     checkExecutionState();
@@ -237,7 +237,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getContextSubmitedCount(final WorkflowStep step) {
+  public int getTaskSubmitedCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -250,7 +250,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getContextRunningCount(final WorkflowStep step) {
+  public int getTaskRunningCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -263,7 +263,7 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getContextDoneCount(final WorkflowStep step) {
+  public int getTaskDoneCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -276,37 +276,37 @@ public abstract class AbstractContextExecutor implements ContextExecutor {
   }
 
   @Override
-  public int getTotalContextSubmitedCount() {
+  public int getTotalTaskSubmitedCount() {
 
     return this.submittedContexts.size();
   }
 
   @Override
-  public int getTotalContextRunningCount() {
+  public int getTotalTaskRunningCount() {
 
     return this.runningContexts.size();
   }
 
   @Override
-  public int getTotalContextDoneCount() {
+  public int getTotalTaskDoneCount() {
 
     return this.doneContexts.size();
   }
 
   int getTotalWaitingCount() {
 
-    return getTotalContextSubmitedCount()
-        - getTotalContextRunningCount() - getTotalContextDoneCount();
+    return getTotalTaskSubmitedCount()
+        - getTotalTaskRunningCount() - getTotalTaskDoneCount();
   }
 
   @Override
-  public void waitEndOfContexts(final WorkflowStep step) {
+  public void waitEndOfTasks(final WorkflowStep step) {
 
     // Check execution state
     checkExecutionState();
 
     while (!isStopped()
-        && (getContextRunningCount(step) > 0 || getContextSubmitedCount(step) > getContextDoneCount(step))) {
+        && (getTaskRunningCount(step) > 0 || getTaskSubmitedCount(step) > getTaskDoneCount(step))) {
 
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);

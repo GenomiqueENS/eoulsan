@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collections;
 import java.util.Date;
@@ -41,21 +42,21 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This class define a step status.
+ * This class define a task status.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContextStatus implements StepStatus {
+public class TaskStatus implements StepStatus {
 
-  private final WorkflowStepContext context;
+  private final TaskContext context;
   private final WorkflowStepStatus status;
 
   private String message;
   private Map<String, Long> counters = Maps.newHashMap();
-  private String contextDescription;
+  private String taskDescription;
   private double progress;
 
-  private WorkflowStepContextResult result;
+  private TaskResult result;
 
   private Date startDate;
   private Date endDate;
@@ -80,7 +81,7 @@ public class WorkflowStepContextStatus implements StepStatus {
   @Override
   public String getDescription() {
 
-    return this.contextDescription;
+    return this.taskDescription;
   }
 
   @Override
@@ -104,7 +105,7 @@ public class WorkflowStepContextStatus implements StepStatus {
 
     checkNotNull(description, "the description argument cannot be null");
 
-    this.contextDescription = description;
+    this.taskDescription = description;
   }
 
   @Override
@@ -133,8 +134,8 @@ public class WorkflowStepContextStatus implements StepStatus {
   @Override
   public void setProgress(final double progress) {
 
-    // Check context status
-    checkState();
+    // Check result state
+    checkResultState();
 
     // Check progress value
     checkProgress(progress);
@@ -144,7 +145,7 @@ public class WorkflowStepContextStatus implements StepStatus {
 
     // If a status for the step exist, inform the step status
     if (this.status != null) {
-      this.status.setContextProgress(this.context.getId(),
+      this.status.setTaskProgress(this.context.getId(),
           context.getContextName(), progress);
     }
   }
@@ -181,17 +182,17 @@ public class WorkflowStepContextStatus implements StepStatus {
   @Override
   public StepResult createStepResult(final boolean success) {
 
-    // Check context status
-    checkState();
+    // Check result state
+    checkResultState();
 
     // Get the duration of the context execution
     final long duration = endOfStep();
 
     // Create the context result
     this.result =
-        new WorkflowStepContextResult(context, startDate, endDate, duration,
-            this.message, this.contextDescription == null
-                ? "" : this.contextDescription, this.counters, success);
+        new TaskResult(context, startDate, endDate, duration, this.message,
+            this.taskDescription == null ? "" : this.taskDescription,
+            this.counters, success);
 
     return this.result;
   }
@@ -200,16 +201,16 @@ public class WorkflowStepContextStatus implements StepStatus {
   public StepResult createStepResult(final Throwable exception,
       final String exceptionMessage) {
 
-    // Check context status
-    checkState();
+    // Check result state
+    checkResultState();
 
     // Get the duration of the context execution
     final long duration = endOfStep();
 
     // Create the context result
     this.result =
-        new WorkflowStepContextResult(context, startDate, endDate, duration,
-            exception, exceptionMessage);
+        new TaskResult(context, startDate, endDate, duration, exception,
+            exceptionMessage);
 
     return this.result;
   }
@@ -227,10 +228,9 @@ public class WorkflowStepContextStatus implements StepStatus {
   /**
    * Check the state of the result creation.
    */
-  private void checkState() {
+  private void checkResultState() {
 
-    Preconditions.checkState(this.result == null,
-        "Step result has been created");
+    checkState(this.result == null, "Step result has been created");
   }
 
   /**
@@ -281,15 +281,14 @@ public class WorkflowStepContextStatus implements StepStatus {
 
   /**
    * Constructor.
-   * @param context the context object
+   * @param taskContext the task context object
    * @param status the status object
    */
-  WorkflowStepContextStatus(final WorkflowStepContext context,
-      final WorkflowStepStatus status) {
+  TaskStatus(final TaskContext taskContext, final WorkflowStepStatus status) {
 
-    Preconditions.checkNotNull(context, "context cannot be null");
+    Preconditions.checkNotNull(taskContext, "context cannot be null");
 
-    this.context = context;
+    this.context = taskContext;
     this.status = status;
   }
 

@@ -55,11 +55,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
- * This class define a step context.
+ * This class define a task context.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContext implements StepContext, Serializable {
+public class TaskContext implements StepContext, Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 8288158811122533646L;
@@ -386,7 +386,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
   //
 
   /**
-   * Serialize the WorkflowStepContext object.
+   * Serialize the TaskContext object.
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -398,7 +398,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   /**
-   * Serialize the WorkflowStepContext object.
+   * Serialize the TaskContext object.
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -410,7 +410,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   /**
-   * Serialize the WorkflowStepContext object.
+   * Serialize the TaskContext object.
    * @param out output stream
    * @throws IOException if an error occurs while creating the file
    */
@@ -426,12 +426,12 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * Deserialize the TaskContext object. Warning: this method update the
    * values of the settings of the Eoulsan runtime.
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static WorkflowStepContext deserialize(final File file)
+  public static TaskContext deserialize(final File file)
       throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
@@ -440,12 +440,12 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * Deserialize the TaskContext object. Warning: this method update the
    * values of the settings of the Eoulsan runtime.
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static WorkflowStepContext deserialize(final DataFile file)
+  public static TaskContext deserialize(final DataFile file)
       throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
@@ -454,12 +454,12 @@ public class WorkflowStepContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * Deserialize the TaskContext object. Warning: this method update the
    * values of the settings of the Eoulsan runtime.
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static WorkflowStepContext deserialize(final InputStream in)
+  public static TaskContext deserialize(final InputStream in)
       throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
@@ -467,8 +467,8 @@ public class WorkflowStepContext implements StepContext, Serializable {
     try {
       final ObjectInputStream ois = new ObjectInputStream(in);
 
-      // Read WorkflowStepContext object
-      final WorkflowStepContext result = (WorkflowStepContext) ois.readObject();
+      // Read TaskContext object
+      final TaskContext result = (TaskContext) ois.readObject();
 
       // Read Settings object
       final Settings settings = (Settings) ois.readObject();
@@ -493,7 +493,7 @@ public class WorkflowStepContext implements StepContext, Serializable {
    * Constructor.
    * @param step step related to the context
    */
-  WorkflowStepContext(final WorkflowContext workflowContext,
+  TaskContext(final WorkflowContext workflowContext,
       final AbstractWorkflowStep step, Map<InputPort, Data> inputData,
       Map<OutputPort, AbstractData> outputData) {
 

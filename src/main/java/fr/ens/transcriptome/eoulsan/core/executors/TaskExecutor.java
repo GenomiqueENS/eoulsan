@@ -27,30 +27,30 @@ package fr.ens.transcriptome.eoulsan.core.executors;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This interface define a context executor.
+ * This interface define a task executor.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface ContextExecutor {
+public interface TaskExecutor {
 
   /**
    * Submit contexts to execute.
    * @param step step related to the contexts
    * @param contexts contexts to execute
    */
-  void submit(WorkflowStep step, Set<WorkflowStepContext> contexts);
+  void submit(WorkflowStep step, Set<TaskContext> contexts);
 
   /**
    * Submit a context to execute.
    * @param step step related to the context
    * @param context context to execute
    */
-  void submit(WorkflowStep step, WorkflowStepContext context);
+  void submit(WorkflowStep step, TaskContext context);
 
   /**
    * Get the status related to a step.
@@ -67,49 +67,49 @@ public interface ContextExecutor {
   WorkflowStepResult getResult(WorkflowStep step);
 
   /**
-   * Get the count of submitted contexts of a step.
+   * Get the count of submitted task contexts of a step.
    * @param step a workflow step
-   * @return the count of submitted contexts
+   * @return the count of submitted task contexts
    */
-  int getContextSubmitedCount(WorkflowStep step);
+  int getTaskSubmitedCount(WorkflowStep step);
 
   /**
-   * Get the count of running contexts of a step.
+   * Get the count of running task contexts of a step.
    * @param step a workflow step
-   * @return the count of running contexts
+   * @return the count of running task contexts
    */
-  int getContextRunningCount(WorkflowStep step);
+  int getTaskRunningCount(WorkflowStep step);
 
   /**
-   * Get the count of done contexts of a step.
+   * Get the count of done task contexts of a step.
    * @param step a workflow step
-   * @return the count of done contexts
+   * @return the count of done task contexts
    */
-  int getContextDoneCount(WorkflowStep step);
+  int getTaskDoneCount(WorkflowStep step);
 
   /**
-   * Wait the end of the contexts.
+   * Wait the end of the task contexts.
    * @param step a workflow step
    */
-  void waitEndOfContexts(WorkflowStep step);
+  void waitEndOfTasks(WorkflowStep step);
 
   /**
-   * Get the count of submitted contexts for the wokflow.
-   * @return the count of submitted contexts
+   * Get the count of submitted task contexts for the workflow.
+   * @return the count of submitted task contexts
    */
-  int getTotalContextSubmitedCount();
+  int getTotalTaskSubmitedCount();
 
   /**
-   * Get the count of running contexts for the workflow.
-   * @return the count of running contexts
+   * Get the count of running task contexts for the workflow.
+   * @return the count of running task contexts
    */
-  int getTotalContextRunningCount();
+  int getTotalTaskRunningCount();
 
   /**
-   * Get the count of done contexts for the workflow.
-   * @return the count of done contexts
+   * Get the count of done task contexts for the workflow.
+   * @return the count of done task contexts
    */
-  int getTotalContextDoneCount();
+  int getTotalTaskDoneCount();
 
   /**
    * Start the executor.

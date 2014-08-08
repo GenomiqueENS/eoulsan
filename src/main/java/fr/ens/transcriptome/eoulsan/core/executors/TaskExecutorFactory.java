@@ -27,15 +27,15 @@ package fr.ens.transcriptome.eoulsan.core.executors;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
 /**
- * This class define a factory for ContextExecutor that can create only one
- * instance. This class avoid the serialization of the context executor classes
- * when serialize WorkflowStepContext object.
+ * This class define a factory for TaskExecutor that can create only one
+ * instance. This class avoid the serialization of the task executor classes
+ * when serialize TaskContext object.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ContextExecutorFactory {
+public class TaskExecutorFactory {
 
-  private static ContextExecutor executor;
+  private static TaskExecutor executor;
 
   //
   // Static method
@@ -43,17 +43,17 @@ public class ContextExecutorFactory {
 
   /**
    * Get the executor
-   * @return the ContextExecutor object
+   * @return the TaskExecutor object
    */
-  public static ContextExecutor getExecutor() {
+  public static TaskExecutor getExecutor() {
 
     if (executor == null) {
 
-      // Get the thread number to use by the context executor
+      // Get the thread number to use by the task executor
       final int threadNumber =
           EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
-      executor = new CombinedContextExecutor(threadNumber);
+      executor = new CombinedTaskExecutor(threadNumber);
     }
 
     return executor;
@@ -66,7 +66,7 @@ public class ContextExecutorFactory {
   /**
    * Private constructor.
    */
-  private ContextExecutorFactory() {
+  private TaskExecutorFactory() {
   }
 
 }

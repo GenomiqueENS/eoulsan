@@ -48,15 +48,15 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * This class allow to run a step context.
+ * This class allow to run a task context.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContextRunner {
+public class TaskRunner {
 
-  private final WorkflowStepContext context;
+  private final TaskContext context;
   private final Step step;
-  private final WorkflowStepContextStatus status;
+  private final TaskStatus status;
   private StepResult result;
 
   //
@@ -65,13 +65,13 @@ public class WorkflowStepContextRunner {
 
   /**
    * Get the context result.
-   * @return a WorkflowStepContextResult object
+   * @return a TaskResult object
    */
-  public WorkflowStepContextResult getResult() {
+  public TaskResult getResult() {
 
     checkState(this.result != null, "The context has not been run");
 
-    return (WorkflowStepContextResult) this.result;
+    return (TaskResult) this.result;
   }
 
   //
@@ -79,17 +79,17 @@ public class WorkflowStepContextRunner {
   //
 
   /**
-   * Run the context.
-   * @return a context result object
+   * Run the task context.
+   * @return a task result object
    */
-  public WorkflowStepContextResult run() {
+  public TaskResult run() {
 
     // check if input files exists
     // checkExistingInputFiles();
 
     // Thread group name
     final String threadGroupName =
-        "StepContextExecutor_"
+        "TaskRunner_"
             + this.context.getStep().getId() + "_#" + this.context.getId();
 
     // Define thread group
@@ -165,7 +165,7 @@ public class WorkflowStepContextRunner {
     // Send the tokens
     sendTokens();
 
-    return (WorkflowStepContextResult) this.result;
+    return (TaskResult) this.result;
   }
 
   /**
@@ -175,9 +175,9 @@ public class WorkflowStepContextRunner {
 
     if (this.result == null)
       throw new IllegalStateException(
-          "Cannot send tokens of a null result step");
+          "Cannot send tokens of a null result task");
 
-    // Do not send data if the step has not been successful
+    // Do not send data if the task has not been successful
     if (!this.result.isSuccess()) {
       return;
     }
@@ -360,30 +360,30 @@ public class WorkflowStepContextRunner {
 
   /**
    * Constructor.
-   * @param stepContext stepContext to execute
+   * @param taskContext task context to execute
    */
-  public WorkflowStepContextRunner(final WorkflowStepContext stepContext) {
+  public TaskRunner(final TaskContext taskContext) {
 
-    this(stepContext, null);
+    this(taskContext, null);
   }
 
   /**
    * Constructor.
-   * @param stepContext stepContext to execute
+   * @param taskContext task context to execute
    * @param stepStatus step status
    */
-  public WorkflowStepContextRunner(final WorkflowStepContext stepContext,
+  public TaskRunner(final TaskContext taskContext,
       final WorkflowStepStatus stepStatus) {
 
-    Preconditions.checkNotNull(stepContext, "stepContext cannot be null");
+    Preconditions.checkNotNull(taskContext, "taskContext cannot be null");
 
-    this.context = stepContext;
+    this.context = taskContext;
     this.step =
-        StepInstances.getInstance().getStep(stepContext.getCurrentStep());
+        StepInstances.getInstance().getStep(taskContext.getCurrentStep());
 
-    this.status = new WorkflowStepContextStatus(stepContext, stepStatus);
+    this.status = new TaskStatus(taskContext, stepStatus);
 
-    // Set the stepContext name for the status
+    // Set the task context name for the status
     this.context.setContextName(createDefaultContextName());
   }
 

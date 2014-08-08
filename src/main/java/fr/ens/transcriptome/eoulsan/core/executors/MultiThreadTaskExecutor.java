@@ -34,28 +34,27 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 
 /**
  * This class define a muti thread executor.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MultiThreadContextExecutor extends AbstractContextExecutor {
+public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
 
-  private static final int CHECKING_DELAY_MS = 5000;
   private static final int WAIT_SHUTDOWN_MINUTES = 60;
 
   private final PausableThreadPoolExecutor executor;
   private final List<Future<ContextThread>> threads = Lists.newArrayList();
 
   /**
-   * Wrapper class around a call to AbstractContext.execute() method.
+   * Wrapper class around a call to AbstractTaskExecutor.execute() method.
    * @author Laurent Jourdren
    */
   private final class ContextThread implements Runnable {
 
-    private final WorkflowStepContext context;
+    private final TaskContext context;
 
     @Override
     public void run() {
@@ -71,13 +70,13 @@ public class MultiThreadContextExecutor extends AbstractContextExecutor {
      * Constructor.
      * @param context context to execute
      */
-    ContextThread(final WorkflowStepContext context) {
+    ContextThread(final TaskContext context) {
       this.context = context;
     }
   }
 
   @Override
-  public void submit(final WorkflowStep step, final WorkflowStepContext context) {
+  public void submit(final WorkflowStep step, final TaskContext context) {
 
     // Call to the super method
     super.submit(step, context);
@@ -124,50 +123,15 @@ public class MultiThreadContextExecutor extends AbstractContextExecutor {
     this.executor.resume();
   }
 
-  // @Override
-  // public void waitEndOfContexts() {
-  //
-  // // Do nothing if threads are not used
-  // if (this.executor == null) {
-  // return;
-  // }
-  //
-  // int contextNotProcessed;
-  //
-  // // Wait until all contexts are processed
-  // do {
-  //
-  // // Wait
-  // try {
-  // Thread.sleep(CHECKING_DELAY_MS);
-  // } catch (InterruptedException e) {
-  // getLogger().warning("InterruptedException: " + e.getMessage());
-  // }
-  //
-  // // Count contexts not processed
-  // contextNotProcessed = 0;
-  // for (Future<ContextThread> fst : this.threads) {
-  // if (!fst.isDone()) {
-  // contextNotProcessed++;
-  // }
-  // }
-  //
-  // } while (contextNotProcessed > 0);
-  //
-  // // Close the thread pool
-  // executor.shutdown();
-  //
-  // }
-
   //
   // Constructor
   //
 
   /**
    * Constructor.
-   * @param threadNumber number of thread to use by the context executor
+   * @param threadNumber number of thread to use by the task executor
    */
-  public MultiThreadContextExecutor(final int threadNumber) {
+  public MultiThreadTaskExecutor(final int threadNumber) {
 
     checkArgument(threadNumber > 0, "threadNumber must be > 0");
 

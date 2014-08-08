@@ -34,43 +34,42 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This class defined a combined context executor that use several context
- * executors according to the paralellization mode of the step.
+ * This class defined a combined task executor that use several context
+ * executors according to the parallelization mode of the step.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class CombinedContextExecutor implements ContextExecutor, Runnable {
+public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 200;
 
-  private final AbstractContextExecutor noContextExecutor;
-  private final AbstractContextExecutor stdContextExecutor;
-  private final AbstractContextExecutor ownContextExecutor;
+  private final AbstractTaskExecutor noTaskExecutor;
+  private final AbstractTaskExecutor stdTaskExecutor;
+  private final AbstractTaskExecutor ownTaskExecutor;
 
   boolean isStarted;
   boolean isStopped;
 
   @Override
-  public void submit(final WorkflowStep step,
-      final Set<WorkflowStepContext> contexts) {
+  public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
     // Check execution state
     checkExecutionState();
 
-    for (WorkflowStepContext context : contexts) {
+    for (TaskContext context : contexts) {
       submit(step, context);
     }
   }
 
   @Override
-  public void submit(final WorkflowStep step, final WorkflowStepContext context) {
+  public void submit(final WorkflowStep step, final TaskContext context) {
 
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(context, "context argument cannot be null");
@@ -78,7 +77,7 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
     // Check execution state
     checkExecutionState();
 
-    getContextExecutor(step).submit(step, context);
+    getTaskExecutor(step).submit(step, context);
   }
 
   @Override
@@ -86,7 +85,7 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getContextExecutor(step).getStatus(step);
+    return getTaskExecutor(step).getStatus(step);
   }
 
   @Override
@@ -94,66 +93,66 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getContextExecutor(step).getResult(step);
+    return getTaskExecutor(step).getResult(step);
   }
 
   @Override
-  public int getContextSubmitedCount(final WorkflowStep step) {
+  public int getTaskSubmitedCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getContextExecutor(step).getContextSubmitedCount(step);
+    return getTaskExecutor(step).getTaskSubmitedCount(step);
   }
 
   @Override
-  public int getContextRunningCount(final WorkflowStep step) {
+  public int getTaskRunningCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getContextExecutor(step).getContextRunningCount(step);
+    return getTaskExecutor(step).getTaskRunningCount(step);
   }
 
   @Override
-  public int getContextDoneCount(final WorkflowStep step) {
+  public int getTaskDoneCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getContextExecutor(step).getContextDoneCount(step);
+    return getTaskExecutor(step).getTaskDoneCount(step);
   }
 
   @Override
-  public void waitEndOfContexts(final WorkflowStep step) {
+  public void waitEndOfTasks(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
     // Check execution state
     checkExecutionState();
 
-    getContextExecutor(step).waitEndOfContexts(step);
+    getTaskExecutor(step).waitEndOfTasks(step);
   }
 
   @Override
-  public int getTotalContextSubmitedCount() {
+  public int getTotalTaskSubmitedCount() {
 
-    return this.noContextExecutor.getTotalContextSubmitedCount()
-        + this.stdContextExecutor.getTotalContextSubmitedCount()
-        + this.ownContextExecutor.getTotalContextSubmitedCount();
+    return this.noTaskExecutor.getTotalTaskSubmitedCount()
+        + this.stdTaskExecutor.getTotalTaskSubmitedCount()
+        + this.ownTaskExecutor.getTotalTaskSubmitedCount();
   }
 
   @Override
-  public int getTotalContextRunningCount() {
+  public int getTotalTaskRunningCount() {
 
-    return this.noContextExecutor.getTotalContextRunningCount()
-        + this.stdContextExecutor.getTotalContextRunningCount()
-        + this.ownContextExecutor.getTotalContextRunningCount();
+    return this.noTaskExecutor.getTotalTaskRunningCount()
+        + this.stdTaskExecutor.getTotalTaskRunningCount()
+        + this.ownTaskExecutor.getTotalTaskRunningCount();
   }
 
   @Override
-  public int getTotalContextDoneCount() {
+  public int getTotalTaskDoneCount() {
 
-    return this.noContextExecutor.getTotalContextDoneCount()
-        + this.stdContextExecutor.getTotalContextDoneCount()
-        + this.ownContextExecutor.getTotalContextDoneCount();
+    return this.noTaskExecutor.getTotalTaskDoneCount()
+        + this.stdTaskExecutor.getTotalTaskDoneCount()
+        + this.ownTaskExecutor.getTotalTaskDoneCount();
   }
 
   @Override
@@ -166,15 +165,15 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
       this.isStarted = true;
     }
 
-    this.noContextExecutor.start();
-    this.stdContextExecutor.start();
-    this.ownContextExecutor.start();
+    this.noTaskExecutor.start();
+    this.stdTaskExecutor.start();
+    this.ownTaskExecutor.start();
 
-    // Pause ownContextExecutor
-    this.ownContextExecutor.pause();
+    // Pause ownTaskExecutor
+    this.ownTaskExecutor.pause();
 
     // Start the thread
-    new Thread(this, "ContextExecutor_combined").start();
+    new Thread(this, "TaskExecutor_combined").start();
   }
 
   @Override
@@ -187,9 +186,9 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
       this.isStopped = true;
     }
 
-    this.noContextExecutor.stop();
-    this.stdContextExecutor.stop();
-    this.ownContextExecutor.stop();
+    this.noTaskExecutor.stop();
+    this.stdTaskExecutor.stop();
+    this.ownTaskExecutor.stop();
   }
 
   //
@@ -219,22 +218,22 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
   }
 
   /**
-   * Get the context executor of a step.
+   * Get the task executor of a step.
    * @param step the step
-   * @return the context executor that the step must use
+   * @return the task executor that the step must use
    */
-  private ContextExecutor getContextExecutor(final WorkflowStep step) {
+  private TaskExecutor getTaskExecutor(final WorkflowStep step) {
 
     switch (getParallelizationMode(step)) {
 
     case NOT_NEEDED:
-      return this.noContextExecutor;
+      return this.noTaskExecutor;
 
     case STANDARD:
-      return this.stdContextExecutor;
+      return this.stdTaskExecutor;
 
     case OWN_PARALELIZATION:
-      return this.ownContextExecutor;
+      return this.ownTaskExecutor;
 
     default:
       throw new IllegalStateException("Unknown Parallelization mode");
@@ -250,27 +249,27 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
 
     while (!this.isStopped) {
 
-      // Is there some task to do by ownContextExecutor ?
-      if (this.ownContextExecutor.isPaused()
-          && this.ownContextExecutor.getTotalWaitingCount() > 0) {
+      // Is there some task to do by ownTaskExecutor ?
+      if (this.ownTaskExecutor.isPaused()
+          && this.ownTaskExecutor.getTotalWaitingCount() > 0) {
 
         // If std executor running, pause it
-        if (!this.stdContextExecutor.isPaused()) {
-          this.stdContextExecutor.pause();
+        if (!this.stdTaskExecutor.isPaused()) {
+          this.stdTaskExecutor.pause();
         }
 
         // When std executor has finishing current running task resume own
         // executor
-        if (this.stdContextExecutor.getTotalContextRunningCount() == 0) {
-          this.ownContextExecutor.resume();
+        if (this.stdTaskExecutor.getTotalTaskRunningCount() == 0) {
+          this.ownTaskExecutor.resume();
         }
       }
 
-      if (!this.ownContextExecutor.isPaused()
-          && this.ownContextExecutor.getTotalWaitingCount() == 0) {
+      if (!this.ownTaskExecutor.isPaused()
+          && this.ownTaskExecutor.getTotalWaitingCount() == 0) {
 
-        this.ownContextExecutor.pause();
-        this.stdContextExecutor.resume();
+        this.ownTaskExecutor.pause();
+        this.stdTaskExecutor.resume();
       }
 
       // Wait
@@ -288,16 +287,16 @@ public class CombinedContextExecutor implements ContextExecutor, Runnable {
 
   /**
    * Constructor.
-   * @param threadNumber number of thread to use by the context executor
+   * @param threadNumber number of thread to use by the task executor
    */
-  public CombinedContextExecutor(final int threadNumber) {
+  public CombinedTaskExecutor(final int threadNumber) {
 
     checkArgument(threadNumber > 0, "threadNumber must be > 0");
 
     // Create executor service
-    this.stdContextExecutor = new MultiThreadContextExecutor(threadNumber);
-    this.noContextExecutor = new MonoThreadContextExecutor();
-    this.ownContextExecutor = new MonoThreadContextExecutor();
+    this.stdTaskExecutor = new MultiThreadTaskExecutor(threadNumber);
+    this.noTaskExecutor = new MonoThreadTaskExecutor();
+    this.ownTaskExecutor = new MonoThreadTaskExecutor();
   }
 
 }

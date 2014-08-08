@@ -54,8 +54,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
-import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutorFactory;
+import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutor;
+import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -73,7 +73,7 @@ public class TokenManager implements Runnable {
   private static final int CHECKING_DELAY_MS = 1000;
 
   private final AbstractWorkflowStep step;
-  private final ContextExecutor executor;
+  private final TaskExecutor executor;
   private final WorkflowInputPorts inputPorts;
   private final WorkflowOutputPorts outputPorts;
 
@@ -272,7 +272,7 @@ public class TokenManager implements Runnable {
   }
 
   //
-  // WorkflowStepContext creation methods
+  // TaskContext creation methods
   //
 
   /**
@@ -346,10 +346,9 @@ public class TokenManager implements Runnable {
    * @param workflowContext the Workflow context
    * @return a set with the context
    */
-  private Set<WorkflowStepContext> createContexts(
-      final WorkflowContext workflowContext) {
+  private Set<TaskContext> createContexts(final WorkflowContext workflowContext) {
 
-    final Set<WorkflowStepContext> result = Sets.newHashSet();
+    final Set<TaskContext> result = Sets.newHashSet();
 
     final Set<ImmutableMap<InputPort, Data>> cartesianProductToProcess;
 
@@ -367,7 +366,7 @@ public class TokenManager implements Runnable {
       // Create the Data object for the output port
       Map<OutputPort, AbstractData> outputData = createContextOutputData();
       // Create the context object
-      result.add(new WorkflowStepContext(workflowContext, this.step, inputData,
+      result.add(new TaskContext(workflowContext, this.step, inputData,
           outputData));
     }
 
@@ -379,7 +378,7 @@ public class TokenManager implements Runnable {
    * @param workflowContext the workflow context
    * @return a singleton set with the context
    */
-  private Set<WorkflowStepContext> createContextWhenNoInputPortExist(
+  private Set<TaskContext> createContextWhenNoInputPortExist(
       final WorkflowContext workflowContext) {
 
     // Empty input Data for the context
@@ -388,8 +387,8 @@ public class TokenManager implements Runnable {
     // Create the Data object for the output port
     Map<OutputPort, AbstractData> outputData = createContextOutputData();
 
-    return Collections.singleton(new WorkflowStepContext(workflowContext,
-        this.step, inputData, outputData));
+    return Collections.singleton(new TaskContext(workflowContext, this.step,
+        inputData, outputData));
   }
 
   //
@@ -475,7 +474,7 @@ public class TokenManager implements Runnable {
       }
 
       // Create new contexts to submit
-      final Set<WorkflowStepContext> contexts;
+      final Set<TaskContext> contexts;
       synchronized (this) {
 
         // Get the Workflow context
@@ -500,7 +499,7 @@ public class TokenManager implements Runnable {
       if (isNoTokenToReceive()) {
 
         // Wait end of all context
-        this.executor.waitEndOfContexts(this.step);
+        this.executor.waitEndOfTasks(this.step);
 
         // Get the result
         final WorkflowStepResult result = this.executor.getResult(this.step);
@@ -547,7 +546,7 @@ public class TokenManager implements Runnable {
     this.outputPorts = step.getWorkflowOutputPorts();
 
     // Get the executor
-    this.executor = ContextExecutorFactory.getExecutor();
+    this.executor = TaskExecutorFactory.getExecutor();
   }
 
 }

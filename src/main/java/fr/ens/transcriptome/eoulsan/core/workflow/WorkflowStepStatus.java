@@ -42,8 +42,8 @@ public class WorkflowStepStatus {
 
   private final AbstractWorkflowStep step;
 
-  private final Map<Integer, Double> contextProgress = Maps.newHashMap();
-  private final Map<Integer, String> contextNames = Maps.newHashMap();
+  private final Map<Integer, Double> taskProgress = Maps.newHashMap();
+  private final Map<Integer, String> taskNames = Maps.newHashMap();
   private double progress = Double.NaN;
   private String note;
 
@@ -72,7 +72,7 @@ public class WorkflowStepStatus {
     if (Double.isNaN(this.progress)) {
 
       double sum = 0.0;
-      for (Double p : this.contextProgress.values())
+      for (Double p : this.taskProgress.values())
         sum += p;
 
       return sum
@@ -84,24 +84,24 @@ public class WorkflowStepStatus {
   }
 
   /**
-   * Get the name of a context of the step.
-   * @param contextId the id of the context
+   * Get the name of a task.
+   * @param contextId the id of the task
    * @return a String with the name of the context or null if the context not
    *         exists
    */
-  public String getContextName(final int contextId) {
+  public String getTaskName(final int contextId) {
 
-    return this.contextNames.get(contextId);
+    return this.taskNames.get(contextId);
   }
 
   /**
-   * Get the progress of a context of the step.
-   * @param contextId the id of the context
+   * Get the progress of a task.
+   * @param contextId the id of the task
    * @return a double between O and 1
    */
-  public double getContextProgress(final int contextId) {
+  public double getTaskProgress(final int contextId) {
 
-    return this.contextProgress.get(contextId);
+    return this.taskProgress.get(contextId);
   }
 
   //
@@ -153,48 +153,48 @@ public class WorkflowStepStatus {
   }
 
   /**
-   * Set the progress of a context of the step.
+   * Set the progress of a task.
    * @param contextId id of the context
    * @param contextName name of the context
    * @param min minimal value
    * @param max maximal value
    * @param value value to set
    */
-  public void setContextProgress(final int contextId, final String contextName,
+  public void setTaskProgress(final int contextId, final String contextName,
       final int min, final int max, final int value) {
 
     checkProgress(min, max, value);
 
     if (min == max)
-      setContextProgress(contextId, contextName, 1.0);
+      setTaskProgress(contextId, contextName, 1.0);
     else
-      setContextProgress(contextId, contextName, ((double) (value - min))
+      setTaskProgress(contextId, contextName, ((double) (value - min))
           / (max - min));
   }
 
   /**
-   * Set the progress of a context of the step.
+   * Set the progress of a task.
    * @param contextId id of the context
    * @param contextName name of the context
    * @param value value to set
    */
-  public void setContextProgress(final int contextId, final String contextName,
+  public void setTaskProgress(final int contextId, final String contextName,
       final double progress) {
 
     checkContext(contextId, contextName);
     checkProgress(progress);
 
     // Inform observers that status has changed
-    progressContextStatusUpdated(contextId, contextName, progress);
+    progressTaskStatusUpdated(contextId, contextName, progress);
 
     // Save progress contextName for step progress computation
     synchronized (this) {
-      this.contextProgress.put(contextId, progress);
+      this.taskProgress.put(contextId, progress);
 
       // Update context name if needed
-      if (!this.contextNames.containsKey(contextId)
-          || !this.contextNames.get(contextId).equals(contextName)) {
-        this.contextNames.put(contextId, contextName);
+      if (!this.taskNames.containsKey(contextId)
+          || !this.taskNames.get(contextId).equals(contextName)) {
+        this.taskNames.put(contextId, contextName);
       }
     }
 
@@ -212,7 +212,7 @@ public class WorkflowStepStatus {
    * @param contextName name of the context
    * @param progress progress value
    */
-  private void progressContextStatusUpdated(final int contextId,
+  private void progressTaskStatusUpdated(final int contextId,
       final String contextName, final double progress) {
 
     // Inform listeners

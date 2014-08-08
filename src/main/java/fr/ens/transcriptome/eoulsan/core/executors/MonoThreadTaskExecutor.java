@@ -30,25 +30,25 @@ import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 
 /**
  * This class define a mono thread executor.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MonoThreadContextExecutor extends AbstractContextExecutor
+public class MonoThreadTaskExecutor extends AbstractTaskExecutor
     implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
-  private Queue<WorkflowStepContext> queue = Queues.newLinkedBlockingQueue();
+  private Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
 
   //
-  // ContextExcutor methods
+  // TaskExcutor methods
   //
 
   @Override
-  public void submit(final WorkflowStep step, final WorkflowStepContext context) {
+  public void submit(final WorkflowStep step, final TaskContext context) {
 
     super.submit(step, context);
 
@@ -59,7 +59,7 @@ public class MonoThreadContextExecutor extends AbstractContextExecutor
   public void start() {
 
     super.start();
-    new Thread(this, "ContextExecutor_monothread").start();
+    new Thread(this, "TaskExecutor_monothread").start();
   }
 
   //

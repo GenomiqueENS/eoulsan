@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutorFactory;
+import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -451,7 +451,7 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     // Stop executor
-    ContextExecutorFactory.getExecutor().stop();
+    TaskExecutorFactory.getExecutor().stop();
   }
 
   /**
@@ -746,6 +746,6 @@ public abstract class AbstractWorkflow implements Workflow {
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
     // Start executor
-    ContextExecutorFactory.getExecutor().start();
+    TaskExecutorFactory.getExecutor().start();
   }
 }

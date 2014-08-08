@@ -69,7 +69,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private static int instanceCounter;
 
   private final AbstractWorkflow workflow;
-  // private final WorkflowStepContext stepContext;
 
   private final int number;
   private final String id;

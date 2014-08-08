@@ -38,15 +38,15 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
- * This class define a result for a step context.
+ * This class define a result for a task context.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContextResult implements StepResult, Serializable {
+public class TaskResult implements StepResult, Serializable {
 
   private static final long serialVersionUID = -1698693204391020077L;
 
-  private final WorkflowStepContext context;
+  private final TaskContext context;
 
   private final Date startTime;
   private final Date endTime;
@@ -55,10 +55,10 @@ public class WorkflowStepContextResult implements StepResult, Serializable {
   private final Throwable exception;
   private final String errorMessage;
   private final Map<String, Long> counters = Maps.newHashMap();
-  private final String contextMessage;
-  private final String contextDescription;
+  private final String taskMessage;
+  private final String taskDescription;
 
-  WorkflowStepContext getContext() {
+  TaskContext getContext() {
     return this.context;
   }
 
@@ -75,11 +75,11 @@ public class WorkflowStepContextResult implements StepResult, Serializable {
   }
 
   String getDescription() {
-    return this.contextDescription;
+    return this.taskDescription;
   }
 
   String getMessage() {
-    return this.contextMessage;
+    return this.taskMessage;
   }
 
   @Override
@@ -116,7 +116,7 @@ public class WorkflowStepContextResult implements StepResult, Serializable {
   // Constructor
   //
 
-  WorkflowStepContextResult(final WorkflowStepContext context,
+  TaskResult(final TaskContext context,
       final Date startTime, final Date endTime, final long duration,
       final String contextMessage, final String contextDescription,
       final Map<String, Long> counters, final boolean success) {
@@ -133,14 +133,14 @@ public class WorkflowStepContextResult implements StepResult, Serializable {
     this.endTime = endTime;
     this.duration = duration;
     this.success = success;
-    this.contextMessage = contextMessage;
-    this.contextDescription = contextDescription;
+    this.taskMessage = contextMessage;
+    this.taskDescription = contextDescription;
     this.counters.putAll(counters);
     this.exception = null;
     this.errorMessage = null;
   }
 
-  WorkflowStepContextResult(final WorkflowStepContext context,
+  TaskResult(final TaskContext context,
       final Date startTime, final Date endTime, final long duration,
       final Throwable exception, final String errorMessage) {
 
@@ -151,8 +151,8 @@ public class WorkflowStepContextResult implements StepResult, Serializable {
     this.endTime = endTime;
     this.duration = duration;
     this.success = false;
-    this.contextMessage = null;
-    this.contextDescription = null;
+    this.taskMessage = null;
+    this.taskDescription = null;
     this.exception = exception;
     this.errorMessage = errorMessage;
   }

@@ -47,9 +47,9 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContext;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextResult;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepContextRunner;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
 
 /**
  * This class define a action to launch a task on a cluster.
@@ -165,15 +165,15 @@ public class ClusterTaskAction extends AbstractAction {
         throw new FileNotFoundException(contextFile.toString());
 
       // Load context file
-      final WorkflowStepContext context =
-          WorkflowStepContext.deserialize(contextFile);
+      final TaskContext context =
+          TaskContext.deserialize(contextFile);
 
       // Create the context runner
-      final WorkflowStepContextRunner runner =
-          new WorkflowStepContextRunner(context);
+      final TaskRunner runner =
+          new TaskRunner(context);
 
       // Get the result
-      final WorkflowStepContextResult result = runner.run();
+      final TaskResult result = runner.run();
 
       final String fileBaseName =
           filenameWithoutExtension(contextFile.getName());
@@ -208,7 +208,7 @@ public class ClusterTaskAction extends AbstractAction {
    * @throws IOException if an error occurs while creating the result file
    */
   private static final void saveTaskResult(
-      final WorkflowStepContextResult taskResult, final File taskResultFile)
+      final TaskResult taskResult, final File taskResultFile)
       throws EoulsanException, IOException {
 
     if (taskResult == null)

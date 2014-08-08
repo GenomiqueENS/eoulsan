@@ -69,11 +69,11 @@ public class WorkflowStepResult {
   private long duration;
   private Set<Parameter> parameters;
 
-  private final Map<Integer, String> contextNames = Maps.newHashMap();
-  private final Map<Integer, Map<String, Long>> contextCounters = Maps
+  private final Map<Integer, String> taskNames = Maps.newHashMap();
+  private final Map<Integer, Map<String, Long>> taskCounters = Maps
       .newHashMap();
-  private final Map<Integer, String> contextDescriptions = Maps.newHashMap();
-  private final Map<Integer, String> contextMessages = Maps.newHashMap();
+  private final Map<Integer, String> taskDescriptions = Maps.newHashMap();
+  private final Map<Integer, String> taskMessages = Maps.newHashMap();
   private final Map<String, Long> stepCounters = Maps.newHashMap();
   private String stepMessage;
 
@@ -112,7 +112,7 @@ public class WorkflowStepResult {
    */
   public String getContextMessage(final String contextName) {
 
-    return this.contextMessages.get(contextName);
+    return this.taskMessages.get(contextName);
   }
 
   /**
@@ -122,7 +122,7 @@ public class WorkflowStepResult {
    */
   public Map<String, Long> getContextCounters(final String contextName) {
 
-    final Map<String, Long> result = this.contextCounters.get(contextName);
+    final Map<String, Long> result = this.taskCounters.get(contextName);
 
     return Collections.unmodifiableMap(result);
   }
@@ -182,13 +182,13 @@ public class WorkflowStepResult {
     checkImmutableState();
 
     // Check if at least one context result has been added to the step result
-    Preconditions.checkState(!this.contextNames.isEmpty(),
+    Preconditions.checkState(!this.taskNames.isEmpty(),
         "No context result has been added for step " + this.stepId);
 
     this.immutable = true;
   }
 
-  public void addResult(final WorkflowStepContextResult result) {
+  public void addResult(final TaskResult result) {
 
     checkNotNull(result, "result cannot be null");
 
@@ -197,13 +197,13 @@ public class WorkflowStepResult {
 
     // Check if result has been already added
     final int contextId = result.getContext().getId();
-    Preconditions.checkState(!this.contextNames.containsKey(contextId),
+    Preconditions.checkState(!this.taskNames.containsKey(contextId),
         "Context #"
             + contextId + " has already been added to result of step "
             + this.stepId);
 
     // Set start and end times
-    if (this.contextNames.isEmpty()) {
+    if (this.taskNames.isEmpty()) {
       this.startTime = result.getStartTime();
       this.endTime = result.getEndTime();
     } else {
@@ -220,11 +220,11 @@ public class WorkflowStepResult {
     // Compute duration
     this.duration = this.endTime.getTime() - this.startTime.getTime();
 
-    this.contextNames.put(contextId, result.getContext().getContextName());
+    this.taskNames.put(contextId, result.getContext().getContextName());
 
     // Set counters information
-    this.contextCounters.put(contextId, result.getCounters());
-    this.contextDescriptions.put(contextId, result.getDescription());
+    this.taskCounters.put(contextId, result.getCounters());
+    this.taskDescriptions.put(contextId, result.getDescription());
 
     // Set success (Keep only the first error)
     if (this.success) {
@@ -335,13 +335,13 @@ public class WorkflowStepResult {
     sb.append(toJSON(1, "Step parameters", convert(this.parameters)));
 
     sb.append(Strings.repeat(TAB, 1));
-    sb.append("\"Contexts\" : [");
+    sb.append("\"Tasks\" : [");
     boolean sampleProcessed = false;
-    for (int contextId : this.contextNames.keySet()) {
+    for (int contextId : this.taskNames.keySet()) {
 
       // Do not log non processed samples
-      if (!this.contextCounters.containsKey(contextId)
-          && !this.contextMessages.containsKey(contextId))
+      if (!this.taskCounters.containsKey(contextId)
+          && !this.taskMessages.containsKey(contextId))
         continue;
 
       if (!sampleProcessed) {
@@ -351,16 +351,14 @@ public class WorkflowStepResult {
 
       sb.append(Strings.repeat(TAB, 2));
       sb.append("{\n");
-      sb.append(toJSON(4, "Context id", contextId));
-      sb.append(toJSON(4, "Context name", this.contextNames.get(contextId)));
-      sb.append(toJSON(4, "Context description",
-          this.contextDescriptions.get(contextId)));
-      sb.append(toJSON(4, "Context message",
-          this.contextMessages.get(contextId)));
+      sb.append(toJSON(4, "Task id", contextId));
+      sb.append(toJSON(4, "Task name", this.taskNames.get(contextId)));
+      sb.append(toJSON(4, "Task description",
+          this.taskDescriptions.get(contextId)));
+      sb.append(toJSON(4, "Task message", this.taskMessages.get(contextId)));
 
       // contextName counters
-      sb.append(toJSON(4, "Context counters",
-          this.contextCounters.get(contextId)));
+      sb.append(toJSON(4, "Task counters", this.taskCounters.get(contextId)));
       sb.append(Strings.repeat(TAB, 2));
       sb.append("}\n");
     }
