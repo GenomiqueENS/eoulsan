@@ -26,6 +26,14 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +44,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -369,6 +379,110 @@ public class WorkflowStepContext implements StepContext, Serializable {
     return Objects.toStringHelper(this).add("id", this.id)
         .add("step", this.step.getId()).add("contextName", this.contextName)
         .toString();
+  }
+
+  //
+  // Serialization methods
+  //
+
+  /**
+   * Serialize the WorkflowStepContext object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serialize(final File file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serialize(new FileOutputStream(file));
+  }
+
+  /**
+   * Serialize the WorkflowStepContext object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serialize(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serialize(file.create());
+  }
+
+  /**
+   * Serialize the WorkflowStepContext object.
+   * @param out output stream
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serialize(final OutputStream out) throws IOException {
+
+    checkNotNull(out, "out argument cannot be null");
+
+    final ObjectOutputStream oos = new ObjectOutputStream(out);
+
+    oos.writeObject(this);
+    oos.writeObject(EoulsanRuntime.getSettings());
+    oos.close();
+  }
+
+  /**
+   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * values of the settings of the Eoulsan runtime.
+   * @param file input DataFile
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static WorkflowStepContext deserialize(final File file)
+      throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    return deserialize(new FileInputStream(file));
+  }
+
+  /**
+   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * values of the settings of the Eoulsan runtime.
+   * @param file input DataFile
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static WorkflowStepContext deserialize(final DataFile file)
+      throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    return deserialize(file.open());
+  }
+
+  /**
+   * Deserialize the WorkflowStepContext object. Warning: this method update the
+   * values of the settings of the Eoulsan runtime.
+   * @param in input stream
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static WorkflowStepContext deserialize(final InputStream in)
+      throws IOException {
+
+    checkNotNull(in, "in argument cannot be null");
+
+    try {
+      final ObjectInputStream ois = new ObjectInputStream(in);
+
+      // Read WorkflowStepContext object
+      final WorkflowStepContext result = (WorkflowStepContext) ois.readObject();
+
+      // Read Settings object
+      final Settings settings = (Settings) ois.readObject();
+
+      // Overwrite current Settings of Eoulsan runtime
+      EoulsanRuntime.getSettings().setSettings(settings);
+
+      ois.close();
+
+      return result;
+
+    } catch (ClassNotFoundException e) {
+      throw new EoulsanRuntimeException(e.getMessage());
+    }
   }
 
   //

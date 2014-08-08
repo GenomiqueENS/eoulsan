@@ -362,6 +362,16 @@ public class WorkflowStepContextRunner {
    * Constructor.
    * @param stepContext stepContext to execute
    */
+  public WorkflowStepContextRunner(final WorkflowStepContext stepContext) {
+
+    this(stepContext, null);
+  }
+
+  /**
+   * Constructor.
+   * @param stepContext stepContext to execute
+   * @param stepStatus step status
+   */
   public WorkflowStepContextRunner(final WorkflowStepContext stepContext,
       final WorkflowStepStatus stepStatus) {
 

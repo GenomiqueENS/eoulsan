@@ -9,5 +9,8 @@ fr.ens.transcriptome.eoulsan.actions.UploadS3Action
 # Hadoop jar actions
 fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction
 
+# Cluster task action
+fr.ens.transcriptome.eoulsan.actions.ClusterTaskAction
+
 # Fake actions
 fr.ens.transcriptome.eoulsan.actions.AWSExecAction

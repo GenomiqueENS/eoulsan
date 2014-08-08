@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -41,7 +42,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepContextResult implements StepResult {
+public class WorkflowStepContextResult implements StepResult, Serializable {
+
+  private static final long serialVersionUID = -1698693204391020077L;
 
   private final WorkflowStepContext context;
 
