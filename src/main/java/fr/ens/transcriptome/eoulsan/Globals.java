@@ -110,7 +110,7 @@ public final class Globals {
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64"})));
+          "linux\tamd64", "linux\tx86_64" })));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
@@ -210,6 +210,28 @@ public final class Globals {
   /** Default charset. */
   public static final Charset DEFAULT_CHARSET = Charset
       .forName(DEFAULT_FILE_ENCODING);
+
+  //
+  // Default file extensions
+  //
+
+  /** Log extension. */
+  public static final String LOG_EXTENSION = ".log";
+
+  /** Step log extension. */
+  public static final String STEP_LOG_EXTENSION = ".steplog";
+
+  /** Step result extension. */
+  public static final String STEP_RESULT_EXTENSION = ".stepresult";
+
+  /** Task context extension. */
+  public static final String TASK_CONTEXT_EXTENSION = ".taskcontext";
+
+  /** Task result extension. */
+  public static final String TASK_RESULT_EXTENSION = ".taskresult";
+
+  /** Task done extension. */
+  public static final String TASK_DONE_EXTENSION = ".taskdone";
 
   //
   // Private constants
