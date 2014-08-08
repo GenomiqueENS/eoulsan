@@ -428,7 +428,7 @@ public class TokenManager implements Runnable {
         + this.step.getId() + " is already started");
 
     // Start the thread
-    new Thread(this).start();
+    new Thread(this, "TokenManager_" + this.step.getId()).start();
 
     this.isStarted = true;
   }

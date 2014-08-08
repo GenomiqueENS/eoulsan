@@ -88,7 +88,9 @@ public class WorkflowStepContextRunner {
     // checkExistingInputFiles();
 
     // Thread group name
-    final String threadGroupName = "eoulsan-context-#" + this.context.getId();
+    final String threadGroupName =
+        "StepContextExecutor_"
+            + this.context.getStep().getId() + "_#" + this.context.getId();
 
     // Define thread group
     final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
@@ -123,8 +125,9 @@ public class WorkflowStepContextRunner {
     this.status.durationStart();
 
     try {
-      // Create thread
-      final Thread thread = new Thread(threadGroup, r);
+
+      // Create thread, reuse the thread group name as thread name
+      final Thread thread = new Thread(threadGroup, r, threadGroupName);
 
       // Start thread
       thread.start();

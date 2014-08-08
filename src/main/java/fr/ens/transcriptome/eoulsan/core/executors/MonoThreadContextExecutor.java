@@ -59,7 +59,7 @@ public class MonoThreadContextExecutor extends AbstractContextExecutor
   public void start() {
 
     super.start();
-    new Thread(this).start();
+    new Thread(this, "ContextExecutor_monothread").start();
   }
 
   //
