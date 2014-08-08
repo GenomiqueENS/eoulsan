@@ -61,8 +61,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.executors.CombinedContextExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
@@ -453,7 +451,7 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     // Stop executor
-    ContextExecutorFactory.getInstance().getExecutor().stop();
+    ContextExecutorFactory.getExecutor().stop();
   }
 
   /**
@@ -747,15 +745,7 @@ public abstract class AbstractWorkflow implements Workflow {
         newDataFile(executionArguments.getHadoopWorkingPathname());
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
-    // Get the thread number to use by the context executor
-    final int threadNumber =
-        EoulsanRuntime.getSettings().getLocalThreadsNumber();
-
-    // Set the context executor
-    final ContextExecutorFactory factory = ContextExecutorFactory.getInstance();
-    factory.newCombinedContextExecutor(threadNumber);
-
     // Start executor
-    factory.getExecutor().start();
+    ContextExecutorFactory.getExecutor().start();
   }
 }

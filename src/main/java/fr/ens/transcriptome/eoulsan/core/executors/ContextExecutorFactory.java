@@ -24,9 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.executors;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import com.google.common.base.Preconditions;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
 /**
  * This class define a factory for ContextExecutor that can create only one
@@ -37,57 +35,28 @@ import com.google.common.base.Preconditions;
  */
 public class ContextExecutorFactory {
 
-  private static ContextExecutorFactory singleton;
-
-  private ContextExecutor executor;
+  private static ContextExecutor executor;
 
   //
-  // Getter
+  // Static method
   //
 
   /**
    * Get the executor
    * @return the ContextExecutor object
    */
-  public ContextExecutor getExecutor() {
+  public static ContextExecutor getExecutor() {
 
-    Preconditions.checkState(this.executor != null,
-        "the executor has not been created");
+    if (executor == null) {
 
-    return this.executor;
-  }
+      // Get the thread number to use by the context executor
+      final int threadNumber =
+          EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
-  //
-  // Factory methods
-  //
-
-  /**
-   * Create a combined context executor.
-   * @param threadNumber the number of thread to use
-   */
-  public void newCombinedContextExecutor(final int threadNumber) {
-
-    checkState(this.executor == null, "The executor has been already created");
-
-    this.executor = new CombinedContextExecutor(threadNumber);
-  }
-
-  //
-  // Static methods
-  //
-
-  /**
-   * Get the singleton instance
-   * @return the ContextExecutorFactory object
-   */
-  public static ContextExecutorFactory getInstance() {
-
-    if (singleton == null) {
-
-      singleton = new ContextExecutorFactory();
+      executor = new CombinedContextExecutor(threadNumber);
     }
 
-    return singleton;
+    return executor;
   }
 
   //

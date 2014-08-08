@@ -547,7 +547,7 @@ public class TokenManager implements Runnable {
     this.outputPorts = step.getWorkflowOutputPorts();
 
     // Get the executor
-    this.executor = ContextExecutorFactory.getInstance().getExecutor();
+    this.executor = ContextExecutorFactory.getExecutor();
   }
 
 }
