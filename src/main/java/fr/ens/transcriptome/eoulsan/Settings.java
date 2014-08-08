@@ -109,12 +109,12 @@ public final class Settings {
       + ".mail.smtp.host";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY });
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
   //
   // Getters
@@ -808,6 +808,21 @@ public final class Settings {
 
     }
 
+  }
+
+  /**
+   * Set the values of the settings with another Settings object.
+   * @param settings Settings object which values must be set in the current
+   *          object
+   */
+  public void setSettings(final Settings settings) {
+
+    if (settings == null) {
+      throw new NullPointerException("settings arguments cannot be null");
+    }
+
+    // Set all the values
+    this.properties.putAll(settings.properties);
   }
 
   private void init() {
