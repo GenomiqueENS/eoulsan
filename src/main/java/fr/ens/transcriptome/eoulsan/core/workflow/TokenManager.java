@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
@@ -77,6 +78,7 @@ public class TokenManager implements Runnable {
       .newHashSet();
 
   private boolean endOfStep;
+  private boolean isStarted;
 
   /**
    * Class needed for cartesian product computation.
@@ -417,9 +419,29 @@ public class TokenManager implements Runnable {
   //
 
   /**
+   * Start the Token manager thread.
+   */
+  void start() {
+
+    // Check if the thread has been already started
+    checkState(!this.isStarted, "The token manager thread for step "
+        + this.step.getId() + " is already started");
+
+    // Start the thread
+    new Thread(this).start();
+
+    this.isStarted = true;
+  }
+
+  /**
    * Stop the Token manager thread.
    */
   void stop() {
+
+    // Check if the thread has been started
+    checkState(this.isStarted,
+        "The token manager thread for step "
+            + this.step.getId() + " is already started");
 
     this.endOfStep = true;
   }
@@ -520,9 +542,6 @@ public class TokenManager implements Runnable {
 
     // Get the executor
     this.executor = step.getAbstractWorkflow().getExecutor();
-
-    // Start tokenManager thread
-    new Thread(this).start();
   }
 
 }

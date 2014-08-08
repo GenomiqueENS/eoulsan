@@ -25,6 +25,9 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
 import java.util.Set;
 
@@ -67,24 +70,33 @@ public class WorkflowStepStateObserver {
     // If is the root step, there is nothing to wait
     synchronized (this) {
       if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
-          && state == StepState.WAITING)
-        this.stepState = StepState.READY;
-      else
+          && state == WAITING) {
+        this.stepState = READY;
+      } else {
         this.stepState = state;
+      }
     }
 
     // Inform step that depend of this step
-    if (this.stepState == StepState.DONE)
-      for (AbstractWorkflowStep step : this.stepsToInform)
+    if (this.stepState == DONE) {
+      for (AbstractWorkflowStep step : this.stepsToInform) {
         step.getStepStateObserver().updateStatus();
+      }
+    }
+
+    // Start Token manager thread for the step if state is READY
+    if (this.stepState == READY) {
+      TokenManagerRegistry.getInstance().getTokenManager(this.step).start();
+    }
 
     // Inform workflow object
     step.getAbstractWorkflow().updateStepState(this.step);
 
     // Inform listeners
     for (WorkflowStepObserver o : WorkflowStepObserverRegistry.getInstance()
-        .getObservers())
+        .getObservers()) {
       o.notifyStepState(this.step);
+    }
   }
 
   /**
@@ -93,11 +105,19 @@ public class WorkflowStepStateObserver {
    */
   private void updateStatus() {
 
-    for (AbstractWorkflowStep step : this.requiredSteps)
-      if (step.getState() != StepState.DONE)
-        return;
+    // Do nothing if the step is already in READY state
+    if (getState() == READY) {
+      return;
+    }
 
-    setState(StepState.READY);
+    for (AbstractWorkflowStep step : this.requiredSteps) {
+      if (step.getState() != DONE) {
+        return;
+      }
+    }
+
+    // Set the step to the READY state
+    setState(READY);
   }
 
   //

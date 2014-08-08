@@ -63,7 +63,6 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.executors.MonoThreadContextExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.MultiThreadContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -378,22 +377,18 @@ public abstract class AbstractWorkflow implements Workflow {
     // check if input files exists
     checkExistingInputFiles();
 
-    // Set Steps to WAITING state
+    // Get the token manager registry
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
+    // Set Steps to WAITING state
     for (AbstractWorkflowStep step : this.steps.keySet()) {
 
-      // Create Token manager of each step and start dedicated thread
+      // Create Token manager of each step
       registry.getTokenManager(step);
 
-      // TODO start TokenManager thread only when the state of the step change
-      // to WORKING
-
+      // Set state to WAITING
       step.setState(WAITING);
     }
-
-    // Set root step ready for running
-    this.rootStep.setState(READY);
 
     final Stopwatch stopwatch = new Stopwatch();
     stopwatch.start();
