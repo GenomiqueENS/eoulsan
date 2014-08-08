@@ -63,7 +63,7 @@ import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.executors.CombinedContextExecutor;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.MonoThreadContextExecutor;
+import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -99,8 +99,6 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractWorkflowStep designStep;
   private AbstractWorkflowStep checkerStep;
   private AbstractWorkflowStep firstStep;
-
-  private final ContextExecutor executor;
 
   //
   // Getters
@@ -188,14 +186,6 @@ public abstract class AbstractWorkflow implements Workflow {
   public WorkflowContext getWorkflowContext() {
 
     return this.workflowContext;
-  }
-
-  /**
-   * Get the executor for the workflow.
-   * @return a ContextExecutor object
-   */
-  ContextExecutor getExecutor() {
-    return this.executor;
   }
 
   //
@@ -463,7 +453,7 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     // Stop executor
-    this.executor.stop();
+    ContextExecutorFactory.getInstance().getExecutor().stop();
   }
 
   /**
@@ -757,12 +747,15 @@ public abstract class AbstractWorkflow implements Workflow {
         newDataFile(executionArguments.getHadoopWorkingPathname());
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
+    // Get the thread number to use by the context executor
+    final int threadNumber =
+        EoulsanRuntime.getSettings().getLocalThreadsNumber();
+
     // Set the context executor
-    this.executor =
-        new CombinedContextExecutor(EoulsanRuntime.getSettings()
-            .getLocalThreadsNumber());
+    final ContextExecutorFactory factory = ContextExecutorFactory.getInstance();
+    factory.newCombinedContextExecutor(threadNumber);
 
     // Start executor
-    this.executor.start();
+    factory.getExecutor().start();
   }
 }

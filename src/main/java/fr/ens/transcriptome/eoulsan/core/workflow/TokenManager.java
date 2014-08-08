@@ -30,7 +30,11 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -47,9 +51,11 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutor;
+import fr.ens.transcriptome.eoulsan.core.executors.ContextExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -541,7 +547,7 @@ public class TokenManager implements Runnable {
     this.outputPorts = step.getWorkflowOutputPorts();
 
     // Get the executor
-    this.executor = step.getAbstractWorkflow().getExecutor();
+    this.executor = ContextExecutorFactory.getInstance().getExecutor();
   }
 
 }

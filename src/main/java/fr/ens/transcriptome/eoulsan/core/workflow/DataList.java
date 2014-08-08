@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class DataList extends AbstractData {
+public class DataList extends AbstractData implements Serializable {
+
+  private static final long serialVersionUID = -2933515018143805029L;
 
   private final List<Data> list = Lists.newArrayList();
 

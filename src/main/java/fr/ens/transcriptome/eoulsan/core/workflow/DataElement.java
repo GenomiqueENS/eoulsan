@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,9 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class DataElement extends AbstractData {
+class DataElement extends AbstractData implements Serializable {
+
+  private static final long serialVersionUID = -8982205120365590676L;
 
   private final Map<String, String> metadata = Maps.newHashMap();
   protected final List<DataFile> files;

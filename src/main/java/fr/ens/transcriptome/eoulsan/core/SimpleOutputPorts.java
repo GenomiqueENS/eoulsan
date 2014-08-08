@@ -24,10 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 public class SimpleOutputPorts extends AbstractPorts<OutputPort> implements
-    OutputPorts {
+    OutputPorts, Serializable {
+
+  private static final long serialVersionUID = -1607044916452828888L;
 
   SimpleOutputPorts(Set<OutputPort> ports) {
     super(ports);

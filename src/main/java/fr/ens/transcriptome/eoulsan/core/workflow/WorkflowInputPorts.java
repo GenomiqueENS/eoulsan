@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +38,10 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> {
+class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> implements
+    Serializable {
+
+  private static final long serialVersionUID = -746211786359434112L;
 
   //
   // Static methods

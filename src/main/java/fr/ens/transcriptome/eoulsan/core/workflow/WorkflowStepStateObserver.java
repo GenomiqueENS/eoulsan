@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -39,7 +40,9 @@ import com.google.common.collect.Sets;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepStateObserver {
+public class WorkflowStepStateObserver implements Serializable {
+
+  private static final long serialVersionUID = -5734184849291521186L;
 
   private final AbstractWorkflowStep step;
   private StepState stepState = StepState.CREATED;

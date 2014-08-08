@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -32,7 +33,9 @@ import java.util.Set;
  * @since 2.0
  */
 public class SimpleInputPorts extends AbstractPorts<InputPort> implements
-    InputPorts {
+    InputPorts, Serializable {
+
+  private static final long serialVersionUID = -6661589274392547355L;
 
   SimpleInputPorts(Set<InputPort> ports) {
     super(ports);

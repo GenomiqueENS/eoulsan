@@ -24,14 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
+import java.io.Serializable;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -42,10 +45,9 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class DataFile implements Comparable<DataFile> {
+public class DataFile implements Comparable<DataFile>, Serializable {
 
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
+  private static final long serialVersionUID = -3280343485491150872L;
 
   /** The separator char ('/'). */
   public static final char separatorChar = '/';
@@ -447,8 +449,11 @@ public class DataFile implements Comparable<DataFile> {
       this.protocol = registery.newService(protocolPrefixInSource);
 
     if (this.protocol == null) {
-      LOGGER.severe("Unknown protocol: \""
-          + protocolPrefixInSource + "\", can't set protocol for DataFile.");
+      getLogger()
+          .severe(
+              "Unknown protocol: \""
+                  + protocolPrefixInSource
+                  + "\", can't set protocol for DataFile.");
       this.unknownProtocolName = protocolPrefixInSource;
     }
 
@@ -498,6 +503,33 @@ public class DataFile implements Comparable<DataFile> {
   public String toString() {
 
     return this.src;
+  }
+
+  //
+  // Serialization methods
+  //
+
+  /**
+   * Serialize the object.
+   * @param out the object output stream
+   * @throws IOException if an error occurs while serializing the object
+   */
+  private void writeObject(final ObjectOutputStream out) throws IOException {
+
+    out.writeObject(this.src);
+  }
+
+  /**
+   * Deserialize the object.
+   * @param in the object input stream
+   * @throws IOException if an error occurs while deserializing the object
+   */
+  private void readObject(final ObjectInputStream in) throws IOException,
+      ClassNotFoundException {
+
+    final String source = (String) in.readObject();
+
+    parseSource(source);
   }
 
   //
