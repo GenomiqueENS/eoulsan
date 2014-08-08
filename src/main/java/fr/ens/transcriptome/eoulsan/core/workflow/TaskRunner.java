@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -275,7 +276,7 @@ public class TaskRunner {
         this.context.getStep().getAbstractWorkflow().getLogDir();
     final DataFile logFile =
         new DataFile(logDir, step.getId()
-            + "_context#" + this.context.getId() + ".log");
+            + "_context#" + this.context.getId() + TASK_LOG_EXTENSION);
     OutputStream logOut;
     try {
 

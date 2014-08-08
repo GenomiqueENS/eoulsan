@@ -25,16 +25,13 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +48,6 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutor;
@@ -66,9 +62,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @since 2.0
  */
 public class TokenManager implements Runnable {
-
-  // TODO may be not the good place to define this
-  private static final String STEP_RESULT_FILE_EXTENSION = ".result";
 
   private static final int CHECKING_DELAY_MS = 1000;
 
@@ -406,7 +399,7 @@ public class TokenManager implements Runnable {
     // Step result file
     final DataFile logFile =
         new DataFile(this.step.getAbstractWorkflow().getLogDir(), step.getId()
-            + STEP_RESULT_FILE_EXTENSION);
+            + STEP_RESULT_EXTENSION);
 
     try {
 

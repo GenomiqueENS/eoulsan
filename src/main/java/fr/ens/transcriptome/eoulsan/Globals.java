@@ -231,6 +231,9 @@ public final class Globals {
   public static final String TASK_RESULT_EXTENSION = ".taskresult";
 
   /** Task done extension. */
+  public static final String TASK_LOG_EXTENSION = ".tasklog";
+
+  /** Task done extension. */
   public static final String TASK_DONE_EXTENSION = ".taskdone";
 
   //

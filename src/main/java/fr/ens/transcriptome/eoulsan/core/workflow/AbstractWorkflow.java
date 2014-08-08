@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.Globals.LOG_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
@@ -78,8 +80,6 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 4865597995432347155L;
-
-  private static final String STEP_RESULT_FILE_EXTENSION = ".result";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
@@ -464,7 +464,8 @@ public abstract class AbstractWorkflow implements Workflow {
       final String threadGroupName) {
 
     // Define the log file for the step
-    final DataFile logFile = new DataFile(getLogDir(), step.getId() + ".log");
+    final DataFile logFile =
+        new DataFile(getLogDir(), step.getId() + LOG_EXTENSION);
     OutputStream logOut;
     try {
 
@@ -507,7 +508,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Step result file
     final DataFile logFile =
-        new DataFile(this.logDir, step.getId() + STEP_RESULT_FILE_EXTENSION);
+        new DataFile(this.logDir, step.getId() + STEP_RESULT_EXTENSION);
 
     try {
 
