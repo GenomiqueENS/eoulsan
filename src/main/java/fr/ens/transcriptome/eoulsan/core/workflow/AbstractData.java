@@ -24,8 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.Serializable;
+
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -35,7 +39,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractData implements Data {
+public abstract class AbstractData implements Data, Serializable {
+
+  private static final long serialVersionUID = 2363270050921101143L;
 
   private static int instanceCount;
 
@@ -60,9 +66,8 @@ public abstract class AbstractData implements Data {
    */
   void setName(final String name) {
 
-    Preconditions.checkNotNull("The name of the data cannot be null");
-    Preconditions.checkArgument(
-        CharMatcher.JAVA_LETTER_OR_DIGIT.matchesAllOf(name),
+    checkNotNull(name, "The name of the data cannot be null");
+    checkArgument(CharMatcher.JAVA_LETTER_OR_DIGIT.matchesAllOf(name),
         "The name of data can only contains letters or digit");
 
     this.name = name;
@@ -87,7 +92,7 @@ public abstract class AbstractData implements Data {
    */
   protected AbstractData(final DataFormat format) {
 
-    Preconditions.checkNotNull(format, "format argument cannot be null");
+    checkNotNull(format, "format argument cannot be null");
 
     this.name = "data" + (++instanceCount);
     this.format = format;

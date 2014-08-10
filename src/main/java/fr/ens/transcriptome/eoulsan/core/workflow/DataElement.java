@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
 import java.io.Serializable;
@@ -252,8 +253,8 @@ class DataElement extends AbstractData implements Serializable {
 
     super(format);
 
-    Preconditions.checkNotNull(format, "format argument cannot be null");
-    Preconditions.checkNotNull(files, "files argument cannot be null");
+    checkNotNull(format, "format argument cannot be null");
+    checkNotNull(files, "files argument cannot be null");
 
     for (DataFile f : files)
       if (f == null)
@@ -276,9 +277,8 @@ class DataElement extends AbstractData implements Serializable {
 
     super(port.getFormat());
 
-    Preconditions.checkNotNull(port,
-        "stepWorkingPathname argument cannot be null");
-    Preconditions.checkNotNull(port, "port argument cannot be null");
+    checkNotNull(port, "stepWorkingPathname argument cannot be null");
+    checkNotNull(port, "port argument cannot be null");
 
     this.stepWorkingPathname = port.getStep().getStepWorkingDir();
     this.stepId = port.getStep().getId();

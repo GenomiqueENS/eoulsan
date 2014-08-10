@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 
 import com.google.common.base.Objects;
@@ -43,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowInputPort extends SimpleInputPort {
+class WorkflowInputPort extends SimpleInputPort implements Serializable {
 
   private static final long serialVersionUID = -3858660424325558424L;
 
