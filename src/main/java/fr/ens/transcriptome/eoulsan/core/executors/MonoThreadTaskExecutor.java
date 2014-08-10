@@ -37,8 +37,8 @@ import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MonoThreadTaskExecutor extends AbstractTaskExecutor
-    implements Runnable {
+public class MonoThreadTaskExecutor extends AbstractTaskExecutor implements
+    Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
   private Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();

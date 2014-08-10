@@ -33,8 +33,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 
 /**
  * This class define a muti thread executor.
@@ -46,13 +46,13 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
   private static final int WAIT_SHUTDOWN_MINUTES = 60;
 
   private final PausableThreadPoolExecutor executor;
-  private final List<Future<ContextThread>> threads = Lists.newArrayList();
+  private final List<Future<TaskThread>> threads = Lists.newArrayList();
 
   /**
-   * Wrapper class around a call to AbstractTaskExecutor.execute() method.
+   * Wrapper class around a call to executeTask method.
    * @author Laurent Jourdren
    */
-  private final class ContextThread implements Runnable {
+  private final class TaskThread implements Runnable {
 
     private final TaskContext context;
 
@@ -70,7 +70,7 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
      * Constructor.
      * @param context context to execute
      */
-    ContextThread(final TaskContext context) {
+    TaskThread(final TaskContext context) {
       this.context = context;
     }
   }
@@ -82,7 +82,7 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
     super.submit(step, context);
 
     // Create context thread
-    final ContextThread st = new ContextThread(context);
+    final TaskThread st = new TaskThread(context);
 
     // Submit the context thread the thread executor
     synchronized (this.threads) {
