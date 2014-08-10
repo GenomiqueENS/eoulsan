@@ -233,8 +233,17 @@ public final class Globals {
   /** Task done extension. */
   public static final String TASK_LOG_EXTENSION = ".tasklog";
 
+  /** Task output data extension. */
+  public static final String TASK_DATA_EXTENSION = ".taskdata";
+
   /** Task done extension. */
   public static final String TASK_DONE_EXTENSION = ".taskdone";
+
+  /** Task stdout extension. */
+  public static final String TASK_STDOUT_EXTENSION = ".taskout";
+
+  /** Task stderr extension. */
+  public static final String TASK_STDERR_EXTENSION = ".taskerr";
 
   //
   // Private constants
