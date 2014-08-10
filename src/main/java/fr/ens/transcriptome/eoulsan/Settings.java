@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +44,9 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public final class Settings {
+public final class Settings implements Serializable {
+
+  private static final long serialVersionUID = -7897805708866950402L;
 
   /** Logger. */
   private static final Logger LOGGER = EoulsanLogger.getLogger();
