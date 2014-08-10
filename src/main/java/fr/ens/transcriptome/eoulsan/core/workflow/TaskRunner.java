@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
 
@@ -59,6 +61,7 @@ public class TaskRunner {
   private final Step step;
   private final TaskStatus status;
   private StepResult result;
+  private boolean isTokensSent;
 
   //
   // Getter
@@ -84,6 +87,9 @@ public class TaskRunner {
    * @return a task result object
    */
   public TaskResult run() {
+
+    // Check if task has been already executed
+    checkState(this.result == null, "task has been already executed");
 
     // check if input files exists
     // checkExistingInputFiles();
@@ -174,9 +180,13 @@ public class TaskRunner {
    */
   private void sendTokens() {
 
-    if (this.result == null)
-      throw new IllegalStateException(
-          "Cannot send tokens of a null result task");
+    // Check if result has been created
+    checkState(this.result != null, "Cannot send tokens of a null result task");
+
+    // Check if tokens has been already sent
+    checkState(!this.isTokensSent, "Cannot send tokens twice");
+
+    this.isTokensSent = true;
 
     // Do not send data if the task has not been successful
     if (!this.result.isSuccess()) {
@@ -275,8 +285,9 @@ public class TaskRunner {
     final DataFile logDir =
         this.context.getStep().getAbstractWorkflow().getTaskDir();
     final DataFile logFile =
-        new DataFile(logDir, step.getId()
-            + "_context#" + this.context.getId() + TASK_LOG_EXTENSION);
+        new DataFile(logDir, createTaskPrefixFile(this.context)
+            + TASK_LOG_EXTENSION);
+
     OutputStream logOut;
     try {
 
@@ -300,9 +311,14 @@ public class TaskRunner {
     // Set the Handler
     logger.addHandler(handler);
 
+    // Get the Log level on command line
+    String logLevel = Main.getInstance().getLogLevelArgument();
+    if (logLevel == null) {
+      logLevel = Globals.LOG_LEVEL.getName();
+    }
+
     // Set log level
-    handler.setLevel(Level.parse(Main.getInstance().getLogLevelArgument()
-        .toUpperCase()));
+    handler.setLevel(Level.parse(logLevel.toUpperCase()));
 
     return logger;
   }
@@ -352,7 +368,66 @@ public class TaskRunner {
         }
       }
     }
+  }
 
+  //
+  // Static methods
+  //
+
+  /**
+   * Create the prefix of a related task file.
+   * @param context the context
+   * @return a string with the prefix of the task file
+   */
+  public static String createTaskPrefixFile(final TaskContext context) {
+
+    if (context == null) {
+      return null;
+    }
+
+    return context.getStep().getId() + "_context#" + context.getId();
+  }
+
+  /**
+   * Create a step result for an exception.
+   * @param taskContext task context
+   * @param exception exception
+   * @return a new TaskResult object
+   */
+  public static TaskResult createStepResult(final TaskContext taskContext,
+      Throwable exception) {
+
+    return createStepResult(taskContext, exception, null);
+  }
+
+  /**
+   * Create a step result for an exception.
+   * @param taskContext task context
+   * @param exception exception
+   * @param errorMessage error message
+   * @return a new TaskResult object
+   */
+  public static TaskResult createStepResult(final TaskContext taskContext,
+      Throwable exception, String errorMessage) {
+
+    final TaskRunner runner = new TaskRunner(taskContext);
+
+    // Start the time watch
+    runner.status.durationStart();
+
+    // Create the result object
+    return (TaskResult) runner.status.createStepResult(exception, errorMessage);
+  }
+
+  /**
+   * Send tokens for a serialized task result.
+   * @param taskContext task context
+   * @param taskResult task result
+   */
+  public static void sendTokens(final TaskContext taskContext,
+      final TaskResult taskResult) {
+
+    new TaskRunner(taskContext, taskResult).sendTokens();
   }
 
   //
@@ -365,7 +440,7 @@ public class TaskRunner {
    */
   public TaskRunner(final TaskContext taskContext) {
 
-    this(taskContext, null);
+    this(taskContext, (WorkflowStepStatus) null);
   }
 
   /**
@@ -376,7 +451,7 @@ public class TaskRunner {
   public TaskRunner(final TaskContext taskContext,
       final WorkflowStepStatus stepStatus) {
 
-    Preconditions.checkNotNull(taskContext, "taskContext cannot be null");
+    checkNotNull(taskContext, "taskContext cannot be null");
 
     this.context = taskContext;
     this.step =
@@ -386,6 +461,27 @@ public class TaskRunner {
 
     // Set the task context name for the status
     this.context.setContextName(createDefaultContextName());
+  }
+
+  /**
+   * Private constructor used to send token for serialized result.
+   * @param taskContext task context
+   * @param taskResult task result
+   */
+  private TaskRunner(final TaskContext taskContext, final TaskResult taskResult) {
+
+    checkNotNull(taskContext, "taskContext cannot be null");
+    checkNotNull(taskResult, "taskResult cannot be null");
+
+    // Check if the task result has been created for the task context
+    checkArgument(taskContext.getId() == taskResult.getContext().getId(), "");
+
+    this.context = taskContext;
+    this.result = taskResult;
+
+    // Step object and status are not necessary in this case
+    this.step = null;
+    this.status = null;
   }
 
 }

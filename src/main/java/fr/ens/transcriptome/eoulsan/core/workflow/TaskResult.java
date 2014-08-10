@@ -24,7 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -34,6 +42,9 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -102,24 +113,104 @@ public class TaskResult implements StepResult, Serializable {
     return this.errorMessage;
   }
 
-  @Override
-  public void write(final DataFile file) throws IOException {
-    throw new UnsupportedOperationException();
+  //
+  // Serialization methods
+  //
+
+  /**
+   * Serialize the TaskResult object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serialize(final File file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serialize(new FileOutputStream(file));
   }
 
-  @Override
-  public void write(final OutputStream out) throws IOException {
-    throw new UnsupportedOperationException();
+  /**
+   * Serialize the TaskResult object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serialize(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serialize(file.create());
+  }
+
+  /**
+   * Serialize the TaskResult object.
+   * @param out output stream
+   * @throws IOException if an error occurs while creating the file
+   */
+  public final void serialize(final OutputStream out) throws IOException {
+
+    checkNotNull(out, "out argument cannot be null");
+
+    final ObjectOutputStream oos = new ObjectOutputStream(out);
+    oos.writeObject(this);
+    oos.close();
+  }
+
+  /**
+   * Deserialize the TaskResult object.
+   * @param file input DataFile
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static TaskResult deserialize(final File file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    return deserialize(new FileInputStream(file));
+  }
+
+  /**
+   * Deserialize the TaskResult object.
+   * @param file input DataFile
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static TaskResult deserialize(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    return deserialize(file.open());
+  }
+
+  /**
+   * Deserialize the TaskResult object.
+   * @param in input stream
+   * @throws IOException if an error occurs while reading the file
+   */
+  public static TaskResult deserialize(final InputStream in) throws IOException {
+
+    checkNotNull(in, "in argument cannot be null");
+
+    try {
+      final ObjectInputStream ois = new ObjectInputStream(in);
+
+      // Read TaskContext object
+      final TaskResult result = (TaskResult) ois.readObject();
+
+      ois.close();
+
+      return result;
+
+    } catch (ClassNotFoundException e) {
+      throw new EoulsanRuntimeException(e.getMessage());
+    }
   }
 
   //
   // Constructor
   //
 
-  TaskResult(final TaskContext context,
-      final Date startTime, final Date endTime, final long duration,
-      final String contextMessage, final String contextDescription,
-      final Map<String, Long> counters, final boolean success) {
+  TaskResult(final TaskContext context, final Date startTime,
+      final Date endTime, final long duration, final String contextMessage,
+      final String contextDescription, final Map<String, Long> counters,
+      final boolean success) {
 
     Preconditions.checkNotNull(context, "context argument cannot be null");
     Preconditions.checkNotNull(startTime, "startTime argument cannot be null");
@@ -140,9 +231,9 @@ public class TaskResult implements StepResult, Serializable {
     this.errorMessage = null;
   }
 
-  TaskResult(final TaskContext context,
-      final Date startTime, final Date endTime, final long duration,
-      final Throwable exception, final String errorMessage) {
+  TaskResult(final TaskContext context, final Date startTime,
+      final Date endTime, final long duration, final Throwable exception,
+      final String errorMessage) {
 
     Preconditions.checkNotNull(context, "context argument cannot be null");
 

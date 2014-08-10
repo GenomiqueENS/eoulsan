@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -287,6 +288,28 @@ public class TaskContext implements StepContext, Serializable {
     return getOutputData(getOutputPortNameForFormat(format), origin.getName());
   }
 
+  /**
+   * Update serialized output data. This method is used when process serialized
+   * task result.
+   * @param data data to set
+   */
+  private void updateOutputData(final Map<String, AbstractData> data) {
+
+    checkNotNull(data, "data argument cannot be null");
+    checkArgument(data.size() == this.outputData.size(),
+        "Unexpected number of output data ("
+            + this.outputData.size() + " was expected): " + data.size());
+
+    for (Map.Entry<String, AbstractData> e : data.entrySet()) {
+
+      checkArgument(this.outputData.containsKey(e.getKey()), "Unknown port: "
+          + e.getKey());
+
+      // Update outputData
+      this.outputData.put(e.getKey(), e.getValue());
+    }
+  }
+
   //
   // Package methods
   //
@@ -332,6 +355,11 @@ public class TaskContext implements StepContext, Serializable {
   // Private methods
   //
 
+  /**
+   * Get the input port for a given format.
+   * @param format the format
+   * @return the port that matches to the format
+   */
   private String getInputPortNameForFormat(final DataFormat format) {
 
     checkNotNull(format, "The format is null");
@@ -354,6 +382,11 @@ public class TaskContext implements StepContext, Serializable {
     }
   }
 
+  /**
+   * Get the output port for a given format.
+   * @param format the format
+   * @return the port that matches to the format
+   */
   private String getOutputPortNameForFormat(final DataFormat format) {
 
     checkNotNull(format, "The format is null");
@@ -483,6 +516,95 @@ public class TaskContext implements StepContext, Serializable {
       ois.close();
 
       return result;
+
+    } catch (ClassNotFoundException e) {
+      throw new EoulsanRuntimeException(e.getMessage());
+    }
+  }
+
+  /**
+   * Serialize output data.
+   * @param out output stream
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serializeOutputData(final File file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serializeOutputData(new FileOutputStream(file));
+  }
+
+  /**
+   * Serialize output data.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serializeOutputData(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    serializeOutputData(file.create());
+  }
+
+  /**
+   * Serialize output data.
+   * @param out output stream
+   * @throws IOException if an error occurs while creating the file
+   */
+  public void serializeOutputData(final OutputStream out) throws IOException {
+
+    checkNotNull(out, "out argument cannot be null");
+
+    final ObjectOutputStream oos = new ObjectOutputStream(out);
+    System.out.println(this.outputData.getClass());
+    oos.writeObject(this.outputData);
+    oos.close();
+  }
+
+  /**
+   * Deserialize output data.
+   * @param file input datafile
+   * @throws IOException if an error occurs while reading the file
+   */
+  public void deserializeOutputData(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    deserializeOutputData(file.open());
+  }
+
+  /**
+   * Deserialize output data.
+   * @param file input file
+   * @throws IOException if an error occurs while reading the file
+   */
+  public void deserializeOutputData(final File file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    deserializeOutputData(new FileInputStream(file));
+  }
+
+  /**
+   * Deserialize output data.
+   * @param in input stream
+   * @throws IOException if an error occurs while reading the file
+   */
+  public void deserializeOutputData(final InputStream in) throws IOException {
+
+    checkNotNull(in, "in argument cannot be null");
+
+    try {
+      final ObjectInputStream ois = new ObjectInputStream(in);
+
+      // Read TaskContext object
+      final Map<String, AbstractData> outputData =
+          (Map<String, AbstractData>) ois.readObject();
+
+      ois.close();
+
+      // Update serialized data
+      updateOutputData(outputData);
 
     } catch (ClassNotFoundException e) {
       throw new EoulsanRuntimeException(e.getMessage());

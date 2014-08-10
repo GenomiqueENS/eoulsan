@@ -25,14 +25,13 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.filenameWithoutExtension;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -44,9 +43,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.workflow.StepInstances;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
@@ -108,6 +108,7 @@ public class ClusterTaskAction extends AbstractAction {
     }
 
     final File contextFile = new File(arguments.get(0));
+    System.out.println("contextFile: " + contextFile);
 
     // Execute task
     run(contextFile);
@@ -157,7 +158,7 @@ public class ClusterTaskAction extends AbstractAction {
   private static final void run(final File contextFile) {
 
     checkNotNull(contextFile, "contextFile is null");
-
+    System.out.println("Start run()");
     try {
 
       // Test if param file exists
@@ -165,59 +166,46 @@ public class ClusterTaskAction extends AbstractAction {
         throw new FileNotFoundException(contextFile.toString());
 
       // Load context file
-      final TaskContext context =
-          TaskContext.deserialize(contextFile);
+      final TaskContext context = TaskContext.deserialize(contextFile);
 
       // Create the context runner
-      final TaskRunner runner =
-          new TaskRunner(context);
+      final TaskRunner runner = new TaskRunner(context);
+
+      // Load step instance
+      final Step step =
+          StepInstances.getInstance().getStep(context.getCurrentStep());
+
+      // Configure step
+      step.configure(context.getCurrentStep().getParameters());
 
       // Get the result
       final TaskResult result = runner.run();
 
-      final String fileBaseName =
-          filenameWithoutExtension(contextFile.getName());
+      // Get the prefix for the task files and the base dir
+      final String taskPrefix = TaskRunner.createTaskPrefixFile(context);
+      final File baseDir = contextFile.getParentFile();
 
       // Save task result
-      saveTaskResult(result, new File(contextFile.getParent(), fileBaseName
-          + TASK_RESULT_EXTENSION));
+      result.serialize(new File(baseDir, taskPrefix + TASK_RESULT_EXTENSION));
+
+      // Save task output data
+      context.serializeOutputData(new File(baseDir, taskPrefix
+          + TASK_DATA_EXTENSION));
 
       // Create done file
-      createDoneFile(new File(contextFile.getParent(), fileBaseName
-          + Globals.TASK_DONE_EXTENSION));
+      createDoneFile(new File(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION));
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
       Common.errorExit(e, "IOException: " + e.getMessage());
-    } catch (EoulsanException e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     } catch (EoulsanRuntimeException e) {
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+    } catch (Throwable t) {
+      t.printStackTrace();
     }
 
-  }
-
-  /**
-   * Save the result of a task.
-   * @param taskResult task result
-   * @param taskResultFile task result file
-   * @throws EoulsanException if the result object is null
-   * @throws IOException if an error occurs while creating the result file
-   */
-  private static final void saveTaskResult(
-      final TaskResult taskResult, final File taskResultFile)
-      throws EoulsanException, IOException {
-
-    if (taskResult == null)
-      throw new EoulsanException("Task result is null");
-
-    final ObjectOutputStream out =
-        new ObjectOutputStream(new FileOutputStream(taskResultFile));
-    out.writeObject(taskResult);
-    out.close();
   }
 
   /**

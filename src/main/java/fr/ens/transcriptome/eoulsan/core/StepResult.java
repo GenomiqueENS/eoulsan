@@ -64,22 +64,4 @@ public interface StepResult {
    */
   String getErrorMessage();
 
-  //
-  // I/O
-  //
-
-  /**
-   * Write the result in a file.
-   * @param file output file
-   * @throws IOException if an error occurs while writing the result
-   */
-  void write(final DataFile file) throws IOException;
-
-  /**
-   * Write the result in a file.
-   * @param out output stream
-   * @throws IOException if an error occurs while writing the result
-   */
-  void write(final OutputStream out) throws IOException;
-
 }

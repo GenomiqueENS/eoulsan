@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.core.executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Multimaps.synchronizedMultimap;
+import static java.util.Collections.synchronizedMap;
 
 import java.util.Map;
 import java.util.Set;
@@ -36,10 +38,10 @@ import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
@@ -52,17 +54,12 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
 
   private static final int SLEEP_TIME_IN_MS = 500;
 
-  private Multimap<WorkflowStep, Integer> submittedContexts = HashMultimap
-      .create();
-  private Multimap<WorkflowStep, Integer> runningContexts = HashMultimap
-      .create();
-  private Multimap<WorkflowStep, Integer> doneContexts = HashMultimap.create();
-  private Map<Integer, WorkflowStep> contexts = Maps.newHashMap();
-
-  private final Map<WorkflowStep, WorkflowStepStatus> status = Maps
-      .newHashMap();
-  private final Map<WorkflowStep, WorkflowStepResult> results = Maps
-      .newHashMap();
+  private final Multimap<WorkflowStep, Integer> submittedContexts;
+  private final Multimap<WorkflowStep, Integer> runningContexts;
+  private final Multimap<WorkflowStep, Integer> doneContexts;
+  private final Map<Integer, WorkflowStep> contexts;
+  private final Map<WorkflowStep, WorkflowStepStatus> status;
+  private final Map<WorkflowStep, WorkflowStepResult> results;
 
   private boolean isStarted;
   private boolean isStopped;
@@ -72,12 +69,21 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   // Protected methods
   //
 
-  private void addResult(final WorkflowStep step,
-      final TaskResult result) {
+  /**
+   * Add a task result to its step result.
+   * @param step the step of the result
+   * @param result the result to add
+   */
+  private void addResult(final WorkflowStep step, final TaskResult result) {
 
     this.results.get(step).addResult(result);
   }
 
+  /**
+   * Get the step related to a context.
+   * @param context the context
+   * @return the step related to the context
+   */
   protected WorkflowStep getStep(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
@@ -85,6 +91,11 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     return getStep(context.getId());
   }
 
+  /**
+   * Get the step related to a context.
+   * @param contextId the context id
+   * @return the step related to the context
+   */
   protected WorkflowStep getStep(final int contextId) {
 
     // Test if the contextId has been submitted
@@ -94,6 +105,10 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     return this.contexts.get(contextId);
   }
 
+  /**
+   * Set a context in the running state
+   * @param context the context
+   */
   private void addRunningContext(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
@@ -101,6 +116,10 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     addRunningContext(context.getId());
   }
 
+  /**
+   * Set a context in the running state
+   * @param contextId the context id
+   */
   private void addRunningContext(final int contextId) {
 
     // Check execution state
@@ -123,6 +142,10 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     }
   }
 
+  /**
+   * Set a context in done state.
+   * @param context the context
+   */
   private void addDoneContext(final TaskContext context) {
 
     checkNotNull(context, "context argument cannot be null");
@@ -130,6 +153,10 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     addDoneContext(context.getId());
   }
 
+  /**
+   * Set a context in done state.
+   * @param contextId the context id
+   */
   private void addDoneContext(final int contextId) {
 
     // Check execution state
@@ -154,6 +181,11 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     }
   }
 
+  /**
+   * Execute a context and automatically set the context in the correct state
+   * (running and then done).
+   * @param context the context to execute
+   */
   protected void execute(final TaskContext context) {
 
     checkNotNull(context, "context argument is null");
@@ -161,24 +193,36 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
     // Check execution state
     checkExecutionState();
 
+    // Update counters
+    addRunningContext(context);
+
+    // Add the context result to the step result
+    addResult(getStep(context.getId()), executeTask(context));
+
+    // Update counters
+    addDoneContext(context);
+  }
+
+  /**
+   * Execute a context.
+   * @param context
+   * @return
+   */
+  protected TaskResult executeTask(final TaskContext context) {
+
+    checkNotNull(context, "context argument is null");
+
     // Get the step of the context
     final WorkflowStep step = getStep(context.getId());
 
     // Create context runner
-    final TaskRunner contextRunner =
-        new TaskRunner(context, getStatus(step));
-
-    // Update counters
-    addRunningContext(context);
+    final TaskRunner contextRunner = new TaskRunner(context, getStatus(step));
 
     // Run the step context
     contextRunner.run();
 
-    // Add the context result to the step result
-    addResult(step, contextRunner.getResult());
-
-    // Update counters
-    addDoneContext(context);
+    // Return the result
+    return contextRunner.getResult();
   }
 
   //
@@ -186,8 +230,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   //
 
   @Override
-  public void submit(final WorkflowStep step,
-      final Set<TaskContext> contexts) {
+  public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
@@ -388,6 +431,32 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
 
     checkState(this.isStarted, "The executor is not started");
     checkState(!this.isStopped, "The executor is stopped");
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Protected constructor.
+   */
+  protected AbstractTaskExecutor() {
+
+    final Multimap<WorkflowStep, Integer> mm1 = HashMultimap.create();
+    final Multimap<WorkflowStep, Integer> mm2 = HashMultimap.create();
+    final Multimap<WorkflowStep, Integer> mm3 = HashMultimap.create();
+
+    this.submittedContexts = synchronizedMultimap(mm1);
+    this.runningContexts = synchronizedMultimap(mm2);
+    this.doneContexts = synchronizedMultimap(mm3);
+
+    final Map<Integer, WorkflowStep> m1 = Maps.newHashMap();
+    final Map<WorkflowStep, WorkflowStepStatus> m2 = Maps.newHashMap();
+    final Map<WorkflowStep, WorkflowStepResult> m3 = Maps.newHashMap();
+
+    this.contexts = synchronizedMap(m1);
+    this.status = synchronizedMap(m2);
+    this.results = synchronizedMap(m3);
   }
 
 }
