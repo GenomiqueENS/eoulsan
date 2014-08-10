@@ -55,6 +55,7 @@ public class ExecutorArguments {
   private String jobEnvironment = "";
   private String outputPathname;
   private String logPathname;
+  private String taskPathname;
   private final String jobId;
   private final String jobUUID = UUID.randomUUID().toString();
   private final long creationTime;
@@ -85,6 +86,14 @@ public class ExecutorArguments {
    */
   public final String getLogPathname() {
     return this.logPathname;
+  }
+
+  /**
+   * Get the task path.
+   * @return Returns the task Path
+   */
+  public final String getTaskPathname() {
+    return this.taskPathname;
   }
 
   /**
@@ -186,6 +195,18 @@ public class ExecutorArguments {
       return;
 
     this.logPathname = logPath.trim();
+  }
+
+  /**
+   * Set the task path
+   * @param taskPath The task path to set
+   */
+  public final void setTaskPathname(final String taskPath) {
+
+    if (taskPath == null)
+      return;
+
+    this.taskPathname = taskPath.trim();
   }
 
   /**
@@ -336,8 +357,8 @@ public class ExecutorArguments {
     final File outputDir = new File(designFile.getAbsoluteFile().getParent());
 
     final File logDir = new File(outputDir, getJobId());
-
     final File workingDir = new File(logDir, "working");
+    final File taskDir = new File(logDir, "tasks");
 
     // Set the local working path
     setLocalWorkingPathname(workingDir.getAbsolutePath());
@@ -353,6 +374,9 @@ public class ExecutorArguments {
 
     // Set the log path
     setLogPathname(logDir.getAbsolutePath());
+
+    // Set the tasks path
+    setTaskPathname(taskDir.getAbsolutePath());
   }
 
 }

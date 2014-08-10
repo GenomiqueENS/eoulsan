@@ -111,6 +111,17 @@ public class WorkflowContext implements Serializable {
   }
 
   /**
+   * Get the task path.
+   * @return Returns the task Path
+   */
+  public String getTaskPathname() {
+
+    final DataFile dir = this.workflow.getLogDir();
+
+    return dir == null ? null : dir.getSource();
+  }
+
+  /**
    * Get the job id.
    * @return the job id
    */

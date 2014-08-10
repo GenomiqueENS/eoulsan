@@ -273,7 +273,7 @@ public class TaskRunner {
 
     // Define the log file for the step
     final DataFile logDir =
-        this.context.getStep().getAbstractWorkflow().getLogDir();
+        this.context.getStep().getAbstractWorkflow().getTaskDir();
     final DataFile logFile =
         new DataFile(logDir, step.getId()
             + "_context#" + this.context.getId() + TASK_LOG_EXTENSION);

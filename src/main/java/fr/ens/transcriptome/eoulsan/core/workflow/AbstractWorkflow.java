@@ -85,6 +85,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final DataFile hadoopWorkingDir;
   private final DataFile outputDir;
   private final DataFile logDir;
+  private final DataFile taskDir;
 
   private final Design design;
   private final WorkflowContext workflowContext;
@@ -132,6 +133,14 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   DataFile getLogDir() {
     return this.logDir;
+  }
+
+  /**
+   * Get the task directory.
+   * @return Returns the task directory
+   */
+  DataFile getTaskDir() {
+    return this.taskDir;
   }
 
   @Override
@@ -614,12 +623,13 @@ public abstract class AbstractWorkflow implements Workflow {
   public void checkDirectories() throws EoulsanException {
 
     checkNotNull(this.logDir, "the log directory is null");
+    checkNotNull(this.taskDir, "the task directory is null");
     checkNotNull(this.outputDir, "the output directory is null");
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
       for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir }) {
+          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir }) {
 
         if (dir == null)
           continue;
@@ -739,6 +749,8 @@ public abstract class AbstractWorkflow implements Workflow {
     this.design = design;
 
     this.logDir = newDataFile(executionArguments.getLogPathname());
+
+    this.taskDir = newDataFile(executionArguments.getTaskPathname());
 
     this.localWorkingDir =
         newDataFile(executionArguments.getLocalWorkingPathname());

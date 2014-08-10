@@ -107,6 +107,12 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   @Override
+  public String getTaskPathname() {
+
+    return this.workflowContext.getTaskPathname();
+  }
+
+  @Override
   public String getOutputPathname() {
     return this.workflowContext.getOutputPathname();
   }
@@ -426,13 +432,12 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the
-   * values of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values
+   * of the settings of the Eoulsan runtime.
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final File file)
-      throws IOException {
+  public static TaskContext deserialize(final File file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -440,13 +445,12 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the
-   * values of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values
+   * of the settings of the Eoulsan runtime.
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final DataFile file)
-      throws IOException {
+  public static TaskContext deserialize(final DataFile file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -454,8 +458,8 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the
-   * values of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values
+   * of the settings of the Eoulsan runtime.
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */

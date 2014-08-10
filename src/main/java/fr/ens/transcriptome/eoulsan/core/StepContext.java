@@ -107,6 +107,12 @@ public interface StepContext {
   String getLogPathname();
 
   /**
+   * Get the task path.
+   * @return Returns the task Path
+   */
+  String getTaskPathname();
+
+  /**
    * Get the output path.
    * @return Returns the output Path
    */
