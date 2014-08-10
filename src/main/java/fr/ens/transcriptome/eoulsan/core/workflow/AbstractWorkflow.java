@@ -26,8 +26,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.Globals.LOG_EXTENSION;
-import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
@@ -35,7 +33,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,10 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
@@ -60,9 +53,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutorFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
@@ -424,12 +415,6 @@ public abstract class AbstractWorkflow implements Workflow {
         // Log end of analysis
         logEndAnalysis(false, stopwatch);
 
-        // Stop all other steps
-        for (AbstractWorkflowStep step : this.steps.keySet()) {
-          final TokenManager tokenManager = registry.getTokenManager(step);
-          tokenManager.stop();
-        }
-
         // Stop the workflow
         stop();
 
@@ -456,78 +441,15 @@ public abstract class AbstractWorkflow implements Workflow {
     for (AbstractWorkflowStep step : this.steps.keySet()) {
 
       // Stop Token manager dedicated thread
-      registry.getTokenManager(step).stop();
+      final TokenManager tokenManager = registry.getTokenManager(step);
+
+      if (tokenManager.isStarted()) {
+        tokenManager.stop();
+      }
     }
 
     // Stop executor
     TaskExecutorFactory.getExecutor().stop();
-  }
-
-  /**
-   * Create the logger for a step.
-   * @param step the step
-   * @param threadGroupName the name of the thread group
-   * @return a Logger instance
-   */
-  private Logger createStepLogger(final AbstractWorkflowStep step,
-      final String threadGroupName) {
-
-    // Define the log file for the step
-    final DataFile logFile =
-        new DataFile(getLogDir(), step.getId() + LOG_EXTENSION);
-    OutputStream logOut;
-    try {
-
-      logOut = logFile.create();
-
-    } catch (IOException e) {
-      return null;
-    }
-
-    // Get the logger for the step
-    final Logger logger = Logger.getLogger(threadGroupName);
-
-    final Handler handler = new StreamHandler(logOut, Globals.LOG_FORMATTER);
-
-    // Disable parent Handler
-    logger.setUseParentHandlers(false);
-
-    // Set log level to all before setting the real log level
-    logger.setLevel(Level.ALL);
-
-    // Set the Handler
-    logger.addHandler(handler);
-
-    // Set log level
-    handler.setLevel(Level.parse(Main.getInstance().getLogLevelArgument()
-        .toUpperCase()));
-
-    return logger;
-  }
-
-  /**
-   * This method write the step result in a file.
-   * @param step step that has been executed
-   * @param result result object
-   */
-  private void writeStepResult(final WorkflowStep step, final StepResult result) {
-
-    if (result == null)
-      return;
-
-    // Step result file
-    final DataFile logFile =
-        new DataFile(this.logDir, step.getId() + STEP_RESULT_EXTENSION);
-
-    try {
-
-      result.write(logFile);
-
-    } catch (IOException e) {
-
-      Common.showAndLogErrorMessage("Unable to create log file for "
-          + step.getId() + " step.");
-    }
   }
 
   //

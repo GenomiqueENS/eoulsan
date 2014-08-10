@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
@@ -178,35 +179,37 @@ public class TokenManager implements Runnable {
    */
   public void postToken(final WorkflowInputPort inputPort, final Token token) {
 
-    Preconditions.checkNotNull(token);
-    Preconditions.checkNotNull(inputPort);
+    checkNotNull(token);
+    checkNotNull(inputPort);
 
-    if (this.receivedToken.contains(token.getId())) {
-      return;
-    } else {
-      this.receivedToken.add(token.getId());
-    }
+    // Check origin step state
+    final StepState originStepState = token.getOrigin().getStep().getState();
+    checkState(originStepState == WORKING || originStepState == DONE,
+        "Invalid token step origin state: " + originStepState);
+
+    // Check if token has already been processed
+    checkState(!this.receivedToken.contains(token.getId()),
+        "Token has been already received: " + token.getId());
 
     // Check if the input is linked to the step
-    if (!this.inputPorts.contains(inputPort))
-      throw new IllegalStateException("Unknown port: " + inputPort);
+    checkState(this.inputPorts.contains(inputPort), "Unknown port: "
+        + inputPort);
 
-    if (inputPort.getLink() != token.getOrigin())
-      throw new IllegalStateException("The input port ("
-          + inputPort + ") and the output port (" + outputPorts
-          + ") are not linked:");
+    // Check if the origin of the token and the input port are linked
+    checkState(inputPort.getLink() == token.getOrigin(), "The input port ("
+        + inputPort + ") and the output port (" + outputPorts
+        + ") are not linked:");
 
     // Check if the input port is closed
-    if (this.closedPorts.contains(inputPort))
-      throw new IllegalStateException("The input port is closed for the step: "
-          + inputPort);
+    checkState(!this.closedPorts.contains(inputPort),
+        "The input port is closed for the step: " + inputPort);
 
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      if (this.inputTokens.get(inputPort).isEmpty())
-        throw new IllegalStateException("No data receive for port: "
-            + inputPort);
+      // Check if input port is empty
+      checkState(!this.inputTokens.get(inputPort).isEmpty(),
+          "No data receive for port: " + inputPort);
 
       // The input port must be closed
       this.closedPorts.add(inputPort);
@@ -432,6 +435,15 @@ public class TokenManager implements Runnable {
   }
 
   /**
+   * Test if the thread for the token is started.
+   * @return true if the thread for the token is started
+   */
+  public boolean isStarted() {
+
+    return this.isStarted;
+  }
+
+  /**
    * Stop the Token manager thread.
    */
   void stop() {
@@ -439,8 +451,9 @@ public class TokenManager implements Runnable {
     // Check if the thread has been started
     checkState(this.isStarted,
         "The token manager thread for step "
-            + this.step.getId() + " is already started");
+            + this.step.getId() + " is not started");
 
+    this.isStarted = false;
     this.endOfStep = true;
   }
 
@@ -509,12 +522,12 @@ public class TokenManager implements Runnable {
             writeStepResult(result);
           }
 
+          // Send end of step tokens
+          sendEndOfStepTokens();
+
         } else {
           this.step.setState(FAIL);
         }
-
-        // Send end of step tokens
-        sendEndOfStepTokens();
 
         this.endOfStep = true;
       }
