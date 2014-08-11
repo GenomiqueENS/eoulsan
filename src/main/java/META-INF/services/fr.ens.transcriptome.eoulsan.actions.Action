@@ -5,6 +5,7 @@ fr.ens.transcriptome.eoulsan.actions.CreateHadoopJarAction
 fr.ens.transcriptome.eoulsan.actions.ExecAction
 fr.ens.transcriptome.eoulsan.actions.HadoopExecAction
 fr.ens.transcriptome.eoulsan.actions.UploadS3Action
+fr.ens.transcriptome.eoulsan.actions.ClusterExecAction
 
 # Hadoop jar actions
 fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction
