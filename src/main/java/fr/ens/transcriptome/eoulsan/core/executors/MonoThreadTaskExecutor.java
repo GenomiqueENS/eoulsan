@@ -73,7 +73,13 @@ public class MonoThreadTaskExecutor extends AbstractTaskExecutor implements
 
       // Do nothing if the queue is empty or the executor paused
       if (!this.isPaused() && !this.queue.isEmpty()) {
-        execute(this.queue.remove());
+
+        // Get context to execute
+        final TaskContext context = this.queue.remove();
+
+        // Execute the context
+        beforeExecuteTask(context);
+        afterExecuteTask(context, executeTask(context));
       }
 
       // Wait

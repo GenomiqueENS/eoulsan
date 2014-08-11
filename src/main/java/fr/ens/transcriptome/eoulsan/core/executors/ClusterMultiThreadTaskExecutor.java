@@ -24,7 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.executors;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DONE_EXTENSION;
@@ -33,7 +34,11 @@ import static fr.ens.transcriptome.eoulsan.Globals.TASK_STDERR_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_STDOUT_EXTENSION;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Queue;
 
@@ -41,18 +46,53 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.actions.ClusterTaskAction;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
+/**
+ * This class is an executor for task running on a cluster.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
 
   private Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+
+  /**
+   * This class allow to fetch standard output or standard error.
+   */
+  public static final class ProcessThreadOutput extends Thread {
+
+    final InputStream in;
+    final OutputStream out;
+
+    @Override
+    public void run() {
+
+      try {
+        FileUtils.copy(in, out);
+      } catch (IOException e) {
+        EoulsanLogger.getLogger().severe(e.getMessage());
+      }
+    }
+
+    /**
+     * Constructor.
+     * @param in Input stream
+     * @param out Output Stream
+     */
+    public ProcessThreadOutput(final InputStream in, final OutputStream out) {
+
+      this.in = in;
+      this.out = out;
+    }
+  }
 
   /**
    * Wrapper class around a call to executeTask method.
@@ -61,64 +101,19 @@ public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
   private final class TaskThread extends Thread {
 
     private final TaskContext context;
-
-    @Override
-    public void run() {
-
-      // Execute task
-      execute(this.context);
-
-      // Remove the thread from the queue
-      queue.remove(this);
-    }
-
-    //
-    // Constructor
-    //
+    private final File taskDir;
+    private final String taskPrefix;
+    private Process process;
 
     /**
-     * Constructor.
-     * @param context context to execute
+     * Create the process
+     * @throws IOException if an error occurs while creating the process
      */
-    TaskThread(final TaskContext context) {
-      this.context = context;
-    }
-  }
+    private void createProcess() throws IOException {
 
-  /**
-   * Code to execute by the TaskThread.
-   * @param context context to execute
-   */
-  @Override
-  protected TaskResult executeTask(final TaskContext context) {
-
-    // Get task dir
-    final File taskDir = new File(context.getTaskPathname());
-
-    // Get the prefix for the task files
-    final String taskPrefix = TaskRunner.createTaskPrefixFile(context);
-
-    // Define the file for the task context
-    final File taskContextFile =
-        new File(taskDir, taskPrefix + TASK_CONTEXT_EXTENSION);
-
-    // Define stdout file
-    final File taskStdoutFile =
-        new File(taskDir, taskPrefix + TASK_STDOUT_EXTENSION);
-
-    // Define stderr file
-    final File taskStderrFile =
-        new File(taskDir, taskPrefix + TASK_STDERR_EXTENSION);
-
-    // Define the file for the task done
-    final File taskDoneFile =
-        new File(taskDir, taskPrefix + TASK_DONE_EXTENSION);
-
-    // Define the file for the task result
-    final File taskResultFile =
-        new File(taskDir, taskPrefix + TASK_RESULT_EXTENSION);
-
-    try {
+      // Define the file for the task context
+      final File taskContextFile =
+          new File(this.taskDir, this.taskPrefix + TASK_CONTEXT_EXTENSION);
 
       // Serialize the context object
       context.serialize(taskContextFile);
@@ -137,58 +132,137 @@ public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
       command.add(ClusterTaskAction.ACTION_NAME);
       command.add(taskContextFile.getAbsolutePath());
 
-      command.add(">");
-      command.add(taskStdoutFile.getAbsolutePath());
+      final ProcessBuilder pb = new ProcessBuilder(command);
 
-      command.add("2>");
-      command.add(taskStderrFile.getAbsolutePath());
+      // Start the process
+      this.process = pb.start();
+    }
 
-      getLogger().info("Launch cluster task: " + command);
+    /**
+     * Load the result of the step
+     * @return a TaskResult object
+     * @throws EoulsanException if the done task is not found
+     * @throws IOException if an error occurs while reading the result file
+     */
+    private TaskResult loadResult() throws EoulsanException, IOException {
 
-      // String cmd = "/bin/bash -c '" + Joiner.on(' ').join(command) + "'";
-      String cmd = "/bin/ls -l /tmp";
-      cmd =
-          "/home/jourdren/workspace/eoulsan/target/dist/eoulsan-1.3-SNAPSHOT/eoulsan.sh "
-              + ClusterTaskAction.ACTION_NAME + " "
-              + taskContextFile.getAbsolutePath();
-
-      // Execute task
-      // final int exitCode = ProcessUtils.sh(command);
-      // final int exitCode = ProcessUtils.system(cmd);
-      // System.out.println("exit code: " + exitCode);
-
-      // System.out.println("ProcessUtils output:\n"
-      // + ProcessUtils.execToString(cmd, true, false));
-
-      ProcessUtils.execToString(cmd, true, false);
-
-      // if (exitCode != 0) {
-      // throw new EoulsanException("Invalid task exit code: "
-      // + exitCode + " for task #" + context.getId() + " in step "
-      // + getStep(context).getId());
-      // }
+      // Define the file for the task done
+      final File taskDoneFile =
+          new File(taskDir, taskPrefix + TASK_DONE_EXTENSION);
 
       if (!taskDoneFile.exists()) {
         throw new EoulsanException("No done file found for task #"
             + context.getId() + " in step " + getStep(context).getId());
       }
 
-      TaskResult result = TaskResult.deserialize(taskResultFile);
-
+      // Define the file for the task result
+      final File taskResultFile =
+          new File(taskDir, taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
       context.deserializeOutputData(new File(taskDir, taskPrefix
           + TASK_DATA_EXTENSION));
 
-      // Send tokens
-      TaskRunner.sendTokens(context, result);
+      return TaskResult.deserialize(taskResultFile);
+    }
 
-      return result;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return TaskRunner.createStepResult(context, e);
-    } catch (EoulsanException e) {
-      e.printStackTrace();
-      return TaskRunner.createStepResult(context, e);
+    /**
+     * Redirect standard and error output of the process to files
+     * @throws FileNotFoundException if file to redirect are not found
+     */
+    private void redirectProcessStream() throws FileNotFoundException {
+
+      checkState(this.process != null, "Process has not been created");
+
+      // Define stdout file
+      final File taskStdoutFile =
+          new File(taskDir, taskPrefix + TASK_STDOUT_EXTENSION);
+
+      // Start stdout thread
+      new ProcessThreadOutput(this.process.getInputStream(),
+          new FileOutputStream(taskStdoutFile)).start();
+
+      // Define stderr file
+      final File taskStderrFile =
+          new File(taskDir, taskPrefix + TASK_STDERR_EXTENSION);
+
+      // Start stderr thread
+      new ProcessThreadOutput(this.process.getErrorStream(),
+          new FileOutputStream(taskStderrFile)).start();
+    }
+
+    @Override
+    public void run() {
+
+      TaskResult result = null;
+
+      try {
+
+        // Change task state
+        beforeExecuteTask(this.context);
+
+        // Start process
+        createProcess();
+
+        // Redirect stdout and stderr to files
+        redirectProcessStream();
+
+        // Wait process
+        final int exitCode = this.process.waitFor();
+
+        // Set exception if exit code is not 0
+        if (exitCode != 0) {
+          throw new EoulsanException("Invalid task exit code: "
+              + exitCode + " for task #" + context.getId() + " in step "
+              + getStep(context).getId());
+        }
+
+        // Load result
+        result = loadResult();
+
+        // Send tokens
+        TaskRunner.sendTokens(this.context, result);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+        result = TaskRunner.createStepResult(this.context, e);
+      } catch (EoulsanException e) {
+        e.printStackTrace();
+        result = TaskRunner.createStepResult(this.context, e);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+        result = TaskRunner.createStepResult(this.context, e);
+      } finally {
+
+        // Change task state
+        afterExecuteTask(this.context, result);
+
+        // Remove the thread from the queue
+        queue.remove(this);
+      }
+    }
+
+    public void destroy() {
+
+      if (this.process != null) {
+        this.process.destroy();
+      }
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param context context to execute
+     */
+    TaskThread(final TaskContext context) {
+
+      checkNotNull(context, "context argument cannot be null");
+
+      this.context = context;
+      this.taskDir = new File(context.getTaskPathname());
+      this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
     }
   }
 
@@ -206,6 +280,18 @@ public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
 
     // Start the Thread
     st.start();
+  }
+
+  @Override
+  public void stop() {
+
+    for (TaskThread thread : this.queue) {
+
+      // Kill the subprocess
+      thread.destroy();
+    }
+
+    this.queue.clear();
   }
 
 }

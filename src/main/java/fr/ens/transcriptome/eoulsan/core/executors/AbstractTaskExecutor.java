@@ -182,11 +182,10 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   }
 
   /**
-   * Execute a context and automatically set the context in the correct state
-   * (running and then done).
+   * Set the state of the context before executing a task.
    * @param context the context to execute
    */
-  protected void execute(final TaskContext context) {
+  protected void beforeExecuteTask(final TaskContext context) {
 
     checkNotNull(context, "context argument is null");
 
@@ -195,18 +194,29 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
 
     // Update counters
     addRunningContext(context);
+  }
+
+  /**
+   * Set the state of the context after executing a task.
+   * @param context the context to execute
+   */
+  protected void afterExecuteTask(final TaskContext context,
+      final TaskResult result) {
+
+    checkNotNull(context, "context argument is null");
+    checkNotNull(result, "result argument is null");
 
     // Add the context result to the step result
-    addResult(getStep(context.getId()), executeTask(context));
+    addResult(getStep(context.getId()), result);
 
     // Update counters
     addDoneContext(context);
   }
 
   /**
-   * Execute a context.
-   * @param context
-   * @return
+   * Default executing context method.
+   * @param context the context
+   * @return a TaskResult object
    */
   protected TaskResult executeTask(final TaskContext context) {
 

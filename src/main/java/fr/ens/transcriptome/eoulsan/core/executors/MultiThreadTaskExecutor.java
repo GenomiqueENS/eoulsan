@@ -59,7 +59,9 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
     @Override
     public void run() {
 
-      execute(this.context);
+      // Execute the context
+      beforeExecuteTask(this.context);
+      afterExecuteTask(this.context, executeTask(this.context));
     }
 
     //

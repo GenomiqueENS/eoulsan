@@ -53,13 +53,21 @@ public class TaskExecutorFactory {
       final int threadNumber =
           EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
-      executor = new CombinedTaskExecutor(threadNumber);
+      if (EoulsanRuntime.getRuntime().isClusterMode()) {
+
+        // Cluster mode
+        executor = new ClusterCombinedTaskExecutor(threadNumber);
+      } else {
+
+        // Standard mode
+        executor = new CombinedTaskExecutor(threadNumber);
+      }
     }
 
     return executor;
   }
 
-  //
+  // Local
   // Constructor
   //
 
