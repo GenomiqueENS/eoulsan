@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
@@ -37,11 +37,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 
 /**
- * This class define a muti thread executor.
+ * This class define a muti thread scheduler.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
+public class MultiThreadTaskScheduler extends AbstractTaskScheduler {
 
   private static final int WAIT_SHUTDOWN_MINUTES = 60;
 
@@ -49,7 +49,7 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
   private final List<Future<TaskThread>> threads = Lists.newArrayList();
 
   /**
-   * Wrapper class around a call to executeTask method.
+   * Wrapper class around a call to executeTask methods.
    * @author Laurent Jourdren
    */
   private final class TaskThread implements Runnable {
@@ -131,9 +131,9 @@ public class MultiThreadTaskExecutor extends AbstractTaskExecutor {
 
   /**
    * Constructor.
-   * @param threadNumber number of thread to use by the task executor
+   * @param threadNumber number of thread to use by the task scheduler
    */
-  public MultiThreadTaskExecutor(final int threadNumber) {
+  public MultiThreadTaskScheduler(final int threadNumber) {
 
     checkArgument(threadNumber > 0, "threadNumber must be > 0");
 

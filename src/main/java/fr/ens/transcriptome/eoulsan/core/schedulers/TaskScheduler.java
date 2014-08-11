@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import java.util.Set;
 
@@ -32,11 +32,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This interface define a task executor.
+ * This interface define a task scheduler.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface TaskExecutor {
+public interface TaskScheduler {
 
   /**
    * Submit contexts to execute.
@@ -112,12 +112,12 @@ public interface TaskExecutor {
   int getTotalTaskDoneCount();
 
   /**
-   * Start the executor.
+   * Start the scheduler.
    */
   void start();
 
   /**
-   * Stop the executor.
+   * Stop the scheduler.
    */
   void stop();
 

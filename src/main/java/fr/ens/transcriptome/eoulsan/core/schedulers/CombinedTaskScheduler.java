@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,18 +39,18 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This class defined a combined task executor that use several context
- * executors according to the parallelization mode of the step.
+ * This class defined a combined task scheduler that use several context
+ * schedulers according to the parallelization mode of the step.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class CombinedTaskExecutor implements TaskExecutor, Runnable {
+public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 200;
 
-  private final AbstractTaskExecutor noTaskExecutor;
-  private final AbstractTaskExecutor stdTaskExecutor;
-  private final AbstractTaskExecutor ownTaskExecutor;
+  private final AbstractTaskScheduler noTaskScheduler;
+  private final AbstractTaskScheduler stdTaskScheduler;
+  private final AbstractTaskScheduler ownTaskScheduler;
 
   boolean isStarted;
   boolean isStopped;
@@ -77,7 +77,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
     // Check execution state
     checkExecutionState();
 
-    getTaskExecutor(step).submit(step, context);
+    getTaskScheduler(step).submit(step, context);
   }
 
   @Override
@@ -85,7 +85,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getStatus(step);
+    return getTaskScheduler(step).getStatus(step);
   }
 
   @Override
@@ -93,7 +93,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getResult(step);
+    return getTaskScheduler(step).getResult(step);
   }
 
   @Override
@@ -101,7 +101,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskSubmitedCount(step);
+    return getTaskScheduler(step).getTaskSubmitedCount(step);
   }
 
   @Override
@@ -109,7 +109,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskRunningCount(step);
+    return getTaskScheduler(step).getTaskRunningCount(step);
   }
 
   @Override
@@ -117,7 +117,7 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskDoneCount(step);
+    return getTaskScheduler(step).getTaskDoneCount(step);
   }
 
   @Override
@@ -128,52 +128,52 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
     // Check execution state
     checkExecutionState();
 
-    getTaskExecutor(step).waitEndOfTasks(step);
+    getTaskScheduler(step).waitEndOfTasks(step);
   }
 
   @Override
   public int getTotalTaskSubmitedCount() {
 
-    return this.noTaskExecutor.getTotalTaskSubmitedCount()
-        + this.stdTaskExecutor.getTotalTaskSubmitedCount()
-        + this.ownTaskExecutor.getTotalTaskSubmitedCount();
+    return this.noTaskScheduler.getTotalTaskSubmitedCount()
+        + this.stdTaskScheduler.getTotalTaskSubmitedCount()
+        + this.ownTaskScheduler.getTotalTaskSubmitedCount();
   }
 
   @Override
   public int getTotalTaskRunningCount() {
 
-    return this.noTaskExecutor.getTotalTaskRunningCount()
-        + this.stdTaskExecutor.getTotalTaskRunningCount()
-        + this.ownTaskExecutor.getTotalTaskRunningCount();
+    return this.noTaskScheduler.getTotalTaskRunningCount()
+        + this.stdTaskScheduler.getTotalTaskRunningCount()
+        + this.ownTaskScheduler.getTotalTaskRunningCount();
   }
 
   @Override
   public int getTotalTaskDoneCount() {
 
-    return this.noTaskExecutor.getTotalTaskDoneCount()
-        + this.stdTaskExecutor.getTotalTaskDoneCount()
-        + this.ownTaskExecutor.getTotalTaskDoneCount();
+    return this.noTaskScheduler.getTotalTaskDoneCount()
+        + this.stdTaskScheduler.getTotalTaskDoneCount()
+        + this.ownTaskScheduler.getTotalTaskDoneCount();
   }
 
   @Override
   public void start() {
 
     // Check execution state
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(!this.isStopped, "The scheduler is stopped");
 
     synchronized (this) {
       this.isStarted = true;
     }
 
-    this.noTaskExecutor.start();
-    this.stdTaskExecutor.start();
-    this.ownTaskExecutor.start();
+    this.noTaskScheduler.start();
+    this.stdTaskScheduler.start();
+    this.ownTaskScheduler.start();
 
-    // Pause ownTaskExecutor
-    this.ownTaskExecutor.pause();
+    // Pause ownTaskScheduler
+    this.ownTaskScheduler.pause();
 
     // Start the thread
-    new Thread(this, "TaskExecutor_combined").start();
+    new Thread(this, "TaskScheduler_combined").start();
   }
 
   @Override
@@ -186,9 +186,9 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
       this.isStopped = true;
     }
 
-    this.noTaskExecutor.stop();
-    this.stdTaskExecutor.stop();
-    this.ownTaskExecutor.stop();
+    this.noTaskScheduler.stop();
+    this.stdTaskScheduler.stop();
+    this.ownTaskScheduler.stop();
   }
 
   //
@@ -200,8 +200,8 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
    */
   private void checkExecutionState() {
 
-    checkState(this.isStarted, "The executor is not started");
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(this.isStarted, "The scheduler is not started");
+    checkState(!this.isStopped, "The scheduler is stopped");
   }
 
   /**
@@ -218,22 +218,22 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
   }
 
   /**
-   * Get the task executor of a step.
+   * Get the task scheduler of a step.
    * @param step the step
-   * @return the task executor that the step must use
+   * @return the task scheduler that the step must use
    */
-  private TaskExecutor getTaskExecutor(final WorkflowStep step) {
+  private TaskScheduler getTaskScheduler(final WorkflowStep step) {
 
     switch (getParallelizationMode(step)) {
 
     case NOT_NEEDED:
-      return this.noTaskExecutor;
+      return this.noTaskScheduler;
 
     case STANDARD:
-      return this.stdTaskExecutor;
+      return this.stdTaskScheduler;
 
     case OWN_PARALELIZATION:
-      return this.ownTaskExecutor;
+      return this.ownTaskScheduler;
 
     default:
       throw new IllegalStateException("Unknown Parallelization mode");
@@ -249,27 +249,27 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
     while (!this.isStopped) {
 
-      // Is there some task to do by ownTaskExecutor ?
-      if (this.ownTaskExecutor.isPaused()
-          && this.ownTaskExecutor.getTotalWaitingCount() > 0) {
+      // Is there some task to do by ownTaskScheduler ?
+      if (this.ownTaskScheduler.isPaused()
+          && this.ownTaskScheduler.getTotalWaitingCount() > 0) {
 
-        // If std executor running, pause it
-        if (!this.stdTaskExecutor.isPaused()) {
-          this.stdTaskExecutor.pause();
+        // If standard scheduler running, pause it
+        if (!this.stdTaskScheduler.isPaused()) {
+          this.stdTaskScheduler.pause();
         }
 
-        // When std executor has finishing current running task resume own
-        // executor
-        if (this.stdTaskExecutor.getTotalTaskRunningCount() == 0) {
-          this.ownTaskExecutor.resume();
+        // When standard scheduler has finishing current running task resume own
+        // scheduler
+        if (this.stdTaskScheduler.getTotalTaskRunningCount() == 0) {
+          this.ownTaskScheduler.resume();
         }
       }
 
-      if (!this.ownTaskExecutor.isPaused()
-          && this.ownTaskExecutor.getTotalWaitingCount() == 0) {
+      if (!this.ownTaskScheduler.isPaused()
+          && this.ownTaskScheduler.getTotalWaitingCount() == 0) {
 
-        this.ownTaskExecutor.pause();
-        this.stdTaskExecutor.resume();
+        this.ownTaskScheduler.pause();
+        this.stdTaskScheduler.resume();
       }
 
       // Wait
@@ -287,16 +287,16 @@ public class CombinedTaskExecutor implements TaskExecutor, Runnable {
 
   /**
    * Constructor.
-   * @param threadNumber number of thread to use by the task executor
+   * @param threadNumber number of thread to use by the task scheduler
    */
-  public CombinedTaskExecutor(final int threadNumber) {
+  public CombinedTaskScheduler(final int threadNumber) {
 
     checkArgument(threadNumber > 0, "threadNumber must be > 0");
 
-    // Create executor service
-    this.stdTaskExecutor = new MultiThreadTaskExecutor(threadNumber);
-    this.noTaskExecutor = new MonoThreadTaskExecutor();
-    this.ownTaskExecutor = new MonoThreadTaskExecutor();
+    // Create the schedulers instances
+    this.stdTaskScheduler = new MultiThreadTaskScheduler(threadNumber);
+    this.noTaskScheduler = new MonoThreadTaskScheduler();
+    this.ownTaskScheduler = new MonoThreadTaskScheduler();
   }
 
 }

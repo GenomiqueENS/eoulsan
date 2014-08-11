@@ -51,8 +51,8 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
-import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutor;
-import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutorFactory;
+import fr.ens.transcriptome.eoulsan.core.schedulers.TaskScheduler;
+import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -67,7 +67,7 @@ public class TokenManager implements Runnable {
   private static final int CHECKING_DELAY_MS = 1000;
 
   private final AbstractWorkflowStep step;
-  private final TaskExecutor executor;
+  private final TaskScheduler scheduler;
   private final WorkflowInputPorts inputPorts;
   private final WorkflowOutputPorts outputPorts;
 
@@ -127,7 +127,7 @@ public class TokenManager implements Runnable {
    */
   WorkflowStepResult getStepResult() {
 
-    return this.executor.getResult(this.step);
+    return this.scheduler.getResult(this.step);
   }
 
   //
@@ -499,16 +499,16 @@ public class TokenManager implements Runnable {
       }
 
       // Submit execution of the available contexts
-      this.executor.submit(this.step, contexts);
+      this.scheduler.submit(this.step, contexts);
 
       // If no more token to receive
       if (isNoTokenToReceive()) {
 
         // Wait end of all context
-        this.executor.waitEndOfTasks(this.step);
+        this.scheduler.waitEndOfTasks(this.step);
 
         // Get the result
-        final WorkflowStepResult result = this.executor.getResult(this.step);
+        final WorkflowStepResult result = this.scheduler.getResult(this.step);
 
         // Set the result immutable
         result.setImmutable();
@@ -551,8 +551,8 @@ public class TokenManager implements Runnable {
     this.inputPorts = step.getWorkflowInputPorts();
     this.outputPorts = step.getWorkflowOutputPorts();
 
-    // Get the executor
-    this.executor = TaskExecutorFactory.getExecutor();
+    // Get the scheduler
+    this.scheduler = TaskSchedulerFactory.getScheduler();
   }
 
 }

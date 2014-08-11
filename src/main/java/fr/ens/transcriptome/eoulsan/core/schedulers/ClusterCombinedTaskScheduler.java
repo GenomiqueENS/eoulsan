@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -38,15 +38,15 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This class defined a combined task executor for cluster mode.
+ * This class defined a combined task scheduler for cluster mode.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ClusterCombinedTaskExecutor implements TaskExecutor {
+public class ClusterCombinedTaskScheduler implements TaskScheduler {
 
-  private final AbstractTaskExecutor noTaskExecutor;
-  private final AbstractTaskExecutor stdTaskExecutor;
-  private final AbstractTaskExecutor clusterTaskExecutor;
+  private final AbstractTaskScheduler noTaskScheduler;
+  private final AbstractTaskScheduler stdTaskScheduler;
+  private final AbstractTaskScheduler clusterTaskScheduler;
 
   boolean isStarted;
   boolean isStopped;
@@ -73,7 +73,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
     // Check execution state
     checkExecutionState();
 
-    getTaskExecutor(step).submit(step, context);
+    getTaskScheduler(step).submit(step, context);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getStatus(step);
+    return getTaskScheduler(step).getStatus(step);
   }
 
   @Override
@@ -89,7 +89,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getResult(step);
+    return getTaskScheduler(step).getResult(step);
   }
 
   @Override
@@ -97,7 +97,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskSubmitedCount(step);
+    return getTaskScheduler(step).getTaskSubmitedCount(step);
   }
 
   @Override
@@ -105,7 +105,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskRunningCount(step);
+    return getTaskScheduler(step).getTaskRunningCount(step);
   }
 
   @Override
@@ -113,7 +113,7 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskExecutor(step).getTaskDoneCount(step);
+    return getTaskScheduler(step).getTaskDoneCount(step);
   }
 
   @Override
@@ -124,46 +124,46 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
     // Check execution state
     checkExecutionState();
 
-    getTaskExecutor(step).waitEndOfTasks(step);
+    getTaskScheduler(step).waitEndOfTasks(step);
   }
 
   @Override
   public int getTotalTaskSubmitedCount() {
 
-    return this.noTaskExecutor.getTotalTaskSubmitedCount()
-        + this.stdTaskExecutor.getTotalTaskSubmitedCount()
-        + this.clusterTaskExecutor.getTotalTaskSubmitedCount();
+    return this.noTaskScheduler.getTotalTaskSubmitedCount()
+        + this.stdTaskScheduler.getTotalTaskSubmitedCount()
+        + this.clusterTaskScheduler.getTotalTaskSubmitedCount();
   }
 
   @Override
   public int getTotalTaskRunningCount() {
 
-    return this.noTaskExecutor.getTotalTaskRunningCount()
-        + this.stdTaskExecutor.getTotalTaskRunningCount()
-        + this.clusterTaskExecutor.getTotalTaskRunningCount();
+    return this.noTaskScheduler.getTotalTaskRunningCount()
+        + this.stdTaskScheduler.getTotalTaskRunningCount()
+        + this.clusterTaskScheduler.getTotalTaskRunningCount();
   }
 
   @Override
   public int getTotalTaskDoneCount() {
 
-    return this.noTaskExecutor.getTotalTaskDoneCount()
-        + this.stdTaskExecutor.getTotalTaskDoneCount()
-        + this.clusterTaskExecutor.getTotalTaskDoneCount();
+    return this.noTaskScheduler.getTotalTaskDoneCount()
+        + this.stdTaskScheduler.getTotalTaskDoneCount()
+        + this.clusterTaskScheduler.getTotalTaskDoneCount();
   }
 
   @Override
   public void start() {
 
     // Check execution state
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(!this.isStopped, "The scheduler is stopped");
 
     synchronized (this) {
       this.isStarted = true;
     }
 
-    this.noTaskExecutor.start();
-    this.stdTaskExecutor.start();
-    this.clusterTaskExecutor.start();
+    this.noTaskScheduler.start();
+    this.stdTaskScheduler.start();
+    this.clusterTaskScheduler.start();
   }
 
   @Override
@@ -176,9 +176,9 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
       this.isStopped = true;
     }
 
-    this.noTaskExecutor.stop();
-    this.stdTaskExecutor.stop();
-    this.clusterTaskExecutor.stop();
+    this.noTaskScheduler.stop();
+    this.stdTaskScheduler.stop();
+    this.clusterTaskScheduler.stop();
   }
 
   //
@@ -190,8 +190,8 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
    */
   private void checkExecutionState() {
 
-    checkState(this.isStarted, "The executor is not started");
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(this.isStarted, "The scheduler is not started");
+    checkState(!this.isStopped, "The scheduler is stopped");
   }
 
   /**
@@ -208,24 +208,24 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
   }
 
   /**
-   * Get the task executor of a step.
+   * Get the task scheduler of a step.
    * @param step the step
-   * @return the task executor that the step must use
+   * @return the task scheduler that the step must use
    */
-  private TaskExecutor getTaskExecutor(final WorkflowStep step) {
+  private TaskScheduler getTaskScheduler(final WorkflowStep step) {
 
     if (step.getType() == GENERATOR_STEP) {
-      return this.stdTaskExecutor;
+      return this.stdTaskScheduler;
     }
 
     switch (getParallelizationMode(step)) {
 
     case NOT_NEEDED:
-      return this.noTaskExecutor;
+      return this.noTaskScheduler;
 
     case STANDARD:
     case OWN_PARALELIZATION:
-      return this.clusterTaskExecutor;
+      return this.clusterTaskScheduler;
 
     default:
       throw new IllegalStateException("Unknown Parallelization mode");
@@ -238,13 +238,13 @@ public class ClusterCombinedTaskExecutor implements TaskExecutor {
 
   /**
    * Constructor.
-   * @param threadNumber number of thread to use by the task executor
+   * @param threadNumber number of thread to use by the task scheduler
    */
-  public ClusterCombinedTaskExecutor(final int threadNumber) {
+  public ClusterCombinedTaskScheduler(final int threadNumber) {
 
-    // Create executors
-    this.noTaskExecutor = new MonoThreadTaskExecutor();
-    this.stdTaskExecutor = new MultiThreadTaskExecutor(threadNumber);
-    this.clusterTaskExecutor = new ClusterMultiThreadTaskExecutor();
+    // Create the schedulers
+    this.noTaskScheduler = new MonoThreadTaskScheduler();
+    this.stdTaskScheduler = new MultiThreadTaskScheduler(threadNumber);
+    this.clusterTaskScheduler = new ClusterMultiThreadTaskScheduler();
   }
 }

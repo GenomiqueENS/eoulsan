@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import java.util.Queue;
 
@@ -33,11 +33,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 
 /**
- * This class define a mono thread executor.
+ * This class define a mono thread scheduler.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MonoThreadTaskExecutor extends AbstractTaskExecutor implements
+public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
     Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
@@ -59,7 +59,7 @@ public class MonoThreadTaskExecutor extends AbstractTaskExecutor implements
   public void start() {
 
     super.start();
-    new Thread(this, "TaskExecutor_monothread").start();
+    new Thread(this, "TaskScheduler_monothread").start();
   }
 
   //
@@ -71,7 +71,7 @@ public class MonoThreadTaskExecutor extends AbstractTaskExecutor implements
 
     while (!this.isStopped()) {
 
-      // Do nothing if the queue is empty or the executor paused
+      // Do nothing if the queue is empty or the scheduler paused
       if (!this.isPaused() && !this.queue.isEmpty()) {
 
         // Get context to execute

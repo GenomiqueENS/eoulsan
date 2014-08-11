@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -56,11 +56,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * This class is an executor for task running on a cluster.
+ * This class is a scheduler for task running on a cluster.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
+public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
 
   private Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
 
@@ -95,7 +95,7 @@ public class ClusterMultiThreadTaskExecutor extends AbstractTaskExecutor {
   }
 
   /**
-   * Wrapper class around a call to executeTask method.
+   * Wrapper class around a call to executeTask methods.
    * @author Laurent Jourdren
    */
   private final class TaskThread extends Thread {

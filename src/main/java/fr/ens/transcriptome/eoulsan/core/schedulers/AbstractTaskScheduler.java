@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -46,11 +46,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 
 /**
- * This class define an abstract task executor.
+ * This class define an abstract task scheduler.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractTaskExecutor implements TaskExecutor {
+public abstract class AbstractTaskScheduler implements TaskScheduler {
 
   private static final int SLEEP_TIME_IN_MS = 500;
 
@@ -236,7 +236,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   }
 
   //
-  // TaskExecutor interface
+  // TaskScheduler interface
   //
 
   @Override
@@ -373,7 +373,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   public void start() {
 
     // Check execution state
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(!this.isStopped, "The scheduler is stopped");
 
     synchronized (this) {
       this.isStarted = true;
@@ -400,7 +400,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   }
 
   /**
-   * Pause the executor.
+   * Pause the scheduler.
    */
   void pause() {
 
@@ -415,7 +415,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   }
 
   /**
-   * Resume the executor.
+   * Resume the scheduler.
    */
   void resume() {
 
@@ -430,8 +430,8 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   }
 
   /**
-   * Test if the executor is paused.
-   * @return true if the executor is paused
+   * Test if the scheduler is paused.
+   * @return true if the scheduler is paused
    */
   boolean isPaused() {
     return this.isPaused;
@@ -439,8 +439,8 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
 
   private void checkExecutionState() {
 
-    checkState(this.isStarted, "The executor is not started");
-    checkState(!this.isStopped, "The executor is stopped");
+    checkState(this.isStarted, "The scheduler is not started");
+    checkState(!this.isStopped, "The scheduler is stopped");
   }
 
   //
@@ -450,7 +450,7 @@ public abstract class AbstractTaskExecutor implements TaskExecutor {
   /**
    * Protected constructor.
    */
-  protected AbstractTaskExecutor() {
+  protected AbstractTaskScheduler() {
 
     final Multimap<WorkflowStep, Integer> mm1 = HashMultimap.create();
     final Multimap<WorkflowStep, Integer> mm2 = HashMultimap.create();

@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.executors.TaskExecutorFactory;
+import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -448,8 +448,8 @@ public abstract class AbstractWorkflow implements Workflow {
       }
     }
 
-    // Stop executor
-    TaskExecutorFactory.getExecutor().stop();
+    // Stop scheduler
+    TaskSchedulerFactory.getScheduler().stop();
   }
 
   //
@@ -680,7 +680,7 @@ public abstract class AbstractWorkflow implements Workflow {
         newDataFile(executionArguments.getHadoopWorkingPathname());
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
-    // Start executor
-    TaskExecutorFactory.getExecutor().start();
+    // Start scheduler
+    TaskSchedulerFactory.getScheduler().start();
   }
 }

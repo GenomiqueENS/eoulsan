@@ -22,49 +22,49 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.executors;
+package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
 /**
- * This class define a factory for TaskExecutor that can create only one
- * instance. This class avoid the serialization of the task executor classes
+ * This class define a factory for TaskScheduler that can create only one
+ * instance. This class avoid the serialization of the task scheduler classes
  * when serialize TaskContext object.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class TaskExecutorFactory {
+public class TaskSchedulerFactory {
 
-  private static TaskExecutor executor;
+  private static TaskScheduler scheduler;
 
   //
   // Static method
   //
 
   /**
-   * Get the executor
-   * @return the TaskExecutor object
+   * Get the scheduler
+   * @return the TaskScheduler object
    */
-  public static TaskExecutor getExecutor() {
+  public static TaskScheduler getScheduler() {
 
-    if (executor == null) {
+    if (scheduler == null) {
 
-      // Get the thread number to use by the task executor
+      // Get the thread number to use by the task scheduler
       final int threadNumber =
           EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
       if (EoulsanRuntime.getRuntime().isClusterMode()) {
 
         // Cluster mode
-        executor = new ClusterCombinedTaskExecutor(threadNumber);
+        scheduler = new ClusterCombinedTaskScheduler(threadNumber);
       } else {
 
         // Standard mode
-        executor = new CombinedTaskExecutor(threadNumber);
+        scheduler = new CombinedTaskScheduler(threadNumber);
       }
     }
 
-    return executor;
+    return scheduler;
   }
 
   // Local
@@ -74,7 +74,7 @@ public class TaskExecutorFactory {
   /**
    * Private constructor.
    */
-  private TaskExecutorFactory() {
+  private TaskSchedulerFactory() {
   }
 
 }
