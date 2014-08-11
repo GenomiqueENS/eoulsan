@@ -70,6 +70,12 @@ public abstract class AbstractEoulsanRuntime {
   public abstract boolean isAmazonMode();
 
   /**
+   * Test if Eoulsan runs in on a non Hadoop cluster.
+   * @return true if Eoulsan in on a non Hadoop cluster
+   */
+  public abstract boolean isClusterMode();
+
+  /**
    * Create an InputStream to load data.
    * @param dataSource the source of the data to load
    * @return an InputStream corresponding to the source
