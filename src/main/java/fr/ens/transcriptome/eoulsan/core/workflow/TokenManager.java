@@ -121,15 +121,6 @@ public class TokenManager implements Runnable {
     return this.endOfStep;
   }
 
-  /**
-   * Get the step result.
-   * @return the step result object
-   */
-  WorkflowStepResult getStepResult() {
-
-    return this.scheduler.getResult(this.step);
-  }
-
   //
   // Port checking methods
   //

@@ -403,7 +403,7 @@ public abstract class AbstractWorkflow implements Workflow {
         for (AbstractWorkflowStep failedStep : failedSteps) {
 
           final WorkflowStepResult result =
-              registry.getTokenManager(failedStep).getStepResult();
+              TaskSchedulerFactory.getScheduler().getResult(failedStep);
           getLogger().severe(
               "Fail of the analysis: " + result.getErrorMessage());
 
