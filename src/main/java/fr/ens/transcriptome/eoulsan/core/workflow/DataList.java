@@ -52,6 +52,11 @@ public class DataList extends AbstractData implements Serializable {
 
   @Override
   public Data addDataToList(final String name) {
+    return addDataToList(name, -1);
+  }
+
+  @Override
+  public Data addDataToList(final String name, final int part) {
 
     Preconditions.checkNotNull(name, "name argument cannot be null");
 
@@ -60,9 +65,15 @@ public class DataList extends AbstractData implements Serializable {
 
     final AbstractData result = new DataElement(this.port);
     result.setName(name);
+    result.setPart(part);
     this.list.add(result);
 
     return result;
+  }
+
+  @Override
+  public int getPart() {
+    return -1;
   }
 
   @Override

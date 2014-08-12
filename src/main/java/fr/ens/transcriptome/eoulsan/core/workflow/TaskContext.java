@@ -211,8 +211,7 @@ public class TaskContext implements StepContext, Serializable {
   @Override
   public void setContextName(final String contextName) {
 
-    Preconditions.checkNotNull(contextName,
-        "contextName argument cannot be null");
+    checkNotNull(contextName, "contextName argument cannot be null");
 
     // TODO Check if the context name is unique for the step
 
@@ -244,7 +243,9 @@ public class TaskContext implements StepContext, Serializable {
   @Override
   public Data getInputData(final String portName) {
 
-    Preconditions.checkNotNull(portName, "portName cannot be null");
+    checkNotNull(portName, "portName cannot be null");
+    checkArgument(this.inputData.containsKey(portName),
+        "unknown input port name: " + portName);
 
     return new UnmodifiableData(this.inputData.get(portName));
   }
@@ -257,11 +258,20 @@ public class TaskContext implements StepContext, Serializable {
 
   @Override
   public Data getOutputData(final String portName, final String dataName) {
+    return getOutputData(portName, dataName, -1);
+  }
 
-    Preconditions.checkNotNull(portName, "portName cannot be null");
+  @Override
+  public Data getOutputData(final String portName, final String dataName,
+      final int part) {
+
+    checkNotNull(portName, "portName cannot be null");
+    checkArgument(this.outputData.containsKey(portName),
+        "unknown output port name: " + portName);
 
     final AbstractData data = this.outputData.get(portName);
     data.setName(dataName);
+    data.setPart(part);
 
     return data;
   }
@@ -269,13 +279,19 @@ public class TaskContext implements StepContext, Serializable {
   @Override
   public Data getOutputData(final String portName, final Data origin) {
 
-    Preconditions.checkNotNull(origin, "origin cannot be null");
+    checkNotNull(origin, "origin cannot be null");
 
-    return getOutputData(portName, origin.getName());
+    return getOutputData(portName, origin.getName(), origin.getPart());
   }
 
   @Override
   public Data getOutputData(final DataFormat format, final String dataName) {
+    return getOutputData(format, dataName, -1);
+  }
+
+  @Override
+  public Data getOutputData(final DataFormat format, final String dataName,
+      final int part) {
 
     return getOutputData(getOutputPortNameForFormat(format), dataName);
   }
@@ -283,9 +299,10 @@ public class TaskContext implements StepContext, Serializable {
   @Override
   public Data getOutputData(final DataFormat format, final Data origin) {
 
-    Preconditions.checkNotNull(origin, "origin cannot be null");
+    checkNotNull(origin, "origin cannot be null");
 
-    return getOutputData(getOutputPortNameForFormat(format), origin.getName());
+    return getOutputData(getOutputPortNameForFormat(format), origin.getName(),
+        origin.getPart());
   }
 
   /**
@@ -321,7 +338,7 @@ public class TaskContext implements StepContext, Serializable {
    */
   public Data getInputData(final InputPort port) {
 
-    Preconditions.checkNotNull(port, "port cannot be null");
+    checkNotNull(port, "port cannot be null");
 
     if (!this.inputData.containsKey(port.getName()))
       throw new EoulsanRuntimeException("Unknown port: "
@@ -337,7 +354,7 @@ public class TaskContext implements StepContext, Serializable {
    */
   Data getOutputData(final OutputPort port) {
 
-    Preconditions.checkNotNull(port, "port cannot be null");
+    checkNotNull(port, "port cannot be null");
 
     if (!this.outputData.containsKey(port.getName()))
       throw new EoulsanRuntimeException("Unknown port: "

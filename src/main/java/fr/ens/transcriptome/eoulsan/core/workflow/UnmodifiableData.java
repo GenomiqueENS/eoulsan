@@ -55,6 +55,12 @@ public class UnmodifiableData implements Data {
   }
 
   @Override
+  public int getPart() {
+
+    return this.data.getPart();
+  }
+
+  @Override
   public Map<String, String> getMetadata() {
     return Collections.unmodifiableMap(this.data.getMetadata());
   }
@@ -71,6 +77,11 @@ public class UnmodifiableData implements Data {
 
   @Override
   public Data addDataToList(final String name) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Data addDataToList(String name, int part) {
     throw new UnsupportedOperationException();
   }
 

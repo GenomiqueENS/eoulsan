@@ -48,6 +48,7 @@ public abstract class AbstractData implements Data, Serializable {
   private String name;
   private boolean defaultName = true;
   private final DataFormat format;
+  private int part = -1;
 
   @Override
   public String getName() {
@@ -60,6 +61,11 @@ public abstract class AbstractData implements Data, Serializable {
     return this.format;
   }
 
+  @Override
+  public int getPart() {
+    return this.part;
+  }
+
   /**
    * Set the name of the data.
    * @param name the new name of the data
@@ -68,10 +74,17 @@ public abstract class AbstractData implements Data, Serializable {
 
     checkNotNull(name, "The name of the data cannot be null");
     checkArgument(CharMatcher.JAVA_LETTER_OR_DIGIT.matchesAllOf(name),
-        "The name of data can only contains letters or digit");
+        "The name of data can only contains letters or digit: " + name);
 
     this.name = name;
     this.defaultName = false;
+  }
+
+  void setPart(final int part) {
+
+    checkArgument(part >= -1, "Part argument must equals or greater tha -1");
+
+    this.part = part;
   }
 
   /**

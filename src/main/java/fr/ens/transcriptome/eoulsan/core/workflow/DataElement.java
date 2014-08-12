@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
@@ -72,14 +73,21 @@ class DataElement extends AbstractData implements Serializable {
 
     super.setName(name);
 
-    // If DataFile object(s) has not been set in the constructor
-    if (this.stepId != null) {
+    // Update datafiles
+    updateDataFiles();
+  }
 
-      // Update the DataFile filename
-      for (int i = 0; i < this.files.size(); i++) {
-        this.files.set(i, createDataFile(i));
-      }
-    }
+  @Override
+  void setPart(int part) {
+
+    if (!this.canRename)
+      throw new EoulsanRuntimeException(
+          "Data cannot be renamed once it has been used");
+
+    super.setPart(part);
+
+    // Update dataFiles
+    updateDataFiles();
   }
 
   @Override
@@ -111,7 +119,12 @@ class DataElement extends AbstractData implements Serializable {
   }
 
   @Override
-  public Data addDataToList(String name) {
+  public Data addDataToList(final String name) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Data addDataToList(final String name, final int part) {
     throw new UnsupportedOperationException();
   }
 
@@ -225,8 +238,14 @@ class DataElement extends AbstractData implements Serializable {
     sb.append(getName());
 
     // Set the file index if needed
-    if (fileIndex >= 0)
+    if (fileIndex >= 0) {
       sb.append(toLetter(fileIndex));
+    }
+
+    if (getPart() > -1) {
+      sb.append("_part");
+      sb.append(getPart());
+    }
 
     // Set the extension
     sb.append(getFormat().getDefaultExtention());
@@ -235,6 +254,18 @@ class DataElement extends AbstractData implements Serializable {
     sb.append(this.compression.getExtension());
 
     return new DataFile(this.stepWorkingPathname, sb.toString());
+  }
+
+  private void updateDataFiles() {
+
+    // If DataFile object(s) has not been set in the constructor
+    if (this.stepId != null) {
+
+      // Update the DataFile filename
+      for (int i = 0; i < this.files.size(); i++) {
+        this.files.set(i, createDataFile(i));
+      }
+    }
   }
 
   @Override

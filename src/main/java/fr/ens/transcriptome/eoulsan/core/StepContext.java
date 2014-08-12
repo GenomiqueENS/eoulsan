@@ -216,6 +216,15 @@ public interface StepContext {
   /**
    * Get the output data for an input DataType and a Sample.
    * @param format the DataFormat of the source
+   * @param dataName the name of the data
+   * @param part data part
+   * @return a String with the pathname
+   */
+  Data getOutputData(DataFormat format, String dataName, int part);
+
+  /**
+   * Get the output data for an input DataType and a Sample.
+   * @param format the DataFormat of the source
    * @param origin origin of the new data
    * @return a String with the pathname
    */
@@ -228,6 +237,15 @@ public interface StepContext {
    * @return a String with the pathname
    */
   Data getOutputData(String portName, String dataName);
+
+  /**
+   * Get the output data for a port name and a Sample.
+   * @param portName the name of the port
+   * @param dataName the name of the data
+   * @param part data part
+   * @return a String with the pathname
+   */
+  Data getOutputData(String portName, String dataName, int part);
 
   /**
    * Get the output data for a port name and a Sample.
