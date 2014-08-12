@@ -188,19 +188,21 @@ public class TokenManager implements Runnable {
 
     // Check if the origin of the token and the input port are linked
     checkState(inputPort.getLink() == token.getOrigin(), "The input port ("
-        + inputPort + ") and the output port (" + outputPorts
+        + inputPort + ") and the output port (" + token.getOrigin()
         + ") are not linked:");
 
     // Check if the input port is closed
     checkState(!this.closedPorts.contains(inputPort),
-        "The input port is closed for the step: " + inputPort);
+        "The input port is closed for the step "
+            + this.step.getId() + ": " + inputPort.getName());
 
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
       // Check if input port is empty
       checkState(!this.inputTokens.get(inputPort).isEmpty(),
-          "No data receive for port: " + inputPort);
+          "No data receive for port on step "
+              + this.step.getId() + ": " + inputPort.getName());
 
       // The input port must be closed
       this.closedPorts.add(inputPort);
@@ -209,11 +211,14 @@ public class TokenManager implements Runnable {
       // Register data to process
       final Data data = token.getData();
 
-      if (data.isList())
-        for (Data e : data.getListElements())
+      if (data.isList()) {
+        for (Data e : data.getListElements()) {
           addData(inputPort, e);
-      else
+        }
+      } else {
+
         addData(inputPort, data);
+      }
     }
   }
 
@@ -239,6 +244,7 @@ public class TokenManager implements Runnable {
 
       if (inputData.size() == 0) {
         dataList = new DataList(inputPort);
+        inputData.add(dataList);
       } else {
         dataList = (DataList) inputData.iterator().next();
       }
