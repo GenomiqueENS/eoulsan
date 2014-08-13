@@ -607,7 +607,7 @@ public class CommandWorkflow extends AbstractWorkflow {
               generatorAdded.put(format, generatorStep);
 
               // Rerun search dependencies
-              searchDependencies();
+              searchDependencies(generatorAdded);
               return;
             }
 
@@ -617,7 +617,7 @@ public class CommandWorkflow extends AbstractWorkflow {
               Collections.swap(this.steps, indexOfStep(step),
                   indexOfStep(generatorAdded.get(format)));
 
-              searchDependencies();
+              searchDependencies(generatorAdded);
               return;
             }
 
