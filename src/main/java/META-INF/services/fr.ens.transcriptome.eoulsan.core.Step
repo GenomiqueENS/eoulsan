@@ -28,5 +28,10 @@ fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep
 
+# Copy steps
 fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputDataStep
 fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputDataStep
+
+# Splitter and Merger steps
+fr.ens.transcriptome.eoulsan.steps.SplitterStep
+fr.ens.transcriptome.eoulsan.steps.MergerStep

@@ -50,6 +50,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.splitermergers.Merger;
+import fr.ens.transcriptome.eoulsan.splitermergers.Splitter;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**
@@ -76,6 +78,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private String generatorClassName;
   private Set<Parameter> generatorParameters = Sets.newLinkedHashSet();
   private String checkerClassName;
+  private String splitterClassName;
+  private String mergerClassName;
   private int maxFilesCount;
 
   @Override
@@ -132,6 +136,18 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   }
 
   @Override
+  public boolean isSplitter() {
+
+    return this.splitterClassName != null;
+  }
+
+  @Override
+  public boolean isMerger() {
+
+    return this.mergerClassName != null;
+  }
+
+  @Override
   public Step getGenerator() {
 
     final Step generator =
@@ -156,6 +172,18 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   public Checker getChecker() {
 
     return (Checker) loadClass(this.checkerClassName, Checker.class);
+  }
+
+  @Override
+  public Splitter getSplitter() {
+
+    return (Splitter) loadClass(this.splitterClassName, Splitter.class);
+  }
+
+  @Override
+  public Merger getMerger() {
+
+    return (Merger) loadClass(this.mergerClassName, Merger.class);
   }
 
   @Override
@@ -234,6 +262,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.contentType = XMLUtils.getTagValue(e, "content-type");
       this.generatorClassName = XMLUtils.getTagValue(e, "generator");
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
+      this.splitterClassName = XMLUtils.getTagValue(e, "splitter");
+      this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
       if (this.designFieldName != null)
         this.dataTypeFromDesignFile = true;
@@ -298,6 +328,13 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         && "".equals(this.checkerClassName.trim()))
       this.checkerClassName = null;
 
+    if (this.splitterClassName != null
+        && "".equals(this.splitterClassName.trim()))
+      this.splitterClassName = null;
+
+    if (this.mergerClassName != null && "".equals(this.mergerClassName.trim()))
+      this.mergerClassName = null;
+
     if (this.maxFilesCount < 1 || this.maxFilesCount > 2)
       throw new EoulsanException("Invalid maximal files count for data format "
           + this.name + ": " + this.maxFilesCount);
@@ -336,6 +373,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         && equal(this.extensions, that.extensions)
         && equal(this.generatorClassName, that.generatorClassName)
         && equal(this.checkerClassName, that.checkerClassName)
+        && equal(this.splitterClassName, that.splitterClassName)
+        && equal(this.mergerClassName, that.mergerClassName)
         && equal(this.maxFilesCount, that.maxFilesCount);
   }
 
@@ -345,7 +384,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     return Objects.hashCode(this.name, this.description, this.prefix,
         this.oneFilePerAnalysis, this.dataTypeFromDesignFile,
         this.designFieldName, this.contentType, this.extensions,
-        this.generatorClassName, this.checkerClassName, this.maxFilesCount);
+        this.generatorClassName, this.checkerClassName, this.splitterClassName,
+        this.mergerClassName, this.maxFilesCount);
   }
 
   @Override
@@ -359,6 +399,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         .add("generatorClassName", this.generatorClassName)
         .add("generatorParameters", this.generatorParameters)
         .add("checkerClassName", this.checkerClassName)
+        .add("splitterClassName", this.splitterClassName)
+        .add("mergerClassName", this.mergerClassName)
         .add("maxFilesCount", this.maxFilesCount).toString();
   }
 

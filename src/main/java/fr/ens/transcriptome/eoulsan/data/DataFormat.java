@@ -28,6 +28,8 @@ import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.splitermergers.Merger;
+import fr.ens.transcriptome.eoulsan.splitermergers.Splitter;
 
 /**
  * This interface define a DataFormat.
@@ -103,6 +105,18 @@ public interface DataFormat {
   boolean isChecker();
 
   /**
+   * Test if a splitter class is available for this DataFormat.
+   * @return true if a splitter class is available for this DataFormat
+   */
+  boolean isSplitter();
+
+  /**
+   * Test if a merger class is available for this DataFormat.
+   * @return true if a merger class is available for this DataFormat
+   */
+  boolean isMerger();
+
+  /**
    * Get the step needed to generate the DataType from DataTypes provided by the
    * Design file.
    * @return the Step needed to generated the DataType or null if no Step is
@@ -115,6 +129,20 @@ public interface DataFormat {
    * @return the Checker or null if no Checker is available for this task
    */
   Checker getChecker();
+
+  /**
+   * Get the splitter class related to this type.
+   * @return The Splitter instanced class of null if no Splitter is available
+   *         for this task
+   */
+  Splitter getSplitter();
+
+  /**
+   * Get the merger class related to this type.
+   * @return The Merger instanced class of null if no Merger is available for
+   *         this task
+   */
+  Merger getMerger();
 
   /**
    * Get the maximal number of files used to store data of this format. This
