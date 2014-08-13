@@ -4,7 +4,8 @@
   <prefix>annotation_</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designfieldname>Annotation</designfieldname>
-  <generator/>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker
+  <generator/>
+  <checker>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker</checker>
   <extensions>
   	<extension default="true">.gff</extension>
   </extensions>
