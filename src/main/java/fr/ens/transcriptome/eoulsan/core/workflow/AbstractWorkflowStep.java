@@ -477,6 +477,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
       inputPort.getStep().postToken(inputPort, token);
     }
+
+    // Log token sending
+    TokenManagerRegistry.getInstance().getTokenManager(this)
+        .logSendingToken(token.getOrigin(), token);
   }
 
   /**

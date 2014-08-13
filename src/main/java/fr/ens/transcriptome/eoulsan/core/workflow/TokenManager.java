@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -71,8 +73,9 @@ public class TokenManager implements Runnable {
   private final WorkflowInputPorts inputPorts;
   private final WorkflowOutputPorts outputPorts;
 
-  private Set<Integer> receivedToken = Sets.newHashSet();
+  private Set<Integer> receivedTokens = Sets.newHashSet();
   private Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
+  private Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
   private Set<InputPort> closedPorts = Sets.newHashSet();
   private Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed = Sets
       .newHashSet();
@@ -163,6 +166,23 @@ public class TokenManager implements Runnable {
   // Token handling methods
   //
 
+  public void logSendingToken(final WorkflowOutputPort outputPort,
+      final Token token) {
+
+    checkNotNull(token);
+    checkNotNull(outputPort);
+
+    // Test if the token is an end token
+    if (!token.isEndOfStepToken()) {
+
+      synchronized (this.outputTokens) {
+        for (Data e : token.getData().getListElements()) {
+          this.outputTokens.put(outputPort, e);
+        }
+      }
+    }
+  }
+
   /**
    * Post a token to the the token manager.
    * @param inputPort port where the token must be posted
@@ -179,7 +199,7 @@ public class TokenManager implements Runnable {
         "Invalid token step origin state: " + originStepState);
 
     // Check if token has already been processed
-    checkState(!this.receivedToken.contains(token.getId()),
+    checkState(!this.receivedTokens.contains(token.getId()),
         "Token has been already received: " + token.getId());
 
     // Check if the input is linked to the step
@@ -231,7 +251,7 @@ public class TokenManager implements Runnable {
 
     if (!inputPort.isList()) {
 
-      synchronized (this) {
+      synchronized (inputTokens) {
         inputTokens.put(inputPort, data);
       }
 
@@ -242,15 +262,18 @@ public class TokenManager implements Runnable {
 
       final Collection<Data> inputData = this.inputTokens.get(inputPort);
 
-      if (inputData.size() == 0) {
-        dataList = new DataList(inputPort);
-        inputData.add(dataList);
-      } else {
-        dataList = (DataList) inputData.iterator().next();
-      }
+      synchronized (inputData) {
 
-      // Add the data to the data list
-      dataList.getModifiableList().add(data);
+        if (inputData.size() == 0) {
+          dataList = new DataList(inputPort);
+          inputData.add(dataList);
+        } else {
+          dataList = (DataList) inputData.iterator().next();
+        }
+
+        // Add the data to the data list
+        dataList.getModifiableList().add(data);
+      }
     }
   }
 
@@ -501,6 +524,9 @@ public class TokenManager implements Runnable {
       // If no more token to receive
       if (isNoTokenToReceive()) {
 
+        // Log received tokens
+        logReceivedTokens();
+
         // Wait end of all context
         this.scheduler.waitEndOfTasks(this.step);
 
@@ -526,10 +552,66 @@ public class TokenManager implements Runnable {
           this.step.setState(FAIL);
         }
 
+        // Log sent tokens
+        logSentTokens();
+
         this.endOfStep = true;
       }
 
     } while (!this.endOfStep);
+  }
+
+  /**
+   * Log received tokens.
+   */
+  private void logReceivedTokens() {
+
+    String msg =
+        "Step #"
+            + this.step.getNumber() + " " + this.step.getId()
+            + " has received tokens: ";
+
+    if (this.inputTokens.size() == 0) {
+      msg += "no token received";
+    } else {
+
+      List<String> list = Lists.newArrayList();
+      for (InputPort port : this.inputTokens.keySet()) {
+        list.add(port.getName()
+            + " (" + port.getFormat().getName() + "): "
+            + this.inputTokens.get(port).size());
+      }
+
+      msg += Joiner.on(", ").join(list);
+    }
+
+    getLogger().fine(msg);
+  }
+
+  /**
+   * Log sent tokens.
+   */
+  private void logSentTokens() {
+
+    String msg =
+        "Step #"
+            + this.step.getNumber() + " " + this.step.getId()
+            + " has sent tokens: ";
+
+    if (this.outputTokens.size() == 0) {
+      msg += " no token sent";
+    } else {
+
+      List<String> list = Lists.newArrayList();
+      for (OutputPort port : this.outputTokens.keySet()) {
+        list.add(port.getName()
+            + " (" + port.getFormat().getName() + "): "
+            + this.outputTokens.get(port).size());
+      }
+      msg += Joiner.on(", ").join(list);
+    }
+
+    getLogger().fine(msg);
   }
 
   //
