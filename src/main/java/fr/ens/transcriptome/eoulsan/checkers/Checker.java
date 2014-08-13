@@ -24,11 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.checkers;
 
+import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -39,10 +42,16 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 public interface Checker {
 
   /**
-   * Get the name of the step.
-   * @return the name of the step
+   * Get the name of the checker.
+   * @return the name of the checker
    */
   String getName();
+
+  /**
+   * Get format related to the checker.
+   * @return a DataFormat object
+   */
+  DataFormat getFormat();
 
   /**
    * Set the parameters of the checker to configure the checker.
@@ -53,11 +62,16 @@ public interface Checker {
 
   /**
    * Launch the check.
-   * @param context Execution context
-   * @param sample check data for the sample
+   * @param data data to check
+   * @param checkInfo object that contains data shared between the checkers
    * @throws EoulsanException if an error occurs while executing step
    */
-  boolean check(StepContext context, Sample sample, CheckStore checkInfo)
-      throws EoulsanException;
+  boolean check(Data data, CheckStore checkInfo) throws EoulsanException;
+
+  /**
+   * Get the list of Checker required to run before this checker.
+   * @return a list of DataFormat that are checked by the required checkers
+   */
+  public Set<DataFormat> getCheckersRequiered();
 
 }

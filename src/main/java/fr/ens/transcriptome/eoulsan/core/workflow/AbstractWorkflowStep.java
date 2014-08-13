@@ -42,7 +42,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
-import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
@@ -52,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
 import fr.ens.transcriptome.eoulsan.steps.DesignStep;
 import fr.ens.transcriptome.eoulsan.steps.FakeStep;
 
@@ -403,7 +403,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     if (getType() == StepType.STANDARD_STEP
         || getType() == StepType.DESIGN_STEP
         || getType() == StepType.GENERATOR_STEP
-        || getType() == StepType.DESIGN_STEP) {
+        || getType() == StepType.CHECKER_STEP) {
 
       getLogger().info(
           "Configure "

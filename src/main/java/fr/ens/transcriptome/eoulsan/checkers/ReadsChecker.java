@@ -24,8 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.checkers;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -35,9 +39,9 @@ import fr.ens.transcriptome.eoulsan.bio.IlluminaReadId;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
  * This class define a checker on FASTQ files.
@@ -55,29 +59,31 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
+  public DataFormat getFormat() {
+    return READS_FASTQ;
+  }
+
+  @Override
+  public Set<DataFormat> getCheckersRequiered() {
+    return Collections.emptySet();
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
   }
 
   @Override
-  public boolean check(final StepContext context, final Sample sample,
-      final CheckStore checkInfo) throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo)
+      throws EoulsanException {
 
-    if (context == null)
-      throw new NullPointerException("The execution context is null");
-
-    if (sample == null)
+    if (data == null)
       throw new NullPointerException("The sample is null");
 
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
 
-    // get input file count for the sample
-    // TODO uncomment the following code when checker will be adapted to Data
-    // objects
-    final int inFileCount = 0;
-    // context.getOutputData(DataFormats.READS_FASTQ,
-    // sample).getDataFileCount();
+    final int inFileCount = data.getDataFileCount();
 
     if (inFileCount < 1)
       throw new EoulsanException("No reads file found.");
@@ -86,32 +92,27 @@ public class ReadsChecker implements Checker {
       throw new EoulsanException(
           "Cannot handle more than 2 reads files at the same time.");
 
-    final FastqFormat format = sample.getMetadata().getFastqFormat();
+    // Get FASTQ format
+    // TODO create a DataMetaData class that contains standard methods like
+    // SampleMeData
+    FastqFormat format =
+        FastqFormat.getFormatFromName(data.getMetadata()
+            .get(FASTQ_FORMAT_FIELD));
+    if (format == null) {
+      format = FastqFormat.FASTQ_ILLUMINA;
+    }
 
     // Single end mode
     if (inFileCount == 1) {
 
-      // TODO uncomment the following code when checker will be adapted to Data
-      // objects
-      // final DataFile file =
-      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-      //
-      // checkReadFile(file, format);
+      checkReadFile(data.getDataFile(0), format);
     }
 
     // Paired end mode
     if (inFileCount == 2) {
 
-      // TODO uncomment the following code when checker will be adapted to Data
-      // objects
-      // final DataFile file1 =
-      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(0);
-      //
-      // final DataFile file2 =
-      // context.getOutputData(DataFormats.READS_FASTQ, sample).getDataFile(1);
-      //
-      // checkReadFile(file1, format, true, 1);
-      // checkReadFile(file2, format, true, 2);
+      checkReadFile(data.getDataFile(0), format, true, 1);
+      checkReadFile(data.getDataFile(1), format, true, 2);
     }
 
     return true;

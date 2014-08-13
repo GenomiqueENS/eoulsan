@@ -34,7 +34,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.checkers.CheckerStep;
 import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;

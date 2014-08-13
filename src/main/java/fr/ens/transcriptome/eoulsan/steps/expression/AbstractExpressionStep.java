@@ -45,6 +45,8 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.StepInstances;
+import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
 
 /**
  * This abstract class define and parse arguments for the expression step.
@@ -243,6 +245,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     if (this.counter == null) {
       throw new EoulsanException("Unknown counter: " + counterName);
     }
+
+    // Configure Checker
+    CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
 
     // Set temporary directory
     this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();

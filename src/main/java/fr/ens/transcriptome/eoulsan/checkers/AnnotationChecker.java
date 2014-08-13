@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.checkers;
 
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -40,10 +43,10 @@ import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 
@@ -65,45 +68,50 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
+  public DataFormat getFormat() {
+    return ANNOTATION_GFF;
+  }
+
+  @Override
+  public Set<DataFormat> getCheckersRequiered() {
+    return Sets.newHashSet(DataFormats.GENOME_FASTA);
+  }
+
+  @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
-          .equals(p.getName()))
+          .equals(p.getName())) {
         this.genomicType = p.getStringValue();
-      if (AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME
-          .equals(p.getName()))
+      } else if (AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME.equals(p
+          .getName())) {
         this.attributeId = p.getStringValue();
-      else if ("stranded".equals(p.getName()))
+      } else if ("stranded".equals(p.getName())) {
         this.stranded =
             "yes".equals(p.getStringValue())
                 || "reverse".equals(p.getStringValue());
-      else if (!"counter".equals(p.getName())
-          && !"overlapmode".equals(p.getName()))
+      } else if (!"counter".equals(p.getName())
+          && !"overlapmode".equals(p.getName())) {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
-
+      }
     }
-
   }
 
   @Override
-  public boolean check(final StepContext context, final Sample sample,
-      final CheckStore checkInfo) throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo)
+      throws EoulsanException {
 
-    if (context == null)
-      throw new NullPointerException("The execution context is null");
-
-    if (sample == null)
-      throw new NullPointerException("The sample is null");
+    if (data == null)
+      throw new NullPointerException("The data is null");
 
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
 
     try {
-      final DataFile annotationFile =
-          context.getInputData(DataFormats.ANNOTATION_GFF).getDataFile();
+      final DataFile annotationFile = data.getDataFile();
 
       if (!annotationFile.exists())
         return true;
@@ -112,7 +120,7 @@ public class AnnotationChecker implements Checker {
         return true;
 
       final GenomeDescription desc =
-          getGenomeDescription(annotationFile, context, sample, checkInfo);
+          getGenomeDescription(annotationFile, checkInfo);
 
       validationAnnotation(annotationFile, desc, this.genomicType,
           this.attributeId, this.stranded);
@@ -282,7 +290,7 @@ public class AnnotationChecker implements Checker {
         final long start = Integer.parseInt(fields[1]);
         final long end = Integer.parseInt(fields[2]);
 
-        result.put(sequenceName, new long[] {start, end});
+        result.put(sequenceName, new long[] { start, end });
         final long len = desc.getSequenceLength(sequenceName);
 
         if (len == -1)
@@ -310,19 +318,8 @@ public class AnnotationChecker implements Checker {
   }
 
   private GenomeDescription getGenomeDescription(final DataFile annotationFile,
-      final StepContext context, final Sample sample, final CheckStore checkInfo)
-      throws EoulsanException, BadBioEntryException, IOException {
-
-    Object o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
-
-    if (o == null) {
-
-      DataFormats.GENOME_FASTA.getChecker().check(context, sample, checkInfo);
-      o = checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
-
-      if (o == null)
-        return null;
-    }
+      final CheckStore checkInfo) throws EoulsanException,
+      BadBioEntryException, IOException {
 
     GenomeDescription result =
         (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);

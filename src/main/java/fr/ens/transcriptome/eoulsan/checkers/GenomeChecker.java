@@ -24,16 +24,19 @@
 
 package fr.ens.transcriptome.eoulsan.checkers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 
 /**
@@ -52,31 +55,37 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
+  public DataFormat getFormat() {
+    return DataFormats.GENOME_FASTA;
+  }
+
+  @Override
+  public Set<DataFormat> getCheckersRequiered() {
+    return Collections.emptySet();
+  }
+
+  @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
   }
 
   @Override
-  public boolean check(final StepContext context, final Sample sample,
-      final CheckStore checkInfo) throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo)
+      throws EoulsanException {
 
-    if (context == null)
-      throw new NullPointerException("The execution context is null");
-
-    if (sample == null)
-      throw new NullPointerException("The sample is null");
+    if (data == null)
+      throw new NullPointerException("The data is null");
 
     if (checkInfo == null)
       throw new NullPointerException("The check info info is null");
 
     // If genome has already been checked do not launch check another time
     if (checkInfo.contains(GENOME_DESCRIPTION)) {
-      context.getLogger().info("Genome check has already been done");
+      getLogger().info("Genome check has already been done");
       return true;
     }
 
-    final DataFile genomeFile =
-        context.getInputData(DataFormats.GENOME_FASTA).getDataFile();
+    final DataFile genomeFile = data.getDataFile();
 
     try {
 
