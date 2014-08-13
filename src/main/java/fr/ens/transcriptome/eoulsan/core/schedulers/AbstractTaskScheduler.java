@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Multimaps.synchronizedMultimap;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.synchronizedMap;
 
 import java.util.Map;
@@ -137,9 +138,15 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkState(!this.doneContexts.containsValue(contextId), "The context ("
         + contextId + ") has been already done");
 
+    final WorkflowStep step = getStep(contextId);
     synchronized (this) {
-      this.runningContexts.put(getStep(contextId), contextId);
+      this.runningContexts.put(step, contextId);
     }
+
+    getLogger().fine(
+        "Scheduler: task #"
+            + contextId + " (step #" + step.getNumber() + " " + step.getId()
+            + ") is running");
   }
 
   /**
@@ -151,6 +158,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(context, "context argument cannot be null");
 
     addDoneContext(context.getId());
+
   }
 
   /**
@@ -179,6 +187,11 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.runningContexts.remove(step, contextId);
       this.doneContexts.put(step, contextId);
     }
+
+    getLogger().fine(
+        "Scheduler: task #"
+            + contextId + " (step #" + step.getNumber() + " " + step.getId()
+            + ") is done");
   }
 
   /**
@@ -276,6 +289,11 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.submittedContexts.put(step, context.getId());
       this.contexts.put(context.getId(), step);
     }
+
+    EoulsanLogger.getLogger().fine(
+        "Scheduler: task #"
+            + context.getId() + " (step #" + step.getNumber() + " "
+            + step.getId() + ") has been submitted");
   }
 
   @Override
