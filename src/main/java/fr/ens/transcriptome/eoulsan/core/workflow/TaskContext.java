@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
@@ -389,13 +388,14 @@ public class TaskContext implements StepContext, Serializable {
     case 0:
       throw new EoulsanRuntimeException("The step "
           + this.step.getId() + " do not provide an input port with format: "
-          + format);
+          + format.getName());
     case 1:
       return ports.get(0).getName();
     default:
       throw new EoulsanRuntimeException("The step "
           + this.step.getId()
-          + " provide more than one input port with format: " + format);
+          + " provide more than one input port with format: "
+          + format.getName());
     }
   }
 
@@ -416,13 +416,14 @@ public class TaskContext implements StepContext, Serializable {
     case 0:
       throw new EoulsanRuntimeException("The step "
           + this.step.getId() + " do not provide an output port with format: "
-          + format);
+          + format.getName());
     case 1:
       return ports.get(0).getName();
     default:
       throw new EoulsanRuntimeException("The step "
           + this.step.getId()
-          + " provide more than one output port with format: " + format);
+          + " provide more than one output port with format: "
+          + format.getName());
     }
   }
 
