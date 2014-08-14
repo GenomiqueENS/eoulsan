@@ -61,7 +61,7 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "_gfffastagenerator";
+    return "gfffastagenerator";
   }
 
   @Override

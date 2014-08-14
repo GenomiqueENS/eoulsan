@@ -60,7 +60,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "_genomedescgenerator";
+    return "genomedescgenerator";
   }
 
   @Override

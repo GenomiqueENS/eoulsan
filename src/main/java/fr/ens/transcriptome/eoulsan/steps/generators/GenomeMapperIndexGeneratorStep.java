@@ -58,7 +58,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "_genericindexgenerator";
+    return "genericindexgenerator";
   }
 
   @Override
