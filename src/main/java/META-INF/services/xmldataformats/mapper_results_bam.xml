@@ -1,7 +1,7 @@
 <dataformat>
   <name>mapper_results_bam</name>
   <description>bam alignments format</description>
-  <prefix>mapper_results_</prefix>
+  <prefix>alignments</prefix>
   <extensions>
   	<extension default="true">.bam</extension>
   </extensions>

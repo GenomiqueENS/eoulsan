@@ -1,7 +1,7 @@
 <dataformat>
   <name>mapper_results_sam</name>
   <description>bam filtered alignments format</description>
-  <prefix>mapper_results_</prefix>
+  <prefix>alignments</prefix>
   <extensions>
   	<extension default="true">.sam</extension>
   </extensions>

@@ -1,7 +1,7 @@
 <dataformat>
   <name>diffana_results_tsv</name>
   <description>tsv differential analysis results format</description>
-  <prefix>diffana_results_</prefix>
+  <prefix>diffanaresults</prefix>
   <extensions>
   	<extension default="true">.tsv</extension>
   	<extension>.txt</extension>

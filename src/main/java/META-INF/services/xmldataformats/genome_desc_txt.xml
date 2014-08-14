@@ -1,7 +1,7 @@
 <dataformat>
   <name>genome_desc_txt</name>
   <description>genome description in text format</description>
-  <prefix>genome_desc</prefix>
+  <prefix>genomedesc</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <generator>fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionGeneratorStep</generator>
   <extensions>

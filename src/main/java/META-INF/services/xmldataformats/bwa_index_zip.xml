@@ -1,7 +1,7 @@
 <dataformat>
   <name>bwa_index_zip</name>
   <description>bwa index zipped format</description>
-  <prefix>bwa_index_</prefix>
+  <prefix>bwaindex</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
   <generator mapperName="bwa">fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>

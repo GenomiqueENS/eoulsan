@@ -1,7 +1,7 @@
 <dataformat>
   <name>annotation_gff</name>
   <description>gff annotation format</description>
-  <prefix>annotation_</prefix>
+  <prefix>gff</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designfieldname>Annotation</designfieldname>
   <generator/>
