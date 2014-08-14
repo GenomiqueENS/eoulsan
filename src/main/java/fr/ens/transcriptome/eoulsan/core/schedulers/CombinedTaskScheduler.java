@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 
 import java.util.Set;
 
@@ -223,6 +224,15 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
    * @return the task scheduler that the step must use
    */
   private TaskScheduler getTaskScheduler(final WorkflowStep step) {
+
+    switch (step.getType()) {
+
+    case GENERATOR_STEP:
+    case CHECKER_STEP:
+      return this.stdTaskScheduler;
+    default:
+      break;
+    }
 
     switch (getParallelizationMode(step)) {
 
