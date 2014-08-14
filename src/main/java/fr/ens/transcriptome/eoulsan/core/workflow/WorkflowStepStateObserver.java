@@ -32,11 +32,14 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 
 /**
@@ -103,6 +106,11 @@ public class WorkflowStepStateObserver implements Serializable {
       return;
     }
 
+    // Log dependencies when step is in WAITING state
+    if (this.stepState == WAITING) {
+      logDependencies();
+    }
+
     // Inform step that depend of this step
     if (this.stepState == DONE) {
       for (AbstractWorkflowStep step : this.stepsToInform) {
@@ -144,6 +152,30 @@ public class WorkflowStepStateObserver implements Serializable {
 
     // Set the step to the READY state
     setState(READY);
+  }
+
+  /**
+   * Log dependencies of step.
+   */
+  void logDependencies() {
+
+    String msg =
+        "Step #"
+            + step.getNumber() + " " + step.getId()
+            + " has the following dependencies: ";
+
+    List<String> list = Lists.newArrayList();
+
+    for (AbstractWorkflowStep step : this.requiredSteps) {
+      list.add("step #" + step.getNumber() + " " + step.getId());
+    }
+
+    if (list.isEmpty()) {
+      msg += "no dependencies";
+    } else {
+      msg += Joiner.on(", ").join(list);
+    }
+    getLogger().fine(msg);
   }
 
   //
