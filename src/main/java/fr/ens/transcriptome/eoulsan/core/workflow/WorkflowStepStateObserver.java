@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.CREATED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
@@ -34,6 +36,8 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 
 /**
  * This class define an observer for step states.
@@ -45,17 +49,25 @@ public class WorkflowStepStateObserver implements Serializable {
   private static final long serialVersionUID = -5734184849291521186L;
 
   private final AbstractWorkflowStep step;
-  private StepState stepState = StepState.CREATED;
+  private StepState stepState;
 
   private Set<AbstractWorkflowStep> requiredSteps = Sets.newHashSet();
   private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
 
+  /**
+   * Add a dependency.
+   * @param step the dependency
+   */
   public void addDependency(final AbstractWorkflowStep step) {
 
     this.requiredSteps.add(step);
     step.getStepStateObserver().stepsToInform.add(this.step);
   }
 
+  /**
+   * Get the state of the step.
+   * @return the state of the step
+   */
   public StepState getState() {
 
     return this.stepState;
@@ -78,6 +90,17 @@ public class WorkflowStepStateObserver implements Serializable {
       } else {
         this.stepState = state;
       }
+    }
+
+    // Log the new state of the step
+    getLogger().fine(
+        "Step #"
+            + this.step.getNumber() + " " + this.step.getId()
+            + " is now in state " + this.stepState);
+
+    // If step has just been created there is nothing to do
+    if (this.stepState == CREATED) {
+      return;
     }
 
     // Inform step that depend of this step
@@ -127,10 +150,15 @@ public class WorkflowStepStateObserver implements Serializable {
   // Constructor
   //
 
+  /**
+   * Constructor.
+   * @param step the step related to the instance
+   */
   public WorkflowStepStateObserver(final AbstractWorkflowStep step) {
 
-    Preconditions.checkNotNull(step, "step cannot be null");
+    checkNotNull(step, "step cannot be null");
 
     this.step = step;
+    setState(CREATED);
   }
 }
