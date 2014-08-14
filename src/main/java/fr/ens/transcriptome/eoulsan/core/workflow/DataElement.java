@@ -24,9 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -42,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
  * This class define a data element.
@@ -57,10 +54,7 @@ class DataElement extends AbstractData implements Serializable {
   protected final List<DataFile> files;
 
   // Field required for multi-files Data creation
-  private final DataFile stepWorkingPathname;
-  private final String stepId;
-  private final String portName;
-  private final CompressionType compression;
+  private final WorkflowOutputPort port;
 
   private boolean canRename = true;
 
@@ -220,50 +214,24 @@ class DataElement extends AbstractData implements Serializable {
 
   private DataFile createDataFile(final int fileIndex) {
 
-    final StringBuilder sb = new StringBuilder();
-
-    // Set the name of the step that generated the file
-    sb.append(this.stepId);
-    sb.append('_');
-
-    // Set the port of the step that generated the file
-    sb.append(this.portName);
-    sb.append('_');
-
-    // Set the name of the format
-    sb.append(getFormat().getName());
-    sb.append('_');
-
-    // Set the name of the date
-    sb.append(getName());
-
-    // Set the file index if needed
-    if (fileIndex >= 0) {
-      sb.append(toLetter(fileIndex));
-    }
-
-    if (getPart() > -1) {
-      sb.append("_part");
-      sb.append(getPart());
-    }
-
-    // Set the extension
-    sb.append(getFormat().getDefaultExtention());
-
-    // Set the compression extension
-    sb.append(this.compression.getExtension());
-
-    return new DataFile(this.stepWorkingPathname, sb.toString());
+    return FileNaming.file(port, this, fileIndex);
   }
 
   private void updateDataFiles() {
 
     // If DataFile object(s) has not been set in the constructor
-    if (this.stepId != null) {
+    if (this.port != null) {
 
       // Update the DataFile filename
-      for (int i = 0; i < this.files.size(); i++) {
-        this.files.set(i, createDataFile(i));
+      if (this.port.getFormat().getMaxFilesCount() > 1) {
+
+        // Multi-file formats
+        for (int i = 0; i < this.files.size(); i++) {
+          this.files.set(i, createDataFile(i));
+        }
+      } else {
+        // Mono-file formats
+        this.files.set(0, createDataFile(-1));
       }
     }
   }
@@ -294,10 +262,7 @@ class DataElement extends AbstractData implements Serializable {
 
     this.files = Lists.newArrayList(files);
 
-    this.stepWorkingPathname = null;
-    this.stepId = null;
-    this.portName = null;
-    this.compression = null;
+    this.port = null;
   }
 
   DataElement(final DataFormat format, final DataFile file) {
@@ -308,13 +273,9 @@ class DataElement extends AbstractData implements Serializable {
 
     super(port.getFormat());
 
-    checkNotNull(port, "stepWorkingPathname argument cannot be null");
     checkNotNull(port, "port argument cannot be null");
 
-    this.stepWorkingPathname = port.getStep().getStepWorkingDir();
-    this.stepId = port.getStep().getId();
-    this.portName = port.getName();
-    this.compression = port.getCompression();
+    this.port = port;
 
     if (getFormat().getMaxFilesCount() == 1) {
       this.files = Lists.newArrayList(createDataFile(-1));
