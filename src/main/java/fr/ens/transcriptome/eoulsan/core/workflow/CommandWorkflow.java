@@ -528,8 +528,14 @@ public class CommandWorkflow extends AbstractWorkflow {
       final CommandWorkflowStep step = steps.get(i);
 
       // If step need no data, the step depends from the previous step
-      if (step.getWorkflowInputPorts().isEmpty() && i > 0)
+      if (step.getWorkflowInputPorts().isEmpty() && i > 0) {
         step.addDependency(steps.get(i - 1));
+      }
+
+      // If previous step has no output, the current step depend on it
+      if (i > 0 && steps.get(i - 1).getWorkflowOutputPorts().isEmpty()) {
+        step.addDependency(steps.get(i - 1));
+      }
 
       for (WorkflowInputPort inputPort : step.getWorkflowInputPorts()) {
 
