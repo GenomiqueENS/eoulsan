@@ -51,7 +51,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel.StepPort;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -236,27 +235,6 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandWorkflowStep step : this.steps) {
       step.configure();
     }
-  }
-
-  /**
-   * Get the format provided by the design file.
-   * @return a Set with the DataFormat
-   */
-  private Set<DataFormat> getDesignDataFormats() {
-
-    final Set<DataFormat> result = Sets.newHashSet();
-    final List<String> fields = getDesign().getMetadataFieldsNames();
-
-    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-
-    for (String fieldName : fields) {
-      DataFormat df = registry.getDataFormatForDesignField(fieldName);
-
-      if (df != null)
-        result.add(df);
-    }
-
-    return result;
   }
 
   /**
