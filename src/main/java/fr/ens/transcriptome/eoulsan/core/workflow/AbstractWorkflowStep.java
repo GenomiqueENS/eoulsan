@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.NOT_NEEDED;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.CHECKER_STEP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -50,7 +49,6 @@ import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
 import fr.ens.transcriptome.eoulsan.steps.DesignStep;
 import fr.ens.transcriptome.eoulsan.steps.FakeStep;
@@ -420,42 +418,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     }
 
     setState(StepState.CONFIGURED);
-  }
-
-  /**
-   * Run checker (runs only for Design step).
-   */
-  private void configureCheckerStep() {
-
-    // TODO modify design step to configure also the checker step
-
-    /* This method can only works with design step */
-    if (getType() != CHECKER_STEP)
-      return;
-
-    // Get Checker step
-    final CheckerStep checkerStep =
-        (CheckerStep) StepInstances.getInstance().getStep(this);
-
-    // Get the input files of the workflow
-    // final Set<WorkflowStepOutputDataFile> files =
-    // getWorkflow().getWorkflowFilesAtRootStep().getInputFiles();
-
-    // Get design
-    final Design design = this.getWorkflow().getDesign();
-
-    // If no sample there is nothing to do
-    if (design.getSampleCount() == 0)
-      return;
-
-    // Search to format to check
-    // for (WorkflowStepOutputDataFile file : files)
-    // if (file.getFormat().isChecker()) {
-    //
-    // // Add the checker to the list of checkers to launch
-    // checkerStep.addChecker(file.getFormat().getChecker());
-    // }
-
   }
 
   //
