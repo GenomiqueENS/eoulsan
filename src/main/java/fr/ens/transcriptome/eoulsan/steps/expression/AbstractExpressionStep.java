@@ -45,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.workflow.StepInstances;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
 
 /**
@@ -178,8 +177,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
-    builder.addPort("features_annotation", ANNOTATION_GFF);
-    builder.addPort("genome_description", GENOME_DESC_TXT);
+    builder.addPort("featuresannotation", ANNOTATION_GFF);
+    builder.addPort("genomedescription", GENOME_DESC_TXT);
 
     return builder.create();
   }

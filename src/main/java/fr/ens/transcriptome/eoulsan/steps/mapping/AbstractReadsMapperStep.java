@@ -50,9 +50,9 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "reads_mapping";
 
   protected static final String READS_PORT_NAME = "reads";
-  protected static final String MAPPER_INDEX_PORT_NAME = "mapper_index";
+  protected static final String MAPPER_INDEX_PORT_NAME = "mapperindex";
   protected static final String GENOME_DESCRIPTION_PORT_NAME =
-      "genome_description";
+      "genomedescription";
 
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
 

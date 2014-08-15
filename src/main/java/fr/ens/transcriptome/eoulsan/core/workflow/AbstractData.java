@@ -73,7 +73,7 @@ public abstract class AbstractData implements Data, Serializable {
   void setName(final String name) {
 
     checkNotNull(name, "The name of the data cannot be null");
-    checkArgument(CharMatcher.JAVA_LETTER_OR_DIGIT.matchesAllOf(name),
+    checkArgument(FileNaming.isDataNameValid(name),
         "The name of data can only contains letters or digit: " + name);
 
     this.name = name;

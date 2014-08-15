@@ -24,8 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -71,12 +75,11 @@ public abstract class AbstractPort implements Port, Serializable {
    */
   AbstractPort(final String name, final boolean list, final DataFormat format) {
 
-    if (name == null)
-      throw new NullPointerException("The name of the port is null");
-
-    if (format == null)
-      throw new NullPointerException("The format of the port "
-          + name + " is null");
+    checkNotNull(name, "The name of the port is null");
+    checkNotNull(format, "The format of the port " + name + " is null");
+    checkArgument(FileNaming.isPortNameValid(name),
+        "Invalid port name (only ascii letters and digits are allowed): "
+            + name.trim());
 
     this.name = name.trim().toLowerCase();
     this.list = list;

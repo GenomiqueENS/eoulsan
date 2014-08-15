@@ -80,7 +80,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
-    builder.addPort("genome_description", GENOME_DESC_TXT);
+    builder.addPort("genomedescription", GENOME_DESC_TXT);
 
     return builder.create();
   }

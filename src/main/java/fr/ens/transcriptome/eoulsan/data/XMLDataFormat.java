@@ -50,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.splitermergers.Merger;
 import fr.ens.transcriptome.eoulsan.splitermergers.Splitter;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
@@ -71,7 +72,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private String description;
   private String prefix;
   private boolean oneFilePerAnalysis;
-  private boolean dataTypeFromDesignFile;
+  private boolean dataFormatFromDesignFile;
   private String designFieldName;
   private String contentType = "text/plain";
   private final List<String> extensions = Lists.newArrayList();
@@ -102,7 +103,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   @Override
   public boolean isDataFormatFromDesignFile() {
 
-    return this.dataTypeFromDesignFile;
+    return this.dataFormatFromDesignFile;
   }
 
   @Override
@@ -266,7 +267,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
       if (this.designFieldName != null)
-        this.dataTypeFromDesignFile = true;
+        this.dataFormatFromDesignFile = true;
 
       // Get the parameters of the generator step
       for (Element generatorElement : XMLUtils.getElementsByTagName(e,
@@ -310,9 +311,14 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     // Check object values
     if (this.name == null)
-      throw new EoulsanException("The name of the datatype is null");
+      throw new EoulsanException("The name of the dataformat is null");
 
     this.name = this.name.trim().toLowerCase();
+
+    if (!FileNaming.isFormatPrefixValid(this.prefix))
+      throw new EoulsanException(
+          "The prefix of the dataformat is invalid (only ascii letters and digits are allowed): "
+              + this.prefix);
 
     if (this.description != null)
       this.description = this.description.trim();
@@ -367,7 +373,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         && equal(this.description, that.description)
         && equal(this.prefix, that.prefix)
         && equal(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
-        && equal(this.dataTypeFromDesignFile, that.dataTypeFromDesignFile)
+        && equal(this.dataFormatFromDesignFile, that.dataFormatFromDesignFile)
         && equal(this.designFieldName, that.designFieldName)
         && equal(this.contentType, that.contentType)
         && equal(this.extensions, that.extensions)
@@ -382,7 +388,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   public int hashCode() {
 
     return Objects.hashCode(this.name, this.description, this.prefix,
-        this.oneFilePerAnalysis, this.dataTypeFromDesignFile,
+        this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
         this.designFieldName, this.contentType, this.extensions,
         this.generatorClassName, this.checkerClassName, this.splitterClassName,
         this.mergerClassName, this.maxFilesCount);

@@ -70,7 +70,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
     return new InputPortsBuilder().addPort("genome", GENOME_FASTA)
-        .addPort("genome_description", GENOME_DESC_TXT).create();
+        .addPort("genomedescription", GENOME_DESC_TXT).create();
   }
 
   @Override

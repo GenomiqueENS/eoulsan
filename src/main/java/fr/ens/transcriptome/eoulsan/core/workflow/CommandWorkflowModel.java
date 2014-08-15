@@ -189,6 +189,11 @@ public class CommandWorkflowModel implements Serializable {
     if ("".equals(stepIdLower))
       throw new EoulsanException("The id of the step is empty.");
 
+    if (!FileNaming.isStepIdValid(stepIdLower))
+      throw new EoulsanException(
+          "The id of the step is not valid (only ascii letters and digits are allowed): "
+              + stepIdLower);
+
     if (this.stepParameters.containsKey(stepIdLower)
         || StepType.getAllDefaultStepId().contains(stepIdLower))
       throw new EoulsanException("The step id already exists: " + stepIdLower);
