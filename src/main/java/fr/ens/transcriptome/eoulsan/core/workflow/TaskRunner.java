@@ -92,9 +92,6 @@ public class TaskRunner {
     // Check if task has been already executed
     checkState(this.result == null, "task has been already executed");
 
-    // check if input files exists
-    // checkExistingInputFiles();
-
     // Thread group name
     final String threadGroupName =
         "TaskRunner_"
@@ -255,24 +252,6 @@ public class TaskRunner {
   }
 
   /**
-   * Get the input data files.
-   * @return a list a DataFile
-   */
-  private List<DataFile> getInputDataFile() {
-
-    final List<DataFile> result = Lists.newArrayList();
-
-    for (String inputPortName : this.context.getCurrentStep().getInputPorts()
-        .getPortNames()) {
-
-      result.addAll(DataUtils.getDataFiles(this.context
-          .getInputData(inputPortName)));
-    }
-
-    return result;
-  }
-
-  /**
    * Create the logger for a step.
    * @param step the step
    * @param threadGroupName the name of the thread group
@@ -321,22 +300,6 @@ public class TaskRunner {
     handler.setLevel(Level.parse(logLevel.toUpperCase()));
 
     return logger;
-  }
-
-  /**
-   * Check if the input files exists.
-   * @throws EoulsanException if the input files does not exists
-   */
-  private void checkExistingInputFiles() throws EoulsanException {
-
-    for (DataFile file : getInputDataFile()) {
-
-      if (!file.exists()) {
-        throw new EoulsanException("A file required by the "
-            + context.getCurrentStep().getId() + " step does not exists ("
-            + file + ")");
-      }
-    }
   }
 
   /**
