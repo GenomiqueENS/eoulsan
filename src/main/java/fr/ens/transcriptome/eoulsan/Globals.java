@@ -219,31 +219,31 @@ public final class Globals {
   public static final String LOG_EXTENSION = ".log";
 
   /** Step log extension. */
-  public static final String STEP_LOG_EXTENSION = ".steplog";
+  public static final String STEP_LOG_EXTENSION = ".step.log";
 
   /** Step result extension. */
-  public static final String STEP_RESULT_EXTENSION = ".stepresult";
+  public static final String STEP_RESULT_EXTENSION = ".step.result";
 
   /** Task context extension. */
-  public static final String TASK_CONTEXT_EXTENSION = ".taskcontext";
+  public static final String TASK_CONTEXT_EXTENSION = ".task.context";
 
   /** Task result extension. */
-  public static final String TASK_RESULT_EXTENSION = ".taskresult";
+  public static final String TASK_RESULT_EXTENSION = ".task.result";
 
   /** Task done extension. */
-  public static final String TASK_LOG_EXTENSION = ".tasklog";
+  public static final String TASK_LOG_EXTENSION = ".task.log";
 
   /** Task output data extension. */
-  public static final String TASK_DATA_EXTENSION = ".taskdata";
+  public static final String TASK_DATA_EXTENSION = ".task.data";
 
   /** Task done extension. */
-  public static final String TASK_DONE_EXTENSION = ".taskdone";
+  public static final String TASK_DONE_EXTENSION = ".task.done";
 
   /** Task stdout extension. */
-  public static final String TASK_STDOUT_EXTENSION = ".taskout";
+  public static final String TASK_STDOUT_EXTENSION = ".task.out";
 
   /** Task stderr extension. */
-  public static final String TASK_STDERR_EXTENSION = ".taskerr";
+  public static final String TASK_STDERR_EXTENSION = ".task.err";
 
   //
   // Private constants
