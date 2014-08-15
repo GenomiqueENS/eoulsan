@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.data.protocols;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
@@ -147,6 +148,19 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
   @Override
   public boolean canDelete() {
+
+    return false;
+  }
+
+  @Override
+  public List<DataFile> list(final DataFile file) throws IOException {
+
+    throw new IOException("The list() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canList() {
 
     return false;
   }

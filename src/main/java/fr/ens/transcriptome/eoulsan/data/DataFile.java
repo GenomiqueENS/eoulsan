@@ -33,6 +33,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
@@ -394,6 +395,20 @@ public class DataFile implements Comparable<DataFile>, Serializable {
           "The underlying protocol does not allow deleting files");
 
     getProtocol().delete(this);
+  }
+
+  /**
+   * List the content of a directory.
+   * @return a List with the content of the directory
+   * @throws IOException if an error occurs while listing the directory
+   */
+  public List<DataFile> list() throws IOException {
+
+    if (!getProtocol().canList())
+      throw new IOException(
+          "The underlying protocol does not allow to list a directory");
+
+    return getProtocol().list(this);
   }
 
   //

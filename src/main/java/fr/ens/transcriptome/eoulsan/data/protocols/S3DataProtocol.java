@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.amazonaws.AmazonClientException;
@@ -551,6 +552,19 @@ public class S3DataProtocol implements DataProtocol {
 
   @Override
   public boolean canDelete() {
+
+    return false;
+  }
+
+  @Override
+  public List<DataFile> list(final DataFile file) throws IOException {
+
+    throw new IOException("The list() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canList() {
 
     return false;
   }

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
@@ -129,6 +130,14 @@ public interface DataProtocol {
   void delete(DataFile file) throws IOException;
 
   /**
+   * List a directory.
+   * @param dir directory to list
+   * @return a list of DataFile objects
+   * @throws IOException if an error occurs while listing the directory
+   */
+  List<DataFile> list(DataFile dir) throws IOException;
+
+  /**
    * Get the metadata for the source.
    * @param src source to use
    * @return always a metadataObject
@@ -165,6 +174,12 @@ public interface DataProtocol {
    * @return true if delete() is available
    */
   boolean canDelete();
+
+  /**
+   * Test if the list() method is available with this protocol.
+   * @return true if list() is available
+   */
+  boolean canList();
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.

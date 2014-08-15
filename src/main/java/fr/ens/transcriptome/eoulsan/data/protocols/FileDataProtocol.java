@@ -29,6 +29,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -206,6 +209,35 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
   @Override
   public boolean canDelete() {
+
+    return true;
+  }
+
+  @Override
+  public List<DataFile> list(final DataFile file) throws IOException {
+
+    final File directoryFile = getSourceAsFile(file);
+
+    if (!directoryFile.exists())
+      throw new FileNotFoundException("File not found: " + file);
+
+    if (!directoryFile.isDirectory())
+      throw new IOException("The file is not a directory: " + file);
+
+    // List directory
+    final File[] files = directoryFile.listFiles();
+
+    // Convert the File array to a list of DataFile
+    final List<DataFile> result = new ArrayList<DataFile>(files.length);
+    for (File f : files)
+      result.add(new DataFile(f));
+
+    // Return an unmodifiable list
+    return Collections.unmodifiableList(result);
+  }
+
+  @Override
+  public boolean canList() {
 
     return true;
   }

@@ -24,9 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -173,6 +176,47 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
   @Override
   public boolean canDelete() {
+
+    return true;
+  }
+
+  @Override
+  public List<DataFile> list(final DataFile file) throws IOException {
+
+    final Path path = getPath(file);
+
+    if (path == null)
+      throw new NullPointerException("Path to delete is null");
+    if (this.conf == null)
+      throw new NullPointerException("The configuration object is null");
+
+    final FileSystem fs = path.getFileSystem(this.conf);
+
+    if (fs == null)
+      throw new IOException("Unable to delete the file, The FileSystem is null");
+
+    FileStatus fileStatus = fs.getFileStatus(path);
+
+    if (!fs.exists(path))
+      throw new FileNotFoundException("File not found: " + file);
+
+    if (!fileStatus.isDir())
+      throw new IOException("The file is not a directory: " + file);
+
+    // List directory
+    final FileStatus[] files = fs.listStatus(path);
+
+    // Convert the File array to a list of DataFile
+    final List<DataFile> result = new ArrayList<DataFile>(files.length);
+    for (FileStatus f : files)
+      result.add(new DataFile(f.getPath().toUri().toString()));
+
+    // Return an unmodifiable list
+    return Collections.unmodifiableList(result);
+  }
+
+  @Override
+  public boolean canList() {
 
     return true;
   }
