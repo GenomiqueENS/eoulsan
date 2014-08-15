@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -203,8 +204,7 @@ public class TaskRunner {
       final Data data = context.getOutputData(port);
 
       // Create symbolic links
-      // TODO enable symlink creation
-      // createSymlinksInOutputDirectory(data);
+      createSymlinksInOutputDirectory(data);
 
       // Send the token
       context.getStep().sendToken(new Token(port, data));
@@ -350,12 +350,22 @@ public class TaskRunner {
     final DataFile outputDir =
         this.context.getStep().getAbstractWorkflow().getOutputDir();
 
+    final DataFile workingDir = this.context.getStep().getStepWorkingDir();
+
+    // Nothing to to if the step working directory is the output directory
+    if (this.context.getStep().getType() == DESIGN_STEP
+        || outputDir.equals(workingDir)) {
+      return;
+    }
+
     for (Data data : outData.getListElements()) {
       for (DataFile file : DataUtils.getDataFiles(data)) {
 
         final DataFile link = new DataFile(outputDir, file.getName());
 
         try {
+
+          // TODO Use the Java 7 api to check if existing link is really a link
           // Remove existing file/symlink
           if (link.exists())
             link.delete();
