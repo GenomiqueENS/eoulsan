@@ -202,6 +202,7 @@ public class FileNaming {
     checkNotNull(port, "port argument cannot be null");
 
     setStepId(port.getStep().getId());
+    setPortName(port.getName());
     setFormat(port.getFormat());
     setCompression(port.getCompression());
   }
