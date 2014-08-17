@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define a token manager for a step.
@@ -292,9 +293,21 @@ public class TokenManager implements Runnable {
    */
   private void sendSkipStepTokens() {
 
+    // Create a map with the samples
+    final Map<String, Sample> samples = Maps.newHashMap();
+    for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
+      samples.put(FileNaming.toValidName(sample.getName()), sample);
+    }
+
     for (WorkflowOutputPort port : this.outputPorts) {
 
       for (Data data : port.getExistingData()) {
+
+        // Set the metadata from sample metadata
+        if (samples.containsKey(data.getName())) {
+          DataUtils.setDataMetaData(data, samples.get(data.getName()));
+        }
+
         this.step.sendToken(new Token(port, data));
       }
 
