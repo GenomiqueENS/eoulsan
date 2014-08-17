@@ -287,6 +287,23 @@ public class TokenManager implements Runnable {
     }
   }
 
+  /**
+   * Send all the tokens of a skip step.
+   */
+  private void sendSkipStepTokens() {
+
+    for (WorkflowOutputPort port : this.outputPorts) {
+
+      for (Data data : port.getExistingData()) {
+        this.step.sendToken(new Token(port, data));
+      }
+
+    }
+
+    // Send end of step token
+    sendEndOfStepTokens();
+  }
+
   //
   // TaskContext creation methods
   //
@@ -519,7 +536,9 @@ public class TokenManager implements Runnable {
       }
 
       // Submit execution of the available contexts
-      this.scheduler.submit(this.step, contexts);
+      if (!this.step.isSkip()) {
+        this.scheduler.submit(this.step, contexts);
+      }
 
       // If no more token to receive
       if (isNoTokenToReceive()) {
@@ -527,29 +546,39 @@ public class TokenManager implements Runnable {
         // Log received tokens
         logReceivedTokens();
 
-        // Wait end of all context
-        this.scheduler.waitEndOfTasks(this.step);
+        if (!this.step.isSkip()) {
 
-        // Get the result
-        final WorkflowStepResult result = this.scheduler.getResult(this.step);
+          // Wait end of all context
+          this.scheduler.waitEndOfTasks(this.step);
 
-        // Set the result immutable
-        result.setImmutable();
+          // Get the result
+          final WorkflowStepResult result = this.scheduler.getResult(this.step);
 
-        // Change Step state
-        if (result.isSuccess()) {
+          // Set the result immutable
+          result.setImmutable();
+
+          // Change Step state
+          if (result.isSuccess()) {
+            this.step.setState(DONE);
+
+            // Write step result
+            if (this.step.isCreateLogFiles()) {
+              writeStepResult(result);
+            }
+
+            // Send end of step tokens
+            sendEndOfStepTokens();
+
+          } else {
+            this.step.setState(FAIL);
+          }
+        } else {
+
+          // If the step is skip the result is always OK
           this.step.setState(DONE);
 
-          // Write step result
-          if (this.step.isCreateLogFiles()) {
-            writeStepResult(result);
-          }
-
-          // Send end of step tokens
-          sendEndOfStepTokens();
-
-        } else {
-          this.step.setState(FAIL);
+          // Send all the tokens of step tokens
+          sendSkipStepTokens();
         }
 
         // Log sent tokens
