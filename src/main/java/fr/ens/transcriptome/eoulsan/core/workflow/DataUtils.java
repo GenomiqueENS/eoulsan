@@ -24,13 +24,24 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.core.workflow.FileNaming.toValidName;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define an utility on data object.
@@ -66,7 +77,7 @@ public final class DataUtils {
   public static void setDataFile(final Data data, final int fileIndex,
       final DataFile dataFile) {
 
-    Preconditions.checkNotNull(data, "data cannot be null");
+    checkNotNull(data, "data argument cannot be null");
 
     if (data.isList()) {
       throw new IllegalArgumentException(
@@ -84,11 +95,58 @@ public final class DataUtils {
    */
   public static final List<DataFile> getDataFiles(final Data data) {
 
+    checkNotNull(data, "data argument cannot be null");
+
     if (data.isList()) {
       return Collections.emptyList();
     }
 
     return ((DataElement) data).getDataFiles();
+  }
+
+  /**
+   * Set the metadata of a data object from the information of a Sample object
+   * from a Design.
+   * @param data the data object
+   * @param sample the sample
+   */
+  public static final void setDataMetaData(final Data data, final Sample sample) {
+
+    checkNotNull(data, "data argument cannot be null");
+    checkNotNull(sample, "sample argument cannot be null");
+    checkArgument(
+        data.getName().equals(toValidName(sample.getName())),
+        "The sample name ("
+            + sample.getName() + ") does not match with data name ("
+            + data.getName() + ")");
+
+    // Do no set metadata on a data list
+    if (data.isList()) {
+      return;
+    }
+
+    // Get the fields to not use (fields related to files)
+    final Set<String> fieldsToNotUse = Sets.newHashSet();
+    for (DataFormat format : DataFormatRegistry.getInstance().getAllFormats()) {
+      if (format.getDesignFieldName() != null) {
+        fieldsToNotUse.add(format.getDesignFieldName());
+      }
+    }
+
+    // Get the data metadata object
+    final Map<String, String> dataMetadata = data.getMetadata();
+
+    // Set the original sample name and sample id in the metadata
+    dataMetadata.put(Design.NAME_FIELD, sample.getName());
+    dataMetadata.put(Design.SAMPLE_NUMBER_FIELD, "" + sample.getId());
+
+    // Set the other fields of the design file
+    for (String fieldName : sample.getMetadata().getFields()) {
+
+      if (!fieldsToNotUse.contains(fieldName)) {
+        dataMetadata.put(fieldName, sample.getMetadata().getField(fieldName));
+      }
+    }
   }
 
   //

@@ -850,6 +850,34 @@ public class FileNaming {
   }
 
   //
+  // Other static methods
+  //
+
+  /**
+   * Convert a string to a valid name string that can be used for step id or
+   * data name.
+   * @param name the name to convert
+   * @return a string with only the name characters argument that are allowed by
+   *         the file naming convention
+   */
+  public static final String toValidName(final String name) {
+
+    checkNotNull(name, "name argument cannot be null");
+
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < name.length(); i++) {
+
+      final char c = name.charAt(i);
+      if (ASCII_LETTER_OR_DIGIT.matches(c)) {
+        sb.append(c);
+      }
+    }
+
+    return sb.toString();
+  }
+
+  //
   // Constructor
   //
 

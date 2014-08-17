@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
@@ -43,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -106,14 +106,11 @@ public class DesignStep extends AbstractStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     final Set<DataFile> files = Sets.newHashSet();
-    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+    final Set<String> dataNames = Sets.newHashSet();
 
     for (Sample sample : this.design.getSamples()) {
 
       for (OutputPort port : getOutputPorts()) {
-
-        final boolean oneFilePerDesign =
-            port.getFormat().isOneFilePerAnalysis();
 
         // Create DataFile object(s)
         List<DataFile> dataFiles = getDesignDatafilesPort(sample, port);
@@ -133,16 +130,22 @@ public class DesignStep extends AbstractStep {
         // Set metadata
         if (port.isList()) {
 
-          data = dataList.addDataToList(sample.getName());
+          final String dataName = FileNaming.toValidName(sample.getName());
 
-          final Map<String, String> dataMetadata = data.getMetadata();
-          for (String fieldName : this.design.getMetadataFieldsNames()) {
-
-            if (!getOutputPorts().contains(fieldName)) {
-              dataMetadata.put(fieldName,
-                  sample.getMetadata().getField(fieldName));
-            }
+          // Check if the data name has already used
+          if (dataNames.contains(dataName)) {
+            return status.createStepResult(new EoulsanException(
+                "The design contains two or more sample with the same name after renaming: "
+                    + dataName + " ( original sample name: " + sample.getName()
+                    + ")"));
           }
+
+          // Add a new data to the list
+          data = dataList.addDataToList(dataName);
+
+          // Set the metadata
+          DataUtils.setDataMetaData(data, sample);
+
         } else {
           data = dataList;
         }
