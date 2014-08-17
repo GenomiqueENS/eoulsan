@@ -27,14 +27,21 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.SimpleOutputPort;
+import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
@@ -103,6 +110,39 @@ class WorkflowOutputPort extends SimpleOutputPort {
           + getName() + " <- " + getFormat().getName());
 
     this.links.add(inputPort);
+  }
+
+  /**
+   * Test if output files of the port exists.
+   * @return true if output files of the port exists
+   */
+  public List<DataFile> getExistingOutputFiles() {
+
+    final List<DataFile> result = Lists.newArrayList();
+
+    try {
+
+      // List the files of the working directory of the step
+      final List<DataFile> dirFiles = this.step.getStepWorkingDir().list();
+
+      // Get the output file prefix and suffix
+      final String filePrefix = FileNaming.filePrefix(this);
+      final String fileSuffix = FileNaming.fileSuffix(this);
+
+      // Check if files of the directory matches with the prefix and the suffix
+      for (DataFile f : dirFiles) {
+        if (FileNaming.isFilenameValid(f)
+            && f.getName().startsWith(filePrefix)
+            && f.getName().endsWith(fileSuffix)) {
+          result.add(f);
+        }
+      }
+
+    } catch (IOException e) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   @Override
