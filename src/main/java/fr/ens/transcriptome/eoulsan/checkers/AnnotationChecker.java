@@ -290,7 +290,7 @@ public class AnnotationChecker implements Checker {
         final long start = Integer.parseInt(fields[1]);
         final long end = Integer.parseInt(fields[2]);
 
-        result.put(sequenceName, new long[] { start, end });
+        result.put(sequenceName, new long[] {start, end});
         final long len = desc.getSequenceLength(sequenceName);
 
         if (len == -1)

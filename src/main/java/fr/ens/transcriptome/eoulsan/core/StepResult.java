@@ -24,11 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import fr.ens.transcriptome.eoulsan.data.DataFile;
-
 /**
  * This class define the result of a step.
  * @since 1.0

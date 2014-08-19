@@ -38,7 +38,6 @@ import java.util.Set;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 
 /**

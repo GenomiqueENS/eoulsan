@@ -32,7 +32,7 @@ import java.util.Comparator;
  * @author Claire Wallon
  */
 public class SAMComparator implements Comparator<SAMRecord> {
-  
+
   @Override
   public int compare(SAMRecord r0, SAMRecord r1) {
 
@@ -66,7 +66,8 @@ public class SAMComparator implements Comparator<SAMRecord> {
               if (r0.getFirstOfPairFlag() && r1.getFirstOfPairFlag()) {
                 comp = r0.getAlignmentStart() - r1.getAlignmentStart();
                 if (comp == 0) {
-                  comp = r0.getMateAlignmentStart() - r1.getMateAlignmentStart();
+                  comp =
+                      r0.getMateAlignmentStart() - r1.getMateAlignmentStart();
                 }
               }
 

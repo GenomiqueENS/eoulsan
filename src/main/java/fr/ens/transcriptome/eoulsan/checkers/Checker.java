@@ -24,15 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.checkers;
 
-import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This interface define a checker.

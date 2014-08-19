@@ -29,8 +29,8 @@ import java.util.Queue;
 import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 
 /**
  * This class define a mono thread scheduler.

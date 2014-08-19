@@ -46,7 +46,6 @@ import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
 import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 import com.amazonaws.services.elasticmapreduce.util.StepFactory;
-
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**

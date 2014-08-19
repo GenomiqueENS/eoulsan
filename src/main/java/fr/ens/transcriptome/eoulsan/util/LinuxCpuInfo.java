@@ -34,7 +34,7 @@ import java.io.File;
 public class LinuxCpuInfo extends LinuxInfo {
 
   private static final String CPUINFO_FILE = "/proc/cpuinfo";
-  
+
   @Override
   public File getInfoFile() {
 

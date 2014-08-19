@@ -29,8 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
-import com.google.common.base.CharMatcher;
-
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 

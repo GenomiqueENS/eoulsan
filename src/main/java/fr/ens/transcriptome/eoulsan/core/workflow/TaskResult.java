@@ -42,9 +42,7 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 

@@ -30,7 +30,7 @@ import java.net.UnknownHostException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This class define some utility methods for the underlying operating system. 
+ * This class define some utility methods for the underlying operating system.
  * @since 1.0
  * @author Laurent Jourdren
  */

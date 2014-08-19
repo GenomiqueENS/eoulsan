@@ -30,7 +30,6 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Counters;
 
 import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 public class HadoopReporter implements Reporter {

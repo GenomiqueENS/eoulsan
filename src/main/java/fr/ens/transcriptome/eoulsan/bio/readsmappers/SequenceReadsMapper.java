@@ -164,7 +164,7 @@ public interface SequenceReadsMapper {
   String getMapperArguments();
 
   List<String> getListMapperArguments();
-  
+
   /**
    * Set the mapper additional arguments.
    * @param arguments the additional mapper arguments
@@ -193,8 +193,6 @@ public interface SequenceReadsMapper {
    */
   void map() throws IOException;
 
-  
-  
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
@@ -210,23 +208,25 @@ public interface SequenceReadsMapper {
    */
   void map(File readsFile1, File readsFile2) throws IOException;
 
-  
   /**
    * mode single-end : method used only by bowtie mapper
    * @param readsFile fastq input file with reads
-   * @param parser SAMParserLine which parses the outputstream without create a file
+   * @param parser SAMParserLine which parses the outputstream without create a
+   *          file
    * @throws IOException
    */
   void map(File readsFile, SAMParserLine parserLine) throws IOException;
-  
+
   /**
    * mode pair-end : method used only by bowtie mapper
    * @param readsFile1 fastq input file with reads
    * @param readsFile2 fastq input file with reads
-   * @param parser SAMParserLine which parses the outputstream without create a file
+   * @param parser SAMParserLine which parses the outputstream without create a
+   *          file
    * @throws IOException
    */
-  void map(File readsFile1, File readsFile2, SAMParserLine parserLine) throws IOException;
+  void map(File readsFile1, File readsFile2, SAMParserLine parserLine)
+      throws IOException;
 
   /**
    * Get the output of the mapper as an SAM file.
@@ -257,7 +257,8 @@ public interface SequenceReadsMapper {
    * @param counterGroup the group for the reporter
    */
   void init(boolean pairEnd, FastqFormat fastqFormat, File archiveIndexFile,
-      File archiveIndexDir, ReporterIncrementer incrementer, String counterGroup) throws IOException ;
+      File archiveIndexDir, ReporterIncrementer incrementer, String counterGroup)
+      throws IOException;
 
   /**
    * Get the DataFormat for genome index for the mapper.

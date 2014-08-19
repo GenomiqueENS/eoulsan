@@ -112,12 +112,12 @@ public final class Settings implements Serializable {
       + ".mail.smtp.host";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY});
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   //
   // Getters

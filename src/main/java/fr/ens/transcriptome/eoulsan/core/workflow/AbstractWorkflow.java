@@ -542,8 +542,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir }) {
+      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
 
         if (dir == null)
           continue;

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
-
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**

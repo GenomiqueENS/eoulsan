@@ -26,8 +26,8 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepStatus;
 

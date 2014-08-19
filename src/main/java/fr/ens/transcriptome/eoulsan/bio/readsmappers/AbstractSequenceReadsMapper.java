@@ -77,7 +77,7 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract String getIndexerExecutable();
 
   protected String[] getIndexerExecutables() {
-    return new String[] { getIndexerExecutable() };
+    return new String[] {getIndexerExecutable()};
   }
 
   protected abstract List<String> getIndexerCommand(
