@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.design.Sample;

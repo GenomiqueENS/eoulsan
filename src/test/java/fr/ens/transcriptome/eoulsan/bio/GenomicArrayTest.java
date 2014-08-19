@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 import java.util.Set;

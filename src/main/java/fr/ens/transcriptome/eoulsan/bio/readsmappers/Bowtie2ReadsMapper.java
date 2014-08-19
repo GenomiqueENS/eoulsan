@@ -77,7 +77,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String[] getMapperExecutables() {
-    return new String[] { MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN };
+    return new String[] {MAPPER_EXECUTABLE, MAPPER_EXECUTABLE_BIN};
   }
 
   @Override

@@ -76,7 +76,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String[] getMapperExecutables() {
-    return new String[] { MAPPER_EXECUTABLE };
+    return new String[] {MAPPER_EXECUTABLE};
   }
 
   protected static final String getBowtieQualityArgument(

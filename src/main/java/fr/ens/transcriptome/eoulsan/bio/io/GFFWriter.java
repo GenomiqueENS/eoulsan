@@ -34,7 +34,6 @@ import java.nio.charset.Charset;
 
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a GFF writer.

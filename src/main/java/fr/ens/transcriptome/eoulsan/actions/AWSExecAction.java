@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.actions;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
-
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**

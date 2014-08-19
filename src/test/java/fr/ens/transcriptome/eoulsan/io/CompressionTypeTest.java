@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

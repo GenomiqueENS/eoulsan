@@ -41,8 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.common.base.Objects;
-
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**

@@ -39,7 +39,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.google.common.base.Strings;
-
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class FileConcatInputStreamTest {

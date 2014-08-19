@@ -113,7 +113,8 @@ public final class Settings {
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";
 
-  private static final String ZOOKEEPER_DEFAULT_PORT_KEY = "zookeeper.default.port";
+  private static final String ZOOKEEPER_DEFAULT_PORT_KEY =
+      "zookeeper.default.port";
 
   private static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
       "zookeeper.session.timeout";
@@ -360,8 +361,9 @@ public final class Settings {
    */
   public int getZooKeeperDefaultPort() {
 
-    return Integer.parseInt(this.properties.getProperty(ZOOKEEPER_DEFAULT_PORT_KEY, ""
-        + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
+    return Integer.parseInt(this.properties
+        .getProperty(ZOOKEEPER_DEFAULT_PORT_KEY, ""
+            + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
   }
 
   /**

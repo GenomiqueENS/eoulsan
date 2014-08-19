@@ -40,7 +40,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
-
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**

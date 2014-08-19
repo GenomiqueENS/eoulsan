@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.impl.DesignImpl;
 
 /**
