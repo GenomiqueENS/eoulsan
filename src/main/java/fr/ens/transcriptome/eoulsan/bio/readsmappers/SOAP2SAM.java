@@ -347,13 +347,13 @@ public class SOAP2SAM {
   //
 
   public SOAP2SAM(final GenomeDescription gd) {
-    
+
     this.gd = gd;
     this.fin = null;
     this.funmap = null;
-    this.fout = null;    
+    this.fout = null;
   }
-  
+
   public SOAP2SAM(final File fin, final File funmap,
       final GenomeDescription gd, final File fout) {
 

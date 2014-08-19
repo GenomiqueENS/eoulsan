@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
-
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class MapperProcessDemo {
