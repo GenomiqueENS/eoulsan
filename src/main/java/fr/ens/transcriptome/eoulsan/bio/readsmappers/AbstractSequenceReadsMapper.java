@@ -838,7 +838,8 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return BinariesInstaller.install(binaryFilename, getTempDirectoryPath());
+    return BinariesInstaller.install(getSoftwarePackage(), getPackageVersion(),
+        binaryFilename, getTempDirectoryPath());
   }
 
 }
