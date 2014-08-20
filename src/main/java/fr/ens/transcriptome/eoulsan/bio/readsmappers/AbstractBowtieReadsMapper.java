@@ -200,7 +200,7 @@ public abstract class AbstractBowtieReadsMapper extends
     cmd.add("-S");
     cmd.add(outputFile.getAbsolutePath());
 
-    getLogger().info(cmd.toString());
+    getLogger().info("Command line executed: " + cmd.toString());
 
     final int exitValue = sh(cmd, archiveIndexDir);
 

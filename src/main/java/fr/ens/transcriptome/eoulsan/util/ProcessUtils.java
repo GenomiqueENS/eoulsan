@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -37,13 +39,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.io.FileCharsets;
-import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * Utility class for launching external process.
@@ -51,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Laurent Jourdren
  */
 public final class ProcessUtils {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset.forName(System
@@ -119,8 +115,8 @@ public final class ProcessUtils {
    */
   public static int system(final String cmd) throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine(
+        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final Process p = Runtime.getRuntime().exec(cmd);
 
@@ -163,8 +159,7 @@ public final class ProcessUtils {
       if (!(temporaryDirectory == null))
         pb.directory(temporaryDirectory);
 
-      LOGGER.fine("execute script (Thread "
-          + Thread.currentThread().getId() + "): " + cmd.toString());
+      getLogger().fine("Execute command: " + cmd.toString());
 
       p = pb.start();
 
@@ -174,9 +169,10 @@ public final class ProcessUtils {
 
       terr.join();
       exitValue = p.waitFor();
+      getLogger().fine("Command exit value: " + exitValue);
 
     } catch (InterruptedException e) {
-      LOGGER.warning("Process interrupted : " + e.getMessage());
+      getLogger().warning("Process interrupted : " + e.getMessage());
     }
     return exitValue;
   }
@@ -199,8 +195,8 @@ public final class ProcessUtils {
   public static void exec(final String cmd, final boolean stdOutput)
       throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine(
+        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -241,8 +237,8 @@ public final class ProcessUtils {
   public static void execWriteOutput(String cmd, File outputFile)
       throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine(
+        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -290,8 +286,8 @@ public final class ProcessUtils {
   public static String execToString(final String cmd, final boolean addStdErr,
       final boolean checkExitCode) throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine(
+        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -363,12 +359,13 @@ public final class ProcessUtils {
       if (exitValue == 139)
         throw new IOException("Segmentation fault: " + cmd);
 
-      LOGGER.fine("Done (Thread "
-          + Thread.currentThread().getId() + ", exit code: " + exitValue
-          + ") in " + (endTime - startTime) + " ms.");
+      getLogger().fine(
+          "Done (Thread "
+              + Thread.currentThread().getId() + ", exit code: " + exitValue
+              + ") in " + (endTime - startTime) + " ms.");
     } catch (InterruptedException e) {
 
-      LOGGER.severe("Interrupted exception: " + e.getMessage());
+      getLogger().severe("Interrupted exception: " + e.getMessage());
     }
 
   }
@@ -511,8 +508,8 @@ public final class ProcessUtils {
    */
   public static void execThreadOutput(final String cmd) throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine(
+        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -537,8 +534,9 @@ public final class ProcessUtils {
    */
   public static void execThreadOutput(final String[] cmd) throws IOException {
 
-    LOGGER.fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
+    getLogger().fine(
+        "execute (Thread "
+            + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
 
     final long startTime = System.currentTimeMillis();
 
