@@ -187,16 +187,6 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-			<id>java.net</id>
-			<name>java.net repository</name>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
-
-		<repository>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 			<id>CHiBi</id>
 			<name>CHibi repository</name>
 			<url>http://www.chibi.ubc.ca/maven2</url>
@@ -242,6 +232,27 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<!-- Update groupId and artifactId for 2.0.x version -->
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.3.0</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+					</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
@@ -262,7 +273,7 @@
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.76</version>
+			<version>1.83</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -333,7 +344,7 @@
 	<build>
 		<directory>target</directory>
 		<outputDirectory>target/classes</outputDirectory>
-		<finalName>${artifactId}-${version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<testOutputDirectory>target/test-classes</testOutputDirectory>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
@@ -365,6 +376,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 
 				<configuration>
 					<source>1.6</source>
@@ -375,6 +387,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
 				<configuration>
 					<!--skip>true</skip-->
 				</configuration>
@@ -402,26 +415,26 @@
 								</exec>
 
 								<condition property="build.commit" value="">
-									<not>  
+									<not>
 										<isset property="build.commit"/>
 									</not>
 								</condition>
-							
+
 								<exec executable="hostname" outputproperty="build.host"/>
 
 								<manifest file="${basedir}/target/generated-resources/MANIFEST.MF">
 									<attribute name="Built-By" value="${user.name}"/>
-									<attribute name="Built-Date" value="${TODAY}"/>  
-									<attribute name="Built-Year" value="${YEAR}"/> 
-									<attribute name="Built-Commit" value="${build.commit}" /> 
-									<attribute name="Built-Host" value="${build.host}" /> 
+									<attribute name="Built-Date" value="${TODAY}"/>
+									<attribute name="Built-Year" value="${YEAR}"/>
+									<attribute name="Built-Commit" value="${build.commit}" />
+									<attribute name="Built-Host" value="${build.host}" />
 
-									<attribute name="Specification-Title" value="${pom.name}"/>   
-									<attribute name="Specification-Version" value="${pom.version}"/>   
+									<attribute name="Specification-Title" value="${project.name}"/>
+									<attribute name="Specification-Version" value="${project.version}"/>
 									<attribute name="Specification-Vendor" value="${project.organization.name}"/>
 
-									<attribute name="Implementation-Title" value="${pom.name}"/>   
-									<attribute name="Implementation-Version" value="build${build.number}"/>   
+									<attribute name="Implementation-Title" value="${project.name}"/>
+									<attribute name="Implementation-Version" value="build${build.number}"/>
 									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
 
 									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main"/>
@@ -437,7 +450,7 @@
            					<phase>package</phase>
            					<configuration>
              						<tasks unless="distrib.package.skip">
-		
+
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
 								<!-- Package binary distribution -->
 
@@ -447,11 +460,11 @@
 								<copy file="${basedir}/LICENSE-LGPL.txt" todir="${basedir}/target/dist/" />
 								<copy file="${basedir}/LICENSE-CeCILL-C.txt" todir="${basedir}/target/dist/" />
 
-								<copy file="${basedir}/src/main/bin/${pom.artifactId}.sh" todir="${basedir}/target/dist/" />
-								<chmod file="${basedir}/target/dist/${pom.artifactId}.sh" perm="ugo+rx" />
+								<copy file="${basedir}/src/main/bin/${project.artifactId}.sh" todir="${basedir}/target/dist/" />
+								<chmod file="${basedir}/target/dist/${project.artifactId}.sh" perm="ugo+rx" />
 
-								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar" todir="${basedir}/target/dist/lib/" />
-								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}"/>
+								<copy file="${basedir}/target/${project.artifactId}-${project.version}.jar" todir="${basedir}/target/dist/lib/" />
+								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${project.artifactId}-${project.version}"/>
 
 								<!-- Package source distribution -->
 
@@ -468,7 +481,7 @@
 										<include name="LICENSE-CeCILL-C.txt"/>
 									</fileset>
 								</copy>
-								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
+								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${project.artifactId}-${project.version}"/>
 							</tasks>
            					</configuration>
            					<goals>
@@ -485,39 +498,39 @@
 								<!-- Compress dist-src -->
 
 
-								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
+								<tar longfile="gnu" destfile="${basedir}/target/${project.artifactId}-${project.version}.tar">
 									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
 										<include name="*/**"/>
-										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+										<exclude name="${project.artifactId}-${project.version}/${project.artifactId}.sh" />
 									</tarfileset>
 									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
-										<include name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+										<include name="${project.artifactId}-${project.version}/${project.artifactId}.sh" />
 									</tarfileset>
 								</tar>
-								<gzip zipfile="${basedir}/target/${artifactId}-${version}.tar.gz"
-									src="${basedir}/target/${artifactId}-${version}.tar"/>
-                                                                <bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
-                                                                        src="${basedir}/target/${artifactId}-${version}.tar"/>
-								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar" 
+								<gzip zipfile="${basedir}/target/${project.artifactId}-${project.version}.tar.gz"
+									src="${basedir}/target/${project.artifactId}-${project.version}.tar"/>
+                                                                <bzip2 destfile="${basedir}/target/${project.artifactId}-${project.version}.tar.bz2"
+                                                                        src="${basedir}/target/${project.artifactId}-${project.version}.tar"/>
+								<untar src="${basedir}/target/${project.artifactId}-${project.version}.tar"
 									dest="${basedir}/target/tar-bin"/>
-                                                                <zip destfile="${basedir}/target/${artifactId}-${version}.zip"
+                                                                <zip destfile="${basedir}/target/${project.artifactId}-${project.version}.zip"
                                                                         basedir="${basedir}/target/tar-bin"/>
 
 								<!-- Compress dist-src -->
-								<tar longfile="gnu" tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
+								<tar longfile="gnu" tarfile="${basedir}/target/${project.artifactId}-src-${project.version}.tar">
 
 									<tarfileset dir="${basedir}/target/dist-src"  mode="755" username="nobody" group="nobody">
 										<include name="*/**"/>
 									</tarfileset>
 								</tar>
-								<gzip zipfile="${basedir}/target/${artifactId}-src-${version}.tar.gz"
-									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
-								<bzip2 destfile="${basedir}/target/${artifactId}-src-${version}.tar.bz2"
-									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
+								<gzip zipfile="${basedir}/target/${project.artifactId}-src-${project.version}.tar.gz"
+									src="${basedir}/target/${project.artifactId}-src-${project.version}.tar"/>
+								<bzip2 destfile="${basedir}/target/${project.artifactId}-src-${project.version}.tar.bz2"
+									src="${basedir}/target/${project.artifactId}-src-${project.version}.tar"/>
 
-								<untar src="${basedir}/target/${pom.artifactId}-src-${pom.version}.tar" 
+								<untar src="${basedir}/target/${project.artifactId}-src-${project.version}.tar"
 									dest="${basedir}/target/tar-src"/>
-                                                                <zip destfile="${basedir}/target/${artifactId}-src-${version}.zip"
+                                                                <zip destfile="${basedir}/target/${project.artifactId}-src-${project.version}.zip"
                                                                         basedir="${basedir}/target/tar-src"/>
              							</tasks>
 						</configuration>
@@ -530,25 +543,25 @@
 						<phase>site</phase>
 						<configuration>
 							<tasks>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.url}">
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.url}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<replacetoken>@@@WEBSITE@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.version}">
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.version}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<replacetoken>@@@VERSION@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.name}">
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.name}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<replacetoken>@@@APPNAME@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${artifactId}">
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.artifactId}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
@@ -581,17 +594,17 @@
 
 								<mkdir dir="${basedir}/target/site" />
 
-								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.gz"
+								<copy file="${basedir}/target/${project.artifactId}-${project.version}.tar.gz"
 									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.gz"
+								<copy file="${basedir}/target/${project.artifactId}-src-${project.version}.tar.gz"
 									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.bz2"
+								<copy file="${basedir}/target/${project.artifactId}-${project.version}.tar.bz2"
 									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.bz2"
+								<copy file="${basedir}/target/${project.artifactId}-src-${project.version}.tar.bz2"
 									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-${pom.version}.zip"
+								<copy file="${basedir}/target/${project.artifactId}-${project.version}.zip"
 									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.zip"
+								<copy file="${basedir}/target/${project.artifactId}-src-${project.version}.zip"
 									todir="${basedir}/target/site"/>
 							</tasks>
 						</configuration>
@@ -599,17 +612,18 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-				
+
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
 				<configuration>
 					<archive>
 						<manifestEntries>
 							<mode>development</mode>
-							<url>${pom.url}</url>
+							<url>${project.url}</url>
 						</manifestEntries>
 						<manifestFile>${basedir}/target/generated-resources/MANIFEST.MF</manifestFile>
 					</archive>
@@ -789,7 +803,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
 			</plugin-->
-			
+
 			<!--plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>ckjm-maven-plugin</artifactId>

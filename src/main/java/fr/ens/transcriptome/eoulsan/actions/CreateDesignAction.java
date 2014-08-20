@@ -91,7 +91,7 @@ public class CreateDesignAction extends AbstractAction {
           parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Pair-end option
-      if (line.hasOption("pair-end")) {
+      if (line.hasOption("paired-end")) {
         pairEndMode = true;
         argsOptions += 1;
       }

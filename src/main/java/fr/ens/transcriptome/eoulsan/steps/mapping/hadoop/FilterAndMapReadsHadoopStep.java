@@ -225,6 +225,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
         context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFilename());
 
+    // Set ZooKeeper client configuration
+    ReadsMapperHadoopStep.setZooKeeperJobConfiguration(jobConf, context);
+
     // Set Job name
     // Create the job and its name
     final Job job =

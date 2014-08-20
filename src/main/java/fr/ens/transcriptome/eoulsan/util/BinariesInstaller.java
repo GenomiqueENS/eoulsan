@@ -95,8 +95,9 @@ public class BinariesInstaller {
    * @return a string with the path of the installed binary
    * @throws IOException if an error occurs while installing binary
    */
-  public static String install(final String binaryFilename, final String tempDir)
-      throws IOException {
+  public static String install(final String softwarePackage,
+      final String packageVersion, final String binaryFilename,
+      final String tempDir) throws IOException {
 
     final File tempDirFile =
         new File(tempDir == null
@@ -117,7 +118,8 @@ public class BinariesInstaller {
     final String arch = System.getProperty("os.arch").toLowerCase();
 
     LOGGER.fine("Try to install \""
-        + binaryFilename + "\" for " + os + " (" + arch + ")");
+        + binaryFilename + "\" of " + softwarePackage + " package for " + os
+        + " (" + arch + ")");
 
     String osArchKey = os + "\t" + arch;
 
@@ -136,7 +138,10 @@ public class BinariesInstaller {
     }
 
     final String inputPath =
-        "/" + osArchKey.replace(" ", "").replace('\t', '/');
+        '/'
+            + osArchKey.replace(" ", "").replace('\t', '/')
+            + (softwarePackage == null ? "" : '/' + softwarePackage.trim())
+            + (packageVersion == null ? "" : '/' + packageVersion);
 
     final String outputPath =
         tempDirFile.getAbsolutePath()

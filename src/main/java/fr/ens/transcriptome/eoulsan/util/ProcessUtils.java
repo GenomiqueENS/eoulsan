@@ -43,6 +43,7 @@ import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.io.FileCharsets;
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * Utility class for launching external process.

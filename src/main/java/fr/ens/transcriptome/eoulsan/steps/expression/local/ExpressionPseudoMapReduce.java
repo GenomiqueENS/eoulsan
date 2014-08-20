@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import net.sf.samtools.SAMException;
-import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import com.google.common.collect.Lists;
@@ -54,6 +54,7 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
@@ -78,7 +79,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
   private TranscriptAndExonFinder tef;
   private final String counterGroup;
-  private final SAMParser parser;
+  private final SAMLineParser parser;
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
 
@@ -303,15 +304,13 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
     this.counterGroup = counterGroup;
 
-    // Create parser object
-    this.parser = new SAMParser();
-
     // Load genome description object
     final GenomeDescription genomeDescription =
         GenomeDescription.load(genomeDescFile);
 
-    // Set the chromosomes sizes in the parser
-    this.parser.setGenomeDescription(genomeDescription);
+    // Create parser object
+    this.parser =
+        new SAMLineParser(SAMUtils.newSAMFileHeader(genomeDescription));
 
     loadAnnotationFile(annotationFile, expressionType, attributeId);
   }
@@ -333,15 +332,13 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
     this.counterGroup = counterGroup;
 
-    // Create parser object
-    this.parser = new SAMParser();
-
     // Load genome description object
     final GenomeDescription genomeDescription =
         GenomeDescription.load(genomeDescIs);
 
-    // Set the chromosomes sizes in the parser
-    this.parser.setGenomeDescription(genomeDescription);
+    // Create parser object
+    this.parser =
+        new SAMLineParser(SAMUtils.newSAMFileHeader(genomeDescription));
 
     loadAnnotationFile(annotationIs, expressionType, attributeId);
   }

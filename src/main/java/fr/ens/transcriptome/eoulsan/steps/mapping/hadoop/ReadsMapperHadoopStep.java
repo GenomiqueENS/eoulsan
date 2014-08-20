@@ -43,6 +43,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -111,8 +112,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Create the list of jobs to run
       final Map<Job, String> jobs = Maps.newHashMap();
       jobs.put(
-          createJobConf(conf, readsData, fastqFormat, mapperIndexData, outData),
-          readsData.getName());
+          createJobConf(conf, context, readsData, fastqFormat, mapperIndexData,
+              outData), readsData.getName());
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJobs(jobs,
@@ -142,8 +143,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final Data readsData, final FastqFormat fastqFormat,
-      final Data mapperIndexData, final Data outData) throws IOException {
+      final StepContext context, final Data readsData,
+      final FastqFormat fastqFormat, final Data mapperIndexData,
+      final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -189,6 +191,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // No JVM task resuse
     jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
 
+    // Set ZooKeeper client configuration
+    setZooKeeperJobConfiguration(jobConf, context);
+
     // Create the job and its name
     final Job job =
         new Job(jobConf, "Map reads with "
@@ -220,6 +225,30 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     FileOutputFormat.setOutputPath(job, new Path(outData.getDataFilename()));
 
     return job;
+  }
+
+  /**
+   * Configure ZooKeeper client.
+   * @param jobConf job configuration
+   * @param context Eoulsan context
+   */
+  static void setZooKeeperJobConfiguration(final Configuration jobConf,
+      final StepContext context) {
+
+    final Settings settings = context.getSettings();
+
+    String connectString = settings.getZooKeeperConnectString();
+
+    if (connectString == null) {
+
+      connectString =
+          jobConf.get("mapred.job.tracker").split(":")[0]
+              + ":" + settings.getZooKeeperDefaultPort();
+    }
+
+    jobConf.set(ReadsMapperMapper.ZOOKEEPER_CONNECT_STRING_KEY, connectString);
+    jobConf.set(ReadsMapperMapper.ZOOKEEPER_SESSION_TIMEOUT_KEY,
+        "" + settings.getZooKeeperSessionTimeout());
   }
 
 }

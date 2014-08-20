@@ -32,9 +32,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.sf.samtools.SAMComparator;
+import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMParser;
+import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
@@ -45,6 +45,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -63,7 +65,7 @@ public class PreTreatmentExpressionReducer extends
   private Text outKey = new Text();
   private Text outValue = new Text();
 
-  private final SAMParser parser = new SAMParser();
+  private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
   private List<SAMRecord> records = new ArrayList<SAMRecord>();
 
   @Override
@@ -85,7 +87,8 @@ public class PreTreatmentExpressionReducer extends
             genomeDescFile), conf));
 
     // Set the chromosomes sizes in the parser
-    this.parser.setGenomeDescription(genomeDescription);
+    this.parser.getFileHeader().setSequenceDictionary(
+        SAMUtils.newSAMSequenceDictionary(genomeDescription));
 
     // Counter group
     this.counterGroup = conf.get(Globals.PARAMETER_PREFIX + ".counter.group");

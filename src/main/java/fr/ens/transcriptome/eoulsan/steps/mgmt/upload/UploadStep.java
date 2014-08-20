@@ -274,7 +274,6 @@ public abstract class UploadStep extends AbstractStep {
           getUploadedDataFile(in, file.getStep(), file.getSample(),
               file.getPortName(), file.getFormat(), file.getFileIndex());
       result.put(in, out);
-
     }
 
     return result;

@@ -282,7 +282,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     job.setMapperClass(HTSeqCountMapper.class);
 
     // Set the combiner class
-    // job.setCombinerClass(HTSeqCountReducer.class);
+    job.setCombinerClass(HTSeqCountReducer.class);
 
     // Set the reducer class
     job.setReducerClass(HTSeqCountReducer.class);
@@ -291,7 +291,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     job.setOutputKeyClass(Text.class);
 
     // Set the output value class
-    job.setOutputValueClass(Text.class);
+    job.setOutputValueClass(Long.class);
 
     // Set output path
 

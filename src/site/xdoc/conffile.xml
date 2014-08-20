@@ -70,6 +70,9 @@
 		<tr><td>main.mail.send.result.mail.to</td><td>string</td><td>Not set</td><td>Mail address where send result message</td></tr>
 		<tr><td>main.mail.smtp.host</td><td>string</td><td>Not set</td><td>SMTP server to use to send mails. See the <a href="#smtp">SMTP section</a> for more information</td></tr>
 		
+		<tr><td>zookeeper.connect.string</td><td>string</td><td>Not set</td><td>ZooKeeper connect String. If not set, the server used will be the same as the job tracker node and the port will the default port set by the <tt>zookeeper.default.port</tt></td></tr>
+		<tr><td>zookeeper.default.port</td><td>integer</td><td>2181</td><td>ZooKeeper Default port</td></tr>
+		<tr><td>zookeeper.session.timeout</td><td>integer</td><td>10000</td><td>ZooKeeper session timeout</td></tr>
 		
 		<tr><td>aws.access.key</td><td>string</td><td>Not set</td><td>AWS access key, a 20-character alphanumeric string</td></tr>
 		<tr><td>aws.secret.key</td><td>string</td><td>Not set</td><td>AWS secret key, a 40-character string</td></tr>
