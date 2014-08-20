@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,6 +74,23 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         getGenomicType(), getAttributeId(), false, 0, null, genomeDescFile,
         reporter, counterGroup);
 
+  }
+
+  private static boolean isPairedData(final InputStream is) {
+
+    final SAMFileReader input = new SAMFileReader(is);
+    SAMRecordIterator samIterator = input.iterator();
+
+    boolean result = false;
+
+    // Test if input is paired-end data
+    if (samIterator.hasNext()) {
+      if (samIterator.next().getReadPairedFlag())
+        result = true;
+    }
+    input.close();
+
+    return result;
   }
 
   /**
@@ -129,12 +147,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final SAMFileReader inputSam = new SAMFileReader(samFile.open());
 
     // paired-end mode ?
-    final SAMFileReader input = new SAMFileReader(samFile.open());
-    SAMRecordIterator samIterator = input.iterator();
-    SAMRecord firstRecord = samIterator.next();
-    if (firstRecord.getReadPairedFlag())
-      pairedEnd = true;
-    input.close();
+    pairedEnd = isPairedData(samFile.open());
 
     int empty = 0;
     int ambiguous = 0;
