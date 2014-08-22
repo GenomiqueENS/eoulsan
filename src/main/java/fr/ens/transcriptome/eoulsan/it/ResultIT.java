@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class ResultIT {
 
-  public final static Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
+  public static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
   private final Collection<PathMatcher> patternsFilesTreated;
@@ -76,7 +76,7 @@ public class ResultIT {
    * @throws IOException if an error occurs while moving file
    * @throws EoulsanException if no file copy in destination directory
    */
-  public void copyFiles(final File destinationDirectory) throws IOException,
+  public final void copyFiles(final File destinationDirectory) throws IOException,
       EoulsanException {
 
     // Check at least on file match with a pattern
@@ -132,7 +132,7 @@ public class ResultIT {
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */
-  public OutputExecution compareTo(final ResultIT expectedOutput)
+  public final OutputExecution compareTo(final ResultIT expectedOutput)
       throws IOException {
 
     // Copy list files
@@ -205,7 +205,8 @@ public class ResultIT {
 
   /**
    * Listing recursively all files in the source directory which match with
-   * patterns files defined
+   * patterns files definedsourceDirectory
+   * @param sourceDirectory source directory
    * @return a map with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
    */
@@ -325,6 +326,7 @@ public class ResultIT {
   /**
    * Clean directory, remove all files do not matching to a pattern. If none
    * pattern define, all files are keeping.
+   * @param directory to clean
    * @throws IOException if an error occurs while removing files
    */
   private void cleanDirectory(final File directory) throws IOException {
@@ -347,15 +349,15 @@ public class ResultIT {
 
   /**
    * Remove empty directories
-   * @param directory directory to treat
+   * @param directoryTarget directory to treat
    */
-  private void removeEmptyDirectory(File directory) {
+  private void removeEmptyDirectory(final File directoryTarget) {
 
-    if (directory == null || !directory.isDirectory())
+    if (directoryTarget == null || !directoryTarget.isDirectory())
       return;
 
     // Parse list files
-    for (File dir : directory.listFiles()) {
+    for (File dir : directoryTarget.listFiles()) {
 
       if (dir.isDirectory()) {
         // Treat sub directories
@@ -375,7 +377,7 @@ public class ResultIT {
    * pattern. If no pattern define, all files of source directory
    * @return map with file name and instance of file
    */
-  public List<File> getFilesList() {
+  public final List<File> getFilesList() {
     return this.filesList;
   }
 
@@ -436,10 +438,10 @@ public class ResultIT {
 
     /**
      * Sets the result.
-     * @param result the new result
+     * @param res the new result
      */
-    public void setResult(boolean result) {
-      this.result = result;
+    public void setResult(final boolean res) {
+      this.result = res;
     }
 
     /**
@@ -458,12 +460,12 @@ public class ResultIT {
     /**
      * Update report and result to directories comparison
      * @param msg message added to the report text
-     * @param result boolean result of comparison for a file between two
+     * @param resultIntermedary boolean result of comparison for a file between two
      *          directories
      */
-    public void appendComparison(final String msg, final boolean result) {
+    public void appendComparison(final String msg, final boolean resultIntermedary) {
       appendReport(msg);
-      setResult(result && isResult());
+      setResult(resultIntermedary && isResult());
     }
   }
 
@@ -476,7 +478,7 @@ public class ResultIT {
   static final class FilesComparator {
 
     private final List<Comparator> comparators = newArrayList();
-    private final static boolean useSerializationFile = true;
+    private static final boolean USE_SERIALIZATION_FILE = true;
 
     private final File fileA;
     private final File fileB;
@@ -530,9 +532,9 @@ public class ResultIT {
       // Binary comparator is default comparator, always at first position
       comparators.add(new BinaryComparator());
 
-      comparators.add(new FastqComparator(useSerializationFile));
-      comparators.add(new SAMComparator(useSerializationFile, "PG"));
-      comparators.add(new TextComparator(useSerializationFile));
+      comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
+      comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG"));
+      comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       comparators.add(new LogComparator());
 
       this.comparator = findComparator(this.fileA.getName());

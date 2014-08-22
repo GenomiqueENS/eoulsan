@@ -69,7 +69,7 @@ public class ProcessIT {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  public final static Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
+  public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
 
@@ -121,11 +121,10 @@ public class ProcessIT {
    * Launch test execution, first generate data directory corresponding to the
    * arguments: expected data or data to test.If it is data to test then launch
    * comparison
-   * @throws Exception if an error occurs while execute script or
-   *           comparison
+   * @throws Exception if an error occurs while execute script or comparison
    */
   @Test
-  public void launchTest() throws Exception {
+  public final void launchTest() throws Exception {
 
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
@@ -283,7 +282,7 @@ public class ProcessIT {
 
     // Generate only missing expected data directory
     return this.generateNewTests && !this.expectedTestDirectory.exists();
-    
+
   }
 
   /**
@@ -422,6 +421,15 @@ public class ProcessIT {
 
   }
 
+  /**
+   * Execute command line to run process integrated test
+   * @param cmdLine command line shell
+   * @param directory source for command line
+   * @param msg message if an error occurs during execution or if the process
+   *          fail
+   * @throws EoulsanException if an error occurs during execution or if the
+   *           process fail
+   */
   private void executeCommandLine(final List<String> cmdLine,
       final File directory, final String msg) throws EoulsanException {
 
@@ -451,6 +459,7 @@ public class ProcessIT {
    * Create the expected data test directory
    * @param inputTestDirectory source test directory with needed files
    * @return expected data directory for the test
+   * @throws EoulsanException if the existing directory is empty
    */
   private File retrieveExpectedDirectory(final File inputTestDirectory)
       throws EoulsanException {
@@ -464,6 +473,12 @@ public class ProcessIT {
             return pathname.getName().startsWith("expected");
           }
         });
+
+    // Execute test, expected must be existing
+    if (expectedDirectories.length == 0 && !this.generateExpectedData)
+      throw new EoulsanException(testName
+          + ": no expected directory found to launch test in "
+          + inputTestDirectory.getAbsolutePath());
 
     // No test directory found
     if (expectedDirectories.length == 0) {
@@ -481,11 +496,6 @@ public class ProcessIT {
         return new File(inputTestDirectory, "/expected_"
             + (this.manualGenerationExpectedData
                 ? "UNKNOWN" : versionExpectedApplication));
-      } else {
-        // Execute test, expected must be existing
-        throw new EoulsanException(testName
-            + ": no expected directory found to launch test in "
-            + inputTestDirectory.getAbsolutePath());
       }
     }
 
@@ -539,6 +549,7 @@ public class ProcessIT {
    * global
    * @param globalsConf global configuration for tests
    * @param testConfFile file with the test configuration
+   * @return Properties content of configuration file
    * @throws IOException if an error occurs while reading the file.
    */
   private Properties loadConfigurationFile(final Properties globalsConf,
@@ -611,7 +622,7 @@ public class ProcessIT {
    *           of the test.
    */
   public ProcessIT(final Properties globalsConf, final File applicationPath,
-      final File testConfFile, final File testsDirectory, String testName)
+      final File testConfFile, final File testsDirectory, final String testName)
       throws IOException, EoulsanException {
 
     this.testConf = loadConfigurationFile(globalsConf, testConfFile);

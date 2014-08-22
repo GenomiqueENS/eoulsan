@@ -64,16 +64,16 @@ public class ITFactory {
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   /** Key to java properties for Testng */
-  public final static String CONF_PATH_KEY = "conf.path";
-  public final static String TESTS_FILE_PATH_KEY = "tests.file.path";
-  public final static String GENERATE_ALL_EXPECTED_DATA_KEY =
+  public static final String CONF_PATH_KEY = "conf.path";
+  public static final String TESTS_FILE_PATH_KEY = "tests.file.path";
+  public static final String GENERATE_ALL_EXPECTED_DATA_KEY =
       "generate.all.expected.data";
-  public final static String GENERATE_NEW_EXPECTED_DATA_KEY =
+  public static final String GENERATE_NEW_EXPECTED_DATA_KEY =
       "generate.new.expected.data";
 
-  public final static String APPLICATION_PATH_KEY = "application.path";
+  public static final String APPLICATION_PATH_KEY = "application.path";
 
-  private final static Stopwatch TIMER = Stopwatch.createUnstarted();
+  private static final Stopwatch TIMER = Stopwatch.createUnstarted();
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
@@ -96,7 +96,7 @@ public class ITFactory {
    * @return array object from integrated tests
    */
   @Factory
-  public Object[] createInstances() {
+  public final Object[] createInstances() {
 
     // If no test configuration path defined, do nothing
     if (this.applicationPath == null)
@@ -338,7 +338,7 @@ public class ITFactory {
       try {
         
         checkExistingStandardFile(configurationFile, "test configuration file");
-        
+
         this.globalsConf.load(newReader(this.configurationFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
       } catch (IOException e) {
