@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.ens.transcriptome</groupId>
@@ -15,7 +14,8 @@
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
-		<didyouknow>Did you know that eoulsan is the breton word for pipeline?</didyouknow>
+		<didyouknow>Did you know that eoulsan is the breton word for pipeline?
+		</didyouknow>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -117,7 +117,9 @@
 			<name>Marie-agnès Dilies</name>
 			<email />
 			<url />
-			<organization>Pasteur Institute, Paris, Transcriptome and Epigenome platform</organization>
+			<organization>Pasteur Institute, Paris, Transcriptome and Epigenome
+				platform
+			</organization>
 			<organizationUrl>http://www.pasteur.fr/</organizationUrl>
 			<roles>
 				<role>Differential analysis normalization help</role>
@@ -129,8 +131,10 @@
 			<name>Marlène Gratigny</name>
 			<email />
 			<url />
-			<organization>École normale supérieure, IBENS, Dyogen group</organization>
-			<organizationUrl>http://www.ibens.ens.fr/spip.php?article82&amp;lang=en</organizationUrl>
+			<organization>École normale supérieure, IBENS, Dyogen group
+			</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article82&amp;lang=en
+			</organizationUrl>
 			<roles>
 				<role>Testing and documentation review</role>
 			</roles>
@@ -141,8 +145,11 @@
 			<name>Valentine Murigneux</name>
 			<email />
 			<url />
-			<organization>École normale supérieure, IBENS, Expression of eukaryotic messenger RNAs group</organization>
-			<organizationUrl>http://www.ibens.ens.fr/spip.php?article80&amp;lang=en</organizationUrl>
+			<organization>École normale supérieure, IBENS, Expression of
+				eukaryotic messenger RNAs group
+			</organization>
+			<organizationUrl>http://www.ibens.ens.fr/spip.php?article80&amp;lang=en
+			</organizationUrl>
 			<roles>
 				<role>Testing</role>
 			</roles>
@@ -176,8 +183,9 @@
 	<mailingLists>
 		<mailingList>
 			<name>eoulsan-group</name>
-			<subscribe>http://groups.google.com/group/eoulsan/subscribe</subscribe>
-			<!--unsubscribe>http://groups.google.com/group/eoulsan/unsubscribe</unsubscribe-->
+			<subscribe>http://groups.google.com/group/eoulsan/subscribe
+			</subscribe>
+			<!--unsubscribe>http://groups.google.com/group/eoulsan/unsubscribe</unsubscribe -->
 			<archive>http://groups.google.com/group/eoulsan</archive>
 		</mailingList>
 	</mailingLists>
@@ -208,15 +216,16 @@
 			</snapshots>
 			<id>ens</id>
 			<name>ENS repository</name>
-			<!--url>https://maven-repository.dev.java.net/nonav/repository</url-->
+			<!--url>https://maven-repository.dev.java.net/nonav/repository</url -->
 			<url>http://transcriptome.ens.fr/maven2</url>
 		</repository>
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:https://eoulsan.googlecode.com/svn/trunk/</connection>
+		<connection>scm:svn:https://eoulsan.googlecode.com/svn/trunk/
+		</connection>
 		<tag>eoulsan-read-only</tag>
-                <!--developerConnection></developerConnection-->
+		<!--developerConnection></developerConnection -->
 		<url>http://code.google.com/p/eoulsan/source/checkout</url>
 	</scm>
 
@@ -360,10 +369,8 @@
 		</testResources>
 		<pluginManagement>
 			<plugins>
-				<!--plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>cobertura-maven-plugin</artifactId>
-		 	       </plugin-->
+				<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>cobertura-maven-plugin</artifactId> 
+					</plugin -->
 			</plugins>
 		</pluginManagement>
 
@@ -384,7 +391,7 @@
 				<version>2.17</version>
 				<configuration>
 					<testNGArtifactName>none:none</testNGArtifactName>
-					<!--skip>true</skip-->
+					<!--skip>true</skip -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -410,101 +417,109 @@
 				<executions>
 					<execution>
 						<id>generate-ressources</id>
-           					<phase>generate-resources</phase>
-           					<configuration>
-             						<tasks>
-								<mkdir dir="${basedir}/target/generated-resources"/>
-								<buildnumber file="${basedir}/build.num"/>
+						<phase>generate-resources</phase>
+						<configuration>
+							<tasks>
+								<mkdir dir="${basedir}/target/generated-resources" />
+								<buildnumber file="${basedir}/build.num" />
 								<tstamp>
 									<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss z" />
 									<format property="YEAR" pattern="yyyy" />
 								</tstamp>
 
 								<!-- execute git describe -->
-								<exec executable="git" failifexecutionfails="false" outputproperty="build.commit">
-									<arg value="describe"/>
-									<arg value="--all"/>
-									<arg value="--long"/>
+								<exec executable="git" failifexecutionfails="false"
+									outputproperty="build.commit">
+									<arg value="describe" />
+									<arg value="--all" />
+									<arg value="--long" />
 								</exec>
 
 								<condition property="build.commit" value="">
-									<not>  
-										<isset property="build.commit"/>
+									<not>
+										<isset property="build.commit" />
 									</not>
 								</condition>
-							
-								<exec executable="hostname" outputproperty="build.host"/>
+
+								<exec executable="hostname" outputproperty="build.host" />
 
 								<manifest file="${basedir}/target/generated-resources/MANIFEST.MF">
-									<attribute name="Built-By" value="${user.name}"/>
-									<attribute name="Built-Date" value="${TODAY}"/>  
-									<attribute name="Built-Year" value="${YEAR}"/> 
-									<attribute name="Built-Commit" value="${build.commit}" /> 
-									<attribute name="Built-Host" value="${build.host}" /> 
+									<attribute name="Built-By" value="${user.name}" />
+									<attribute name="Built-Date" value="${TODAY}" />
+									<attribute name="Built-Year" value="${YEAR}" />
+									<attribute name="Built-Commit" value="${build.commit}" />
+									<attribute name="Built-Host" value="${build.host}" />
 
-									<attribute name="Specification-Title" value="${pom.name}"/>   
-									<attribute name="Specification-Version" value="${pom.version}"/>   
-									<attribute name="Specification-Vendor" value="${project.organization.name}"/>
+									<attribute name="Specification-Title" value="${pom.name}" />
+									<attribute name="Specification-Version" value="${pom.version}" />
+									<attribute name="Specification-Vendor" value="${project.organization.name}" />
 
-									<attribute name="Implementation-Title" value="${pom.name}"/>   
-									<attribute name="Implementation-Version" value="build${build.number}"/>   
-									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
+									<attribute name="Implementation-Title" value="${pom.name}" />
+									<attribute name="Implementation-Version" value="build${build.number}" />
+									<attribute name="Implementation-Vendor" value="${project.organization.name}" />
 
-									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main"/>
+									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main" />
 								</manifest>
-								<copy file="${basedir}/target/generated-resources/MANIFEST.MF" tofile="${basedir}/target/classes/manifest.txt"/>
-             						</tasks>
-           					</configuration>
-           					<goals>
-             						<goal>run</goal>
-           					</goals>
-         				</execution>
+								<copy file="${basedir}/target/generated-resources/MANIFEST.MF"
+									tofile="${basedir}/target/classes/manifest.txt" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>create-dists</id>
-           					<phase>package</phase>
-           					<configuration>
-             						<tasks unless="distrib.package.skip">
-		
+						<phase>package</phase>
+						<configuration>
+							<tasks unless="distrib.package.skip">
+
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
 								<!-- Package binary distribution -->
 
-								<mkdir dir="${basedir}/target/dist/lib"/>
-								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" /-->
+								<mkdir dir="${basedir}/target/dist/lib" />
+								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" 
+									/ -->
 								<copy file="${basedir}/INSTALL.txt" todir="${basedir}/target/dist/" />
 								<copy file="${basedir}/LICENSE-LGPL.txt" todir="${basedir}/target/dist/" />
 								<copy file="${basedir}/LICENSE-CeCILL-C.txt" todir="${basedir}/target/dist/" />
 
-								<copy file="${basedir}/src/main/bin/${pom.artifactId}.sh" todir="${basedir}/target/dist/" />
-								<chmod file="${basedir}/target/dist/${pom.artifactId}.sh" perm="ugo+rx" />
+								<copy file="${basedir}/src/main/bin/${pom.artifactId}.sh"
+									todir="${basedir}/target/dist/" />
+								<chmod file="${basedir}/target/dist/${pom.artifactId}.sh"
+									perm="ugo+rx" />
 
-								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar" todir="${basedir}/target/dist/lib/" />
-								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}"/>
+								<copy file="${basedir}/target/${pom.artifactId}-${pom.version}.jar"
+									todir="${basedir}/target/dist/lib/" />
+								<move file="${basedir}/target/dist/"
+									tofile="${basedir}/target/dist/${pom.artifactId}-${pom.version}" />
 
 								<!-- Package source distribution -->
 
-								<mkdir dir="${basedir}/target/dist-src/"/>
+								<mkdir dir="${basedir}/target/dist-src/" />
 								<copy todir="${basedir}/target/dist-src/">
 									<fileset dir="${basedir}">
-										<include name="src/**"/>
-										<include name="pom.xml"/>
-										<include name="checkstyle.xml"/>
-										<include name="checkstyle-license.txt"/>
-										<include name="COMPILING.txt"/>
-										<include name="INSTALL.txt"/>
-										<include name="LICENSE-LGPL.txt"/>
-										<include name="LICENSE-CeCILL-C.txt"/>
+										<include name="src/**" />
+										<include name="pom.xml" />
+										<include name="checkstyle.xml" />
+										<include name="checkstyle-license.txt" />
+										<include name="COMPILING.txt" />
+										<include name="INSTALL.txt" />
+										<include name="LICENSE-LGPL.txt" />
+										<include name="LICENSE-CeCILL-C.txt" />
 									</fileset>
 								</copy>
-								<move file="${basedir}/target/dist-src/" tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}"/>
+								<move file="${basedir}/target/dist-src/"
+									tofile="${basedir}/target/dist-src/${pom.artifactId}-${pom.version}" />
 							</tasks>
-           					</configuration>
-           					<goals>
-             						<goal>run</goal>
-           					</goals>
-         				</execution>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>compress-dists</id>
-           					<phase>package</phase>
+						<phase>package</phase>
 						<configuration>
 							<tasks unless="distrib.package.compression.skip">
 
@@ -512,41 +527,49 @@
 								<!-- Compress dist-src -->
 
 
-								<tar longfile="gnu" destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
-									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
-										<include name="*/**"/>
-										<exclude name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+								<tar longfile="gnu"
+									destfile="${basedir}/target/${pom.artifactId}-${pom.version}.tar">
+									<tarfileset dir="${basedir}/target/dist" mode="644"
+										dirmode="755" username="nobody" group="nobody">
+										<include name="*/**" />
+										<exclude
+											name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
 									</tarfileset>
-									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
-										<include name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
+									<tarfileset dir="${basedir}/target/dist" mode="755"
+										dirmode="755" username="nobody" group="nobody">
+										<include
+											name="${pom.artifactId}-${pom.version}/${pom.artifactId}.sh" />
 									</tarfileset>
 								</tar>
 								<gzip zipfile="${basedir}/target/${artifactId}-${version}.tar.gz"
-									src="${basedir}/target/${artifactId}-${version}.tar"/>
-                                                                <bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
-                                                                        src="${basedir}/target/${artifactId}-${version}.tar"/>
-								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar" 
-									dest="${basedir}/target/tar-bin"/>
-                                                                <zip destfile="${basedir}/target/${artifactId}-${version}.zip"
-                                                                        basedir="${basedir}/target/tar-bin"/>
+									src="${basedir}/target/${artifactId}-${version}.tar" />
+								<bzip2 destfile="${basedir}/target/${artifactId}-${version}.tar.bz2"
+									src="${basedir}/target/${artifactId}-${version}.tar" />
+								<untar src="${basedir}/target/${pom.artifactId}-${pom.version}.tar"
+									dest="${basedir}/target/tar-bin" />
+								<zip destfile="${basedir}/target/${artifactId}-${version}.zip"
+									basedir="${basedir}/target/tar-bin" />
 
 								<!-- Compress dist-src -->
-								<tar longfile="gnu" tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
+								<tar longfile="gnu"
+									tarfile="${basedir}/target/${artifactId}-src-${version}.tar">
 
-									<tarfileset dir="${basedir}/target/dist-src"  mode="755" username="nobody" group="nobody">
-										<include name="*/**"/>
+									<tarfileset dir="${basedir}/target/dist-src" mode="755"
+										username="nobody" group="nobody">
+										<include name="*/**" />
 									</tarfileset>
 								</tar>
 								<gzip zipfile="${basedir}/target/${artifactId}-src-${version}.tar.gz"
-									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
+									src="${basedir}/target/${artifactId}-src-${version}.tar" />
 								<bzip2 destfile="${basedir}/target/${artifactId}-src-${version}.tar.bz2"
-									src="${basedir}/target/${artifactId}-src-${version}.tar"/>
+									src="${basedir}/target/${artifactId}-src-${version}.tar" />
 
-								<untar src="${basedir}/target/${pom.artifactId}-src-${pom.version}.tar" 
-									dest="${basedir}/target/tar-src"/>
-                                                                <zip destfile="${basedir}/target/${artifactId}-src-${version}.zip"
-                                                                        basedir="${basedir}/target/tar-src"/>
-             							</tasks>
+								<untar
+									src="${basedir}/target/${pom.artifactId}-src-${pom.version}.tar"
+									dest="${basedir}/target/tar-src" />
+								<zip destfile="${basedir}/target/${artifactId}-src-${version}.zip"
+									basedir="${basedir}/target/tar-src" />
+							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
@@ -557,39 +580,45 @@
 						<phase>site</phase>
 						<configuration>
 							<tasks>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.url}">
-									<include name="**/*.jnlp"/>
-									<include name="**/*.html"/>
-									<include name="**/*.rss"/>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+									value="${pom.url}">
+									<include name="**/*.jnlp" />
+									<include name="**/*.html" />
+									<include name="**/*.rss" />
 									<replacetoken>@@@WEBSITE@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.version}">
-									<include name="**/*.jnlp"/>
-									<include name="**/*.html"/>
-									<include name="**/*.rss"/>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+									value="${pom.version}">
+									<include name="**/*.jnlp" />
+									<include name="**/*.html" />
+									<include name="**/*.rss" />
 									<replacetoken>@@@VERSION@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${pom.name}">
-									<include name="**/*.jnlp"/>
-									<include name="**/*.html"/>
-									<include name="**/*.rss"/>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+									value="${pom.name}">
+									<include name="**/*.jnlp" />
+									<include name="**/*.html" />
+									<include name="**/*.rss" />
 									<replacetoken>@@@APPNAME@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${artifactId}">
-									<include name="**/*.jnlp"/>
-									<include name="**/*.html"/>
-									<include name="**/*.rss"/>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+									value="${artifactId}">
+									<include name="**/*.jnlp" />
+									<include name="**/*.html" />
+									<include name="**/*.rss" />
 									<replacetoken>@@@APPNAMEMIN@@@</replacetoken>
 								</replace>
 
 								<tstamp>
-									<format property="TODAY_UK" pattern="EEE, dd MMM yyyy HH:mm:ss z" locale="en,UK"/>
+									<format property="TODAY_UK" pattern="EEE, dd MMM yyyy HH:mm:ss z"
+										locale="en,UK" />
 								</tstamp>
 
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${TODAY_UK}">
-									<include name="**/*.jnlp"/>
-									<include name="**/*.html"/>
-									<include name="**/*.rss"/>
+								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+									value="${TODAY_UK}">
+									<include name="**/*.jnlp" />
+									<include name="**/*.html" />
+									<include name="**/*.rss" />
 									<replacetoken>@@@DATE@@@</replacetoken>
 								</replace>
 							</tasks>
@@ -609,24 +638,26 @@
 								<mkdir dir="${basedir}/target/site" />
 
 								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.gz"
-									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.gz"
-									todir="${basedir}/target/site"/>
+									todir="${basedir}/target/site" />
+								<copy
+									file="${basedir}/target/${artifactId}-src-${pom.version}.tar.gz"
+									todir="${basedir}/target/site" />
 								<copy file="${basedir}/target/${artifactId}-${pom.version}.tar.bz2"
-									todir="${basedir}/target/site"/>
-								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.tar.bz2"
-									todir="${basedir}/target/site"/>
+									todir="${basedir}/target/site" />
+								<copy
+									file="${basedir}/target/${artifactId}-src-${pom.version}.tar.bz2"
+									todir="${basedir}/target/site" />
 								<copy file="${basedir}/target/${artifactId}-${pom.version}.zip"
-									todir="${basedir}/target/site"/>
+									todir="${basedir}/target/site" />
 								<copy file="${basedir}/target/${artifactId}-src-${pom.version}.zip"
-									todir="${basedir}/target/site"/>
+									todir="${basedir}/target/site" />
 							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
 						</goals>
 					</execution>
-				
+
 				</executions>
 			</plugin>
 			<plugin>
@@ -638,7 +669,8 @@
 							<mode>development</mode>
 							<url>${pom.url}</url>
 						</manifestEntries>
-						<manifestFile>${basedir}/target/generated-resources/MANIFEST.MF</manifestFile>
+						<manifestFile>${basedir}/target/generated-resources/MANIFEST.MF
+						</manifestFile>
 					</archive>
 				</configuration>
 			</plugin>
@@ -653,8 +685,10 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<!-- All libs except junit, hadoop-core, ws-java-sdk and its runtime dependencies -->
-							<excludeArtifactIds>junit,hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl</excludeArtifactIds>
+							<!-- All libs except junit, hadoop-core, ws-java-sdk and its runtime 
+								dependencies -->
+							<excludeArtifactIds>junit,hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							</excludeArtifactIds>
 							<outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						</configuration>
 					</execution>
@@ -666,9 +700,11 @@
 						</goals>
 						<configuration>
 							<!-- hadoop-core, aws-java-sdk and its runtime dependencies -->
-							<includeArtifactIds>hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl</includeArtifactIds>
-							<outputDirectory>${basedir}/target/dist/lib/local</outputDirectory>
-				            </configuration>
+							<includeArtifactIds>hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							</includeArtifactIds>
+							<outputDirectory>${basedir}/target/dist/lib/local
+							</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -681,24 +717,24 @@
 					<outputEncoding>iso-8859-1</outputEncoding>
 				</configuration>
 			</plugin>
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<formats>
-						<format>xml</format>
-					</formats>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>cobertura</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin-->
+			<!--plugin> 
+			<groupId>org.codehaus.mojo</groupId> 
+			<artifactId>cobertura-maven-plugin</artifactId> 
+				<version>2.5.1</version> 
+				<configuration> 
+				<formats> 
+				<format>xml</format> 
+				</formats> 
+				</configuration> 
+				<executions> 
+				<execution> 
+				<phase>package</phase> 
+				<goals> 
+				<goal>cobertura</goal> 
+				</goals> 
+				</execution> 
+				</executions> 
+		   </plugin -->
 		</plugins>
 		<extensions>
 			<extension>
@@ -722,21 +758,14 @@
 					<outputEncoding>utf-8</outputEncoding>
 				</configuration>
 			</plugin>
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version-->
-				<!--configuration>
-					<configLocation>checkstyle.xml</configLocation>
-				</configuration>
-			</plugin-->
+
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-					<configuration>
-						<encoding>utf-8</encoding>
-						<doctitle>${project.name} ${project.version} API</doctitle>
-						<overview>${basedir}/src/main/java/overview.html</overview>
-					</configuration>
+				<configuration>
+					<encoding>utf-8</encoding>
+					<doctitle>${project.name} ${project.version} API</doctitle>
+					<overview>${basedir}/src/main/java/overview.html</overview>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -750,135 +779,105 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12.2</version>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clover-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-docck-plugin</artifactId>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.5.2</version>
-				<configuration>
-					<findbugsXmlOutput>true</findbugsXmlOutput>
-					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-					<xmlOutput>true</xmlOutput>
-				</configuration>
-			</plugin-->
 
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId>
-			</plugin>
+
+			<!-- add plugin for test with Jenkins : static analysis code -->
+			<!-- PLUG-IN Checkstyle -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.12</version>
 				<configuration>
-					<configLocation>checkstyle.xml</configLocation>
+					<!-- configLocation>src/config/sun_checks.xml</configLocation -->
+					<configLocation>./checkstyle_google.xml</configLocation>
 				</configuration>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- PLUG-IN Findbugs -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.7.1</version>
+				<version>2.3.1</version>
 				<configuration>
-					<linkXref>true</linkXref>
-					<sourceEncoding>utf-8</sourceEncoding>
-					<minimumTokens>100</minimumTokens>
-					<targetJdk>1.6</targetJdk>
+					<effort>Max</effort>
+					<xmlOutput>true</xmlOutput>
 				</configuration>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>javancss-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- PLUG-IN PMD/CPD -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jdepend-maven-plugin</artifactId>
-			</plugin-->
-			
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>ckjm-maven-plugin</artifactId>
-			</plugin-->
-
-
-			<!--plugin>
-				<groupId>net.sf.xradar</groupId>
-				<artifactId>maven-xradar-plugin</artifactId>
-				<version>1.2.2</version>
-		        </plugin-->
-
-			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.5</version>
 				<configuration>
-				<targetjdk>1.5</targetjdk>
-				<rulesets>
-				<ruleset>/rulesets/basic.xml</ruleset>
-				<ruleset>/rulesets/controversial.xml</ruleset>
-				</rulesets>
-				<format>xml</format>
-				<linkXref>true</linkXref>
-				<sourceEncoding>utf-8</sourceEncoding>
-				<minimumTokens>100</minimumTokens>
+					<!-- PMD options -->
+					<targetJdk>1.7</targetJdk>
+					<aggregate>true</aggregate>
+					<format>xml</format>
+					<rulesets>
+						<ruleset>./pmd-rules.xml</ruleset>
+					</rulesets>
+
+					<!-- CPD options -->
+					<minimumTokens>20</minimumTokens>
+					<ignoreIdentifiers>true</ignoreIdentifiers>
+					<!-- configLocation>src/config/sun_checks.xml</configLocation -->
+					<configLocation>./checkstyle_google.xml</configLocation>
 				</configuration>
-				</plugin>-->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>changelog-maven-plugin</artifactId>
-				<configuration>
-					<type>date</type>
-					<dates>
-						<date implementation="java.lang.String">2008-01-01</date>
-					</dates>
-					<dateFormat>yyyy-MM-dd</dateFormat>
-				</configuration>
-			</plugin-->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-			</plugin-->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-simian-plugin</artifactId>
-				</plugin>-->
-			<!--plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-junit-report-plugin</artifactId>
-				</plugin-->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-tasklist-plugin</artifactId>
-				</plugin>-->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				</plugin>
-				<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-faq-plugin</artifactId>
-				</plugin>-->
+			</plugin>
+
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jxr-maven-plugin</artifactId> 
+				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
+				<version>2.12.2</version> </plugin -->
+			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-clover-plugin</artifactId> 
+				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-docck-plugin</artifactId> 
+				</plugin -->
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>findbugs-maven-plugin</artifactId> 
+				<version>2.5.2</version> <configuration> <findbugsXmlOutput>true</findbugsXmlOutput> 
+				<findbugsXmlWithMessages>true</findbugsXmlWithMessages> <xmlOutput>true</xmlOutput> 
+				</configuration> </plugin -->
+
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jxr-maven-plugin</artifactId> 
+				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
+				<configuration> <configLocation>checkstyle.xml</configLocation> </configuration> 
+				</plugin -->
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>cobertura-maven-plugin</artifactId> 
+				</plugin> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>findbugs-maven-plugin</artifactId> 
+				</plugin -->
+			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 
+				<version>2.7.1</version> <configuration> <linkXref>true</linkXref> <sourceEncoding>utf-8</sourceEncoding> 
+				<minimumTokens>100</minimumTokens> <targetJdk>1.6</targetJdk> </configuration> 
+				</plugin -->
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>javancss-maven-plugin</artifactId> 
+				</plugin> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jdepend-maven-plugin</artifactId> 
+				</plugin -->
+
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>ckjm-maven-plugin</artifactId> 
+				</plugin -->
+
+
+			<!--plugin> <groupId>net.sf.xradar</groupId> <artifactId>maven-xradar-plugin</artifactId> 
+				<version>1.2.2</version> </plugin -->
+
+			<!--<plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 
+				<configuration> <targetjdk>1.5</targetjdk> <rulesets> <ruleset>/rulesets/basic.xml</ruleset> 
+				<ruleset>/rulesets/controversial.xml</ruleset> </rulesets> <format>xml</format> 
+				<linkXref>true</linkXref> <sourceEncoding>utf-8</sourceEncoding> <minimumTokens>100</minimumTokens> 
+				</configuration> </plugin> -->
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>changelog-maven-plugin</artifactId> 
+				<configuration> <type>date</type> <dates> <date implementation="java.lang.String">2008-01-01</date> 
+				</dates> <dateFormat>yyyy-MM-dd</dateFormat> </configuration> </plugin -->
+			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>taglist-maven-plugin</artifactId> 
+				</plugin -->
+			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-simian-plugin</artifactId> 
+				</plugin> -->
+			<!--plugin> <groupId>maven</groupId> <artifactId>maven-junit-report-plugin</artifactId> 
+				</plugin -->
+			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-tasklist-plugin</artifactId> 
+				</plugin> -->
+			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-pmd-plugin</artifactId> 
+				</plugin> <plugin> <groupId>maven</groupId> <artifactId>maven-faq-plugin</artifactId> 
+				</plugin> -->
 		</plugins>
 	</reporting>
 
