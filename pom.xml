@@ -736,48 +736,48 @@
 				</executions> 
 		   </plugin -->
 
-		<!-- add plugin for test with Jenkins : static analysis code -->
-		<!-- PLUG-IN Checkstyle -->
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-checkstyle-plugin</artifactId>
-			<version>2.12</version>
-			<configuration>
-				<configLocation>./checkstyle_google.xml</configLocation>
-			</configuration>
-		</plugin>
+			<!-- add plugin for test with Jenkins : static analysis code -->
+			<!-- PLUG-IN Checkstyle -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<configLocation>./checkstyle_google.xml</configLocation>
+				</configuration>
+			</plugin>
 
-		<!-- PLUG-IN Findbugs -->
-		<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>findbugs-maven-plugin</artifactId>
-			<version>2.3.1</version>
-			<configuration>
-				<effort>Max</effort>
-				<xmlOutput>true</xmlOutput>
-			</configuration>
-		</plugin>
+			<!-- PLUG-IN Findbugs -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<effort>Max</effort>
+					<xmlOutput>true</xmlOutput>
+				</configuration>
+			</plugin>
 
-		<!-- PLUG-IN PMD/CPD -->
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-pmd-plugin</artifactId>
-			<version>3.0.1</version>
-			<configuration>
-				<!-- PMD options -->
-				<targetJdk>1.7</targetJdk>
-				<aggregate>true</aggregate>
-				<format>xml</format>
-				<rulesets>
-					<ruleset>./pmd-rules.xml</ruleset>
-				</rulesets>
+			<!-- PLUG-IN PMD/CPD -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<!-- PMD options -->
+					<targetJdk>1.7</targetJdk>
+					<aggregate>true</aggregate>
+					<format>xml</format>
+					<rulesets>
+						<ruleset>./pmd-rules.xml</ruleset>
+					</rulesets>
 
-				<!-- CPD options -->
-				<minimumTokens>20</minimumTokens>
-				<ignoreIdentifiers>true</ignoreIdentifiers>
-				<configLocation>./checkstyle_google.xml</configLocation>
-			</configuration>
-		</plugin>
+					<!-- CPD options -->
+					<minimumTokens>20</minimumTokens>
+					<ignoreIdentifiers>true</ignoreIdentifiers>
+					<configLocation>./checkstyle_google.xml</configLocation>
+				</configuration>
+			</plugin>
 
 		</plugins>
 
@@ -827,64 +827,143 @@
 			</plugin>
 
 			<plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-jxr-plugin</artifactId>
-                                <version>2.3</version>
-                        </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
 
 
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jxr-maven-plugin</artifactId> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
-				<version>2.12.2</version> </plugin -->
-			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-clover-plugin</artifactId> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-docck-plugin</artifactId> 
-				</plugin -->
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>findbugs-maven-plugin</artifactId> 
-				<version>2.5.2</version> <configuration> <findbugsXmlOutput>true</findbugsXmlOutput> 
-				<findbugsXmlWithMessages>true</findbugsXmlWithMessages> <xmlOutput>true</xmlOutput> 
-				</configuration> </plugin -->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId> 
+			</plugin> 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId> 
+				<version>2.12.2</version> 
+			</plugin -->
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId> 
+			</plugin> 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-docck-plugin</artifactId> 
+			</plugin -->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId> 
+				<version>2.5.2</version> 
+				<configuration>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+					<findbugsXmlWithMessages>true</findbugsXmlWithMessages> 
+					<xmlOutput>true</xmlOutput> 
+				</configuration> 
+			</plugin -->
 
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jxr-maven-plugin</artifactId> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
-				<configuration> <configLocation>checkstyle.xml</configLocation> </configuration> 
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId> 
+			</plugin> 
+				
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId> 
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation> 
+				</configuration> 
 				</plugin -->
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>cobertura-maven-plugin</artifactId> 
-				</plugin> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>findbugs-maven-plugin</artifactId> 
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId> 
+			</plugin> 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId> 
 				</plugin -->
-			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 
-				<version>2.7.1</version> <configuration> <linkXref>true</linkXref> <sourceEncoding>utf-8</sourceEncoding> 
-				<minimumTokens>100</minimumTokens> <targetJdk>1.6</targetJdk> </configuration> 
-				</plugin -->
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>javancss-maven-plugin</artifactId> 
-				</plugin> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jdepend-maven-plugin</artifactId> 
+			<!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId> 
+				<version>2.7.1</version>
+				<configuration>
+					<linkXref>true</linkXref> 
+					<sourceEncoding>utf-8</sourceEncoding> 
+					<minimumTokens>100</minimumTokens> 
+					<targetJdk>1.6</targetJdk> 
+				</configuration>
+			</plugin -->
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javancss-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId> 
 				</plugin -->
 
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>ckjm-maven-plugin</artifactId> 
+			<!--plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>ckjm-maven-plugin</artifactId>
 				</plugin -->
 
 
-			<!--plugin> <groupId>net.sf.xradar</groupId> <artifactId>maven-xradar-plugin</artifactId> 
-				<version>1.2.2</version> </plugin -->
+			<!--plugin>
+			<groupId>net.sf.xradar</groupId><artifactId>maven-xradar-plugin</artifactId> 
+				<version>1.2.2</version></plugin -->
 
-			<!--<plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 
-				<configuration> <targetjdk>1.5</targetjdk> <rulesets> <ruleset>/rulesets/basic.xml</ruleset> 
-				<ruleset>/rulesets/controversial.xml</ruleset> </rulesets> <format>xml</format> 
-				<linkXref>true</linkXref> <sourceEncoding>utf-8</sourceEncoding> <minimumTokens>100</minimumTokens> 
-				</configuration> </plugin> -->
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>changelog-maven-plugin</artifactId> 
-				<configuration> <type>date</type> <dates> <date implementation="java.lang.String">2008-01-01</date> 
-				</dates> <dateFormat>yyyy-MM-dd</dateFormat> </configuration> </plugin -->
-			<!--plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>taglist-maven-plugin</artifactId> 
-				</plugin -->
-			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-simian-plugin</artifactId> 
-				</plugin> -->
-			<!--plugin> <groupId>maven</groupId> <artifactId>maven-junit-report-plugin</artifactId> 
-				</plugin -->
-			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-tasklist-plugin</artifactId> 
-				</plugin> -->
-			<!--<plugin> <groupId>maven</groupId> <artifactId>maven-pmd-plugin</artifactId> 
-				</plugin> <plugin> <groupId>maven</groupId> <artifactId>maven-faq-plugin</artifactId> 
-				</plugin> -->
+			<!--<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId> 
+				<configuration>
+					<targetjdk>1.5</targetjdk>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset> 
+						<ruleset>/rulesets/controversial.xml</ruleset>
+					</rulesets>
+					<format>xml</format> 
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens> 
+				</configuration>
+			</plugin> -->
+			
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>changelog-maven-plugin</artifactId> 
+				<configuration>
+					<type>date</type> 
+					<dates>
+						<date implementation="java.lang.String">2008-01-01</date> 
+					</dates>
+					<dateFormat>yyyy-MM-dd</dateFormat>
+				</configuration>
+			</plugin -->
+			
+			<!--plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId> 
+			</plugin -->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-simian-plugin</artifactId> 
+			</plugin> -->
+			<!--plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-junit-report-plugin</artifactId> 
+			</plugin -->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-tasklist-plugin</artifactId> 
+			</plugin> -->
+			<!--<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-pmd-plugin</artifactId> 
+			</plugin>
+			
+			<plugin>
+				<groupId>maven</groupId>
+				<artifactId>maven-faq-plugin</artifactId> 
+			</plugin> -->
 		</plugins>
 	</reporting>
 
