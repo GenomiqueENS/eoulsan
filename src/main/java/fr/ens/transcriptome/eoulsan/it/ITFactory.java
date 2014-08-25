@@ -63,25 +63,31 @@ public class ITFactory {
   /** Logger */
   private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
-  /** Key to java properties for Testng */
-  public static final String CONF_PATH_KEY = "conf.path";
-  public static final String TESTS_FILE_PATH_KEY = "tests.file.path";
-  public static final String GENERATE_ALL_EXPECTED_DATA_KEY =
+  // Java system properties keys used for integration tests
+  public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
+  public static final String IT_TESTS_PATH_SYSTEM_KEY = "it.tests.path";
+  public static final String GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY =
       "generate.all.expected.data";
-  public static final String GENERATE_NEW_EXPECTED_DATA_KEY =
+  public static final String GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY =
       "generate.new.expected.data";
+  public static final String IT_APPLICATION_PATH_KEY_SYSTEM_KEY =
+      "it.application.path";
 
-  public static final String APPLICATION_PATH_KEY = "application.path";
+  // IT configuration properties keys
+  private static final String IT_OUTPUT_ANALYSIS_DIRECTORY_KEY =
+      "it.output.analysis.directory";
+  private static final String IT_LOG_DIRECTORY_KEY = "it.log.directory";
+  private static final String IT_TESTS_DIRECTORY_KEY = "it.tests.directory";
 
+  // TODO: This timer is never started
   private static final Stopwatch TIMER = Stopwatch.createUnstarted();
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
   private static String outputTestsDirectoryPath;
 
-  private final Properties globalsConf;
+  private final Properties globalsConf = new Properties();
   private final File applicationPath;
-  private final File configurationFile;
 
   // File with tests name to execute
   private final File selectedTestsFile;
@@ -302,6 +308,81 @@ public class ITFactory {
   }
 
   //
+  // Other methods
+  //
+
+  /**
+   * Get a File object from a Java System property.
+   * @param property the key of the property to get
+   * @return a File object or null if the property does not exists
+   */
+  private static File getFileFromSystemProperty(final String property) {
+
+    if (property == null) {
+      return null;
+    }
+
+    final String value = System.getProperty(property);
+    if (value == null) {
+      return null;
+    }
+
+    return new File(value);
+  }
+
+  /**
+   * Get the application path as a File object. If the "it.application.path"
+   * system property is set, return a File object pointing to the file, else try
+   * to find the application in <tt>./target/dist</tt> directory.
+   * @return a File object or null if no application path is found
+   */
+  private static File getApplicationPath() {
+
+    File dir = getFileFromSystemProperty(IT_APPLICATION_PATH_KEY_SYSTEM_KEY);
+
+    if (dir != null) {
+      return dir;
+    }
+
+    // Get user dir
+    File distDir =
+        new File(System.getProperty("user.dir")
+            + File.separator + "target" + File.separator + "dist");
+
+    // The dist directory does not exists ?
+    if (!distDir.isDirectory()) {
+      return null;
+    }
+
+    // Search if the dist directory only contains an unique directory
+    File subDir = null;
+    int dirCount = 0;
+    int fileCount = 0;
+
+    for (File f : distDir.listFiles()) {
+
+      if (f.getName().startsWith(".")) {
+        continue;
+      }
+
+      if (f.isDirectory()) {
+        dirCount++;
+        subDir = f;
+      } else if (f.isFile()) {
+        fileCount++;
+      }
+    }
+
+    // There only on directory in dist directory
+    if (fileCount == 0 && dirCount == 1) {
+      return subDir;
+    }
+
+    // Other cases
+    return distDir;
+  }
+
+  //
   // Constructor
   //
 
@@ -312,50 +393,45 @@ public class ITFactory {
    */
   public ITFactory() throws EoulsanException {
 
-    if (System.getProperty(CONF_PATH_KEY) != null) {
-      this.configurationFile = new File(System.getProperty(CONF_PATH_KEY));
-    } else {
-      this.configurationFile = null;
-    }
+    // Get configuration file path
+    File configurationFile = getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
 
-    if (System.getProperty(APPLICATION_PATH_KEY) != null) {
-      this.applicationPath = new File(System.getProperty(APPLICATION_PATH_KEY));
-    } else {
-      this.applicationPath = null;
-    }
+    if (configurationFile != null) {
 
-    if (this.configurationFile != null && this.applicationPath != null) {
+      // Get application path
+      this.applicationPath = getApplicationPath();
 
-      if (System.getProperty(TESTS_FILE_PATH_KEY) != null) {
-        this.selectedTestsFile =
-            new File(System.getProperty(TESTS_FILE_PATH_KEY));
-      } else {
-        this.selectedTestsFile = null;
+      // Check if application path exists
+      if (this.applicationPath == null || !this.applicationPath.isDirectory()) {
+        throw new EoulsanException("The application path doest not exists"
+            + this.applicationPath == null
+            ? "" : this.applicationPath.toString());
       }
 
+      // Get the file with the list of tests to run
+      this.selectedTestsFile =
+          getFileFromSystemProperty(IT_TESTS_PATH_SYSTEM_KEY);
+
       // Load configuration file
-      this.globalsConf = new Properties();
       try {
-        
+
         checkExistingStandardFile(configurationFile, "test configuration file");
 
-        this.globalsConf.load(newReader(this.configurationFile,
+        this.globalsConf.load(newReader(configurationFile,
             Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
       } catch (IOException e) {
         throw new EoulsanException("Reading test configuration file fail ("
-            + this.configurationFile.getAbsolutePath() + ")");
+            + configurationFile.getAbsolutePath() + "): " + e.getMessage());
       }
 
       // Load command line properties
       // Command generate all expected directories test
-      String val = System.getProperty(GENERATE_ALL_EXPECTED_DATA_KEY);
-      val = (val == null ? "false" : (val.trim().toLowerCase()));
-      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_KEY, val);
+      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY,
+          Boolean.getBoolean(GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
 
       // Command generate new expected directories test
-      val = System.getProperty(GENERATE_NEW_EXPECTED_DATA_KEY);
-      val = (val == null ? "false" : (val.trim().toLowerCase()));
-      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_KEY, val);
+      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY,
+          Boolean.getBoolean(GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
 
       // Retrieve application version test
       this.versionApplication =
@@ -363,29 +439,31 @@ public class ITFactory {
               .getProperty(ProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
               this.applicationPath);
 
-      // Init logger path
+      // Set logger path
       this.loggerPath =
-          this.globalsConf.getProperty("log.directory")
+          this.globalsConf.getProperty(IT_LOG_DIRECTORY_KEY)
               + "/" + this.versionApplication + "_" + DATE_FORMATTER.toString()
               + ".log";
 
-      // Init test data source directory
+      // Set test data source directory
       this.testsDataDirectory =
-          new File(this.globalsConf.getProperty("tests.directory"));
+          new File(this.globalsConf.getProperty(IT_TESTS_DIRECTORY_KEY));
 
-      // Init test data output directory
+      // Set test data output directory
       this.outputTestsDirectory =
-          new File(this.globalsConf.getProperty("output.analysis.directory"),
+          new File(
+              this.globalsConf.getProperty(IT_OUTPUT_ANALYSIS_DIRECTORY_KEY),
               this.versionApplication + "_" + DATE_FORMATTER.toString());
 
       // Set output tests directory path to call by Testng instance in Action
       // class
+      // TODO: May be a Java system property will be better
       outputTestsDirectoryPath = this.outputTestsDirectory.getAbsolutePath();
 
     } else {
       // Case no testng must be create when compile project with maven
-      this.globalsConf = null;
       this.versionApplication = null;
+      this.applicationPath = null;
       this.testsDataDirectory = null;
       this.outputTestsDirectory = null;
       this.loggerPath = null;

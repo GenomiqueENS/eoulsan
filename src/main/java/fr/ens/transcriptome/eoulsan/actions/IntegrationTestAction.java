@@ -83,7 +83,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("c")) {
 
         // Configuration test files
-        System.setProperty(ITFactory.CONF_PATH_KEY, line.getOptionValue("c")
+        System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, line.getOptionValue("c")
             .trim());
         argsOptions += 2;
       }
@@ -91,7 +91,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(ITFactory.APPLICATION_PATH_KEY,
+        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY,
             line.getOptionValue("exec").trim());
         argsOptions += 2;
       }
@@ -100,7 +100,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITFactory.TESTS_FILE_PATH_KEY,
+        System.setProperty(ITFactory.IT_TESTS_PATH_SYSTEM_KEY,
             line.getOptionValue("f").trim());
         argsOptions += 2;
       }
@@ -112,11 +112,11 @@ public class IntegrationTestAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          System.setProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_KEY, "true");
+          System.setProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          System.setProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_KEY, "true");
+          System.setProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         argsOptions += 2;
       }

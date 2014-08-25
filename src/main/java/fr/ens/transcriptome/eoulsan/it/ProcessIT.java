@@ -634,11 +634,11 @@ public class ProcessIT {
 
     this.generateAllTests =
         Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_KEY));
+            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
 
     this.generateNewTests =
         Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_KEY));
+            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
 
     this.manualGenerationExpectedData =
         Boolean.parseBoolean(this.testConf
