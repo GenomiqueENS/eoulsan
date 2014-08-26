@@ -215,22 +215,20 @@ public class ProcessIT {
       return version;
     }
 
-    String cmd = commandLine;
-    if (commandLine.contains(APPLICATION_PATH_VARIABLE)) {
-      // Replace application path in command line
-      cmd =
-          commandLine.replace(APPLICATION_PATH_VARIABLE,
-              applicationPath.getAbsolutePath());
-    }
-
     // Execute command
     try {
 
-      String exitValue = ProcessUtils.execToString(cmd);
+      // Replace application path variable in command line
+      final String cmd =
+          commandLine.replace(APPLICATION_PATH_VARIABLE,
+              applicationPath.getAbsolutePath());
 
-      if (exitValue != null && exitValue.trim().length() > 0)
+      // Execute command
+      final String output = ProcessUtils.execToString(cmd);
+
+      if (output != null && output.trim().length() > 0)
         // Retrieve version
-        version = exitValue.trim();
+        version = output.trim();
 
     } catch (IOException e) {
     }
@@ -364,18 +362,18 @@ public class ProcessIT {
     if (this.testConf.getProperty(scriptConfKey) == null)
       return;
 
-    String value = this.testConf.getProperty(scriptConfKey);
-    String s = value;
-    if (value.contains(APPLICATION_PATH_VARIABLE)) {
-      // Replace application path in command line
-      s =
-          value.replace(APPLICATION_PATH_VARIABLE,
-              this.applicationPath.getAbsolutePath());
-    }
+    // Get command line from the configuration
+    final String cmdLine = this.testConf.getProperty(scriptConfKey);
 
+    // Replace application path variable in command line
+    final String cmd =
+        cmdLine.replace(APPLICATION_PATH_VARIABLE,
+            this.applicationPath.getAbsolutePath());
+
+    // TODO May be using Runtime.exec(String) is a better solution
     // Build list command line
     final List<String> scriptCmdLine =
-        Lists.newLinkedList(CMD_LINE_SPLITTER.split(s));
+        Lists.newLinkedList(CMD_LINE_SPLITTER.split(cmd));
 
     if (scriptCmdLine.isEmpty())
       return;
