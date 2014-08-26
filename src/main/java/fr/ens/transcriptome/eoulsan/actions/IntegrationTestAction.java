@@ -112,11 +112,11 @@ public class IntegrationTestAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          System.setProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          System.setProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         argsOptions += 2;
       }

@@ -73,29 +73,7 @@ public class ProcessIT {
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
 
-  /** Key for configuration test */
-  public static final String PRE_TEST_SCRIPT_KEY = "pre.test.script";
-  public static final String POST_TEST_SCRIPT_KEY = "post.test.script";
-  public static final String DESCRIPTION_KEY = "description";
-
-  public static final String COMMAND_TO_LAUNCH_APPLICATION_KEY =
-      "command.to.launch.application";
-  public static final String COMMAND_TO_GENERATE_MANUALLY_KEY =
-      "command.to.generate.manually";
-
-  public static final String COMMAND_TO_GET_VERSION_APPLICATION_KEY =
-      "command.to.get.version.application";
-
-  public static final String INPUT_FILES_PATTERNS_KEY = "input.files.patterns";
-  public static final String OUTPUT_FILES_PATTERNS_KEY =
-      "output.files.patterns";
-
-  public static final String MANUAL_GENERATION_EXPECTED_DATA_KEY =
-      "manual.generation.expected.data";
-  public final static String GENERATE_ALL_EXPECTED_DATA_KEY =
-      "generate.all.expected.data";
-
-  public static final String APPLICATION_PATH_VARIABLE = "{application.path}";
+  private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
   /** Variables */
   private final Properties testConf;
@@ -360,19 +338,19 @@ public class ProcessIT {
 
     // Generated test directory
     // Optional script, pre-treatment before launch application
-    executeScript(PRE_TEST_SCRIPT_KEY);
+    executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY);
 
     // Execute application
     if (this.generateExpectedData && this.manualGenerationExpectedData)
       // Case generate expected data manually only it doesn't exists
-      executeScript(COMMAND_TO_GENERATE_MANUALLY_KEY);
+      executeScript(ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY);
     else
       // Case execute testing application
-      executeScript(COMMAND_TO_LAUNCH_APPLICATION_KEY);
+      executeScript(ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY);
 
     // Optional script, post-treatment after execution application and before
     // comparison between directories
-    executeScript(POST_TEST_SCRIPT_KEY);
+    executeScript(ITFactory.POST_TEST_SCRIPT_CONF_KEY);
   }
 
   /**
@@ -488,7 +466,8 @@ public class ProcessIT {
 
         // Retrieve command line from test configuration
         final String value =
-            this.testConf.getProperty(COMMAND_TO_GET_VERSION_APPLICATION_KEY);
+            this.testConf
+                .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY);
 
         final String versionExpectedApplication =
             retrieveVersionApplication(value, this.applicationPath);
@@ -634,15 +613,15 @@ public class ProcessIT {
 
     this.generateAllTests =
         Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
+            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_CONF_KEY));
 
     this.generateNewTests =
         Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
+            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_CONF_KEY));
 
     this.manualGenerationExpectedData =
         Boolean.parseBoolean(this.testConf
-            .getProperty(MANUAL_GENERATION_EXPECTED_DATA_KEY));
+            .getProperty(ITFactory.MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY));
 
     this.generateExpectedData = generateAllTests || generateNewTests;
     this.expectedTestDirectory =
@@ -651,9 +630,9 @@ public class ProcessIT {
     this.outputTestDirectory = new File(testsDirectory, this.testName);
 
     this.inputFilesPattern =
-        this.testConf.getProperty(INPUT_FILES_PATTERNS_KEY);
+        this.testConf.getProperty(ITFactory.INPUT_FILES_PATTERNS_CONF_KEY);
     this.outputFilesPattern =
-        this.testConf.getProperty(OUTPUT_FILES_PATTERNS_KEY);
+        this.testConf.getProperty(ITFactory.OUTPUT_FILES_PATTERNS_CONF_KEY);
 
     // Set action required
     final String actionType =
@@ -663,9 +642,9 @@ public class ProcessIT {
                 : "generate new data expected ") : "launch test");
 
     // Check not define, use test name
-    if (this.testConf.contains(DESCRIPTION_KEY)) {
+    if (this.testConf.contains(ITFactory.DESCRIPTION_CONF_KEY)) {
       this.description =
-          this.testConf.getProperty(DESCRIPTION_KEY)
+          this.testConf.getProperty(ITFactory.DESCRIPTION_CONF_KEY)
               + "\n action type: "
               + actionType.toUpperCase(Globals.DEFAULT_LOCALE);
     } else {

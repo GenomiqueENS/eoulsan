@@ -66,18 +66,35 @@ public class ITFactory {
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
   public static final String IT_TESTS_PATH_SYSTEM_KEY = "it.tests.path";
-  public static final String GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY =
-      "generate.all.expected.data";
-  public static final String GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY =
-      "generate.new.expected.data";
+  public static final String IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY =
+      "it.generate.all.expected.data";
+  public static final String IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY =
+      "it.generate.new.expected.data";
   public static final String IT_APPLICATION_PATH_KEY_SYSTEM_KEY =
       "it.application.path";
 
-  // IT configuration properties keys
-  private static final String IT_OUTPUT_ANALYSIS_DIRECTORY_KEY =
-      "it.output.analysis.directory";
-  private static final String IT_LOG_DIRECTORY_KEY = "it.log.directory";
-  private static final String IT_TESTS_DIRECTORY_KEY = "it.tests.directory";
+  // Configuration properties keys
+  static final String TESTS_DIRECTORY_CONF_KEY = "tests.directory";
+  static final String OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY =
+      "output.analysis.directory";
+  static final String LOG_DIRECTORY_CONF_KEY = "log.directory";
+  static final String PRE_TEST_SCRIPT_CONF_KEY = "pre.test.script";
+  static final String POST_TEST_SCRIPT_CONF_KEY = "post.test.script";
+  static final String GENERATE_ALL_EXPECTED_DATA_CONF_KEY =
+      "generate.all.expected.data";
+  static final String GENERATE_NEW_EXPECTED_DATA_CONF_KEY =
+      "generate.new.expected.data";
+  static final String DESCRIPTION_CONF_KEY = "description";
+  static final String COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY =
+      "command.to.launch.application";
+  static final String COMMAND_TO_GENERATE_MANUALLY_CONF_KEY =
+      "command.to.generate.manually";
+  static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
+      "command.to.get.application.version";
+  static final String INPUT_FILES_PATTERNS_CONF_KEY = "input.files.patterns";
+  static final String OUTPUT_FILES_PATTERNS_CONF_KEY = "output.files.patterns";
+  static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
+      "manual.generation.expected.data";
 
   // TODO: This timer is never started
   private static final Stopwatch TIMER = Stopwatch.createUnstarted();
@@ -426,33 +443,35 @@ public class ITFactory {
 
       // Load command line properties
       // Command generate all expected directories test
-      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY,
-          Boolean.getBoolean(GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
+      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_CONF_KEY,
+          Boolean.getBoolean(IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
 
       // Command generate new expected directories test
-      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY,
-          Boolean.getBoolean(GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
+      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_CONF_KEY,
+          Boolean.getBoolean(IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
 
       // Retrieve application version test
       this.versionApplication =
-          ProcessIT.retrieveVersionApplication(this.globalsConf
-              .getProperty(ProcessIT.COMMAND_TO_GET_VERSION_APPLICATION_KEY),
-              this.applicationPath);
+          ProcessIT
+              .retrieveVersionApplication(
+                  this.globalsConf
+                      .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
+                  this.applicationPath);
 
       // Set logger path
       this.loggerPath =
-          this.globalsConf.getProperty(IT_LOG_DIRECTORY_KEY)
+          this.globalsConf.getProperty(LOG_DIRECTORY_CONF_KEY)
               + "/" + this.versionApplication + "_" + DATE_FORMATTER.toString()
               + ".log";
 
       // Set test data source directory
       this.testsDataDirectory =
-          new File(this.globalsConf.getProperty(IT_TESTS_DIRECTORY_KEY));
+          new File(this.globalsConf.getProperty(TESTS_DIRECTORY_CONF_KEY));
 
       // Set test data output directory
       this.outputTestsDirectory =
           new File(
-              this.globalsConf.getProperty(IT_OUTPUT_ANALYSIS_DIRECTORY_KEY),
+              this.globalsConf.getProperty(OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
               this.versionApplication + "_" + DATE_FORMATTER.toString());
 
       // Set output tests directory path to call by Testng instance in Action
