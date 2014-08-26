@@ -66,6 +66,7 @@ public class ResultIT {
 
   private final Collection<PathMatcher> patternsFilesTreated;
   private final Collection<PathMatcher> allPatternsFiles;
+  private final Collection<PathMatcher> outputExcludePatternsFiles;
   private final List<File> filesList;
   private final File directory;
 
@@ -76,8 +77,8 @@ public class ResultIT {
    * @throws IOException if an error occurs while moving file
    * @throws EoulsanException if no file copy in destination directory
    */
-  public final void copyFiles(final File destinationDirectory) throws IOException,
-      EoulsanException {
+  public final void copyFiles(final File destinationDirectory)
+      throws IOException, EoulsanException {
 
     // Check at least on file match with a pattern
     boolean noFileMatchPatterns = false;
@@ -219,6 +220,11 @@ public class ResultIT {
 
     for (File file : sourceDirectory.listFiles()) {
 
+      // Apply exclude pattern
+      if (isFilenameMatches(this.outputExcludePatternsFiles, file.getName())) {
+        continue;
+      }
+
       // Treat directory
       if (file.isDirectory())
         files.addAll(createListFiles(file));
@@ -269,7 +275,8 @@ public class ResultIT {
    * @param patternsFiles sequences of patterns files
    * @return collection of PathMatcher, one per pattern
    */
-  private Collection<PathMatcher> setPatternFiles(final String patternsFiles) {
+  private static Collection<PathMatcher> setPatternFiles(
+      final String patternsFiles) {
 
     final String patternTestConfigurationFile = "test.conf";
 
@@ -384,6 +391,7 @@ public class ResultIT {
   //
   // Constructor
   //
+
   /**
    * Public constructor, it build list patterns and create list files from the
    * source directory.
@@ -395,12 +403,29 @@ public class ResultIT {
   public ResultIT(final File outputTestDirectory,
       final String inputPatternsFiles, final String outputPatternsFiles)
       throws IOException {
+
+    this(outputTestDirectory, inputPatternsFiles, outputPatternsFiles, null);
+  }
+
+  /**
+   * Public constructor, it build list patterns and create list files from the
+   * source directory.
+   * @param outputTestDirectory source directory
+   * @param inputPatternsFiles sequences of patterns, separated by a space
+   * @param outputPatternsFiles sequences of patterns, separated by a space
+   * @param outputExcludePattern sequences of patterns, separated by a space
+   * @throws IOException if an error occurs while parsing input directory
+   */
+  public ResultIT(final File outputTestDirectory,
+      final String inputPatternsFiles, final String outputPatternsFiles,
+      final String outputExcludePattern) throws IOException {
     this.directory = outputTestDirectory;
 
     // Build list patterns
     this.patternsFilesTreated = setPatternFiles(outputPatternsFiles);
     this.allPatternsFiles =
         setPatternFiles(inputPatternsFiles + " " + outputPatternsFiles);
+    this.outputExcludePatternsFiles = setPatternFiles(outputExcludePattern);
 
     this.filesList = createListFiles(this.directory);
   }
@@ -460,10 +485,11 @@ public class ResultIT {
     /**
      * Update report and result to directories comparison
      * @param msg message added to the report text
-     * @param resultIntermedary boolean result of comparison for a file between two
-     *          directories
+     * @param resultIntermedary boolean result of comparison for a file between
+     *          two directories
      */
-    public void appendComparison(final String msg, final boolean resultIntermedary) {
+    public void appendComparison(final String msg,
+        final boolean resultIntermedary) {
       appendReport(msg);
       setResult(resultIntermedary && isResult());
     }
