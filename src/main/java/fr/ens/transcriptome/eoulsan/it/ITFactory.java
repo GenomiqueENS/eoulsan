@@ -96,12 +96,13 @@ public class ITFactory {
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
-  // TODO: This timer is never started
-  private static final Stopwatch TIMER = Stopwatch.createUnstarted();
-
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
+
   private static String outputTestsDirectoryPath;
+
+  // TODO: This timer is never started
+  private final Stopwatch timer = Stopwatch.createUnstarted();
 
   private final Properties globalsConf = new Properties();
   private final File applicationPath;
@@ -303,7 +304,7 @@ public class ITFactory {
     // Add suffix to log global filename
     LOGGER.fine("End execution of "
         + testsCount + " in "
-        + toTimeHumanReadable(TIMER.elapsed(TimeUnit.MILLISECONDS)));
+        + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
     final File loggerFile = new File(this.loggerPath);
 
@@ -370,6 +371,9 @@ public class ITFactory {
     if (!distDir.isDirectory()) {
       return null;
     }
+
+    // Set Java property for TestNG
+    System.setProperty("maven.testng.output.dir", "");
 
     // Search if the dist directory only contains an unique directory
     File subDir = null;
