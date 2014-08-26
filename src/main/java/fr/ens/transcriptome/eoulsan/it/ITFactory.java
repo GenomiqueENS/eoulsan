@@ -65,7 +65,7 @@ public class ITFactory {
 
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
-  public static final String IT_TESTS_PATH_SYSTEM_KEY = "it.tests.path";
+  public static final String IT_TEST_LIST_PATH_SYSTEM_KEY = "it.test.list.path";
   public static final String IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY =
       "it.generate.all.expected.data";
   public static final String IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY =
@@ -431,7 +431,7 @@ public class ITFactory {
 
       // Get the file with the list of tests to run
       this.selectedTestsFile =
-          getFileFromSystemProperty(IT_TESTS_PATH_SYSTEM_KEY);
+          getFileFromSystemProperty(IT_TEST_LIST_PATH_SYSTEM_KEY);
 
       // Load configuration file
       try {

@@ -100,7 +100,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITFactory.IT_TESTS_PATH_SYSTEM_KEY,
+        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY,
             line.getOptionValue("f").trim());
         argsOptions += 2;
       }
