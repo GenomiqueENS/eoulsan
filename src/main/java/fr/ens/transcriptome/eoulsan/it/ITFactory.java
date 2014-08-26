@@ -96,6 +96,8 @@ public class ITFactory {
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
+  static final String TEST_CONFIGURATION_FILENAME = "test.conf";
+
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
 
@@ -219,7 +221,7 @@ public class ITFactory {
 
       checkExistingDirectoryFile(testDirectory, "the test directory");
 
-      if (!new File(testDirectory, "test.conf").exists())
+      if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
         continue;
 
       // Add test
@@ -227,7 +229,7 @@ public class ITFactory {
       // Create instance
       final ProcessIT processIT =
           new ProcessIT(this.globalsConf, this.applicationPath, new File(
-              testDirectory, "test.conf"), this.outputTestsDirectory,
+              testDirectory, TEST_CONFIGURATION_FILENAME), this.outputTestsDirectory,
               testDirectory.getName());
 
       // Add in map

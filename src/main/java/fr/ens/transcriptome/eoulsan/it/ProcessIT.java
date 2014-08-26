@@ -72,6 +72,7 @@ public class ProcessIT {
   public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
+  private static final String TEST_SOURCE_LINK_NAME = "test-source";
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
@@ -130,7 +131,8 @@ public class ProcessIT {
       // Treat result application directory
       regressionResultIT =
           new ResultIT(this.outputTestDirectory, this.inputFilesPattern,
-              this.outputFilesPattern);
+              this.outputFilesPattern, TEST_SOURCE_LINK_NAME
+                  + " " + ITFactory.TEST_CONFIGURATION_FILENAME);
 
       if (this.generateExpectedData) {
         // Build expected directory if necessary
@@ -143,11 +145,14 @@ public class ProcessIT {
             + expectedTestDirectory.getAbsolutePath());
 
       } else {
+
         // Case comparison between expected and output test directory
         outputComparison =
             regressionResultIT.compareTo(new ResultIT(
                 this.expectedTestDirectory.getParentFile(),
-                this.inputFilesPattern, this.outputFilesPattern));
+                this.inputFilesPattern, this.outputFilesPattern,
+                TEST_SOURCE_LINK_NAME
+                    + " " + ITFactory.TEST_CONFIGURATION_FILENAME));
 
         // Comparison assessment
         status = outputComparison.isResult();
@@ -319,6 +324,10 @@ public class ProcessIT {
         createSymbolicLink(file, this.outputTestDirectory);
       }
     }
+
+    // Create a symbolic link to the input directory
+    createSymbolicLink(this.inputTestDirectory, new File(
+        this.outputTestDirectory, TEST_SOURCE_LINK_NAME));
   }
 
   //

@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
 import static com.google.common.collect.Sets.newHashSet;
@@ -38,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -61,11 +63,15 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class ResultIT {
 
-  public static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
+  private static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
-  private final Collection<PathMatcher> patternsFilesTreated;
-  private final Collection<PathMatcher> allPatternsFiles;
+  private static PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
+      .getPathMatcher("glob:*");
+
+  private final Set<PathMatcher> patternsFilesTreated;
+  private final Set<PathMatcher> allPatternsFiles;
+  private final Set<PathMatcher> outputExcludePatternsFiles;
   private final List<File> filesList;
   private final File directory;
 
@@ -76,8 +82,8 @@ public class ResultIT {
    * @throws IOException if an error occurs while moving file
    * @throws EoulsanException if no file copy in destination directory
    */
-  public final void copyFiles(final File destinationDirectory) throws IOException,
-      EoulsanException {
+  public final void copyFiles(final File destinationDirectory)
+      throws IOException, EoulsanException {
 
     // Check at least on file match with a pattern
     boolean noFileMatchPatterns = false;
@@ -219,11 +225,17 @@ public class ResultIT {
 
     for (File file : sourceDirectory.listFiles()) {
 
-      // Treat directory
-      if (file.isDirectory())
-        files.addAll(createListFiles(file));
+      // Apply excluding pattern
+      if (isFilenameMatches(this.outputExcludePatternsFiles, file.getName())) {
+        continue;
+      }
 
-      // Search file in all patterns
+      // Process sub-directories
+      if (file.isDirectory()) {
+        files.addAll(createListFiles(file));
+      }
+
+      // Search files that match with one of all patterns
       if (isFilenameMatches(this.allPatternsFiles, file.getName())) {
         files.add(file);
       }
@@ -244,9 +256,7 @@ public class ResultIT {
   private boolean isFilenameMatches(final Collection<PathMatcher> patterns,
       final String filename) {
 
-    // None pattern, keep all file
-    if (patterns.isEmpty())
-      return true;
+    checkNotNull(patterns, "patterns argument cannot be null");
 
     // Ignore compression extension file
     final String filenameWithoutCompressionExtension =
@@ -266,106 +276,33 @@ public class ResultIT {
    * Build collection of PathMatcher for selection files to tread according to a
    * pattern file define in test configuration. Patterns set in string with
    * space to separator. Get input and output patterns files.
-   * @param patternsFiles sequences of patterns files
+   * @param patterns sequences of patterns files
    * @return collection of PathMatcher, one per pattern
    */
-  private Collection<PathMatcher> setPatternFiles(final String patternsFiles) {
+  private static Set<PathMatcher> createPathMatchers(final String patterns) {
 
-    final String patternTestConfigurationFile = "test.conf";
+    // No pattern defined
+    if (patterns == null || patterns.trim().isEmpty()) {
 
-    // No pattern define
-    if (patternsFiles == null)
-      return Collections.emptySet();
+      return Collections.singleton(ALL_PATH_MATCHER);
+    }
 
     // Init collection
-    final Collection<PathMatcher> setPatterns = newHashSet();
+    final Set<PathMatcher> result = newHashSet();
 
     // Parse patterns
-    for (String globSyntax : COMMA_SPLITTER.split(patternsFiles)) {
+    for (String globSyntax : COMMA_SPLITTER.split(patterns)) {
 
       // Convert in syntax reading by Java
       final PathMatcher matcher =
           FileSystems.getDefault().getPathMatcher("glob:" + globSyntax);
 
       // Add in list patterns files to treat
-      if (!setPatterns.contains(matcher)) {
-        setPatterns.add(matcher);
-      }
-    }
-
-    // If pattern define, add pattern
-    if (!setPatterns.isEmpty()) {
-
-      setPatterns.add(FileSystems.getDefault().getPathMatcher(
-          "glob:" + patternTestConfigurationFile));
+      result.add(matcher);
     }
 
     // Return unmodifiable collection
-    return Collections.unmodifiableCollection(setPatterns);
-  }
-
-  /**
-   * Clean directory, remove all files do not matching to a pattern. If none
-   * pattern define, all files are keeping.
-   * @throws IOException if an error occurs while removing files
-   */
-  @SuppressWarnings("unused")
-  private void cleanDirectory() throws IOException {
-    // None pattern files define
-    if (this.allPatternsFiles.isEmpty())
-      // Keep all files
-      return;
-
-    // Remove all files no keeping (no match with patterns)
-    cleanDirectory(this.directory);
-
-    // Clean directory
-    removeEmptyDirectory(this.directory);
-  }
-
-  /**
-   * Clean directory, remove all files do not matching to a pattern. If none
-   * pattern define, all files are keeping.
-   * @param directory to clean
-   * @throws IOException if an error occurs while removing files
-   */
-  private void cleanDirectory(final File directory) throws IOException {
-
-    if (directory == null || !directory.isDirectory())
-      return;
-
-    // Parse list files
-    for (File file : directory.listFiles()) {
-
-      if (file.isDirectory())
-        cleanDirectory(file);
-
-      // Check filename save in list files
-      if (!this.filesList.contains(file)) {
-        file.delete();
-      }
-    }
-  }
-
-  /**
-   * Remove empty directories
-   * @param directoryTarget directory to treat
-   */
-  private void removeEmptyDirectory(final File directoryTarget) {
-
-    if (directoryTarget == null || !directoryTarget.isDirectory())
-      return;
-
-    // Parse list files
-    for (File dir : directoryTarget.listFiles()) {
-
-      if (dir.isDirectory()) {
-        // Treat sub directories
-        removeEmptyDirectory(dir);
-        // Delete success only if directory is empty
-        dir.delete();
-      }
-    }
+    return Collections.unmodifiableSet(result);
   }
 
   //
@@ -384,23 +321,26 @@ public class ResultIT {
   //
   // Constructor
   //
+
   /**
    * Public constructor, it build list patterns and create list files from the
    * source directory.
    * @param outputTestDirectory source directory
    * @param inputPatternsFiles sequences of patterns, separated by a space
    * @param outputPatternsFiles sequences of patterns, separated by a space
+   * @param outputExcludePattern sequences of patterns, separated by a space
    * @throws IOException if an error occurs while parsing input directory
    */
   public ResultIT(final File outputTestDirectory,
-      final String inputPatternsFiles, final String outputPatternsFiles)
-      throws IOException {
+      final String inputPatternsFiles, final String outputPatternsFiles,
+      final String outputExcludePattern) throws IOException {
     this.directory = outputTestDirectory;
 
     // Build list patterns
-    this.patternsFilesTreated = setPatternFiles(outputPatternsFiles);
+    this.patternsFilesTreated = createPathMatchers(outputPatternsFiles);
     this.allPatternsFiles =
-        setPatternFiles(inputPatternsFiles + " " + outputPatternsFiles);
+        createPathMatchers(inputPatternsFiles + " " + outputPatternsFiles);
+    this.outputExcludePatternsFiles = createPathMatchers(outputExcludePattern);
 
     this.filesList = createListFiles(this.directory);
   }
@@ -460,10 +400,11 @@ public class ResultIT {
     /**
      * Update report and result to directories comparison
      * @param msg message added to the report text
-     * @param resultIntermedary boolean result of comparison for a file between two
-     *          directories
+     * @param resultIntermedary boolean result of comparison for a file between
+     *          two directories
      */
-    public void appendComparison(final String msg, final boolean resultIntermedary) {
+    public void appendComparison(final String msg,
+        final boolean resultIntermedary) {
       appendReport(msg);
       setResult(resultIntermedary && isResult());
     }
@@ -475,7 +416,7 @@ public class ResultIT {
    * @author Sandrine Perrin
    * @since 1.3
    */
-  static final class FilesComparator {
+  private static final class FilesComparator {
 
     private final List<Comparator> comparators = newArrayList();
     private static final boolean USE_SERIALIZATION_FILE = true;
