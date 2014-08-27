@@ -305,7 +305,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
       // Build the command line
       cmd.add(bwaPath);
-      cmd.add("sampe");
+      cmd.add("samse");
       cmd.add("-f");
       cmd.add(resultFile.getAbsolutePath());
       cmd.add(getIndexPath(archiveIndex));
