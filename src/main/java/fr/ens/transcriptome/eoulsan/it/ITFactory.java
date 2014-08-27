@@ -66,6 +66,7 @@ public class ITFactory {
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
   public static final String IT_TEST_LIST_PATH_SYSTEM_KEY = "it.test.list.path";
+  public static final String IT_TEST_SYSTEM_KEY = "it.test.name";
   public static final String IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY =
       "it.generate.all.expected.data";
   public static final String IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY =
@@ -111,6 +112,7 @@ public class ITFactory {
 
   // File with tests name to execute
   private final File selectedTestsFile;
+  private final String selectedTest;
 
   private final File testsDataDirectory;
   private final String versionApplication;
@@ -208,14 +210,14 @@ public class ITFactory {
     final List<ProcessIT> tests = Lists.newArrayList();
     final List<File> allTestsDirectories;
 
-    // Collect all test.txt describing test to launch
-    if (this.selectedTestsFile == null) {
-      // Collect all tests
-      allTestsDirectories =
-          Lists.newArrayList(this.testsDataDirectory.listFiles());
-    } else {
-      // Collect tests from a file with names tests
-      allTestsDirectories = readFileAsList();
+    // Collect tests from a file with names tests
+    allTestsDirectories = readTestListFile();
+
+    // Add the selected test if set
+    if (this.selectedTest != null) {
+
+      allTestsDirectories.add(new File(this.testsDataDirectory,
+          this.selectedTest));
     }
 
     if (allTestsDirectories.size() == 0)
@@ -255,9 +257,13 @@ public class ITFactory {
    * @return list all directories test found
    * @throws IOException if an error occurs while read file
    */
-  private List<File> readFileAsList() throws IOException {
+  private List<File> readTestListFile() throws IOException {
 
     final List<File> allDirectoriesFound = Lists.newArrayList();
+
+    if (this.selectedTestsFile == null) {
+      return allDirectoriesFound;
+    }
 
     checkExistingStandardFile(this.selectedTestsFile, "selected tests file");
 
@@ -445,6 +451,9 @@ public class ITFactory {
       this.selectedTestsFile =
           getFileFromSystemProperty(IT_TEST_LIST_PATH_SYSTEM_KEY);
 
+      // Get the test to execute
+      this.selectedTest = System.getProperty(IT_TEST_SYSTEM_KEY);
+
       // Load configuration file
       try {
 
@@ -503,7 +512,8 @@ public class ITFactory {
       this.outputTestsDirectory = null;
       this.loggerPath = null;
       this.selectedTestsFile = null;
-
+      this.selectedTest = null;
     }
   }
+
 }

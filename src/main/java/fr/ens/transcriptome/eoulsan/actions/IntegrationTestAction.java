@@ -83,16 +83,16 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("c")) {
 
         // Configuration test files
-        System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, line.getOptionValue("c")
-            .trim());
+        System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, line
+            .getOptionValue("c").trim());
         argsOptions += 2;
       }
 
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY,
-            line.getOptionValue("exec").trim());
+        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY, line
+            .getOptionValue("exec").trim());
         argsOptions += 2;
       }
 
@@ -100,8 +100,17 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY,
-            line.getOptionValue("f").trim());
+        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY, line
+            .getOptionValue("f").trim());
+        argsOptions += 2;
+      }
+
+      // Optional argument
+      if (line.hasOption("t")) {
+
+        // Test to launch
+        System.setProperty(ITFactory.IT_TEST_SYSTEM_KEY,
+            line.getOptionValue("t").trim());
         argsOptions += 2;
       }
 
@@ -112,11 +121,13 @@ public class IntegrationTestAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
-          System.setProperty(ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(
+              ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
-          System.setProperty(ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(
+              ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
 
         argsOptions += 2;
       }
@@ -178,6 +189,11 @@ public class IntegrationTestAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("file").hasArg(true)
         .withDescription("optional: files with tests name to launch")
         .withLongOpt("file").create('f'));
+
+    // Optional, the name of the test to execute
+    options.addOption(OptionBuilder.withArgName("test").hasArg(true)
+        .withDescription("optional: test name to launch").withLongOpt("test")
+        .create('t'));
 
     // Optional, force generated expected data
     options
