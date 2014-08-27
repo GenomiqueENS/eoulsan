@@ -38,8 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -117,11 +115,23 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public List<String> getListMapperArguments() {
+
     if (getMapperArguments() == null)
       return Collections.emptyList();
 
-    String[] tabMapperArguments = getMapperArguments().trim().split(" ");
-    return Lists.newArrayList(tabMapperArguments);
+    // Split the mapper arguments
+    final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
+
+    final List<String> result = new ArrayList<String>();
+
+    // Keep only non empty arguments
+    for (String arg : tabMapperArguments) {
+      if (!arg.isEmpty()) {
+        result.add(arg);
+      }
+    }
+
+    return result;
   }
 
   /**

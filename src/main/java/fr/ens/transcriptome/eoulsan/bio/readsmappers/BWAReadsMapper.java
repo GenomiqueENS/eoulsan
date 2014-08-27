@@ -241,7 +241,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    // Get temp dir from Eoulsan Runtime
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
     // Temporary result file 1

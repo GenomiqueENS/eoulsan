@@ -122,6 +122,20 @@ public class Reporter implements ReporterIncrementer {
   }
 
   /**
+   * Get a counter groups
+   * @param counterGroup the group of the counter
+   * @return a unmodifiable list of the counter groups or empty list if counter
+   *         doesn't exist
+   */
+  public Set<String> getCounterGroup(final String counterGroup) {
+
+    if (this.map.containsKey(counterGroup))
+      return Collections.unmodifiableSet(this.map.get(counterGroup).keySet());
+
+    return Collections.emptySet();
+  }
+
+  /**
    * Clear all the counters in the reporter.
    */
   public void clear() {
