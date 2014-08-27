@@ -182,6 +182,16 @@ public class ITFactory {
       throw new IOException("Cannot create output tests directory "
           + this.outputTestsDirectory.getAbsolutePath());
 
+    // Path to the latest link
+    File latestLink = new File(this.outputTestsDirectory.getParent(), "latest");
+
+    // Remove old link
+    if (latestLink.exists()) {
+      latestLink.delete();
+    }
+
+    // Recreate the link
+    createSymbolicLink(this.outputTestsDirectory, latestLink);
   }
 
   /**
@@ -229,8 +239,8 @@ public class ITFactory {
       // Create instance
       final ProcessIT processIT =
           new ProcessIT(this.globalsConf, this.applicationPath, new File(
-              testDirectory, TEST_CONFIGURATION_FILENAME), this.outputTestsDirectory,
-              testDirectory.getName());
+              testDirectory, TEST_CONFIGURATION_FILENAME),
+              this.outputTestsDirectory, testDirectory.getName());
 
       // Add in map
       tests.add(processIT);
