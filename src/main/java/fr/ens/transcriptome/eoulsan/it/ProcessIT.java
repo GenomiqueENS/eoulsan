@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.Files.newReader;
 import static com.google.common.io.Files.newWriter;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
@@ -35,9 +36,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -45,11 +49,8 @@ import java.util.logging.Logger;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Test;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
@@ -73,6 +74,8 @@ public class ProcessIT {
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
   private static final String TEST_SOURCE_LINK_NAME = "test-source";
+  private static final String STDERR_FILENAME = "STDERR";
+  private static final String STDOUT_FILENAME = "STDOUT";
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
@@ -95,6 +98,41 @@ public class ProcessIT {
   private final boolean manualGenerationExpectedData;
 
   private final StringBuilder reportText = new StringBuilder();
+
+  /**
+   * This internal class allow to save Process outputs
+   * @author Laurent Jourdren
+   */
+  private static final class CopyProcessOutput extends Thread {
+
+    private final Path path;
+    private final InputStream in;
+    private final String desc;
+
+    @Override
+    public void run() {
+      // TODO Auto-generated method stub
+
+      try {
+        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+        LOGGER.warning("Error while copying " + desc + ": " + e.getMessage());
+      }
+
+    }
+
+    CopyProcessOutput(final InputStream in, final File file, final String desc) {
+
+      checkNotNull(in, "in argument cannot be null");
+      checkNotNull(file, "file argument cannot be null");
+      checkNotNull(desc, "desc argument cannot be null");
+
+      this.in = in;
+      this.path = file.toPath();
+      this.desc = desc;
+    }
+
+  }
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -343,6 +381,10 @@ public class ProcessIT {
     checkExistingDirectoryFile(this.outputTestDirectory,
         "output test directory");
 
+    // Define stdout and stderr file
+    final File stdoutFile = new File(this.outputTestDirectory, STDOUT_FILENAME);
+    final File stderrFile = new File(this.outputTestDirectory, STDERR_FILENAME);
+
     // Generated test directory
     // Optional script, pre-treatment before launch application
     executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY);
@@ -350,10 +392,12 @@ public class ProcessIT {
     // Execute application
     if (this.generateExpectedData && this.manualGenerationExpectedData)
       // Case generate expected data manually only it doesn't exists
-      executeScript(ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY);
+      executeScript(ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY,
+          stdoutFile, stderrFile);
     else
       // Case execute testing application
-      executeScript(ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY);
+      executeScript(ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY,
+          stdoutFile, stderrFile);
 
     // Optional script, post-treatment after execution application and before
     // comparison between directories
@@ -368,6 +412,19 @@ public class ProcessIT {
   private void executeScript(final String scriptConfKey)
       throws EoulsanException {
 
+    executeScript(scriptConfKey, null, null);
+  }
+
+  /**
+   * Execute a script from a command line retrieved from the test configuration.
+   * @param scriptConfKey key for configuration to get command line
+   * @param stdoutFile file where copy the standard output of the script
+   * @param stderrFile file where copy the standard output of the script
+   * @throws EoulsanException if an error occurs while execute script
+   */
+  private void executeScript(final String scriptConfKey, final File stdoutFile,
+      final File stderrFile) throws EoulsanException {
+
     if (this.testConf.getProperty(scriptConfKey) == null)
       return;
 
@@ -377,33 +434,16 @@ public class ProcessIT {
     // Replace application path variable in command line
     final String cmd =
         cmdLine.replace(APPLICATION_PATH_VARIABLE,
-            this.applicationPath.getAbsolutePath());
+            this.applicationPath.getAbsolutePath()).trim();
 
-    // TODO May be using Runtime.exec(String) is a better solution
-    // Build list command line
-    final List<String> scriptCmdLine =
-        Lists.newLinkedList(CMD_LINE_SPLITTER.split(cmd));
-
-    if (scriptCmdLine.isEmpty())
+    if (cmd.isEmpty())
       return;
 
     // Execute script
-    this.reportText.append("\nexecute script with command line:"
-        + Joiner.on(' ').join(scriptCmdLine));
+    this.reportText.append("\nexecute script with command line: " + cmd);
 
-    // Copy script in output directory
-    if (!new File(this.outputTestDirectory, scriptCmdLine.get(0)).exists()) {
-      final List<String> copyScriptCmd =
-          Lists.newArrayList("cp", scriptCmdLine.get(0),
-              this.outputTestDirectory.getAbsolutePath());
-
-      executeCommandLine(copyScriptCmd, this.outputTestDirectory,
-          "copy script in directory");
-    }
-
-    executeCommandLine(scriptCmdLine, this.outputTestDirectory,
-        "execution application");
-
+    executeCommandLine(cmd, this.outputTestDirectory, "execution application",
+        stdoutFile, stderrFile);
   }
 
   /**
@@ -412,28 +452,41 @@ public class ProcessIT {
    * @param directory source for command line
    * @param msg message if an error occurs during execution or if the process
    *          fail
+   * @param stdoutFile file where copy the standard output of the process
+   * @param stderrFile file where copy the standard output of the process
    * @throws EoulsanException if an error occurs during execution or if the
    *           process fail
    */
-  private void executeCommandLine(final List<String> cmdLine,
-      final File directory, final String msg) throws EoulsanException {
+  private void executeCommandLine(final String cmdLine, final File directory,
+      final String msg, final File stdoutFile, final File stderrFile)
+      throws EoulsanException {
 
-    int exitValue = -1;
     try {
-      // Execute script
-      exitValue = ProcessUtils.sh(Lists.newArrayList(cmdLine), directory);
+
+      final Process p = Runtime.getRuntime().exec(cmdLine, null, directory);
+
+      // Save stdout
+      if (stdoutFile != null) {
+        new CopyProcessOutput(p.getInputStream(), stdoutFile, "stdout").start();
+      }
+
+      // Save stderr
+      if (stdoutFile != null) {
+        new CopyProcessOutput(p.getErrorStream(), stderrFile, "stderr").start();
+      }
+
+      // Wait the end of the process
+      final int exitValue = p.waitFor();
 
       if (exitValue != 0) {
-        throw new EoulsanException("Bad exit value "
-            + exitValue + " for script " + msg + ": "
-            + Joiner.on(" ").join(cmdLine));
+        throw new EoulsanException("Bad exit value for script "
+            + msg + " (command line: " + cmdLine + "): " + exitValue);
       }
-    } catch (IOException e) {
-      throw new EoulsanException("Error during execution script for  (cmd:"
-          + Joiner.on(" ").join(cmdLine) + ") with exit value " + exitValue
-          + ", msg " + e.getMessage());
-    }
 
+    } catch (IOException | InterruptedException e) {
+      throw new EoulsanException("Error during execution script for script "
+          + msg + " (command line: " + cmdLine + "): " + e.getMessage());
+    }
   }
 
   //
@@ -525,7 +578,8 @@ public class ProcessIT {
 
     if (this.generateExpectedData)
       try {
-        Files.copy(reportFile, new File(this.expectedTestDirectory, status));
+        Files.copy(reportFile.toPath(), new File(this.expectedTestDirectory,
+            status).toPath(), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
       }
   }
