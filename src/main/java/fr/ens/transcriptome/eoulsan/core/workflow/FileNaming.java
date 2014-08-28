@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.CharMatcher.inRange;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
 import java.io.File;
 
@@ -56,6 +57,7 @@ public class FileNaming {
   private String stepId;
   private String portName;
   private String dataName;
+  private int sampleId = -1;
   private DataFormat format;
   private int fileIndex = -1;
   private int part = -1;;
@@ -87,6 +89,15 @@ public class FileNaming {
    */
   public String getDataName() {
     return dataName;
+  }
+
+  /**
+   * Get the sample id related to the data. This value is only use when generate
+   * compatible filenames.
+   * @return the id of the sample related to the file or -1 if not known
+   */
+  public int getSampleId() {
+    return sampleId;
   }
 
   /**
@@ -153,6 +164,16 @@ public class FileNaming {
 
     checkDataName(dataName);
     this.dataName = dataName;
+  }
+
+  /**
+   * Set the sample id related to the data. This value is only use when generate
+   * compatible filenames.
+   * @param sampleId the id of the sample related to the file or -1 if not known
+   */
+  public void setSampleId(final int sampleId) {
+
+    this.sampleId = sampleId;
   }
 
   /**
@@ -278,6 +299,67 @@ public class FileNaming {
 
     return filename(this.stepId, this.portName, this.format, this.dataName,
         this.fileIndex, this.part, this.compression);
+  }
+
+  /**
+   * Return the filename using Eoulsan 1.x naming.
+   * @return a string with the filename using Eoulsan 1.x naming
+   */
+  public String compatibilityFilename() {
+
+    checkNotNull(this.stepId, "stepId has not been set");
+    checkNotNull(this.portName, "portName has not been set");
+    checkNotNull(this.format, "format has not been set");
+    checkNotNull(this.dataName, "datName has not been set");
+    checkNotNull(this.compression, "compression has not been set");
+
+    checkFormatAndFileIndex();
+
+    final StringBuilder sb = new StringBuilder();
+
+    final String prefix;
+
+    // Set the prefix against step name
+    switch (this.stepId) {
+
+    case "filterreads":
+      prefix = "filtered_reads";
+      break;
+
+    case "mapreads":
+      prefix = "mapper_results";
+      break;
+
+    case "filtersam":
+    case "filterandmap":
+      prefix = "filtered_mapper_results";
+      break;
+
+    default:
+      prefix = this.stepId;
+      break;
+    }
+
+    sb.append(prefix);
+    sb.append('_');
+
+    // Set the id of the sample
+    if (this.format.isOneFilePerAnalysis()) {
+      sb.append('1');
+    } else {
+      sb.append(this.sampleId);
+    }
+
+    // Set the file index if needed
+    if (fileIndex >= 0) {
+
+      sb.append(toLetter(fileIndex));
+    }
+
+    // Set the extension
+    sb.append(this.format.getDefaultExtention());
+
+    return sb.toString();
   }
 
   /**
