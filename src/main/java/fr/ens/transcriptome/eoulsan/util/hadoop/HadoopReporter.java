@@ -24,29 +24,53 @@
 
 package fr.ens.transcriptome.eoulsan.util.hadoop;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Set;
 
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Counters;
+import org.apache.hadoop.mapreduce.TaskInputOutputContext;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.google.common.collect.Sets;
+
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
+/**
+ * This class define a Hadoop reporter.
+ * @since 1.0
+ * @author Laurent Jourdren
+ */
+@SuppressWarnings("rawtypes")
 public class HadoopReporter implements Reporter {
 
+  private final TaskInputOutputContext context;
   private final Counters counters;
 
   @Override
   public void incrCounter(final String counterGroup, final String counterName,
       long amount) {
 
-    this.counters.getGroup(counterGroup).findCounter(counterName)
-        .increment(amount);
+    if (context != null) {
+      // Use in mappers and reducers
+      this.context.getCounter(counterGroup, counterName).increment(amount);
+    } else {
+      // Use in other cases
+      this.counters.getGroup(counterGroup).findCounter(counterName)
+          .increment(amount);
+    }
   }
 
   @Override
   public long getCounterValue(final String counterGroup,
       final String counterName) {
+
+    // This method does not works in Hadoop mappers and reducers
+    if (context != null) {
+      throw new NotImplementedException();
+    }
 
     return this.counters.findCounter(counterGroup, counterName).getValue();
   }
@@ -54,11 +78,21 @@ public class HadoopReporter implements Reporter {
   @Override
   public Set<String> getCounterGroups() {
 
+    // This method does not works in Hadoop mappers and reducers
+    if (context != null) {
+      throw new NotImplementedException();
+    }
+
     return Sets.newHashSet(counters.getGroupNames());
   }
 
   @Override
   public Set<String> getCounterNames(final String group) {
+
+    // This method does not works in Hadoop mappers and reducers
+    if (context != null) {
+      throw new NotImplementedException();
+    }
 
     final Set<String> result = Sets.newHashSet();
 
@@ -68,9 +102,32 @@ public class HadoopReporter implements Reporter {
     return result;
   }
 
-  public HadoopReporter(final Counters counter) {
+  //
+  // Constructors
+  //
 
-    this.counters = counter;
+  /**
+   * Constructor. This constructor is used by Hadoop mappers and reducers.
+   * @param context context to use for counter incrementation
+   */
+  public HadoopReporter(final TaskInputOutputContext context) {
+
+    checkNotNull(context, "context is null");
+
+    this.counters = null;
+    this.context = context;
+  }
+
+  /**
+   * Constructor.
+   * @param counters counters to use for counter incrementation
+   */
+  public HadoopReporter(final Counters counters) {
+
+    checkNotNull(counters, "counters is null");
+
+    this.counters = counters;
+    this.context = null;
   }
 
 }
