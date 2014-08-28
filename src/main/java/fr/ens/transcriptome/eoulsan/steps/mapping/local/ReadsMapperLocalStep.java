@@ -118,13 +118,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
           new File(StringUtils.filenameWithoutExtension(archiveIndexFile
               .getPath()));
 
-      // get input file count for the sample
-      final Data inData = context.getInputData(DataFormats.READS_FASTQ);
+      // Get input data
+      final Data inData = context.getInputData(READS_FASTQ);
 
-      // define final output SAM file
-      final File samFile =
-          context.getOutputData(MAPPER_RESULTS_SAM, inData).getDataFile()
-              .toFile();
+      // Get output data
+      final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, inData);
+
+      // Define final output SAM file
+      final File samFile = outData.getDataFile().toFile();
 
       // Get FASTQ format
       // TODO create a DataMetaData class that contains standard methods like
