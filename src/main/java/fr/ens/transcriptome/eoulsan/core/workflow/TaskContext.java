@@ -280,7 +280,12 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(origin, "origin cannot be null");
 
-    return getOutputData(portName, origin.getName(), origin.getPart());
+    final Data result =
+        getOutputData(portName, origin.getName(), origin.getPart());
+
+    result.getMetadata().putAll(origin.getMetadata());
+
+    return result;
   }
 
   @Override
@@ -298,10 +303,7 @@ public class TaskContext implements StepContext, Serializable {
   @Override
   public Data getOutputData(final DataFormat format, final Data origin) {
 
-    checkNotNull(origin, "origin cannot be null");
-
-    return getOutputData(getOutputPortNameForFormat(format), origin.getName(),
-        origin.getPart());
+    return getOutputData(getOutputPortNameForFormat(format), origin);
   }
 
   /**
