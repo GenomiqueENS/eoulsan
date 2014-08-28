@@ -51,6 +51,8 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskScheduler;
@@ -450,19 +452,40 @@ public class TokenManager implements Runnable {
       return;
 
     // Step result file
-    final DataFile logFile =
+    DataFile logFile =
         new DataFile(this.step.getAbstractWorkflow().getLogDir(), step.getId()
             + STEP_RESULT_EXTENSION);
 
     try {
 
-      result.write(logFile);
+      result.write(logFile, false);
 
     } catch (IOException e) {
 
       Common.showAndLogErrorMessage("Unable to create log file for "
           + step.getId() + " step.");
     }
+
+    // Write the result file in old format
+    if (EoulsanRuntime.getSettings().isUseOldEoulsanResultFormat()) {
+
+      // Step result file
+      logFile =
+          new DataFile(this.step.getAbstractWorkflow().getLogDir(),
+              step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
+
+      try {
+
+        result.write(logFile, true);
+
+      } catch (IOException e) {
+
+        Common.showAndLogErrorMessage("Unable to create log file for "
+            + step.getId() + " step.");
+      }
+
+    }
+
   }
 
   //

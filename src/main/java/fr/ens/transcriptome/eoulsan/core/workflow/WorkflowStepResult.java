@@ -45,6 +45,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -182,7 +183,7 @@ public class WorkflowStepResult {
     checkImmutableState();
 
     // Check if at least one context result has been added to the step result
-    Preconditions.checkState(!this.taskNames.isEmpty(),
+    checkState(!this.taskNames.isEmpty(),
         "No context result has been added for step " + this.stepId);
 
     this.immutable = true;
@@ -197,10 +198,9 @@ public class WorkflowStepResult {
 
     // Check if result has been already added
     final int contextId = result.getContext().getId();
-    Preconditions.checkState(!this.taskNames.containsKey(contextId),
-        "Context #"
-            + contextId + " has already been added to result of step "
-            + this.stepId);
+    checkState(!this.taskNames.containsKey(contextId), "Context #"
+        + contextId + " has already been added to result of step "
+        + this.stepId);
 
     // Set start and end times
     if (this.taskNames.isEmpty()) {
@@ -369,7 +369,65 @@ public class WorkflowStepResult {
       sb.append("]\n");
     }
 
-    sb.append('}');
+    sb.append("}\n");
+    return sb.toString();
+  }
+
+  /**
+   * Get a representation of the result in the old Eoulsan format.
+   * @return a String with the result
+   */
+  public String toEoulsanLogV1() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append("Job Id: ");
+    sb.append(this.jobId);
+    sb.append(" [");
+    sb.append(this.jobUUID);
+    sb.append(']');
+    sb.append("\nJob description: ");
+    sb.append(this.jobDescription);
+    sb.append("\nJob environment: ");
+    sb.append(this.jobEnvironment);
+    sb.append("\nStep: ");
+    sb.append(this.stepId);
+    sb.append(" [");
+    sb.append(stepClass);
+    sb.append("]");
+    sb.append("\nParameters:\n");
+
+    for (Parameter p : this.parameters) {
+      sb.append('\t');
+      sb.append(p.getName());
+      sb.append(": ");
+      sb.append(p.getStringValue());
+      sb.append('\n');
+    }
+
+    sb.append("Start time: ");
+    sb.append(this.startTime);
+    sb.append("\nEnd time: ");
+    sb.append(this.endTime);
+    sb.append("\nDuration: ");
+    sb.append(StringUtils.toTimeHumanReadable(duration));
+    sb.append('\n');
+
+    for (int contextId : this.taskNames.keySet()) {
+
+      sb.append(this.taskDescriptions.get(contextId));
+      sb.append('\n');
+
+      for (Map.Entry<String, Long> counter : this.taskCounters.get(contextId)
+          .entrySet()) {
+        sb.append('\t');
+        sb.append(counter.getKey());
+        sb.append('=');
+        sb.append(counter.getValue());
+        sb.append('\n');
+      }
+    }
+
     return sb.toString();
   }
 
@@ -405,21 +463,39 @@ public class WorkflowStepResult {
     throw new UnsupportedOperationException();
   }
 
-  public void write(final DataFile file) throws IOException {
+  /**
+   * Write the result.
+   * @param file output file
+   * @param oldFormat write the result in old Eoulsan format instead of JSON
+   * @throws IOException if an error occurs while writing result
+   */
+  public void write(final DataFile file, final boolean oldFormat)
+      throws IOException {
 
     checkNotNull(file, "file is null");
 
-    write(file.create());
+    write(file.create(), oldFormat);
   }
 
-  public void write(final OutputStream out) throws IOException {
+  /**
+   * Write the result.
+   * @param out output stream
+   * @param oldFormat write the result in old Eoulsan format instead of JSON
+   * @throws IOException if an error occurs while writing result
+   */
+  public void write(final OutputStream out, final boolean oldFormat)
+      throws IOException {
 
     checkNotNull(out, "output stream is null");
-    Preconditions.checkState(this.immutable,
-        "Cannot write non immutable object");
+    checkState(this.immutable, "Cannot write non immutable object");
 
     BufferedWriter writer = FileUtils.createBufferedWriter(out);
-    writer.write(toJSON());
+
+    if (oldFormat) {
+      writer.write(toEoulsanLogV1());
+    } else {
+      writer.write(toJSON());
+    }
     writer.close();
   }
 

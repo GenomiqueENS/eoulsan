@@ -120,6 +120,9 @@ public final class Settings implements Serializable {
   private static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
       "zookeeper.session.timeout";
 
+  private static final String USE_OLD_EOULSAN_RESULT_FORMAT_KEY =
+      MAIN_PREFIX_KEY + "old.result.format";
+
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
           HADOOP_AWS_SECRET_KEY});
@@ -376,6 +379,17 @@ public final class Settings implements Serializable {
     return Integer.parseInt(this.properties.getProperty(
         ZOOKEEPER_SESSION_TIMEOUT_KEY, ""
             + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
+  }
+
+  /**
+   * Test if Eoulsan result files must be written using the old format.
+   * @return true if Eoulsan result files must be written using the old format
+   */
+  public boolean isUseOldEoulsanResultFormat() {
+
+    return Boolean.parseBoolean(this.properties.getProperty(
+        USE_OLD_EOULSAN_RESULT_FORMAT_KEY, ""
+            + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
   }
 
   /**
@@ -715,6 +729,18 @@ public final class Settings implements Serializable {
   public void setZooKeeperSessionTimeout(final int timeout) {
 
     this.properties.setProperty(ZOOKEEPER_SESSION_TIMEOUT_KEY, "" + timeout);
+  }
+
+  /**
+   * Set if Eoulsan result files must be written using the old format.
+   * @param useOldEoulsanResultFormat true if Eoulsan result files must be
+   *          written using the old format
+   */
+  public void setUseOldEoulsanResultFormat(
+      final boolean useOldEoulsanResultFormat) {
+
+    this.properties.getProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
+        Boolean.toString(useOldEoulsanResultFormat));
   }
 
   /**

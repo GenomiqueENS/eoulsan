@@ -205,6 +205,9 @@ public final class Globals {
   /** ZooKeeper default session timeout. */
   public static final int ZOOKEEPER_SESSION_TIMEOUT_DEFAULT = 10000;
 
+  /** Write results using old Eoulsan format. */
+  public static final boolean USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT = true;
+
   //
   // Files encoding
   //
@@ -229,6 +232,9 @@ public final class Globals {
 
   /** Step result extension. */
   public static final String STEP_RESULT_EXTENSION = ".step.result";
+
+  /** Old step result format extension. */
+  public static final String STEP_RESULT_OLD_FORMAT_EXTENSION = ".log";
 
   /** Task context extension. */
   public static final String TASK_CONTEXT_EXTENSION = ".task.context";
