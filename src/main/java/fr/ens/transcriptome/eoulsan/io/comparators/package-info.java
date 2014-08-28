@@ -22,32 +22,9 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.io;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
-
 /**
- * This class allow to compare two binary files.
+ * This package contains classes for compare files.
  * @author Laurent Jourdren
  * @since 1.3
  */
-public class BinaryCompareFile extends AbstractCompareFiles {
-
-  @Override
-  public boolean compareNonOrderedFiles(InputStream inA, InputStream inB)
-      throws IOException {
-
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean compareOrderedFiles(InputStream inA, InputStream inB)
-      throws IOException {
-
-    return FileUtils.compareFile(inA, inB);
-  }
-
-}
+package fr.ens.transcriptome.eoulsan.io.comparators;

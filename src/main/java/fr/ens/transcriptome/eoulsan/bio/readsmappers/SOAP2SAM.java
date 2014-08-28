@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -54,6 +55,7 @@ public class SOAP2SAM {
   private final File funmap;
   private final File fout;
   private final GenomeDescription gd;
+  private boolean first;
 
   private static final Pattern PATTERN = Pattern
       .compile("^([AaCcGgTt])->(\\d+)");
@@ -65,34 +67,33 @@ public class SOAP2SAM {
     final UnSynchronizedBufferedWriter bw =
         FileUtils.createFastBufferedWriter(this.fout);
 
-    if (this.gd != null) {
-
-      bw.write("@HD\tVN:1.0\tSO:unsorted\n");
-
-      for (String sequenceName : this.gd.getSequencesNames()) {
-        bw.write("@SQ\tSN:"
-            + sequenceName + "\tLN:" + this.gd.getSequenceLength(sequenceName)
-            + "\n");
-      }
-    }
-
     return bw;
   }
 
-  public void convert(boolean isPaired) throws IOException {
+  private String[] sLast;
+  private final List<String> results = new ArrayList<String>();
 
-    final BufferedReader br = FileUtils.createBufferedReader(this.fin);
-    final UnSynchronizedBufferedWriter bw = createWriter();
+  public List<String> c(String line, boolean isPaired) {
 
-    String line = null;
-    String[] sLast = null;
+    this.results.clear();
 
-    while ((line = br.readLine()) != null) {
+    if (first) {
+      if (this.gd != null) {
+
+        results.add("@HD\tVN:1.0\tSO:unsorted");
+
+        for (String sequenceName : this.gd.getSequencesNames()) {
+          results.add("@SQ\tSN:"
+              + sequenceName + "\tLN:"
+              + this.gd.getSequenceLength(sequenceName));
+        }
+        first = false;
+      }
 
       final String[] sCurr = convert(line, isPaired);
 
       if (sCurr == null) {
-        continue;
+        return results;
       }
 
       if (sLast != null && sLast[0].equals(sCurr[0])) {
@@ -100,15 +101,15 @@ public class SOAP2SAM {
         if (isPaired) { // Fix single end mode, added by Laurent Jourdren
           mating(sLast, sCurr);
         }
-        bw.write(join(sLast, "\t") + "\n");
-        bw.write(join(sCurr, "\t") + "\n");
+        results.add(join(sLast, "\t"));
+        results.add(join(sCurr, "\t"));
 
         sLast = null;
 
       } else {
 
         if (sLast != null) {
-          bw.write(join(sLast, "\t") + "\n");
+          results.add(join(sLast, "\t"));
         }
         sLast = sCurr;
       }
@@ -116,8 +117,40 @@ public class SOAP2SAM {
       // bw.write(convert(line, false));
     }
 
+    return results;
+  }
+
+  public List<String> last() {
+
+    results.clear();
+
     if (sLast != null) {
-      bw.write(join(sLast, "\t") + "\n");
+      results.add(join(sLast, "\t"));
+    }
+
+    return results;
+  }
+
+  public void convert(boolean isPaired) throws IOException {
+
+    final BufferedReader br = FileUtils.createBufferedReader(this.fin);
+    final UnSynchronizedBufferedWriter bw = createWriter();
+
+    String[] sLast = null;
+    String line = null;
+
+    while ((line = br.readLine()) != null) {
+
+      for (String l : c(line, isPaired)) {
+        bw.write(l);
+        bw.write('\n');
+      }
+
+    }
+
+    for (String l : last()) {
+      bw.write(l);
+      bw.write('\n');
     }
 
     br.close();
@@ -312,6 +345,14 @@ public class SOAP2SAM {
   //
   // Constructor
   //
+
+  public SOAP2SAM(final GenomeDescription gd) {
+
+    this.gd = gd;
+    this.fin = null;
+    this.funmap = null;
+    this.fout = null;
+  }
 
   public SOAP2SAM(final File fin, final File funmap,
       final GenomeDescription gd, final File fout) {

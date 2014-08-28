@@ -204,6 +204,57 @@ public class $PROJECT_NAME implements EntryPoint {
 
     return flowcellId.substring(1);
   }
+  
+  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
+    
+    if (genomesList == null){
+      return Collections.emptyList();
+    }
+    
+    List<String> availableGenomes = new ArrayList<String>();
+    List<String> warnings = new ArrayList<String>();
+    boolean first = true;
+  
+    for (String line : genomesList.trim().split("\n")) {
+      if (line.indexOf("=") > -1) {
+        String[] l = line.split("=");
+        availableGenomes.add(trimSpecificString(l[0]));
+        availableGenomes.add(trimSpecificString(l[1]));
+      }
+    }
+
+    Set<String> genomesDesign = new HashSet<String>();
+    for (CasavaSample sample : design) {
+      genomesDesign.add(sample.getSampleRef());
+    }
+    
+    
+    for (String genomeSample : genomesDesign) {
+      if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
+        if (first)
+          warnings.add("\nNot available in genomes aliases list for detection contaminant for this specie : ");
+        
+        warnings.add("\t"+genomeSample);
+        first = false;
+      }
+    }
+    
+    return warnings;
+  }
+
+  private static String trimSpecificString(final String s) {
+
+    String trimmed = s.trim().toLowerCase();
+    String carToReplace = ".,;:/-_'";
+    
+    for (int i = 0; i < carToReplace.length(); i++) {
+      // Check present character to replace by space
+      if (trimmed.indexOf(carToReplace.charAt(i)) != -1)
+        trimmed = trimmed.replace(carToReplace.charAt(i),' ');
+    }
+    
+    return trimmed.toString();
+  }
 
   public final List<String> checkProjectCasavaDesign(final CasavaDesign design) {
 

@@ -110,10 +110,7 @@ public class LocalReporter implements Reporter {
   @Override
   public Set<String> getCounterNames(final String group) {
 
-    if (group == null)
-      throw new NullPointerException("group is null");
-
-    if (!this.map.containsKey(group))
+    if (group == null || !this.map.containsKey(group))
       return Collections.emptySet();
 
     return Collections.unmodifiableSet(this.map.get(group).keySet());

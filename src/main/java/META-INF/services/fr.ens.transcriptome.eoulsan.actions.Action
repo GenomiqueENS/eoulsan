@@ -15,3 +15,6 @@ fr.ens.transcriptome.eoulsan.actions.ClusterTaskAction
 
 # Fake actions
 fr.ens.transcriptome.eoulsan.actions.AWSExecAction
+
+# Validation Eoulsan version
+fr.ens.transcriptome.eoulsan.actions.IntegrationTestAction

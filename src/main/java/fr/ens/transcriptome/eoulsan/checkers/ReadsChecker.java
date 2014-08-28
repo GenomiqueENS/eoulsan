@@ -99,7 +99,7 @@ public class ReadsChecker implements Checker {
         FastqFormat.getFormatFromName(data.getMetadata()
             .get(FASTQ_FORMAT_FIELD));
     if (format == null) {
-      format = FastqFormat.FASTQ_ILLUMINA;
+      format = FastqFormat.FASTQ_SANGER;
     }
 
     // Single end mode

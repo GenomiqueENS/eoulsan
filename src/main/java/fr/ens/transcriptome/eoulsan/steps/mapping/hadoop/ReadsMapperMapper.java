@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
@@ -55,13 +56,14 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.transcriptome.eoulsan.util.locker.Locker;
 import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
 
@@ -102,6 +104,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   private Locker lock;
 
   private SequenceReadsMapper mapper;
+  private MapperProcess process;
   private List<String> fields = newArrayList();
 
   /**
@@ -126,12 +129,12 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     if (fieldsSize == 3) {
 
       // Single end
-      mapper.writeInputEntry(fields.get(0), fields.get(1), fields.get(2));
+      process.writeEntry(fields.get(0), fields.get(1), fields.get(2));
 
     } else if (fieldsSize == 6) {
 
       // Pair end
-      mapper.writeInputEntry(fields.get(0), fields.get(1), fields.get(2),
+      process.writeEntry(fields.get(0), fields.get(1), fields.get(2),
           fields.get(3), fields.get(4), fields.get(5));
     }
 
@@ -197,8 +200,17 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         .info("Genome index directory where decompressed: " + archiveIndexDir);
 
     // Init mapper
-    mapper.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        new HadoopReporterIncrementer(context), this.counterGroup);
+    mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(context),
+        this.counterGroup);
+
+    // Set FASTQ format
+    mapper.setFastqFormat(fastqFormat);
+
+    // TODO Handle genome description
+    if (pairEnd)
+      this.process = this.mapper.mapPE(null);
+    else
+      this.process = this.mapper.mapSE(null);
 
     LOGGER.info("Fastq format: " + fastqFormat);
 
@@ -281,8 +293,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    // LOGGER.info(lock.getProcessesWaiting() + " process(es) waiting.");
     lock.lock();
+
     try {
       ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
           .toLowerCase());
@@ -293,12 +305,13 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
           + this.mapper.getMapperName());
 
       // Close the data file
-      this.mapper.closeInput();
+      this.process.closeEntriesWriter();
 
       context.setStatus("Run " + this.mapper.getMapperName());
 
       // Process to mapping
-      mapper.map();
+      parseSAMResults(this.process.getStout(), context);
+      this.process.waitFor();
 
     } catch (IOException e) {
 
@@ -310,26 +323,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       lock.unlock();
     }
 
-    // Parse result file
-    context.setStatus("Parse " + this.mapper.getMapperName() + " results");
-    final File samOutputFile = this.mapper.getSAMFile(null);
-    parseSAMResults(samOutputFile, context);
-
-    // Remove temporary files
-    if (!samOutputFile.delete())
-      LOGGER.warning("Can not delete "
-          + this.mapper.getMapperName() + " output file: "
-          + samOutputFile.getAbsolutePath());
-
-    LOGGER.info("!!!!!!! delete ? : " + samOutputFile.delete());
-
-    // Clean mapper input files
-    this.mapper.clean();
-
     LOGGER.info("End of close() of the mapper.");
   }
 
-  private final void parseSAMResults(final File resultFile,
+  private final void parseSAMResults(final InputStream resultFileInputStream,
       final Context context) throws IOException, InterruptedException {
 
     String line;
@@ -339,7 +336,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Parse SAM result file
     final BufferedReader readerResults =
-        FileUtils.createBufferedReader(resultFile);
+        FileUtils.createBufferedReader(resultFileInputStream);
 
     final int taskId = context.getTaskAttemptID().getTaskID().getId();
 

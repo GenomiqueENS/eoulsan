@@ -82,7 +82,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
           FastqFormat.getFormatFromName(inData.getMetadata().get(
               FASTQ_FORMAT_FIELD));
       if (fastqFormat == null) {
-        fastqFormat = FastqFormat.FASTQ_ILLUMINA;
+        fastqFormat = FastqFormat.FASTQ_SANGER;
       }
 
       // get input file count for the sample

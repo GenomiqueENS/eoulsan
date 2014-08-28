@@ -49,10 +49,11 @@ public interface Reporter extends ReporterIncrementer {
   Set<String> getCounterGroups();
 
   /**
-   * Get the list of counter of a group.
-   * @param group counter group
-   * @return a set with the names of the counters
+   * Get the names of the counter of a counter group.
+   * @param counterGroup the group of the counter
+   * @return a unmodifiable list of the name of the counter of the groups or
+   *         empty list if counter doesn't exist
    */
-  Set<String> getCounterNames(String group);
+  public Set<String> getCounterNames(String counterGroup);
 
 }

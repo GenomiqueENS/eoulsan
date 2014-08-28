@@ -21,7 +21,8 @@ make_paths() {
 }
 
 # Get the path to this script
-BASEDIR=`dirname $0`
+REAL_SCRIPT_PATH=`readlink -f $0`
+BASEDIR=`dirname $REAL_SCRIPT_PATH`
 
 # Set the Eoulsan libraries path
 LIBDIR=$BASEDIR/lib

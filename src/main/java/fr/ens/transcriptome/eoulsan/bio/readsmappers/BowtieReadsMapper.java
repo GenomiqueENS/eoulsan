@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -100,6 +103,48 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   public String getDefaultArguments() {
     return DEFAULT_ARGUMENTS;
+  }
+
+  protected List<String> createCommonArgs(final String bowtiePath,
+      final String index, final boolean inputCrossbowFormat,
+      final boolean memoryMappedIndex) {
+
+    final List<String> result = new ArrayList<String>();
+
+    // Bowtie Executable path
+    result.add(bowtiePath);
+
+    // Set the user options
+    if (getListMapperArguments() != null)
+      result.addAll(getListMapperArguments());
+
+    // Set the number of threads to use
+    result.add("-p");
+    result.add(getThreadsNumber() + "");
+
+    // Enable memory mapped index
+    if (memoryMappedIndex)
+      result.add("--mm");
+
+    // Input Format in FASTQ or Crossbow format
+    if (inputCrossbowFormat)
+      result.add(("-r"));
+    else
+      result.add(("-q"));
+
+    // Set the quality format
+    result.add(bowtieQualityArgument());
+
+    // Output in SAM format
+    result.add("-S");
+
+    // Quiet mode
+    result.add("--quiet");
+
+    // Genome index name
+    result.add(index);
+
+    return result;
   }
 
 }

@@ -27,35 +27,27 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.Utils.checkState;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
-import fr.ens.transcriptome.eoulsan.bio.io.BioCharsets;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils.ProcessThreadErrOutput;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class abstract implements a generic Mapper.
@@ -90,24 +82,14 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract List<String> getIndexerCommand(
       final String indexerPathname, final String genomePathname);
 
-  private File readsFile1;
-  private File readsFile2;
-
   private File archiveIndexFile;
   private File archiveIndexDir;
 
-  private UnSynchronizedBufferedWriter readsWriter1;
-  private UnSynchronizedBufferedWriter readsWriter2;
-
-  private boolean noReadWritten = true;
-  private boolean pairEnd = false;
-  private FastqFormat fastqFormat;
+  private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
   private int threadsNumber;
   private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
-
-  private int entriesWritten;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -130,26 +112,30 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public List<String> getListMapperArguments() {
+
     if (getMapperArguments() == null)
       return Collections.emptyList();
 
-    String[] tabMapperArguments = getMapperArguments().trim().split(" ");
-    return Lists.newArrayList(tabMapperArguments);
-  }
+    // Split the mapper arguments
+    final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
 
-  /**
-   * Test if the mapper is in pair end mode.
-   * @return true if the mapper is in pair end mode
-   */
-  public boolean isPairEnd() {
+    final List<String> result = new ArrayList<String>();
 
-    return this.pairEnd;
+    // Keep only non empty arguments
+    for (String arg : tabMapperArguments) {
+      if (!arg.isEmpty()) {
+        result.add(arg);
+      }
+    }
+
+    return result;
   }
 
   /**
    * Get Fastq format.
    * @return the fastq format
    */
+  @Override
   public FastqFormat getFastqFormat() {
 
     return this.fastqFormat;
@@ -196,6 +182,15 @@ public abstract class AbstractSequenceReadsMapper implements
   public void setTempDirectory(final File tempDirectory) {
 
     this.tempDir = tempDirectory;
+  }
+
+  @Override
+  public void setFastqFormat(final FastqFormat format) {
+
+    if (format == null)
+      throw new NullPointerException("The FASTQ format is null");
+
+    this.fastqFormat = format;
   }
 
   //
@@ -274,7 +269,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine(cmd.toString());
 
-    final int exitValue = sh(cmd, tmpGenomeFile.getParentFile());
+    final int exitValue = ProcessUtils.sh(cmd, tmpGenomeFile.getParentFile());
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for index creation execution: "
@@ -403,172 +398,23 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   //
-  // Entries
+  // Mapping with File
   //
 
   @Override
-  public void closeInput() throws IOException {
+  public final void mapPE(final File readsFile1, final File readsFile2,
+      final GenomeDescription gd, final File samFile) throws IOException {
 
-    checkState(!this.noReadWritten,
-        "Can not close writer that has not been created.");
-    checkState(this.readsWriter1 != null,
-        "Can not close writer that has not been created.");
-
-    if (this.readsWriter1 != null)
-      this.readsWriter1.close();
-
-    if (isPairEnd()) {
-
-      checkState(this.readsWriter2 != null,
-          "Can not close writer that has not been created.");
-
-      if (this.readsWriter2 != null)
-        this.readsWriter2.close();
-    }
-
-    getLogger().fine("Write " + entriesWritten + " reads for mapping");
-  }
-
-  private void checkWritePairEnd() throws IOException {
-
-    checkState(isPairEnd(), "Can not write paired-end read in single-end mode.");
-
-    if (noReadWritten) {
-
-      this.readsFile1 =
-          FileUtils.createTempFile(getTempDirectory(),
-              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
-      this.readsFile2 =
-          FileUtils.createTempFile(getTempDirectory(),
-              Globals.APP_NAME_LOWER_CASE + "-reads2-", ".fq");
-
-      getLogger().fine("Temporary reads/1 file: " + this.readsFile1);
-      getLogger().fine("Temporary reads/2 file: " + this.readsFile1);
-
-      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
-      this.readsWriter2 = FileUtils.createFastBufferedWriter(this.readsFile2);
-
-      this.noReadWritten = false;
-    }
-  }
-
-  private void checkWriteSingleEnd() throws IOException {
-
-    checkState(!isPairEnd(),
-        "Can not write single-end read in paired-end mode.");
-
-    if (noReadWritten) {
-
-      this.readsFile1 =
-          EoulsanRuntime.getRuntime().createTempFile(
-              Globals.APP_NAME_LOWER_CASE + "-reads1-", ".fq");
-
-      this.readsWriter1 = FileUtils.createFastBufferedWriter(this.readsFile1);
-
-      getLogger().fine("Temporary reads/1 file: " + this.readsFile1);
-
-      this.noReadWritten = false;
-    }
-
+    FileUtils.copy(mapPE(readsFile1, readsFile2, gd), new FileOutputStream(
+        samFile));
   }
 
   @Override
-  public void writeInputEntry(final ReadSequence read1, final ReadSequence read2)
-      throws IOException {
-
-    checkWritePairEnd();
-
-    if (read1 == null && read2 == null) {
-      return;
-    }
-
-    if (read1 == null || read2 == null) {
-
-      throw new IllegalStateException(
-          "One of the two read of the pair-end is null");
-    }
-
-    this.readsWriter1.write(read1.toFastQ());
-    this.readsWriter2.write(read2.toFastQ());
-
-    entriesWritten++;
-    inputReadsIncr();
-  }
-
-  @Override
-  public void writeInputEntry(ReadSequence read) throws IOException {
-
-    checkWriteSingleEnd();
-
-    if (read == null) {
-      return;
-    }
-
-    this.readsWriter1.write(read.toFastQ());
-    entriesWritten++;
-    inputReadsIncr();
-  }
-
-  @Override
-  public void writeInputEntry(final String sequenceName, final String sequence,
-      final String quality) throws IOException {
-
-    checkWriteSingleEnd();
-
-    if (sequenceName == null || sequence == null || quality == null) {
-      return;
-    }
-
-    this.readsWriter1.write(ReadSequence.toFastQ(sequenceName, sequence,
-        quality));
-    entriesWritten++;
-    inputReadsIncr();
-  }
-
-  @Override
-  public void writeInputEntry(final String sequenceName1,
-      final String sequence1, final String quality1,
-      final String sequenceName2, final String sequence2, final String quality2)
-      throws IOException {
-
-    checkWritePairEnd();
-
-    if (sequenceName1 == null
-        || sequence1 == null || quality1 == null || sequenceName2 == null
-        || sequence2 == null || quality2 == null) {
-      return;
-    }
-
-    this.readsWriter1.write(ReadSequence.toFastQ(sequenceName1, sequence1,
-        quality1));
-    this.readsWriter2.write(ReadSequence.toFastQ(sequenceName2, sequence2,
-        quality2));
-
-    entriesWritten++;
-    inputReadsIncr();
-  }
-
-  //
-  // Mapping
-  //
-
-  @Override
-  public void map() throws IOException {
-
-    if (isPairEnd()) {
-      map(this.readsFile1, this.readsFile2);
-    } else {
-      map(this.readsFile1);
-    }
-  }
-
-  @Override
-  public final void map(final File readsFile1, final File readsFile2)
-      throws IOException {
+  public final InputStream mapPE(final File readsFile1, final File readsFile2,
+      final GenomeDescription gd) throws IOException {
 
     getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
 
-    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
 
@@ -581,15 +427,22 @@ public abstract class AbstractSequenceReadsMapper implements
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
     // Process to mapping
-    internalMap(readsFile1, readsFile2, archiveIndexDir);
+    return internalMapPE(readsFile1, readsFile2, archiveIndexDir, gd);
   }
 
   @Override
-  public final void map(final File readsFile) throws IOException {
+  public final void mapSE(final File readsFile, final GenomeDescription gd,
+      final File samFile) throws IOException {
+
+    FileUtils.copy(mapSE(readsFile, gd), new FileOutputStream(samFile));
+  }
+
+  @Override
+  public final InputStream mapSE(final File readsFile,
+      final GenomeDescription gd) throws IOException {
 
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
-    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
     checkNotNull(readsFile, "readsFile1 is null");
     checkExistingStandardFile(readsFile,
         "readsFile1 not exits or is not a standard file.");
@@ -598,107 +451,68 @@ public abstract class AbstractSequenceReadsMapper implements
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
 
     // Process to mapping
-    internalMap(readsFile, archiveIndexDir);
+    return internalMapSE(readsFile, archiveIndexDir, gd);
   }
 
-  /**
-   * Mode single-end method used only by bowtie mapper, the outputstream of
-   * bowtie is got back by SAMParserLine which parses the stream without create
-   * a file
-   */
-  @Override
-  public final void map(File readsFile, SAMParserLine parserLine)
-      throws IOException {
-    getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
-
-    checkState(!isPairEnd(), "Cannot map a single reads file in pair-end mode.");
-    checkNotNull(readsFile, "readsFile1 is null");
-    checkExistingStandardFile(readsFile,
-        "readsFile1 not exits or is not a standard file.");
-
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
-
-    // Process to mapping
-    internalMap(readsFile, archiveIndexDir, parserLine);
-  }
-
-  /**
-   * Mode pair-end method used only by bowtie mapper, the outputstream of bowtie
-   * is got back by SAMParserLine which parses the stream without create a file
-   */
-  @Override
-  public final void map(File readsFile1, File readsFile2,
-      SAMParserLine parserLine) throws IOException {
-    getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
-
-    checkState(isPairEnd(), "Cannot map a single reads file in pair-end mode.");
-    checkNotNull(readsFile1, "readsFile1 is null");
-    checkNotNull(readsFile2, "readsFile2 is null");
-
-    checkExistingStandardFile(readsFile1,
-        "readsFile1 not exits or is not a standard file.");
-    checkExistingStandardFile(readsFile2,
-        "readsFile2 not exits or is not a standard file.");
-
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
-
-    // Process to mapping
-    internalMap(readsFile1, readsFile2, archiveIndexDir, parserLine);
-  }
-
-  protected abstract void internalMap(final File readsFile1,
-      final File readsFile2, final File archiveIndex) throws IOException;
-
-  protected abstract void internalMap(final File readsFile,
-      final File archiveIndex) throws IOException;
-
-  protected abstract void internalMap(final File readsFile1,
-      final File readsFile2, final File archiveIndex,
-      final SAMParserLine parserLine) throws IOException;
-
-  protected abstract void internalMap(final File readsFile,
-      final File archiveIndex, final SAMParserLine parserLine)
+  protected abstract InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
       throws IOException;
 
-  protected void deleteFile(final File file) {
-
-    if (file != null && file.exists()) {
-
-      if (!file.delete()) {
-
-        getLogger().warning(
-            "Cannot delete file while cleaning mapper temporary file: " + file);
-      }
-    }
-  }
+  protected abstract InputStream internalMapSE(final File readsFile,
+      final File archiveIndex, final GenomeDescription gd) throws IOException;
 
   //
-  // Incrementors
+  // Mapping with streams
   //
 
-  private void inputReadsIncr() {
+  @Override
+  public final MapperProcess mapPE(final GenomeDescription gd)
+      throws IOException {
 
-    this.incrementer.incrCounter(this.counterGroup, "mapper input reads", 1);
+    getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+
+    // Process to mapping
+    final MapperProcess result = internalMapPE(archiveIndexDir, gd);
+
+    // Set counter
+    result.setIncrementer(this.incrementer, this.counterGroup);
+
+    return result;
   }
+
+  @Override
+  public final MapperProcess mapSE(final GenomeDescription gd)
+      throws IOException {
+
+    getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+
+    // Process to mapping
+    final MapperProcess result = internalMapSE(archiveIndexDir, gd);
+
+    // Set counter
+    result.setIncrementer(this.incrementer, this.counterGroup);
+
+    return result;
+  }
+
+  protected abstract MapperProcess internalMapPE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException;
+
+  protected abstract MapperProcess internalMapSE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException;
 
   //
   // Init
   //
 
-  /**
-   * Initialize mapper.
-   * @param pairEnd true if the mapper is in pair end mode.
-   * @param fastqFormat Fastq format
-   * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index for the
-   * @param incrementer Objet to use to increment counters
-   * @param counterGroup counter name group
-   */
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
@@ -710,8 +524,6 @@ public abstract class AbstractSequenceReadsMapper implements
     checkExistingStandardFile(archiveIndexFile,
         "The archive index file not exits or is not a standard file.");
 
-    this.pairEnd = pairEnd;
-    this.fastqFormat = fastqFormat;
     this.archiveIndexFile = archiveIndexFile;
     this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
@@ -721,99 +533,6 @@ public abstract class AbstractSequenceReadsMapper implements
   //
   // Utilities methods
   //
-
-  /**
-   * Execute a command. This method automatically use the temporary directory to
-   * create the shell script to execute.
-   * @param cmd command to execute
-   * @return the exit error of the program
-   * @throws IOException if an error occurs while executing the command
-   */
-  protected int sh(final List<String> cmd) throws IOException {
-
-    return ProcessUtils.sh(cmd, getTempDirectory());
-  }
-
-  protected int sh(final List<String> cmd, final File temporaryDirectory)
-      throws IOException {
-
-    return ProcessUtils.sh(cmd, temporaryDirectory);
-  }
-
-  /**
-   * create a processBuilder for execute command and include a thread for get
-   * output stream which redirect to parserLine and a second thread for get
-   * error stream
-   * @param cmd line command
-   * @param temporaryDirectory
-   * @param parserLine SAMParserLine which retrieve output stream
-   * @return integer exit value for the process
-   * @throws IOException if an error occurs while executing the command
-   */
-  protected int sh(final List<String> cmd, final File temporaryDirectory,
-      final SAMParserLine parserLine) throws IOException {
-
-    ProcessBuilder pb;
-    final Process p;
-    int exitValue = Integer.MAX_VALUE;
-
-    try {
-      pb = new ProcessBuilder(cmd);
-
-      if (!(temporaryDirectory == null))
-        pb.directory(temporaryDirectory);
-
-      getLogger().fine(
-          "execute command (Thread "
-              + Thread.currentThread().getId() + "): " + cmd.toString());
-
-      p = pb.start();
-
-      // a thread for get output stream and redirect him to parserLine
-      final Thread tout = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-          if (parserLine != null) {
-            try {
-
-              InputStream is = p.getInputStream();
-              BufferedReader buff =
-                  new BufferedReader(new InputStreamReader(is,
-                      BioCharsets.SAM_CHARSET));
-              String line = "";
-
-              while ((line = buff.readLine()) != null) {
-                parserLine.parseLine(line);
-              }// while
-
-              // Close reader
-              buff.close();
-
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-          }
-        }
-      });
-      tout.start();
-
-      // thread for get error stream, not save
-      final Thread terr =
-          new Thread(new ProcessThreadErrOutput(p.getErrorStream()));
-      terr.start();
-
-      tout.join();
-      terr.join();
-
-      exitValue = p.waitFor();
-
-    } catch (InterruptedException e) {
-      getLogger().warning("Process interrupted : " + e.getMessage());
-    }
-    return exitValue;
-  }
 
   /**
    * Install a list of binaries bundled in the jar in a temporary directory.

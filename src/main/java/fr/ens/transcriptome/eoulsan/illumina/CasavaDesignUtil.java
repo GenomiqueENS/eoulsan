@@ -92,11 +92,19 @@ public final class CasavaDesignUtil {
       // Check if all the fields are not empty
       checkFCID(sample.getFlowCellId());
 
-      // Check if the flowcell id is the flow cell expected
-      if (flowCellId != null
-          && !flowCellId.trim().equals(sample.getFlowCellId()))
-        throw new EoulsanException("Bad flowcell name found: "
-            + sample.getFlowCellId() + " (" + flowCellId + " expected).");
+      if (flowCellId != null) {
+
+        // Check if the flow cell id is the flow cell id expected
+        if (!flowCellId.trim().toUpperCase()
+            .equals(sample.getFlowCellId().toUpperCase())) {
+          throw new EoulsanException("Bad flowcell name found: "
+              + sample.getFlowCellId() + " (" + flowCellId + " expected).");
+        }
+
+        // Use the case of the flowCellId parameter as case for the flow cell id
+        // of sample
+        sample.setFlowCellId(flowCellId);
+      }
 
       // Check if all the samples had the same flow cell id
       if (first) {

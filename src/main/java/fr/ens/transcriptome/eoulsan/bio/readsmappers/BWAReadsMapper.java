@@ -24,18 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMParserLine;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -62,13 +61,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private static final String SUFFIX_OUTPUT = ".sai";
 
   private File archiveIndex;
-  private File outputFile;
-  private File readsFile;
-
-  private File outputFile1;
-  private File readsFile1;
-  private File outputFile2;
-  private File readsFile2;
 
   @Override
   public String getMapperName() {
@@ -155,11 +147,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected void internalMap(final File readsFile, final File archiveIndex)
+  protected InputStream internalMapSE(final File readsFile,
+      final File archiveIndex, final GenomeDescription genomedescription)
       throws IOException {
 
     this.archiveIndex = archiveIndex;
-    this.readsFile = readsFile;
 
     final String bwaPath;
 
@@ -167,14 +159,16 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install(MAPPER_EXECUTABLE);
     }
 
-    this.outputFile =
+    // Temporary result file
+    final File tmpFile =
         FileUtils.createTempFile(readsFile.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-        outputFile.getAbsolutePath(), getIndexPath(archiveIndex),
-        readsFile.getAbsolutePath());
+    // Path to index
+    final String indexPath = getIndexPath(archiveIndex);
 
+    return createMapperProcessSE(bwaPath, indexPath, readsFile, tmpFile, true)
+        .getStout();
   }
 
   private String getIndexPath(final File archiveIndexDir) throws IOException {
@@ -183,12 +177,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected void internalMap(final File readsFile1, final File readsFile2,
-      final File archiveIndexDir) throws IOException {
+  protected InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndexDir,
+      final GenomeDescription genomeDescription) throws IOException {
 
     this.archiveIndex = archiveIndexDir;
-    this.readsFile1 = readsFile1;
-    this.readsFile2 = readsFile2;
 
     final String bwaPath;
 
@@ -196,76 +189,51 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    getLogger().fine("first pair member alignement");
-
-    this.outputFile1 =
+    // Temporary result file 1
+    final File tmpFile1 =
         FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-        outputFile1.getAbsolutePath(), getIndexPath(archiveIndexDir),
-        readsFile1.getAbsolutePath());
-
-    getLogger().fine("first second member alignement");
-
-    this.outputFile2 =
+    // Temporary result file 2
+    final File tmpFile2 =
         FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
             + "-output-", SUFFIX_OUTPUT);
 
-    execAln(bwaPath, getMapperArguments(), getThreadsNumber(),
-        outputFile2.getAbsolutePath(), getIndexPath(archiveIndexDir),
-        readsFile2.getAbsolutePath());
+    // Path to index
+    final String indexPath = getIndexPath(archiveIndex);
 
+    return createMapperProcessPE(bwaPath, indexPath, readsFile1, readsFile2,
+        tmpFile1, tmpFile2, true).getStout();
   }
 
   @Override
-  protected void internalMap(final File readsFile1, final File readsFile2,
-      final File archiveIndex, final SAMParserLine parserLine)
+  protected MapperProcess internalMapSE(File archiveIndex, GenomeDescription gd)
       throws IOException {
-    throw new UnsupportedOperationException();
-  }
+    this.archiveIndex = archiveIndex;
 
-  @Override
-  protected void internalMap(final File readsFile, final File archiveIndex,
-      final SAMParserLine parserLine) throws IOException {
-    throw new UnsupportedOperationException();
-  }
+    final String bwaPath;
 
-  private void execAln(final String bwaPath, final String args,
-      final int threads, final String outputFilename,
-      final String indexPathname, final String readsFilename)
-      throws IOException {
-
-    final boolean illuminaFastq =
-        getFastqFormat() == FASTQ_ILLUMINA
-            || getFastqFormat() == FASTQ_ILLUMINA_1_5;
-
-    final List<String> cmd = new ArrayList<String>();
-    cmd.add(bwaPath);
-    cmd.add("aln");
-    if (illuminaFastq)
-      cmd.add("-I");
-    cmd.add(args);
-    cmd.add("-t");
-    cmd.add(threads + "");
-    cmd.add("-f");
-    cmd.add(outputFilename);
-    cmd.add(indexPathname);
-    cmd.add(readsFilename);
-
-    getLogger().info(cmd.toString());
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
+    synchronized (SYNC) {
+      bwaPath = install(MAPPER_EXECUTABLE);
     }
 
+    // Temporary result file
+    final File tmpFile =
+        FileUtils.createTempFile(
+            EoulsanRuntime.getRuntime().getTempDirectory(), PREFIX_FILES
+                + "-output-", SUFFIX_OUTPUT);
+
+    // Path to index
+    final String indexPath = getIndexPath(archiveIndex);
+
+    return createMapperProcessSE(bwaPath, indexPath, null, tmpFile, false);
   }
 
   @Override
-  public File getSAMFile(final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapPE(File archiveIndex, GenomeDescription gd)
+      throws IOException {
+
+    this.archiveIndex = archiveIndex;
 
     final String bwaPath;
 
@@ -273,60 +241,163 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       bwaPath = install("bwa");
     }
 
-    final List<String> cmd = new ArrayList<String>();
-    final File resultFile;
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
-    if (isPairEnd()) {
+    // Temporary result file 1
+    final File tmpFile1 =
+        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
+            SUFFIX_OUTPUT);
 
-      resultFile =
-          FileUtils.createTempFile(this.outputFile1.getParentFile(),
-              PREFIX_FILES + "-output-", ".sam");
+    // Temporary result file 2
+    final File tmpFile2 =
+        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
+            SUFFIX_OUTPUT);
+    // Path to index
+    final String indexPath = getIndexPath(archiveIndex);
 
-      cmd.add(bwaPath);
-      cmd.add("sampe");
-      cmd.add("-P");
-      cmd.add("-f");
-      cmd.add(resultFile.getAbsolutePath());
-      cmd.add(getIndexPath(archiveIndex));
-      cmd.add(outputFile1.getAbsolutePath());
-      cmd.add(outputFile2.getAbsolutePath());
-      cmd.add(readsFile1.getAbsolutePath());
-      cmd.add(readsFile2.getAbsolutePath());
-
-    } else {
-
-      resultFile =
-          FileUtils.createTempFile(this.outputFile.getParentFile(),
-              PREFIX_FILES + "-output-", ".sam");
-
-      // Build the command line
-      cmd.add(bwaPath);
-      cmd.add("sampe");
-      cmd.add("-f");
-      cmd.add(resultFile.getAbsolutePath());
-      cmd.add(getIndexPath(archiveIndex));
-      cmd.add(outputFile.getAbsolutePath());
-      cmd.add(readsFile.getAbsolutePath());
-
-    }
-
-    System.out.println("cmd: " + cmd);
-    getLogger().info(cmd.toString());
-
-    final int exitValue = sh(cmd);
-
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + MAPPER_NAME + " execution: " + exitValue);
-    }
-
-    return resultFile;
+    return createMapperProcessPE(bwaPath, indexPath, null, null, tmpFile1,
+        tmpFile2, false);
   }
 
-  @Override
-  public void clean() {
+  private MapperProcess createMapperProcessSE(final String bwaPath,
+      final String indexPath, final File readsFile, final File tmpFile,
+      final boolean fileMode) throws IOException {
 
-    deleteFile(this.outputFile);
+    return new MapperProcess(this, fileMode, false, false) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        final boolean illuminaFastq =
+            getFastqFormat() == FASTQ_ILLUMINA
+                || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+
+        final List<String> cmd1 = new ArrayList<String>();
+        cmd1.add(bwaPath);
+        cmd1.add("aln");
+        if (illuminaFastq)
+          cmd1.add("-I");
+        cmd1.add(getMapperArguments());
+        cmd1.add("-t");
+        cmd1.add(getThreadsNumber() + "");
+        cmd1.add("-f");
+        cmd1.add(tmpFile.getAbsolutePath());
+        cmd1.add(indexPath);
+        if (fileMode)
+          cmd1.add(readsFile.getAbsolutePath());
+        else
+          cmd1.add(getTmpInputFile1().getAbsolutePath());
+
+        final List<String> cmd2 = new ArrayList<String>();
+
+        // Build the command line
+        cmd2.add(bwaPath);
+        cmd2.add("samse");
+        cmd2.add(indexPath);
+        cmd2.add(tmpFile.getAbsolutePath());
+
+        // TODO fix version Laurent
+        // cmd2.add(readsFile.getAbsolutePath());
+        if (fileMode)
+          cmd2.add(readsFile.getAbsolutePath());
+        else
+          cmd2.add(getTmpInputFile1().getAbsolutePath());
+
+        final List<List<String>> result = new ArrayList<List<String>>();
+        result.add(cmd1);
+        result.add(cmd2);
+
+        return result;
+      }
+
+      @Override
+      protected void clean() {
+
+        tmpFile.delete();
+      }
+
+    };
+
+  }
+
+  private MapperProcess createMapperProcessPE(final String bwaPath,
+      final String indexPath, final File readsFile1, final File readsFile2,
+      final File tmpFile1, final File tmpFile2, final boolean fileMode)
+      throws IOException {
+
+    return new MapperProcess(this, fileMode, false, true) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        final boolean illuminaFastq =
+            getFastqFormat() == FASTQ_ILLUMINA
+                || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+
+        final List<String> cmd1 = new ArrayList<String>();
+        cmd1.add(bwaPath);
+        cmd1.add("aln");
+        if (illuminaFastq)
+          cmd1.add("-I");
+        cmd1.add(getMapperArguments());
+        cmd1.add("-t");
+        cmd1.add(getThreadsNumber() + "");
+        cmd1.add("-f");
+        cmd1.add(tmpFile1.getAbsolutePath());
+        cmd1.add(indexPath);
+        if (fileMode)
+          cmd1.add(readsFile1.getAbsolutePath());
+        else
+          cmd1.add(getTmpInputFile1().getAbsolutePath());
+
+        final List<String> cmd2 = new ArrayList<String>();
+        cmd2.add(bwaPath);
+        cmd2.add("aln");
+        if (illuminaFastq)
+          cmd2.add("-I");
+        cmd2.add(getMapperArguments());
+        cmd2.add("-t");
+        cmd2.add(getThreadsNumber() + "");
+        cmd2.add("-f");
+        cmd2.add(tmpFile2.getAbsolutePath());
+        cmd2.add(indexPath);
+        if (fileMode)
+          cmd2.add(readsFile2.getAbsolutePath());
+        else
+          cmd2.add(getTmpInputFile2().getAbsolutePath());
+
+        final List<String> cmd3 = new ArrayList<String>();
+
+        // Build the command line
+        cmd3.add(bwaPath);
+        cmd3.add("sampe");
+        cmd3.add(indexPath);
+        cmd3.add(tmpFile1.getAbsolutePath());
+        cmd3.add(tmpFile2.getAbsolutePath());
+        if (fileMode) {
+          cmd3.add(readsFile1.getAbsolutePath());
+          cmd3.add(readsFile2.getAbsolutePath());
+        } else {
+          cmd3.add(getTmpInputFile1().getAbsolutePath());
+          cmd3.add(getTmpInputFile2().getAbsolutePath());
+        }
+
+        final List<List<String>> result = new ArrayList<List<String>>();
+        result.add(cmd1);
+        result.add(cmd2);
+        result.add(cmd3);
+
+        return result;
+      }
+
+      @Override
+      protected void clean() {
+
+        tmpFile1.delete();
+        tmpFile2.delete();
+      }
+
+    };
   }
 
   //
@@ -334,13 +405,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  public void init(final boolean pairEnd, final FastqFormat fastqFormat,
-      final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(pairEnd, fastqFormat, archiveIndexFile, archiveIndexDir,
-        incrementer, counterGroup);
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
   }
 
