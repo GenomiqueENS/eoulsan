@@ -625,6 +625,7 @@ public class FileNamingTest {
 
     assertFalse(FileNaming.isFilenameValid("toto.txt"));
     assertFalse(FileNaming.isFilenameValid("filterreads_output_reads_s1.fq"));
+    assertFalse(FileNaming.isFilenameValid("filtered_mapper_results_1.sam"));
 
   }
 

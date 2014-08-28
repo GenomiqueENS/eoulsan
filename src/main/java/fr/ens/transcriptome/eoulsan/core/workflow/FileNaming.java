@@ -33,7 +33,6 @@ import java.io.File;
 
 import com.google.common.base.CharMatcher;
 
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -669,7 +668,8 @@ public class FileNaming {
     final String[] extensions = filename.split("\\.");
 
     if (extensions.length < 2 || extensions.length > 3) {
-      throw new EoulsanRuntimeException("Invalid filename: " + filename);
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
     }
 
     // Get format extension
@@ -684,14 +684,23 @@ public class FileNaming {
     final String[] fields = extensions[0].split("_");
 
     if (fields.length < 4) {
-      throw new EoulsanRuntimeException("Invalid filename: " + filename);
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
     }
 
     result.setStepId(fields[0]);
     result.setPortName(fields[1]);
 
-    result.setFormat(DataFormatRegistry.getInstance()
-        .getDataFormatFromFilename(fields[2], formatExtension));
+    final DataFormat format =
+        DataFormatRegistry.getInstance().getDataFormatFromFilename(fields[2],
+            formatExtension);
+
+    if (format == null) {
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
+    }
+
+    result.setFormat(format);
 
     result.setDataName(fields[3]);
 
@@ -700,24 +709,28 @@ public class FileNaming {
       if (fields[i].startsWith(FILE_INDEX_PREFIX)) {
 
         if (result.getFileIndex() != -1) {
-          throw new EoulsanRuntimeException("Invalid filename: " + filename);
+          throw new FileNamingParsingRuntimeException("Invalid filename: "
+              + filename);
         }
         try {
           result.setFileIndex(Integer.parseInt(fields[i]
               .substring(FILE_INDEX_PREFIX.length())));
         } catch (NumberFormatException e) {
-          throw new EoulsanRuntimeException("Invalid filename: " + filename);
+          throw new FileNamingParsingRuntimeException("Invalid filename: "
+              + filename);
         }
       } else if (fields[i].startsWith(PART_INDEX_PREFIX)) {
 
         if (result.getPart() != -1) {
-          throw new EoulsanRuntimeException("Invalid filename: " + filename);
+          throw new FileNamingParsingRuntimeException("Invalid filename: "
+              + filename);
         }
         try {
           result.setPart(Integer.parseInt(fields[i].substring(PART_INDEX_PREFIX
               .length())));
         } catch (NumberFormatException e) {
-          throw new EoulsanRuntimeException("Invalid filename: " + filename);
+          throw new FileNamingParsingRuntimeException("Invalid filename: "
+              + filename);
         }
       }
 
@@ -725,7 +738,8 @@ public class FileNaming {
 
     if (result.getFormat().getMaxFilesCount() > 1
         && result.getFileIndex() == -1) {
-      throw new EoulsanRuntimeException("Invalid filename: " + filename);
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
     }
 
     return result;
@@ -837,7 +851,7 @@ public class FileNaming {
 
     try {
       FileNaming.parse(filename);
-    } catch (EoulsanRuntimeException e) {
+    } catch (FileNamingParsingRuntimeException e) {
       return false;
     }
 
