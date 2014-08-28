@@ -58,9 +58,12 @@ import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskScheduler;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a token manager for a step.
@@ -169,6 +172,11 @@ public class TokenManager implements Runnable {
   // Token handling methods
   //
 
+  /**
+   * Log the token that are send by the step.
+   * @param outputPort the output port
+   * @param token the token sent
+   */
   public void logSendingToken(final WorkflowOutputPort outputPort,
       final Token token) {
 
@@ -183,7 +191,71 @@ public class TokenManager implements Runnable {
           this.outputTokens.put(outputPort, e);
         }
       }
+
+      // Create compatibility link for result files
+      if (EoulsanRuntime.getSettings().getBooleanSetting(
+          "debug.compatibility.result.file.links")
+          && this.step.getType() == StepType.STANDARD_STEP) {
+        createCompatibilityLinkResultFiles(token.getData());
+      }
     }
+  }
+
+  /**
+   * This method allow to create symbolic link on step result file with the same
+   * name as in Eoulsan 1.x.
+   * @param data the data
+   */
+  private void createCompatibilityLinkResultFiles(final Data data) {
+
+    checkNotNull(data, "data argument cannot be null");
+
+    for (Data e : data.getListElements()) {
+
+      // Get the sample id from metadata
+      int sampleId = -1;
+      if (e.getMetadata().containsKey(Design.SAMPLE_NUMBER_FIELD)) {
+
+        try {
+          sampleId =
+              Integer.parseInt(e.getMetadata().get(Design.SAMPLE_NUMBER_FIELD));
+        } catch (NumberFormatException exp) {
+          // Do nothing
+        }
+      }
+
+      // For all data
+      for (DataFile f : DataUtils.getDataFiles(e)) {
+
+        try {
+
+          final DataFile parentDir = f.getParent();
+
+          // Do something only if local file
+          if (!parentDir.isLocalFile()) {
+            continue;
+          }
+
+          // Parse the filename
+          final FileNaming name = FileNaming.parse(f.getName());
+          name.setSampleId(sampleId);
+
+          // Create link name
+          final DataFile link =
+              new DataFile(parentDir, name.compatibilityFilename());
+
+          // Create link only if not already exists
+          if (!link.exists()) {
+            FileUtils.createSymbolicLink(f.toFile(), link.toFile());
+          }
+
+        } catch (IOException exp) {
+          getLogger().warning(
+              "Error while creating compatibility link: " + exp.getMessage());
+        }
+      }
+    }
+
   }
 
   /**
