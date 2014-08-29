@@ -45,6 +45,7 @@ public class BasicUI implements WorkflowStepObserver {
 
   private final Workflow workflow;
   private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
+  private final boolean interactiveMode;
 
   private int lastMessageLength = 0;
 
@@ -72,8 +73,8 @@ public class BasicUI implements WorkflowStepObserver {
   @Override
   public void notifyStepState(final WorkflowStep step, double progress) {
 
-    if (step == null
-        || step.getWorkflow() != this.workflow
+    if (!this.interactiveMode
+        || step == null || step.getWorkflow() != this.workflow
         || step.getState() != StepState.WORKING
         || !this.steps.containsKey(step))
       return;
@@ -183,6 +184,8 @@ public class BasicUI implements WorkflowStepObserver {
 
     // Search step to follow
     searchSteps();
+
+    this.interactiveMode = System.console() != null;
   }
 
 }
