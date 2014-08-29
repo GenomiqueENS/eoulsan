@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.security.InvalidParameterException;
+import java.util.List;
 
 /**
  * Discribe a version of a software.
@@ -33,9 +34,12 @@ import java.security.InvalidParameterException;
  */
 public final class Version implements Comparable<Version> {
 
+  private static final char SEPARATOR = '.';
+
   private int major;
   private int minor;
   private int revision;
+  private String type = "";
 
   //
   // Getters
@@ -63,6 +67,14 @@ public final class Version implements Comparable<Version> {
    */
   public int getRevision() {
     return revision;
+  }
+
+  /**
+   * Get the type of the Version
+   * @return the type of the version
+   */
+  public String getType() {
+    return type;
   }
 
   //
@@ -102,16 +114,42 @@ public final class Version implements Comparable<Version> {
       this.revision = 0;
   }
 
+  /**
+   * Set the type of the Version
+   * @param type The type of revision. The value cannot be null
+   */
+  public void setType(final String type) {
+
+    if (type == null) {
+      this.type = "";
+    } else {
+      this.type = type.trim();
+    }
+  }
+
   //
   // Other methods
   //
 
   /**
    * Get the version in a string format.
-   * @return The version in a strinf format
+   * @return The version in a string format
    */
   public String toString() {
-    return getMajor() + "." + getMinor() + "." + getRevision();
+
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append(getMajor());
+    sb.append(SEPARATOR);
+    sb.append(getMinor());
+
+    if (getRevision() > 0) {
+      sb.append(SEPARATOR);
+      sb.append(getRevision());
+    }
+    sb.append(getType());
+
+    return sb.toString();
   }
 
   /**
@@ -121,9 +159,22 @@ public final class Version implements Comparable<Version> {
    * @param revision The number of revision of the version
    */
   public void setVersion(final int major, final int minor, final int revision) {
+    setVersion(major, minor, revision, null);
+  }
+
+  /**
+   * Set the version.
+   * @param major The major version of the version
+   * @param minor The minor version of the version
+   * @param revision The number of revision of the version
+   * @param type The type of the version
+   */
+  public void setVersion(final int major, final int minor, final int revision,
+      final String type) {
     setMajor(major);
     setMinor(minor);
     setRevision(revision);
+    setType(type);
   }
 
   /**
@@ -136,29 +187,79 @@ public final class Version implements Comparable<Version> {
       return;
 
     String v = version.trim();
-    if (version.endsWith("-SNAPSHOT"))
-      v = version.replaceAll("-SNAPSHOT", "");
-    else if ("UNKNOWN_VERSION".equals(v))
-      v = "0.0.0";
 
-    final String[] fields = v.split("\\.");
-    int major = 0;
-    int minor = 0;
-    int revision = 0;
+    int fieldCount = 0;
+    final StringBuilder sb = new StringBuilder();
+    boolean inType = false;
 
     try {
-      if (fields.length > 0)
-        major = Integer.parseInt(fields[0].trim());
-      if (fields.length > 1)
-        minor = Integer.parseInt(fields[1].trim());
-      if (fields.length > 2)
-        revision = Integer.parseInt(fields[2].trim());
+      for (int i = 0; i < v.length(); i++) {
+
+        final char c = v.charAt(i);
+
+        if (inType || Character.isDigit(c)) {
+          sb.append(c);
+        } else {
+
+          if (sb.length() > 0) {
+            switch (fieldCount) {
+            case 0:
+              setMajor(Integer.parseInt(sb.toString()));
+              break;
+
+            case 1:
+              setMinor(Integer.parseInt(sb.toString()));
+              break;
+
+            case 2:
+              setRevision(Integer.parseInt(sb.toString()));
+              inType = true;
+              break;
+
+            default:
+              break;
+            }
+            sb.setLength(0);
+          }
+
+          if (c == SEPARATOR) {
+            fieldCount++;
+          } else {
+            inType = true;
+            sb.append(c);
+          }
+        }
+      }
+
+      if (sb.length() > 0) {
+        if (inType) {
+          setType(sb.toString());
+        } else {
+
+          switch (fieldCount) {
+          case 0:
+            setMajor(Integer.parseInt(sb.toString()));
+            break;
+
+          case 1:
+            setMinor(Integer.parseInt(sb.toString()));
+            break;
+
+          case 2:
+            setRevision(Integer.parseInt(sb.toString()));
+            break;
+
+          default:
+            break;
+          }
+
+        }
+      }
+
     } catch (NumberFormatException e) {
       throw new InvalidParameterException("Invalid version format in string: "
           + version);
     }
-
-    setVersion(major, minor, revision);
   }
 
   /**
@@ -183,7 +284,12 @@ public final class Version implements Comparable<Version> {
     if (compMinor != 0)
       return compMinor;
 
-    return Integer.valueOf(getRevision()).compareTo(version.getRevision());
+    final int compRevision =
+        Integer.valueOf(getRevision()).compareTo(version.getRevision());
+    if (compRevision != 0)
+      return compRevision;
+
+    return getType().compareTo(version.getType());
   }
 
   /**
@@ -191,16 +297,16 @@ public final class Version implements Comparable<Version> {
    * @param versions The array of versions
    * @return The minimal version
    */
-  public static Version getMinimalVersion(final Version[] versions) {
+  public static Version getMinimalVersion(final List<Version> versions) {
 
-    if (versions == null || versions.length == 0)
+    if (versions == null || versions.size() == 0)
       return null;
 
-    Version min = versions[0];
+    Version min = versions.get(0);
 
-    for (int i = 1; i < versions.length; i++)
-      if (min.compareTo(versions[i]) > 0)
-        min = versions[i];
+    for (Version v : versions)
+      if (min.compareTo(v) > 0)
+        min = v;
 
     return min;
   }
@@ -210,16 +316,16 @@ public final class Version implements Comparable<Version> {
    * @param versions The array of versions
    * @return The maximal version
    */
-  public static Version getMaximalVersion(final Version[] versions) {
+  public static Version getMaximalVersion(final List<Version> versions) {
 
-    if (versions == null || versions.length == 0)
+    if (versions == null || versions.size() == 0)
       return null;
 
-    Version max = versions[0];
+    Version max = versions.get(0);
 
-    for (int i = 1; i < versions.length; i++)
-      if (max.compareTo(versions[i]) < 0)
-        max = versions[i];
+    for (Version v : versions)
+      if (max.compareTo(v) < 0)
+        max = v;
 
     return max;
   }
@@ -240,13 +346,14 @@ public final class Version implements Comparable<Version> {
     final Version v = (Version) o;
 
     return v.major == this.major
-        && v.minor == this.minor && v.revision == this.revision;
+        && v.minor == this.minor && v.revision == this.revision
+        && this.type.equals(v.type);
   }
 
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(major, minor, revision);
+    return Utils.hashCode(major, minor, revision, type);
   }
 
   //
@@ -259,6 +366,19 @@ public final class Version implements Comparable<Version> {
   public Version() {
 
     this(null);
+  }
+
+  /**
+   * Public constructor.
+   * @param major The major version of the version
+   * @param minor The minor version of the version
+   * @param revision The number of revision of the version
+   * @param type The type of the version
+   */
+  public Version(final int major, final int minor, final int revision,
+      final String type) {
+
+    setVersion(major, minor, revision, type);
   }
 
   /**
