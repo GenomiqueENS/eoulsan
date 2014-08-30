@@ -24,9 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.ui;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
@@ -34,27 +36,46 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserver;
 
 /**
  * This class define a basic UI for Eoulsan.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class BasicUI implements WorkflowStepObserver {
+public class BasicUI implements UI {
 
-  private final Workflow workflow;
+  private Workflow workflow;
   private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
-  private final boolean interactiveMode;
+  private boolean interactiveMode;
 
   private int lastMessageLength = 0;
 
   //
-  // WorkflowStepObserver methods
+  // UI methods
   //
 
   @Override
+  public String getName() {
+    return "basic";
+  }
+
+  @Override
+  public void init(final Workflow workflow) {
+
+    checkNotNull(workflow, "workflow is null");
+    this.workflow = workflow;
+
+    // Search step to follow
+    searchSteps();
+
+    this.interactiveMode = System.console() != null;
+  }
+
+  @Override
   public void notifyStepState(final WorkflowStep step) {
+
+    // Check if the UI has been initialized
+    checkState(this.workflow != null, "The UI has not been initialized");
 
     if (step == null || step.getWorkflow() != this.workflow)
       return;
@@ -67,11 +88,17 @@ public class BasicUI implements WorkflowStepObserver {
   public void notifyStepState(final WorkflowStep step, final int contextId,
       final String contextName, final double progress) {
 
+    // Check if the UI has been initialized
+    checkState(this.workflow != null, "The UI has not been initialized");
+
     // DO nothing
   }
 
   @Override
   public void notifyStepState(final WorkflowStep step, double progress) {
+
+    // Check if the UI has been initialized
+    checkState(this.workflow != null, "The UI has not been initialized");
 
     if (!this.interactiveMode
         || step == null || step.getWorkflow() != this.workflow
@@ -109,6 +136,9 @@ public class BasicUI implements WorkflowStepObserver {
 
   @Override
   public void notifyStepState(final WorkflowStep step, final String note) {
+
+    // Check if the UI has been initialized
+    checkState(this.workflow != null, "The UI has not been initialized");
 
     if (step == null || step.getWorkflow() != this.workflow)
       return;
@@ -167,25 +197,6 @@ public class BasicUI implements WorkflowStepObserver {
       sum += p;
 
     return sum / this.steps.size();
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Public constructor.
-   * @param workflow workflow to show
-   */
-  public BasicUI(final Workflow workflow) {
-
-    Preconditions.checkNotNull(workflow, "workflow is null");
-    this.workflow = workflow;
-
-    // Search step to follow
-    searchSteps();
-
-    this.interactiveMode = System.console() != null;
   }
 
 }

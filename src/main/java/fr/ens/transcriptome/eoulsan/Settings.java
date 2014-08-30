@@ -123,13 +123,15 @@ public final class Settings implements Serializable {
   private static final String USE_OLD_EOULSAN_RESULT_FORMAT_KEY =
       MAIN_PREFIX_KEY + "old.result.format";
 
+  private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
+
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY });
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
   //
   // Getters
@@ -390,6 +392,15 @@ public final class Settings implements Serializable {
     return Boolean.parseBoolean(this.properties.getProperty(
         USE_OLD_EOULSAN_RESULT_FORMAT_KEY, ""
             + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
+  }
+
+  /**
+   * Get the UI name.
+   * @return the UI name
+   */
+  public String getUIName() {
+
+    return this.properties.getProperty(UI_NAME_KET, Globals.UI_NAME_DEFAULT);
   }
 
   /**
@@ -741,6 +752,15 @@ public final class Settings implements Serializable {
 
     this.properties.getProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
         Boolean.toString(useOldEoulsanResultFormat));
+  }
+
+  /**
+   * Set the UI name.
+   * @param uiName the UI name
+   */
+  public void setUIName(final String uiName) {
+
+    this.properties.setProperty(UI_NAME_KET, uiName);
   }
 
   /**

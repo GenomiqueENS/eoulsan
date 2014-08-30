@@ -110,7 +110,7 @@ public final class Globals {
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
       .unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64"})));
+          "linux\tamd64", "linux\tx86_64" })));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
@@ -185,6 +185,9 @@ public final class Globals {
 
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
+
+  /** Default UI name. */
+  public static final String UI_NAME_DEFAULT = "basic";
 
   /** FASTA file width. */
   public static final int FASTA_FILE_WIDTH = 60;

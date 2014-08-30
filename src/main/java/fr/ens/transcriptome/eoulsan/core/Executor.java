@@ -38,10 +38,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
+import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserverRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.ui.BasicUI;
+import fr.ens.transcriptome.eoulsan.ui.UI;
+import fr.ens.transcriptome.eoulsan.ui.UIService;
 
 /**
  * This class is the executor for running all the steps of an analysis.
@@ -126,8 +128,8 @@ public class Executor {
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
 
-    // Create UI
-    final BasicUI ui = new BasicUI(workflow);
+    // Get UI
+    final UI ui = startUI(workflow);
 
     // Enable listen workflow events by ui
     WorkflowStepObserverRegistry.getInstance().addObserver(ui);
@@ -136,12 +138,43 @@ public class Executor {
 
     // Execute Workflow
     workflow.execute();
-
   }
 
   //
   // Utility methods
   //
+
+  /**
+   * Start the UI.
+   * @param workflow the workflow
+   * @return the UI object
+   * @throws EoulsanException if an error occurs while stating the UI
+   */
+  private UI startUI(final Workflow workflow) throws EoulsanException {
+
+    // Get the UI name
+    final String uiName = EoulsanRuntime.getSettings().getUIName();
+
+    if (uiName == null) {
+      throw new EoulsanException("No UI name defined.");
+    }
+
+    // Get the UIService
+    final UIService uiService = UIService.getInstance();
+
+    // Test the UI exists
+    if (!uiService.isService(uiName)) {
+      throw new EoulsanException("Unknown UI name: " + uiName);
+    }
+
+    // Get the UI
+    final UI ui = uiService.newService(uiName);
+
+    // Initialize UI
+    ui.init(workflow);
+
+    return ui;
+  }
 
   /**
    * Log some information about the current execution.
