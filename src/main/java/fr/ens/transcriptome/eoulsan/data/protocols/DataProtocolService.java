@@ -49,8 +49,8 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   //
 
   /**
-   * Retrieve the singleton static instance of StepService.
-   * @return A StepService instance
+   * Retrieve the singleton static instance of DataProtocolService.
+   * @return A DataProtocol instance
    */
   public static synchronized DataProtocolService getInstance() {
 
