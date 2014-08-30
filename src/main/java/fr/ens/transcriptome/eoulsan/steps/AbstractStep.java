@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.steps;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 
@@ -30,6 +30,12 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -42,13 +48,7 @@ public abstract class AbstractStep implements Step {
   @Override
   public String getDescription() {
 
-    return "Description of " + getName();
-  }
-
-  @Override
-  public Version getVersion() {
-
-    return Globals.APP_VERSION;
+    return "No description for " + getName() + " step";
   }
 
   @Override

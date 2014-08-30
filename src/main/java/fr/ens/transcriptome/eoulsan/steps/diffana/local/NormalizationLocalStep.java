@@ -30,8 +30,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_T
 import java.io.File;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -39,7 +39,9 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.diffana.Normalization;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define the step for normalization
@@ -58,6 +60,12 @@ public class NormalizationLocalStep extends AbstractStep {
   public String getName() {
 
     return STEP_NAME;
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

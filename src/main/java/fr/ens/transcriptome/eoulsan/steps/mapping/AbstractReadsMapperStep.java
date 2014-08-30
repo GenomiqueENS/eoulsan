@@ -32,11 +32,13 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define an abstract step for read mapping.
@@ -124,6 +126,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public String getDescription() {
 
     return "This step filters reads.";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

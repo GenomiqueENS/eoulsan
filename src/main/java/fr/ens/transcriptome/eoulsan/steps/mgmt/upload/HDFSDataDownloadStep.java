@@ -41,8 +41,8 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -52,7 +52,9 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.DistCp;
+import fr.ens.transcriptome.eoulsan.util.Version;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -94,6 +96,12 @@ public class HDFSDataDownloadStep extends AbstractStep {
   public String getDescription() {
 
     return "Download output data from HDFS filesystem";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

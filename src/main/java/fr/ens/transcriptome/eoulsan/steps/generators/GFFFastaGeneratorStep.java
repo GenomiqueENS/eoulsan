@@ -33,12 +33,12 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFFastaReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
 import fr.ens.transcriptome.eoulsan.bio.io.SequenceWriter;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -46,6 +46,8 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This generator allow to generate a genome fasta file from the fasta section
@@ -68,6 +70,12 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   public String getDescription() {
 
     return "Generate Genome Fasta file from a Fasta section of GFF file";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

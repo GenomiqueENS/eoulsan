@@ -24,12 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a first step that do nothing. All generator steps must be
@@ -44,6 +45,12 @@ public final class FirstStep extends AbstractStep {
   public String getName() {
 
     return "first";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

@@ -37,10 +37,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class is a step that launch checkers.
@@ -126,6 +127,12 @@ public class CheckerStep extends AbstractStep {
   public String getName() {
 
     return "_checker";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

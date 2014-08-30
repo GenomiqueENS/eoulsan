@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -46,6 +46,8 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.storages.GenomeDescStorage;
 import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeDescStorage;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class implements a genome description generator step.
@@ -67,6 +69,12 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   public String getDescription() {
 
     return "Generate genome description";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

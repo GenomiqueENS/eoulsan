@@ -33,15 +33,17 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define an abstract step for read filtering.
@@ -72,6 +74,12 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   public String getDescription() {
 
     return "This step filters reads.";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

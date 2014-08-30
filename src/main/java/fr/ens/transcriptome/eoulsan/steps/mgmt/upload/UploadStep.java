@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -55,7 +55,9 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.Version;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
@@ -189,6 +191,12 @@ public abstract class UploadStep extends AbstractStep {
   public String getName() {
 
     return "upload";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

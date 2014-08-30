@@ -34,8 +34,8 @@ import java.util.Set;
 import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -48,7 +48,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * Copy input files of a format in another location or in different compression
@@ -70,6 +72,12 @@ public class CopyInputDataStep extends AbstractStep {
   public String getName() {
 
     return STEP_NAME;
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

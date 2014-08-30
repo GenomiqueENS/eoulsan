@@ -36,16 +36,18 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This abstract class define and parse arguments for the expression step.
@@ -169,6 +171,12 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   public String getDescription() {
 
     return "This step compute the expression.";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

@@ -24,11 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a terminal step that do nothing. After this execution the
@@ -43,6 +44,12 @@ public class TerminalStep extends AbstractStep {
   public String getName() {
 
     return "terminal";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

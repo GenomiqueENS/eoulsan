@@ -35,8 +35,8 @@ import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -46,10 +46,12 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionFitType;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionMethod;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DiffAna.DispersionSharingMode;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define the step of differential analysis in local mode.
@@ -86,6 +88,12 @@ public class DiffAnaLocalStep extends AbstractStep {
   public String getName() {
 
     return STEP_NAME;
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override

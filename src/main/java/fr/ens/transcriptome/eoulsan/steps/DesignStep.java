@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.core.AbstractStep;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -50,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a design step.
@@ -65,6 +66,12 @@ public class DesignStep extends AbstractStep {
   @Override
   public String getName() {
     return "design";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
   }
 
   @Override
