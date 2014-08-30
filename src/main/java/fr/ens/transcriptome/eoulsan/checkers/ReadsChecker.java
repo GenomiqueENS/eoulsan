@@ -128,6 +128,11 @@ public class ReadsChecker implements Checker {
       final boolean checkPairMember, final int pairMember)
       throws EoulsanException {
 
+    // If the file does not exists do nothing
+    if (!file.exists()) {
+      return;
+    }
+
     final InputStream is;
 
     try {
