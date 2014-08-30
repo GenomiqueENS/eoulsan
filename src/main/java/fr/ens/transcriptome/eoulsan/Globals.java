@@ -209,7 +209,7 @@ public final class Globals {
   public static final int ZOOKEEPER_SESSION_TIMEOUT_DEFAULT = 10000;
 
   /** Write results using old Eoulsan format. */
-  public static final boolean USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT = true;
+  public static final boolean USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT = false;
 
   //
   // Files encoding
