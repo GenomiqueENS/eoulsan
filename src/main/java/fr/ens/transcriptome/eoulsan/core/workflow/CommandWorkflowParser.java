@@ -95,7 +95,32 @@ public class CommandWorkflowParser {
   public static final String LOGS_PATH_CONSTANT_NAME = "logs.path";
 
   /** Version of the format of the workflow file. */
-  private static final String FORMAT_VERSION = "1.0";
+  static final String FORMAT_VERSION = "1.0";
+
+  // Tag and attribute names
+  static final String WORKFLOWNAME_TAG_NAME = "name";
+  static final String PARAMETERNAME_TAG_NAME = "name";
+  static final String PARAMETERVALUE_TAG_NAME = "value";
+  static final String PARAMETER_TAG_NAME = "parameter";
+  static final String FROMPORT_TAG_NAME = "fromport";
+  static final String FROMSTEP_TAG_NAME = "fromstep";
+  static final String PORT_TAG_NAME = "port";
+  static final String INPUT_TAG_NAME = "input";
+  static final String INPUTS_TAG_NAMES = "inputs";
+  static final String GLOBALS_TAG_NAME = "globals";
+  static final String PARAMETERS_TAG_NAME = "parameters";
+  static final String STEPNAME_TAG_NAME = "stepname";
+  static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardOutput";
+  static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
+  static final String ID_ATTR_NAME_STEP_TAG = "id";
+  static final String STEP_TAG_NAME = "step";
+  static final String STEPS_TAG_NAME = "steps";
+  static final String CONSTANTS_TAG_NAME = "constants";
+  static final String AUTHOR_TAG_NAME = "author";
+  static final String DESCRIPTION_TAG_NAME = "description";
+  static final String NAME_TAG_NAME = "name";
+  static final String FORMATVERSION_TAG_NAME = "formatversion";
+  static final String ROOT_TAG_NAME = "analysis";
 
   private InputStream is;
 
@@ -148,7 +173,7 @@ public class CommandWorkflowParser {
           + e.getMessage());
     }
 
-    final NodeList nAnalysisList = doc.getElementsByTagName("analysis");
+    final NodeList nAnalysisList = doc.getElementsByTagName(ROOT_TAG_NAME);
 
     for (int i = 0; i < nAnalysisList.getLength(); i++) {
 
@@ -161,31 +186,33 @@ public class CommandWorkflowParser {
         // Parse description elements
         //
 
-        final String formatVersion = getTagValue("formatversion", eElement);
+        final String formatVersion =
+            getTagValue(FORMATVERSION_TAG_NAME, eElement);
         if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion))
           throw new EoulsanException(
               "Invalid version of the format of the workflow file.");
 
-        final String name = getTagValue("name", eElement);
+        final String name = getTagValue(WORKFLOWNAME_TAG_NAME, eElement);
         result.setName(name);
 
-        final String description = getTagValue("description", eElement);
+        final String description = getTagValue(DESCRIPTION_TAG_NAME, eElement);
         result.setDescription(description);
 
-        final String author = getTagValue("author", eElement);
+        final String author = getTagValue(AUTHOR_TAG_NAME, eElement);
         result.setAuthor(author);
 
         //
         // Parse constants
         //
 
-        addConstants(parseParameters(eElement, "constants", null, false));
+        addConstants(parseParameters(eElement, CONSTANTS_TAG_NAME, null, false));
 
         //
         // Parse steps
         //
 
-        final NodeList nStepsList = eElement.getElementsByTagName("steps");
+        final NodeList nStepsList =
+            eElement.getElementsByTagName(STEPS_TAG_NAME);
 
         for (int j = 0; j < nStepsList.getLength(); j++) {
 
@@ -194,7 +221,7 @@ public class CommandWorkflowParser {
 
             final Element stepsElement = (Element) nodeSteps;
             final NodeList nStepList =
-                stepsElement.getElementsByTagName("step");
+                stepsElement.getElementsByTagName(STEP_TAG_NAME);
 
             for (int k = 0; k < nStepList.getLength(); k++) {
 
@@ -204,19 +231,22 @@ public class CommandWorkflowParser {
                 final Element eStepElement = (Element) nStepNode;
 
                 final String stepId =
-                    eStepElement.getAttribute("id").trim().toLowerCase();
+                    eStepElement.getAttribute(ID_ATTR_NAME_STEP_TAG).trim()
+                        .toLowerCase();
 
                 final boolean skip =
-                    Boolean.parseBoolean(eStepElement.getAttribute("skip")
-                        .trim().toLowerCase());
+                    Boolean.parseBoolean(eStepElement
+                        .getAttribute(SKIP_ATTR_NAME_STEP_TAG).trim()
+                        .toLowerCase());
 
                 final boolean discardOutput =
                     Boolean.parseBoolean(eStepElement
-                        .getAttribute("discardOutput").trim().toLowerCase());
+                        .getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG).trim()
+                        .toLowerCase());
 
-                String stepName = getTagValue("stepname", eStepElement);
+                String stepName = getTagValue(STEPNAME_TAG_NAME, eStepElement);
                 if (stepName == null)
-                  stepName = getTagValue("name", eStepElement);
+                  stepName = getTagValue(NAME_TAG_NAME, eStepElement);
                 if (stepName == null)
                   throw new EoulsanException(
                       "Step name not found in workflow file.");
@@ -226,7 +256,8 @@ public class CommandWorkflowParser {
                         ? stepName : stepId);
 
                 final Set<Parameter> parameters =
-                    parseParameters(eStepElement, "parameters", stepName, true);
+                    parseParameters(eStepElement, PARAMETERS_TAG_NAME,
+                        stepName, true);
 
                 LOGGER.info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
@@ -242,8 +273,8 @@ public class CommandWorkflowParser {
         // Parse globals parameters
         //
 
-        result.setGlobalParameters(parseParameters(eElement, "globals", null,
-            true));
+        result.setGlobalParameters(parseParameters(eElement, GLOBALS_TAG_NAME,
+            null, true));
 
       }
     }
@@ -267,7 +298,7 @@ public class CommandWorkflowParser {
     final Map<String, StepOutputPort> result =
         new HashMap<String, StepOutputPort>();
 
-    final NodeList nList = root.getElementsByTagName("inputs");
+    final NodeList nList = root.getElementsByTagName(INPUTS_TAG_NAMES);
 
     for (int i = 0; i < nList.getLength(); i++) {
 
@@ -275,7 +306,8 @@ public class CommandWorkflowParser {
       if (node.getNodeType() == Node.ELEMENT_NODE) {
 
         Element element = (Element) node;
-        final NodeList nParameterList = element.getElementsByTagName("input");
+        final NodeList nParameterList =
+            element.getElementsByTagName(INPUT_TAG_NAME);
 
         for (int j = 0; j < nParameterList.getLength(); j++) {
 
@@ -286,7 +318,7 @@ public class CommandWorkflowParser {
             Element eStepElement = (Element) nParameterNode;
 
             // Get and check the toInput attribute
-            final String portName = getTagValue("port", eStepElement);
+            final String portName = getTagValue(PORT_TAG_NAME, eStepElement);
             if (portName == null)
               throw new EoulsanException(
                   "the \"toInput\" attribute not exists in an input section of step \""
@@ -303,8 +335,9 @@ public class CommandWorkflowParser {
                       + stepId + "\" in workflow file.");
 
             final StepOutputPort input =
-                new StepOutputPort(getTagValue("fromStep", eStepElement),
-                    getTagValue("fromPort", eStepElement));
+                new StepOutputPort(
+                    getTagValue(FROMSTEP_TAG_NAME, eStepElement), getTagValue(
+                        FROMPORT_TAG_NAME, eStepElement));
 
             // Check step ID
             if (input.stepId == null)
@@ -362,7 +395,7 @@ public class CommandWorkflowParser {
 
         Element element = (Element) node;
         final NodeList nParameterList =
-            element.getElementsByTagName("parameter");
+            element.getElementsByTagName(PARAMETER_TAG_NAME);
 
         for (int j = 0; j < nParameterList.getLength(); j++) {
 
@@ -372,8 +405,10 @@ public class CommandWorkflowParser {
 
             Element eStepElement = (Element) nParameterNode;
 
-            final String paramName = getTagValue("name", eStepElement);
-            final String paramValue = getTagValue("value", eStepElement);
+            final String paramName =
+                getTagValue(PARAMETERNAME_TAG_NAME, eStepElement);
+            final String paramValue =
+                getTagValue(PARAMETERVALUE_TAG_NAME, eStepElement);
 
             if (paramName == null)
               throw new EoulsanException(

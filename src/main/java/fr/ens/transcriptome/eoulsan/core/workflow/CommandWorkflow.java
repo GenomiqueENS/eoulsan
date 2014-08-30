@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -57,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputDataStep;
 import fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputDataStep;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -806,6 +809,34 @@ public class CommandWorkflow extends AbstractWorkflow {
     // return new WorkflowFiles(inFiles, reusedFiles, outFiles);
 
     return null;
+  }
+
+  @Override
+  protected void saveConfigurationFiles() throws EoulsanException {
+
+    // Save design file
+    super.saveConfigurationFiles();
+
+    try {
+      DataFile logDir = new DataFile(getWorkflowContext().getLogPathname());
+
+      if (!logDir.exists()) {
+        logDir.mkdirs();
+      }
+
+      // Save design file
+
+      BufferedWriter writer =
+          FileUtils.createBufferedWriter(new DataFile(logDir,
+              WORKFLOW_COPY_FILENAME).create());
+      writer.write(this.workflowCommand.toXML());
+      writer.close();
+
+    } catch (IOException | EoulsanRuntimeException e) {
+      throw new EoulsanException("Error while writing workflow file: "
+          + e.getMessage());
+    }
+
   }
 
   //

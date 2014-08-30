@@ -59,6 +59,9 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -71,6 +74,9 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 4865597995432347155L;
+
+  private static final String DESIGN_COPY_FILENAME = "design.txt";
+  protected static final String WORKFLOW_COPY_FILENAME = "workflow.xml";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
@@ -358,6 +364,9 @@ public abstract class AbstractWorkflow implements Workflow {
     // check if input files exists
     checkExistingInputFiles();
 
+    // Save configuration files (design and workflow files)
+    saveConfigurationFiles();
+
     // Get the token manager registry
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
@@ -447,6 +456,32 @@ public abstract class AbstractWorkflow implements Workflow {
   //
   // Utility methods
   //
+
+  /**
+   * Save configuration files.
+   * @throws EoulsanException if an error while writing files
+   */
+  protected void saveConfigurationFiles() throws EoulsanException {
+
+    try {
+      DataFile logDir = new DataFile(getWorkflowContext().getLogPathname());
+
+      if (!logDir.exists()) {
+        logDir.mkdirs();
+      }
+
+      // Save design file
+
+      DesignWriter designWriter =
+          new SimpleDesignWriter(
+              new DataFile(logDir, DESIGN_COPY_FILENAME).create());
+      designWriter.write(getDesign());
+
+    } catch (IOException | EoulsanIOException e) {
+      throw new EoulsanException("Error while writing design file: "
+          + e.getMessage());
+    }
+  }
 
   /**
    * Get the steps which has some step status. The step are ordered.
@@ -542,8 +577,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
+      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir }) {
 
         if (dir == null)
           continue;
