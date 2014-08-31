@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
@@ -36,7 +37,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMLineParser;
@@ -52,7 +52,6 @@ import org.apache.hadoop.mapreduce.Reducer;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -71,9 +70,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @author Laurent Jourdren
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
@@ -133,8 +129,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       this.filter =
           mrafb.getAlignmentsFilter(new HadoopReporterIncrementer(context),
               this.counterGroup);
-      LOGGER.info("Read alignments filters to apply: "
-          + Joiner.on(", ").join(this.filter.getFilterNames()));
+      getLogger().info(
+          "Read alignments filters to apply: "
+              + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());

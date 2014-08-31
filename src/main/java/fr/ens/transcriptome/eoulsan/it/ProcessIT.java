@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.it;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.Files.newReader;
 import static com.google.common.io.Files.newWriter;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -44,7 +45,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Test;
@@ -66,9 +66,6 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * @since 1.3
  */
 public class ProcessIT {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
@@ -116,7 +113,8 @@ public class ProcessIT {
       try {
         Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
-        LOGGER.warning("Error while copying " + desc + ": " + e.getMessage());
+        getLogger().warning(
+            "Error while copying " + desc + ": " + e.getMessage());
       }
 
     }
@@ -145,7 +143,7 @@ public class ProcessIT {
 
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
-    LOGGER.info("start test " + this.testName);
+    getLogger().info("start test " + this.testName);
 
     // Compile the result comparison from all tests
     boolean status = true;
@@ -200,7 +198,7 @@ public class ProcessIT {
       msgException =
           "Fail comparison test "
               + testName + ", cause: " + e.getMessage() + "\n";
-      LOGGER.warning(msgException);
+      getLogger().warning(msgException);
       throw new Exception(msgException);
 
     } catch (Exception e) {
@@ -208,7 +206,7 @@ public class ProcessIT {
           "Fail test "
               + testName + ", cause: " + e.getMessage() + "\n\t"
               + e.getClass().getName() + "\n";
-      LOGGER.warning(msgException);
+      getLogger().warning(msgException);
       throw new Exception(msgException);
 
     } finally {
@@ -231,12 +229,15 @@ public class ProcessIT {
 
       // End test
       timer.stop();
-      LOGGER.info(reportFilename
-          + " for "
-          + testName
-          + ((this.generateExpectedData)
-              ? ": generate expected data" : ": launch test and comparison")
-          + " in " + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+      getLogger()
+          .info(
+              reportFilename
+                  + " for "
+                  + testName
+                  + ((this.generateExpectedData)
+                      ? ": generate expected data"
+                      : ": launch test and comparison") + " in "
+                  + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
     }
   }
 

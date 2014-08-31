@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import static com.google.common.base.Objects.equal;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,7 +32,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,7 +46,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -163,8 +162,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       return generator;
     } catch (EoulsanException e) {
 
-      final Logger logger = EoulsanLogger.getLogger();
-      logger.severe("Cannot create generator: " + e.getMessage());
+      getLogger().severe("Cannot create generator: " + e.getMessage());
       return null;
     }
   }

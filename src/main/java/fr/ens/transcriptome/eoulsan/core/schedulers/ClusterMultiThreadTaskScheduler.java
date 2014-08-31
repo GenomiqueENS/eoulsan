@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DONE_EXTENSION;
@@ -46,7 +47,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.actions.ClusterTaskAction;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
@@ -78,7 +78,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       try {
         FileUtils.copy(in, out);
       } catch (IOException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
+        getLogger().severe(e.getMessage());
       }
     }
 

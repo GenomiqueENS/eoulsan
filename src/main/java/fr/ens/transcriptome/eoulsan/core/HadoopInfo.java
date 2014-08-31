@@ -24,15 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.util.VersionInfo;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
@@ -45,9 +45,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class HadoopInfo {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String ROOT_PATH = "/";
   private static final String VAR_PATH = "/var";
@@ -94,7 +91,8 @@ public class HadoopInfo {
         df(tmpDir, conf);
     } catch (IOException e) {
 
-      LOGGER.warning("Error while get system information: " + e.getMessage());
+      getLogger().warning(
+          "Error while get system information: " + e.getMessage());
     }
   }
 
@@ -108,15 +106,17 @@ public class HadoopInfo {
     final String bogomips = cpuinfo.getBogoMips();
     final String cores = cpuinfo.getCores();
 
-    LOGGER.info("SYSINFO CPU model name: "
-        + (modelName == null ? "NA" : modelName));
-    LOGGER.info("SYSINFO CPU count: "
-        + (processor == null ? "NA" : ""
-            + (Integer.parseInt(processor.trim()) + 1)));
-    LOGGER.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
-    LOGGER.info("SYSINFO CPU clock: "
-        + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
-    LOGGER.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+    getLogger().info(
+        "SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
+    getLogger().info(
+        "SYSINFO CPU count: "
+            + (processor == null ? "NA" : ""
+                + (Integer.parseInt(processor.trim()) + 1)));
+    getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    getLogger().info(
+        "SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    getLogger().info(
+        "SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
   private static final void parseMeminfo() throws IOException {
@@ -124,7 +124,8 @@ public class HadoopInfo {
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
 
-    LOGGER.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+    getLogger().info(
+        "SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
   private static final void df(final File f, final Configuration conf)
@@ -132,21 +133,22 @@ public class HadoopInfo {
 
     DF df = new DF(f, conf);
 
-    LOGGER.info("SYSINFO "
-        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
-        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-        + " available, " + df.getPercentUsed() + "% used");
+    getLogger().info(
+        "SYSINFO "
+            + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
+            + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
+            + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
+            + " available, " + df.getPercentUsed() + "% used");
 
   }
 
   private static final void logHadoopVersionInfo() {
 
-    LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
-    LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
-    LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
-    LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
-    LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
+    getLogger().info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
+    getLogger().info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
+    getLogger().info("SYSINFO Hadoop date: " + VersionInfo.getDate());
+    getLogger().info("SYSINFO Hadoop user: " + VersionInfo.getUser());
+    getLogger().info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
 
 }

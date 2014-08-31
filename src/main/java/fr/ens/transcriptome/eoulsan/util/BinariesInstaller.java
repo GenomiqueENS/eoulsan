@@ -24,14 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 
@@ -42,14 +42,13 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class BinariesInstaller {
 
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
   private static final int BUFFER_SIZE = 32 * 1024;
 
   private static void install(final String inputPath, final String file,
       final String outputPath) throws FileNotFoundException, IOException {
 
     if (new File(outputPath, file).isFile()) {
-      LOGGER.fine(file + " is allready installed.");
+      getLogger().fine(file + " is allready installed.");
       return;
     }
 
@@ -117,9 +116,10 @@ public class BinariesInstaller {
     final String os = System.getProperty("os.name").toLowerCase();
     final String arch = System.getProperty("os.arch").toLowerCase();
 
-    LOGGER.fine("Try to install \""
-        + binaryFilename + "\" of " + softwarePackage + " package for " + os
-        + " (" + arch + ")");
+    getLogger().fine(
+        "Try to install \""
+            + binaryFilename + "\" of " + softwarePackage + " package for "
+            + os + " (" + arch + ")");
 
     String osArchKey = os + "\t" + arch;
 
@@ -150,15 +150,15 @@ public class BinariesInstaller {
 
     // Test if the file is allready installed
     if (new File(outputPath, binaryFilename).isFile()) {
-      LOGGER.info(binaryFilename + " is allready installed.");
+      getLogger().info(binaryFilename + " is allready installed.");
       return outputPath + "/" + binaryFilename;
     }
 
     // install the file
     install(inputPath, binaryFilename, outputPath);
 
-    LOGGER.fine("Successful installation of "
-        + binaryFilename + " in " + outputPath);
+    getLogger().fine(
+        "Successful installation of " + binaryFilename + " in " + outputPath);
     return outputPath + "/" + binaryFilename;
   }
 }

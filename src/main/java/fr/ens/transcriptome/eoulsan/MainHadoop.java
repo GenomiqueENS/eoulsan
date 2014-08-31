@@ -24,10 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Handler;
-import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import org.apache.hadoop.conf.Configuration;
@@ -46,9 +47,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public final class MainHadoop extends Main {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String LAUNCH_MODE_NAME = "hadoop";
 
@@ -110,8 +108,8 @@ public final class MainHadoop extends Main {
       HadoopInfo();
 
     } catch (IOException e) {
-      LOGGER
-          .severe("Error while getting system information: " + e.getMessage());
+      getLogger().severe(
+          "Error while getting system information: " + e.getMessage());
     }
 
   }
@@ -130,15 +128,17 @@ public final class MainHadoop extends Main {
     final String bogomips = cpuinfo.getBogoMips();
     final String cores = cpuinfo.getCores();
 
-    LOGGER.info("SYSINFO CPU model name: "
-        + (modelName == null ? "NA" : modelName));
-    LOGGER.info("SYSINFO CPU count: "
-        + (processor == null ? "NA" : ""
-            + (Integer.parseInt(processor.trim()) + 1)));
-    LOGGER.info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
-    LOGGER.info("SYSINFO CPU clock: "
-        + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
-    LOGGER.info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+    getLogger().info(
+        "SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
+    getLogger().info(
+        "SYSINFO CPU count: "
+            + (processor == null ? "NA" : ""
+                + (Integer.parseInt(processor.trim()) + 1)));
+    getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    getLogger().info(
+        "SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    getLogger().info(
+        "SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
   /**
@@ -150,7 +150,8 @@ public final class MainHadoop extends Main {
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
 
-    LOGGER.info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+    getLogger().info(
+        "SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
   /**
@@ -164,11 +165,12 @@ public final class MainHadoop extends Main {
 
     DF df = new DF(f, conf);
 
-    LOGGER.info("SYSINFO "
-        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
-        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-        + " available, " + df.getPercentUsed() + "% used");
+    getLogger().info(
+        "SYSINFO "
+            + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
+            + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
+            + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
+            + " available, " + df.getPercentUsed() + "% used");
 
   }
 
@@ -177,11 +179,11 @@ public final class MainHadoop extends Main {
    */
   private static final void HadoopInfo() {
 
-    LOGGER.info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
-    LOGGER.info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
-    LOGGER.info("SYSINFO Hadoop date: " + VersionInfo.getDate());
-    LOGGER.info("SYSINFO Hadoop user: " + VersionInfo.getUser());
-    LOGGER.info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
+    getLogger().info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
+    getLogger().info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
+    getLogger().info("SYSINFO Hadoop date: " + VersionInfo.getDate());
+    getLogger().info("SYSINFO Hadoop user: " + VersionInfo.getUser());
+    getLogger().info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
 
   //

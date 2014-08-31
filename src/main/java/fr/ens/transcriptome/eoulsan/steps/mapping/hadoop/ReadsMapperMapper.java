@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
@@ -35,7 +36,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -51,7 +51,6 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -73,9 +72,6 @@ import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
  * @author Laurent Jourdren
  */
 public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String HADOOP_TEMP_DIR = "hadoop.tmp.dir";
 
@@ -143,7 +139,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   @Override
   protected void setup(final Context context) throws IOException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     final Configuration conf = context.getConfiguration();
 
@@ -188,16 +184,17 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Get the local genome index zip file
     File archiveIndexFile = new File(localCacheFiles[0].toString());
 
-    LOGGER.info("Genome index compressed file (from distributed cache): "
-        + archiveIndexFile);
+    getLogger().info(
+        "Genome index compressed file (from distributed cache): "
+            + archiveIndexFile);
 
     // Set index directory
     final File archiveIndexDir =
         new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
             + "/" + getIndexLocalName(archiveIndexFile));
 
-    LOGGER
-        .info("Genome index directory where decompressed: " + archiveIndexDir);
+    getLogger().info(
+        "Genome index directory where decompressed: " + archiveIndexDir);
 
     // Init mapper
     mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(context),
@@ -212,7 +209,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     else
       this.process = this.mapper.mapSE(null);
 
-    LOGGER.info("Fastq format: " + fastqFormat);
+    getLogger().info("Fastq format: " + fastqFormat);
 
     this.lock =
         new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
@@ -237,14 +234,16 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     mapper.setThreadsNumber(mapperThreads);
-    LOGGER.info("Use "
-        + this.mapper.getMapperName() + " with " + mapperThreads
-        + " threads option");
+    getLogger().info(
+        "Use "
+            + this.mapper.getMapperName() + " with " + mapperThreads
+            + " threads option");
 
     // Create temporary directory if not exists
     final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
     if (!tempDir.exists()) {
-      LOGGER.fine("Create temporary directory: " + tempDir.getAbsolutePath());
+      getLogger().fine(
+          "Create temporary directory: " + tempDir.getAbsolutePath());
       if (!tempDir.mkdirs())
         throw new IOException(
             "Unable to create local Hadoop temporary directory: " + tempDir);
@@ -253,7 +252,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set mapper temporary directory
     mapper.setTempDirectory(tempDir);
 
-    LOGGER.info("End of setup()");
+    getLogger().info("End of setup()");
   }
 
   private String getIndexLocalName(final File archiveIndexFile)
@@ -286,7 +285,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of cleanup() of the mapper.");
+    getLogger().info("Start of cleanup() of the mapper.");
 
     context.setStatus("Wait free JVM for running "
         + this.mapper.getMapperName());
@@ -299,10 +298,11 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
           .toLowerCase());
 
-      LOGGER.info("Wait "
-          + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-              - waitStartTime) + " before running "
-          + this.mapper.getMapperName());
+      getLogger().info(
+          "Wait "
+              + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+                  - waitStartTime) + " before running "
+              + this.mapper.getMapperName());
 
       // Close the data file
       this.process.closeEntriesWriter();
@@ -315,15 +315,16 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     } catch (IOException e) {
 
-      LOGGER.severe("Error while running "
-          + this.mapper.getMapperName() + ": " + e.getMessage());
+      getLogger().severe(
+          "Error while running "
+              + this.mapper.getMapperName() + ": " + e.getMessage());
       throw e;
 
     } finally {
       lock.unlock();
     }
 
-    LOGGER.info("End of close() of the mapper.");
+    getLogger().info("End of close() of the mapper.");
   }
 
   private final void parseSAMResults(final InputStream resultFileInputStream,
@@ -377,8 +378,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     readerResults.close();
 
-    LOGGER.info(entriesParsed
-        + " entries parsed in " + this.mapper.getMapperName() + " output file");
+    getLogger().info(
+        entriesParsed
+            + " entries parsed in " + this.mapper.getMapperName()
+            + " output file");
   }
 
 }

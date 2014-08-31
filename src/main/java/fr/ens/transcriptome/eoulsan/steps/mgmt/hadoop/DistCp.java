@@ -42,6 +42,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.BufferedReader;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -56,7 +58,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -92,7 +93,6 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -107,8 +107,6 @@ public class DistCp implements Tool {
   /* Default Charset. */
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
-
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String NAME = "distcp";
 
@@ -600,7 +598,7 @@ public class DistCp implements Tool {
         final String sfailure =
             "FAIL " + relativedst + " : " + StringUtils.stringifyException(e);
         out.collect(null, new Text(sfailure));
-        LOGGER.info(sfailure);
+        getLogger().info(sfailure);
         try {
           for (int i = 0; i < 3; ++i) {
             try {
@@ -609,7 +607,8 @@ public class DistCp implements Tool {
                 break;
             } catch (Throwable ex) {
               // ignore, we are just cleaning up
-              LOGGER.fine("Ignoring cleanup exception: " + ex.getMessage());
+              getLogger()
+                  .fine("Ignoring cleanup exception: " + ex.getMessage());
             }
             // update status, so we don't get timed out
             updateStatus(reporter);
@@ -691,8 +690,8 @@ public class DistCp implements Tool {
    */
   static void copy(final Configuration conf, final Arguments args)
       throws IOException {
-    LOGGER.info("srcPaths=" + args.srcs);
-    LOGGER.info("destPath=" + args.dst);
+    getLogger().info("srcPaths=" + args.srcs);
+    getLogger().info("destPath=" + args.dst);
     checkSrcPath(conf, args.srcs);
 
     JobConf job = createJobConf(conf);
@@ -1019,7 +1018,7 @@ public class DistCp implements Tool {
       Path tmp = new Path(dir);
       boolean success = tmp.getFileSystem(conf).delete(tmp, true);
       if (!success) {
-        LOGGER.warning("Could not fully delete " + tmp);
+        getLogger().warning("Could not fully delete " + tmp);
       }
     }
   }
@@ -1214,7 +1213,7 @@ public class DistCp implements Tool {
     try {
       dststatus = dstfs.getFileStatus(args.dst);
     } catch (FileNotFoundException fnfe) {
-      LOGGER.info(args.dst + " does not exist.");
+      getLogger().info(args.dst + " does not exist.");
     }
 
     // create dest path dir if copying > 1 file
@@ -1241,7 +1240,7 @@ public class DistCp implements Tool {
     // up by fullyDelete() later.
     tmpDir.getFileSystem(conf).mkdirs(tmpDir);
 
-    LOGGER.info("srcCount=" + srcCount);
+    getLogger().info("srcCount=" + srcCount);
     jobConf.setInt(SRC_COUNT_LABEL, srcCount);
     jobConf.setLong(TOTAL_SIZE_LABEL, byteCount);
     setMapCount(byteCount, jobConf);
@@ -1347,7 +1346,7 @@ public class DistCp implements Tool {
       final Text dstpath = new Text();
       final Text dstfrom = new Text();
       final FsShell shell = new FsShell(conf);
-      final String[] shellargs = {"-rmr", null};
+      final String[] shellargs = { "-rmr", null };
 
       boolean hasnext = dstin.next(dstpath, dstfrom);
       for (; lsrin.next(lsrpath, lsrstatus);) {
@@ -1428,7 +1427,7 @@ public class DistCp implements Tool {
       try {
         io.close();
       } catch (IOException ioe) {
-        LOGGER.warning(StringUtils.stringifyException(ioe));
+        getLogger().warning(StringUtils.stringifyException(ioe));
         return false;
       }
     }

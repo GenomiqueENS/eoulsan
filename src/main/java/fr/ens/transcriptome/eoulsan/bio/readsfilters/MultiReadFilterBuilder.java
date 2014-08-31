@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -42,9 +41,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @author Laurent Jourdren
  */
 public class MultiReadFilterBuilder {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final Map<String, ReadFilter> mapFilters = newHashMap();
   private final List<ReadFilter> listFilter = Utils.newArrayList();
@@ -124,13 +120,14 @@ public class MultiReadFilterBuilder {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
       this.mapParameters.put(keyTrimmed, valueTrimmed);
-      LOGGER
-          .info("Set read filter \""
+      getLogger().info(
+          "Set read filter \""
               + filterName + "\" with parameter: " + filterKey + "="
               + valueTrimmed);
     } else {
       this.mapParameters.put(filterName, "");
-      LOGGER.info("Set read filter \"" + filterName + "\" with no parameter");
+      getLogger().info(
+          "Set read filter \"" + filterName + "\" with no parameter");
     }
 
     return true;

@@ -24,16 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -51,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  */
 public final class WorkflowStepOutputDataFile implements
     Comparable<WorkflowStepOutputDataFile> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final AbstractWorkflowStep step;
   private final String portName;
@@ -267,8 +263,9 @@ public final class WorkflowStepOutputDataFile implements
     try {
       md = file.getMetaData();
     } catch (IOException e) {
-      LOGGER.warning("Error while getting metadata for file "
-          + file + ": " + e.getMessage());
+      getLogger().warning(
+          "Error while getting metadata for file "
+              + file + ": " + e.getMessage());
       md = null;
     }
 

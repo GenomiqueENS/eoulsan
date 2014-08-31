@@ -30,9 +30,6 @@ import java.util.Iterator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-
 /**
  * Reducer for the expression estimation with htseq-count.
  * @since 1.2

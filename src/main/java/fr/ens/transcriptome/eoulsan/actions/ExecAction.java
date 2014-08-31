@@ -25,11 +25,11 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -41,7 +41,6 @@ import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
@@ -56,9 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
  * @author Laurent Jourdren
  */
 public class ExecAction extends AbstractAction {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Name of this action. */
   public static final String ACTION_NAME = "exec";
@@ -182,8 +178,8 @@ public class ExecAction extends AbstractAction {
       desc = jobDescription.trim();
     }
 
-    LOGGER.info("Worflow file: " + workflowFile);
-    LOGGER.info("Design file: " + designFile);
+    getLogger().info("Worflow file: " + workflowFile);
+    getLogger().info("Design file: " + designFile);
 
     try {
 

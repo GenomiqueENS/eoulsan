@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,9 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
@@ -55,9 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @author Laurent Jourdren
  */
 public class TranscriptAndExonFinder {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private Map<String, Transcript> transcripts;
   private Map<String, ChromosomeZone> chrZoneMap;
@@ -780,7 +777,7 @@ public class TranscriptAndExonFinder {
       final String expressionType, final String attributeId)
       throws IOException, BadBioEntryException {
 
-    LOGGER.info("Expression Type: " + expressionType);
+    getLogger().info("Expression Type: " + expressionType);
 
     final GFFReader reader = new GFFReader(is);
 
@@ -856,9 +853,9 @@ public class TranscriptAndExonFinder {
     for (Map.Entry<String, Transcript> e : this.transcripts.entrySet())
       e.getValue().setType(idType.get(e.getKey()));
 
-    LOGGER.fine("Entries read: " + count);
-    LOGGER.fine("ChrZoneMap: " + this.chrZoneMap.size());
-    LOGGER.fine("Trancripts: " + this.transcripts.size());
+    getLogger().fine("Entries read: " + count);
+    getLogger().fine("ChrZoneMap: " + this.chrZoneMap.size());
+    getLogger().fine("Trancripts: " + this.transcripts.size());
   }
 
   /**

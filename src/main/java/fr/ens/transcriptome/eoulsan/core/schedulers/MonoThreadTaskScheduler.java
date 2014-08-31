@@ -24,11 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.core.schedulers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.util.Queue;
 
 import com.google.common.collect.Queues;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 
@@ -86,7 +87,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);
       } catch (InterruptedException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
+        getLogger().severe(e.getMessage());
       }
     }
   }

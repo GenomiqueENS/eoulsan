@@ -24,15 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
@@ -54,9 +54,6 @@ import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceJob;
  */
 @LocalOnly
 public class AWSElasticMapReduceExecStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final int COUNTDOWN_START = 30;
 
@@ -240,12 +237,12 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
 
     showCountDown(COUNTDOWN_START);
 
-    LOGGER.info("Start Amazon Elastic MapReduce job.");
+    getLogger().info("Start Amazon Elastic MapReduce job.");
 
     // Run job
     final String jobFlowId = job.runJob();
 
-    LOGGER.info("Ran job flow with id: " + jobFlowId);
+    getLogger().info("Ran job flow with id: " + jobFlowId);
 
     if (this.waitJob) {
 
@@ -294,7 +291,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
-        LOGGER.warning("Error while sleeping: " + e.getMessage());
+        getLogger().warning("Error while sleeping: " + e.getMessage());
       }
 
     }

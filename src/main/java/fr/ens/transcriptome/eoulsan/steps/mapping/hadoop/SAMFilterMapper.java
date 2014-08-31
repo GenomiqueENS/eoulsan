@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -43,7 +43,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -57,9 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
-
+ 
   // Parameters keys
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
@@ -80,7 +77,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -96,7 +93,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("End of setup()");
+    getLogger().info("End of setup()");
   }
 
   /**

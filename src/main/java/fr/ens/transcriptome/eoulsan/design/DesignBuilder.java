@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -35,13 +37,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -63,9 +63,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class DesignBuilder {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final int MAX_FASTQ_ENTRIES_TO_READ = 10000;
 
@@ -189,7 +186,7 @@ public class DesignBuilder {
           pairMember = 1;
       }
 
-      return new Object[] {prefix, pairMember};
+      return new Object[] { prefix, pairMember };
     }
 
     //
@@ -305,7 +302,7 @@ public class DesignBuilder {
       try {
         entry = new FastqEntry(file);
       } catch (EmptyFastqException e) {
-        LOGGER.warning(e.getMessage());
+        getLogger().warning(e.getMessage());
         return;
       }
 
@@ -349,7 +346,7 @@ public class DesignBuilder {
     if (filename == null)
       return;
 
-    LOGGER.info("Add file " + filename + " to design.");
+    getLogger().info("Add file " + filename + " to design.");
     addFile(new DataFile(filename));
   }
 
@@ -452,7 +449,7 @@ public class DesignBuilder {
           list.add(new FastqEntry(new DataFile(fastqFile), sampleName,
               sampleDesc, sampleOperator));
         } catch (EmptyFastqException e) {
-          LOGGER.warning(e.getMessage());
+          getLogger().warning(e.getMessage());
         }
       }
     }
@@ -471,11 +468,12 @@ public class DesignBuilder {
     if (casavaDesignFile == null)
       return;
 
-    LOGGER.info("Add Casava design file "
-        + casavaDesignFile
-        + " to design with "
-        + (projectName == null ? "no project filter." : projectName
-            + " project filter."));
+    getLogger().info(
+        "Add Casava design file "
+            + casavaDesignFile
+            + " to design with "
+            + (projectName == null ? "no project filter." : projectName
+                + " project filter."));
 
     final File baseDir;
     final File file;
@@ -640,7 +638,7 @@ public class DesignBuilder {
     FastqFormat format = null;
 
     try {
-      LOGGER.info("Check fastq format for " + fileToCheck);
+      getLogger().info("Check fastq format for " + fileToCheck);
       format =
           FastqFormat.identifyFormat(fileToCheck.open(),
               MAX_FASTQ_ENTRIES_TO_READ);

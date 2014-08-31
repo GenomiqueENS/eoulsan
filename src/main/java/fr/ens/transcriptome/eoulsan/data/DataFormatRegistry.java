@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,10 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -51,8 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class DataFormatRegistry {
 
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldataformats/";
 
@@ -354,12 +351,12 @@ public class DataFormatRegistry {
 
       try {
 
-        LOGGER.fine("try to register format: " + df);
+        getLogger().fine("try to register format: " + df);
         register(df, true);
 
       } catch (EoulsanException e) {
-        LOGGER.warning("Connot register "
-            + df.getName() + ": " + e.getMessage());
+        getLogger().warning(
+            "Connot register " + df.getName() + ": " + e.getMessage());
       }
     }
   }
@@ -377,16 +374,18 @@ public class DataFormatRegistry {
           .getName())) {
 
         final String resource = RESOURCE_PREFIX + filename;
-        LOGGER.fine("Try to register an XML dataformat from "
-            + filename + " resource");
+        getLogger().fine(
+            "Try to register an XML dataformat from " + filename + " resource");
 
         register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
       }
     } catch (EoulsanException e) {
-      LOGGER.severe("Cannot register XML data format: " + e.getMessage());
+      getLogger().severe("Cannot register XML data format: " + e.getMessage());
     } catch (IOException e) {
-      LOGGER.severe("Unable to load the list of XML data format files: "
-          + e.getMessage());
+      getLogger()
+          .severe(
+              "Unable to load the list of XML data format files: "
+                  + e.getMessage());
     }
   }
 

@@ -37,7 +37,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
@@ -290,7 +289,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.contexts.put(context.getId(), step);
     }
 
-    EoulsanLogger.getLogger().fine(
+    getLogger().fine(
         "Scheduler: task #"
             + context.getId() + " (step #" + step.getNumber() + " "
             + step.getId() + ") has been submitted");
@@ -382,7 +381,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);
       } catch (InterruptedException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
+        getLogger().severe(e.getMessage());
       }
     }
   }

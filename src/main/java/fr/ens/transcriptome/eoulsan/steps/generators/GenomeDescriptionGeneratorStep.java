@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -55,9 +54,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 public class GenomeDescriptionGeneratorStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public String getName() {
@@ -102,9 +98,9 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       // Get the output DataFile
       final DataFile genomeDescriptionDataFile = outData.getDataFile();
 
-      LOGGER.fine("Input genome file: " + genomeDataFile);
-      LOGGER.fine("Output genome description file: "
-          + genomeDescriptionDataFile);
+      getLogger().fine("Input genome file: " + genomeDataFile);
+      getLogger().fine(
+          "Output genome description file: " + genomeDescriptionDataFile);
 
       // Create genome description DataFile
       final GenomeDescription desc =
@@ -114,7 +110,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       // Save the genome description in the analysis folder
       desc.save(genomeDescriptionDataFile.create());
 
-      LOGGER.fine("Genome description object: " + desc.toString());
+      getLogger().fine("Genome description object: " + desc.toString());
 
     } catch (BadBioEntryException e) {
 

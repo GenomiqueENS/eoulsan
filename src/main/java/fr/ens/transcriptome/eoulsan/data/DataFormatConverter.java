@@ -24,12 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
@@ -47,9 +47,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class DataFormatConverter {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private DataFormat inFormat;
   private DataFormat outFormat;
@@ -73,9 +70,10 @@ public class DataFormatConverter {
     final CompressionType destCT =
         CompressionType.getCompressionTypeByFilename(outFile.getName());
 
-    LOGGER.fine("Convert "
-        + inFile + " (" + inFormat + "/" + srcCT + ") to " + outFile + " ("
-        + outFormat + "/" + destCT + ").");
+    getLogger().fine(
+        "Convert "
+            + inFile + " (" + inFormat + "/" + srcCT + ") to " + outFile + " ("
+            + outFormat + "/" + destCT + ").");
 
     if (this.inFormat.equals(this.outFormat) && srcCT.equals(destCT)) {
 

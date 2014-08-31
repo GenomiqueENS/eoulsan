@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -41,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
@@ -59,9 +59,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Sandrine Perrin
  */
 public class ITFactory {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
@@ -168,16 +165,17 @@ public class ITFactory {
     // Set source directory for tests to execute
 
     checkExistingDirectoryFile(this.testsDataDirectory, "tests data directory");
-    LOGGER.config("Tests data directory: "
-        + this.testsDataDirectory.getAbsolutePath());
+    getLogger().config(
+        "Tests data directory: " + this.testsDataDirectory.getAbsolutePath());
 
     // Set output directory
     checkExistingDirectoryFile(this.outputTestsDirectory.getParentFile(),
         "output data parent directory");
 
     // Set directory contain all tests to execute
-    LOGGER.config("Output tests directory: "
-        + this.outputTestsDirectory.getAbsolutePath());
+    getLogger().config(
+        "Output tests directory: "
+            + this.outputTestsDirectory.getAbsolutePath());
 
     // Create output test directory
     if (!this.outputTestsDirectory.mkdir())
@@ -306,11 +304,11 @@ public class ITFactory {
 
     fh.setFormatter(Globals.LOG_FORMATTER);
 
-    LOGGER.setLevel(Level.ALL);
+    getLogger().setLevel(Level.ALL);
     // Remove output console
-    LOGGER.setUseParentHandlers(false);
-    LOGGER.addHandler(fh);
-    LOGGER.info(Globals.WELCOME_MSG);
+    getLogger().setUseParentHandlers(false);
+    getLogger().addHandler(fh);
+    getLogger().info(Globals.WELCOME_MSG);
 
   }
 
@@ -320,9 +318,10 @@ public class ITFactory {
   private void closeLogger(final int testsCount) {
 
     // Add suffix to log global filename
-    LOGGER.fine("End execution of "
-        + testsCount + " in "
-        + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+    getLogger().fine(
+        "End execution of "
+            + testsCount + " in "
+            + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
     final File loggerFile = new File(this.loggerPath);
 

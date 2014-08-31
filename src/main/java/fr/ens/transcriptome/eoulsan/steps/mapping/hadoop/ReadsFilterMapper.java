@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
@@ -33,7 +34,6 @@ import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils.parseKeyVa
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -44,7 +44,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -61,9 +60,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @author Laurent Jourdren
  */
 public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -91,7 +87,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -114,7 +110,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("Fastq format: " + fastqFormat);
+    getLogger().info("Fastq format: " + fastqFormat);
 
     // Set the filters
     try {
@@ -128,14 +124,15 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
           mrfb.getReadFilter(new HadoopReporterIncrementer(context),
               this.counterGroup);
 
-      LOGGER.info("Reads filters to apply: "
-          + Joiner.on(", ").join(this.filter.getFilterNames()));
+      getLogger().info(
+          "Reads filters to apply: "
+              + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e.getMessage());
     }
 
-    LOGGER.info("End of setup()");
+    getLogger().info("End of setup()");
   }
 
   //

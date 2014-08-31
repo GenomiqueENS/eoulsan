@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newHashSet;
@@ -34,9 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -66,9 +65,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
  * @author Laurent Jourdren
  */
 public abstract class UploadStep extends AbstractStep {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private DataFile dest;
 
@@ -157,7 +153,8 @@ public abstract class UploadStep extends AbstractStep {
 
       // Remove temporary design file
       if (!newDesignFile.delete()) {
-        LOGGER.warning("Cannot remove temporary design file: " + newDesignFile);
+        getLogger().warning(
+            "Cannot remove temporary design file: " + newDesignFile);
       }
 
       // Change the path of design and workflow file in the context

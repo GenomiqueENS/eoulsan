@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.util.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.JarRepack;
 
@@ -40,9 +40,6 @@ import fr.ens.transcriptome.eoulsan.util.JarRepack;
  * @author Laurent Jourdren
  */
 public final class HadoopJarRepackager {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String DIR_IN_JAR = "lib/";
 
@@ -61,12 +58,12 @@ public final class HadoopJarRepackager {
           "No source jar found in the paths of libraries to repack.");
     }
 
-    LOGGER.info("Repackage " + this.srcJar + " in " + destJarFile);
+    getLogger().info("Repackage " + this.srcJar + " in " + destJarFile);
 
     final JarRepack jarRepack = new JarRepack(this.srcJar, destJarFile);
     for (File file : this.jarFiles) {
       jarRepack.addFile(file, DIR_IN_JAR);
-      LOGGER.fine("Add in repackaged jar file: " + file.getName());
+      getLogger().fine("Add in repackaged jar file: " + file.getName());
     }
 
     jarRepack.close();

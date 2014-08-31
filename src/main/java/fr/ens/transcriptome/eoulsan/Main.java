@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.File;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -58,9 +58,6 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  * @author Laurent Jourdren
  */
 public abstract class Main {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
   private static final String EOULSAN_SCRIPT_PATH_JVM_ARG =
@@ -382,19 +379,23 @@ public abstract class Main {
   private void startupLog() {
 
     // Welcome message
-    LOGGER.info("Welcome to " + Globals.WELCOME_MSG);
-    LOGGER.info("Start in " + this.launchModeName + " mode");
+    getLogger().info("Welcome to " + Globals.WELCOME_MSG);
+    getLogger().info("Start in " + this.launchModeName + " mode");
 
     // Show versions
-    LOGGER.info(Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
-    LOGGER.info(Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
-    LOGGER.info(Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
+    getLogger().info(
+        Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
+    getLogger().info(
+        Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
+    getLogger().info(
+        Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
 
     // Startup script
-    LOGGER.info(Globals.APP_NAME
-        + " Startup script: "
-        + (getLaunchScriptPath() == null
-            ? "(no startup script)" : getLaunchScriptPath()));
+    getLogger().info(
+        Globals.APP_NAME
+            + " Startup script: "
+            + (getLaunchScriptPath() == null
+                ? "(no startup script)" : getLaunchScriptPath()));
 
     // Command line arguments
     final List<String> args = Lists.newArrayList();
@@ -404,15 +405,16 @@ public abstract class Main {
       else
         args.add(a);
 
-    LOGGER.info(Globals.APP_NAME
-        + " Command line arguments: " + Joiner.on(' ').join(args));
+    getLogger().info(
+        Globals.APP_NAME
+            + " Command line arguments: " + Joiner.on(' ').join(args));
 
     // Log file
-    LOGGER
-        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
+    getLogger().info(
+        "Log file: " + (this.logFile == null ? "(none)" : this.logFile));
 
     // Log level
-    LOGGER.info("Log level: " + LOGGER.getLevel());
+    getLogger().info("Log level: " + getLogger().getLevel());
   }
 
   /**
@@ -421,18 +423,18 @@ public abstract class Main {
   protected void sysInfoLog() {
 
     // Host
-    LOGGER.info("Host: " + SystemUtils.getHostName());
+    getLogger().info("Host: " + SystemUtils.getHostName());
 
     // Operating system
-    LOGGER.info("Operating system name: " + System.getProperty("os.name"));
-    LOGGER
-        .info("Operating system version: " + System.getProperty("os.version"));
-    LOGGER.info("Operating system arch: " + System.getProperty("os.arch"));
+    getLogger().info("Operating system name: " + System.getProperty("os.name"));
+    getLogger().info(
+        "Operating system version: " + System.getProperty("os.version"));
+    getLogger().info("Operating system arch: " + System.getProperty("os.arch"));
 
     // Java version
-    LOGGER.info("Java vendor: " + System.getProperty("java.vendor"));
-    LOGGER.info("Java vm name: " + System.getProperty("java.vm.name"));
-    LOGGER.info("Java version: " + System.getProperty("java.version"));
+    getLogger().info("Java vendor: " + System.getProperty("java.vendor"));
+    getLogger().info("Java vm name: " + System.getProperty("java.vm.name"));
+    getLogger().info("Java version: " + System.getProperty("java.version"));
   }
 
   /**
@@ -458,7 +460,7 @@ public abstract class Main {
       return new Settings(defaultConfFile);
     }
 
-    LOGGER.config("No configuration file found.");
+    getLogger().config("No configuration file found.");
     return new Settings(false);
   }
 
@@ -468,14 +470,14 @@ public abstract class Main {
   private void initApplicationLogger() {
 
     // Disable parent Handler
-    LOGGER.setUseParentHandlers(false);
+    getLogger().setUseParentHandlers(false);
 
     // Set log level to all before setting the real log level with
     // BufferedHandler
-    LOGGER.setLevel(Level.ALL);
+    getLogger().setLevel(Level.ALL);
 
     // Add Buffered handler as unique Handler
-    LOGGER.addHandler(this.handler);
+    getLogger().addHandler(this.handler);
 
     // Set the formatter
     this.handler.setFormatter(Globals.LOG_FORMATTER);
@@ -671,12 +673,12 @@ public abstract class Main {
 
     }
 
-    LOGGER.info("Start " + action.getName() + " action");
+    getLogger().info("Start " + action.getName() + " action");
 
     // Run action
     action.action(main.getActionArgs());
 
-    LOGGER.info("End of " + action.getName() + " action");
+    getLogger().info("End of " + action.getName() + " action");
 
     // Flush logs
     main.flushLog();

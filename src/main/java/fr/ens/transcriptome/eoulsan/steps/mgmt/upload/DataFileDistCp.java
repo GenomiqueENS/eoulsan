@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -50,7 +51,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -66,9 +66,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @author Laurent Jourdren
  */
 public class DataFileDistCp {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset
@@ -131,8 +128,9 @@ public class DataFileDistCp {
       final FileStatus fStatusSrc = srcFs.getFileStatus(srcPath);
       final long srcSize = fStatusSrc == null ? 0 : fStatusSrc.getLen();
 
-      LOGGER.info("Start copy "
-          + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
+      getLogger().info(
+          "Start copy "
+              + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
 
       final long startTime = System.currentTimeMillis();
 
@@ -149,10 +147,11 @@ public class DataFileDistCp {
       final double speed =
           destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
 
-      LOGGER.info("End copy "
-          + srcPathname + " to " + destPath + " in "
-          + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
-          + " bytes, " + ((int) speed) + " bytes/s)\n");
+      getLogger().info(
+          "End copy "
+              + srcPathname + " to " + destPath + " in "
+              + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
+              + " bytes, " + ((int) speed) + " bytes/s)\n");
 
       context.getCounter(COUNTER_GROUP_NAME, "Input file size").increment(
           srcSize);
@@ -257,7 +256,7 @@ public class DataFileDistCp {
       final Path f =
           new Path(tmpInputDir, "distcp-" + nf.format(count) + ".cp");
 
-      LOGGER.info("Task copy " + inFile + " in " + f.toString());
+      getLogger().info("Task copy " + inFile + " in " + f.toString());
 
       BufferedWriter bw =
           new BufferedWriter(new OutputStreamWriter(fs.create(f), CHARSET));

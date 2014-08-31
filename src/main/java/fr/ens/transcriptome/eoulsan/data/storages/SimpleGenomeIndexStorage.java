@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.storages;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
@@ -35,10 +36,8 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -52,9 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
-
+ 
   private static final String INDEX_FILENAME = "genomes_index_storage.txt";
 
   private final DataFile dir;
@@ -131,7 +128,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       FileUtils.copy(indexArchive.rawOpen(), entry.file.create());
       this.entries.put(entry.getKey(), entry);
       save();
-      LOGGER.info("Successully added "
+      getLogger().info("Successully added "
           + indexArchive.getName() + " index archive to genome index storage.");
     } catch (IOException e) {
     }
@@ -284,7 +281,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     this.dir = dir;
     load();
 
-    LOGGER.info("Genome index storage found."
+    getLogger().info("Genome index storage found."
         + this.entries.size() + " entries in : " + dir.getSource());
   }
 

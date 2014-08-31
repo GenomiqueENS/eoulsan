@@ -37,11 +37,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -54,8 +52,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class FinalExpressionTranscriptsCreator {
-
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /* Default Charset. */
   private static final Charset CHARSET = Charset

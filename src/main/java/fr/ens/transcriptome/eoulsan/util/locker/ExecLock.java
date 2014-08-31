@@ -24,14 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.util.locker;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Set;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -42,9 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class ExecLock implements Locker {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String LOCK_EXTENSION = ".lock";
   private static final String PID_EXTENSION = ".pid";
@@ -117,12 +114,14 @@ public class ExecLock implements Locker {
   public void unlock() {
 
     if (!lockFile.delete())
-      LOGGER.warning("Can not delete lock file: " + lockFile.getAbsolutePath());
+      getLogger().warning(
+          "Can not delete lock file: " + lockFile.getAbsolutePath());
     if (!pidLockFile.delete())
-      LOGGER.warning("Can not delete pid lock file: "
-          + pidLockFile.getAbsolutePath());
+      getLogger().warning(
+          "Can not delete pid lock file: " + pidLockFile.getAbsolutePath());
     if (!pidFile.delete())
-      LOGGER.warning("Can not delete pid file: " + pidFile.getAbsolutePath());
+      getLogger().warning(
+          "Can not delete pid file: " + pidFile.getAbsolutePath());
     lock = false;
     sleep(10000);
   }
@@ -165,7 +164,8 @@ public class ExecLock implements Locker {
 
       if (!jvmPids.contains(fPid)) {
         if (!f.delete())
-          LOGGER.warning("Can not delete pid file: " + f.getAbsolutePath());
+          getLogger()
+              .warning("Can not delete pid file: " + f.getAbsolutePath());
         continue;
       }
 
@@ -219,8 +219,8 @@ public class ExecLock implements Locker {
 
     if (files == null || files.length == 0) {
       if (!this.lockFile.delete())
-        LOGGER.warning("Can not delete lock file: "
-            + lockFile.getAbsolutePath());
+        getLogger().warning(
+            "Can not delete lock file: " + lockFile.getAbsolutePath());
       return;
     }
 
@@ -235,21 +235,22 @@ public class ExecLock implements Locker {
         fPid = Integer.parseInt(basename.substring(execName.length() + 1));
       } catch (NumberFormatException e) {
         if (!f.delete())
-          LOGGER.warning("Can not delete pid file: " + f.getAbsolutePath());
+          getLogger()
+              .warning("Can not delete pid file: " + f.getAbsolutePath());
         continue;
       }
 
       if (jvmsPids.contains(fPid))
         count++;
       else if (!f.delete())
-        LOGGER.warning("Can not delete pid file: " + f.getAbsolutePath());
+        getLogger().warning("Can not delete pid file: " + f.getAbsolutePath());
 
     }
 
     if (count == 0)
       if (!this.lockFile.delete())
-        LOGGER.warning("Can not delete lock file: "
-            + lockFile.getAbsolutePath());
+        getLogger().warning(
+            "Can not delete lock file: " + lockFile.getAbsolutePath());
   }
 
   /**

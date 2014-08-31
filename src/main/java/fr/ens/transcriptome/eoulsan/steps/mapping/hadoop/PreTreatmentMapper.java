@@ -25,12 +25,12 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_PRETREATMENT_READS_COUNTER;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -39,7 +39,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -54,9 +53,6 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  * @author Claire Wallon
  */
 public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -80,7 +76,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -96,7 +92,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
             + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
     this.read.setFastqFormat(fastqFormat);
 
-    LOGGER.info("Fastq format: " + fastqFormat);
+    getLogger().info("Fastq format: " + fastqFormat);
 
     // Counter group
     this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -104,7 +100,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("End of setup()");
+    getLogger().info("End of setup()");
   }
 
   //

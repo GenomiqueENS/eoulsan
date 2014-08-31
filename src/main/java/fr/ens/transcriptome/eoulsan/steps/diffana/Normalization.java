@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,7 +35,6 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
@@ -44,7 +44,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -61,9 +60,6 @@ import fr.ens.transcriptome.eoulsan.util.r.RSConnectionNewImpl;
  */
 
 public class Normalization {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   protected static final String TARGET_CREATION = "/targetCreation.Rnw";
   protected static final String NORMALIZATION_FUNCTIONS =
@@ -95,10 +91,10 @@ public class Normalization {
   public void run(final StepContext context) throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
-      LOGGER.info("Normalization : Rserve mode");
+      getLogger().info("Normalization : Rserve mode");
       runRserveRnwScript(context);
     } else {
-      LOGGER.info("Normalization : local mode");
+      getLogger().info("Normalization : local mode");
       runLocalRnwScript(context);
     }
   }
@@ -142,7 +138,7 @@ public class Normalization {
     try {
 
       // print log info
-      LOGGER.info("Rserve server name : " + getRConnection().getServerName());
+      getLogger().info("Rserve server name : " + getRConnection().getServerName());
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
@@ -150,7 +146,7 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        LOGGER.info("Experiment : "
+        getLogger().info("Experiment : "
             + experimentSampleList.get(0).getMetadata().getExperiment());
 
         putExpressionFiles(experimentSampleList);
@@ -201,7 +197,7 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        LOGGER.info("Experiment : "
+        getLogger().info("Experiment : "
             + experimentSampleList.get(0).getMetadata().getExperiment());
 
         String rScript = generateScript(experimentSampleList, context);

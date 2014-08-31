@@ -24,16 +24,16 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -56,9 +56,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 @HadoopOnly
 public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Step name. */
   public static final String STEP_NAME = "_copy_design_params_to_output";
@@ -118,9 +115,9 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
             .write(design);
       }
     } catch (IOException e) {
-      LOGGER.severe("Unable to copy design file to output path.");
+      getLogger().severe("Unable to copy design file to output path.");
     } catch (EoulsanIOException e) {
-      LOGGER.severe("Unable to copy design file to output path.");
+      getLogger().severe("Unable to copy design file to output path.");
     }
 
     // Copy workflow file
@@ -128,7 +125,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
       if (!PathUtils.exists(outputWorkflowPath, conf))
         PathUtils.copy(designPath, outputWorkflowPath, conf);
     } catch (IOException e) {
-      LOGGER.severe("Unable to copy design file to output path.");
+      getLogger().severe("Unable to copy design file to output path.");
     }
 
     return status.createStepResult();

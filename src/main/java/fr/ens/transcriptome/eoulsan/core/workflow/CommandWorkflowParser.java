@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_DATE;
 import static fr.ens.transcriptome.eoulsan.Globals.APP_BUILD_NUMBER;
 import static fr.ens.transcriptome.eoulsan.Globals.APP_NAME_LOWER_CASE;
@@ -37,7 +38,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,7 +50,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -63,9 +62,6 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * @author Laurent Jourdren
  */
 public class CommandWorkflowParser {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Version constant name. */
   public static final String VERSION_CONSTANT_NAME = APP_NAME_LOWER_CASE
@@ -145,7 +141,7 @@ public class CommandWorkflowParser {
    */
   public CommandWorkflowModel parse() throws EoulsanException {
 
-    LOGGER.info("Start parsing the workflow workflow file");
+    getLogger().info("Start parsing the workflow workflow file");
 
     final CommandWorkflowModel result = new CommandWorkflowModel();
     final Document doc;
@@ -259,8 +255,9 @@ public class CommandWorkflowParser {
                     parseParameters(eStepElement, PARAMETERS_TAG_NAME,
                         stepName, true);
 
-                LOGGER.info("In workflow file found "
-                    + stepName + " step (parameters: " + parameters + ").");
+                getLogger().info(
+                    "In workflow file found "
+                        + stepName + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, stepName, inputs, parameters, skip,
                     discardOutput);
 
@@ -279,9 +276,9 @@ public class CommandWorkflowParser {
       }
     }
 
-    LOGGER.info("End of parsing of workflow file");
-    LOGGER.info("Found "
-        + result.getStepIds().size() + " step(s) in workflow file");
+    getLogger().info("End of parsing of workflow file");
+    getLogger().info(
+        "Found " + result.getStepIds().size() + " step(s) in workflow file");
 
     return result;
   }

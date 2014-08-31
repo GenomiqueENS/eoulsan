@@ -24,9 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
@@ -37,9 +35,6 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
  * @author Laurent Jourdren
  */
 public class StepService extends ServiceNameLoader<Step> {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static StepService service;
 
@@ -91,7 +86,7 @@ public class StepService extends ServiceNameLoader<Step> {
 
     for (String stepName : getServiceClasses().keySet()) {
 
-      LOGGER.config("found step: " + stepName + " (" + stepName + ")");
+      getLogger().config("found step: " + stepName + " (" + stepName + ")");
     }
   }
 

@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
@@ -42,9 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaLineParser;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -56,9 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class GenomeDescription {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String PREFIX = "genome.";
   private static final String NAME_PREFIX = PREFIX + "name";
@@ -91,8 +87,9 @@ public class GenomeDescription {
    */
   public void addSequence(final String sequenceName, final long sequenceLength) {
 
-    LOGGER.fine("Add sequence in genome description: "
-        + sequenceName + " with " + sequenceLength + " pb");
+    getLogger().fine(
+        "Add sequence in genome description: "
+            + sequenceName + " with " + sequenceLength + " pb");
 
     this.sequences.put(sequenceName, sequenceLength);
   }
@@ -350,7 +347,7 @@ public class GenomeDescription {
 
     checkNotNull(genomeFastaIs, "The input stream of the genome is null");
 
-    LOGGER.fine("Compute genome description from genome fasta file.");
+    getLogger().fine("Compute genome description from genome fasta file.");
 
     final GenomeDescription result = new GenomeDescription();
     result.setGenomeName(StringUtils.basename(filename));

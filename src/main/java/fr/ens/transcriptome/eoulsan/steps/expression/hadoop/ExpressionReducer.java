@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_CHROMOSOME_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENT_ID_NOT_FOUND_COUNTER;
@@ -31,14 +32,12 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.P
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
@@ -52,9 +51,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Maria Bernard
  */
 public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
   private final TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
@@ -155,16 +151,17 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
 
-      LOGGER.info("Genome index compressed file (from distributed cache): "
-          + localCacheFiles[0]);
+      getLogger().info(
+          "Genome index compressed file (from distributed cache): "
+              + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0].toString());
       tef.load(indexFile);
 
     } catch (IOException e) {
 
-      LOGGER.severe("Error while loading annotation data in Reducer: "
-          + e.getMessage());
+      getLogger().severe(
+          "Error while loading annotation data in Reducer: " + e.getMessage());
     }
 
   }

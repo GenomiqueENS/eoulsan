@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +33,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -49,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public final class Common {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /**
    * Write log data.
@@ -106,7 +104,7 @@ public final class Common {
    */
   public static void showAndLogErrorMessage(final String message) {
 
-    LOGGER.severe(message);
+    getLogger().severe(message);
     System.err.println(message);
   }
 
@@ -140,7 +138,7 @@ public final class Common {
       final boolean logMessage) {
 
     if (logMessage) {
-      LOGGER.severe(message);
+      getLogger().severe(message);
     }
 
     System.err.println("\n=== " + Globals.APP_NAME + " Error ===");
@@ -189,12 +187,12 @@ public final class Common {
       return;
 
     if (!properties.containsKey("mail.smtp.host")) {
-      LOGGER.warning("No SMTP server set");
+      getLogger().warning("No SMTP server set");
       return;
     }
 
     if (userMail == null) {
-      LOGGER.warning("No user mail set");
+      getLogger().warning("No user mail set");
       return;
     }
 
@@ -206,7 +204,7 @@ public final class Common {
 
       // Set message attributes
       msg.setFrom(new InternetAddress(userMail));
-      InternetAddress[] address = {new InternetAddress(userMail)};
+      InternetAddress[] address = { new InternetAddress(userMail) };
       msg.setRecipients(Message.RecipientType.TO, address);
       msg.setSubject(subject);
       msg.setSentDate(new Date());
@@ -219,7 +217,7 @@ public final class Common {
 
     } catch (MessagingException mex) {
 
-      LOGGER.warning("Error while sending mail: " + mex.getMessage());
+      getLogger().warning("Error while sending mail: " + mex.getMessage());
 
       // Prints all nested (chained) exceptions as well
       if (!EoulsanRuntime.isRuntime()

@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.storages;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
@@ -35,10 +36,8 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -51,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  */
 public class SimpleGenomeDescStorage implements GenomeDescStorage {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String INDEX_FILENAME = "genomes_desc_storage.txt";
 
@@ -242,7 +238,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     try {
       return GenomeDescription.load(entry.file.open());
     } catch (IOException e) {
-      LOGGER.warning("Cannot read genome description file: " + e.getMessage());
+      getLogger().warning(
+          "Cannot read genome description file: " + e.getMessage());
       return null;
     }
   }
@@ -273,12 +270,13 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
       genomeDesc.save(entry.file.create());
       this.entries.put(entry.getKey(), entry);
       save();
-      LOGGER.info("Successully added "
-          + entry.genomeName
-          + " genome description to genome description storage.");
+      getLogger().info(
+          "Successully added "
+              + entry.genomeName
+              + " genome description to genome description storage.");
     } catch (IOException e) {
-      LOGGER
-          .warning("Cannot add genome description file to genome description storage: "
+      getLogger().warning(
+          "Cannot add genome description file to genome description storage: "
               + e.getMessage());
     }
 
@@ -321,8 +319,9 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     this.dir = dir;
     load();
 
-    LOGGER.info("Genome description storage found. "
-        + this.entries.size() + " entries in : " + dir.getSource());
+    getLogger().info(
+        "Genome description storage found. "
+            + this.entries.size() + " entries in : " + dir.getSource());
   }
 
 }

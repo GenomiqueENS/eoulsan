@@ -25,8 +25,7 @@
 package fr.ens.transcriptome.eoulsan.util.cloud;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.logging.Logger;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
@@ -46,7 +45,6 @@ import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
 import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
 import com.amazonaws.services.elasticmapreduce.util.StepFactory;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**
  * This class define an AWS Elastic MapReduce job.
@@ -54,9 +52,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
  * @author Laurent Jourdren
  */
 public class AWSElasticMapReduceJob {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final int MAX_FAIL_COUNT = 5;
 
@@ -482,7 +477,7 @@ public class AWSElasticMapReduceJob {
         } catch (AmazonClientException ace) {
 
           failCount++;
-          LOGGER.warning("Amazon client exception: " + ace.getMessage());
+          getLogger().warning("Amazon client exception: " + ace.getMessage());
 
           if (failCount >= MAX_FAIL_COUNT) {
             throw ace;
@@ -492,8 +487,9 @@ public class AWSElasticMapReduceJob {
 
         if (lastState == null || !lastState.equals(state)) {
 
-          LOGGER.info("State of the job "
-              + this.runFlowResult.getJobFlowId() + ": " + state);
+          getLogger().info(
+              "State of the job "
+                  + this.runFlowResult.getJobFlowId() + ": " + state);
           lastState = state;
         }
 
@@ -504,8 +500,8 @@ public class AWSElasticMapReduceJob {
       return state;
 
     } catch (InterruptedException e) {
-      LOGGER.warning("Error while waiting AWS Elastic MapReduce Job: "
-          + e.getMessage());
+      getLogger().warning(
+          "Error while waiting AWS Elastic MapReduce Job: " + e.getMessage());
     }
 
     return null;

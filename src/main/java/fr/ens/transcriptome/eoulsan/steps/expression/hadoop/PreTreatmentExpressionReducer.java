@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFormatException;
@@ -42,7 +42,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
@@ -57,9 +56,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 public class PreTreatmentExpressionReducer extends
     Reducer<Text, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
   private Text outKey = new Text();
@@ -128,8 +124,9 @@ public class PreTreatmentExpressionReducer extends
       } catch (SAMFormatException e) {
         context.getCounter(this.counterGroup,
             INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-        LOGGER.info("Invalid SAM output entry: "
-            + e.getMessage() + " line='" + stringRecord + "'");
+        getLogger().info(
+            "Invalid SAM output entry: "
+                + e.getMessage() + " line='" + stringRecord + "'");
         return;
       }
 

@@ -24,12 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -39,9 +39,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Laurent Jourdren
  */
 public class AWSExecAction extends AbstractAction {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Name of this action. */
   public static final String ACTION_NAME = "awsexec";
@@ -67,9 +64,10 @@ public class AWSExecAction extends AbstractAction {
   @Override
   public void action(final List<String> arguments) {
 
-    LOGGER.severe("The \""
-        + getName() + "\" action has been renamed to \""
-        + EMRExecAction.ACTION_NAME + "\".");
+    getLogger().severe(
+        "The \""
+            + getName() + "\" action has been renamed to \""
+            + EMRExecAction.ACTION_NAME + "\".");
 
     System.err.println("The \""
         + getName() + "\" action has been renamed to \""

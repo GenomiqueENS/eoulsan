@@ -27,10 +27,10 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
@@ -285,7 +285,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);
       } catch (InterruptedException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
+        getLogger().severe(e.getMessage());
       }
     }
   }

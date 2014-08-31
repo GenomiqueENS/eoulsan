@@ -24,14 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 
 /**
  * This class define a linux info file parser.
@@ -39,9 +39,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
  * @author Laurent Jourdren
  */
 public abstract class LinuxInfo {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private Map<String, String> map = Maps.newHashMap();
 
@@ -72,8 +69,8 @@ public abstract class LinuxInfo {
       br.close();
     } catch (IOException e) {
 
-      LOGGER
-          .warning("unable to parse " + getInfoFile() + ": " + e.getMessage());
+      getLogger().warning(
+          "unable to parse " + getInfoFile() + ": " + e.getMessage());
     }
   }
 

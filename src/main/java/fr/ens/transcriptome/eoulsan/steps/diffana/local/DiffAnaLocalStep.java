@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.DIFFANA_RESULTS_TSV;
@@ -31,10 +32,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_T
 
 import java.io.File;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -70,9 +69,6 @@ public class DiffAnaLocalStep extends AbstractStep {
       "disp.est.sharing.mode";
 
   private static final String STEP_NAME = "diffana";
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // parameters and there default values
   private DispersionMethod dispEstMethod = DispersionMethod.POOLED;
@@ -183,14 +179,17 @@ public class DiffAnaLocalStep extends AbstractStep {
     }
 
     // Log Step parameters
-    LOGGER.info("In "
-        + getName() + ", dispersion estimation method="
-        + this.dispEstMethod.getName());
-    LOGGER.info("In "
-        + getName() + ", dispersion estimation sharing mode="
-        + this.dispEstSharingMode.getName());
-    LOGGER.info("In "
-        + getName() + ", dispersion estimation fit type="
-        + this.dispEstFitType.getName());
+    getLogger().info(
+        "In "
+            + getName() + ", dispersion estimation method="
+            + this.dispEstMethod.getName());
+    getLogger().info(
+        "In "
+            + getName() + ", dispersion estimation sharing mode="
+            + this.dispEstSharingMode.getName());
+    getLogger().info(
+        "In "
+            + getName() + ", dispersion estimation fit type="
+            + this.dispEstFitType.getName());
   }
 }

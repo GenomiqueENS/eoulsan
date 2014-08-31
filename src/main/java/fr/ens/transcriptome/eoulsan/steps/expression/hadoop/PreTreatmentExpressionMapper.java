@@ -24,8 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
@@ -33,7 +34,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -46,9 +46,6 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  */
 public class PreTreatmentExpressionMapper extends
     Mapper<LongWritable, Text, Text, Text> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
 
@@ -65,7 +62,7 @@ public class PreTreatmentExpressionMapper extends
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -81,7 +78,7 @@ public class PreTreatmentExpressionMapper extends
       throw new IOException("No counter group defined");
     }
 
-    LOGGER.info("End of setup()");
+    getLogger().info("End of setup()");
   }
 
   //

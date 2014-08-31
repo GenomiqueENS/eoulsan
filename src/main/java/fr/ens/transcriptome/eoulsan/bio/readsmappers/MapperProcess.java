@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,12 +36,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -50,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  * @since 1.3
  */
 public abstract class MapperProcess {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   private final String mapperName;
   private final boolean inputFileMode;
@@ -159,7 +156,7 @@ public abstract class MapperProcess {
 
       this.os.close();
       try {
-        LOGGER.fine("End of writing temporary file for mapper");
+        getLogger().fine("End of writing temporary file for mapper");
         startProcess();
       } catch (InterruptedException e) {
         throw new IOException(e.getMessage());
@@ -217,7 +214,7 @@ public abstract class MapperProcess {
       try {
         final int exitValue = process.waitFor();
 
-        LOGGER.fine("End of process with " + exitValue + " exit value");
+        getLogger().fine("End of process with " + exitValue + " exit value");
 
         if (exitValue != 0)
           throw new IOException("Bad error result for "
@@ -546,15 +543,16 @@ public abstract class MapperProcess {
       if (executionDirectory() != null)
         builder.directory(executionDirectory());
 
-      LOGGER.info("Process command: " + Joiner.on(' ').join(builder.command()));
-      LOGGER.info("Process directory: " + builder.directory());
+      getLogger().info(
+          "Process command: " + Joiner.on(' ').join(builder.command()));
+      getLogger().info("Process directory: " + builder.directory());
 
       // Start command
       this.process = builder.start();
 
       if (i < cmds.size() - 1) {
         final int exitValue = this.process.waitFor();
-        LOGGER.fine("End of process with " + exitValue + " exit value");
+        getLogger().fine("End of process with " + exitValue + " exit value");
 
         if (exitValue != 0)
           throw new IOException("Bad error result for "
@@ -576,7 +574,7 @@ public abstract class MapperProcess {
   public void waitFor() throws InterruptedException, IOException {
 
     final int exitValue = process.waitFor();
-    LOGGER.fine("End of process with " + exitValue + " exit value");
+    getLogger().fine("End of process with " + exitValue + " exit value");
 
     if (exitValue != 0)
       throw new IOException("Bad error result for "

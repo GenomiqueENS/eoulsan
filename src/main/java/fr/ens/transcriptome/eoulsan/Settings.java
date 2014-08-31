@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +35,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -47,9 +48,6 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public final class Settings implements Serializable {
 
   private static final long serialVersionUID = -7897805708866950402L;
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String MAIN_PREFIX_KEY = "main.";
   private final Properties properties = new Properties();
@@ -889,7 +887,7 @@ public final class Settings implements Serializable {
     if (confFile.exists()) {
       loadSettings(confFile);
     } else {
-      LOGGER.config("No configuration file found.");
+      getLogger().config("No configuration file found.");
     }
   }
 
@@ -902,7 +900,7 @@ public final class Settings implements Serializable {
   public void loadSettings(final File file) throws IOException,
       EoulsanException {
 
-    LOGGER.info("Load configuration file: " + file.getAbsolutePath());
+    getLogger().info("Load configuration file: " + file.getAbsolutePath());
     final InputStream is = FileUtils.createInputStream(file);
 
     this.properties.load(FileUtils.createInputStream(file));
@@ -943,8 +941,8 @@ public final class Settings implements Serializable {
 
   private void init() {
 
-    LOGGER.info("System temp directory: "
-        + System.getProperty("java.io.tmpdir"));
+    getLogger().info(
+        "System temp directory: " + System.getProperty("java.io.tmpdir"));
     setTempDirectory(System.getProperty("java.io.tmpdir"));
   }
 
@@ -964,9 +962,9 @@ public final class Settings implements Serializable {
   private void logSetting(final String key) {
 
     if (OBFUSCATED_KEYS.contains(key))
-      LOGGER.info("Setting: " + key + "=xxxx value not shown xxxx");
+      getLogger().info("Setting: " + key + "=xxxx value not shown xxxx");
     else
-      LOGGER.info("Setting: " + key + "=" + properties.getProperty(key));
+      getLogger().info("Setting: " + key + "=" + properties.getProperty(key));
   }
 
   /**

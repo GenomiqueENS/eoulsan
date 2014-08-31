@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
-import java.util.Set;
-import java.util.logging.Logger;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import java.util.Set;
+
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -44,8 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @HadoopCompatible
 public class FakeStep extends AbstractStep {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
+  
 
   @Override
   public String getName() {
@@ -68,7 +67,7 @@ public class FakeStep extends AbstractStep {
   public void configure(Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters)
-      LOGGER.info("s: " + p.getName() + "\t" + p.getStringValue());
+      getLogger().info("s: " + p.getName() + "\t" + p.getStringValue());
 
   }
 

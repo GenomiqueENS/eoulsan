@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -31,10 +32,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
@@ -66,9 +65,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private static final String STRANDED_PARAMETER_NAME = "stranded";
 
   private static final String COUNTER_PARAMETER_NAME = "counter";
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
@@ -260,9 +256,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();
 
     // Log Step parameters
-    LOGGER.info("In "
+    getLogger().info("In "
         + getName() + ", counter=" + this.counter.getCounterName());
-    LOGGER.info("In "
+    getLogger().info("In "
         + getName() + ", stranded=" + this.stranded + ", overlapmode="
         + this.overlapmode);
   }

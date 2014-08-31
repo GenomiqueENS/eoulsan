@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.Sequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastaWriter;
@@ -56,9 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 public class GFFFastaGeneratorStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   public String getName() {
@@ -103,8 +99,8 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       // Get the output DataFile
       final DataFile genomeDataFile = outData.getDataFile();
 
-      LOGGER.info("Input annotation file: " + annotationDataFile);
-      LOGGER.info("Output genome file: " + genomeDataFile);
+      getLogger().info("Input annotation file: " + annotationDataFile);
+      getLogger().info("Output genome file: " + genomeDataFile);
 
       final SequenceReader reader =
           new GFFFastaReader(annotationDataFile.open());

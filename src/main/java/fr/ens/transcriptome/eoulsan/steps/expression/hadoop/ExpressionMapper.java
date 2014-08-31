@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
@@ -36,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFormatException;
@@ -52,7 +52,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
@@ -72,9 +71,6 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   // Parameters keys
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".expression.genome.desc.file";
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String counterGroup;
 
@@ -110,8 +106,9 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      LOGGER.info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + line + "'");
+      getLogger().info(
+          "Invalid SAM output entry: "
+              + e.getMessage() + " line='" + line + "'");
       return;
     }
 
@@ -173,8 +170,9 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
 
-      LOGGER.info("Genome index compressed file (from distributed cache): "
-          + localCacheFiles[0]);
+      getLogger().info(
+          "Genome index compressed file (from distributed cache): "
+              + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0].toString());
       tef.load(indexFile);
@@ -202,8 +200,8 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
           SAMUtils.newSAMSequenceDictionary(genomeDescription));
 
     } catch (IOException e) {
-      LOGGER.severe("Error while loading annotation data in Mapper: "
-          + e.getMessage());
+      getLogger().severe(
+          "Error while loading annotation data in Mapper: " + e.getMessage());
     }
 
   }

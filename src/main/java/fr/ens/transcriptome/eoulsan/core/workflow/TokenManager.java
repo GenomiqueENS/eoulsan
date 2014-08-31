@@ -50,7 +50,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
@@ -610,7 +609,7 @@ public class TokenManager implements Runnable {
       try {
         Thread.sleep(CHECKING_DELAY_MS);
       } catch (InterruptedException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
+        getLogger().severe(e.getMessage());
       }
 
       // Do nothing until the step is not ready

@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep.DATAFORMATS_TO_DOWNLOAD_SETTING;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
@@ -53,9 +52,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @HadoopCompatible
 public class DefineDataFormatToDownload extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   protected static final String STEP_NAME = "defineformatstodownload";
 
@@ -139,7 +135,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     final String formats = sb.toString();
 
-    LOGGER.info("Format to download: " + formats);
+    getLogger().info("Format to download: " + formats);
 
     // Save the list of the DataFormat to download in the settings
     final Settings settings = context.getRuntime().getSettings();

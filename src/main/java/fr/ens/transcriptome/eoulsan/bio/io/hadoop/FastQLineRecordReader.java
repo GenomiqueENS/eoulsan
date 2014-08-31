@@ -42,8 +42,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -59,13 +60,10 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.util.LineReader;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-
 /**
  * Treats keys as offset in file and value as line.
  */
 public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private CompressionCodecFactory compressionCodecs = null;
   private long start;
@@ -138,8 +136,8 @@ public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
       }
 
       // line too long. try again
-      LOGGER.info("Skipped line of size "
-          + newSize + " at pos " + (pos - newSize));
+      getLogger().info(
+          "Skipped line of size " + newSize + " at pos " + (pos - newSize));
     }
     if (newSize == 0) {
       key = null;

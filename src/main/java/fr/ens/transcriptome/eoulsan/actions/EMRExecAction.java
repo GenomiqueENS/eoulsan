@@ -25,11 +25,11 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -43,7 +43,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
@@ -62,9 +61,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  */
 public class EMRExecAction extends AbstractAction {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Action name. */
   static final String ACTION_NAME = "emrexec";
@@ -188,8 +184,8 @@ public class EMRExecAction extends AbstractAction {
     checkNotNull(designFile, "designFile is null");
     checkNotNull(s3Path, "s3Path is null");
 
-    LOGGER.info("Parameter file: " + workflowFile);
-    LOGGER.info("Design file: " + designFile);
+    getLogger().info("Parameter file: " + workflowFile);
+    getLogger().info("Design file: " + designFile);
 
     final String desc;
 

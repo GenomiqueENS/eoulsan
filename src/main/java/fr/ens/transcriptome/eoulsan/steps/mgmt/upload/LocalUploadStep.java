@@ -24,15 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.BZIP2;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.removeCompressionExtension;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.compressionExtension;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
@@ -50,8 +49,6 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 @LocalOnly
 public class LocalUploadStep extends UploadStep {
 
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file)
@@ -114,7 +111,7 @@ public class LocalUploadStep extends UploadStep {
         continue;
       }
 
-      LOGGER.info("Convert " + src + " to " + dest);
+      getLogger().info("Convert " + src + " to " + dest);
       new DataFormatConverter(src, dest).convert();
     }
 

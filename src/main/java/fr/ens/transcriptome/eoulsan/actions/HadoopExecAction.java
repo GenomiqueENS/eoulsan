@@ -25,11 +25,11 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -42,7 +42,6 @@ import org.apache.commons.cli.ParseException;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -54,9 +53,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
  * @author Laurent Jourdren
  */
 public class HadoopExecAction extends AbstractAction {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Name of this action. */
   public static final String ACTION_NAME = "hadoopexec";
@@ -191,7 +187,7 @@ public class HadoopExecAction extends AbstractAction {
 
       File repackagedJarFile = HadoopJarRepackager.repack();
 
-      LOGGER.info("Launch Eoulsan in Hadoop mode.");
+      getLogger().info("Launch Eoulsan in Hadoop mode.");
 
       // Create command line
       final List<String> argsList = Lists.newArrayList();

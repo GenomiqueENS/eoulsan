@@ -24,11 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -39,7 +40,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -65,9 +65,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 @HadoopOnly
 public class HDFSDataDownloadStep extends AbstractStep {
-
-  // Logger
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /**
    * Key in the settings to use to save the list of DataFormat of the files to
@@ -124,10 +121,11 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return status.createStepResult();
     }
 
-    LOGGER.info("Start copying results.");
-    LOGGER.info("inpath="
-        + context.getHadoopWorkingPathname() + "\toutpath="
-        + context.getOutputPathname());
+    getLogger().info("Start copying results.");
+    getLogger().info(
+        "inpath="
+            + context.getHadoopWorkingPathname() + "\toutpath="
+            + context.getOutputPathname());
 
     final Configuration conf = this.conf;
 
@@ -176,7 +174,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
           for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 
             // Copy the file
-            LOGGER.info("Copy " + e.getKey() + " to " + e.getValue());
+            getLogger().info("Copy " + e.getKey() + " to " + e.getValue());
             new DataFormatConverter(e.getKey(), e.getValue()).convert();
           }
 
@@ -214,7 +212,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
           // Remove job path directory
           final FileSystem fs = jobPath.getFileSystem(conf);
           if (!fs.delete(jobPath, true)) {
-            LOGGER.warning("Cannot remove DataFileDistCp job path: " + jobPath);
+            getLogger().warning(
+                "Cannot remove DataFileDistCp job path: " + jobPath);
           }
 
           // Copy files to destination

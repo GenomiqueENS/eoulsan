@@ -25,15 +25,14 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel;
@@ -51,9 +50,6 @@ import fr.ens.transcriptome.eoulsan.ui.UIService;
  * @author Laurent Jourdren
  */
 public class Executor {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private final ExecutorArguments arguments;
   private final CommandWorkflowModel command;
@@ -78,8 +74,8 @@ public class Executor {
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
 
-    LOGGER.info("Found "
-        + this.design.getSampleCount() + " sample(s) in design file");
+    getLogger().info(
+        "Found " + this.design.getSampleCount() + " sample(s) in design file");
   }
 
   //
@@ -134,7 +130,8 @@ public class Executor {
     // Enable listen workflow events by ui
     WorkflowStepObserverRegistry.getInstance().addObserver(ui);
 
-    LOGGER.info("Start analysis at " + new Date(System.currentTimeMillis()));
+    getLogger().info(
+        "Start analysis at " + new Date(System.currentTimeMillis()));
 
     // Execute Workflow
     workflow.execute();
@@ -184,21 +181,21 @@ public class Executor {
   private static void logInfo(ExecutorArguments execArgs,
       final CommandWorkflowModel command) {
 
-    LOGGER.info("Design file path: " + execArgs.getDesignPathname());
-    LOGGER.info("Workflow file path: " + execArgs.getWorkflowPathname());
+    getLogger().info("Design file path: " + execArgs.getDesignPathname());
+    getLogger().info("Workflow file path: " + execArgs.getWorkflowPathname());
 
-    LOGGER.info("Workflow Author: " + command.getAuthor());
-    LOGGER.info("Workflow Description: " + command.getDescription());
-    LOGGER.info("Workflow Name: " + command.getName());
+    getLogger().info("Workflow Author: " + command.getAuthor());
+    getLogger().info("Workflow Description: " + command.getDescription());
+    getLogger().info("Workflow Name: " + command.getName());
 
-    LOGGER.info("Job Id: " + execArgs.getJobId());
-    LOGGER.info("Job UUID: " + execArgs.getJobUUID());
-    LOGGER.info("Job Description: " + execArgs.getJobDescription());
-    LOGGER.info("Job Environment: " + execArgs.getJobEnvironment());
+    getLogger().info("Job Id: " + execArgs.getJobId());
+    getLogger().info("Job UUID: " + execArgs.getJobUUID());
+    getLogger().info("Job Description: " + execArgs.getJobDescription());
+    getLogger().info("Job Environment: " + execArgs.getJobEnvironment());
 
-    LOGGER.info("Job Base path: " + execArgs.getLocalWorkingPathname());
-    LOGGER.info("Job Output path: " + execArgs.getOutputPathname());
-    LOGGER.info("Job Log path: " + execArgs.getLogPathname());
+    getLogger().info("Job Base path: " + execArgs.getLocalWorkingPathname());
+    getLogger().info("Job Output path: " + execArgs.getOutputPathname());
+    getLogger().info("Job Log path: " + execArgs.getLogPathname());
   }
 
   private static Design loadDesign(final ExecutorArguments arguments)
@@ -207,7 +204,7 @@ public class Executor {
     try {
 
       // Load design
-      LOGGER.info("Read design file");
+      getLogger().info("Read design file");
 
       // Get input stream of design file from arguments object
       final InputStream is = arguments.openDesignFile();

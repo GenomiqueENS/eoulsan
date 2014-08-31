@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.ELIMINATED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER;
@@ -41,7 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFormatException;
@@ -56,7 +56,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -75,9 +74,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @author Claire Wallon
  */
 public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   // Parameters keys
   static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
@@ -103,7 +99,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
   public void setup(final Context context) throws IOException,
       InterruptedException {
 
-    LOGGER.info("Start of configure()");
+    getLogger().info("Start of configure()");
 
     try {
 
@@ -118,8 +114,9 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
 
-      LOGGER.info("Genome index compressed file (from distributed cache): "
-          + localCacheFiles[0]);
+      getLogger().info(
+          "Genome index compressed file (from distributed cache): "
+              + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0].toString());
       this.features.load(indexFile);
@@ -159,11 +156,11 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
       this.removeAmbiguousCases = conf.getBoolean(REMOVE_AMBIGUOUS_CASES, true);
 
     } catch (IOException e) {
-      LOGGER.severe("Error while loading annotation data in Mapper: "
-          + e.getMessage());
+      getLogger().severe(
+          "Error while loading annotation data in Mapper: " + e.getMessage());
     }
 
-    LOGGER.info("End of configure()");
+    getLogger().info("End of configure()");
   }
 
   /**
@@ -323,15 +320,17 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      LOGGER.info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + line + "'");
+      getLogger().info(
+          "Invalid SAM output entry: "
+              + e.getMessage() + " line='" + line + "'");
       return;
     } catch (EoulsanException e) {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      LOGGER.info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + line + "'");
+      getLogger().info(
+          "Invalid SAM output entry: "
+              + e.getMessage() + " line='" + line + "'");
       return;
     }
 

@@ -24,11 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsCreator;
@@ -43,9 +43,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Claire Wallon
  */
 public class EoulsanCounter extends AbstractExpressionCounter {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /** Counter name. */
   public static final String COUNTER_NAME = "eoulsanCounter";
@@ -89,8 +86,9 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
     // Remove expression Temp file
     if (!expressionTmpFile.delete())
-      LOGGER.warning("Can not delete expression temporary file: "
-          + expressionTmpFile.getAbsolutePath());
+      getLogger().warning(
+          "Can not delete expression temporary file: "
+              + expressionTmpFile.getAbsolutePath());
 
     // } catch (BadBioEntryException e) {
     // exit("Invalid annotation entry: " + e.getEntry());

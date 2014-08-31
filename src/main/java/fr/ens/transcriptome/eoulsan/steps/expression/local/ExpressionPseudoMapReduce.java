@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.local;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_CHROMOSOME_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
@@ -43,7 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.sf.samtools.SAMException;
 import net.sf.samtools.SAMLineParser;
@@ -51,7 +51,6 @@ import net.sf.samtools.SAMRecord;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
@@ -74,8 +73,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private TranscriptAndExonFinder tef;
   private final String counterGroup;
@@ -113,7 +110,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
       reporter.incrCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName(), 1);
-      LOGGER.info("Invalid SAM output entry: "
+      getLogger().info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + value + "'");
       return;
     }

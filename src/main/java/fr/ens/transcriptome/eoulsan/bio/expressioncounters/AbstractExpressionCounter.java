@@ -24,14 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -43,9 +42,6 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Claire Wallon
  */
 public abstract class AbstractExpressionCounter implements ExpressionCounter {
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private String genomicType;
   private String attributeId;
@@ -146,7 +142,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
       final DataFile genomeDescFile) throws IOException, EoulsanException,
       BadBioEntryException {
 
-    LOGGER.fine("Counting with " + getCounterName());
+    getLogger().fine("Counting with " + getCounterName());
 
     checkNotNull(alignmentFile, "alignmentFile is null");
     checkNotNull(annotationFile, "annotationFile is null");

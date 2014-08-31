@@ -24,13 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.rosuda.REngine.REngineException;
 
@@ -38,7 +39,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -51,9 +51,6 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Vivien Deshaies
  */
 public class DiffAna extends Normalization {
-
-  /** Logger. */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   private static final String DISPERSION_ESTIMATION =
       "/dispersionEstimation.Rnw";
@@ -234,10 +231,10 @@ public class DiffAna extends Normalization {
   public void run(final StepContext context) throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
-      LOGGER.info("Differential analysis : Rserve mode");
+      getLogger().info("Differential analysis : Rserve mode");
       runRserveRnwScript(context);
     } else {
-      LOGGER.info("Differential analysis : local mode");
+      getLogger().info("Differential analysis : local mode");
       runLocalRnwScript(context);
     }
   }

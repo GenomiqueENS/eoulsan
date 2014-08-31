@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import com.google.common.base.Preconditions;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -48,9 +48,6 @@ public final class GenomeMapperIndexer {
 
   private final SequenceReadsMapper mapper;
   private final GenomeIndexStorage storage;
-
-  /** Logger */
-  private static final Logger LOGGER = EoulsanLogger.getLogger();
 
   /**
    * Create an archived genome index.
@@ -72,7 +69,7 @@ public final class GenomeMapperIndexer {
 
     // If no index storage or if the index does not already exists compute it
     if (precomputedIndexDataFile == null) {
-      LOGGER.info("Genome index not found, must compute it.");
+      getLogger().info("Genome index not found, must compute it.");
       computeIndex(genomeDataFile, mapperIndexDataFile);
       if (storage != null)
         storage.put(this.mapper, genomeDescription, mapperIndexDataFile);
@@ -104,15 +101,16 @@ public final class GenomeMapperIndexer {
       this.mapper.makeArchiveIndex(genome.open(), outputFile);
     }
 
-    LOGGER.info("mapperIndexDataFile: " + mapperIndex);
+    getLogger().info("mapperIndexDataFile: " + mapperIndex);
 
     if (!mapperIndex.isLocalFile()) {
 
       new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndex);
 
       if (!outputFile.delete()) {
-        LOGGER.severe("Unbable to delete temporary "
-            + this.mapper.getMapperName() + " archive index.");
+        getLogger().severe(
+            "Unbable to delete temporary "
+                + this.mapper.getMapperName() + " archive index.");
       }
 
     }
