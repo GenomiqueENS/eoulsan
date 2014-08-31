@@ -41,23 +41,34 @@ public class EoulsanLogger {
   private static Map<String, Logger> threadGroupLoggers =
       new HashMap<String, Logger>();
 
+  private static Logger logger;
+
   /**
    * Get the logger object.
    * @return a logger object for Eoulsan
    */
   public static Logger getLogger() {
 
-    ThreadGroup tg = Thread.currentThread().getThreadGroup();
+    // Search Thread logger only if thread logger has been registered
+    if (!threadGroupLoggers.isEmpty()) {
 
-    do {
+      ThreadGroup tg = Thread.currentThread().getThreadGroup();
+      do {
 
-      if (threadGroupLoggers.containsKey(tg.getName()))
-        return threadGroupLoggers.get(tg.getName());
+        if (threadGroupLoggers.containsKey(tg.getName()))
+          return threadGroupLoggers.get(tg.getName());
 
-      tg = tg.getParent();
-    } while (tg != null);
+        tg = tg.getParent();
+      } while (tg != null);
+    }
 
-    return Logger.getLogger(loggerName);
+    // Keep a reference of the Logger to avoid disappearance of the Handlers.
+    // LogManager only keeps weak references to the Loggers it creates.
+    if (logger == null) {
+      logger = Logger.getLogger(loggerName);
+    }
+
+    return logger;
   }
 
   /**
@@ -70,6 +81,7 @@ public class EoulsanLogger {
       throw new NullPointerException("New logger name is null");
 
     loggerName = newLoggerName;
+    logger = null;
   }
 
   /**
