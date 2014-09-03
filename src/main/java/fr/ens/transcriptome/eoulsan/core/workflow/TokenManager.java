@@ -60,7 +60,6 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -212,16 +211,7 @@ public class TokenManager implements Runnable {
     for (Data e : data.getListElements()) {
 
       // Get the sample id from metadata
-      int sampleId = -1;
-      if (e.getMetadata().containsKey(Design.SAMPLE_NUMBER_FIELD)) {
-
-        try {
-          sampleId =
-              Integer.parseInt(e.getMetadata().get(Design.SAMPLE_NUMBER_FIELD));
-        } catch (NumberFormatException exp) {
-          // Do nothing
-        }
-      }
+      final int sampleId = e.getMetadata().getSampleId();
 
       // For all data
       for (DataFile f : DataUtils.getDataFiles(e)) {

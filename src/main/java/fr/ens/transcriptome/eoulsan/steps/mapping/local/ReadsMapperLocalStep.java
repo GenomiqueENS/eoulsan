@@ -29,7 +29,6 @@ import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELI
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -128,14 +127,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final File samFile = outData.getDataFile().toFile();
 
       // Get FASTQ format
-      // TODO create a DataMetaData class that contains standard methods like
-      // SampleMeData
-      FastqFormat fastqFormat =
-          FastqFormat.getFormatFromName(inData.getMetadata().get(
-              FASTQ_FORMAT_FIELD));
-      if (fastqFormat == null) {
-        fastqFormat = FastqFormat.FASTQ_SANGER;
-      }
+      final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // Initialize the mapper
       final SequenceReadsMapper mapper =

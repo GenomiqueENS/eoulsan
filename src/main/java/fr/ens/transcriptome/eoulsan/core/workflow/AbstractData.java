@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractData implements Data, Serializable {
+abstract class AbstractData implements Data, Serializable {
 
   private static final long serialVersionUID = 2363270050921101143L;
 

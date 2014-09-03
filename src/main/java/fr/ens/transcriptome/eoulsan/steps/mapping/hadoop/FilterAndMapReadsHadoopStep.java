@@ -171,9 +171,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Set reads filter fastq format
-    // TODO implements metadata for design values
-    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, ""
-        + readsData.getMetadata().get("fastq.format"));
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, readsData.getMetadata()
+        .getFastqFormat().getName());
 
     // Set read filters parameters
     addParametersToJobConf(getReadFilterParameters(),
@@ -210,8 +209,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     }
 
     // Set Mapper fastq format
-    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, ""
-        + readsData.getMetadata().get("fastq.format"));
+    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, readsData.getMetadata()
+        .getFastqFormat().getName());
 
     //
     // Alignment filtering
@@ -304,9 +303,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
 
     // Set fastq format
-    // TODO Use metadata
     jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, readsData.getMetadata()
-        .get("fastq.format"));
+        .getFastqFormat().getName());
 
     // Set Job name
     // Create the job and its name

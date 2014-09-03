@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This interface define data used by ports.
@@ -56,7 +55,7 @@ public interface Data {
    * Get metadata about the data.
    * @return a map with the metadata entries
    */
-  Map<String, String> getMetadata();
+  DataMetadata getMetadata();
 
   //
   // List methods

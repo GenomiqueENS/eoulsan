@@ -29,17 +29,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 
 /**
  * This class define a data element.
@@ -50,7 +49,7 @@ class DataElement extends AbstractData implements Serializable {
 
   private static final long serialVersionUID = -8982205120365590676L;
 
-  private final Map<String, String> metadata = Maps.newHashMap();
+  private final DataMetadata metadata = new SimpleDataMetaData();
   protected final List<DataFile> files;
 
   // Field required for multi-files Data creation
@@ -95,21 +94,8 @@ class DataElement extends AbstractData implements Serializable {
   }
 
   @Override
-  public Map<String, String> getMetadata() {
+  public DataMetadata getMetadata() {
     return this.metadata;
-  }
-
-  /**
-   * Set a metadata.
-   * @param key key of the metadata
-   * @param value value of the metadata
-   */
-  protected void setMetadata(final String key, final String value) {
-
-    if (key == null || value == null)
-      return;
-
-    this.metadata.put(key, value);
   }
 
   @Override

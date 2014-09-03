@@ -697,9 +697,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Create the list of paired-end jobs to run
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
 
-      // TODO use metadata, this code do not work
-      boolean pairedEnd =
-          Boolean.parseBoolean(alignmentsData.getMetadata().get("paired.end"));
+      // Get the paired end mode
+      boolean pairedEnd = alignmentsData.getMetadata().isPairedEnd();
 
       if (pairedEnd)
         jobsPairedEnd.add(createJobPairedEnd(conf, context, alignmentsData,

@@ -97,9 +97,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       final Data outData = context.getOutputData(READS_TFQ, inData);
 
       // Get FASTQ format
-      // TODO Use metadata
-      final FastqFormat fastqFormat =
-          FastqFormat.valueOf(inData.getMetadata().get("fastq.format"));
+      final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       final List<Job> jobsPairedEnd = new ArrayList<Job>();
       if (inData.getDataFileCount() == 2)

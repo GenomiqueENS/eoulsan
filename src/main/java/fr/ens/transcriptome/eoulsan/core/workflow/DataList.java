@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -35,6 +34,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 
 /**
  * This class define a data list.
@@ -95,8 +95,8 @@ public class DataList extends AbstractData implements Serializable {
   }
 
   @Override
-  public Map<String, String> getMetadata() {
-    return Collections.emptyMap();
+  public DataMetadata getMetadata() {
+    return new UnmodifiableDataMetadata(new SimpleDataMetaData());
   }
 
   @Override

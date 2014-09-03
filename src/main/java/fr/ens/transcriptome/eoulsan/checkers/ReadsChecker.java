@@ -93,14 +93,7 @@ public class ReadsChecker implements Checker {
           "Cannot handle more than 2 reads files at the same time.");
 
     // Get FASTQ format
-    // TODO create a DataMetaData class that contains standard methods like
-    // SampleMeData
-    FastqFormat format =
-        FastqFormat.getFormatFromName(data.getMetadata()
-            .get(FASTQ_FORMAT_FIELD));
-    if (format == null) {
-      format = FastqFormat.FASTQ_SANGER;
-    }
+    final FastqFormat format = data.getMetadata().getFastqFormat();
 
     // Single end mode
     if (inFileCount == 1) {

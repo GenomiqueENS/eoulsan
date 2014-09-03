@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.FileNaming.toValidName;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
@@ -40,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -134,17 +133,17 @@ public final class DataUtils {
     }
 
     // Get the data metadata object
-    final Map<String, String> dataMetadata = data.getMetadata();
+    final DataMetadata dataMetadata = data.getMetadata();
 
     // Set the original sample name and sample id in the metadata
-    dataMetadata.put(Design.NAME_FIELD, sample.getName());
-    dataMetadata.put(Design.SAMPLE_NUMBER_FIELD, "" + sample.getId());
+    dataMetadata.setSampleName(sample.getName());
+    dataMetadata.setSampleId(sample.getId());
 
     // Set the other fields of the design file
     for (String fieldName : sample.getMetadata().getFields()) {
 
       if (!fieldsToNotUse.contains(fieldName)) {
-        dataMetadata.put(fieldName, sample.getMetadata().getField(fieldName));
+        dataMetadata.set(fieldName, sample.getMetadata().getField(fieldName));
       }
     }
   }

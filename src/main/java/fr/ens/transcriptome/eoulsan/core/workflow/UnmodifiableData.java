@@ -24,9 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -34,13 +33,16 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 
 /**
  * This class define an unmodifiable data
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class UnmodifiableData implements Data {
+public class UnmodifiableData implements Data, Serializable {
+
+  private static final long serialVersionUID = -7754468478398255288L;
 
   private final Data data;
 
@@ -61,8 +63,8 @@ public class UnmodifiableData implements Data {
   }
 
   @Override
-  public Map<String, String> getMetadata() {
-    return Collections.unmodifiableMap(this.data.getMetadata());
+  public DataMetadata getMetadata() {
+    return new UnmodifiableDataMetadata(this.data.getMetadata());
   }
 
   @Override

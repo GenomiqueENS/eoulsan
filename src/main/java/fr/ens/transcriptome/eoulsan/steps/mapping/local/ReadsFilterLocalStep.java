@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
@@ -76,14 +75,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       final Data outData = context.getOutputData(READS_FASTQ, inData);
 
       // Get FASTQ format
-      // TODO create a DataMetaData class that contains standard methods like
-      // SampleMeData
-      FastqFormat fastqFormat =
-          FastqFormat.getFormatFromName(inData.getMetadata().get(
-              FASTQ_FORMAT_FIELD));
-      if (fastqFormat == null) {
-        fastqFormat = FastqFormat.FASTQ_SANGER;
-      }
+      final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // get input file count for the sample
       final int inFileCount = inData.getDataFileCount();

@@ -105,9 +105,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, readsData);
 
       // Get FASTQ format
-      // TODO Use metadata
-      final FastqFormat fastqFormat =
-          FastqFormat.valueOf(readsData.getMetadata().get("fastq.format"));
+      final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
 
       // Create the list of jobs to run
       final Map<Job, String> jobs = Maps.newHashMap();
