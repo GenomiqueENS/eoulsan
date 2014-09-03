@@ -205,6 +205,9 @@ public class Normalization {
             "Experiment : "
                 + experimentSampleList.get(0).getMetadata().getExperiment());
 
+        createLinkExpressionFiles(experimentSampleList, data,
+            new File(context.getStepWorkingPathname()));
+
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);
 
@@ -723,6 +726,29 @@ public class Normalization {
 
       // Put file on rserve server
       this.rConnection.putFile(inputFile, outputFilename);
+    }
+
+  }
+
+  /**
+   * Put all expression files needed for the analysis on the R server
+   * @throws REngineException
+   */
+  private void createLinkExpressionFiles(List<Sample> experiment, Data data,
+      File inputDir) throws REngineException {
+
+    for (Data d : data.getListElements()) {
+
+      final int sampleId = d.getMetadata().getSampleId();
+      final File inputFile = d.getDataFile().toFile();
+      final String linkFilename =
+          this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
+      final File linkFile = new File(inputFile.getParentFile(), linkFilename);
+
+      if (!linkFile.exists()) {
+        FileUtils.createSymbolicLink(inputFile, linkFile);
+      }
+
     }
 
   }
