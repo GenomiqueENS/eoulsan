@@ -154,11 +154,14 @@ public class RSConnectionNewImpl implements RSConnection {
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(rconnection, "Unable to put file");
+      throw new REngineException(rconnection, "Unable to put file: "
+          + e.getMessage());
     } catch (FileNotFoundException e) {
-      throw new REngineException(rconnection, "file not found");
+      throw new REngineException(rconnection, "file not found: "
+          + e.getMessage());
     } catch (IOException e) {
-      throw new REngineException(rconnection, "Unable to create report.");
+      throw new REngineException(rconnection, "Unable to create report: "
+          + e.getMessage());
     }
 
   }
