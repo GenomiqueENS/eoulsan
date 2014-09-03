@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.DIFFANA_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -100,7 +101,8 @@ public class DiffAnaLocalStep extends AbstractStep {
 
   @Override
   public InputPorts getInputPorts() {
-    return singleInputPort(EXPRESSION_RESULTS_TSV);
+    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+        true, EXPRESSION_RESULTS_TSV).create();
   }
 
   @Override
@@ -128,7 +130,7 @@ public class DiffAnaLocalStep extends AbstractStep {
               rServeEnable);
 
       // Launch analysis
-      ad.run(context);
+      ad.run(context, context.getInputData(eDF));
 
       // Write log file
       return status.createStepResult();

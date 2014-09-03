@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
-import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
 import java.io.File;
@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -77,7 +78,8 @@ public class NormalizationLocalStep extends AbstractStep {
 
   @Override
   public InputPorts getInputPorts() {
-    return singleInputPort(EXPRESSION_RESULTS_TSV);
+    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+        true, EXPRESSION_RESULTS_TSV).create();
   }
 
   @Override
@@ -98,7 +100,7 @@ public class NormalizationLocalStep extends AbstractStep {
               eDF.getDefaultExtention(), new File("."), rServeName,
               rServeEnable);
 
-      norm.run(context);
+      norm.run(context, context.getInputData(eDF));
 
       // Write log file
       return status.createStepResult();

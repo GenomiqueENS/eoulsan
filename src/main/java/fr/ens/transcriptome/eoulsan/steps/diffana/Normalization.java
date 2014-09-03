@@ -46,6 +46,7 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -88,14 +89,15 @@ public class Normalization {
    * Run normalisation step
    * @throws EoulsanException
    */
-  public void run(final StepContext context) throws EoulsanException {
+  public void run(final StepContext context, final Data data)
+      throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Normalization : Rserve mode");
-      runRserveRnwScript(context);
+      runRserveRnwScript(context, data);
     } else {
       getLogger().info("Normalization : local mode");
-      runLocalRnwScript(context);
+      runLocalRnwScript(context, data);
     }
   }
 
@@ -132,13 +134,14 @@ public class Normalization {
    * run Rnw script on Rserve server
    * @throws EoulsanException
    */
-  protected void runRserveRnwScript(final StepContext context)
+  protected void runRserveRnwScript(final StepContext context, final Data data)
       throws EoulsanException {
 
     try {
 
       // print log info
-      getLogger().info("Rserve server name : " + getRConnection().getServerName());
+      getLogger().info(
+          "Rserve server name : " + getRConnection().getServerName());
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
@@ -146,10 +149,11 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        getLogger().info("Experiment : "
-            + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info(
+            "Experiment : "
+                + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        putExpressionFiles(experimentSampleList);
+        putExpressionFiles(experimentSampleList, data);
 
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, true);
@@ -186,7 +190,7 @@ public class Normalization {
    * run Rnw script on local mode
    * @throws EoulsanException
    */
-  protected void runLocalRnwScript(final StepContext context)
+  protected void runLocalRnwScript(final StepContext context, final Data data)
       throws EoulsanException {
 
     try {
@@ -197,8 +201,9 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        getLogger().info("Experiment : "
-            + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info(
+            "Experiment : "
+                + experimentSampleList.get(0).getMetadata().getExperiment());
 
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);
@@ -706,19 +711,20 @@ public class Normalization {
    * Put all expression files needed for the analysis on the R server
    * @throws REngineException
    */
-  private void putExpressionFiles(List<Sample> experiment)
+  private void putExpressionFiles(List<Sample> experiment, Data data)
       throws REngineException {
 
-    int i;
+    for (Data d : data.getListElements()) {
 
-    for (Sample s : experiment) {
-      i = s.getId();
+      final int sampleId = d.getMetadata().getSampleId();
+      final File inputFile = d.getDataFile().toFile();
+      final String outputFilename =
+          this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
 
       // Put file on rserve server
-      this.rConnection.putFile(new File(expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix),
-          this.expressionFilesPrefix + i + this.expressionFilesSuffix);
+      this.rConnection.putFile(inputFile, outputFilename);
     }
+
   }
 
   /**
