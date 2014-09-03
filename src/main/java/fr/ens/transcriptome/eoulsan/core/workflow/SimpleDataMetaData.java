@@ -100,6 +100,12 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
     return this.map.keySet();
   }
 
+  @Override
+  public String toString() {
+
+    return this.map.toString();
+  }
+
   //
   // Constructor
   //

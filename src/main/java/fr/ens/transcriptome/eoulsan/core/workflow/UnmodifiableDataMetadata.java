@@ -37,6 +37,8 @@ import fr.ens.transcriptome.eoulsan.data.DataMetadata;
  */
 class UnmodifiableDataMetadata extends AbstractDataMetaData {
 
+  private static final long serialVersionUID = 2773004152416176374L;
+
   private final DataMetadata metadata;
 
   @Override
@@ -79,6 +81,12 @@ class UnmodifiableDataMetadata extends AbstractDataMetaData {
   public Set<String> keySet() {
 
     return this.metadata.keySet();
+  }
+
+  @Override
+  public String toString() {
+
+    return this.metadata.toString();
   }
 
   //
