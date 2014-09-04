@@ -453,7 +453,9 @@ public class ITFactory {
       this.applicationPath = getApplicationPath();
 
       // Check if application path exists
-      if (this.applicationPath == null || !this.applicationPath.isDirectory()) {
+      if (this.applicationPath == null
+          || !this.applicationPath.isDirectory()
+          || !this.applicationPath.exists()) {
         throw new EoulsanException("The application path doest not exists"
             + this.applicationPath == null
             ? "" : this.applicationPath.toString());
