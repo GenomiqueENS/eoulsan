@@ -156,7 +156,7 @@ public class IntegrationTestAction extends AbstractAction {
           .errorExit(e, "Error while parse parameter file: " + e.getMessage());
     }
 
-    if (arguments.length != argsOptions) {
+    if (argsOptions == 0 || arguments.length != argsOptions) {
       help(options);
     }
 
