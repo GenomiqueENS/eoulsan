@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
@@ -34,7 +35,6 @@ import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import java.util.Collections;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -286,7 +286,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   protected void registerInputAndOutputPorts(final Step step) {
 
-    Preconditions.checkNotNull(step, "step cannot be null");
+    checkNotNull(step, "step cannot be null");
 
     // Get output ports
     this.outputPortsParameter = step.getOutputPorts();
@@ -307,14 +307,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   protected void addDependency(final WorkflowInputPort inputPort,
       final WorkflowOutputPort outputPort) {
 
-    Preconditions.checkNotNull(inputPort, "inputPort argument cannot be null");
-    Preconditions
-        .checkNotNull(outputPort, "outputPort argument cannot be null");
-    Preconditions
-        .checkArgument(outputPort.getStep() == this,
-            "input port ("
-                + inputPort.getName() + ") is not a port of the step ("
-                + getId() + ")");
+    checkNotNull(inputPort, "inputPort argument cannot be null");
+    checkNotNull(outputPort, "outputPort argument cannot be null");
+    checkArgument(outputPort.getStep() == this,
+        "input port ("
+            + inputPort.getName() + ") is not a port of the step ("
+            + getId() + ")");
 
     // Set the link
     inputPort.setLink(outputPort);
@@ -355,6 +353,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private static DataFile defineWorkingDirectory(
       final AbstractWorkflow workflow, final Step step,
       final boolean copyResultsToOutput) {
+
+    checkNotNull(workflow, "workflow argument cannot be null");
+    checkNotNull(step, "step argument cannot be null");
 
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
 
@@ -430,7 +431,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   void sendToken(final Token token) {
 
-    Preconditions.checkNotNull(token, "token cannot be null");
+    checkNotNull(token, "token cannot be null");
 
     final String outputPortName = token.getOrigin().getName();
 
@@ -452,8 +453,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   private void postToken(final WorkflowInputPort inputPort, final Token token) {
 
-    Preconditions.checkNotNull(inputPort, "inputPort cannot be null");
-    Preconditions.checkNotNull(token, "token cannot be null");
+    checkNotNull(inputPort, "inputPort cannot be null");
+    checkNotNull(token, "token cannot be null");
 
     TokenManagerRegistry.getInstance().getTokenManager(this)
         .postToken(inputPort, token);
@@ -472,13 +473,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public AbstractWorkflowStep(final AbstractWorkflow workflow,
       final StepType type) {
 
-    Preconditions.checkArgument(type != StepType.STANDARD_STEP,
+    checkArgument(type != StepType.STANDARD_STEP,
         "This constructor cannot be used for standard steps");
-    Preconditions.checkArgument(type != StepType.GENERATOR_STEP,
+    checkArgument(type != StepType.GENERATOR_STEP,
         "This constructor cannot be used for standard steps");
 
-    Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
-    Preconditions.checkNotNull(type, "Type argument cannot be null");
+    checkNotNull(workflow, "Workflow argument cannot be null");
+    checkNotNull(type, "Type argument cannot be null");
 
     this.workflow = workflow;
     this.number = instanceCounter++;
@@ -527,14 +528,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     default:
 
-      StepInstances.getInstance().registerStep(this, new FakeStep());
+      final Step fakeStep = new FakeStep();
+      StepInstances.getInstance().registerStep(this, fakeStep);
 
       this.stepName = type.name();
       this.mode = EoulsanMode.NONE;
 
       // Define working directory
       this.workingDir =
-          defineWorkingDirectory(workflow, null, this.copyResultsToOutput);
+          defineWorkingDirectory(workflow, fakeStep, this.copyResultsToOutput);
       break;
     }
 
@@ -554,13 +556,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public AbstractWorkflowStep(final AbstractWorkflow workflow,
       final DataFormat format) throws EoulsanException {
 
-    Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
+    checkNotNull(workflow, "Workflow argument cannot be null");
+    checkNotNull(format, "Format argument cannot be null");
 
     final Step generator = format.getGenerator();
     StepInstances.getInstance().registerStep(this, generator);
 
-    Preconditions.checkNotNull(generator, "The generator step is null");
+    checkNotNull(generator, "The generator step is null");
 
     this.workflow = workflow;
     this.number = instanceCounter++;
@@ -602,11 +604,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final boolean copyResultsToOutput, final Set<Parameter> parameters)
       throws EoulsanException {
 
-    Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
-    Preconditions.checkNotNull(id, "Step id argument cannot be null");
-    Preconditions.checkNotNull(stepName, "Step name argument cannot be null");
-    Preconditions.checkNotNull(parameters,
-        "Step arguments argument cannot be null");
+    checkNotNull(workflow, "Workflow argument cannot be null");
+    checkNotNull(id, "Step id argument cannot be null");
+    checkNotNull(stepName, "Step name argument cannot be null");
+    checkNotNull(parameters, "Step arguments argument cannot be null");
 
     this.workflow = workflow;
     this.number = instanceCounter++;
@@ -651,13 +652,11 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final boolean copyResultsToOutput, final DataFile workingDir,
       final Set<Parameter> parameters) throws EoulsanException {
 
-    Preconditions.checkNotNull(workflow, "Workflow argument cannot be null");
-    Preconditions.checkNotNull(id, "Step id argument cannot be null");
-    Preconditions.checkNotNull(stepName, "Step name argument cannot be null");
-    Preconditions.checkNotNull(workingDir,
-        "working directory argument cannot be null");
-    Preconditions.checkNotNull(parameters,
-        "Step arguments argument cannot be null");
+    checkNotNull(workflow, "Workflow argument cannot be null");
+    checkNotNull(id, "Step id argument cannot be null");
+    checkNotNull(stepName, "Step name argument cannot be null");
+    checkNotNull(workingDir, "working directory argument cannot be null");
+    checkNotNull(parameters, "Step arguments argument cannot be null");
 
     if (!(workingDir.equals(workflow.getOutputDir())
         || workingDir.equals(workflow.getLocalWorkingDir()) || workingDir
