@@ -46,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
@@ -89,8 +88,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final WorkflowStepStateObserver observer;
 
   private final DataFile workingDir;
-
-  private StepResult result;
 
   //
   // Getters
@@ -219,12 +216,6 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.outputPorts;
   }
 
-  @Override
-  public StepResult getResult() {
-
-    return this.result;
-  }
-
   /**
    * Get step working directory (where output file of the step will be written).
    * @return the working directory
@@ -311,8 +302,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     checkNotNull(outputPort, "outputPort argument cannot be null");
     checkArgument(outputPort.getStep() == this,
         "input port ("
-            + inputPort.getName() + ") is not a port of the step ("
-            + getId() + ")");
+            + inputPort.getName() + ") is not a port of the step (" + getId()
+            + ")");
 
     // Set the link
     inputPort.setLink(outputPort);

@@ -32,7 +32,6 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepResult;
 
 /**
  * This interface define a step of the workflow.
@@ -173,11 +172,5 @@ public interface WorkflowStep extends Serializable {
    * @return the state of the step
    */
   StepState getState();
-
-  /**
-   * Get step result.
-   * @return the result object
-   */
-  StepResult getResult();
 
 }
