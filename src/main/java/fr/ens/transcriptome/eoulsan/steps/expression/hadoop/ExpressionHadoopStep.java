@@ -570,8 +570,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     builder.addPort("alignments", MAPPER_RESULTS_SAM, true);
-    builder.addPort("features_annotation", ANNOTATION_GFF);
-    builder.addPort("genome_description", GENOME_DESC_TXT, true);
+    builder.addPort("featuresannotation", ANNOTATION_GFF);
+    builder.addPort("genomedescription", GENOME_DESC_TXT, true);
 
     return builder.create();
   }
