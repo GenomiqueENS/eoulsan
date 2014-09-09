@@ -82,11 +82,12 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Set base pathname
       setHadoopWorkingPathname(designPath.getParent().toString());
 
-      final Path logPath =
-          new Path(designPath.getParent().toString() + "/" + getJobId());
-
       final Path outputPath =
           new Path(designPath.getParent().toString() + "/" + getJobId());
+
+      final Path logPath = new Path(outputPath, getJobId());
+      final Path workingPath = new Path(logPath, "working");
+      final Path taskPath = new Path(logPath, "tasks");
 
       // Set log pathname
       setLogPathname(logPath.toString());
@@ -101,7 +102,10 @@ public class ExecJarHadoopAction extends AbstractAction {
       setWorkflowPathname(paramPath.toString());
 
       // Set the output path
-      setLocalWorkingPathname(new File(".").getAbsolutePath());
+      setLocalWorkingPathname(workingPath.toString());
+
+      // Set the tasks path
+      setTaskPathname(taskPath.toString());
 
       // Set Hadoop working pathname
       setHadoopWorkingPathname(destPath.toString());
