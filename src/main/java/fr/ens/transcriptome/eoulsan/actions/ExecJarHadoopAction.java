@@ -350,22 +350,26 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Create executor
       final Executor e = new Executor(arguments);
 
-      // Create upload step
-      final Step uploadStep =
-          new HadoopUploadStep(new DataFile(destURI.toString()), conf);
-
       // Add init global logger Step
       // Add Copy design and workflow file Step
       // Add terminal step if upload only
       final List<Step> firstSteps;
-      if (uploadOnly) {
-        firstSteps = Arrays.asList(new Step[] {uploadStep, new TerminalStep(),
 
-        new CopyDesignAndWorkflowFilesToOutputStep()});
-      } else {
+      // TODO The upload only option is unnecessary in Eoulsan 2.0
+      if (uploadOnly) {
+
+        // TODO The upload step is unnecessary in Eoulsan 2.0
+        // Create upload step
+        final Step uploadStep =
+            new HadoopUploadStep(new DataFile(destURI.toString()), conf);
+
         firstSteps =
-            Arrays.asList(uploadStep,
+            Arrays.asList(uploadStep, new TerminalStep(),
                 new CopyDesignAndWorkflowFilesToOutputStep());
+      } else {
+        // TODO This CopyDesign...OutputStep step is unnecessary in Eoulsan 2.0
+        firstSteps =
+            Arrays.asList((Step) new CopyDesignAndWorkflowFilesToOutputStep());
       }
 
       // Add download Step
