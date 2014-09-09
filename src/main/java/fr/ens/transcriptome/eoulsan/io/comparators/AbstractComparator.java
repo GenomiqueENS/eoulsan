@@ -44,6 +44,9 @@ public abstract class AbstractComparator implements Comparator {
   private String pathFileA;
   private String pathFileB;
 
+  // Line from tested file which fail comparison
+  private String causeFailComparison = null;
+
   @Override
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException {
@@ -142,5 +145,18 @@ public abstract class AbstractComparator implements Comparator {
 
   public String getPathDirectoryFileB() {
     return new File(pathFileB).getParent();
+  }
+
+  @Override
+  public String getCauseFailComparison() {
+    return this.causeFailComparison;
+  }
+
+  @Override
+  public void setCauseFailComparison(final String line) {
+    this.causeFailComparison =
+        (this.causeFailComparison == null)
+            ? "[" + line + "]" : this.causeFailComparison + "\n[" + line + "]";
+
   }
 }

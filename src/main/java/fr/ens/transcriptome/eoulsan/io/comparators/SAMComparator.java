@@ -62,10 +62,14 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
 
       // Header
       if (line.charAt(0) == '@') {
+
         // Skip specified tag in header sam file
         if (!this.tagsToNotCompare.contains(getTag(line))) {
 
           if (!filter.mightContain(line)) {
+            // Save line occurs fail comparison
+            setCauseFailComparison(line);
+
             reader.close();
             return false;
           }
@@ -73,6 +77,9 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
       } else {
         // Line
         if (!filter.mightContain(line)) {
+          // Save line occurs fail comparison
+          setCauseFailComparison(line);
+
           reader.close();
           return false;
         }
@@ -81,8 +88,12 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
     reader.close();
 
     // Check count element is the same between two files
-    if (numberElementsCompared != filter.getAddedNumberOfElements())
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
+      setCauseFailComparison("Different count elements "
+          + this.numberElementsCompared + " was "
+          + filter.getAddedNumberOfElements() + " expected.");
       return false;
+    }
 
     return true;
   }

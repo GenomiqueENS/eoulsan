@@ -51,7 +51,7 @@ public interface Comparator {
    */
   public boolean compareFiles(final String pathA, final String pathB)
       throws IOException;
- 
+
   /**
    * Compare two files no ordered, check if they are the same contents.
    * @param fileA the path to the first file, used like reference.
@@ -83,5 +83,17 @@ public interface Comparator {
    * @return number elements compared
    */
   public int getNumberElementsCompared();
+
+  /**
+   * Return line which fail comparison between to file from tested file.
+   * @return line which fail comparison between to file from tested file
+   */
+  public String getCauseFailComparison();
+
+  /**
+   * Set line which fail comparison between to file from tested file, it can
+   * compile few lines.
+   */
+  public void setCauseFailComparison(final String line);
 
 }

@@ -58,6 +58,9 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
       numberElementsCompared++;
 
       if (!filter.mightContain(line)) {
+        // Save line occurs fail comparison
+        setCauseFailComparison(line);
+
         reader.close();
         return false;
       }
@@ -66,6 +69,9 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
 
     // Check count element is the same between two files
     if (numberElementsCompared != filter.getAddedNumberOfElements()) {
+      setCauseFailComparison("Different count elements "
+          + this.numberElementsCompared + " was "
+          + filter.getAddedNumberOfElements() + " expected.");
       return false;
     }
     return true;

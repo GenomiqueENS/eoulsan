@@ -546,7 +546,7 @@ public class ProcessIT {
 
     if (!expectedDirectories[0].isDirectory())
       throw new EoulsanException(testName
-          + ": no expected directoryfound in "
+          + ": no expected directory found in "
           + inputTestDirectory.getAbsolutePath());
 
     // Return expected data directory

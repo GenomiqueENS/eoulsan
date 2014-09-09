@@ -235,7 +235,7 @@ public class ITFactory {
       if (testDirectory.isFile())
         continue;
 
-      checkExistingDirectoryFile(testDirectory, "the test directory");
+      checkExistingDirectoryFile(testDirectory, "test directory");
 
       if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
         continue;
@@ -281,7 +281,7 @@ public class ITFactory {
       if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
         continue;
 
-      result.add(new File(this.testsDataDirectory, nameTest));
+      result.add(new File(this.testsDataDirectory, nameTest.trim()));
     }
 
     // Close buffer
