@@ -57,6 +57,11 @@ public class ClusterExecAction extends ExecAction {
   @Override
   public void action(final List<String> arguments) {
 
+    System.err.println("WARNING: the action \""
+        + getName()
+        + "\" is currently under developpement for the next version of "
+        + Globals.APP_NAME + " and may actually not work.");
+
     // Get Eoulsan runtime
     final LocalEoulsanRuntime localRuntime =
         (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();

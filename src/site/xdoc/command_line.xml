@@ -46,7 +46,7 @@ $ eoulsan.sh -h
   <p>The program show you the following output:</p>
 
 <source>
-usage: eoulsan [options] command arguments
+usage: eoulsan [options] action arguments
  -about              display information about this software
  -conf &lt;file&gt;        configuration file to use
  -h,--help           display this help
@@ -59,7 +59,7 @@ usage: eoulsan [options] command arguments
  -m &lt;size&gt;           maximal memory usage for JVM in MB (2048 by default)
  -p &lt;classpath&gt;      additional classpath for eoulsan plugins
  -version            show version of the software
-Available commands:
+Available actions:
  - emrexec      execute eoulsan on Amazon Elastic MapReduce service.
  - createdesign create a design file from a list of files.
  - createhadoopjar      create a jar file for hadoop with all dependencies include.
@@ -68,7 +68,7 @@ Available commands:
 </source>
 
 
-  <p>Actually, Eoulsan has 5 available commands:</p>
+  <p>Actually, Eoulsan has 5 available actions:</p>
   <ul>
     <li><b>emrexec</b>: Upload data and launch Eoulsan analysis on Amazon Web Services cloud.</li>
     <li><b>exec</b>: Launch Eoulsan analysis in local mode.</li>
@@ -77,7 +77,7 @@ Available commands:
     <li><b>createhadoopjar</b>: Create an Eoulsan jar file that contains all jar dependencies. This jar file can be used to run manualy Eoulsan on a Hadoop cluster (local or in Amazon Web Services cloud).</li>
   </ul>
 
-  <p>You can display general help and specific help about a command using <b>-h</b> argument.</p>
+  <p>You can display general help and specific help about an action using <b>-h</b> argument.</p>
 
     <subsection name="-about">
       <p>When you run Eoulsan with this option, you will get information about Eoulsan authors and and then returns to the shell.</p>

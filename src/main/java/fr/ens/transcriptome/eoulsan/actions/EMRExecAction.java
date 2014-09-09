@@ -84,6 +84,11 @@ public class EMRExecAction extends AbstractAction {
   @Override
   public void action(final List<String> arguments) {
 
+    System.err.println("WARNING: the action \""
+        + getName()
+        + "\" is currently under developpement for the next version of "
+        + Globals.APP_NAME + " and may actually not work.");
+
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 

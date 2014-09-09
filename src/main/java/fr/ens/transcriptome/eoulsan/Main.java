@@ -213,9 +213,9 @@ public abstract class Main {
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(getHelpEoulsanCommand()
-        + " [options] command arguments", options);
+        + " [options] action arguments", options);
 
-    System.out.println("Available commands:");
+    System.out.println("Available actions:");
     for (Action action : ActionService.getInstance().getActions()) {
 
       if (!action.isHadoopJarMode() && !action.isHidden()) {
