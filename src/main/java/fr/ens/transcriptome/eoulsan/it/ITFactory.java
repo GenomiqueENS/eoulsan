@@ -28,25 +28,24 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -59,6 +58,9 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Sandrine Perrin
  */
 public class ITFactory {
+
+  /** Logger */
+  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
@@ -101,9 +103,6 @@ public class ITFactory {
 
   private static String outputTestsDirectoryPath;
 
-  // TODO: This timer is never started
-  private final Stopwatch timer = Stopwatch.createUnstarted();
-
   private final Properties globalsConf = new Properties();
   private final File applicationPath;
 
@@ -136,6 +135,9 @@ public class ITFactory {
 
       tests = collectTests();
       testsCount = tests.size();
+
+      LOGGER.config("Count tests found " + testsCount);
+
       if (testsCount == 0)
         return new Object[0];
 
@@ -206,30 +208,36 @@ public class ITFactory {
   private List<ProcessIT> collectTests() throws EoulsanException, IOException {
 
     final List<ProcessIT> tests = Lists.newArrayList();
-    final List<File> allTestsDirectories;
+    final List<File> testsToExecuteDirectories = Lists.newArrayList();
 
     // Collect tests from a file with names tests
-    allTestsDirectories = readTestListFile();
+    testsToExecuteDirectories.addAll(readTestListFile());
 
     // Add the selected test if set
     if (this.selectedTest != null) {
 
-      allTestsDirectories.add(new File(this.testsDataDirectory,
+      testsToExecuteDirectories.add(new File(this.testsDataDirectory,
           this.selectedTest));
     }
 
-    if (allTestsDirectories.size() == 0)
+    // If no test was defined by user use all the existing tests
+    if (testsToExecuteDirectories.isEmpty()) {
+      testsToExecuteDirectories.addAll(Arrays.asList(this.testsDataDirectory
+          .listFiles()));
+    }
+
+    if (testsToExecuteDirectories.size() == 0)
       throw new EoulsanException("None test in file "
           + testsDataDirectory.getAbsolutePath());
 
     // Build map
-    for (File testDirectory : allTestsDirectories) {
+    for (File testDirectory : testsToExecuteDirectories) {
 
       // Ignore file
       if (testDirectory.isFile())
         continue;
 
-      checkExistingDirectoryFile(testDirectory, "the test directory");
+      checkExistingDirectoryFile(testDirectory, "test directory");
 
       if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
         continue;
@@ -257,10 +265,10 @@ public class ITFactory {
    */
   private List<File> readTestListFile() throws IOException {
 
-    final List<File> allDirectoriesFound = Lists.newArrayList();
+    final List<File> result = Lists.newArrayList();
 
     if (this.selectedTestsFile == null) {
-      return allDirectoriesFound;
+      return Collections.emptyList();
     }
 
     checkExistingStandardFile(this.selectedTestsFile, "selected tests file");
@@ -275,13 +283,13 @@ public class ITFactory {
       if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
         continue;
 
-      allDirectoriesFound.add(new File(this.testsDataDirectory, nameTest));
+      result.add(new File(this.testsDataDirectory, nameTest.trim()));
     }
 
     // Close buffer
     br.close();
 
-    return allDirectoriesFound;
+    return result;
   }
 
   //
@@ -318,10 +326,7 @@ public class ITFactory {
   private void closeLogger(final int testsCount) {
 
     // Add suffix to log global filename
-    getLogger().fine(
-        "End execution of "
-            + testsCount + " in "
-            + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+    LOGGER.fine("End configuration for " + testsCount + " integrated tests.");
 
     final File loggerFile = new File(this.loggerPath);
 
@@ -363,6 +368,16 @@ public class ITFactory {
     }
 
     return new File(value);
+  }
+
+  /**
+   * Get a Boolean object from a Java System property.
+   * @param property the key of the property to get
+   * @return a Boolean object or false if the property does not exists
+   */
+  private static Boolean getBooleanFromSystemProperty(final String property) {
+
+    return (property == null) ? false : Boolean.getBoolean(property);
   }
 
   /**
@@ -440,7 +455,9 @@ public class ITFactory {
       this.applicationPath = getApplicationPath();
 
       // Check if application path exists
-      if (this.applicationPath == null || !this.applicationPath.isDirectory()) {
+      if (this.applicationPath == null
+          || !this.applicationPath.isDirectory()
+          || !this.applicationPath.exists()) {
         throw new EoulsanException("The application path doest not exists"
             + this.applicationPath == null
             ? "" : this.applicationPath.toString());
@@ -467,12 +484,18 @@ public class ITFactory {
 
       // Load command line properties
       // Command generate all expected directories test
-      this.globalsConf.put(GENERATE_ALL_EXPECTED_DATA_CONF_KEY,
-          Boolean.getBoolean(IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY));
+      this.globalsConf
+          .setProperty(
+              GENERATE_ALL_EXPECTED_DATA_CONF_KEY,
+              getBooleanFromSystemProperty(
+                  IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY).toString());
 
       // Command generate new expected directories test
-      this.globalsConf.put(GENERATE_NEW_EXPECTED_DATA_CONF_KEY,
-          Boolean.getBoolean(IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY));
+      this.globalsConf
+          .setProperty(
+              GENERATE_NEW_EXPECTED_DATA_CONF_KEY,
+              getBooleanFromSystemProperty(
+                  IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY).toString());
 
       // Retrieve application version test
       this.versionApplication =

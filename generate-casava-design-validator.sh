@@ -23,6 +23,8 @@ EOULSAN_PACKAGE_PATH=`echo $EOULSAN_PACKAGE | sed 's/\./\//g'`
 PACKAGE=fr.ens.transcriptome.cdv
 PACKAGE_PATH=`echo $PACKAGE | sed 's/\./\//g'`
 
+HELP_TEXT_PATH=design-validator-help-page.txt
+
 
 rm -rf $PROJECT_NAME
 $GWT_HOME/webAppCreator -out $PROJECT_NAME $PACKAGE.$PROJECT_NAME
@@ -56,6 +58,61 @@ for f in `echo CasavaDesignReader.java AbstractCasavaDesignTextReader.java`
 do
 	sed "s/package $EOULSAN_PACKAGE.illumina.io/package $PACKAGE.client/" $EOULSAN_DIR/src/main/java/$EOULSAN_PACKAGE_PATH/illumina/io/$f | sed "s/import $EOULSAN_PACKAGE.illumina.io/import $PACKAGE.client/" | sed "s/import $EOULSAN_PACKAGE.illumina/import $PACKAGE.client/" |  sed "s/import $EOULSAN_PACKAGE/import $PACKAGE.client/" > $PROJECT_NAME/src/$PACKAGE_PATH/client/$f
 done
+
+cat > $PROJECT_NAME/war/$HELP_TEXT_PATH << EOF
+Help page for validator sample-sheet for bcl2fastq-1.8.x tool (Illumina: http://support.illumina.com/downloads/bcl2fastq_conversion_software_184.ilmn):
+
+The CASAVA/bcl2fastq sample sheet validator helps users to check their run design. This tool uses only html and javascript. No data is sent to our servers when you use this tool.
+This tool generates a sample sheet only in csv format with a very strict syntax.
+It ensures you that the demultiplexing will not fail because the sample sheet is no correct.
+
+You can use the validator in association with Aozan, a tool that automatically handles data transfer, demultiplexing conversion and quality control once a HiSeq run is over (developed by Genomic Paris Centre and available at http://www.transcriptome.ens.fr/aozan/).
+
+The validator is very simple to use:
+1/ copy the sample sheet from your spreadsheet or csv/tsv format in the first tab with the column headers;
+2/ optional: indicate the flow cell id or the run id the text box;
+3/ launch check & convert to csv (the cvs output appears in the second tab).
+
+The verification step opens an alert window in two cases :
+- error message : the conversion is stopped, the sample sheet format is invalid;
+- warning message : the conversion is finalized and it alerts on any potential input error.
+
+The sample sheet input format is very strict. No field can be null or empty.
+- 10 columns in this exact order with these headers :
+        1- FCID: flow cell ID;
+        2- Lane: lane number between 1 and 8;
+        3- SampleID: name used in the fastq file;
+        4- SampleRef: reference name. You can use aliases like index, you can put a key-value list (ex mm10=Mus musculus), available in the 'References Aliases' tab, the program checks if each value exists in the list; if not, it generates a warning message;
+        5- Index: sequence of index or an alias. You can put a key-value list (ex B1=CGATGT), available in the 'Indexes Aliases' tab, the program replaces the aliases by the real value in csv output;
+        6- Description;
+        7- Control: only N or Y, to identify the control sample if you need a control lane (ex: PhiX);
+        8- Recipe;
+        9- Operator;
+        10- SampleProject,
+
+Possible reasons for error/warning messages :
+- column headers missing in the first line;
+- invalid header name;
+- null or empty field;
+- the flow cell ID is not unique or does not match with the one copied in text box, (if present);
+- lane number not in range [1,8];
+- same sampleID defined with different indexes;
+- same sampleID defined in several projects;
+- same sampleID defined in several lanes;
+- misspelled fields : SampleID, SampleRef or SampleProject should be written only with letters, digits, '-' or '_';
+- misspelled index : the index sequence should be written only with the letters A, T, C and G;
+- same sampleID defined in several lanes, but index is not the same;
+
+Using the aliases tab (optional) :
+There are two tabs that allow you to copy a key-value list used to check the sample-sheet for the following fields : index and SampleRef.
+For the index, you can use the aliases to replace them by the real value in the csv output.
+For the SampleRef, you can use the aliases to check that one reference is always written the same way. It is not required by CASAVA/bcl2fastq. If a sampleRef is not found in the list, the program prints a warning message, sometimes with a proposition to fix it.
+
+
+NB : the code of this tool is available at:
+https://code.google.com/p/eoulsan/source/browse/generate-casava-design-validator.sh
+
+EOF
 
 #
 # Add main class
@@ -203,57 +260,6 @@ public class $PROJECT_NAME implements EntryPoint {
       return null;
 
     return flowcellId.substring(1);
-  }
-  
-  public static final List<String> checkGenomesCasavaDesign(final CasavaDesign design, final String genomesList) {
-    
-    if (genomesList == null){
-      return Collections.emptyList();
-    }
-    
-    List<String> availableGenomes = new ArrayList<String>();
-    List<String> warnings = new ArrayList<String>();
-    boolean first = true;
-  
-    for (String line : genomesList.trim().split("\n")) {
-      if (line.indexOf("=") > -1) {
-        String[] l = line.split("=");
-        availableGenomes.add(trimSpecificString(l[0]));
-        availableGenomes.add(trimSpecificString(l[1]));
-      }
-    }
-
-    Set<String> genomesDesign = new HashSet<String>();
-    for (CasavaSample sample : design) {
-      genomesDesign.add(sample.getSampleRef());
-    }
-    
-    
-    for (String genomeSample : genomesDesign) {
-      if (!(availableGenomes.contains(trimSpecificString(genomeSample)))){
-        if (first)
-          warnings.add("\nNot available in genomes aliases list for detection contaminant for this specie : ");
-        
-        warnings.add("\t"+genomeSample);
-        first = false;
-      }
-    }
-    
-    return warnings;
-  }
-
-  private static String trimSpecificString(final String s) {
-
-    String trimmed = s.trim().toLowerCase();
-    String carToReplace = ".,;:/-_'";
-    
-    for (int i = 0; i < carToReplace.length(); i++) {
-      // Check present character to replace by space
-      if (trimmed.indexOf(carToReplace.charAt(i)) != -1)
-        trimmed = trimmed.replace(carToReplace.charAt(i),' ');
-    }
-    
-    return trimmed.toString();
   }
 
   public final List<String> checkProjectCasavaDesign(final CasavaDesign design) {
@@ -475,7 +481,7 @@ public class $PROJECT_NAME implements EntryPoint {
 
   private void loadProjectList(final String url) throws Exception {
 
-    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+  	RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
     final String responseText;
 
     Request request = builder.sendRequest(null, new RequestCallback() {
@@ -496,14 +502,40 @@ public class $PROJECT_NAME implements EntryPoint {
         }
       }
     });
+
   }
 
-  public String textHelp(){
 
-    String txt = "Help for the validator samplesheet coming soon.";
+  // Load help text file from url
+  public void loadTextHelp() {
 
-    return txt;
+  	final String defaultTxt = "Help for the validator samplesheet coming soon.";
+	final String url = "$HELP_TEXT_PATH";
+
+	try {
+      RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
+
+      Request request = builder.sendRequest(null, new RequestCallback() {
+
+        public void onError(Request request, Throwable exception) {
+          helpTextarea.setText(defaultTxt+" 1");
+        }
+
+        public void onResponseReceived(Request request, Response response) {
+          // Success
+          if (200 == response.getStatusCode()) {
+            helpTextarea.setText(response.getText());
+          } else {
+            // Fail
+            helpTextarea.setText(defaultTxt+" 2");
+          }
+        }
+      });
+	} catch (Exception e){
+	  helpTextarea.setText(defaultTxt+" 3");
+	}
   }
+
 
   public void onModuleLoad() {
 
@@ -544,7 +576,7 @@ public class $PROJECT_NAME implements EntryPoint {
 
     helpTextarea.setVisibleLines(40);
     helpTextarea.setSize("99%","100%");
-    helpTextarea.setText(textHelp());
+    loadTextHelp();
 
     flowcellTextBox.setText(Window.Location.getParameter("id"));
 

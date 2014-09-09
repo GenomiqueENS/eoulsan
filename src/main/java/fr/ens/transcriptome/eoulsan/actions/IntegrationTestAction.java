@@ -83,11 +83,17 @@ public class IntegrationTestAction extends AbstractAction {
       }
 
       if (line.hasOption("c")) {
+        String val = line.getOptionValue("c").trim();
+
+        if (!(new File(val).exists() && new File(val).canRead())) {
+          Common.errorExit(null,
+              "Integration test configuration file doesn't exists");
+        }
 
         // Configuration test files
-        System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, line
-            .getOptionValue("c").trim());
+        System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, val);
         argsOptions += 2;
+
       }
 
       if (line.hasOption("exec")) {
@@ -158,7 +164,7 @@ public class IntegrationTestAction extends AbstractAction {
           .errorExit(e, "Error while parse parameter file: " + e.getMessage());
     }
 
-    if (arguments.size() != argsOptions) {
+    if (argsOptions == 0 || arguments.size() != argsOptions) {
       help(options);
     }
 
