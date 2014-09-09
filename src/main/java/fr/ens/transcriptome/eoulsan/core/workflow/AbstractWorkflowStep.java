@@ -293,24 +293,27 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   /**
    * Add a dependency for this step.
    * @param inputPort the input port provided by the dependency
-   * @param outputPort the output port of the step
+   * @param dependencyOutputPort the output port of the step
    */
   protected void addDependency(final WorkflowInputPort inputPort,
-      final WorkflowOutputPort outputPort) {
+      final WorkflowOutputPort dependencyOutputPort) {
 
     checkNotNull(inputPort, "inputPort argument cannot be null");
-    checkNotNull(outputPort, "outputPort argument cannot be null");
-    checkArgument(outputPort.getStep() == this,
-        "input port ("
-            + inputPort.getName() + ") is not a port of the step (" + getId()
-            + ")");
+    checkNotNull(dependencyOutputPort, "dependencyOutputPort argument cannot be null");
+
+    final AbstractWorkflowStep step = inputPort.getStep();
+    final AbstractWorkflowStep dependencyStep = dependencyOutputPort.getStep();
+
+    checkArgument(step == this,  "input port ("
+        + inputPort.getName() + ") is not a port of the step (" + getId()
+        + ")");
 
     // Set the link
-    inputPort.setLink(outputPort);
-    outputPort.addLink(inputPort);
+    inputPort.setLink(dependencyOutputPort);
+    dependencyOutputPort.addLink(inputPort);
 
     // Add the dependency
-    inputPort.getStep().addDependency(outputPort.getStep());
+    step.addDependency(dependencyStep);
   }
 
   /**
