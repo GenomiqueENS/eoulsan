@@ -247,18 +247,18 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param dependencyOutputPort output port the dependency
    * @throws EoulsanException if an error occurs while adding the dependency
    */
-  private boolean addDependency(final WorkflowInputPort inputPort,
+  private void addDependency(final WorkflowInputPort inputPort,
       final WorkflowOutputPort dependencyOutputPort) throws EoulsanException {
-
-    boolean newStepAdded = false;
 
     try {
 
       final AbstractWorkflowStep step = inputPort.getStep();
-      final AbstractWorkflowStep dependencyStep = dependencyOutputPort.getStep();
+      final AbstractWorkflowStep dependencyStep =
+          dependencyOutputPort.getStep();
 
       final DataFile stepDir = inputPort.getStep().getStepWorkingDir();
-      final DataFile depDir = dependencyOutputPort.getStep().getStepWorkingDir();
+      final DataFile depDir =
+          dependencyOutputPort.getStep().getStepWorkingDir();
 
       final DataProtocol stepProtocol = stepDir.getProtocol();
       final DataProtocol depProtocol = depDir.getProtocol();
@@ -273,7 +273,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Check if copy is needed in the working directory
       if (step.getType() == StepType.STANDARD_STEP
-          && stepProtocol != depProtocol && inputPort.isRequiredInWorkingDirectory()) {
+          && stepProtocol != depProtocol
+          && inputPort.isRequiredInWorkingDirectory()) {
         newStep =
             newInputFormatCopyStep(this, inputPort, depOutputCompression,
                 stepCompressionsAllowed);
@@ -282,7 +283,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       // Check if (un)compression is needed
       if (newStep == null
           && step.getType() == StepType.STANDARD_STEP
-          && !inputPort.getCompressionsAccepted().contains(depOutputCompression)) {
+          && !inputPort.getCompressionsAccepted()
+              .contains(depOutputCompression)) {
         newStep =
             newInputFormatCopyStep(this, inputPort, depOutputCompression,
                 stepCompressionsAllowed);
@@ -305,7 +307,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Add the copy step in the list of steps just before the step given as
         // method argument
-        addStep(indexOfStep(dependencyStep), newStep);
+        // addStep(indexOfStep(dependencyStep), newStep);
+        addStep(indexOfStep(step), newStep);
 
         // Add the copy dependency
         newStep.addDependency(newStep.getWorkflowInputPorts().getFirstPort(),
@@ -315,7 +318,6 @@ public class CommandWorkflow extends AbstractWorkflow {
         step.addDependency(inputPort, newStep.getWorkflowOutputPorts()
             .getFirstPort());
 
-        newStepAdded = true;
       } else {
 
         // Add the step dependency
@@ -324,8 +326,6 @@ public class CommandWorkflow extends AbstractWorkflow {
     } catch (IOException e) {
       throw new EoulsanException(e.getMessage());
     }
-
-    return newStepAdded;
   }
 
   /**
@@ -562,10 +562,10 @@ public class CommandWorkflow extends AbstractWorkflow {
                 || stepTested.getType() == StepType.DESIGN_STEP) {
 
               // Add the dependency
-              if (addDependency(inputPort, outputPort)) {
-                // New dependency has been added so change the current index
-                i++;
-              }
+              addDependency(inputPort, outputPort);
+
+              // New dependency may has been added so change the current index
+              j = indexOfStep(stepTested);
 
               found = true;
               break;
@@ -576,6 +576,9 @@ public class CommandWorkflow extends AbstractWorkflow {
           if (found)
             break;
         }
+
+        // New dependency may has been added so change the current index
+        i = indexOfStep(step);
 
         if (!found) {
 
@@ -603,7 +606,6 @@ public class CommandWorkflow extends AbstractWorkflow {
               // Swap generators order
               Collections.swap(this.steps, indexOfStep(step),
                   indexOfStep(generatorAdded.get(format)));
-
               searchDependencies(generatorAdded);
               return;
             }
@@ -654,7 +656,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       for (WorkflowInputPort inputPort : step.getWorkflowInputPorts())
         if (!inputPort.isLinked())
           throw new EoulsanException("The \""
-              + inputPort.getName() + "\" port ("+inputPort.getFormat().getName() +" format) of step \""
+              + inputPort.getName() + "\" port ("
+              + inputPort.getFormat().getName() + " format) of step \""
               + inputPort.getStep().getId() + "\" is not linked");
   }
 
