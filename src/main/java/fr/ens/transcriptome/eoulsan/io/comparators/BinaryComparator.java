@@ -52,8 +52,12 @@ public class BinaryComparator extends AbstractComparator {
       throws IOException {
 
     if (isA == null || isB == null) {
-      throw new IOException("Comparison invalid, input stream null");    }
+      throw new IOException("Comparison invalid, input stream null");
+    }
 
+    // Set cause, can not identified the position who fail comparison
+    setCauseFailComparison("Binary comparison.");
+    
     return FileUtils.compareFile(isA, isB);
   }
 

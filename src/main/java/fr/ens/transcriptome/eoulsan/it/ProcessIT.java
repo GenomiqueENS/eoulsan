@@ -87,6 +87,7 @@ public class ProcessIT {
 
   private final String inputFilesPattern;
   private final String outputFilesPattern;
+  private final String excludeFilesPattern;
 
   private final boolean generateExpectedData;
   private final boolean generateAllTests;
@@ -167,8 +168,7 @@ public class ProcessIT {
       // Treat result application directory
       regressionResultIT =
           new ResultIT(this.outputTestDirectory, this.inputFilesPattern,
-              this.outputFilesPattern, TEST_SOURCE_LINK_NAME
-                  + " " + ITFactory.TEST_CONFIGURATION_FILENAME);
+              this.outputFilesPattern, this.excludeFilesPattern);
 
       if (this.generateExpectedData) {
         // Build expected directory if necessary
@@ -187,8 +187,7 @@ public class ProcessIT {
             regressionResultIT.compareTo(new ResultIT(
                 this.expectedTestDirectory.getParentFile(),
                 this.inputFilesPattern, this.outputFilesPattern,
-                TEST_SOURCE_LINK_NAME
-                    + " " + ITFactory.TEST_CONFIGURATION_FILENAME));
+                this.excludeFilesPattern));
 
         // Comparison assessment
         status = outputComparison.isResult();
@@ -549,12 +548,27 @@ public class ProcessIT {
 
     if (!expectedDirectories[0].isDirectory())
       throw new EoulsanException(testName
-          + ": no expected directoryfound in "
+          + ": no expected directory found in "
           + inputTestDirectory.getAbsolutePath());
 
     // Return expected data directory
     return expectedDirectories[0];
 
+  }
+
+  /**
+   * Group exclude file patterns with default, global configuration and configuration test.
+   * @param valueConfigTests
+   * @return exclude files patterns for tests
+   */
+  private String buildExcludePatterns(final String valueConfigTests) {
+    if (valueConfigTests == null || valueConfigTests.trim().length() == 0)
+      return ProcessIT.TEST_SOURCE_LINK_NAME
+          + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME;
+
+    return ProcessIT.TEST_SOURCE_LINK_NAME
+        + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME + SEPARATOR
+        + valueConfigTests;
   }
 
   /**
@@ -697,6 +711,11 @@ public class ProcessIT {
         this.testConf.getProperty(ITFactory.INPUT_FILES_PATTERNS_CONF_KEY);
     this.outputFilesPattern =
         this.testConf.getProperty(ITFactory.OUTPUT_FILES_PATTERNS_CONF_KEY);
+
+    // Set exclude pattern for this test
+    this.excludeFilesPattern =
+        buildExcludePatterns(this.testConf
+            .getProperty(ITFactory.EXCLUDE_FILES_PATTERNS_CONF_KEY));
 
     // Set action required
     final String actionType =

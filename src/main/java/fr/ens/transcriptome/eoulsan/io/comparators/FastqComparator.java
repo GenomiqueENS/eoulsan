@@ -60,6 +60,8 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
       this.numberElementsCompared++;
 
       if (!filter.mightContain(read.toFastQ())) {
+        // Save line occurs fail comparison
+        setCauseFailComparison(read.toFastQ());
         fastqReader.close();
         return false;
       }
@@ -67,8 +69,12 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
     fastqReader.close();
 
     // Check count element is the same between two files
-    if (this.numberElementsCompared != filter.getAddedNumberOfElements())
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements()){
+      setCauseFailComparison("Different count elements "
+          + this.numberElementsCompared + " was "
+          + filter.getAddedNumberOfElements() + " expected.");
       return false;
+    }
 
     return true;
   }

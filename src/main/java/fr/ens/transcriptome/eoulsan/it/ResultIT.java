@@ -168,13 +168,16 @@ public class ResultIT {
       }
 
       // Comparison two files with same filename
-      boolean res = new FilesComparator(fileExpected, fileTested).compare();
+      final FilesComparator fc = new FilesComparator(fileExpected, fileTested);
+      boolean res = fc.compare();
 
       if (!res) {
         msg =
             "Fail comparison with file: "
                 + fileExpected.getAbsolutePath() + " vs "
-                + fileTested.getAbsolutePath();
+                + fileTested.getAbsolutePath() + "\n\tdetail: "
+                + fc.getDetailComparison();
+        
         comparison.appendComparison(msg, false);
 
         throw new EoulsanITRuntimeException(msg);
@@ -425,14 +428,24 @@ public class ResultIT {
     private final File fileB;
     private final Comparator comparator;
 
+    private String detailComparison = "SUCCESS";
+
     /**
      * Compare two files
      * @return true if files are the same
      * @throws IOException if an error occurs while reading file.
      */
     public boolean compare() throws IOException {
+      final boolean b = comparator.compareFiles(fileA, fileB);
 
-      return comparator.compareFiles(fileA, fileB);
+      if (!b) {
+        this.detailComparison =
+            "fail at "
+                + comparator.getNumberElementsCompared()
+                + " comparisons, with this line "
+                + comparator.getCauseFailComparison();
+      }
+      return b;
     }
 
     /**
@@ -457,6 +470,13 @@ public class ResultIT {
     }
 
     //
+    // Getter
+    //
+    public String getDetailComparison() {
+      return this.detailComparison;
+    }
+
+    //
     // Constructor
     //
 
@@ -474,7 +494,7 @@ public class ResultIT {
       comparators.add(new BinaryComparator());
 
       comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
-      comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG"));
+      comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
       comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       comparators.add(new LogComparator());
 

@@ -66,21 +66,28 @@ public class LogComparator extends AbstractComparator {
       for (String counter : logExpected.getCounterNames(counterGroup)) {
         numberElementsCompared++;
 
-        // Compute difference between two reporter 
+        // Compute difference between two reporter
         diffExpectedTested =
             logExpected.getCounterValue(counterGroup, counter)
                 - getCounterValue(logTested, counterGroup, counter);
 
         if (Math.abs(diffExpectedTested) >= 1) {
+          setCauseFailComparison("Invalid value found: "
+              + getCounterValue(logTested, counterGroup, counter) + " was "
+              + logExpected.getCounterValue(counterGroup, counter)
+              + " expected.");
           return false;
         }
       }
     }
 
     // Check all elements present in first log are compare from second log
-    if (numberElements != numberElementsCompared)
+    if (numberElements != numberElementsCompared) {
+      setCauseFailComparison("Different count elements "
+          + this.numberElementsCompared + " was " + numberElements
+          + " expected.");
       return false;
-
+    }
     return true;
   }
 
