@@ -42,7 +42,7 @@ import org.junit.Test;
  */
 public class GenomicArrayTest {
 
-  private class FastGemomicInterval {
+  private class FastGenomicInterval {
 
     final String chromosome;
     final char strand;
@@ -52,7 +52,7 @@ public class GenomicArrayTest {
       return new GenomicInterval(chromosome, start, end, strand);
     }
 
-    FastGemomicInterval(final String chromosome, final char strand) {
+    FastGenomicInterval(final String chromosome, final char strand) {
 
       this.chromosome = chromosome;
       this.strand = strand;
@@ -61,8 +61,8 @@ public class GenomicArrayTest {
   }
 
   private GenomicArray<String> ga;
-  private FastGemomicInterval fgi;
-  private FastGemomicInterval fgi_stranded;
+  private FastGenomicInterval fgi;
+  private FastGenomicInterval fgi_stranded;
   private Map<GenomicInterval, Set<String>> r;
 
   // /**
@@ -72,8 +72,8 @@ public class GenomicArrayTest {
   public void setUp() throws Exception {
 
     ga = new GenomicArray<String>();
-    fgi = new FastGemomicInterval("chr1", '.');
-    fgi_stranded = new FastGemomicInterval("chr1", '-');
+    fgi = new FastGenomicInterval("chr1", '.');
+    fgi_stranded = new FastGenomicInterval("chr1", '-');
   }
 
   /**

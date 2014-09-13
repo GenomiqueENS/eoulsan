@@ -75,8 +75,9 @@ public class GenomicArray<T> {
      */
     public void addExon(final T value) {
 
-      if (value == null)
-        return;
+      if (value == null) {
+        throw new NullPointerException("value argument cannot be null");
+      }
 
       if (valueCount == 0) {
         this._value = value;
@@ -337,6 +338,14 @@ public class GenomicArray<T> {
      */
     public void addEntry(final GenomicInterval interval, final T value) {
 
+      if (interval == null) {
+        throw new NullPointerException("interval argument cannot be null");
+      }
+
+      if (value == null) {
+        throw new NullPointerException("value argument cannot be null");
+      }
+
       final int intervalStart = interval.getStart();
       final int intervalEnd = interval.getEnd();
 
@@ -514,6 +523,10 @@ public class GenomicArray<T> {
      */
     public ChromosomeStrandedZones(final String chromosomeName) {
 
+      if (chromosomeName == null) {
+        throw new NullPointerException("chromosomeName argument cannot be null");
+      }
+
       this.chromosomeName = chromosomeName;
     }
   }
@@ -536,6 +549,14 @@ public class GenomicArray<T> {
      * @param value value to add
      */
     public void addEntry(final GenomicInterval interval, final T value) {
+
+      if (interval == null) {
+        throw new NullPointerException("interval argument cannot be null");
+      }
+
+      if (value == null) {
+        throw new NullPointerException("value argument cannot be null");
+      }
 
       if (interval.getStrand() == '+' || interval.getStrand() == '.')
         this.plus.addEntry(interval, value);
@@ -607,6 +628,10 @@ public class GenomicArray<T> {
      */
     public ChromosomeZones(final String chromosomeName) {
 
+      if (chromosomeName == null) {
+        throw new NullPointerException("chromosomeName argument cannot be null");
+      }
+
       this.plus = new ChromosomeStrandedZones<T>(chromosomeName);
       this.minus = new ChromosomeStrandedZones<T>(chromosomeName);
     }
@@ -619,8 +644,13 @@ public class GenomicArray<T> {
    */
   public void addEntry(final GenomicInterval interval, final T value) {
 
-    if (interval == null)
-      return;
+    if (interval == null) {
+      throw new NullPointerException("interval argument cannot be null");
+    }
+
+    if (value == null) {
+      throw new NullPointerException("value argument cannot be null");
+    }
 
     final String chromosomeName = interval.getChromosome();
 
@@ -638,6 +668,10 @@ public class GenomicArray<T> {
    */
   public void addChromosome(final String chromosomeName) {
 
+    if (chromosomeName == null) {
+      throw new NullPointerException("chromosomeName argument cannot be null");
+    }
+
     if (containsChromosome(chromosomeName))
       return;
 
@@ -651,8 +685,10 @@ public class GenomicArray<T> {
    */
   public void addChromosomes(final GenomeDescription gd) {
 
-    if (gd == null)
-      return;
+    if (gd == null) {
+      throw new NullPointerException("gd argument cannot be null");
+    }
+
 
     for (String chromosomeName : gd.getSequencesNames())
       addChromosome(chromosomeName);
@@ -665,8 +701,9 @@ public class GenomicArray<T> {
    */
   public Map<GenomicInterval, Set<T>> getEntries(final GenomicInterval interval) {
 
-    if (interval == null)
-      throw new NullPointerException("The interval is null");
+    if (interval == null) {
+      throw new NullPointerException("interval argument cannot be null");
+    }
 
     return getEntries(interval.getChromosome(), interval.getStart(),
         interval.getEnd());
@@ -681,6 +718,10 @@ public class GenomicArray<T> {
    */
   public Map<GenomicInterval, Set<T>> getEntries(final String chromosome,
       final int start, final int end) {
+
+    if (chromosome == null) {
+      throw new NullPointerException("chromosome argument cannot be null");
+    }
 
     final ChromosomeZones<T> chr = this.chromosomes.get(chromosome);
 
@@ -744,6 +785,10 @@ public class GenomicArray<T> {
    */
   public void save(final OutputStream os) throws IOException {
 
+    if (os == null) {
+      throw new NullPointerException("os argument cannot be null");
+    }
+
     final ObjectOutputStream oos = new ObjectOutputStream(os);
     oos.writeObject(this.chromosomes);
     oos.close();
@@ -755,6 +800,10 @@ public class GenomicArray<T> {
    */
   public void save(final File outputFile) throws FileNotFoundException,
       IOException {
+
+    if (outputFile == null) {
+      throw new NullPointerException("outputFile argument cannot be null");
+    }
 
     save(FileUtils.createOutputStream(outputFile));
   }
@@ -769,6 +818,10 @@ public class GenomicArray<T> {
    */
   @SuppressWarnings(value = "unchecked")
   public void load(final InputStream is) throws IOException {
+
+    if (is == null) {
+      throw new NullPointerException("is argument cannot be null");
+    }
 
     final ObjectInputStream ois = new ObjectInputStream(is);
     try {
@@ -786,6 +839,10 @@ public class GenomicArray<T> {
    */
   public void load(final File inputFile) throws FileNotFoundException,
       IOException {
+
+    if (inputFile == null) {
+      throw new NullPointerException("inputFile argument cannot be null");
+    }
 
     load(FileUtils.createInputStream(inputFile));
   }
@@ -828,7 +885,7 @@ public class GenomicArray<T> {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{chromosmes=" + this.chromosomes + "}";
+        + "{chromosomes=" + this.chromosomes + "}";
   }
 
   //
