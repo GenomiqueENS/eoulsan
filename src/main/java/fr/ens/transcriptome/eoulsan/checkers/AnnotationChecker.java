@@ -228,10 +228,17 @@ public class AnnotationChecker implements Checker {
 
       final String featureId = e.getAttributeValue(attributeId);
 
-      if (featureId != null)
-        featuresFound = true;
+      if (attributeId!=null && featureId==null) {
+        throw new BadBioEntryException("Feature "
+            + featureType + " does not contain a " + attributeId
+            + " attribute",e.toString());
+      }
 
-      features.addEntry(new GenomicInterval(e, stranded), featureId);
+      if (featureId != null) {
+
+        features.addEntry(new GenomicInterval(e, stranded), featureId);
+        featuresFound = true;
+      }
 
       lastSequenceName = sequenceName;
     }
