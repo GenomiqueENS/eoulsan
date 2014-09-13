@@ -177,7 +177,12 @@ class WorkflowOutputPort extends SimpleOutputPort {
 
     // Fill the result
     for (String key : map.keySet()) {
-      result.add(new DataElement(getFormat(), map.get(key)));
+
+      // Set the data name
+      final DataElement data = new DataElement(getFormat(), map.get(key));
+      data.setName(key.substring(0, key.indexOf('\t')));
+
+      result.add(data);
     }
 
     return result;
