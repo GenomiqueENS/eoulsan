@@ -60,6 +60,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -326,10 +327,13 @@ public class TokenManager implements Runnable {
 
       final Collection<Data> inputData = this.inputTokens.get(inputPort);
 
+      // Design is required by metadata
+      final Design design = this.step.getAbstractWorkflow().getDesign();
+
       synchronized (inputData) {
 
         if (inputData.size() == 0) {
-          dataList = new DataList(inputPort);
+          dataList = new DataList(inputPort, design);
           inputData.add(dataList);
         } else {
           dataList = (DataList) inputData.iterator().next();
@@ -433,15 +437,18 @@ public class TokenManager implements Runnable {
    */
   private Map<OutputPort, AbstractData> createContextOutputData() {
 
+    // Design is required by metadata
+    final Design design = this.step.getAbstractWorkflow().getDesign();
+
     final Map<OutputPort, AbstractData> result = Maps.newHashMap();
     for (WorkflowOutputPort outputPort : this.outputPorts) {
 
       final AbstractData data;
 
       if (outputPort.isList()) {
-        data = new DataList(outputPort);
+        data = new DataList(outputPort, design);
       } else {
-        data = new DataElement(outputPort);
+        data = new DataElement(outputPort, design);
       }
 
       result.put(outputPort, data);

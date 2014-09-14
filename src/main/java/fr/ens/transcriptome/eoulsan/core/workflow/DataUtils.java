@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -133,17 +132,18 @@ public final class DataUtils {
     }
 
     // Get the data metadata object
-    final DataMetadata dataMetadata = data.getMetadata();
+    final SimpleDataMetaData dataMetadata =
+        (SimpleDataMetaData) data.getMetadata();
 
     // Set the original sample name and sample id in the metadata
-    dataMetadata.setSampleName(sample.getName());
+    dataMetadata.setSampleName(sample);
     dataMetadata.setSampleId(sample.getId());
 
     // Set the other fields of the design file
     for (String fieldName : sample.getMetadata().getFields()) {
 
       if (!fieldsToNotUse.contains(fieldName)) {
-        dataMetadata.set(fieldName, sample.getMetadata().getField(fieldName));
+        dataMetadata.setSampleField(sample, fieldName);
       }
     }
   }

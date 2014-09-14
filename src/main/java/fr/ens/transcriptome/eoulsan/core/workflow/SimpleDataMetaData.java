@@ -24,15 +24,19 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
+import com.amazonaws.services.importexport.model.InvalidParameterException;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
  * This class define a simple class for metadata of data objects.
@@ -43,29 +47,104 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
 
   private static final long serialVersionUID = -2905676240064559127L;
 
+  private final Design design;
   private final Map<String, String> map = Maps.newHashMap();
+
+  private static final String STRING_TYPE = "string";
+  private static final String SAMPLE_NAME_TYPE = "samplename";
+  private static final String SAMPLE_METADATA_TYPE = "samplemetadata";
+  private static final char SEPARATOR = ':';
 
   @Override
   public String get(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    checkKey(key);
 
-    return this.map.get(key);
+    final String value = this.map.get(key);
+
+    if (value == null) {
+      return null;
+    }
+
+    final String type = value.substring(0, value.indexOf(SEPARATOR));
+
+    switch (type) {
+
+    case STRING_TYPE:
+      return value.substring(type.length() + 1);
+
+    case SAMPLE_NAME_TYPE:
+
+      int sampleId1 = Integer.parseInt(value.substring(type.length() + 1));
+      Sample sample1 = null;
+      for (Sample s : this.design.getSamples()) {
+        if (s.getId() == sampleId1) {
+          sample1 = s;
+        }
+      }
+
+      return sample1 == null ? null : sample1.getName();
+
+    case SAMPLE_METADATA_TYPE:
+
+      int endSampleId = value.indexOf(SEPARATOR, type.length() + 1);
+
+      int sampleId2 =
+          Integer.parseInt(value.substring(type.length() + 1, endSampleId));
+
+      String field = value.substring(endSampleId + 1);
+
+      Sample sample2 = null;
+      for (Sample s : this.design.getSamples()) {
+        if (s.getId() == sampleId2) {
+          sample2 = s;
+        }
+      }
+
+      return sample2.getMetadata().getField(field);
+
+    default:
+      throw new IllegalStateException("Unknown metadata type: " + type);
+    }
+
   }
 
   @Override
   public void set(final String key, final String value) {
 
-    checkNotNull(key, "key argument cannot be null");
+    checkKey(key);
     checkNotNull(value, "value argument cannot be null");
 
-    this.map.put(key, value);
+    this.map.put(key, STRING_TYPE + SEPARATOR + value);
+  }
+
+  void setSampleName(final Sample sample) {
+
+    checkNotNull(sample, "sample argument cannot be null");
+
+    final String value = SAMPLE_NAME_TYPE + SEPARATOR + sample.getId();
+
+    this.map.put(SAMPLE_NAME_KEY, value);
+  }
+
+  void setSampleField(final Sample sample, final String sampleField) {
+
+    checkKey(sampleField);
+    checkNotNull(sample, "sample argument cannot be null");
+    checkNotNull(sample, "sampleField argument cannot be null");
+    checkArgument(sample.getMetadata().isField(sampleField));
+
+    final String value =
+        SAMPLE_METADATA_TYPE
+            + SEPARATOR + sample.getId() + SEPARATOR + sampleField;
+
+    this.map.put(sampleField, value);
   }
 
   @Override
   public boolean containsKey(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    checkKey(key);
 
     return this.map.containsKey(key);
   }
@@ -73,7 +152,7 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
   @Override
   public boolean removeKey(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    checkKey(key);
 
     return this.removeKey(key);
   }
@@ -83,8 +162,27 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
 
     checkNotNull(metadata, "metadata argument cannot be null");
 
-    for (String key : metadata.keySet()) {
-      set(key, metadata.get(key));
+    DataMetadata md = metadata;
+
+    // First get a metadata object that is not unmodifiable
+    if (md instanceof UnmodifiableDataMetadata) {
+      md = ((UnmodifiableDataMetadata) md).getMetaData();
+    }
+
+    if (md instanceof SimpleDataMetaData) {
+
+      // If metadata object is a SimpleDataMetaData do raw copy
+      final SimpleDataMetaData that = (SimpleDataMetaData) md;
+      for (Map.Entry<String, String> e : that.map.entrySet()) {
+        this.map.put(e.getKey(), e.getValue());
+      }
+
+    } else {
+
+      // If not, do a standard copy
+      for (String key : metadata.keySet()) {
+        set(key, metadata.get(key));
+      }
     }
   }
 
@@ -106,6 +204,20 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
     return this.map.toString();
   }
 
+  private void checkKey(final String key) {
+
+    checkNotNull(key, "key argument cannot be null");
+
+    for (int i = 0; i < key.length(); i++) {
+
+      if (key.charAt(i) < ' ') {
+        throw new InvalidParameterException(
+            "Invalid metadata key character found: " + key.charAt(i));
+      }
+    }
+
+  }
+
   //
   // Constructor
   //
@@ -113,7 +225,9 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
   /**
    * Constructor.
    */
-  SimpleDataMetaData() {
+  SimpleDataMetaData(final Design design) {
+
+    this.design = design;
   }
 
 }

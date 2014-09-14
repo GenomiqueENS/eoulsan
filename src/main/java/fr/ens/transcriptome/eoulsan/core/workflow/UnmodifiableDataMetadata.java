@@ -89,6 +89,21 @@ class UnmodifiableDataMetadata extends AbstractDataMetaData {
     return this.metadata.toString();
   }
 
+  /**
+   * Get the AbstractData object wrapped by this object.
+   * @return the AbstractData object wrapped by this object
+   */
+  DataMetadata getMetaData() {
+
+    DataMetadata metadata = this;
+
+    do {
+      metadata = ((UnmodifiableDataMetadata) metadata).metadata;
+    } while (metadata instanceof UnmodifiableDataMetadata);
+
+    return metadata;
+  }
+
   //
   // Constructor
   //
