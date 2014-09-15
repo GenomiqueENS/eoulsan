@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -146,6 +147,31 @@ public final class DataUtils {
         dataMetadata.setSampleField(sample, fieldName);
       }
     }
+  }
+
+  /**
+   * Get the SimpleDataMetadata object from a DataMetadata object
+   * @param metadata the metadata object
+   * @return a SimpleDataMetadata object or null if SimpleDataMetaData cannot be
+   *         find in metadata
+   */
+  static SimpleDataMetaData getSimpleMetadata(final DataMetadata metadata) {
+
+    checkNotNull(metadata, "metadata argument cannot be null");
+
+    DataMetadata md = metadata;
+
+    // First get a metadata object that is not unmodifiable
+    if (md instanceof UnmodifiableDataMetadata) {
+      md = ((UnmodifiableDataMetadata) md).getMetaData();
+    }
+
+    if (md instanceof SimpleDataMetaData) {
+
+      return (SimpleDataMetaData) md;
+    }
+
+    return null;
   }
 
   //

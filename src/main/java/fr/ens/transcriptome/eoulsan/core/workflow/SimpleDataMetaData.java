@@ -162,18 +162,12 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
 
     checkNotNull(metadata, "metadata argument cannot be null");
 
-    DataMetadata md = metadata;
+    final SimpleDataMetaData md = DataUtils.getSimpleMetadata(metadata);
 
-    // First get a metadata object that is not unmodifiable
-    if (md instanceof UnmodifiableDataMetadata) {
-      md = ((UnmodifiableDataMetadata) md).getMetaData();
-    }
-
-    if (md instanceof SimpleDataMetaData) {
+    if (md != null) {
 
       // If metadata object is a SimpleDataMetaData do raw copy
-      final SimpleDataMetaData that = (SimpleDataMetaData) md;
-      for (Map.Entry<String, String> e : that.map.entrySet()) {
+      for (Map.Entry<String, String> e : md.map.entrySet()) {
         this.map.put(e.getKey(), e.getValue());
       }
 
