@@ -240,7 +240,7 @@ class DataElement extends AbstractData implements Serializable {
 
     super(format);
 
-    this.metadata = new SimpleDataMetaData(design);
+    this.metadata = new SimpleDataMetadata(design);
 
     checkNotNull(format, "format argument cannot be null");
     checkNotNull(files, "files argument cannot be null");
@@ -267,7 +267,7 @@ class DataElement extends AbstractData implements Serializable {
     checkNotNull(port, "port argument cannot be null");
     checkNotNull(design, "design argument cannot be null");
 
-    this.metadata = new SimpleDataMetaData(design);
+    this.metadata = new SimpleDataMetadata(design);
 
     this.port = port;
 

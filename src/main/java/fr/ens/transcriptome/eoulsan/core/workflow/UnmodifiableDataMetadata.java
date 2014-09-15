@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.data.DataMetadata;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class UnmodifiableDataMetadata extends AbstractDataMetaData {
+class UnmodifiableDataMetadata extends AbstractDataMetadata {
 
   private static final long serialVersionUID = 2773004152416176374L;
 

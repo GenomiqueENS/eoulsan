@@ -102,7 +102,7 @@ public class DataList extends AbstractData implements Serializable {
 
   @Override
   public DataMetadata getMetadata() {
-    return new UnmodifiableDataMetadata(new SimpleDataMetaData(this.design));
+    return new UnmodifiableDataMetadata(new SimpleDataMetadata(this.design));
   }
 
   @Override

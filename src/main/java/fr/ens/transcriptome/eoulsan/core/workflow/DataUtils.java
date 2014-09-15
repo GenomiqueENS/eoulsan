@@ -133,8 +133,8 @@ public final class DataUtils {
     }
 
     // Get the data metadata object
-    final SimpleDataMetaData dataMetadata =
-        (SimpleDataMetaData) data.getMetadata();
+    final SimpleDataMetadata dataMetadata =
+        (SimpleDataMetadata) data.getMetadata();
 
     // Set the original sample name and sample id in the metadata
     dataMetadata.setSampleName(sample);
@@ -155,7 +155,7 @@ public final class DataUtils {
    * @return a SimpleDataMetadata object or null if SimpleDataMetaData cannot be
    *         find in metadata
    */
-  static SimpleDataMetaData getSimpleMetadata(final DataMetadata metadata) {
+  static SimpleDataMetadata getSimpleMetadata(final DataMetadata metadata) {
 
     checkNotNull(metadata, "metadata argument cannot be null");
 
@@ -166,9 +166,9 @@ public final class DataUtils {
       md = ((UnmodifiableDataMetadata) md).getMetaData();
     }
 
-    if (md instanceof SimpleDataMetaData) {
+    if (md instanceof SimpleDataMetadata) {
 
-      return (SimpleDataMetaData) md;
+      return (SimpleDataMetadata) md;
     }
 
     return null;

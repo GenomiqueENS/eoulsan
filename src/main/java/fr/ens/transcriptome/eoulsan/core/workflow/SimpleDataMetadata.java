@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
+class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   private static final long serialVersionUID = -2905676240064559127L;
 
@@ -162,7 +162,7 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
 
     checkNotNull(metadata, "metadata argument cannot be null");
 
-    final SimpleDataMetaData md = DataUtils.getSimpleMetadata(metadata);
+    final SimpleDataMetadata md = DataUtils.getSimpleMetadata(metadata);
 
     if (md != null) {
 
@@ -219,7 +219,7 @@ class SimpleDataMetaData extends AbstractDataMetaData implements Serializable {
   /**
    * Constructor.
    */
-  SimpleDataMetaData(final Design design) {
+  SimpleDataMetadata(final Design design) {
 
     this.design = design;
   }
