@@ -55,12 +55,22 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   private static final String SAMPLE_METADATA_TYPE = "samplemetadata";
   private static final char SEPARATOR = ':';
 
-  @Override
-  public String get(final String key) {
+  /**
+   * Get the raw value of a metadata entry.
+   * @param key the key
+   * @return the raw entry if exists or null
+   */
+  String getRaw(final String key) {
 
     checkKey(key);
 
-    final String value = this.map.get(key);
+    return this.map.get(key);
+  }
+
+  @Override
+  public String get(final String key) {
+
+    final String value = getRaw(key);
 
     if (value == null) {
       return null;
@@ -109,13 +119,25 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   }
 
-  @Override
-  public void set(final String key, final String value) {
+  /**
+   * Set the raw entry of a metadata.
+   * @param key the key
+   * @param value the raw value
+   */
+  void setRaw(final String key, final String value) {
 
     checkKey(key);
     checkNotNull(value, "value argument cannot be null");
 
-    this.map.put(key, STRING_TYPE + SEPARATOR + value);
+    this.map.put(key, value);
+  }
+
+  @Override
+  public void set(final String key, final String value) {
+
+    checkNotNull(value, "value argument cannot be null");
+
+    setRaw(key, STRING_TYPE + SEPARATOR + value);
   }
 
   void setSampleName(final Sample sample) {
@@ -124,12 +146,11 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
     final String value = SAMPLE_NAME_TYPE + SEPARATOR + sample.getId();
 
-    this.map.put(SAMPLE_NAME_KEY, value);
+    setRaw(SAMPLE_NAME_KEY, value);
   }
 
   void setSampleField(final Sample sample, final String sampleField) {
 
-    checkKey(sampleField);
     checkNotNull(sample, "sample argument cannot be null");
     checkNotNull(sample, "sampleField argument cannot be null");
     checkArgument(sample.getMetadata().isField(sampleField));
@@ -138,7 +159,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
         SAMPLE_METADATA_TYPE
             + SEPARATOR + sample.getId() + SEPARATOR + sampleField;
 
-    this.map.put(sampleField, value);
+    setRaw(sampleField, value);
   }
 
   @Override
@@ -168,7 +189,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
       // If metadata object is a SimpleDataMetaData do raw copy
       for (Map.Entry<String, String> e : md.map.entrySet()) {
-        this.map.put(e.getKey(), e.getValue());
+        setRaw(e.getKey(), e.getValue());
       }
 
     } else {
