@@ -50,9 +50,9 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   private final Design design;
   private final Map<String, String> map = Maps.newHashMap();
 
-  private static final String STRING_TYPE = "string";
-  private static final String SAMPLE_NAME_TYPE = "samplename";
-  private static final String SAMPLE_METADATA_TYPE = "samplemetadata";
+  private static final String STRING_TYPE = "value";
+  private static final String SAMPLE_NAME_TYPE = "design_sample_name";
+  private static final String SAMPLE_METADATA_TYPE = "design_sample_metadata";
   private static final char SEPARATOR = ':';
 
   /**
