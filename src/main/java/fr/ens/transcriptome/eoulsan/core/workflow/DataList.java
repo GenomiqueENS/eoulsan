@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,7 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
+import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
  * This class define a data list.
@@ -46,6 +49,9 @@ public class DataList extends AbstractData implements Serializable {
   private static final long serialVersionUID = -2933515018143805029L;
 
   private final List<Data> list = Lists.newArrayList();
+
+  // Required by the metadata
+  private final Design design;
 
   // Field required for multi-files Data creation
   private final WorkflowOutputPort port;
@@ -63,7 +69,7 @@ public class DataList extends AbstractData implements Serializable {
     if (this.port == null)
       throw new UnsupportedOperationException();
 
-    final AbstractData result = new DataElement(this.port);
+    final AbstractData result = new DataElement(this.port, this.design);
     result.setName(name);
     result.setPart(part);
     this.list.add(result);
@@ -96,7 +102,7 @@ public class DataList extends AbstractData implements Serializable {
 
   @Override
   public DataMetadata getMetadata() {
-    return new UnmodifiableDataMetadata(new SimpleDataMetaData());
+    return new UnmodifiableDataMetadata(new SimpleDataMetadata(this.design));
   }
 
   @Override
@@ -144,23 +150,31 @@ public class DataList extends AbstractData implements Serializable {
   /**
    * Constructor.
    * @param port input port
+   * @param design design
    */
-  DataList(final WorkflowInputPort port) {
+  DataList(final WorkflowInputPort port, final Design design) {
 
     super(port.getFormat());
 
+    checkNotNull(design, "design argument cannot be null");
+
     this.port = null;
+    this.design = design;
   }
 
   /**
    * Constructor.
    * @param port output port
+   * @param design
    */
-  DataList(final WorkflowOutputPort port) {
+  DataList(final WorkflowOutputPort port, final Design design) {
 
     super(port.getFormat());
 
+    checkNotNull(design, "design argument cannot be null");
+
     this.port = port;
+    this.design = design;
   }
 
 }

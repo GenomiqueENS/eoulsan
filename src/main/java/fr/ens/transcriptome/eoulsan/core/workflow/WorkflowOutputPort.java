@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.core.SimpleOutputPort;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 
 /**
@@ -175,9 +176,18 @@ class WorkflowOutputPort extends SimpleOutputPort {
       map.put(fields.getDataName() + "\t" + fields.getPart(), file);
     }
 
+    // Get the design for metadata of the data
+    final Design design = step.getAbstractWorkflow().getDesign();
+
     // Fill the result
     for (String key : map.keySet()) {
-      result.add(new DataElement(getFormat(), map.get(key)));
+
+      // Set the data name
+      final DataElement data =
+          new DataElement(getFormat(), map.get(key), design);
+      data.setName(key.substring(0, key.indexOf('\t')));
+
+      result.add(data);
     }
 
     return result;

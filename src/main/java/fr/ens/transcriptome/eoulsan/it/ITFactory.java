@@ -93,11 +93,11 @@ public class ITFactory {
       "command.to.get.application.version";
   static final String INPUT_FILES_PATTERNS_CONF_KEY = "input.files.patterns";
   static final String OUTPUT_FILES_PATTERNS_CONF_KEY = "output.files.patterns";
-  static final String EXCLUDE_FILES_PATTERNS_CONF_KEY = "exclude.files.patterns";
+  static final String EXCLUDE_FILES_PATTERNS_CONF_KEY =
+      "exclude.files.patterns";
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
-  
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
@@ -138,7 +138,7 @@ public class ITFactory {
       tests = collectTests();
       testsCount = tests.size();
 
-      LOGGER.config("Count tests found " + testsCount);
+      getLogger().config("Count tests found " + testsCount);
 
       if (testsCount == 0)
         return new Object[0];
@@ -328,7 +328,8 @@ public class ITFactory {
   private void closeLogger(final int testsCount) {
 
     // Add suffix to log global filename
-    LOGGER.fine("End configuration for " + testsCount + " integrated tests.");
+    getLogger().fine(
+        "End of configuration of " + testsCount + " integration tests");
 
     final File loggerFile = new File(this.loggerPath);
 

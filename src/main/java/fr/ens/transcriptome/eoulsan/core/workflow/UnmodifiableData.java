@@ -129,7 +129,7 @@ public class UnmodifiableData implements Data, Serializable {
       data = ((UnmodifiableData) data).data;
     } while (data instanceof UnmodifiableData);
 
-    return (AbstractData) this.data;
+    return (AbstractData) data;
   }
 
   @Override

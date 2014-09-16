@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.data.DataMetadata;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class UnmodifiableDataMetadata extends AbstractDataMetaData {
+class UnmodifiableDataMetadata extends AbstractDataMetadata {
 
   private static final long serialVersionUID = 2773004152416176374L;
 
@@ -87,6 +87,21 @@ class UnmodifiableDataMetadata extends AbstractDataMetaData {
   public String toString() {
 
     return this.metadata.toString();
+  }
+
+  /**
+   * Get the AbstractData object wrapped by this object.
+   * @return the AbstractData object wrapped by this object
+   */
+  DataMetadata getMetaData() {
+
+    DataMetadata metadata = this;
+
+    do {
+      metadata = ((UnmodifiableDataMetadata) metadata).metadata;
+    } while (metadata instanceof UnmodifiableDataMetadata);
+
+    return metadata;
   }
 
   //

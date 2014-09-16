@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
+import fr.ens.transcriptome.eoulsan.design.Design;
 
 /**
  * This class define a data element.
@@ -49,7 +50,7 @@ class DataElement extends AbstractData implements Serializable {
 
   private static final long serialVersionUID = -8982205120365590676L;
 
-  private final DataMetadata metadata = new SimpleDataMetaData();
+  private final DataMetadata metadata;
   protected final List<DataFile> files;
 
   // Field required for multi-files Data creation
@@ -234,12 +235,16 @@ class DataElement extends AbstractData implements Serializable {
   // Constructor
   //
 
-  DataElement(final DataFormat format, final List<DataFile> files) {
+  DataElement(final DataFormat format, final List<DataFile> files,
+      final Design design) {
 
     super(format);
 
+    this.metadata = new SimpleDataMetadata(design);
+
     checkNotNull(format, "format argument cannot be null");
     checkNotNull(files, "files argument cannot be null");
+    checkNotNull(design, "design argument cannot be null");
 
     for (DataFile f : files)
       if (f == null)
@@ -251,15 +256,18 @@ class DataElement extends AbstractData implements Serializable {
     this.port = null;
   }
 
-  DataElement(final DataFormat format, final DataFile file) {
-    this(format, Collections.singletonList(file));
+  DataElement(final DataFormat format, final DataFile file, final Design design) {
+    this(format, Collections.singletonList(file), design);
   }
 
-  DataElement(final WorkflowOutputPort port) {
+  DataElement(final WorkflowOutputPort port, final Design design) {
 
     super(port.getFormat());
 
     checkNotNull(port, "port argument cannot be null");
+    checkNotNull(design, "design argument cannot be null");
+
+    this.metadata = new SimpleDataMetadata(design);
 
     this.port = port;
 

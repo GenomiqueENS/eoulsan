@@ -133,19 +133,45 @@ public final class DataUtils {
     }
 
     // Get the data metadata object
-    final DataMetadata dataMetadata = data.getMetadata();
+    final SimpleDataMetadata dataMetadata =
+        (SimpleDataMetadata) data.getMetadata();
 
     // Set the original sample name and sample id in the metadata
-    dataMetadata.setSampleName(sample.getName());
+    dataMetadata.setSampleName(sample);
     dataMetadata.setSampleId(sample.getId());
 
     // Set the other fields of the design file
     for (String fieldName : sample.getMetadata().getFields()) {
 
       if (!fieldsToNotUse.contains(fieldName)) {
-        dataMetadata.set(fieldName, sample.getMetadata().getField(fieldName));
+        dataMetadata.setSampleField(sample, fieldName);
       }
     }
+  }
+
+  /**
+   * Get the SimpleDataMetadata object from a DataMetadata object
+   * @param metadata the metadata object
+   * @return a SimpleDataMetadata object or null if SimpleDataMetaData cannot be
+   *         find in metadata
+   */
+  static SimpleDataMetadata getSimpleMetadata(final DataMetadata metadata) {
+
+    checkNotNull(metadata, "metadata argument cannot be null");
+
+    DataMetadata md = metadata;
+
+    // First get a metadata object that is not unmodifiable
+    if (md instanceof UnmodifiableDataMetadata) {
+      md = ((UnmodifiableDataMetadata) md).getMetaData();
+    }
+
+    if (md instanceof SimpleDataMetadata) {
+
+      return (SimpleDataMetadata) md;
+    }
+
+    return null;
   }
 
   //
