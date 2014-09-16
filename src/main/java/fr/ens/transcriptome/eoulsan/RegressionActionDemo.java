@@ -27,6 +27,10 @@ public class RegressionActionDemo {
     final String reportDir =
         "/import/geri02/it_eoulsan_results/output/testng-results";
 
+    final String appliToTestPath =
+        "/home/sperrin/workspace/eoulsan/target/dist/eoulsan-1.3-SNAPSHOT";
+    final String nameTest =
+        "000001_mapreads_bowtie-withIndex_SR_plasticite_abdomen_B2012_small_local";
     // Set the default local for all the application
     Globals.setDefaultLocale();
 
@@ -51,7 +55,12 @@ public class RegressionActionDemo {
           "/home/sperrin/home-net/eoulsan_newReadsMappers", "-f", fileTests,
           "-o", reportDir));
       break;
-    case 3:
+    case 3: // execute IT for one test
+      action.action(Lists.newArrayList("-c", confpath, "-exec",
+          appliToTestPath, "-t", nameTest, "-o", reportDir));
+      break;
+
+    case 4:
       action.action(Lists.newArrayList("-c", confpath, "-exec",
           "/home/sperrin/home-net/eoulsan_newReadsMappers", "-o", reportDir));
       break;

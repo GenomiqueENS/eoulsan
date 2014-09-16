@@ -98,6 +98,11 @@ public class ITFactory {
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
+  static final String PRETREATMENT_GLOBAL_SCRIPT_KEY =
+      "pre.global.script";
+  static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY =
+      "post.global.script";
+
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
   private static Formatter DATE_FORMATTER = new Formatter().format(

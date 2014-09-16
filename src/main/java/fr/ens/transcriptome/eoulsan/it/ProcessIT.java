@@ -386,6 +386,9 @@ public class ProcessIT {
     final File stderrFile = new File(this.outputTestDirectory, STDERR_FILENAME);
 
     // Generated test directory
+    // Optional run pre-treatment global script, before specific of the test
+    executeScript(ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY);
+    
     // Optional script, pre-treatment before launch application
     executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY);
 
@@ -402,6 +405,10 @@ public class ProcessIT {
     // Optional script, post-treatment after execution application and before
     // comparison between directories
     executeScript(ITFactory.POST_TEST_SCRIPT_CONF_KEY);
+
+    // Optional run post-treatment global script, after specific of the test
+    executeScript(ITFactory.POSTTREATMENT_GLOBAL_SCRIPT_KEY);
+
   }
 
   /**
