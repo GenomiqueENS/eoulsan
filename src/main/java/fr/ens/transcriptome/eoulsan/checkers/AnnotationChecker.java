@@ -25,6 +25,12 @@
 package fr.ens.transcriptome.eoulsan.checkers;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.COUNTER_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.OVERLAPMODE_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.REMOVEAMBIGUOUSCASES_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionCreator;
 
 /**
@@ -80,20 +85,22 @@ public class AnnotationChecker implements Checker {
   @Override
   public void configure(Set<Parameter> stepParameters) throws EoulsanException {
 
+    // TODO the parsing of the parameter must be shared with
+    // AbstractExpressionStep
+
     for (Parameter p : stepParameters) {
 
-      if (AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME
-          .equals(p.getName())) {
+      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName())) {
         this.genomicType = p.getStringValue();
-      } else if (AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME.equals(p
-          .getName())) {
+      } else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName())) {
         this.attributeId = p.getStringValue();
-      } else if ("stranded".equals(p.getName())) {
+      } else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
         this.stranded =
             "yes".equals(p.getStringValue())
                 || "reverse".equals(p.getStringValue());
-      } else if (!"counter".equals(p.getName())
-          && !"overlapmode".equals(p.getName())) {
+      } else if (!COUNTER_PARAMETER_NAME.equals(p.getName())
+          && !OVERLAPMODE_PARAMETER_NAME.equals(p.getName())
+          && !REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())) {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }
@@ -228,10 +235,11 @@ public class AnnotationChecker implements Checker {
 
       final String featureId = e.getAttributeValue(attributeId);
 
-      if (attributeId!=null && featureId==null) {
-        throw new BadBioEntryException("Feature "
-            + featureType + " does not contain a " + attributeId
-            + " attribute",e.toString());
+      if (attributeId != null && featureId == null) {
+        throw new BadBioEntryException(
+            "Feature "
+                + featureType + " does not contain a " + attributeId
+                + " attribute", e.toString());
       }
 
       if (featureId != null) {

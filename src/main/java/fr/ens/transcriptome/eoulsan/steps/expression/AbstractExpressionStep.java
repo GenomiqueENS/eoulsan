@@ -57,14 +57,14 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
-  private static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+  public static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
       "removeambiguouscases";
 
-  private static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
+  public static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
 
-  private static final String STRANDED_PARAMETER_NAME = "stranded";
+  public static final String STRANDED_PARAMETER_NAME = "stranded";
 
-  private static final String COUNTER_PARAMETER_NAME = "counter";
+  public static final String COUNTER_PARAMETER_NAME = "counter";
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
