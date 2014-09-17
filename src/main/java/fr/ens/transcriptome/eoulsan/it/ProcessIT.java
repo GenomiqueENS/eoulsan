@@ -43,14 +43,17 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
@@ -73,6 +76,8 @@ public class ProcessIT {
   private static final String TEST_SOURCE_LINK_NAME = "test-source";
   private static final String STDERR_FILENAME = "STDERR";
   private static final String STDOUT_FILENAME = "STDOUT";
+  private static final String CMDLINE_FILENAME = "CMDLINE";
+  private static final String ENV_FILENAME = "ENV";
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
@@ -384,11 +389,16 @@ public class ProcessIT {
     // Define stdout and stderr file
     final File stdoutFile = new File(this.outputTestDirectory, STDOUT_FILENAME);
     final File stderrFile = new File(this.outputTestDirectory, STDERR_FILENAME);
+    final File cmdLineFile =
+        new File(this.outputTestDirectory, CMDLINE_FILENAME);
+
+    // Save environment variable process in file
+    saveEnvironmentVariable();
 
     // Generated test directory
     // Optional run pre-treatment global script, before specific of the test
     executeScript(ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY);
-    
+
     // Optional script, pre-treatment before launch application
     executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY);
 
@@ -396,11 +406,11 @@ public class ProcessIT {
     if (this.generateExpectedData && this.manualGenerationExpectedData)
       // Case generate expected data manually only it doesn't exists
       executeScript(ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY,
-          stdoutFile, stderrFile);
+          stdoutFile, stderrFile, cmdLineFile);
     else
       // Case execute testing application
       executeScript(ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY,
-          stdoutFile, stderrFile);
+          stdoutFile, stderrFile, cmdLineFile);
 
     // Optional script, post-treatment after execution application and before
     // comparison between directories
@@ -419,7 +429,7 @@ public class ProcessIT {
   private void executeScript(final String scriptConfKey)
       throws EoulsanException {
 
-    executeScript(scriptConfKey, null, null);
+    executeScript(scriptConfKey, null, null, null);
   }
 
   /**
@@ -427,10 +437,11 @@ public class ProcessIT {
    * @param scriptConfKey key for configuration to get command line
    * @param stdoutFile file where copy the standard output of the script
    * @param stderrFile file where copy the standard output of the script
+   * @param cmdLineFile file where copy the command line of the script
    * @throws EoulsanException if an error occurs while execute script
    */
   private void executeScript(final String scriptConfKey, final File stdoutFile,
-      final File stderrFile) throws EoulsanException {
+      final File stderrFile, final File cmdLineFile) throws EoulsanException {
 
     if (this.testConf.getProperty(scriptConfKey) == null)
       return;
@@ -448,6 +459,14 @@ public class ProcessIT {
 
     // Execute script
     this.reportText.append("\nexecute script with command line: " + cmd);
+
+    // Save command line in file
+    if (cmdLineFile != null)
+      try {
+        com.google.common.io.Files.write(cmd, cmdLineFile, Charsets.UTF_8);
+      } catch (IOException e) {
+        // Nothing to do
+      }
 
     executeCommandLine(cmd, this.outputTestDirectory, "execution application",
         stdoutFile, stderrFile);
@@ -478,7 +497,7 @@ public class ProcessIT {
       }
 
       // Save stderr
-      if (stdoutFile != null) {
+      if (stderrFile != null) {
         new CopyProcessOutput(p.getErrorStream(), stderrFile, "stderr").start();
       }
 
@@ -495,6 +514,29 @@ public class ProcessIT {
       throw new EoulsanException("Error during execution script for script "
           + msg + " (directory: " + directory + ",command line: " + cmdLine
           + "): " + e.getMessage());
+    }
+  }
+
+  private void saveEnvironmentVariable() {
+    final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
+
+    final Map<String, String> constants = Maps.newHashMap();
+
+    // Extract all environments variables
+    for (Map.Entry<String, String> e : System.getenv().entrySet())
+      constants.put(e.getKey(), e.getValue());
+
+    // Write in file
+    if (constants != null && !constants.isEmpty()) {
+      // Convert to string
+      String envToString =
+          Joiner.on("\n").withKeyValueSeparator("=").join(constants);
+
+      try {
+        com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
+      } catch (IOException e) {
+        // Nothing to do
+      }
     }
   }
 
@@ -564,7 +606,8 @@ public class ProcessIT {
   }
 
   /**
-   * Group exclude file patterns with default, global configuration and configuration test.
+   * Group exclude file patterns with default, global configuration and
+   * configuration test.
    * @param valueConfigTests
    * @return exclude files patterns for tests
    */
