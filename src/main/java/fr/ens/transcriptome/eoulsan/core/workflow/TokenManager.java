@@ -603,97 +603,107 @@ public class TokenManager implements Runnable {
   @Override
   public void run() {
 
-    do {
+    try {
 
-      try {
-        Thread.sleep(CHECKING_DELAY_MS);
-      } catch (InterruptedException e) {
-        getLogger().severe(e.getMessage());
-      }
+      do {
 
-      // Do nothing until the step is not ready
-      final StepState state = this.step.getState();
-      if (!(state == READY || state == WORKING)) {
-        continue;
-      }
-
-      // Set the step to the workng state
-      if (state == READY) {
-        this.step.setState(WORKING);
-      }
-
-      // Create new contexts to submit
-      final Set<TaskContext> contexts;
-      synchronized (this) {
-
-        // Get the Workflow context
-        final WorkflowContext workflowContext =
-            this.step.getAbstractWorkflow().getWorkflowContext();
-
-        if (this.inputPorts.size() > 0) {
-
-          // Standard case
-          contexts = createContexts(workflowContext);
-        } else {
-
-          // When the step has no input port
-          contexts = createContextWhenNoInputPortExist(workflowContext);
+        try {
+          Thread.sleep(CHECKING_DELAY_MS);
+        } catch (InterruptedException e) {
+          getLogger().severe(e.getMessage());
         }
-      }
 
-      // Submit execution of the available contexts
-      if (!this.step.isSkip()) {
-        this.scheduler.submit(this.step, contexts);
-      }
+        // Do nothing until the step is not ready
+        final StepState state = this.step.getState();
+        if (!(state == READY || state == WORKING)) {
+          continue;
+        }
 
-      // If no more token to receive
-      if (isNoTokenToReceive()) {
+        // Set the step to the workng state
+        if (state == READY) {
+          this.step.setState(WORKING);
+        }
 
-        // Log received tokens
-        logReceivedTokens();
+        // Create new contexts to submit
+        final Set<TaskContext> contexts;
+        synchronized (this) {
 
+          // Get the Workflow context
+          final WorkflowContext workflowContext =
+              this.step.getAbstractWorkflow().getWorkflowContext();
+
+          if (this.inputPorts.size() > 0) {
+
+            // Standard case
+            contexts = createContexts(workflowContext);
+          } else {
+
+            // When the step has no input port
+            contexts = createContextWhenNoInputPortExist(workflowContext);
+          }
+        }
+
+        // Submit execution of the available contexts
         if (!this.step.isSkip()) {
+          this.scheduler.submit(this.step, contexts);
+        }
 
-          // Wait end of all context
-          this.scheduler.waitEndOfTasks(this.step);
+        // If no more token to receive
+        if (isNoTokenToReceive()) {
 
-          // Get the result
-          final WorkflowStepResult result = this.scheduler.getResult(this.step);
+          // Log received tokens
+          logReceivedTokens();
 
-          // Set the result immutable
-          result.setImmutable();
+          if (!this.step.isSkip()) {
 
-          // Change Step state
-          if (result.isSuccess()) {
+            // Wait end of all context
+            this.scheduler.waitEndOfTasks(this.step);
+
+            // Get the result
+            final WorkflowStepResult result =
+                this.scheduler.getResult(this.step);
+
+            // Set the result immutable
+            result.setImmutable();
+
+            // Change Step state
+            if (result.isSuccess()) {
+              this.step.setState(DONE);
+
+              // Write step result
+              if (this.step.isCreateLogFiles()) {
+                writeStepResult(result);
+              }
+
+              // Send end of step tokens
+              sendEndOfStepTokens();
+
+            } else {
+              this.step.setState(FAIL);
+            }
+          } else {
+
+            // If the step is skip the result is always OK
             this.step.setState(DONE);
 
-            // Write step result
-            if (this.step.isCreateLogFiles()) {
-              writeStepResult(result);
-            }
-
-            // Send end of step tokens
-            sendEndOfStepTokens();
-
-          } else {
-            this.step.setState(FAIL);
+            // Send all the tokens of step tokens
+            sendSkipStepTokens();
           }
-        } else {
 
-          // If the step is skip the result is always OK
-          this.step.setState(DONE);
+          // Log sent tokens
+          logSentTokens();
 
-          // Send all the tokens of step tokens
-          sendSkipStepTokens();
+          this.endOfStep = true;
         }
 
-        // Log sent tokens
-        logSentTokens();
+      } while (!this.endOfStep);
 
-        this.endOfStep = true;
-      }
+    } catch (Throwable exception) {
 
-    } while (!this.endOfStep);
+      // Stop the analysis
+      this.step.getAbstractWorkflow().emergencyStop(exception,
+          "Error while executing the workflow");
+    }
   }
 
   /**
