@@ -47,6 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 /**
  * This class define the step for normalization
  * @author deshaies
+ * @since 1.2
  */
 @LocalOnly
 public class NormalizationLocalStep extends AbstractStep {

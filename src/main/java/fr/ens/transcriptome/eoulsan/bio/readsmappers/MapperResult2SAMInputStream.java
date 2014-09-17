@@ -25,8 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +36,11 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+/**
+ * This class allow to transform the output of a mapper into SAM format.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class MapperResult2SAMInputStream extends FilterInputStream {
 
   private byte[] buffer = new byte[0];
@@ -163,24 +166,6 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
     super(in);
     this.reader =
         new BufferedReader(new InputStreamReader(this.in, Charsets.ISO_8859_1));
-
-  }
-
-  public static void main(String[] args) throws IOException {
-
-    File f = new File("/home/jourdren/toto1.sam");
-
-    BufferedReader reader =
-        new BufferedReader(new InputStreamReader(
-            new MapperResult2SAMInputStream(new FileInputStream(f))));
-
-    String line = null;
-
-    while ((line = reader.readLine()) != null) {
-      System.out.println(line);
-    }
-
-    reader.close();
 
   }
 

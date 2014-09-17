@@ -31,6 +31,11 @@ import java.util.List;
 
 import org.rosuda.REngine.REngineException;
 
+/**
+ * This class define a local reporter.
+ * @author Laurent Jourdren
+ * @since 1.2
+ */
 public interface RSConnection {
 
   /**

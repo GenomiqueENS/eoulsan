@@ -35,6 +35,7 @@ import com.google.common.collect.Maps;
 /**
  * This class contains utility methods for the Hadoop mapping package classes.
  * @author Laurent Jourdren
+ * @sine 1.2
  */
 public class HadoopMappingUtils {
 

@@ -43,6 +43,7 @@ import org.apache.zookeeper.ZooKeeper;
  *      ://www.altamiracorp.com/blog/employee-posts/distributed-lock-using-
  *      zookeeper
  * @author Laurent Jourdren
+ * @since 2.0
  */
 public class ZooKeeperLocker implements Locker, Watcher {
 
