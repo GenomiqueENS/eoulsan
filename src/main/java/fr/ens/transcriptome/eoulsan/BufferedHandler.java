@@ -36,7 +36,7 @@ import java.util.logging.LogRecord;
 /**
  * This class define a buffered handler.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class BufferedHandler extends Handler {
 

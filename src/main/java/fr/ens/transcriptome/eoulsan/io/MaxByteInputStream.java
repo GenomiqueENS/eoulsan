@@ -31,7 +31,7 @@ import java.io.InputStream;
  * This class allow to create an InputStream that can read a maximum of byte
  * from another InputStream. Warning: this class never close the original
  * stream.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class MaxByteInputStream extends InputStream {

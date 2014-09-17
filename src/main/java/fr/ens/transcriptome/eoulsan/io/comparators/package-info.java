@@ -25,6 +25,6 @@
 /**
  * This package contains classes for compare files.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 package fr.ens.transcriptome.eoulsan.io.comparators;

@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
  * This class allow compare two log files writing by step Eoulsan.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public class LogComparator extends AbstractComparator {

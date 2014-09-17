@@ -29,7 +29,7 @@ import java.lang.annotation.Annotation;
 /**
  * This class define an enum for the mode of Eoulsan.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public enum EoulsanMode {
 

@@ -38,7 +38,7 @@ import java.util.ServiceConfigurationError;
  * This class is a service loader that allow to filter class to retrieve and get
  * service by its name and not by its class name.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public abstract class ServiceNameLoader<S> {
 

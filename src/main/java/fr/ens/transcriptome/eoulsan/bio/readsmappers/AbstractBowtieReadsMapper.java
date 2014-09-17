@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public abstract class AbstractBowtieReadsMapper extends
