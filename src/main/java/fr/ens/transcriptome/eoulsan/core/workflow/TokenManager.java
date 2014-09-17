@@ -51,6 +51,7 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
@@ -368,7 +369,16 @@ public class TokenManager implements Runnable {
   private void sendSkipStepTokens() {
 
     for (WorkflowOutputPort port : this.outputPorts) {
-      for (Data data : port.getExistingData()) {
+
+      final Set<Data> existingData = port.getExistingData();
+
+      if (existingData.size() == 0) {
+        throw new EoulsanRuntimeException("No output files of the step \""
+            + this.step.getId() + "\" matching with " + FileNaming.glob(port)
+            + " found");
+      }
+
+      for (Data data : existingData) {
 
         // Get the metadata storage
         final DataMetadataStorage metadataStorage =

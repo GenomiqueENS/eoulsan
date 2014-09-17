@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -509,6 +510,85 @@ public class FileNamingTest {
         .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
         .filename()
         .equals("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz"));
+
+  }
+
+  @Test
+  public void testGlob() {
+
+    assertEquals("filterreads_output_reads_*.fq",
+        FileNaming.parse("filterreads_output_reads_s1_file0.fq").glob());
+
+    assertTrue(FileSystems.getDefault()
+        .getPathMatcher("glob:filterreads_output_reads_*.fq")
+        .matches(new File("filterreads_output_reads_s1_file0.fq").toPath()));
+
+    assertEquals("filterreads_output_reads_*.fq.bz2",
+        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2").glob());
+
+    assertTrue(FileSystems.getDefault()
+        .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2")
+        .matches(new File("filterreads_output_reads_s1_file0.fq.bz2").toPath()));
+
+    assertEquals("filterreads_output_reads_*.fq.bz2",
+        FileNaming.parse("filterreads_output_reads_s1_file0_part1.fq.bz2")
+            .glob());
+
+    assertTrue(FileSystems
+        .getDefault()
+        .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2")
+        .matches(
+            new File("filterreads_output_reads_s1_file0_part1.fq.bz2").toPath()));
+
+    assertEquals("genericindexgenerator_output_bowtieindex_*.zip", FileNaming
+        .parse("genericindexgenerator_output_bowtieindex_genome.zip").glob());
+
+    assertTrue(FileSystems
+        .getDefault()
+        .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
+        .matches(
+            new File("genericindexgenerator_output_bowtieindex_genome.zip")
+                .toPath()));
+
+    assertEquals("genericindexgenerator_output_bowtieindex_*.zip", FileNaming
+        .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip")
+        .glob());
+
+    assertTrue(FileSystems
+        .getDefault()
+        .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
+        .matches(
+            new File(
+                "genericindexgenerator_output_bowtieindex_genome_part5.zip")
+                .toPath()));
+
+    assertEquals(
+        "genericindexgenerator_output_bowtieindex_*.zip.gz",
+        FileNaming.parse(
+            "genericindexgenerator_output_bowtieindex_genome.zip.gz").glob());
+
+    assertTrue(FileSystems
+        .getDefault()
+        .getPathMatcher(
+            "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
+        .matches(
+            new File("genericindexgenerator_output_bowtieindex_genome.zip.gz")
+                .toPath()));
+
+    assertEquals(
+        "genericindexgenerator_output_bowtieindex_*.zip.gz",
+        FileNaming.parse(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
+            .glob());
+
+    assertTrue(FileSystems
+        .getDefault()
+        .getPathMatcher(
+            "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
+        .matches(
+            new File(
+                "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
+                .toPath()));
 
   }
 
