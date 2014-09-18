@@ -87,13 +87,18 @@ public class ITFactory {
       "command.to.generate.manually";
   static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
       "command.to.get.application.version";
-  static final String INPUT_FILES_PATTERNS_CONF_KEY = "input.files.patterns";
-  static final String OUTPUT_FILES_PATTERNS_CONF_KEY = "output.files.patterns";
-  static final String EXCLUDE_FILES_PATTERNS_CONF_KEY = "exclude.files.patterns";
+  
+  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY = "file.to.compare.patterns";
+  static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY = "exclude.to.compare.patterns";
+
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
-  
+  static final String PRETREATMENT_GLOBAL_SCRIPT_KEY =
+      "pre.global.script";
+  static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY =
+      "post.global.script";
+
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
