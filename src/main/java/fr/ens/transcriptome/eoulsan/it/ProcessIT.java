@@ -90,9 +90,8 @@ public class ProcessIT {
   private final File outputTestDirectory;
   private final File expectedTestDirectory;
 
-  private final String inputFilesPattern;
-  private final String outputFilesPattern;
-  private final String excludeFilesPattern;
+  private final String fileToComparePatterns;
+  private final String excludeToComparePatterns;
 
   private final boolean generateExpectedData;
   private final boolean generateAllTests;
@@ -172,8 +171,8 @@ public class ProcessIT {
 
       // Treat result application directory
       regressionResultIT =
-          new ResultIT(this.outputTestDirectory, this.inputFilesPattern,
-              this.outputFilesPattern, this.excludeFilesPattern);
+          new ResultIT(this.outputTestDirectory, this.fileToComparePatterns,
+              this.excludeToComparePatterns);
 
       if (this.generateExpectedData) {
         // Build expected directory if necessary
@@ -191,26 +190,18 @@ public class ProcessIT {
         outputComparison =
             regressionResultIT.compareTo(new ResultIT(
                 this.expectedTestDirectory.getParentFile(),
-                this.inputFilesPattern, this.outputFilesPattern,
-                this.excludeFilesPattern));
+                this.fileToComparePatterns, this.excludeToComparePatterns));
 
         // Comparison assessment
         status = outputComparison.isResult();
       }
 
     } catch (EoulsanITRuntimeException e) {
-      msgException =
-          "Fail comparison test "
-              + testName + ", cause: " + e.getMessage() + "\n";
-      getLogger().warning(msgException);
+      msgException = buildMessageException(e, testName, true);
       throw new Exception(msgException);
 
     } catch (Exception e) {
-      msgException =
-          "Fail test "
-              + testName + ", cause: " + e.getMessage() + "\n\t"
-              + e.getClass().getName() + "\n";
-      getLogger().warning(msgException);
+      msgException = buildMessageException(e, testName, false);
       throw new Exception(msgException);
 
     } finally {
@@ -243,6 +234,29 @@ public class ProcessIT {
                       : ": launch test and comparison") + " in "
                   + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
     }
+  }
+
+  /**
+   * Build message exception with stack trace
+   * @param e object throwable
+   * @param testName test name
+   * @param debugMode true add stack trace in message exception
+   * @return message
+   */
+  private static String buildMessageException(final Throwable e,
+      final String testName, final boolean debugMode) {
+
+    String msgException =
+        "Fail test "
+            + testName + ", cause: " + e.getMessage() + "\n\t"
+            + e.getClass().getName() + "\n";
+
+    if (debugMode)
+      msgException += "\n\n" + Joiner.on("\n\t").join(e.getStackTrace());
+
+    getLogger().warning(msgException);
+
+    return msgException;
   }
 
   /**
@@ -709,7 +723,7 @@ public class ProcessIT {
   public String toString() {
 
     return this.description
-        + "\n(output files pattern defined " + this.outputFilesPattern + ")";
+        + "\nfiles to compare pattern " + this.fileToComparePatterns + "";
   }
 
   //
@@ -757,15 +771,13 @@ public class ProcessIT {
 
     this.outputTestDirectory = new File(testsDirectory, this.testName);
 
-    this.inputFilesPattern =
-        this.testConf.getProperty(ITFactory.INPUT_FILES_PATTERNS_CONF_KEY);
-    this.outputFilesPattern =
-        this.testConf.getProperty(ITFactory.OUTPUT_FILES_PATTERNS_CONF_KEY);
+    this.fileToComparePatterns =
+        this.testConf.getProperty(ITFactory.FILE_TO_COMPARE_PATTERNS_CONF_KEY);
 
     // Set exclude pattern for this test
-    this.excludeFilesPattern =
+    this.excludeToComparePatterns =
         buildExcludePatterns(this.testConf
-            .getProperty(ITFactory.EXCLUDE_FILES_PATTERNS_CONF_KEY));
+            .getProperty(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
 
     // Set action required
     final String actionType =
