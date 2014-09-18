@@ -222,6 +222,11 @@ public class TokenManager implements Runnable {
       // Get the sample id from metadata
       final int sampleId = e.getMetadata().getSampleId();
 
+      // Do nothing if sample id is not set in metadata
+      if (sampleId == -1) {
+        continue;
+      }
+
       // For all data
       for (DataFile f : DataUtils.getDataFiles(e)) {
 
