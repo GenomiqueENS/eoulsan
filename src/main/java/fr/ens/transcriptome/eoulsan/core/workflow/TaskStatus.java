@@ -60,7 +60,7 @@ public class TaskStatus implements StepStatus {
 
   private Date startDate;
   private Date endDate;
-  private Stopwatch stopwatch = new Stopwatch();
+  private Stopwatch stopwatch = Stopwatch.createUnstarted();
 
   //
   // Getters
@@ -170,7 +170,7 @@ public class TaskStatus implements StepStatus {
     setProgress(1.0);
 
     // Compute elapsed time
-    return this.stopwatch.elapsedTime(TimeUnit.MILLISECONDS);
+    return this.stopwatch.elapsed(TimeUnit.MILLISECONDS);
   }
 
   @Override
