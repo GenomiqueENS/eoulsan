@@ -41,7 +41,6 @@ import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
@@ -58,9 +57,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Sandrine Perrin
  */
 public class ITFactory {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
 
   // Java system properties keys used for integration tests
   public static final String IT_CONF_PATH_SYSTEM_KEY = "it.conf.path";
@@ -91,10 +87,10 @@ public class ITFactory {
       "command.to.generate.manually";
   static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
       "command.to.get.application.version";
-  static final String INPUT_FILES_PATTERNS_CONF_KEY = "input.files.patterns";
-  static final String OUTPUT_FILES_PATTERNS_CONF_KEY = "output.files.patterns";
-  static final String EXCLUDE_FILES_PATTERNS_CONF_KEY =
-      "exclude.files.patterns";
+  
+  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY = "file.to.compare.patterns";
+  static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY = "exclude.to.compare.patterns";
+
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
