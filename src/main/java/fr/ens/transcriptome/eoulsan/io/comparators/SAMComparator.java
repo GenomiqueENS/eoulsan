@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
  * This class allow compare two SAM file with use BloomFilter.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public class SAMComparator extends AbstractComparatorWithBloomFilter {

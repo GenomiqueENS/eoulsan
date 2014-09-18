@@ -301,6 +301,21 @@ public class FileNaming {
   }
 
   /**
+   * Get a glob for the filename.
+   * @return a glob in a string
+   */
+  public String glob() {
+
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append(filePrefix());
+    sb.append('*');
+    sb.append(fileSuffix());
+
+    return sb.toString();
+  }
+
+  /**
    * Return the filename using Eoulsan 1.x naming.
    * @return a string with the filename using Eoulsan 1.x naming
    */
@@ -442,6 +457,18 @@ public class FileNaming {
     sb.append(SEPARATOR);
 
     return sb.toString();
+  }
+
+  /**
+   * Create the glob for the port.
+   * @return a glob in a string
+   */
+  public static String glob(final WorkflowOutputPort port) {
+
+    final FileNaming f = new FileNaming();
+    f.set(port);
+
+    return f.glob();
   }
 
   //

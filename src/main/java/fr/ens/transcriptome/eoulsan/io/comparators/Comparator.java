@@ -31,7 +31,7 @@ import java.util.Collection;
 
 /**
  * This interface define methods to compare files.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public interface Comparator {

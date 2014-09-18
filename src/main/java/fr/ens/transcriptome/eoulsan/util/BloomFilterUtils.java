@@ -14,6 +14,11 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.PrimitiveSink;
 
+/**
+ * This class define Bloom filters utils.
+ * @author Sandrine Perrin
+ * @since 2.0
+ */
 public class BloomFilterUtils implements Serializable {
   private static final long serialVersionUID = 1L;
 

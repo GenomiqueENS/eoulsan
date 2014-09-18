@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 /**
  * This class define an abstract class that is returned by a mapper.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public abstract class MapperProcess {
 

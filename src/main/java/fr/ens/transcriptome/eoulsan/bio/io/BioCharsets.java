@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 /**
  * This class define encoding and charsets for bio file formats.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class BioCharsets {
 

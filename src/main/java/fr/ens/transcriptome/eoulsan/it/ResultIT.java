@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * The class manage the output directory of the integrated test for the
  * comparison.
  * @author Sandrine Perrin
- * @since 1.3
+ * @since 2.0
  */
 public class ResultIT {
 
@@ -359,7 +359,7 @@ public class ResultIT {
    * The internal class represents output result of directories comparison with
    * boolean of the global result and a report text.
    * @author Sandrine Perrin
-   * @since 1.3
+   * @since 2.0
    */
   final class OutputExecution {
 
@@ -420,7 +420,7 @@ public class ResultIT {
    * The internal class choice the comparator matching to filename and compare
    * two files.
    * @author Sandrine Perrin
-   * @since 1.3
+   * @since 2.0
    */
   private static final class FilesComparator {
 

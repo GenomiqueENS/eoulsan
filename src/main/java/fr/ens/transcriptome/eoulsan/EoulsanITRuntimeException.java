@@ -24,7 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-
+/**
+ * This class define a runtime exception for integration tests.
+ * @author Sandrine Perrin
+ * @since 2.0
+ */
 public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
   private static final long serialVersionUID = -1897738767737351557L;

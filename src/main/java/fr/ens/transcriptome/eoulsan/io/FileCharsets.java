@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 /**
  * This class define default charsets.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class FileCharsets {
 

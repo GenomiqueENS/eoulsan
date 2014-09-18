@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 /**
  * This class allow to compare two binary files.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class BinaryComparator extends AbstractComparator {
 

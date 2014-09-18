@@ -32,6 +32,11 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 
+/**
+ * This class define a local reporter.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class LocalReporter implements Reporter {
 
   private Map<String, Map<String, Long>> map =

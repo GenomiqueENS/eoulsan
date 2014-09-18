@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * This class define an enhanced connection to RServe.
  * @author Laurent Jourdren
  * @author Marion Gaussen
+ * @since 1.2
  */
 public class RSConnectionNewImpl implements RSConnection {
 

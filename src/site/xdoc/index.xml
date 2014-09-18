@@ -85,7 +85,26 @@
 
 
 		</section>
-		
+
+        <section name="What's new in Eoulsan @@@VERSION@@@? ">
+
+		<p>Eoulsan 2.0 is currently <u><b>under development</b></u> and <u><b>should not be used for production</b></u>.
+		However this version has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
+
+		<p><b>Warning:</b> this documentation may not be up to date for the latest features of Eoulsan 2.0.</p>
+
+		<p>The main new features in this version of Eoulsan are:</p>
+		<ul>
+		  <li>New workflow engine</li>
+		  <li>Separate log file for each step</li>
+		  <li>Integration tests engine</li>
+		  <li>Support for multiple versions of a mapper</li>
+		  <li>Rewritten mapper launcher</li>
+		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
+		</ul>
+
+		</section>
+
 		<section name="RNA-Seq analysis">
 		
 		<p>Eoulsan contains out the box a fully customizable RNA-Seq pipeline that generate many reports about the performed analysis. The following images are
@@ -94,7 +113,15 @@
 		<div align="center">
 		  <img src="images/boxplotRaw-200pxh.png"/> <img src="images/MA-plot-mo_injection-mo_mirna_injection-200pxh.png"/>
 		</div>
+
+		<p>This version currently use DESeq 1 for normalization and differential analysis but support of DESeq 2 is planned latter in the Eoulsan 2.0 release cycle.</p>
+
+		</section>
+
+		<section name="Chip-Seq analysis">
 		
+		<p>The final Eoulsan 2.0 version will support Chip-Seq analysis, however this feature is currently not implemented.</p>
+
 		</section>
 		
         <section name="Object model">
@@ -104,20 +131,6 @@
             of the project.</p>
         
         </section>		
-		
-		<section name="What's new in Eoulsan @@@VERSION@@@? ">
-		
-		<p>The main new features in this version of Eoulsan are:</p>
-		<ul>
-		  <li>Paired-end data is now fully supported</li>
-		  <li>Bowtie 2 has been added as mapper in the mapping step</li>
-		  <li>HTSeq-count can now be used for expression counting</li>
-		  <li>Normalization and differential analysis now use DESeq 1.8.3</li>
-		  <li>An external RServe server can be used to perform normalization and differential analysis</li>
-		  <li>And many other enhancements,  see the <a href="#@@@VERSION@@@">full changelog</a> for more information</li>
-		</ul>
-				
-		</section>
 
 		<section name="Availability">
 

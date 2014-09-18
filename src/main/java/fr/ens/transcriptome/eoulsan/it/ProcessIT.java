@@ -66,7 +66,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * data to test directory, in this case the comparison with expected data was
  * launch.
  * @author Sandrine Perrin
- * @since 1.3
+ * @since 2.0
  */
 public class ProcessIT {
 

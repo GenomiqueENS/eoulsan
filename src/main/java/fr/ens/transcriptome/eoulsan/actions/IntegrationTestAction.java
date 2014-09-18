@@ -46,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.it.ITFactory;
 
 /**
  * This class launch integration test with Testng class.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  * @author Sandrine Perrin
  */

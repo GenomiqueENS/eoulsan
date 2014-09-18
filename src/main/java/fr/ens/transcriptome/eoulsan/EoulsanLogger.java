@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * This class allow to change the logger name for all Eoulsan classes. The
  * setLoggetName() method must be called before any other Eoulsan method.
  * @author Laurent Jourdren
- * @since 1.3
+ * @since 2.0
  */
 public class EoulsanLogger {
 

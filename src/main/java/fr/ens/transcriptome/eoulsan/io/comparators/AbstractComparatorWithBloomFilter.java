@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
  * This abstract class define methods to compare files with use BloomFilter.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public abstract class AbstractComparatorWithBloomFilter extends

@@ -36,7 +36,7 @@ import java.util.Collection;
 
 /**
  * This abstract class define methods to compare files.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public abstract class AbstractComparator implements Comparator {

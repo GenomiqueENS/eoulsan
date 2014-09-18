@@ -27,6 +27,11 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.Serializable;
 import java.util.Set;
 
+/**
+ * This class define a class that contains several output ports.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class SimpleOutputPorts extends AbstractPorts<OutputPort> implements
     OutputPorts, Serializable {
 

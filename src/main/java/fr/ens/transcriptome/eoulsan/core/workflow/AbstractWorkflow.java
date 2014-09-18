@@ -90,6 +90,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final Map<AbstractWorkflowStep, StepState> steps = Maps.newHashMap();
   private final Multimap<StepState, AbstractWorkflowStep> states =
       ArrayListMultimap.create();
+  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 
   private AbstractWorkflowStep rootStep;
   private AbstractWorkflowStep designStep;
@@ -380,8 +381,8 @@ public abstract class AbstractWorkflow implements Workflow {
       step.setState(WAITING);
     }
 
-    final Stopwatch stopwatch = new Stopwatch();
-    stopwatch.start();
+    // Start stop watch
+    this.stopwatch.start();
 
     while (!getSortedStepsByState(READY, WAITING, WORKING).isEmpty()) {
 
@@ -413,18 +414,16 @@ public abstract class AbstractWorkflow implements Workflow {
           }
         }
 
-        // Log end of analysis
-        logEndAnalysis(false, stopwatch);
+        // Get the exception that cause the fail of the analysis
+        final Throwable exception;
+        if (firstResult.getException() != null) {
+          exception = firstResult.getException();
+        } else {
+          exception = new EoulsanException("Fail of the analysis.");
+        }
 
-        // Stop the workflow
-        stop();
-
-        if (firstResult.getException() != null)
-          Common.errorExit(firstResult.getException(),
-              firstResult.getErrorMessage());
-        else
-          Common.errorExit(new EoulsanException("Fail of the analysis."),
-              firstResult.getErrorMessage());
+        // Stop the analysis
+        emergencyStop(exception, firstResult.getErrorMessage());
 
         break;
       }
@@ -433,9 +432,12 @@ public abstract class AbstractWorkflow implements Workflow {
     // Stop the workflow
     stop();
 
-    logEndAnalysis(true, stopwatch);
+    logEndAnalysis(true);
   }
 
+  /**
+   * Stop the threads used by the workflow.
+   */
   private void stop() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
@@ -451,6 +453,23 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Stop scheduler
     TaskSchedulerFactory.getScheduler().stop();
+  }
+
+  /**
+   * Stop the workflow if the analysis failed.
+   * @param exception exception
+   * @param errorMessage error message
+   */
+  void emergencyStop(final Throwable exception, final String errorMessage) {
+
+    // Log end of analysis
+    logEndAnalysis(false);
+
+    // Stop the workflow
+    stop();
+
+    // Exit Eoulsan
+    Common.errorExit(exception, errorMessage);
   }
 
   //
@@ -577,8 +596,8 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir }) {
+      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
 
         if (dir == null)
           continue;
@@ -638,9 +657,9 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param success true if analysis was successful
    * @param stopwatch stopwatch of the workflow epoch
    */
-  private void logEndAnalysis(final boolean success, final Stopwatch stopwatch) {
+  private void logEndAnalysis(final boolean success) {
 
-    stopwatch.stop();
+    this.stopwatch.stop();
 
     final String successString = success ? "Successful" : "Unsuccessful";
 
@@ -648,8 +667,8 @@ public abstract class AbstractWorkflow implements Workflow {
     getLogger().info(
         successString
             + " end of the analysis in "
-            + StringUtils.toTimeHumanReadable(stopwatch
-                .elapsedTime(MILLISECONDS)) + " s.");
+            + StringUtils.toTimeHumanReadable(stopwatch.elapsed(MILLISECONDS))
+            + " s.");
 
     // Send a mail
 
@@ -669,8 +688,7 @@ public abstract class AbstractWorkflow implements Workflow {
             + ".\nJob finished at "
             + new Date(System.currentTimeMillis())
             + " in "
-            + StringUtils.toTimeHumanReadable(stopwatch
-                .elapsedTime(MILLISECONDS))
+            + StringUtils.toTimeHumanReadable(stopwatch.elapsed(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
             + workflowContext.getOutputPathname() + "\n\nThe "
             + Globals.APP_NAME + "team.";

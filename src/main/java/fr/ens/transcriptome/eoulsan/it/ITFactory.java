@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class launch integration test with Testng.
- * @since 1.3
+ * @since 2.0
  * @author Laurent Jourdren
  * @author Sandrine Perrin
  */

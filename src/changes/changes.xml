@@ -427,11 +427,32 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
-         <release version="1.3" description="Eoulsan 1.3 release" date="TBD">
-            <action dev="jourdren" type="ADD">
+         <release version="2.0-alpha1" description="Eoulsan 1.3 release" date="TBD">
+            <action dev="jourdren" type="add">
                 A new locker for the reads mapping step in Hadoop mode is now used. It is
                 based on Zookeeper and is very stable.
             </action>
+
+            <action dev="jourdren" type="add">
+                Add a new workflow engine to Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Each Eoulsan step has now a dedicated log file.
+            </action>
+
+            <action dev="sperrin" type="add">
+                An integration tests engine has been added to ensure Eoulsan results consistancy across versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Support for multiple versions of a mapper. User can now set the mapper version to use in Eoulsan workflow file.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The code for launching and parse mapper output has been rewritten.
+            </action>
+
          </release>
 
 	</body>

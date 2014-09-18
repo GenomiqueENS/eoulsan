@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
  * This class allow compare two text files with use BloomFilter.
- * @since 1.3
+ * @since 2.0
  * @author Sandrine Perrin
  */
 public class TextComparator extends AbstractComparatorWithBloomFilter {
