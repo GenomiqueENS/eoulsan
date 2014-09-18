@@ -8,15 +8,11 @@ import fr.ens.transcriptome.eoulsan.actions.IntegrationTestAction;
 
 public class RegressionActionDemo {
 
-  /**
-   * Logger
-   * @throws IOException
-   */
-
   public static void main(String[] args) throws EoulsanException, IOException {
 
     RegressionActionDemo.mainbis();
 
+    
   }
 
   public static void mainbis() {
@@ -32,12 +28,12 @@ public class RegressionActionDemo {
     final String nameTest =
         "000001_mapreads_bowtie-withIndex_SR_plasticite_abdomen_B2012_small_local";
     // Set the default local for all the application
-    Globals.setDefaultLocale();
+    // Globals.setDefaultLocale();
 
     IntegrationTestAction action = new IntegrationTestAction();
 
     // Run action
-    int choice = 0;
+    int choice = 3;
 
     switch (choice) {
     case 0:
