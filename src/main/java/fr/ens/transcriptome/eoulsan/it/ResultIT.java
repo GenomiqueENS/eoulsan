@@ -23,24 +23,27 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
 import static com.google.common.collect.Sets.newHashSet;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
@@ -69,10 +72,10 @@ public class ResultIT {
   private static PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
       .getPathMatcher("glob:*");
 
-  private final Set<PathMatcher> patternsFilesTreated;
-  private final Set<PathMatcher> allPatternsFiles;
-  private final Set<PathMatcher> outputExcludePatternsFiles;
-  private final List<File> filesList;
+  private final String fileToComparePatterns;
+  private final String excludeToComparePatterns;
+
+  private final List<File> filesToCompare;
   private final File directory;
 
   /**
@@ -86,10 +89,10 @@ public class ResultIT {
       throws IOException, EoulsanException {
 
     // Check at least on file match with a pattern
-    boolean noFileMatchPatterns = false;
+    boolean noFileFoundToCopy = true;
 
     // Copy output files
-    for (File f : filesList) {
+    for (File f : filesToCompare) {
 
       final String filename = f.getName();
 
@@ -97,30 +100,19 @@ public class ResultIT {
       if (!new File(destinationDirectory, filename).exists()) {
         final File dest = new File(destinationDirectory, filename);
 
-        // Check not exist in parent directory (corresponding to the input
-        // directory for a test)
-        final File parent =
-            new File(destinationDirectory.getParentFile(), filename);
-
-        if (parent.exists()) {
-          // No copy
-          continue;
-        }
-
         if (!FileUtils.copyFile(f, dest))
           throw new IOException("Error when moving file "
               + filename + " to " + destinationDirectory.getAbsolutePath()
               + ".");
 
-        noFileMatchPatterns =
-            noFileMatchPatterns
-                || isFilenameMatches(this.patternsFilesTreated, filename);
+        noFileFoundToCopy = false;
       }
     }
 
-    if (!noFileMatchPatterns) {
+    if (noFileFoundToCopy) {
       String msg =
-          "Fail: none file in source directory corresponding to output file pattern";
+          "Fail: none file to copy in dest "
+              + destinationDirectory.getAbsolutePath();
       throw new EoulsanException(msg);
     }
 
@@ -142,13 +134,14 @@ public class ResultIT {
       throws IOException {
 
     // Copy list files
-    final List<File> allFilesFromTest = new ArrayList<File>(this.filesList);
+    final List<File> allFilesFromTest =
+        new ArrayList<File>(this.filesToCompare);
 
     // Build map filename with files path
     Map<String, File> filesTestedMap =
         newHashMapWithExpectedSize(expectedOutput.getFilesList().size());
 
-    for (File f : this.filesList) {
+    for (File f : this.filesToCompare) {
       filesTestedMap.put(f.getName(), f);
     }
 
@@ -174,10 +167,10 @@ public class ResultIT {
       if (!res) {
         msg =
             "Fail comparison with file: "
-                + fileExpected.getAbsolutePath() + " vs "
+                + fileExpected.getAbsolutePath() + " "
                 + fileTested.getAbsolutePath() + "\n\tdetail: "
                 + fc.getDetailComparison();
-        
+
         comparison.appendComparison(msg, false);
 
         throw new EoulsanITRuntimeException(msg);
@@ -194,7 +187,7 @@ public class ResultIT {
     if (!allFilesFromTest.isEmpty()) {
       msg =
           "Unexpected file in data to test directory: "
-              + Joiner.on(" ").join(allFilesFromTest);
+              + Joiner.on("\n\t").join(allFilesFromTest);
       comparison.appendComparison(msg, false);
 
       throw new EoulsanITRuntimeException(msg);
@@ -204,7 +197,7 @@ public class ResultIT {
     // Remove all files not need to compare
     // this.cleanDirectory();
 
-    //
+    System.out.println("report comparaison " + comparison.getReport());
     return comparison;
   }
 
@@ -218,76 +211,91 @@ public class ResultIT {
    * @param sourceDirectory source directory
    * @return a map with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
+   * @throws EoulsanException if no file to compare found
    */
-  private List<File> createListFiles(final File sourceDirectory)
-      throws IOException {
+  private List<File> createListFiles() throws IOException, EoulsanException {
 
-    checkExistingDirectoryFile(sourceDirectory, "source directory");
+    // Build list patterns
+    final Set<PathMatcher> fileToCompareMatcher =
+        createPathMatchers(this.fileToComparePatterns, true);
 
-    final List<File> files = newArrayList();
+    final Set<PathMatcher> excludeToCompareMatcher =
+        createPathMatchers(this.excludeToComparePatterns, false);
 
-    for (File file : sourceDirectory.listFiles()) {
+    final List<File> files = listingFilesFromPatterns(fileToCompareMatcher);
 
-      // Apply excluding pattern
-      if (isFilenameMatches(this.outputExcludePatternsFiles, file.getName())) {
-        continue;
-      }
+    if (files.isEmpty())
+      throw new EoulsanException("No file found with patterns "
+          + this.fileToComparePatterns);
 
-      // Process sub-directories
-      if (file.isDirectory()) {
-        files.addAll(createListFiles(file));
-      }
+    final List<File> excludedFiles =
+        listingFilesFromPatterns(excludeToCompareMatcher);
 
-      // Search files that match with one of all patterns
-      if (isFilenameMatches(this.allPatternsFiles, file.getName())) {
-        files.add(file);
-      }
-    }
+    // Remove exclude files
+    if (!excludedFiles.isEmpty())
+      files.removeAll(excludedFiles);
 
     // Return unmodifiable list
     return Collections.unmodifiableList(files);
   }
 
   /**
-   * Check a file matching to a pattern. If no pattern define, return always
-   * true.
-   * @param patterns patterns for filename
-   * @param filename the file name
-   * @return true if the path match to one pattern or none pattern otherwise
-   *         false
+   * @param patterns
+   * @return
+   * @throws IOException
    */
-  private boolean isFilenameMatches(final Collection<PathMatcher> patterns,
-      final String filename) {
+  public List<File> listingFilesFromPatterns(final Set<PathMatcher> patterns)
+      throws IOException {
 
-    checkNotNull(patterns, "patterns argument cannot be null");
+    final List<File> matchedFiles = Lists.newArrayList();
 
-    // Ignore compression extension file
-    final String filenameWithoutCompressionExtension =
-        StringUtils.filenameWithoutCompressionExtension(filename);
-    final Path path = new File(filenameWithoutCompressionExtension).toPath();
+    for (final PathMatcher matcher : patterns) {
 
-    // Parse all patterns
-    for (PathMatcher matcher : patterns) {
-      if (matcher.matches(path))
-        return true;
+      Files.walkFileTree(Paths.get(directory.toURI()),
+          new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file,
+                BasicFileAttributes attrs) throws IOException {
+
+              if (matcher.matches(file)) {
+                // System.out.println("Matches OK " + file);
+                matchedFiles.add(file.toFile());
+              } else {
+                // System.out.println("Don't match " + file);
+              }
+              return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                throws IOException {
+              return FileVisitResult.CONTINUE;
+            }
+          });
     }
-
-    return false;
+    return Collections.unmodifiableList(matchedFiles);
   }
 
   /**
    * Build collection of PathMatcher for selection files to tread according to a
    * pattern file define in test configuration. Patterns set in string with
    * space to separator. Get input and output patterns files.
-   * @param patterns sequences of patterns files
-   * @return collection of PathMatcher, one per pattern
+   * @param patterns sequences of patterns filesList.
+   * @param defaultAllPath if true and patterns empty use default pattern
+   *          otherwise empty collection
+   * @return collection of PathMatcher, one per pattern. Can be empty if no
+   *         pattern defined and exclude use default patterns.
    */
-  private static Set<PathMatcher> createPathMatchers(final String patterns) {
+  // TODO private
+  static Set<PathMatcher> createPathMatchers(final String patterns,
+      final boolean defaultAllPath) {
 
     // No pattern defined
     if (patterns == null || patterns.trim().isEmpty()) {
 
-      return Collections.singleton(ALL_PATH_MATCHER);
+      if (defaultAllPath)
+        return Collections.singleton(ALL_PATH_MATCHER);
+      return Collections.emptySet();
     }
 
     // Init collection
@@ -318,7 +326,7 @@ public class ResultIT {
    * @return map with file name and instance of file
    */
   public final List<File> getFilesList() {
-    return this.filesList;
+    return this.filesToCompare;
   }
 
   //
@@ -329,23 +337,18 @@ public class ResultIT {
    * Public constructor, it build list patterns and create list files from the
    * source directory.
    * @param outputTestDirectory source directory
-   * @param inputPatternsFiles sequences of patterns, separated by a space
-   * @param outputPatternsFiles sequences of patterns, separated by a space
-   * @param outputExcludePattern sequences of patterns, separated by a space
+   * @param fileToComparePatterns sequences of patterns, separated by a space
+   * @param excludeToComparePatterns sequences of patterns, separated by a space
    * @throws IOException if an error occurs while parsing input directory
    */
   public ResultIT(final File outputTestDirectory,
-      final String inputPatternsFiles, final String outputPatternsFiles,
-      final String outputExcludePattern) throws IOException {
+      final String fileToComparePatterns, final String excludeToComparePatterns)
+      throws IOException, EoulsanException {
     this.directory = outputTestDirectory;
+    this.fileToComparePatterns = fileToComparePatterns;
+    this.excludeToComparePatterns = excludeToComparePatterns;
 
-    // Build list patterns
-    this.patternsFilesTreated = createPathMatchers(outputPatternsFiles);
-    this.allPatternsFiles =
-        createPathMatchers(inputPatternsFiles + " " + outputPatternsFiles);
-    this.outputExcludePatternsFiles = createPathMatchers(outputExcludePattern);
-
-    this.filesList = createListFiles(this.directory);
+    this.filesToCompare = createListFiles();
   }
 
   //
