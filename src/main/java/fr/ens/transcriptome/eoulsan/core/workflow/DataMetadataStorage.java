@@ -37,8 +37,10 @@ public class DataMetadataStorage {
   /**
    * Set the metdata of a data from the metadata storage.
    * @param data the date which metadata must be set
+   * @return true if the metadata for the data has been found in the metadata
+   *         storage
    */
-  public void loadMetadata(final Data data) {
+  public boolean loadMetadata(final Data data) {
 
     checkNotNull(data, "data argument cannot be null");
 
@@ -47,9 +49,10 @@ public class DataMetadataStorage {
 
     // Do nothing if metadata cannot be set
     if (metadata == null) {
-      return;
+      return false;
     }
 
+    boolean result = false;
     final List<DataFile> files = DataUtils.getDataFiles(data);
 
     // For each file of the data
@@ -66,8 +69,11 @@ public class DataMetadataStorage {
           metadata.setRaw(e.getKey(), e.getValue());
         }
 
+        result = true;
       }
     }
+
+    return result;
   }
 
   /**

@@ -62,6 +62,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -203,8 +204,10 @@ public class TokenManager implements Runnable {
           DataMetadataStorage.getInstance(this.step.getAbstractWorkflow()
               .getOutputDir());
 
-      // Store token metadata
-      metadataStorage.saveMetaData(token.getData());
+      // Store token metadata only if step is not skipped
+      if (!this.step.isSkip()) {
+        metadataStorage.saveMetaData(token.getData());
+      }
     }
   }
 
@@ -373,6 +376,12 @@ public class TokenManager implements Runnable {
    */
   private void sendSkipStepTokens() {
 
+    // Create a map with the samples
+    final Map<String, Sample> samples = Maps.newHashMap();
+    for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
+      samples.put(FileNaming.toValidName(sample.getName()), sample);
+    }
+
     for (WorkflowOutputPort port : this.outputPorts) {
 
       final Set<Data> existingData = port.getExistingData();
@@ -391,7 +400,17 @@ public class TokenManager implements Runnable {
                 .getOutputDir());
 
         // Set the metadata of data from the storage of metadata
-        metadataStorage.loadMetadata(data);
+        final boolean isMetadataSet = metadataStorage.loadMetadata(data);
+
+        // If metadata has not been found from metadata storage
+        if (!isMetadataSet) {
+
+          // Set the metadata from sample metadata
+          if (samples.containsKey(data.getName())) {
+            DataUtils.setDataMetaData(data, samples.get(data.getName()));
+          }
+
+        }
 
         this.step.sendToken(new Token(port, data));
       }
