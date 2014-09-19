@@ -88,6 +88,25 @@ public final class DataUtils {
   }
 
   /**
+   * Change the DataFiles in a Data object
+   * @param data Data object to modify
+   * @param dataFiles DataFiles to set
+   */
+  public static void setDataFiles(final Data data,
+      final List<DataFile> dataFiles) {
+
+    checkNotNull(data, "data argument cannot be null");
+
+    if (data.isList()) {
+      throw new IllegalArgumentException(
+          "data list are not handled by this method");
+    }
+
+    final DataElement modifiableData = (DataElement) data;
+    modifiableData.setDataFiles(dataFiles);
+  }
+
+  /**
    * Get the list of the DataFile objects in a Data object.
    * @param data data object
    * @return a list of DataFile objects

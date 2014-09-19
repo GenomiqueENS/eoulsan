@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
@@ -31,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
@@ -131,9 +131,13 @@ class DataElement extends AbstractData implements Serializable {
     return this.files.get(0);
   }
 
+  /**
+   * Set the first data file.
+   * @param dataFile data file to set
+   */
   void setDataFile(final DataFile dataFile) {
 
-    Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
+    checkNotNull(dataFile, "DataFile to set cannot be null");
 
     if (this.files.size() == 0)
       throw new IllegalStateException(
@@ -142,11 +146,15 @@ class DataElement extends AbstractData implements Serializable {
     this.files.set(0, dataFile);
   }
 
+  /**
+   * Set a DataFile.
+   * @param fileIndex index of the data file
+   * @param dataFile file to set
+   */
   void setDataFile(final int fileIndex, final DataFile dataFile) {
 
-    Preconditions.checkArgument(fileIndex >= 0,
-        "fileIndex argument must be >=0");
-    Preconditions.checkNotNull(dataFile, "DataFile to set cannot be null");
+    checkArgument(fileIndex >= 0, "fileIndex argument must be >=0");
+    checkNotNull(dataFile, "DataFile to set cannot be null");
 
     if (fileIndex >= this.files.size())
       throw new IllegalStateException(
@@ -155,6 +163,29 @@ class DataElement extends AbstractData implements Serializable {
     this.files.set(fileIndex, dataFile);
   }
 
+  /**
+   * Set the DataFiles.
+   * @param dataFiles files to set
+   */
+  void setDataFiles(final List<DataFile> dataFile) {
+
+    checkNotNull(dataFile, "dataFiles to set cannot be null");
+
+    for (DataFile file : dataFile) {
+
+      checkArgument(file != null, "dataFiles cannot contains null value");
+      checkArgument(Collections.frequency(dataFile, file) == 1,
+          "dataFile cannot contains the same file: " + file);
+    }
+
+    this.files.clear();
+    this.files.addAll(dataFile);
+  }
+
+  /**
+   * Get the DataFiles of the data.
+   * @return a list with the DataFiles
+   */
   List<DataFile> getDataFiles() {
 
     return Collections.unmodifiableList(Lists.newArrayList(this.files));

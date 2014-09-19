@@ -163,9 +163,7 @@ public class DesignStep extends AbstractStep {
           DataUtils.setDataFile(data, f);
         } else {
           // Multi-file data
-          for (int i = 0; i < dataFiles.size(); i++) {
-            DataUtils.setDataFile(data, i, dataFiles.get(i));
-          }
+          DataUtils.setDataFiles(data, dataFiles);
         }
       }
 

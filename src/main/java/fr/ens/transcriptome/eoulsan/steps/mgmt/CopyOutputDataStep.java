@@ -201,22 +201,25 @@ public class CopyOutputDataStep extends AbstractStep {
     } else {
 
       final int count = inData.getDataFileCount();
+      final List<DataFile> outFiles = Lists.newArrayList();
 
       // Handle multi file format like fastq
       for (int i = 0; i < count; i++) {
 
         final DataFile in = inData.getDataFile(i);
         final DataFile out = new DataFile(outputDir, in.getName());
+        outFiles.add(out);
+
         if (!in.exists())
           throw new FileNotFoundException("input file not found: " + in);
 
         // Copy file
         FileUtils.copy(in.rawOpen(), out.rawCreate());
 
-        // Set the DataFile in the output data object
-        DataUtils.setDataFile(outData, i, out);
       }
 
+      // Set the DataFile in the output data object
+      DataUtils.setDataFiles(outData, outFiles);
     }
   }
 
