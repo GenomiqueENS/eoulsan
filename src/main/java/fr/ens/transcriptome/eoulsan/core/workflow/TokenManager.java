@@ -86,7 +86,7 @@ public class TokenManager implements Runnable {
   private Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed = Sets
       .newHashSet();
 
-  private boolean endOfStep;
+  private volatile boolean endOfStep;
   private boolean isStarted;
 
   /**

@@ -52,7 +52,7 @@ public class TaskStatus implements StepStatus {
   private final WorkflowStepStatus status;
 
   private String message;
-  private Map<String, Long> counters = Maps.newHashMap();
+  private final Map<String, Long> counters = Maps.newHashMap();
   private String taskDescription;
   private double progress;
 
@@ -60,7 +60,7 @@ public class TaskStatus implements StepStatus {
 
   private Date startDate;
   private Date endDate;
-  private Stopwatch stopwatch = Stopwatch.createUnstarted();
+  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 
   //
   // Getters
@@ -97,7 +97,9 @@ public class TaskStatus implements StepStatus {
   @Override
   public void setMessage(String message) {
 
-    this.message = message;
+    synchronized (this) {
+      this.message = message;
+    }
   }
 
   @Override
@@ -105,7 +107,9 @@ public class TaskStatus implements StepStatus {
 
     checkNotNull(description, "the description argument cannot be null");
 
-    this.taskDescription = description;
+    synchronized (this) {
+      this.taskDescription = description;
+    }
   }
 
   @Override
@@ -115,9 +119,12 @@ public class TaskStatus implements StepStatus {
     checkNotNull(counterGroup, "Counter group is null");
 
     // Add all counters
-    for (String counterName : reporter.getCounterNames(counterGroup))
-      this.counters.put(counterName,
-          reporter.getCounterValue(counterGroup, counterName));
+    for (String counterName : reporter.getCounterNames(counterGroup)) {
+      synchronized (this.counters) {
+        this.counters.put(counterName,
+            reporter.getCounterValue(counterGroup, counterName));
+      }
+    }
   }
 
   @Override
@@ -140,13 +147,16 @@ public class TaskStatus implements StepStatus {
     // Check progress value
     checkProgress(progress);
 
-    // Set progress value
-    this.progress = progress;
+    synchronized (this) {
 
-    // If a status for the step exist, inform the step status
-    if (this.status != null) {
-      this.status.setTaskProgress(this.context.getId(),
-          context.getContextName(), progress);
+      // Set progress value
+      this.progress = progress;
+
+      // If a status for the step exist, inform the step status
+      if (this.status != null) {
+        this.status.setTaskProgress(this.context.getId(),
+            context.getContextName(), progress);
+      }
     }
   }
 
@@ -160,14 +170,24 @@ public class TaskStatus implements StepStatus {
    */
   private long endOfStep() {
 
-    // Stop the stopwatch
-    this.stopwatch.stop();
+    checkState(this.startDate != null, "stopwatch has been never started");
 
-    // Get the end Date
-    this.endDate = new Date(System.currentTimeMillis());
+    // If an exception is thrown while creating StepResult object or after, this
+    // method
+    // can be called two times
+    if (this.stopwatch.isRunning()) {
 
-    // The step is completed
-    setProgress(1.0);
+      // Stop the stopwatch
+      this.stopwatch.stop();
+
+      // Get the end Date
+      this.endDate = new Date(System.currentTimeMillis());
+
+      // The step is completed
+      setProgress(1.0);
+    }
+
+    checkState(this.endDate != null, "stopwatch has been never stopped");
 
     // Compute elapsed time
     return this.stopwatch.elapsed(TimeUnit.MILLISECONDS);

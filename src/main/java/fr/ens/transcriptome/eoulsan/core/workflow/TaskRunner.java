@@ -62,7 +62,7 @@ public class TaskRunner {
   private final TaskContext context;
   private final Step step;
   private final TaskStatus status;
-  private StepResult result;
+  private volatile StepResult result;
   private boolean isTokensSent;
 
   //
