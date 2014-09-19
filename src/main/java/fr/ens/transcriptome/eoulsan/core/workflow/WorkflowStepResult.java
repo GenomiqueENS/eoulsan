@@ -34,12 +34,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -397,7 +400,18 @@ public class WorkflowStepResult {
     sb.append("]");
     sb.append("\nParameters:\n");
 
-    for (Parameter p : this.parameters) {
+    // Sort the parameters
+    final List<Parameter> parametersList = Lists.newArrayList(this.parameters);
+    Collections.sort(parametersList, new Comparator<Parameter>() {
+
+      @Override
+      public int compare(final Parameter p1, final Parameter p2) {
+
+        return p1.getName().compareTo(p2.getName());
+      }
+    });
+
+    for (Parameter p : parametersList) {
       sb.append('\t');
       sb.append(p.getName());
       sb.append(": ");
