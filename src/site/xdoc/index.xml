@@ -108,6 +108,7 @@
 			<tr><th>Eoulsan Mode</th><th>Action name</th><th>Status</th></tr>
 			<tr><td>Local mode</td><td>exec</td><td>Working</td></tr>
 			<tr><td>Hadoop mode</td><td>hadoopexec</td><td>Not working, port to Hadoop 2.x is in progress</td></tr>
+			<tr><td>Grid mode</td><td>gridexec</td><td>Planned, prototype works, waiting the Hadoop mode achievement</td></tr>
 			<tr><td>Amazon EMR mode</td><td>emrexec</td><td>Not working, waiting the Hadoop mode achievement</td></tr>
 			<tr><td>Cluster mode</td><td>clusterexec</td><td>Planned, partially implemented</td></tr>
 			<tr><td>Other cloud mode</td><td>not defined</td><td>Planned, implementation not started</td></tr>
