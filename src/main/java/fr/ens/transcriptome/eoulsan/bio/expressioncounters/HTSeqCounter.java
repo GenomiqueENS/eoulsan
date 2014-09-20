@@ -120,7 +120,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final boolean removeAmbiguousCases, final String featureType,
       final String attributeId, final boolean quiet, final int minAverageQual,
       final DataFile samOutFile, final DataFile genomeDescFile,
-      Reporter reporter, String counterGroup) throws EoulsanException,
+      final Reporter reporter, String counterGroup) throws EoulsanException,
       IOException, BadBioEntryException {
 
     final GenomicArray<String> features =

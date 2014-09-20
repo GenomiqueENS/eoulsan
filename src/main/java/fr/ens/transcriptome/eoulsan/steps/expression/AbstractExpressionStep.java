@@ -79,7 +79,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private String attributeId = DEFAULT_ATTRIBUTE_ID;
   private String tmpDir;
 
-  private ExpressionCounter counter;
+  private String counterName;
   private StrandUsage stranded = StrandUsage.NO;
   private OverlapMode overlapmode = OverlapMode.UNION;
   private boolean removeAmbiguousCases = true;
@@ -109,7 +109,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
    * @return Returns the counterName
    */
   protected String getCounterName() {
-    return this.counter.getCounterName();
+    return this.counterName;
   }
 
   /**
@@ -142,7 +142,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
    */
   protected ExpressionCounter getCounter() {
 
-    return this.counter;
+    return ExpressionCounterService.getInstance().newService(counterName);
   }
 
   /**
@@ -242,12 +242,13 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     if (counterName == null)
       counterName = "eoulsanCounter";
 
-    this.counter =
-        ExpressionCounterService.getInstance().newService(counterName);
-
-    if (this.counter == null) {
+    // Test if counter engine exists
+    if (ExpressionCounterService.getInstance().newService(counterName) == null) {
       throw new EoulsanException("Unknown counter: " + counterName);
     }
+
+    // Set the counter name to use
+    this.counterName = counterName;
 
     // Configure Checker
     CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
@@ -256,10 +257,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();
 
     // Log Step parameters
-    getLogger().info("In "
-        + getName() + ", counter=" + this.counter.getCounterName());
-    getLogger().info("In "
-        + getName() + ", stranded=" + this.stranded + ", overlapmode="
-        + this.overlapmode);
+    getLogger().info("In " + getName() + ", counter=" + this.counterName);
+    getLogger().info(
+        "In "
+            + getName() + ", stranded=" + this.stranded + ", overlapmode="
+            + this.overlapmode);
   }
 }
