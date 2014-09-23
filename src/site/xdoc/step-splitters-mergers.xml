@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Splitter and Merger steps</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Introduction">
+
+      <p>Splitting file data in small chucks is a common trick to scale data processing when you launch an analysis on a cluster. When you use Eoulsan in distributed mode, 
+         Eoulsan automatically split and merge common biological data (FASTQ files and SAM files) using the Hadoop framework with a low overhead. You can also use this 
+         strategy to achieve computation parallelization with non-hadoop cluster providing you manually declare in the workflow file when data must be split and merged.</p>
+
+    </section>
+
+    <section name="Spliter step">
+
+      <p>This step allow to split data in small chucks.</p>  
+
+      <ul>
+        <li><b>Internal name</b>: splitter</li> 
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: N/A</li>
+ 	<li><b>Input</b>: Data in the format defined in the parameters</li>
+	<li><b>Output</b>: Data split in the same format as the input</li>
+
+        <br/>
+        <li><b>Mandatory parameter</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>format</td><td>format</td><td>Name of the format of the data to split. <a href="#supportedformats">See below</a> to get the list of the format that can be split</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Optional parameters</b>: Splitters can have <a href="#supportedformats">optional arguments</a> to set the splitting method according to the data format</li>
+      </ul>
+
+
+    </section>
+
+    <section name="Merger step">
+
+      <p>This step allow to merge small chucks of data in a large file.</p>  
+
+      <ul>
+        <li><b>Internal name</b>: merger</li> 
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: N/A</li>
+ 	<li><b>Input</b>: Data in the format defined in the parameters</li>
+	<li><b>Output</b>: Data merged in the same format as the input</li>
+
+        <br/>
+        <li><b>Mandatory parameter</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>format</td><td>format</td><td>Name of the format of the data to merge. <a href="#supportedformats">See below</a> to get the list of the format that can be merged</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Optional parameters</b>: Mergers can have <a href="#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
+      </ul>
+
+
+    </section>
+
+    <a name="supportedformats" />
+    <section name="Supported formats">
+
+      <subsection name="fastq">
+
+      <ul>
+        <li><b>Format name</b>: reads_fastq</li> 
+        <li><b>Description</b>: FASTQ format</li>
+
+        <br/>
+        <li><b>Splitter optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Merger optional parameters</b>: None</li>
+      </ul>
+
+      </subsection>
+
+    </section>
+
+  </body>
+  
+</document>

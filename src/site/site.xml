@@ -73,10 +73,10 @@
 				<item name="Map reads" href="/step-mapreads.html" />
 				<item name="Filter alignments" href="/step-filteralignments.html" />
 				<item name="Filter and map" href="step-filterandmap.html" />
-				<item name="Filter samples" href="/step-filtersamples.html" />
 				<item name="Expression" href="/step-expression.html" />
 				<item name="Normalization" href="/step-normalization.html" />
 				<item name="Differential analysis" href="/step-diffana.html" />
+				<item name="Splitters and mergers" href="/step-splitters-mergers.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">
