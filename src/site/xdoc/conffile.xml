@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -28,13 +28,13 @@
 
   <properties>
     <title>Configuration file</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="The Configuration file">
 
         <p>Some global parameters of Eoulsan such as the path of the temporary directory can be set in a configuration file. There are two ways to use a configuration file:</p>
@@ -51,29 +51,32 @@
 		<tr><td>main.debug</td><td>boolean</td><td>false</td><td>Enable debugging information</td></tr>
 		<tr><td>main.printstacktrace</td><td>boolean</td><td>false</td><td>Enable print stack trace when error occurs</td></tr>
 		<!--tr><td>main.bypass.platform.checking</td><td>boolean</td><td>false</td><td>Bypass platform checking</td></tr-->
+		<tr><td>main.ui.name</td><td>string</td><td>basic</td><td>Define the user interface to use. There is currently 3 available UI: "basic" (the default UI),
+                "no" (that do nothing) and the experimental "lanterna"</td></tr>
 		<tr><td>main.local.threads</td><td>integer</td><td>0</td><td>Number of threads to use in local mode</td></tr>
-		
+
 		<tr><td>main.default.fastq.format</td><td>string</td><td>fastq-sanger</td><td>The default fastq format: fastq-sanger, fastq-solexa, fastq-illumina or fastq-illumina-1.5</td></tr>
-		
+
 		<tr><td>main.design.obfuscate</td><td>boolean</td><td>true</td><td>Obfuscate design file when upload to AWS</td></tr>
 		<tr><td>main.design.remove.replicate.info</td><td>boolean</td><td>true</td><td>Remove replicate information in design when upload to AWS</td></tr>
+		<tr><td>main.old.result.format</td><td>boolean</td><td>false</td><td>Save step result file in the Eoulsan version 1 format</td></tr>
 		<tr><td>main.rserve.enable</td><td>boolean</td><td>false</td><td>Enable Rserve server for R computation</td></tr>
 		<tr><td>main.rserve.servername</td><td>string</td><td>Not set</td><td>Name of the Rserve server</td></tr>
 		<tr><td>main.save.r.scripts</td><td>boolean</td><td>false</td><td>Save or not r scripts</td></tr>
-		
+
 		<tr><td>main.genome.storage.path</td><td>string</td><td>Not set</td><td>Path to the genomes repository</td></tr>
 		<tr><td>main.annotation.storage.path</td><td>string</td><td>Not set</td><td>Path to the annotations repository</td></tr>
 		<tr><td>main.genome.mapper.index.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome indexes repository (cannot be an URL)</td></tr>
 		<tr><td>main.genome.desc.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome descriptions repository (cannot be an URL)</td></tr>
-		
+
 		<tr><td>main.mail.send.result.mail</td><td>boolean</td><td>false</td><td>Enable send mail to user at the end of analysis</td></tr>
 		<tr><td>main.mail.send.result.mail.to</td><td>string</td><td>Not set</td><td>Mail address where send result message</td></tr>
 		<tr><td>main.mail.smtp.host</td><td>string</td><td>Not set</td><td>SMTP server to use to send mails. See the <a href="#smtp">SMTP section</a> for more information</td></tr>
-		
+
 		<tr><td>zookeeper.connect.string</td><td>string</td><td>Not set</td><td>ZooKeeper connect String. If not set, the server used will be the same as the job tracker node and the port will the default port set by the <tt>zookeeper.default.port</tt></td></tr>
 		<tr><td>zookeeper.default.port</td><td>integer</td><td>2181</td><td>ZooKeeper Default port</td></tr>
 		<tr><td>zookeeper.session.timeout</td><td>integer</td><td>10000</td><td>ZooKeeper session timeout</td></tr>
-		
+
 		<tr><td>aws.access.key</td><td>string</td><td>Not set</td><td>AWS access key, a 20-character alphanumeric string</td></tr>
 		<tr><td>aws.secret.key</td><td>string</td><td>Not set</td><td>AWS secret key, a 40-character string</td></tr>
 
@@ -85,13 +88,13 @@
 		<tr><td>aws.mapreduce.log.path</td><td>string</td><td>Not set</td><td>Log path. If not set, no log will be generated</td></tr>
         <tr><td>aws.mapreduce.task.tracker.mapper.max.tasks</td><td>integer</td><td>0</td><td>The number of maximal task mapper that can be created on a task tracker (0 for no limit)</td></tr>
         <tr><td>aws.mapreduce.enable.debugging</td><td>boolean</td><td>false</td><td>If set to true, AWS Elastic MapReduce debug mode will be enable. (Require AWS SimpleDB)</td></tr>
-		
+
 		<tr><td>aws.mapreduce.wait.job</td><td>boolean</td><td>false</td><td>Wait the end of the job on AWS MapReduce</td></tr>
 
 	</table>
 
 	<p>This values are overridden by the values of the global section of the XML workflow file. It is useful to use a configuration file to set AWS keys to remove
-	 this entries from the workflow file that is sent on the network when using Amazon Web Services. 
+	 this entries from the workflow file that is sent on the network when using Amazon Web Services.
 	 Developers can also use additional parameter that are not in the previous table.</p>
 
 	<p>The following table contains the endpoints for the several AWS regions where EMR is available:</p>
@@ -106,20 +109,20 @@
 		<tr><td>Asia Pacific (Tokyo)</td><td>elasticmapreduce.ap-northeast-1.amazonaws.com</td></tr>
 		<tr><td>South America (Sao Paulo)</td><td>elasticmapreduce.sa-east-1.amazonaws.com</td></tr>
 	</table>
-	
+
 	<p>The lastest list of available EMR endpoints can be found <a href="http://docs.aws.amazon.com/general/latest/gr/rande.html#emr_region">here</a>.</p>
 
 		<a name="smtp"/>
 		<subsection name="SMTP configuration (Mail service)">
-		
+
 	<p>Eoulsan use the <a href="">javamail library</a> to send messages to inform user of the end of the analysis. To do this Eoulsan need
-	an SMTP server. If your SMTP server can be used without authentication and with an unencrypted connection on the default 
+	an SMTP server. If your SMTP server can be used without authentication and with an unencrypted connection on the default
 	port, you just had to set the <code>main.mail.smtp.host</code> parameter in your Eoulsan configuration. Otherwise, you need to add
-	the correct 
+	the correct
 	<a href="http://javamail.kenai.com/nonav/javadocs/com/sun/mail/smtp/package-summary.html">javamail SMTP
-	properties</a> with a "<code>main.</code>" prefix to your Eoulsan configuration (e.g. 
+	properties</a> with a "<code>main.</code>" prefix to your Eoulsan configuration (e.g.
 	javamail <code>mail.smtp.port</code> property becomes <code>main.mail.smtp.port</code> in Eoulsan configuration).</p>
-		
+
 		</subsection>
 
         <subsection name="Eoulsan configuration file sample">
@@ -142,5 +145,5 @@ main.debug=false</source>
     </section>
 
   </body>
-  
+
 </document>
