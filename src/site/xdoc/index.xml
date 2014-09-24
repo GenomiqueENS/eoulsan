@@ -114,6 +114,9 @@
 			<tr><td>Other cloud mode</td><td>not defined</td><td>Planned, implementation not started</td></tr>
 		</table>
 
+        <p><b>Note:</b> Eoulsan 2.x is not binary compatible with Eoulsan 1.2.x, so step plug-ins written for previous versions will not work this release. The Eoulsan 2.x API
+        is not currently stable and breaking compatibility may occurs until final Eoulsan 2.0 version.</p>
+
 	</section>
 
 	<section name="RNA-Seq analysis">
