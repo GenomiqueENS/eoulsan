@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,57 +24,68 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Expression step</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Expression step">
 
       <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.
-      Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the 
-      implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>  
+      Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the
+      implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>
 
       <ul>
          <li><b>Name</b>: expression.</li>
          <li><b>Available</b>: Both local and distributed mode</li>
-         <li><b>Multithreaded in local mode</b>: No</li>
-        <li><b>Input</b>: filtered alignments (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
-        <li><b>Output</b>: expression file (e.g. <code>expression_1.tsv</code>).</li>
-	 <br/>
-	 
+
+         <br/>
+         <li><b>Input port</b>:
+           <ul>
+             <li><b>input</b>: alignments in SAM format (format: mapper_results_sam)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: expression file in TSV format (format: expression_results_tsv)</li>
+           </ul>
+         </li>
+	    <br/>
+
          <li><b>Optional parameters</b>:</li>
-    <table>
+         <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).</td><td>eoulsanCounter</td></tr>
 		<tr><td>genomictype</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
 		<tr><td>attributeid</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
-	</table>
-	<br/>
-	
+	 </table>
+	 <br/>
+
 		<li><b>Optional parameters of HTSeq-count</b>:</li>
-	<table>
+	 <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>stranded</td><td>string</td><td>If "reverse", the read has to be mapped to the opposite strand as the feature. 
-If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature 
+		<tr><td>stranded</td><td>string</td><td>If "reverse", the read has to be mapped to the opposite strand as the feature.
+If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature
 regardless of whether it is mapped to the same or the opposite strand as the feature.</td><td>no</td></tr>
 		<tr><td>overlapmode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
 		<tr><td>removeambiguouscases</td><td>string</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
-	</table>
+	 </table>
 
        </ul>
-      
+
 	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
 
     </section>
 
 
   </body>
-  
+
 </document>

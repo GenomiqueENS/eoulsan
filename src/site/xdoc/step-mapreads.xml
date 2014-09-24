@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,52 +24,65 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Map reads step</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Map reads step">
 
-      <p>This step allow to map reads with a mapper program.</p>  
+      <p>This step allow to map reads with a mapper program.</p>
 
       <ul>
-	<li><b>Internal name</b>: mapreads</li> 
-        <li><b>Available</b>: Both local and distributed mode</li>
-        <li><b>Multithreaded in local mode</b>: Yes (mapper multithreading)</li>
-        <li><b>Input</b>: filtered reads (e.g. <code>filtered_reads_1.fq</code>)</li>
-        <li><b>Output</b>: alignments in SAM format (e.g. <code>mapper_results_1.sam</code>)</li>	
-	<br/>
-    
-    <li><b>Optional parameters</b>:</li>
-		<table>
+         <li><b>Internal name</b>: mapreads</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
+
+         <br/>
+         <li><b>Input ports</b>:
+           <ul>
+             <li><b>reads</b>: reads in FASTQ format (format: reads_fastq)</li>
+             <li><b>mapperindex</b>: mapper index for the genome (automatically generated from genome sequence file)</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: alignments in FASTQ format (format: mapper_results_sam)</li>
+           </ul>
+         </li>
+         <br/>
+
+         <li><b>Optional parameters</b>:</li>
+           <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
                 <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
-                <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr> 
+                <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
                 <tr><td>mapper</td><td>string</td><td>The name of the mapper to use</td><td>None, this parameter is mandatory. (e.g. bowtie, bwa, soap, gsnap)</td></tr>
                 <tr><td>mapper.arguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
-        </table>
-        
-	<br/>
-    <li><b>Available built-in mappers</b>:</li>
-		<table>
+           </table>
+
+         <br/>
+         <li><b>Available built-in mappers</b>:</li>
+           <table>
                 <tr><th>Mapper name</th><th>Bundled version</th><th>Default mapper arguments</th></tr>
                 <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie</a></td><td>0.12.9</td><td>--best -k 2</td></tr>
                 <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie2</a></td><td>2.0.6</td><td></td></tr>
                 <tr><td><a href="http://bio-bwa.sourceforge.net/">BWA</a></td><td>0.6.2</td><td>-l 28</td></tr>
                 <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP2</a></td><td>2.20</td><td>-r 2 -l 28</td></tr>
                 <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</a></td><td>2012-07-20</td><td>-N 1</td></tr>
-        </table>
+           </table>
       </ul>
     </section>
 
   </body>
-  
+
 </document>

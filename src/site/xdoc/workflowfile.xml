@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,17 +24,17 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Workflow file</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="The workflow file">
 
       <p>The workflow file (usually named as <b>workflow.xml</b>) is the file where all the steps to execute and theirs parameters will be set. This file use the XML syntax and is divided in 3 sections : </p>
@@ -49,15 +49,15 @@
 
 	<p>In all parameter values you can use variables (e.g. <code>${variable}</code>) that contains values for : </p>
 	<ul>
-		<li>Built-in variables (<code>${eoulsan.version}</code>, 
+		<li>Built-in variables (<code>${eoulsan.version}</code>,
 		  <code>${eoulsan.build.number}</code>, <code>${eoulsan.build.date}</code>,
-		  <code>${design.file.path}</code>, <code>${workflow.file.path}</code>, 
+		  <code>${design.file.path}</code>, <code>${workflow.file.path}</code>,
 		  <code>${output.path}</code>, <code>${logs.path}</code>,
 		  <code>${job.id}</code>, <code>${job.uuid}</code> and <code>${available.processors}</code>)</li>
 		<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/System.html#getProperty(java.lang.String)">java properties</a> (e.g. <code>${java.version}</code>)</li>
 		<li>System environment variables (e.g. <code>${PATH}</code>, <code>${PWD}</code>)</li>
 		<li><a href="#constantssection">user defined constants</a></li>
-	</ul> 
+	</ul>
 	<p>User can also insert in parameter values the output of a shell command with expression between "<b>`</b>":</p>
 	<source>
 	 &lt;value&gt;`cat /proc/cpuinfo | grep processor | wc -l`&lt;/value&gt;
@@ -109,7 +109,7 @@
                         &lt;parameter&gt;
                                 &lt;name&gt;mapperarguments&lt;/name&gt;
                                 &lt;value&gt;--best -k 2&lt;/value&gt;
-                        &lt;/parameter&gt;                          
+                        &lt;/parameter&gt;
                 &lt;/parameters&gt;
         &lt;/step&gt;
 
@@ -126,7 +126,7 @@
                                 &lt;value&gt;&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
-        &lt;/step&gt; 
+        &lt;/step&gt;
 
         &lt;!-- Filter samples --&gt;
         &lt;step id="filterSamples" skip="false"&gt;
@@ -166,7 +166,7 @@
                         &lt;parameter&gt;
                                 &lt;name&gt;removeambiguouscases&lt;/name&gt;
                                 &lt;value&gt;true&lt;/value&gt;
-                        &lt;/parameter&gt;                  
+                        &lt;/parameter&gt;
                 &lt;/parameters&gt;
         &lt;/step&gt;
 
@@ -179,16 +179,16 @@
         &lt;!-- Diffana --&gt;
         &lt;step id="diffana" skip="false"&gt;
                 &lt;name&gt;diffana&lt;/name&gt;
-                
+
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;disp.est.method&lt;/name&gt;
                                 &lt;value&gt;pooled&lt;/value&gt;
                         &lt;/parameter&gt;
-                        &lt;parameter&gt;                        
+                        &lt;parameter&gt;
                                 &lt;name&gt;disp.est.sharing.mode&lt;/name&gt;
                                 &lt;value&gt;maximum&lt;/value&gt;
-                        &lt;/parameter&gt;                                 
+                        &lt;/parameter&gt;
                                 &lt;name>disp.est.fit.type&lt;/name&gt;
                                 &lt;value>local&lt;/value&gt;
                         &lt;/parameter&gt;
@@ -217,18 +217,18 @@
                 <li><b>name:</b> The name of this workflow file.</li>
                 <li><b>description:</b> The description of this workflow file.</li>
                 <li><b>author:</b> The author of this workflow file.</li>
-        </ul> 
+        </ul>
 
      </subsection>
 
      <subsection name="Constants section">
         <a name="constantssection" />
- 
- 		<p>The constant section allow to define additional variables that can be used in the values of the parameters with the <code>${variable}</code> syntax. 
- 		Previously defined constants (and other variables) can be used in a new constant.</p>       
+
+		<p>The constant section allow to define additional variables that can be used in the values of the parameters with the <code>${variable}</code> syntax.
+		Previously defined constants (and other variables) can be used in a new constant.</p>
         <p>Note that the constants section is optional.</p>
-        
- <source>       
+
+ <source>
     &lt;constants&gt;
         &lt;parameter&gt;
 	        &lt;name&gt;my.constant1&lt;/name&gt;
@@ -238,9 +238,9 @@
 	        &lt;name&gt;my.constant2&lt;/name&gt;
 	        &lt;value&gt;${my.constant1}-bar&lt;/value&gt;
         &lt;/parameter&gt;
-    &lt;/constants&gt;        
+    &lt;/constants&gt;
  </source>
- 
+
      </subsection>
 
      <subsection name="Steps section">
@@ -251,8 +251,11 @@
           <tr><th>Attribute</th><th>Type</th><th>Default value</th><th>Description</th></tr>
           <tr><td>id</td><td>string</td><td>The name of the step</td><td>This value define the identifier of the step. The id value must be unique in a workflow. The identifier is used to named output filenames of the step</td></tr>
           <tr><td>discardOutput</td><td>boolean</td><td>false</td><td>When this attribute is set to true, the output files of the step will saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful</td></tr>
-          <tr><td>skip</td><td>boolean</td><td>false</td><td>The skip attribute allow to skip a step if its value is set to true</td></tr>
+          <tr><td>skip</td><td>boolean</td><td>false</td><td>The <tt>skip</tt> attribute allow to skip a step if its value is set to true</td></tr>
         </table>
+
+    <p>If not set by the user, the Eoulsan workflow engine will take as data source for each input port the last previous step that generate data of the format that requested by the input port.
+       If the user do not want to use the last source of data, it can manually define using <tt>input</tt> tags and its <tt>port</tt>, <tt>fromstep</tt> and <tt>fromport</tt> subtags.</p>
 
 <source>
 
@@ -276,6 +279,15 @@
         &lt;!-- Map reads --&gt;
         &lt;step id="mapping" skip="false"&gt;
                 &lt;name&gt;mapreads&lt;/name&gt;
+
+                &lt;inputs&gt;
+                        &lt;input&gt;
+                                &lt;port&gt;reads&lt;/port&gt;
+                                &lt;fromstep&gt;myfilterreadstep&lt;/fromstep&gt;
+                                &lt;fromport&gt;output&lt;/fromport&gt;
+                        &lt;/input&gt;
+                &lt;/inputs&gt;
+
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapper&lt;/name&gt;
@@ -289,6 +301,7 @@
     &lt;/steps&gt;
 
 </source>
+
 
 
      </subsection>
@@ -310,9 +323,9 @@
 
 	<p>The global parameters override the values of the configuration file. For more information about the configuration file see the <a href="conffile.html">configuration file page</a>.</p>
 
- 
+
     </section>
 
   </body>
-  
+
 </document>

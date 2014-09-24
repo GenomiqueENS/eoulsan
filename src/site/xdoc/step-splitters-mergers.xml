@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,35 +24,47 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Splitter and Merger steps</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Introduction">
 
-      <p>Splitting file data in small chucks is a common trick to scale data processing when you launch an analysis on a cluster. When you use Eoulsan in distributed mode, 
-         Eoulsan automatically split and merge common biological data (FASTQ files and SAM files) using the Hadoop framework with a low overhead. You can also use this 
+      <p>Splitting file data in small chucks is a common trick to scale data processing when you launch an analysis on a cluster. When you use Eoulsan in distributed mode,
+         Eoulsan automatically split and merge common biological data (FASTQ files and SAM files) using the Hadoop framework with a low overhead. You can also use this
          strategy to achieve computation parallelization with non-hadoop cluster providing you manually declare in the workflow file when data must be split and merged.</p>
 
     </section>
 
     <section name="Spliter step">
 
-      <p>This step allow to split data in small chucks.</p>  
+      <p>This step allow to split data in small chucks.</p>
 
       <ul>
-        <li><b>Internal name</b>: splitter</li> 
+        <li><b>Internal name</b>: splitter</li>
         <li><b>Available</b>: Both local and distributed mode</li>
-        <li><b>Multithreaded in local mode</b>: N/A</li>
- 	<li><b>Input</b>: Data in the format defined in the parameters</li>
-	<li><b>Output</b>: Data split in the same format as the input</li>
+
+        <br/>
+         <li><b>Input port</b>:
+           <ul>
+             <li><b>input</b>: data to split (format defined in the parameters)</li>
+           </ul>
+         </li>
+
+         <br/>
+        <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: split data (format defined in the parameters)</li>
+           </ul>
+        </li>
+	    <br/>
 
         <br/>
         <li><b>Mandatory parameter</b>:</li>
@@ -70,10 +82,10 @@
 
     <section name="Merger step">
 
-      <p>This step allow to merge small chucks of data in a large file.</p>  
+      <p>This step allow to merge small chucks of data in a large file.</p>
 
       <ul>
-        <li><b>Internal name</b>: merger</li> 
+        <li><b>Internal name</b>: merger</li>
         <li><b>Available</b>: Both local and distributed mode</li>
         <li><b>Multithreaded in local mode</b>: N/A</li>
  	<li><b>Input</b>: Data in the format defined in the parameters</li>
@@ -99,7 +111,7 @@
       <subsection name="fastq">
 
       <ul>
-        <li><b>Format name</b>: reads_fastq</li> 
+        <li><b>Format name</b>: reads_fastq</li>
         <li><b>Description</b>: FASTQ format</li>
 
         <br/>
@@ -118,5 +130,5 @@
     </section>
 
   </body>
-  
+
 </document>

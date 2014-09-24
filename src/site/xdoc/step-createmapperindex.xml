@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,33 +24,46 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Create mapper index step</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Create mapper index step">
 
-      <p>This step allow to create index for all the mappers available in Eoulsan. This step is automatically called when needed.</p>  
+      <p>This step allow to create index for all the mappers available in Eoulsan. This step is automatically called when needed.</p>
 
       <ul>
-	<li><b>Internal name</b>: _genericindexgenerator</li> 
+        <li><b>Internal name</b>: genericindexgenerator</li>
         <li><b>Available</b>: Both local and distributed mode</li>
-        <li><b>Multithreaded in local mode</b>: No</li>
-        <li><b>Input</b>: genome file</li>
-        <li><b>Output</b>: index for the genome in a zip file (e.g. <code>bowtie_index_1.zip</code>)</li>
-	<br/>
+
+        <br/>
+        <li><b>Input ports</b>:
+           <ul>
+             <li><b>genome</b>: genome sequence file (format: genome_fasta)</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: genome mapper index</li>
+           </ul>
+         </li>
+
+         <br/>
         <li><b>Optional parameters</b>: none</li>
       </ul>
     </section>
 
 
   </body>
-  
+
 </document>

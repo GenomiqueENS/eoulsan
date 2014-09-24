@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- /* * Eoulsan development code * * This code may be freely distributed 
-	and modified under the * terms of the GNU Lesser General Public License version 
-	2.1 or * later and CeCILL-C. This should be distributed with the code. * 
-	If you do not have a copy, see: * * http://www.gnu.org/licenses/lgpl-2.1.txt 
-	* http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt * * Copyright 
-	for this code is held jointly by the Genomic platform * of the Institut de 
-	Biologie de l'École Normale Supérieure and * the individual authors. These 
-	should be listed in @author doc * comments. * * For more information on the 
-	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit 
+<!-- /* * Eoulsan development code * * This code may be freely distributed
+	and modified under the * terms of the GNU Lesser General Public License version
+	2.1 or * later and CeCILL-C. This should be distributed with the code. *
+	If you do not have a copy, see: * * http://www.gnu.org/licenses/lgpl-2.1.txt
+	* http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt * * Copyright
+	for this code is held jointly by the Genomic platform * of the Institut de
+	Biologie de l'École Normale Supérieure and * the individual authors. These
+	should be listed in @author doc * comments. * * For more information on the
+	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit
 	the home page * at: * * http://www.transcriptome.ens.fr/eoulsan * */ -->
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
@@ -31,30 +31,19 @@
 			</p>
 
 			<ul>
-				<li>
-					<b>Name</b>
-					: diffana
-				</li>
-				<li>
-					<b>Available</b>
-					: Only in local mode
-				</li>
-				<li>
-					<b>Multithreaded in local mode</b>
-					: No
-				</li>
-				<li>
-					<b>Input</b>
-					: expression file (e.g.
-					<code>expression_1.tsv</code>
-					)
-				</li>
-				<li>
-					<b>Output</b>
-					: differential analysis result file (e.g.
-					<code>diffana_1.txt</code>
-					)
-				</li>
+				<li><b>Name</b>: diffana</li>
+				<li><b>Available</b>: Only in local mode</li>
+
+				<br/>
+                <li><b>Input port</b>:
+                  <ul>
+                    <li><b>input</b>: expression file in TSV format (format: expression_results_tsv)</li>
+                  </ul>
+                </li>
+
+				<br/>
+				<li><b>Output</b>: differential analysis result file (e.g. <code>diffana_1.txt</code>)</li>
+				<br/>
 				<li>
 					<b>Optional parameters</b>
 					:
@@ -93,33 +82,33 @@
 					</table>
 					<br />
 					<ul>
-						<li><b>disp.est.method</b> : 
+						<li><b>disp.est.method</b> :
 						There are three ways how the empirical dispersion can be computed:
 						<ul>
 							<li>
-							<b>pooled</b> : Use the samples from all conditions with 
-							replicates to estimate a single pooled empirical 
-							dispersion value, called "pooled", and assign it 
+							<b>pooled</b> : Use the samples from all conditions with
+							replicates to estimate a single pooled empirical
+							dispersion value, called "pooled", and assign it
 							to all samples.
 							</li>
 							<li>
-							<b>per-condition</b> : For each condition with replicates, 
-							compute a gene’s empirical dispersion value by 
-							considering the data from samples for this condition. 
+							<b>per-condition</b> : For each condition with replicates,
+							compute a gene’s empirical dispersion value by
+							considering the data from samples for this condition.
 							For samples of unreplicated conditions, the maximum
-							of empirical dispersion values from the other 
+							of empirical dispersion values from the other
 							conditions is used.
 							</li>
 							<li>
-							<b>blind</b> : 
-							Ignore the sample labels and compute a gene’s 
-							empirical dispersion value as if all samples were 
-							replicates of a single condition. This can be done 
-							even if there are no biological replicates. 
-							This method can lead to loss of power; see the <a 
+							<b>blind</b> :
+							Ignore the sample labels and compute a gene’s
+							empirical dispersion value as if all samples were
+							replicates of a single condition. This can be done
+							even if there are no biological replicates.
+							This method can lead to loss of power; see the <a
 							href="http://bioconductor.org/packages/2.10/bioc/vignettes/DESeq/inst/doc/DESeq.pdf"
-                                                        >DESeq vignette</a> for details. The single estimated dispersion 
-							condition is called "blind" and used for all samples. 
+                                                        >DESeq vignette</a> for details. The single estimated dispersion
+							condition is called "blind" and used for all samples.
 							<u>If no replicate is available use this parameter</u>.
 							</li>
 						</ul>
@@ -129,17 +118,17 @@
 						for each gene, a dispersion-mean relationship is fitted
 						for sharing information across genes in order to reduce
 						variability of the dispersion estimates. After that, for
-						each gene, we have two values: the empirical value 
+						each gene, we have two values: the empirical value
 						(derived only from this gene’s data), and the fitted
 						value (i.e., the dispersion value typical for genes
 						with an average expression similar to those of this gene)
 						<ul>
 							<li>
-							<b>fit-only</b> : Use only the fitted value, i.e., 
-							the empirical value is used only as input to the 
-							fitting, and then ignored. Use this only with very 
-							few replicates, and when you are not too concerned 
-							about false positives from dispersion outliers, 
+							<b>fit-only</b> : Use only the fitted value, i.e.,
+							the empirical value is used only as input to the
+							fitting, and then ignored. Use this only with very
+							few replicates, and when you are not too concerned
+							about false positives from dispersion outliers,
 							i.e. genes with an unusually high variability.
 							<u>If no replicate is available use this parameter</u>.
 							</li>
@@ -150,9 +139,9 @@
 							maybe even with only two replicates.
 							</li>
 							<li>
-							<b>gene-est-only</b> : No fitting or sharing, use 
-							only the empirical value. This method is preferable 
-							when the number of replicates is large and the 
+							<b>gene-est-only</b> : No fitting or sharing, use
+							only the empirical value. This method is preferable
+							when the number of replicates is large and the
 							empirical dispersion values are sufficiently reliable.
 							If the number of repli- cates is small, this option
 							may lead to many cases where the dispersion of a
@@ -165,11 +154,11 @@
 						<ul>
 							<li>
 							<b>parametric</b> : Fit a dispersion-mean relation
-							of the form dispersion = asymptDisp + extraPois / 
+							of the form dispersion = asymptDisp + extraPois /
 							mean via a robust gamma-family GLM.
 							</li>
 							<li>
-							<b>local</b> : Use the locfit package to fit a 
+							<b>local</b> : Use the locfit package to fit a
 							dispersion-mean relation, as described in the DESeq
 							paper.
 							</li>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,35 +24,46 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Filter alignements step</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Filter alignments step">
 
       <p>This step allow to filter the output alignments in SAM format.</p>
       <p>WARNING : the filters order in the workflow file is not trivial. The output file of this step is the same, regardless the filters order. Nevertheless, informations in the log file depend of the filters order. </p>
 
       <ul>
-	<li><b>Internal name</b>: filtersam</li> 
+	<li><b>Internal name</b>: filtersam</li>
 	<li><b>Available</b>: Both local and distributed mode</li>
-	<li><b>Multithreaded in local mode</b>: Yes</li>
-	<li><b>Input</b>: alignments in SAM format (e.g. <code>mapper_results__1.sam</code>)</li>
-	<li><b>Output</b>: filtered alignments in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>)</li>	
+
+	<br/>
+	<li><b>Input port</b>:
+           <ul>
+             <li><b>input</b>: alignments in SAM format (format: mapper_results_sam)</li>
+           </ul>
+         </li>
+
+    <br/>
+    <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: alignments in SAM format (format: mapper_results_sam)</li>
+           </ul>
+        </li>
 
 	<br/>
         <li><b>Optional parameters</b>:</li>
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
         <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
-		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>	
+		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
 		<tr><td>mappingquality.threshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td><td></td></tr>
 		<tr><td>removeunmapped</td><td>boolean</td><td>If true, remove unmapped reads.</td><td></td></tr>
 		<tr><td>removemultimatches</td><td>boolean</td><td>If true, remove all alignments of a multi-matches read.</td><td></td></tr>
@@ -61,18 +72,18 @@
 		<tr><td>distancefromreference</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td><td></td></tr>
 		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation step, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
 	</table>
-	
-	<br/> 
+
+	<br/>
         <li><b>Compatibility parameters with Eoulsan 1.0.x</b>:</li>
 	<table>
 		<tr><td>mappingqualitythreshold</td><td>integer</td><td>Threshold for the mapping quality. An integer between [0-255]. This filter is based on the MAPQ field of SAM format specification.</td><td>0</td></tr>
 	</table>
       </ul>
-        
-      
+
+
     </section>
 
 
   </body>
-  
+
 </document>

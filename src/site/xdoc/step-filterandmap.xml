@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -24,39 +24,52 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Filter and map reads step</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Filter and map reads step">
 
       <p>This step combine in one step in Hadoop mode the filtering of the reads, the mapping and the filtering of the alignments.
-      This step only is available in hadoop mode is more efficient than using the 3 steps successively.</p>  
+      This step only is available in hadoop mode is more efficient than using the 3 steps successively.</p>
 
       <ul>
- 	<li><b>Internal name</b>: filterandmap</li> 
-    <li><b>Available</b>: Distributed mode only</li>
-    <li><b>Multithreaded in local mode</b>: N/A</li>
- 	<li><b>Input</b>: Fastq or tfq file (tfq files are tabuleted fastq files with one read by line used in hadoop mode)</li>
-	<li><b>Output</b>: filtered alignment file in SAM format (e.g. <code>filtered_mapper_results_1.sam</code>)</li>
+         <li><b>Internal name</b>: filterandmap</li>
+         <li><b>Available</b>: Distributed mode only</li>
 
-	<br/>
-    <li><b>Optional parameters</b>: This step use all the optional parameters of the <a href="./step-filterreads.html">filterreads step</a>, 
+         <br/>
+         <li><b>Input ports</b>:
+           <ul>
+             <li><b>reads</b>: reads in FASTQ format (format: reads_fastq)</li>
+             <li><b>mapperindex</b>: mapper index for the genome (automatically generated from genome sequence file)</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: alignments in FASTQ format (format: mapper_results_sam)</li>
+           </ul>
+        </li>
+
+         <br/>
+    <li><b>Optional parameters</b>: This step use all the optional parameters of the <a href="./step-filterreads.html">filterreads step</a>,
                                     <a href="./step-mapreads.html">mapreads step</a>
-                                    and <a href="./step-filteralignments.html">filtersam step</a>. 
+                                    and <a href="./step-filteralignments.html">filtersam step</a>.
                                     For more information, see the documentation of this steps.</li>
-	
+
 	</ul>
     </section>
 
 
   </body>
-  
+
 </document>
