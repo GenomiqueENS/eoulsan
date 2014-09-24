@@ -106,7 +106,7 @@ public class CommandWorkflowParser {
   static final String GLOBALS_TAG_NAME = "globals";
   static final String PARAMETERS_TAG_NAME = "parameters";
   static final String STEPNAME_TAG_NAME = "stepname";
-  static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardOutput";
+  static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardoutput";
   static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
   static final String ID_ATTR_NAME_STEP_TAG = "id";
   static final String STEP_TAG_NAME = "step";
