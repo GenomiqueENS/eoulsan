@@ -1,6 +1,6 @@
 <dataformat>
   <name>expression_results_tsv</name>
-  <description>tsv expression resultst format</description>
+  <description>tsv expression results format</description>
   <prefix>expression</prefix>
   <extensions>
   	<extension default="true">.tsv</extension>
