@@ -100,6 +100,7 @@
 		  <li>Integration tests engine</li>
 		  <li>Support for multiple versions of a mapper</li>
 		  <li>Rewritten mapper launcher</li>
+		  <li>New JSON format for step result file</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
 
