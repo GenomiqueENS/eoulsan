@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * This class define a translator that call another translator but with a
  * different index field.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class ChangeIndexTranslator extends BasicTranslator {

@@ -32,6 +32,7 @@ import java.util.Map;
  * This class define a translator that concat two translator. To use the field
  * of the second translator, id must be translated with the first translator.
  * translator and a array of identifiers.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class JoinTranslator extends BasicTranslator {

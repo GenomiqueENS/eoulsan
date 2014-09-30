@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter;
 
 /**
  * This class define a TranslatorOutputFormat that generate a tabular text file.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class TSVTranslatorOutputFormat implements TranslatorOutputFormat {

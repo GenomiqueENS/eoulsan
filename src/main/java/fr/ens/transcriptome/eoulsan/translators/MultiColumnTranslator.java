@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 /**
  * This class implements a translator for multicolumn annotation. The first
  * column is the identifier.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class MultiColumnTranslator extends BasicTranslator {

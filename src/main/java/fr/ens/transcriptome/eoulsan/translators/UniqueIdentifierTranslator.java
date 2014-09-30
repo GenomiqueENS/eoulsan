@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * This class define a translator with create unique identifier from another
  * translator and a array of identifiers.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class UniqueIdentifierTranslator extends BasicTranslator {

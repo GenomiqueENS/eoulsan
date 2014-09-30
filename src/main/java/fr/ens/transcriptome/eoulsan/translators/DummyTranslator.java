@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.translators;
 
-
 /**
  * This translator is only for tests.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class DummyTranslator extends BasicTranslator {

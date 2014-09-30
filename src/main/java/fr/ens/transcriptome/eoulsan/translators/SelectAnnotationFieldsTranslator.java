@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.translators;
 
-
 /**
  * This class define a translator with only few of field of another translator.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class SelectAnnotationFieldsTranslator extends BasicTranslator {

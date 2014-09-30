@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.translators;
 
-
 /**
  * This abstract class implements basic methods to get several field or several
  * annotations.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public abstract class BasicTranslator implements Translator {

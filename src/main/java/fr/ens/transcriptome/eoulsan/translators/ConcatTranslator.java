@@ -29,6 +29,7 @@ import java.util.Map;
 
 /**
  * This class define a translator composed of several translators.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class ConcatTranslator extends BasicTranslator {

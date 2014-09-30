@@ -28,6 +28,7 @@ import java.io.IOException;
 
 /**
  * This interface define a translator output format.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface TranslatorOutputFormat {

@@ -42,6 +42,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 /**
  * This class define a TranslatorOutputFormat that generate a Microsoft Excel
  * XLSX file.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {

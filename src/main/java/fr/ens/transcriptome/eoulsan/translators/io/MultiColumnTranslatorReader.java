@@ -39,9 +39,12 @@ import fr.ens.transcriptome.eoulsan.translators.MultiColumnTranslator;
 
 /**
  * This class define a reader for load annotation into a translator.
- * @author Laurent Jourdren TODO put removeDoubleQuotesAndTrim to StringUtils
+ * @since 2.0
+ * @author Laurent Jourdren T
  */
 public class MultiColumnTranslatorReader {
+
+  // TODO put removeDoubleQuotesAndTrim to StringUtils
 
   private InputStream is;
 

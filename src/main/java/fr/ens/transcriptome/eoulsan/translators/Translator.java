@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.translators;
 
 /**
  * This interface define how retrieve annotation for a feature.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public interface Translator {

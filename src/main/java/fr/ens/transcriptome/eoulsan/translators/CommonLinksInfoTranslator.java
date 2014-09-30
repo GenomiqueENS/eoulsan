@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.translators;
 
-
 /**
  * This class define a translator that add commons links information.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class CommonLinksInfoTranslator extends BasicTranslator {

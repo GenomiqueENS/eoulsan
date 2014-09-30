@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.translators;
 
 /**
  * This class define a translator that add the identifier to translations.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class AddIdentifierTranslator extends BasicTranslator {

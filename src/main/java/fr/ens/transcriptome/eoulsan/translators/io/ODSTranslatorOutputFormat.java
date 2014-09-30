@@ -53,6 +53,7 @@ import org.w3c.dom.NodeList;
 /**
  * This class define a TranslatorOutputFormat that generate an OpenDocument
  * spreadsheet file.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {

@@ -36,6 +36,7 @@ import fr.ens.transcriptome.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
  * This class implements utility methods for translators.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 public class TranslatorUtils {
