@@ -1,0 +1,8 @@
+<dataformat>
+  <name>annotated_expression_results_xlsx</name>
+  <description>xlsx annotated expression results format</description>
+  <prefix>annotatedexpression</prefix>
+  <extensions>
+  	<extension default="true">.xlsx</extension>
+  </extensions>
+</dataformat>

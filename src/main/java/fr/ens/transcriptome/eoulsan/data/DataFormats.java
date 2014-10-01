@@ -97,5 +97,17 @@ public class DataFormats {
   /** Unmap reads results data format. */
   public static final DataFormat UNMAP_READS_FASTA = registry
       .getDataFormatFromName("unmap_fasta");
+  
+  /** TSV Annotated expression results data format. */
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_TSV = registry
+      .getDataFormatFromName("annotated_expression_results_tsv");
+  
+  /** ODS Annotated expression results data format. */
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_ODS = registry
+      .getDataFormatFromName("annotated_expression_results_ods");
+  
+  /** XLSX Annotated expression results data format. */
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_XLSX = registry
+      .getDataFormatFromName("annotated_expression_results_xlsx");
 
 }

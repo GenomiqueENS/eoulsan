@@ -14,3 +14,6 @@ genome_fasta.xml
 genome_desc_txt.xml
 annotation_gff.xml
 unmap_reads_fasta.xml
+annotated_expression_results_tsv.xml
+annotated_expression_results_ods.xml
+annotated_expression_results_xlsx.xml
