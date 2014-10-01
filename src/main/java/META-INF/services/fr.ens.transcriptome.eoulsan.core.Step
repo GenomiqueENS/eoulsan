@@ -19,11 +19,10 @@ fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
 fr.ens.transcriptome.eoulsan.steps.expression.ExpressionResultsAnnotationStep
 
-# Normalisation step
+# Normalisation and diffana steps
 fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
-
-# Diffana step
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
+fr.ens.transcriptome.eoulsan.steps.diffana.DiffanaResultsAnnotationStep
 
 # Management steps
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
