@@ -1,0 +1,302 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+
+package fr.ens.transcriptome.eoulsan.steps.expression;
+
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
+
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.OutputPorts;
+import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.translators.BasicTranslator;
+import fr.ens.transcriptome.eoulsan.translators.CommonLinksInfoTranslator;
+import fr.ens.transcriptome.eoulsan.translators.ConcatTranslator;
+import fr.ens.transcriptome.eoulsan.translators.Translator;
+import fr.ens.transcriptome.eoulsan.translators.TranslatorUtils;
+import fr.ens.transcriptome.eoulsan.translators.io.MultiColumnTranslatorReader;
+import fr.ens.transcriptome.eoulsan.translators.io.ODSTranslatorOutputFormat;
+import fr.ens.transcriptome.eoulsan.translators.io.TSVTranslatorOutputFormat;
+import fr.ens.transcriptome.eoulsan.translators.io.TranslatorOutputFormat;
+import fr.ens.transcriptome.eoulsan.translators.io.XLSXTranslatorOutputFormat;
+import fr.ens.transcriptome.eoulsan.util.Version;
+
+/**
+ * This class define a step that create annotated expression files in TSV, ODS
+ * or XLSX format.
+ * @since 2.0
+ * @author Laurent Jourdren
+ */
+@HadoopCompatible
+public class ExpressionResultsAnnotationStep extends AbstractStep {
+
+  public static final String STEP_NAME = "expressionresultsannotation";
+
+  public static final String COUNTER_GROUP = "expressionresultsannotation";
+
+  private static final DataFormat DEFAULT_FORMAT =
+      ANNOTATED_EXPRESSION_RESULTS_TSV;
+
+  private DataFile annotationFile;
+  private Map<String, DataFormat> outputFormats = Maps.newHashMap();
+
+  //
+  // Step methods
+  //
+
+  @Override
+  public String getName() {
+
+    return STEP_NAME;
+  }
+
+  @Override
+  public String getDescription() {
+
+    return "This step add annotation to expression files and diffana files.";
+  }
+
+  @Override
+  public Version getVersion() {
+
+    return Globals.APP_VERSION;
+  }
+
+  @Override
+  public InputPorts getInputPorts() {
+
+    return InputPortsBuilder.singleInputPort(EXPRESSION_RESULTS_TSV);
+  }
+
+  @Override
+  public OutputPorts getOutputPorts() {
+
+    final OutputPortsBuilder builder = new OutputPortsBuilder();
+
+    for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {
+      builder.addPort(e.getKey(), e.getValue());
+    }
+
+    return builder.create();
+  }
+
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+
+    final Collection<DataFormat> formats = this.outputFormats.values();
+
+    // XLSX and ODS file creation require lot of memory so multithreading is
+    // disable to avoid out of memory
+    if (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
+        || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX)) {
+      return OWN_PARALELIZATION;
+    }
+
+    // TSV creation can be multithreaded
+    return ParallelizationMode.STANDARD;
+  }
+
+  @Override
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
+
+    for (final Parameter p : stepParameters) {
+
+      // Set annotation file
+      if ("annotationfile".equals(p.getName())) {
+        this.annotationFile = new DataFile(p.getStringValue());
+      } else if ("outputformat".equals(p.getName())) {
+
+        // Set ouptut format
+
+        for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
+            .split(p.getValue())) {
+
+          switch (format) {
+
+          case "tsv":
+            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_TSV);
+            break;
+
+          case "ods":
+            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_ODS);
+            break;
+
+          case "xlsx":
+            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_XLSX);
+            break;
+
+          default:
+            new EoulsanException("Unknown output format: " + format);
+            break;
+          }
+
+        }
+      } else {
+        // Unknown option
+        throw new EoulsanException("Unknown option: " + p.getName());
+      }
+    }
+
+    // Check if annotation file has been set
+    if (this.annotationFile == null) {
+      throw new EoulsanException("The annotation file is not set");
+    }
+
+    // Check if annotation file exists
+    if (!this.annotationFile.exists()) {
+      throw new EoulsanException("The annotation file does not exists: "
+          + this.annotationFile);
+    }
+
+    // Set the default format
+    if (this.outputFormats.isEmpty()) {
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtention().substring(1),
+          DEFAULT_FORMAT);
+    }
+  }
+
+  @Override
+  public StepResult execute(final StepContext context, final StepStatus status) {
+
+    // Load translator
+    final Translator translator;
+    try {
+
+      // TODO annotation may be shared by several threads
+      translator = loadTranslator();
+    } catch (IOException | EoulsanIOException e) {
+      return status.createStepResult(e);
+    }
+
+    // Define Result
+    StringBuilder resultString = new StringBuilder();
+
+    // Convert to TSV
+    try {
+
+      final Data inData = context.getInputData(EXPRESSION_RESULTS_TSV);
+
+      final DataFile in = inData.getDataFile();
+
+      // For each formats
+      for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {
+
+        // Get format
+        final DataFormat format = e.getValue();
+
+        final Data outData = context.getOutputData(format, inData);
+
+        final DataFile out = outData.getDataFile();
+
+        final TranslatorOutputFormat of;
+
+        if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX)
+          of = new XLSXTranslatorOutputFormat(out.create());
+        else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS)
+          of = new ODSTranslatorOutputFormat(out.create());
+        else
+          of = new TSVTranslatorOutputFormat(out.create());
+
+        TranslatorUtils.addTranslatorFields(in.open(), 0, translator, of);
+        resultString.append("Convert " + in + " to " + out + "\n");
+      }
+
+    } catch (IOException e) {
+      return status.createStepResult(e);
+    }
+
+    // Set the description of the context
+    status.setDescription(resultString.toString());
+
+    // Return the result
+    return status.createStepResult();
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Load translator annotation.
+   * @return a Translator object with the additional annotation
+   * @throws EoulsanIOException if an error occurs while reading additionnal
+   *           annotation
+   * @throws IOException if an error occurs while reading additionnal annotation
+   */
+  private Translator loadTranslator() throws EoulsanIOException, IOException {
+
+    final Translator did = new BasicTranslator() {
+
+      @Override
+      public String translateField(final String id, final String field) {
+
+        if (id == null || field == null)
+          return null;
+
+        if ("EnsemblGeneID".equals(field)
+            && id.length() == 18 && id.startsWith("ENS"))
+          return id;
+
+        return null;
+      }
+
+      @Override
+      public String[] getFields() {
+
+        return new String[] {"EnsemblGeneID"};
+      }
+    };
+
+    return new CommonLinksInfoTranslator(new ConcatTranslator(did,
+        new MultiColumnTranslatorReader(this.annotationFile.open()).read()));
+
+  }
+
+}

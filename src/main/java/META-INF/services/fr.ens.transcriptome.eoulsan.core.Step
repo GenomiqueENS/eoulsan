@@ -17,6 +17,7 @@ fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterHadoopStep
 # Expression steps
 fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
+fr.ens.transcriptome.eoulsan.steps.expression.ExpressionResultsAnnotationStep
 
 # Normalisation step
 fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
