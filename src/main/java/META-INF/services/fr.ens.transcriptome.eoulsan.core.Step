@@ -31,12 +31,12 @@ fr.ens.transcriptome.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
 fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep
 
 # Copy steps
-fr.ens.transcriptome.eoulsan.steps.mgmt.CopyInputDataStep
-fr.ens.transcriptome.eoulsan.steps.mgmt.CopyOutputDataStep
+fr.ens.transcriptome.eoulsan.steps.CopyInputDataStep
+fr.ens.transcriptome.eoulsan.steps.CopyOutputDataStep
 
 # Splitter and Merger steps
 fr.ens.transcriptome.eoulsan.steps.SplitterStep
 fr.ens.transcriptome.eoulsan.steps.MergerStep
 
-# Shell step
+# Common step
 fr.ens.transcriptome.eoulsan.steps.ShellStep

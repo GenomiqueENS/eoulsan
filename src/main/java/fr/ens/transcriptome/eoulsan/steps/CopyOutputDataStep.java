@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.mgmt;
+package fr.ens.transcriptome.eoulsan.steps;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +35,6 @@ import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
-import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -49,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -150,8 +148,6 @@ public class CopyOutputDataStep extends AbstractStep {
       final InputPorts inputPorts = context.getCurrentStep().getInputPorts();
 
       for (String portName : inputPorts.getPortNames()) {
-
-        final InputPort inputPort = inputPorts.getPort(portName);
 
         final Data inData = context.getInputData(portName);
         final Data outData = context.getOutputData(portName, inData);
