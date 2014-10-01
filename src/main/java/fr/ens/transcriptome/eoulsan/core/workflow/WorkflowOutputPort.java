@@ -193,6 +193,22 @@ class WorkflowOutputPort extends SimpleOutputPort {
     return result;
   }
 
+  /**
+   * Test if all the links of the port had target on skipped steps.
+   * @return true if all the links of the port had target on skipped steps
+   */
+  public boolean isAllLinksToSkippedSteps() {
+
+    for (WorkflowInputPort inPort : getLinks()) {
+
+      if (!inPort.getStep().isSkip()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   @Override
   public String toString() {
 

@@ -384,6 +384,12 @@ public class TokenManager implements Runnable {
 
     for (WorkflowOutputPort port : this.outputPorts) {
 
+      // If port is not linked or only connected to skipped steps there is need
+      // to check if output data exists
+      if (port.getLinks().isEmpty() || port.isAllLinksToSkippedSteps()) {
+        break;
+      }
+
       final Set<Data> existingData = port.getExistingData();
 
       if (existingData.size() == 0) {
