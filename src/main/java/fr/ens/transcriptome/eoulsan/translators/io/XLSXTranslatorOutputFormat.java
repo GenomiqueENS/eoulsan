@@ -138,6 +138,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     // Create a new font and alter it.
     Font font = wb.createFont();
     font.setItalic(true);
+    font.setFontHeightInPoints((short) 10);
 
     // Fonts are set into a style so create a new one to use.
     this.style = wb.createCellStyle();

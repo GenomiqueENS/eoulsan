@@ -107,6 +107,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
         c.setCellBackgroundColor(Color.ORANGE);
         Font f = c.getFont();
         f.setFontStyle(FontStyle.ITALIC);
+        f.setSize(10);
         c.setFont(f);
         c.setStringValue(h);
       }
