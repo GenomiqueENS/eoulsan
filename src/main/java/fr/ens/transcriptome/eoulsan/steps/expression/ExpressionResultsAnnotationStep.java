@@ -101,7 +101,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
   @Override
   public String getDescription() {
 
-    return "This step add annotation to expression files and diffana files.";
+    return "This step add annotation to expression files";
   }
 
   @Override
@@ -243,7 +243,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
       final Data inData = context.getInputData(EXPRESSION_RESULTS_TSV);
 
-      final DataFile in = inData.getDataFile();
+      final DataFile inFile = inData.getDataFile();
 
       // For each formats
       for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {
@@ -253,19 +253,19 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
         final Data outData = context.getOutputData(format, inData);
 
-        final DataFile out = outData.getDataFile();
+        final DataFile outFile = outData.getDataFile();
 
         final TranslatorOutputFormat of;
 
         if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX)
-          of = new XLSXTranslatorOutputFormat(out.create());
+          of = new XLSXTranslatorOutputFormat(outFile.create());
         else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS)
-          of = new ODSTranslatorOutputFormat(out.create());
+          of = new ODSTranslatorOutputFormat(outFile.create());
         else
-          of = new TSVTranslatorOutputFormat(out.create());
+          of = new TSVTranslatorOutputFormat(outFile.create());
 
-        TranslatorUtils.addTranslatorFields(in.open(), 0, translator, of);
-        resultString.append("Convert " + in + " to " + out + "\n");
+        TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
+        resultString.append("Convert " + inFile + " to " + outFile + "\n");
       }
 
     } catch (IOException e) {
