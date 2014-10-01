@@ -100,6 +100,9 @@ public final class Settings implements Serializable {
   private static final String ANNOTATION_STORAGE_KEY = MAIN_PREFIX_KEY
       + "annotation.storage.path";
 
+  private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "additional.annotation.storage.path";
+
   private static final String SEND_RESULT_MAIL_KEY = MAIN_PREFIX_KEY
       + ".mail.send.result.mail";
 
@@ -124,12 +127,12 @@ public final class Settings implements Serializable {
   private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY});
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   //
   // Getters
@@ -320,6 +323,15 @@ public final class Settings implements Serializable {
   public String getAnnotationStoragePath() {
 
     return this.properties.getProperty(ANNOTATION_STORAGE_KEY);
+  }
+
+  /**
+   * Get the additional annotation storage path.
+   * @return the path to the additional annotation storage path
+   */
+  public String getAdditionalAnnotationStoragePath() {
+
+    return this.properties.getProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY);
   }
 
   /**
@@ -682,6 +694,18 @@ public final class Settings implements Serializable {
   public void setAnnotationStoragePath(final String annotationStoragePath) {
 
     this.properties.setProperty(ANNOTATION_STORAGE_KEY, annotationStoragePath);
+  }
+
+  /**
+   * Set the additional annotation storage path.
+   * @param additionalAnnotationStoragePath the path to the additional
+   *          annotation index storage path
+   */
+  public void setAdditionalAnnotationStoragePath(
+      final String additionalAnnotationStoragePath) {
+
+    this.properties.setProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY,
+        additionalAnnotationStoragePath);
   }
 
   /**
