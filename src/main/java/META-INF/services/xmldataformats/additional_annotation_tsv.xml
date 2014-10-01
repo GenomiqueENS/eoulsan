@@ -1,0 +1,11 @@
+<dataformat>
+  <name>additional_annotation_tsv</name>
+  <description>additional annotation format</description>
+  <prefix>additionalannotation</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <designfieldname>AdditionalAnnotation</designfieldname>
+  <extensions>
+  	<extension default="true">.tsv</extension>
+  	<extension>.txt</extension>
+  </extensions>
+</dataformat>

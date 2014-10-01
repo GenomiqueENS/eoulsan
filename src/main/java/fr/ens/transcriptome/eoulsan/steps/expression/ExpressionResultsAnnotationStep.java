@@ -24,7 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
@@ -111,7 +113,19 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    return InputPortsBuilder.singleInputPort(EXPRESSION_RESULTS_TSV);
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    // Add the port for the expression file
+    builder.addPort("expressionfile", EXPRESSION_RESULTS_TSV);
+
+    // If no annotation file is set in parameter use the annotation provided by
+    // the workflow
+    if (this.annotationFile == null) {
+
+      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    }
+
+    return builder.create();
   }
 
   @Override
@@ -119,8 +133,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
 
+    // Set the output ports
     for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {
-      builder.addPort(e.getKey(), e.getValue());
+      builder.addPort(e.getKey() + "output", e.getValue());
     }
 
     return builder.create();
@@ -184,13 +199,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       }
     }
 
-    // Check if annotation file has been set
-    if (this.annotationFile == null) {
-      throw new EoulsanException("The annotation file is not set");
-    }
-
     // Check if annotation file exists
-    if (!this.annotationFile.exists()) {
+    if (this.annotationFile != null && !this.annotationFile.exists()) {
       throw new EoulsanException("The annotation file does not exists: "
           + this.annotationFile);
     }
@@ -210,7 +220,17 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     try {
 
       // TODO annotation may be shared by several threads
-      translator = loadTranslator();
+
+      if (this.annotationFile == null) {
+
+        // If no annotation file parameter set
+        Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+        translator = loadTranslator(annotationData.getDataFile());
+      } else {
+
+        translator = loadTranslator(this.annotationFile);
+      }
+
     } catch (IOException | EoulsanIOException e) {
       return status.createStepResult(e);
     }
@@ -265,12 +285,16 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
   /**
    * Load translator annotation.
+   * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
    * @throws EoulsanIOException if an error occurs while reading additionnal
    *           annotation
    * @throws IOException if an error occurs while reading additionnal annotation
    */
-  private Translator loadTranslator() throws EoulsanIOException, IOException {
+  private Translator loadTranslator(final DataFile annotationFile)
+      throws EoulsanIOException, IOException {
+
+    checkNotNull(annotationFile, "annotationFile argument cannot be null");
 
     final Translator did = new BasicTranslator() {
 
@@ -295,7 +319,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     };
 
     return new CommonLinksInfoTranslator(new ConcatTranslator(did,
-        new MultiColumnTranslatorReader(this.annotationFile.open()).read()));
+        new MultiColumnTranslatorReader(annotationFile.open()).read()));
 
   }
 
