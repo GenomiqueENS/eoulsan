@@ -75,7 +75,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
-  private List<CommandWorkflowStep> steps;
+  private final List<CommandWorkflowStep> steps =
+      new ArrayList<CommandWorkflowStep>();
   private Set<String> stepsIds = Sets.newHashSet();
 
   private final CommandWorkflowModel workflowCommand;
@@ -150,10 +151,26 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void addMainSteps() throws EoulsanException {
 
-    this.steps = new ArrayList<CommandWorkflowStep>();
     final CommandWorkflowModel c = this.workflowCommand;
 
-    for (String stepId : c.getStepIds()) {
+    // Get the list of the step ids
+    final List<String> stepIds = c.getStepIds();
+
+    // Remove the last steps that are skipped
+    int index = stepIds.size() - 1;
+    while (index >= 0) {
+
+      if (c.isStepSkipped(stepIds.get(index))) {
+        stepIds.remove(index);
+      } else {
+        break;
+      }
+
+      index--;
+    }
+
+    // Add the steps
+    for (String stepId : stepIds) {
 
       final String stepName = c.getStepName(stepId);
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
@@ -166,6 +183,11 @@ public class CommandWorkflow extends AbstractWorkflow {
               + ") step.");
       addStep(new CommandWorkflowStep(this, stepId, stepName, stepParameters,
           skip, copyResultsToOutput));
+    }
+
+    // Check if there one or more step to execute
+    if (this.steps.isEmpty()) {
+      throw new EoulsanException("There is no step to execute in the workflow");
     }
   }
 
