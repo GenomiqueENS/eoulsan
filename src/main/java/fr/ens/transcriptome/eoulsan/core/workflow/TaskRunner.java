@@ -47,8 +47,11 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
+import fr.ens.transcriptome.eoulsan.core.StepService;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -117,13 +120,50 @@ public class TaskRunner {
       @Override
       public void run() {
 
+        getLogger().info("Start of task #" + context.getId());
+
+        final Step stepInstance;
+        final StepType stepType = context.getWorkflowStep().getType();
+        final boolean reuseAnnot =
+            step.getClass().getAnnotation(ReuseStepInstance.class) != null;
+
+        final String stepDescLog =
+            String.format("step (id:  %s, name: %s) for task #%d", context
+                .getWorkflowStep().getId(), step.getName(), context.getId());
+
         try {
-          result = step.execute(context, status);
+
+          // If step is a standard step and reuse of step instance is not
+          // required by step
+          // Create a new instance of the step for the task
+          if (stepType == StepType.STANDARD_STEP && !reuseAnnot) {
+
+            // Create the new instance of the step
+            getLogger().fine("Create new instance of " + stepDescLog);
+            stepInstance = StepService.getInstance().newService(step.getName());
+
+            // Configure the new step instance
+            getLogger().fine("Configure step instance");
+            stepInstance.configure(context.getCurrentStep().getParameters());
+
+          } else {
+
+            // Use the original step instance for the task
+            getLogger().fine("Reuse original instance of " + stepDescLog);
+            stepInstance = step;
+          }
+
+          // Execute task
+          getLogger().info("Execute task");
+          result = stepInstance.execute(context, status);
+
         } catch (Throwable t) {
 
           // Handle exception not catch by step code
           result = status.createStepResult(t);
         }
+
+        getLogger().info("End of task #" + context.getId());
       }
     };
 

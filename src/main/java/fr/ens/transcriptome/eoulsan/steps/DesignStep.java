@@ -34,6 +34,7 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -57,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
+@ReuseStepInstance
 public class DesignStep extends AbstractStep {
 
   private final Design design;

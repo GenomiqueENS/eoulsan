@@ -42,6 +42,7 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -64,6 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  */
 @HadoopCompatible
+@ReuseStepInstance
 public class MergerStep extends AbstractStep {
 
   private Merger merger;

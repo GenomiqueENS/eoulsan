@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -38,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @HadoopCompatible
+@ReuseStepInstance
 public class TerminalStep extends AbstractStep {
 
   @Override

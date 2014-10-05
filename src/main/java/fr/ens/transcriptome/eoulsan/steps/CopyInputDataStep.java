@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -58,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  */
 @HadoopCompatible
+@ReuseStepInstance
 public class CopyInputDataStep extends AbstractStep {
 
   public static final String STEP_NAME = "_copyinputformat";
