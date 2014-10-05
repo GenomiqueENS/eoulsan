@@ -39,8 +39,10 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -246,8 +248,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     if (READS_FASTQ.equals(inputDataFile.getDataFormat()))
       job.setInputFormatClass(FastQFormatNew.class);
 
-    // Set the Mapper class
-    job.setMapperClass(FilterAndMapMapper.class);
+    // Set the Mappers classes using a chain mapper
+    ChainMapper.addMapper(job, ReadsFilterMapper.class, LongWritable.class,
+        Text.class, Text.class, Text.class, jobConf);
+    ChainMapper.addMapper(job, SAMFilterMapper.class, Text.class, Text.class,
+        Text.class, Text.class, jobConf);
 
     // Set the reducer class
     job.setReducerClass(SAMFilterReducer.class);

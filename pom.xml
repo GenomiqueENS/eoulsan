@@ -210,6 +210,10 @@
 			<!--url>https://maven-repository.dev.java.net/nonav/repository</url -->
 			<url>http://transcriptome.ens.fr/maven2</url>
 		</repository>
+		<repository>
+			<id>cloudera</id>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+		</repository>
 	</repositories>
 
 	<scm>
@@ -242,9 +246,9 @@
 		</dependency>
 		<dependency>
 			<!-- Update groupId and artifactId for 2.0.x version -->
-			<groupId>org.apache.mahout.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>0.20.1</version>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+			<version>2.3.0-cdh5.1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -722,7 +726,7 @@
 						<configuration>
 							<!-- All libs except junit, hadoop-core, ws-java-sdk and its runtime 
 								dependencies -->
-							<excludeArtifactIds>junit,hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							<excludeArtifactIds>junit,hadoop-client,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
 							</excludeArtifactIds>
 							<outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						</configuration>
