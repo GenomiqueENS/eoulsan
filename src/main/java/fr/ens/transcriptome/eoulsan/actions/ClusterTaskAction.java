@@ -158,7 +158,7 @@ public class ClusterTaskAction extends AbstractAction {
   private static final void run(final File contextFile) {
 
     checkNotNull(contextFile, "contextFile is null");
-    System.out.println("Start run()");
+
     try {
 
       // Test if param file exists
@@ -177,6 +177,9 @@ public class ClusterTaskAction extends AbstractAction {
 
       // Configure step
       step.configure(context.getCurrentStep().getParameters());
+
+      // Force TaksRunner to resuse the step instance that just has been created
+      runner.setForceStepInstanceReuse(true);
 
       // Get the result
       final TaskResult result = runner.run();

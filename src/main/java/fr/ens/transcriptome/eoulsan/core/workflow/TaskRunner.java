@@ -67,6 +67,7 @@ public class TaskRunner {
   private final TaskStatus status;
   private volatile StepResult result;
   private boolean isTokensSent;
+  private boolean forceStepInstanceReuse;
 
   //
   // Getter
@@ -81,6 +82,20 @@ public class TaskRunner {
     checkState(this.result != null, "The context has not been run");
 
     return (TaskResult) this.result;
+  }
+
+  //
+  // Setter
+  //
+
+  /**
+   * Force the TaskRunner to reuse the original step instance when execute the
+   * task.
+   * @param reuse true if the step instance must be reuse when execute the task
+   */
+  public void setForceStepInstanceReuse(boolean reuse) {
+
+    this.forceStepInstanceReuse = reuse;
   }
 
   //
@@ -136,7 +151,8 @@ public class TaskRunner {
           // If step is a standard step and reuse of step instance is not
           // required by step
           // Create a new instance of the step for the task
-          if (stepType == StepType.STANDARD_STEP && !reuseAnnot) {
+          if (stepType == StepType.STANDARD_STEP
+              && !reuseAnnot && !forceStepInstanceReuse) {
 
             // Create the new instance of the step
             getLogger().fine("Create new instance of " + stepDescLog);
