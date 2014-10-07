@@ -28,11 +28,14 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
+import java.util.Set;
 
 /**
  * This class is a service loader that allow to filter class to retrieve and get
@@ -49,6 +52,8 @@ public abstract class ServiceNameLoader<S> {
   private final Map<String, String> classNames =
       new LinkedHashMap<String, String>();
   private final Map<String, S> cache = new HashMap<String, S>();
+  private final Set<String> classesToNotLoad = new HashSet<String>();
+  private boolean notYetLoaded = true;
 
   /**
    * This method allow to filter class that can be returned by
@@ -83,10 +88,88 @@ public abstract class ServiceNameLoader<S> {
   }
 
   /**
+   * Add a class to not load.
+   * @param className class name to not load
+   */
+  public void addClassToNotLoad(final String className) {
+
+    if (className == null) {
+      throw new NullPointerException("className argument cannot be null");
+    }
+
+    this.classesToNotLoad.add(className.trim());
+  }
+
+  /**
+   * Add classes to not load.
+   * @param classNames class names to not load
+   */
+  public void addClassesToNotLoad(final Collection<String> classNames) {
+
+    if (classNames == null) {
+      throw new NullPointerException("classNames argument cannot be null");
+    }
+
+    for (String className : classNames) {
+      if (className != null) {
+        addClassToNotLoad(className);
+      }
+    }
+  }
+
+  /**
+   * Clear classes to not load.
+   */
+  public void clearClassesToNotLoad() {
+
+    this.classesToNotLoad.clear();
+  }
+
+  /**
+   * Remove a class to not load.
+   * @param className class name
+   */
+  public void removeClassToNotLoad(final String className) {
+
+    if (className == null) {
+      throw new NullPointerException("className argument cannot be null");
+    }
+
+    this.classesToNotLoad.remove(className.trim());
+  }
+
+  /**
+   * Remove classes to not load.
+   * @param classNames class names
+   */
+  public void removeClassesToNotLoad(final Collection<String> classNames) {
+
+    if (classNames == null) {
+      throw new NullPointerException("classNames argument cannot be null");
+    }
+
+    for (String className : classNames) {
+      if (className != null) {
+        removeClassToNotLoad(className);
+      }
+    }
+  }
+
+  /**
+   * Get the class names to not load.
+   * @return a set with the names of the classes to not load
+   */
+  public Set<String> getClassesToNotLoad() {
+
+    return Collections.unmodifiableSet(this.classesToNotLoad);
+  }
+
+  /**
    * Reload the list of the available class services.
    */
   public void reload() {
 
+    this.notYetLoaded = false;
     this.classNames.clear();
     this.cache.clear();
 
@@ -99,7 +182,13 @@ public abstract class ServiceNameLoader<S> {
       for (ServiceListLoader.Entry e : ServiceListLoader
           .loadEntries(this.service.getName())) {
 
-        processClassName(e.getUrl().toString(), e.getLineNumber(), e.getValue());
+        // Check if class is allowed to be load
+        if (!this.classesToNotLoad.contains(e.getValue())) {
+
+          // Process class
+          processClassName(e.getUrl().toString(), e.getLineNumber(),
+              e.getValue());
+        }
       }
 
     } catch (IOException e) {
@@ -229,6 +318,10 @@ public abstract class ServiceNameLoader<S> {
     if (serviceName == null)
       return null;
 
+    if (this.notYetLoaded) {
+      reload();
+    }
+
     final String serviceNameLower =
         isServiceNameCaseSensible() ? serviceName.trim() : serviceName
             .toLowerCase().trim();
@@ -273,6 +366,10 @@ public abstract class ServiceNameLoader<S> {
    */
   public Map<String, String> getServiceClasses() {
 
+    if (this.notYetLoaded) {
+      reload();
+    }
+
     return Collections.unmodifiableMap(this.classNames);
   }
 
@@ -285,6 +382,10 @@ public abstract class ServiceNameLoader<S> {
 
     if (serviceName == null)
       return false;
+
+    if (this.notYetLoaded) {
+      reload();
+    }
 
     final String serviceNameLower = serviceName.toLowerCase().trim();
 
@@ -318,7 +419,6 @@ public abstract class ServiceNameLoader<S> {
     this.loader =
         loader == null
             ? Thread.currentThread().getContextClassLoader() : loader;
-    reload();
   }
 
 }
