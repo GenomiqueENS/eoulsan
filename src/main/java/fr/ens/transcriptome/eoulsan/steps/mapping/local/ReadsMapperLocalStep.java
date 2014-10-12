@@ -82,9 +82,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort(READS_PORT_NAME, READS_FASTQ);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat());
-    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(), true);
+    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT, true);
 
     return builder.create();
   }

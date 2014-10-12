@@ -69,8 +69,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("reads", READS_TFQ, true);
-    builder.addPort("mapper_index", getMapper().getArchiveFormat(), true);
+    builder.addPort(READS_PORT_NAME, READS_TFQ, true);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
+        true);
 
     return builder.create();
   }
