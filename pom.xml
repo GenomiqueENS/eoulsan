@@ -728,6 +728,7 @@
 								dependencies -->
 							<excludeArtifactIds>junit,hadoop-client,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
 							</excludeArtifactIds>
+							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${basedir}/target/dist/lib</outputDirectory>
 						</configuration>
 					</execution>
@@ -739,7 +740,7 @@
 						</goals>
 						<configuration>
 							<!-- hadoop-core, aws-java-sdk and its runtime dependencies -->
-							<includeArtifactIds>hadoop-core,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							<includeArtifactIds>hadoop-client,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
 							</includeArtifactIds>
 							<outputDirectory>${basedir}/target/dist/lib/local
 							</outputDirectory>
