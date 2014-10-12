@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 /**
@@ -257,7 +256,7 @@ public final class Version implements Comparable<Version> {
       }
 
     } catch (NumberFormatException e) {
-      throw new InvalidParameterException("Invalid version format in string: "
+      throw new IllegalArgumentException("Invalid version format in string: "
           + version);
     }
   }

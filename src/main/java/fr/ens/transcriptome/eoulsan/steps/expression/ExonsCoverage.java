@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,10 +52,10 @@ public class ExonsCoverage {
     public void addAlignement(final int alignmentStart, final int alignmentEnd) {
 
       if (alignmentStart < 1)
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "Start position can't be lower than 1.");
       if (alignmentEnd < alignmentStart)
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "End position can't be lower than start position.");
 
       // Test if alignment is outside the exon
@@ -117,10 +116,10 @@ public class ExonsCoverage {
     public Exoncoverage(final int start, final int end) {
 
       if (start < 1)
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "Start position can't be lower than 1.");
       if (end < start)
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "End position can't be lower than start position.");
 
       this.exonStart = start;

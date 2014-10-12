@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,7 +173,7 @@ public abstract class ServiceNameLoader<S> {
     this.cache.clear();
 
     if (getMethodName() == null) {
-      throw new InvalidParameterException("getMethod() cannot return null");
+      throw new NullPointerException("getMethod() cannot return null");
     }
 
     try {

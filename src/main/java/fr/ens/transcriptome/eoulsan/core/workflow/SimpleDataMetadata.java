@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-import com.amazonaws.services.importexport.model.InvalidParameterException;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
@@ -226,7 +225,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
     for (int i = 0; i < key.length(); i++) {
 
       if (key.charAt(i) < ' ') {
-        throw new InvalidParameterException(
+        throw new IllegalArgumentException(
             "Invalid metadata key character found: " + key.charAt(i));
       }
     }
