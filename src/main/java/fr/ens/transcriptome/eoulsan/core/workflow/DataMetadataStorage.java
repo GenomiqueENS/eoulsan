@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
-import com.beust.jcommander.internal.Maps;
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.Data;
