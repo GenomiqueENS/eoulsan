@@ -78,6 +78,7 @@
 				<item name="Normalization" href="/step-normalization.html" />
 				<item name="Differential analysis" href="/step-diffana.html" />
 				<item name="Splitters and mergers" href="/step-splitters-mergers.html" />
+				<item name="Shell" href="step-shell.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">
