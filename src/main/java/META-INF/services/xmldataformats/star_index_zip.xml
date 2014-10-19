@@ -1,0 +1,12 @@
+<dataformat>
+  <name>star_index_zip</name>
+  <description>star index zipped format</description>
+  <prefix>starindex</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <content-type>application/zip</content-type>
+  <generator mapperName="star">fr.ens.transcriptome.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
+
+  <extensions>
+  	<extension default="true">.zip</extension>
+  </extensions>
+</dataformat>

@@ -5,6 +5,7 @@ bwa_index_zip.xml
 bowtie_index_zip.xml
 bowtie2_index_zip.xml
 gsnap_index_zip.xml
+star_index_zip.xml
 mapper_results_sam.xml
 mapper_results_bam.xml
 mapper_results_index_bai.xml
