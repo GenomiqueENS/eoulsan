@@ -62,6 +62,10 @@ public class DataFormats {
   public static final DataFormat GSNAP_INDEX_ZIP = registry
       .getDataFormatFromName("gsnap_index_zip");
 
+  /** STAR index data format. */
+  public static final DataFormat STAR_INDEX_ZIP = registry
+      .getDataFormatFromName("star_index_zip");
+
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM = registry
       .getDataFormatFromName("mapper_results_sam");
