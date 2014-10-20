@@ -68,6 +68,7 @@ public class ITFactory {
       "it.generate.new.expected.data";
   public static final String IT_APPLICATION_PATH_KEY_SYSTEM_KEY =
       "it.application.path";
+  public static final String IT_DEBUG_ENABLE_SYSTEM_KEY = "it.debug.enable";
 
   // Configuration properties keys
   static final String TESTS_DIRECTORY_CONF_KEY = "tests.directory";
@@ -87,22 +88,30 @@ public class ITFactory {
       "command.to.generate.manually";
   static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
       "command.to.get.application.version";
-  
-  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY = "file.to.compare.patterns";
-  static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY = "exclude.to.compare.patterns";
+
+  /** Patterns */
+  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
+      "file.to.compare.patterns";
+  static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY =
+      "exclude.to.compare.patterns";
+  static final String CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY =
+      "file.to.check.existence.patterns";
+  static final String CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY =
+      "file.to.check.absence.patterns";
 
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
-  static final String PRETREATMENT_GLOBAL_SCRIPT_KEY =
-      "pre.global.script";
-  static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY =
-      "post.global.script";
+  static final String PRETREATMENT_GLOBAL_SCRIPT_KEY = "pre.global.script";
+  static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY = "post.global.script";
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
+
+  static int TESTS_COUNT;
+  static boolean DEBUG_ENABLE = false;
 
   private static String outputTestsDirectoryPath;
 
@@ -132,16 +141,15 @@ public class ITFactory {
     // Set the default local for all the application
     Globals.setDefaultLocale();
     List<ProcessIT> tests = null;
-    int testsCount = 0;
     try {
       init();
 
       tests = collectTests();
-      testsCount = tests.size();
+      TESTS_COUNT = tests.size();
 
-      getLogger().config("Count tests found " + testsCount);
+      getLogger().config("Count tests found " + TESTS_COUNT);
 
-      if (testsCount == 0)
+      if (TESTS_COUNT == 0)
         return new Object[0];
 
       // Return all tests
@@ -151,11 +159,62 @@ public class ITFactory {
       System.err.println(e.getMessage());
 
     } finally {
-      closeLogger(testsCount);
+      final File loggerFile = new File(this.loggerPath);
+
+      if (loggerFile.exists()) {
+        // Create a symbolic link in output test directory
+        createSymbolicLink(loggerFile, this.outputTestsDirectory);
+      }
     }
 
     // Return none test
     return new Object[0];
+  }
+
+  /**
+   * Create useful symbolic test to the latest and running test in output test
+   * directory.
+   * @param isStartTests in case of start tests, create running test link
+   *          otherwise recreate latest and remove running test
+   */
+  public static void createSymbolicLinkToTest(final File directory,
+      final int failTestsCount) {
+    // Path to the running link
+    File runningTestLink = new File(directory.getParentFile(), "runningtest");
+
+    // Path to the latest link
+    File latestLink = new File(directory.getParentFile(), "latest");
+
+    File succeededLink = new File(directory.getParentFile(), "succeeded");
+    File failedLink = new File(directory.getParentFile(), "failed");
+
+    // Remove old running test link
+    runningTestLink.delete();
+
+    // Create running test link
+    if (failTestsCount == -1) {
+      createSymbolicLink(directory, runningTestLink);
+
+    } else {
+      // Replace latest by running test link
+
+      // Remove old link
+      latestLink.delete();
+
+      // Recreate the latest link
+      createSymbolicLink(directory, latestLink);
+
+      if (failTestsCount == 0) {
+        // Update succeed link
+        succeededLink.delete();
+        createSymbolicLink(directory, succeededLink);
+      } else {
+        // Update failed link
+        failedLink.delete();
+        createSymbolicLink(directory, failedLink);
+      }
+    }
+
   }
 
   /**
@@ -187,16 +246,8 @@ public class ITFactory {
       throw new IOException("Cannot create output tests directory "
           + this.outputTestsDirectory.getAbsolutePath());
 
-    // Path to the latest link
-    File latestLink = new File(this.outputTestsDirectory.getParent(), "latest");
-
-    // Remove old link
-    if (latestLink.exists()) {
-      latestLink.delete();
-    }
-
-    // Recreate the link
-    createSymbolicLink(this.outputTestsDirectory, latestLink);
+    // Start test, no test execute, failtestcount equals -1
+    createSymbolicLinkToTest(this.outputTestsDirectory, -1);
   }
 
   /**
@@ -323,32 +374,24 @@ public class ITFactory {
 
   }
 
-  /**
-   * Close the logger.
-   */
-  private void closeLogger(final int testsCount) {
-
-    // Add suffix to log global filename
-    getLogger().fine(
-        "End of configuration of " + testsCount + " integration tests");
-
-    final File loggerFile = new File(this.loggerPath);
-
-    if (loggerFile.exists()) {
-      // Create a symbolic link
-      createSymbolicLink(loggerFile, this.outputTestsDirectory);
-    }
-  }
-
   //
   // Getter
   //
+
   /**
    * Gets the output test directory path.
    * @return the output test directory path
    */
   public static String getOutputTestDirectoryPath() {
     return outputTestsDirectoryPath;
+  }
+
+  /**
+   * Gets the output test directory file.
+   * @return the output test directory file
+   */
+  public static File getOutputTestDirectoryFile() {
+    return new File(outputTestsDirectoryPath);
   }
 
   //
@@ -529,6 +572,9 @@ public class ITFactory {
       // class
       // TODO: May be a Java system property will be better
       outputTestsDirectoryPath = this.outputTestsDirectory.getAbsolutePath();
+
+      // Retrieve debug setting
+      DEBUG_ENABLE = Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY);
 
     } else {
       // Case no testng must be create when compile project with maven
