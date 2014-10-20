@@ -81,6 +81,10 @@ public class ProcessIT {
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
+  private static int SUCCESS_COUNT = 0;
+  private static int FAIL_COUNT = 0;
+  private static int TEST_RUNNING_COUNT = 0;
+
   /** Variables */
   private final Properties testConf;
   private final String testName;
@@ -90,8 +94,13 @@ public class ProcessIT {
   private final File outputTestDirectory;
   private final File expectedTestDirectory;
 
+  /** Patterns */
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
+  /** Patterns to check file and compare size */
+  private final String checkExistenceFilePatterns;
+  /** Patterns to check file not exist in test directory */
+  private final String checkAbsenceFilePatterns;
 
   private final boolean generateExpectedData;
   private final boolean generateAllTests;
@@ -113,7 +122,6 @@ public class ProcessIT {
 
     @Override
     public void run() {
-      // TODO Auto-generated method stub
 
       try {
         Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
@@ -145,13 +153,15 @@ public class ProcessIT {
    */
   @Test
   public final void launchTest() throws Exception {
+    // Count test running
+    TEST_RUNNING_COUNT++;
 
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
     getLogger().info("start test " + this.testName);
 
     // Compile the result comparison from all tests
-    boolean status = true;
+    boolean isSuccess = true;
 
     ResultIT regressionResultIT = null;
     ResultIT.OutputExecution outputComparison = null;
@@ -172,7 +182,8 @@ public class ProcessIT {
       // Treat result application directory
       regressionResultIT =
           new ResultIT(this.outputTestDirectory, this.fileToComparePatterns,
-              this.excludeToComparePatterns);
+              this.excludeToComparePatterns, this.checkExistenceFilePatterns,
+              this.checkAbsenceFilePatterns);
 
       if (this.generateExpectedData) {
         // Build expected directory if necessary
@@ -188,20 +199,23 @@ public class ProcessIT {
 
         // Case comparison between expected and output test directory
         outputComparison =
-            regressionResultIT.compareTo(new ResultIT(
-                this.expectedTestDirectory.getParentFile(),
-                this.fileToComparePatterns, this.excludeToComparePatterns));
+            regressionResultIT
+                .compareTo(new ResultIT(this.expectedTestDirectory
+                    .getParentFile(), this.fileToComparePatterns,
+                    this.excludeToComparePatterns,
+                    this.checkExistenceFilePatterns,
+                    this.checkAbsenceFilePatterns));
 
         // Comparison assessment
-        status = outputComparison.isResult();
+        isSuccess = outputComparison.isResult();
       }
 
     } catch (EoulsanITRuntimeException e) {
-      msgException = buildMessageException(e, testName, true);
+      msgException = buildMessageException(e, testName, ITFactory.DEBUG_ENABLE);
       throw new Exception(msgException);
 
     } catch (Exception e) {
-      msgException = buildMessageException(e, testName, false);
+      msgException = buildMessageException(e, testName, ITFactory.DEBUG_ENABLE);
       throw new Exception(msgException);
 
     } finally {
@@ -213,11 +227,18 @@ public class ProcessIT {
 
       // If throws an exception
       if (msgException != null) {
-        status = false;
+        isSuccess = false;
         this.reportText.append("\n" + msgException);
       }
 
-      final String reportFilename = (status ? "SUCCESS" : "FAIL");
+      String reportFilename;
+      if (isSuccess) {
+        reportFilename = "SUCCESS";
+        SUCCESS_COUNT++;
+      } else {
+        reportFilename = "FAIL";
+        FAIL_COUNT++;
+      }
 
       // Create report file
       createReportFile(reportFilename);
@@ -233,6 +254,10 @@ public class ProcessIT {
                       ? ": generate expected data"
                       : ": launch test and comparison") + " in "
                   + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
+
+      // For latest
+      if (TEST_RUNNING_COUNT == ITFactory.TESTS_COUNT)
+        closeLogger();
     }
   }
 
@@ -377,6 +402,7 @@ public class ProcessIT {
 
     // Create a symbolic link for each file from input data test directory
     for (File file : this.inputTestDirectory.listFiles()) {
+      // TODO validate if it should limited only file, not directory
       if (file.isFile()) {
         createSymbolicLink(file, this.outputTestDirectory);
       }
@@ -477,7 +503,8 @@ public class ProcessIT {
     // Save command line in file
     if (cmdLineFile != null)
       try {
-        com.google.common.io.Files.write(cmd, cmdLineFile, Charsets.UTF_8);
+        com.google.common.io.Files.write(cmd + "\n", cmdLineFile,
+            Charsets.UTF_8);
       } catch (IOException e) {
         // Nothing to do
       }
@@ -531,6 +558,9 @@ public class ProcessIT {
     }
   }
 
+  /**
+   * Save all environment variables in file.
+   */
   private void saveEnvironmentVariable() {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
@@ -627,8 +657,10 @@ public class ProcessIT {
    */
   private String buildExcludePatterns(final String valueConfigTests) {
     if (valueConfigTests == null || valueConfigTests.trim().length() == 0)
-      return ProcessIT.TEST_SOURCE_LINK_NAME
-          + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME;
+      // Syntax **/filename
+      return "**/"
+          + ProcessIT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
+          + ITFactory.TEST_CONFIGURATION_FILENAME;
 
     return ProcessIT.TEST_SOURCE_LINK_NAME
         + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME + SEPARATOR
@@ -663,6 +695,27 @@ public class ProcessIT {
             status).toPath(), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
       }
+  }
+
+  /**
+   * Close log file, add a summary on tests execution and update symbolic link
+   * in output test directory.
+   */
+  private void closeLogger() {
+    // Add summary of tests execution
+    getLogger().info(
+        "Summary tests execution: "
+            + SUCCESS_COUNT + " successed tests and " + FAIL_COUNT
+            + " failed tests.");
+
+    // Add suffix to log global filename
+    getLogger().fine(
+        "End of configuration of "
+            + ITFactory.TESTS_COUNT + " integration tests");
+
+    // Update symbolic link in output test directory
+    ITFactory.createSymbolicLinkToTest(
+        this.outputTestDirectory.getParentFile(), FAIL_COUNT);
   }
 
   /**
@@ -723,7 +776,7 @@ public class ProcessIT {
   public String toString() {
 
     return this.description
-        + "\nfiles to compare pattern " + this.fileToComparePatterns + "";
+        + "\nfiles to compare pattern " + this.fileToComparePatterns + "\n";
   }
 
   //
@@ -778,6 +831,14 @@ public class ProcessIT {
     this.excludeToComparePatterns =
         buildExcludePatterns(this.testConf
             .getProperty(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
+
+    this.checkExistenceFilePatterns =
+        this.testConf
+            .getProperty(ITFactory.CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY);
+
+    this.checkAbsenceFilePatterns =
+        this.testConf
+            .getProperty(ITFactory.CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY);
 
     // Set action required
     final String actionType =
