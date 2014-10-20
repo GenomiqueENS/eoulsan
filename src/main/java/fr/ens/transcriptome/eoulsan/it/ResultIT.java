@@ -46,6 +46,7 @@ import java.util.Set;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
@@ -74,8 +75,17 @@ public class ResultIT {
 
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
+  /** Patterns to check file and compare size */
+  private final String checkExistenceFilePatterns;
+  /** Patterns to check file not exist in test directory */
+  private final String checkAbsenceFilePatterns;
 
   private final List<File> filesToCompare;
+
+  private final List<File> filesToExclude;
+  private final List<File> filesToCompareWithComparator;
+  private final List<File> filesToCheckExistence;
+
   private final File directory;
 
   /**
@@ -91,8 +101,13 @@ public class ResultIT {
     // Check at least on file match with a pattern
     boolean noFileFoundToCopy = true;
 
+    if (this.filesToCompare.isEmpty()) {
+      // No file to copy in expected directory
+      return;
+    }
+
     // Copy output files
-    for (File f : filesToCompare) {
+    for (File f : this.filesToCompare) {
 
       final String filename = f.getName();
 
@@ -139,7 +154,7 @@ public class ResultIT {
 
     // Build map filename with files path
     Map<String, File> filesTestedMap =
-        newHashMapWithExpectedSize(expectedOutput.getFilesList().size());
+        newHashMapWithExpectedSize(this.filesToCompare.size());
 
     for (File f : this.filesToCompare) {
       filesTestedMap.put(f.getName(), f);
@@ -149,38 +164,28 @@ public class ResultIT {
     String msg;
 
     // Parse expected files
-    for (File fileExpected : expectedOutput.getFilesList()) {
+    for (Map.Entry<File, Boolean> entry : expectedOutput.getFilesToCompare()
+        .entrySet()) {
+      final File fileExpected = entry.getKey();
+      final boolean usedComparator = entry.getValue();
+
       final String filename = fileExpected.getName();
       final File fileTested = filesTestedMap.get(filename);
 
       if (fileTested == null) {
         msg = "Missing file: " + filename + " in test directory";
-        comparison.appendComparison(msg, false);
-
+        comparison.appendComparison(msg, OutputExecution.FAIL);
         throw new EoulsanITRuntimeException(msg);
       }
 
-      // Comparison two files with same filename
-      final FilesComparator fc = new FilesComparator(fileExpected, fileTested);
-      boolean res = fc.compare();
-
-      if (!res) {
-        msg =
-            "Fail comparison with file: "
-                + fileExpected.getAbsolutePath() + " "
-                + fileTested.getAbsolutePath() + "\n\tdetail: "
-                + fc.getDetailComparison();
-
-        comparison.appendComparison(msg, false);
-
-        throw new EoulsanITRuntimeException(msg);
+      if (usedComparator) {
+        compareFilesContent(comparison, fileExpected, fileTested);
+      } else {
+        compareFilesLength(comparison, fileExpected, fileTested);
       }
 
       // Remove file from list
       allFilesFromTest.remove(fileTested);
-
-      // Add comparison in the report text
-      comparison.appendComparison("Success file comparison: " + filename, true);
     }
 
     // Check file from test are not compare
@@ -188,22 +193,127 @@ public class ResultIT {
       msg =
           "Unexpected file in data to test directory: "
               + Joiner.on("\n\t").join(allFilesFromTest);
-      comparison.appendComparison(msg, false);
+      comparison.appendComparison(msg, OutputExecution.FAIL);
 
       throw new EoulsanITRuntimeException(msg);
     }
+
+    // Check absence file
+    checkAbsenceFileFromPatterns(comparison);
 
     // TODO active after test
     // Remove all files not need to compare
     // this.cleanDirectory();
 
-    System.out.println("report comparaison " + comparison.getReport());
     return comparison;
   }
 
   //
   // Private methods
   //
+
+  /**
+   * Compare content on expected file from tested file with same filename, save
+   * result in outputExecution instance
+   * @param comparison outputExecution object
+   * @param fileExpected file from expected directory
+   * @param fileTested file from tested directory
+   * @throws IOException if an error occurs during comparison file
+   */
+  private void compareFilesContent(final OutputExecution comparison,
+      final File fileExpected, final File fileTested) throws IOException {
+
+    // Comparison two files with same filename
+    final FilesComparator fc = new FilesComparator(fileExpected, fileTested);
+    // Compare files with comparator
+    boolean res = fc.compare();
+    String msg = "";
+
+    if (!res) {
+      msg =
+          "Fail comparison with file: "
+              + fileExpected.getAbsolutePath() + " "
+              + fileTested.getAbsolutePath() + "\n\tdetail: "
+              + fc.getDetailComparison();
+
+      comparison.appendComparison(msg, OutputExecution.FAIL);
+      throw new EoulsanITRuntimeException(msg);
+    }
+    // Add comparison in the report text
+    comparison.appendComparison(
+        "Success file comparison: " + fileExpected.getName(),
+        OutputExecution.SUCCESS);
+  }
+
+  /**
+   * Compare length on expected file from tested file with same filename, save
+   * result in outputExecution instance
+   * @param comparison outputExecution object
+   * @param fileExpected file from expected directory
+   * @param fileTested file from tested directory
+   */
+  private void compareFilesLength(final OutputExecution comparison,
+      final File fileExpected, final File fileTested) {
+    // Compare size file
+    long fileExpectedSize = fileExpected.length();
+    long fileTestedSize = fileTested.length();
+
+    long diffSize = fileExpectedSize - fileTestedSize;
+    boolean isEqualsSize = diffSize < 10L;
+
+    String msg = "";
+
+    if (!isEqualsSize) {
+      msg =
+          String.format(
+              "Fail comparison size expected: %s (%d) vs tested %s (%d)%n",
+              fileExpected.getAbsolutePath(), fileExpectedSize,
+              fileTested.getAbsolutePath(), fileTestedSize);
+
+      comparison.appendComparison(msg, OutputExecution.FAIL);
+      throw new EoulsanITRuntimeException(msg);
+    }
+
+    // Add comparison in the report text
+    comparison.appendComparison("Success file comparison size file: "
+        + fileExpected.getName(), OutputExecution.SUCCESS);
+  }
+
+  /**
+   * @return
+   * @throws IOException
+   */
+  private void checkAbsenceFileFromPatterns(final OutputExecution comparison)
+      throws IOException {
+
+    if (this.checkAbsenceFilePatterns == null
+        || this.checkAbsenceFilePatterns.length() == 0)
+      return;
+
+    final Set<PathMatcher> patterns =
+        createPathMatchers(checkAbsenceFilePatterns, false);
+    final List<File> matchedFile = listingFilesFromPatterns(patterns);
+
+    String msg = "";
+
+    if (matchedFile.isEmpty()) {
+      msg =
+          "SUCCESS no files found with patterns "
+              + this.checkAbsenceFilePatterns + "\n";
+      comparison.appendComparison(msg, OutputExecution.SUCCESS);
+
+    } else {
+
+      msg =
+          "Fail indesirable file in output test directory matched to patterns "
+              + this.checkAbsenceFilePatterns + "\n";
+      // Build list file
+      msg += Joiner.on("; ").join(matchedFile) + "\n";
+
+      comparison.appendComparison(msg, OutputExecution.FAIL);
+      throw new EoulsanITRuntimeException(msg);
+    }
+  }
 
   /**
    * Listing recursively all files in the source directory which match with
@@ -213,38 +323,35 @@ public class ResultIT {
    * @throws IOException if an error occurs while parsing input directory
    * @throws EoulsanException if no file to compare found
    */
-  private List<File> createListFiles() throws IOException, EoulsanException {
+  private List<File> createListFiles(final String patternKey,
+      final List<File> excludedFiles, final boolean defaultAllPath)
+      throws IOException, EoulsanException {
 
-    // Build list patterns
-    final Set<PathMatcher> fileToCompareMatcher =
-        createPathMatchers(this.fileToComparePatterns, true);
+    final Set<PathMatcher> fileMatcher =
+        createPathMatchers(patternKey, defaultAllPath);
 
-    final Set<PathMatcher> excludeToCompareMatcher =
-        createPathMatchers(this.excludeToComparePatterns, false);
+    final List<File> files = listingFilesFromPatterns(fileMatcher);
 
-    final List<File> files = listingFilesFromPatterns(fileToCompareMatcher);
+    // Remove exclude files if exists
+    if (!(excludedFiles == null || excludedFiles.isEmpty())) {
+      files.removeAll(excludedFiles);
+    }
 
     if (files.isEmpty())
-      throw new EoulsanException("No file found with patterns "
-          + this.fileToComparePatterns);
-
-    final List<File> excludedFiles =
-        listingFilesFromPatterns(excludeToCompareMatcher);
-
-    // Remove exclude files
-    if (!excludedFiles.isEmpty())
-      files.removeAll(excludedFiles);
+      return Collections.emptyList();
 
     // Return unmodifiable list
     return Collections.unmodifiableList(files);
+
   }
 
   /**
-   * @param patterns
-   * @return
+   * Create list files matching to the patterns
+   * @param patterns set of pattern to filter file in result directory
+   * @return unmodifiable list of files or empty list
    * @throws IOException
    */
-  public List<File> listingFilesFromPatterns(final Set<PathMatcher> patterns)
+  private List<File> listingFilesFromPatterns(final Set<PathMatcher> patterns)
       throws IOException {
 
     final List<File> matchedFiles = Lists.newArrayList();
@@ -258,10 +365,7 @@ public class ResultIT {
                 BasicFileAttributes attrs) throws IOException {
 
               if (matcher.matches(file)) {
-                // System.out.println("Matches OK " + file);
                 matchedFiles.add(file.toFile());
-              } else {
-                // System.out.println("Don't match " + file);
               }
               return FileVisitResult.CONTINUE;
             }
@@ -273,7 +377,13 @@ public class ResultIT {
             }
           });
     }
-    return Collections.unmodifiableList(matchedFiles);
+
+    // No file found
+    if (matchedFiles.isEmpty())
+      // return empty list
+      return Collections.emptyList();
+
+    return matchedFiles;
   }
 
   /**
@@ -286,8 +396,7 @@ public class ResultIT {
    * @return collection of PathMatcher, one per pattern. Can be empty if no
    *         pattern defined and exclude use default patterns.
    */
-  // TODO private
-  static Set<PathMatcher> createPathMatchers(final String patterns,
+  private static Set<PathMatcher> createPathMatchers(final String patterns,
       final boolean defaultAllPath) {
 
     // No pattern defined
@@ -321,12 +430,29 @@ public class ResultIT {
   //
 
   /**
-   * Return a map with file name and instance of file, only file matching to a
-   * pattern. If no pattern define, all files of source directory
-   * @return map with file name and instance of file
+   * Return a map all to treat for comparison, boolean set if should use an
+   * comparator instance or only check size file.
+   * @return map with file and boolean , true if should use an comparator, false
+   *         to check size file
    */
-  public final List<File> getFilesList() {
-    return this.filesToCompare;
+  public final Map<File, Boolean> getFilesToCompare() {
+    int size =
+        this.filesToCompareWithComparator.size()
+            + this.filesToCheckExistence.size();
+
+    //
+    final Map<File, Boolean> files = Maps.newHashMapWithExpectedSize(size);
+
+    // Add all files to compare with an comparator object
+    for (File f : this.filesToCompareWithComparator) {
+      files.put(f, true);
+    }
+
+    // Add all files to compare only with check size file
+    for (File f : this.filesToCheckExistence) {
+      files.put(f, false);
+    }
+    return files;
   }
 
   //
@@ -339,16 +465,34 @@ public class ResultIT {
    * @param outputTestDirectory source directory
    * @param fileToComparePatterns sequences of patterns, separated by a space
    * @param excludeToComparePatterns sequences of patterns, separated by a space
+   * @param checkAbsenceFilePatterns sequences of patterns, separated by a space
+   * @param checkExistenceFilePatterns sequences of patterns, separated by a
+   *          space
    * @throws IOException if an error occurs while parsing input directory
    */
   public ResultIT(final File outputTestDirectory,
-      final String fileToComparePatterns, final String excludeToComparePatterns)
-      throws IOException, EoulsanException {
+      final String fileToComparePatterns,
+      final String excludeToComparePatterns,
+      final String checkExistenceFilePatterns,
+      final String checkAbsenceFilePatterns) throws IOException,
+      EoulsanException {
+
     this.directory = outputTestDirectory;
     this.fileToComparePatterns = fileToComparePatterns;
     this.excludeToComparePatterns = excludeToComparePatterns;
+    this.checkExistenceFilePatterns = checkExistenceFilePatterns;
+    this.checkAbsenceFilePatterns = checkAbsenceFilePatterns;
 
-    this.filesToCompare = createListFiles();
+    this.filesToExclude =
+        createListFiles(this.excludeToComparePatterns, null, false);
+
+    this.filesToCompareWithComparator =
+        createListFiles(this.fileToComparePatterns, filesToExclude, true);
+
+    this.filesToCheckExistence =
+        createListFiles(this.checkExistenceFilePatterns, filesToExclude, true);
+
+    this.filesToCompare = Lists.newArrayList(getFilesToCompare().keySet());
   }
 
   //
@@ -363,6 +507,9 @@ public class ResultIT {
    */
   final class OutputExecution {
 
+    static final boolean SUCCESS = true;
+    static final boolean FAIL = false;
+
     private StringBuilder report = new StringBuilder();
     private boolean result = true;
 
@@ -376,7 +523,7 @@ public class ResultIT {
 
     /**
      * Checks if is result.
-     * @return true, if is result
+     * @return true, if it is succeeded comparison
      */
     public boolean isResult() {
       return result;
