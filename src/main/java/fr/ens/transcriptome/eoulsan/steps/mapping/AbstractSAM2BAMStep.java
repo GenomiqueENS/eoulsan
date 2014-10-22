@@ -1,5 +1,6 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
@@ -89,6 +90,11 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
               + level + " step: " + p.getName());
 
         this.compressionLevel = level;
+      } else if ("input.format".equals(p.getName())) {
+
+        getLogger().warning(
+            "Deprecated parameter \""
+                + p.getName() + "\" for step " + getName());
       } else {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
