@@ -12,7 +12,6 @@ public class RegressionActionDemo {
 
     RegressionActionDemo.mainbis();
 
-    
   }
 
   public static void mainbis() {
@@ -21,12 +20,12 @@ public class RegressionActionDemo {
 
     final String fileTests = "import/mimir03/lib/it/list_tests.txt";
     final String reportDir =
-        "/import/geri02/it_eoulsan_results/output/testng-results";
+        "/import/disir04/it_eoulsan_results/testng-results";
 
     final String appliToTestPath =
-        "/home/sperrin/workspace/eoulsan/target/dist/eoulsan-1.3-SNAPSHOT";
+        "/home/sperrin/workspace/eoulsan/target/dist/eoulsan-2.0-alpha2-SNAPSHOT";
     final String nameTest =
-        "000001_mapreads_bowtie-withIndex_SR_plasticite_abdomen_B2012_small_local";
+        "000079_filterreads_multistep_SR_plasticite_abdomen_B2012_small_local";
     // Set the default local for all the application
     // Globals.setDefaultLocale();
 

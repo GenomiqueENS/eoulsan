@@ -34,11 +34,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
-
-import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -290,12 +289,11 @@ public class IntegrationTestAction extends AbstractAction {
       final File destinationDirectory =
           new File(outputTestDirectory, reportDirectory.getName());
 
-      if (destinationDirectory.mkdir()) {
-        // Copy testng directory
-        try {
-          Files.copy(reportDirectory, destinationDirectory);
-        } catch (IOException e) {
-        }
+      // Copy testng directory
+      try {
+        FileUtils.copyDirectory(reportDirectory, destinationDirectory);
+      } catch (IOException e) {
+        // Nothing to do
       }
     }
   }
