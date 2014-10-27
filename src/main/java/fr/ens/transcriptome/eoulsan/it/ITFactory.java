@@ -281,7 +281,7 @@ public class ITFactory {
     }
 
     if (testsToExecuteDirectories.size() == 0)
-      throw new EoulsanException("None test in file "
+      throw new EoulsanException("None test directory found in "
           + testsDataDirectory.getAbsolutePath());
 
     // Build map
@@ -296,19 +296,21 @@ public class ITFactory {
       if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
         continue;
 
-      // Add test
-
       // Create instance
       final ProcessIT processIT =
           new ProcessIT(this.globalsConf, this.applicationPath, new File(
               testDirectory, TEST_CONFIGURATION_FILENAME),
               this.outputTestsDirectory, testDirectory.getName());
 
-      // Add in map
+      // Add tests
       tests.add(processIT);
-
     }
-
+    
+    // Check tests founded
+    if (tests.size() == 0)
+      throw new EoulsanException("None test define (with test.conf) in directory "
+          + testsDataDirectory.getAbsolutePath());
+    
     return Collections.unmodifiableList(tests);
   }
 
