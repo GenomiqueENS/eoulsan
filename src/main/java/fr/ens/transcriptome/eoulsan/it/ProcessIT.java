@@ -43,6 +43,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +54,7 @@ import org.testng.annotations.Test;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -80,6 +82,11 @@ public class ProcessIT {
   private static final String ENV_FILENAME = "ENV";
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
+
+  private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
+
+  /** Prefix for set environment variable in test configuration file */
+  private static final String PREFIX_SETENV = "setenv.";
 
   private static int SUCCESS_COUNT = 0;
   private static int FAIL_COUNT = 0;
@@ -158,6 +165,7 @@ public class ProcessIT {
 
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
+
     getLogger().info("start test " + this.testName);
 
     // Compile the result comparison from all tests
@@ -256,8 +264,9 @@ public class ProcessIT {
                   + toTimeHumanReadable(timer.elapsed(TimeUnit.MILLISECONDS)));
 
       // For latest
-      if (TEST_RUNNING_COUNT == ITFactory.TESTS_COUNT)
+      if (TEST_RUNNING_COUNT == ITFactory.TESTS_COUNT) {
         closeLogger();
+      }
     }
   }
 
@@ -530,7 +539,10 @@ public class ProcessIT {
 
     try {
 
-      final Process p = Runtime.getRuntime().exec(cmdLine, null, directory);
+      // Extract environment variable from test configuration file
+      final String[] envp = extractEnvironmentVariables();
+
+      final Process p = Runtime.getRuntime().exec(cmdLine, envp, directory);
 
       // Save stdout
       if (stdoutFile != null) {
@@ -556,6 +568,34 @@ public class ProcessIT {
           + msg + " (directory: " + directory + ",command line: " + cmdLine
           + "): " + e.getMessage());
     }
+  }
+
+  /**
+   * Extract all environment variables setting in test configuration file. Key
+   * must be start with keyword {@link ProcessIT#PREFIX_SETENV}
+   * @return null if not found or an string array in the format name=value
+   */
+  private String[] extractEnvironmentVariables() {
+
+    List<String> envp = Lists.newArrayList();
+
+    for (Object o : this.testConf.keySet()) {
+      String keyProperty = (String) o;
+
+      // Add property if key start with prefix setenv.
+      if (keyProperty.startsWith(PREFIX_SETENV)) {
+        String keyEnvp = keyProperty.substring(PREFIX_SETENV.length());
+        String valEnvp = this.testConf.getProperty(keyProperty);
+        envp.add(keyEnvp + "=" + valEnvp);
+      }
+    }
+
+    // No variable found, return null
+    if (envp.isEmpty())
+      return null;
+
+    // Convert to array
+    return envp.toArray(new String[envp.size()]);
   }
 
   /**
@@ -711,7 +751,10 @@ public class ProcessIT {
     // Add suffix to log global filename
     getLogger().fine(
         "End of configuration of "
-            + ITFactory.TESTS_COUNT + " integration tests");
+            + ITFactory.TESTS_COUNT + " integration tests in "
+            + toTimeHumanReadable(GLOBAL_TIMER.elapsed(TimeUnit.MILLISECONDS)));
+
+    GLOBAL_TIMER.stop();
 
     // Update symbolic link in output test directory
     ITFactory.createSymbolicLinkToTest(
