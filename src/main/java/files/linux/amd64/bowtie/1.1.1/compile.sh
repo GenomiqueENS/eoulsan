@@ -8,7 +8,7 @@ DOCKER_IMAGE="bowtie1-eoulsan:$VERSION"
 
 cat > Dockerfile << EOF
 ############################################################
-# Dockerfile to build star container images
+# Dockerfile to build Bowtie container images
 # Based on Ubuntu
 ############################################################
 

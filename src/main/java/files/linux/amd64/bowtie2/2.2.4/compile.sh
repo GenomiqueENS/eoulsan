@@ -8,7 +8,7 @@ DOCKER_IMAGE="bowtie2-eoulsan:$VERSION"
 
 cat > Dockerfile << EOF
 ############################################################
-# Dockerfile to build star container images
+# Dockerfile to build Bowtie 2 container images
 # Based on Ubuntu
 ############################################################
 
@@ -37,7 +37,6 @@ RUN sed -i 's/RELEASE_FLAGS  = -O3 -m64 \$(SSE_FLAG) -funroll-loops -g3/RELEASE_
 # Compile
 RUN make
 RUN cp -p bowtie2 bowtie2-* /usr/local/bin
-RUN ls -l /usr/local/bin
 
 # Cleanup
 RUN rm -rf /tmp/bowtie2
