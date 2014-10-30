@@ -72,8 +72,11 @@ public class WorkflowStepStatus {
     if (Double.isNaN(this.progress)) {
 
       double sum = 0.0;
-      for (Double p : this.taskProgress.values())
-        sum += p;
+
+      synchronized (this) {
+        for (Double p : this.taskProgress.values())
+          sum += p;
+      }
 
       return sum
           / TokenManagerRegistry.getInstance().getTokenManager(this.step)
