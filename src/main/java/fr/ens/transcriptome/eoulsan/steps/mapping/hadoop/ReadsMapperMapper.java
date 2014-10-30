@@ -34,14 +34,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -173,7 +172,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // DistributedCache.purgeCache(conf);
 
     // Download genome reference
-    final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+    final URI[] localCacheFiles = context.getCacheFiles();
 
     if (localCacheFiles == null || localCacheFiles.length == 0)
       throw new IOException("Unable to retrieve genome index");
@@ -182,7 +181,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw new IOException("Retrieve more than one file in distributed cache");
 
     // Get the local genome index zip file
-    File archiveIndexFile = new File(localCacheFiles[0].toString());
+    File archiveIndexFile = new File(localCacheFiles[0]);
 
     getLogger().info(
         "Genome index compressed file (from distributed cache): "

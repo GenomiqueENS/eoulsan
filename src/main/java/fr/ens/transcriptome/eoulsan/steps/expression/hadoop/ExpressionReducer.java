@@ -31,10 +31,9 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.P
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Iterator;
 
-import org.apache.hadoop.filecache.DistributedCache;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -141,8 +140,7 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
     try {
 
-      final Path[] localCacheFiles =
-          DistributedCache.getLocalCacheFiles(context.getConfiguration());
+      final URI[] localCacheFiles = context.getCacheFiles();
 
       if (localCacheFiles == null || localCacheFiles.length == 0)
         throw new IOException("Unable to retrieve genome index");
@@ -155,7 +153,7 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0].toString());
+      final File indexFile = new File(localCacheFiles[0]);
       tef.load(indexFile);
 
     } catch (IOException e) {

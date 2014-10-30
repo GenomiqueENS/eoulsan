@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -184,12 +183,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Reads mapping parameters
     //
 
-    // Set genome index reference path
-    final Path genomeIndex =
-        new Path(context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFilename());
-
-    DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
-
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
@@ -234,6 +227,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Job job =
         new Job(jobConf, "Filter and map reads ("
             + readsData.getName() + ", " + inputDataFile.getSource() + ")");
+
+    // Set genome index reference path in the distributed cache
+    final Path genomeIndex =
+        new Path(context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFilename());
+    job.addCacheFile(genomeIndex.toUri());
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
