@@ -43,6 +43,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -55,7 +56,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanITRuntimeException;
@@ -86,7 +86,7 @@ public class ProcessIT {
   private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
 
   /** Prefix for set environment variable in test configuration file */
-  private static final String PREFIX_SETENV = "setenv.";
+  private static final String PREFIX_SETENV = "env.var.";
 
   private static int SUCCESS_COUNT = 0;
   private static int FAIL_COUNT = 0;
@@ -115,6 +115,9 @@ public class ProcessIT {
   // Case the expected data was generate manually (not with testing application)
   private final boolean manualGenerationExpectedData;
 
+  // Compile current environment variable and set in configuration file with
+  // prefix PREFIX_SETENV
+  private final String[] environmentVariables;
   private final StringBuilder reportText = new StringBuilder();
 
   /**
@@ -539,10 +542,9 @@ public class ProcessIT {
 
     try {
 
-      // Extract environment variable from test configuration file
-      final String[] envp = extractEnvironmentVariables();
-
-      final Process p = Runtime.getRuntime().exec(cmdLine, envp, directory);
+      final Process p =
+          Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
+              directory);
 
       // Save stdout
       if (stdoutFile != null) {
@@ -579,6 +581,11 @@ public class ProcessIT {
 
     List<String> envp = Lists.newArrayList();
 
+    // Add environment properties
+    for (Map.Entry<String, String> e : System.getenv().entrySet())
+      envp.add(e.getKey() + "=" + e.getValue());
+
+    // Add setting environment variables from configuration test
     for (Object o : this.testConf.keySet()) {
       String keyProperty = (String) o;
 
@@ -604,17 +611,12 @@ public class ProcessIT {
   private void saveEnvironmentVariable() {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
-    final Map<String, String> constants = Maps.newHashMap();
-
-    // Extract all environments variables
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
-      constants.put(e.getKey(), e.getValue());
-
     // Write in file
-    if (constants != null && !constants.isEmpty()) {
+    if (this.environmentVariables == null
+        || this.environmentVariables.length == 0) {
       // Convert to string
       String envToString =
-          Joiner.on("\n").withKeyValueSeparator("=").join(constants);
+          Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
 
       try {
         com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
@@ -843,6 +845,9 @@ public class ProcessIT {
       throws IOException, EoulsanException {
 
     this.testConf = loadConfigurationFile(globalsConf, testConfFile);
+
+    // Extract environment variable from current context and configuration test
+    this.environmentVariables = extractEnvironmentVariables();
 
     this.applicationPath = applicationPath;
     this.testName = testName;
