@@ -566,5 +566,53 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-alpha2" description="Eoulsan 2.0-alpha2 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+                Various fixes in  the workflow engine when use skipped steps.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new sam2bam step. This new step currently only works in local mode.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new step: expressionresultsannotation. This new step allow to add additional annotations to expression files and generate files in TSV, ODS or XLSX formats.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new step: diffanaresultsannotation. This new step allow to add additional annotations to differential analysis files and generate files in TSV, ODS or XLSX formats.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new storage protocol for additionnal annotations.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add a new column named "AdditionalAnnotation" in the design file for the additional annotations of the genome.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new shell step. This step allow to execute a shell command.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Eoulsan now use now a new instance of each step when running a step task.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Several updates to make Eoulsan works in an Hadoop 2.0 cluster. Work still in progress.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Developers can now define in Eoulsan SPI classes the classes that must not be loaded.
+            </action>
+
+            <action dev="sperrin" type="update">
+                Add several enhancements to the Eoulsan integration tests engine.
+            </action>
+
+         </release>
+
 	</body>
 </document>

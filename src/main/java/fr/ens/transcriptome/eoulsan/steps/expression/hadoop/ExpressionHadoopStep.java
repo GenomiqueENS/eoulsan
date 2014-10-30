@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -138,18 +137,20 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       createExonsIndex(context, new Path(annotationDataFile.getSource()),
           genomicType, attributeId, exonsIndexPath, jobConf);
 
-    // Set the path to the exons index
-    DistributedCache.addCacheFile(exonsIndexPath.toUri(), jobConf);
-
     // Debug
     // conf.set("mapred.job.tracker", "local");
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Expression computation with Eoulsan counter ("
-            + alignmentsData.getName() + ", " + inputPath.getName() + ", "
-            + annotationDataFile.getSource() + ", " + genomicType + ","
-            + attributeId + ")");
+        Job.getInstance(
+            jobConf,
+            "Expression computation with Eoulsan counter ("
+                + alignmentsData.getName() + ", " + inputPath.getName() + ", "
+                + annotationDataFile.getSource() + ", " + genomicType + ","
+                + attributeId + ")");
+
+    // Set the path to the exons index
+    job.addCacheFile(exonsIndexPath.toUri());
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);
@@ -257,16 +258,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           genomicType, attributeId, stranded, genomeDescDataFile,
           featuresIndexPath, jobConf);
 
-    // Set the path to the features index
-    DistributedCache.addCacheFile(featuresIndexPath.toUri(), jobConf);
-
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Expression computation with htseq-count ("
+        Job.getInstance(jobConf, "Expression computation with htseq-count ("
             + alignmentsData.getName() + ", " + inputPath.getName() + ", "
             + annotationDataFile.getSource() + ", " + genomicType + ", "
             + attributeId + ", stranded: " + stranded
             + ", removeAmbiguousCases: " + removeAmbiguousCases + ")");
+
+    // Set the path to the features index
+    job.addCacheFile(featuresIndexPath.toUri());
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);
@@ -319,8 +320,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Pretreatment for the expression estimation step ("
-            + alignmentsData.getName() + ", " + inputDataFile.getSource() + ")");
+        Job.getInstance(jobConf,
+            "Pretreatment for the expression estimation step ("
+                + alignmentsData.getName() + ", " + inputDataFile.getSource()
+                + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);
@@ -482,7 +485,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final String sampleId = e.getValue();
 
       final long readsUsed =
           rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
@@ -519,7 +521,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final String sampleId = e.getValue();
 
       // Load the annotation index
       final Path featuresIndexPath =

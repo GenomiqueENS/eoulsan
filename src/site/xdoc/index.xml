@@ -96,6 +96,7 @@
 		<p>The main new features in this version of Eoulsan are:</p>
 		<ul>
 		  <li>New workflow engine</li>
+		  <li>New steps: sam2bam, shell, expression additional annotation, diffana additional annotation</li>
 		  <li>Separate log file for each step</li>
 		  <li>Integration tests engine</li>
 		  <li>Support for multiple versions of a mapper</li>

@@ -41,7 +41,6 @@ import org.apache.hadoop.mapred.Reporter;
  * @since 1.0
  * @author Laurent Jourdren
  */
-@SuppressWarnings("deprecation")
 public class FastqInputFormat extends FileInputFormat<LongWritable, Text> {
 
   public RecordReader<LongWritable, Text> getRecordReader(InputSplit input,
