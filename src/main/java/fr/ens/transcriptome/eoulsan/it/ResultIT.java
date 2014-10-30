@@ -161,6 +161,12 @@ public class ResultIT {
     }
 
     final OutputExecution comparison = new OutputExecution();
+    comparison.appendReport("Patterns:");
+    comparison.appendReport("\t compare file " + this.fileToComparePatterns);
+    comparison.appendReport("\t check size file "
+        + this.checkExistenceFilePatterns);
+    comparison.appendReport("\t exclude file " + this.excludeToComparePatterns);
+
     String msg;
 
     // Parse expected files
