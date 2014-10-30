@@ -180,7 +180,7 @@ public class ITFactory {
   public static void createSymbolicLinkToTest(final File directory,
       final int failTestsCount) {
     // Path to the running link
-    File runningTestLink = new File(directory.getParentFile(), "runningtest");
+    File runningTestLink = new File(directory.getParentFile(), "running");
 
     // Path to the latest link
     File latestLink = new File(directory.getParentFile(), "latest");
