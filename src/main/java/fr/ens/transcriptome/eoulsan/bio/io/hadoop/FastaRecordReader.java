@@ -46,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @since 1.0
  * @author Laurent Jourdren
  */
-@SuppressWarnings("deprecation")
 public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
   /* Default Charset. */

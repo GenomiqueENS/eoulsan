@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.checkers;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.design.SampleMetadata.FASTQ_FORMAT_FIELD;
 
 import java.io.IOException;
 import java.io.InputStream;

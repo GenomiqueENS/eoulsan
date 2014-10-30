@@ -45,6 +45,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -269,7 +270,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       final ZipEntry e = entries.nextElement();
 
-      hs.putString(e.getName());
+      hs.putString(e.getName(), Charsets.UTF_8);
       hs.putLong(e.getSize());
       hs.putLong(e.getTime());
       hs.putLong(e.getCrc());
