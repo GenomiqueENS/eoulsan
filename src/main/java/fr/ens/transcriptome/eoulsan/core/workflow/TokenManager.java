@@ -300,10 +300,10 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      // Check if input port is empty
-      checkState(!this.inputTokens.get(inputPort).isEmpty(),
-          "No data receive for port on step "
-              + this.step.getId() + ": " + inputPort.getName());
+      // Check if input port is empty for non skipped steps
+      checkState(!(!this.step.isSkip() && this.inputTokens.get(inputPort)
+          .isEmpty()), "No data receive for port on step "
+          + this.step.getId() + ": " + inputPort.getName());
 
       // The input port must be closed
       this.closedPorts.add(inputPort);
