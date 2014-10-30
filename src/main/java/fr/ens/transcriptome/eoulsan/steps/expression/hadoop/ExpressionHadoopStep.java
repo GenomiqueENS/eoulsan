@@ -142,10 +142,12 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Expression computation with Eoulsan counter ("
-            + alignmentsData.getName() + ", " + inputPath.getName() + ", "
-            + annotationDataFile.getSource() + ", " + genomicType + ","
-            + attributeId + ")");
+        Job.getInstance(
+            jobConf,
+            "Expression computation with Eoulsan counter ("
+                + alignmentsData.getName() + ", " + inputPath.getName() + ", "
+                + annotationDataFile.getSource() + ", " + genomicType + ","
+                + attributeId + ")");
 
     // Set the path to the exons index
     job.addCacheFile(exonsIndexPath.toUri());
@@ -258,7 +260,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Expression computation with htseq-count ("
+        Job.getInstance(jobConf, "Expression computation with htseq-count ("
             + alignmentsData.getName() + ", " + inputPath.getName() + ", "
             + annotationDataFile.getSource() + ", " + genomicType + ", "
             + attributeId + ", stranded: " + stranded
@@ -318,8 +320,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Pretreatment for the expression estimation step ("
-            + alignmentsData.getName() + ", " + inputDataFile.getSource() + ")");
+        Job.getInstance(jobConf,
+            "Pretreatment for the expression estimation step ("
+                + alignmentsData.getName() + ", " + inputDataFile.getSource()
+                + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopStep.class);
@@ -481,7 +485,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final String sampleId = e.getValue();
 
       final long readsUsed =
           rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
@@ -518,7 +521,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
 
       final Job rj = e.getKey();
-      final String sampleId = e.getValue();
 
       // Load the annotation index
       final Path featuresIndexPath =

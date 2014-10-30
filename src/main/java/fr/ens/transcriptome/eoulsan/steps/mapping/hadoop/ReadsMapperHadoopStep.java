@@ -189,9 +189,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Map reads with "
-            + getMapperName() + " (" + readsData.getName() + ", "
-            + inputPath.getName() + ")");
+        Job.getInstance(jobConf,
+            "Map reads with "
+                + getMapperName() + " (" + readsData.getName() + ", "
+                + inputPath.getName() + ")");
 
     // Set genome index reference path in the distributed cache
     final Path genomeIndex = new Path(mapperIndexData.getDataFilename());

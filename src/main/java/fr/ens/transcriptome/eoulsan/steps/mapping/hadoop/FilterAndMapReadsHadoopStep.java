@@ -225,7 +225,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set Job name
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Filter and map reads ("
+        Job.getInstance(jobConf, "Filter and map reads ("
             + readsData.getName() + ", " + inputDataFile.getSource() + ")");
 
     // Set genome index reference path in the distributed cache
@@ -312,7 +312,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set Job name
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Pretreatment ("
+        Job.getInstance(jobConf, "Pretreatment ("
             + readsData.getName() + ", " + inputDataFile1.getSource() + ", "
             + inputDataFile2.getSource() + ")");
 
