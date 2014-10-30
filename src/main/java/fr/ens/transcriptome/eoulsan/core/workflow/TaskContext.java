@@ -576,7 +576,7 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(out, "out argument cannot be null");
 
     final ObjectOutputStream oos = new ObjectOutputStream(out);
-    System.out.println(this.outputData.getClass());
+
     oos.writeObject(this.outputData);
     oos.close();
   }
@@ -618,6 +618,7 @@ public class TaskContext implements StepContext, Serializable {
       final ObjectInputStream ois = new ObjectInputStream(in);
 
       // Read TaskContext object
+      @SuppressWarnings("unchecked")
       final Map<String, AbstractData> outputData =
           (Map<String, AbstractData>) ois.readObject();
 
