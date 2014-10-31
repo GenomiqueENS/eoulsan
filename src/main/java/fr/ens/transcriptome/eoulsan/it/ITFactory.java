@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.it.ITSuite.createSymbolicLinkToTest;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -110,13 +111,11 @@ public class ITFactory {
   private static Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
 
-  static int TESTS_COUNT;
-  static boolean DEBUG_ENABLE = false;
-
   private static String outputTestsDirectoryPath;
 
   private final Properties globalsConf = new Properties();
   private final File applicationPath;
+  private static ITSuite itSuite;
 
   // File with tests name to execute
   private final File selectedTestsFile;
@@ -140,20 +139,24 @@ public class ITFactory {
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
-    List<ProcessIT> tests = null;
+    List<IT> tests = null;
     try {
       init();
 
       tests = collectTests();
-      TESTS_COUNT = tests.size();
+      final int testsCount = tests.size();
 
-      getLogger().config("Count tests found " + TESTS_COUNT);
+      getLogger().config("Count tests found " + testsCount);
 
-      if (TESTS_COUNT == 0)
+      if (testsCount == 0)
         return new Object[0];
 
+      // Initialize ITSuite
+      itSuite = new ITSuite(testsCount);
+      itSuite.setDebugEnable(Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
+
       // Return all tests
-      return tests.toArray(new Object[tests.size()]);
+      return tests.toArray(new Object[testsCount]);
 
     } catch (Throwable e) {
       System.err.println(e.getMessage());
@@ -169,52 +172,6 @@ public class ITFactory {
 
     // Return none test
     return new Object[0];
-  }
-
-  /**
-   * Create useful symbolic test to the latest and running test in output test
-   * directory.
-   * @param isStartTests in case of start tests, create running test link
-   *          otherwise recreate latest and remove running test
-   */
-  public static void createSymbolicLinkToTest(final File directory,
-      final int failTestsCount) {
-    // Path to the running link
-    File runningTestLink = new File(directory.getParentFile(), "running");
-
-    // Path to the latest link
-    File latestLink = new File(directory.getParentFile(), "latest");
-
-    File succeededLink = new File(directory.getParentFile(), "succeeded");
-    File failedLink = new File(directory.getParentFile(), "failed");
-
-    // Remove old running test link
-    runningTestLink.delete();
-
-    // Create running test link
-    if (failTestsCount == -1) {
-      createSymbolicLink(directory, runningTestLink);
-
-    } else {
-      // Replace latest by running test link
-
-      // Remove old link
-      latestLink.delete();
-
-      // Recreate the latest link
-      createSymbolicLink(directory, latestLink);
-
-      if (failTestsCount == 0) {
-        // Update succeed link
-        succeededLink.delete();
-        createSymbolicLink(directory, succeededLink);
-      } else {
-        // Update failed link
-        failedLink.delete();
-        createSymbolicLink(directory, failedLink);
-      }
-    }
-
   }
 
   /**
@@ -247,7 +204,7 @@ public class ITFactory {
           + this.outputTestsDirectory.getAbsolutePath());
 
     // Start test, no test execute, failtestcount equals -1
-    createSymbolicLinkToTest(this.outputTestsDirectory, -1);
+    createSymbolicLinkToTest(this.outputTestsDirectory);
   }
 
   /**
@@ -259,9 +216,9 @@ public class ITFactory {
    *           test.
    * @throws IOException if the source file doesn't exist
    */
-  private List<ProcessIT> collectTests() throws EoulsanException, IOException {
+  private List<IT> collectTests() throws EoulsanException, IOException {
 
-    final List<ProcessIT> tests = Lists.newArrayList();
+    final List<IT> tests = Lists.newArrayList();
     final List<File> testsToExecuteDirectories = Lists.newArrayList();
 
     // Collect tests from a file with names tests
@@ -297,20 +254,21 @@ public class ITFactory {
         continue;
 
       // Create instance
-      final ProcessIT processIT =
-          new ProcessIT(this.globalsConf, this.applicationPath, new File(
+      final IT processIT =
+          new IT(this.globalsConf, this.applicationPath, new File(
               testDirectory, TEST_CONFIGURATION_FILENAME),
               this.outputTestsDirectory, testDirectory.getName());
 
       // Add tests
       tests.add(processIT);
     }
-    
+
     // Check tests founded
     if (tests.size() == 0)
-      throw new EoulsanException("None test define (with test.conf) in directory "
-          + testsDataDirectory.getAbsolutePath());
-    
+      throw new EoulsanException(
+          "None test define (with test.conf) in directory "
+              + testsDataDirectory.getAbsolutePath());
+
     return Collections.unmodifiableList(tests);
   }
 
@@ -389,11 +347,11 @@ public class ITFactory {
   }
 
   /**
-   * Gets the output test directory file.
-   * @return the output test directory file
+   * Get instance on ITSuite object.
+   * @return
    */
-  public static File getOutputTestDirectoryFile() {
-    return new File(outputTestsDirectoryPath);
+  public static ITSuite getItSuite() {
+    return itSuite;
   }
 
   //
@@ -548,11 +506,10 @@ public class ITFactory {
 
       // Retrieve application version test
       this.versionApplication =
-          ProcessIT
-              .retrieveVersionApplication(
-                  this.globalsConf
-                      .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
-                  this.applicationPath);
+          IT.retrieveVersionApplication(
+              this.globalsConf
+                  .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
+              this.applicationPath);
 
       // Set logger path
       this.loggerPath =
@@ -574,9 +531,6 @@ public class ITFactory {
       // class
       // TODO: May be a Java system property will be better
       outputTestsDirectoryPath = this.outputTestsDirectory.getAbsolutePath();
-
-      // Retrieve debug setting
-      DEBUG_ENABLE = Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY);
 
     } else {
       // Case no testng must be create when compile project with maven

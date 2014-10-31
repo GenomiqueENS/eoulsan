@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class ResultIT {
+public class ITResult {
 
   private static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
@@ -145,7 +145,7 @@ public class ResultIT {
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */
-  public final OutputExecution compareTo(final ResultIT expectedOutput)
+  public final OutputExecution compareTo(final ITResult expectedOutput)
       throws IOException {
 
     // Copy list files
@@ -179,7 +179,11 @@ public class ResultIT {
       final File fileTested = filesTestedMap.get(filename);
 
       if (fileTested == null) {
-        msg = "Missing file: " + filename + " in test directory";
+        msg =
+            "Missing file: "
+                + filename + " \nIn directory: "
+                + this.directory.getAbsolutePath();
+        
         comparison.appendComparison(msg, OutputExecution.FAIL);
         throw new EoulsanITRuntimeException(msg);
       }
@@ -476,7 +480,7 @@ public class ResultIT {
    *          space
    * @throws IOException if an error occurs while parsing input directory
    */
-  public ResultIT(final File outputTestDirectory,
+  public ITResult(final File outputTestDirectory,
       final String fileToComparePatterns,
       final String excludeToComparePatterns,
       final String checkExistenceFilePatterns,

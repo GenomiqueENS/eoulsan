@@ -27,6 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.Files.newReader;
 import static com.google.common.io.Files.newWriter;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.getItSuite;
+import static fr.ens.transcriptome.eoulsan.it.ITSuite.isDebugEnable;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -59,7 +61,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.it.ResultIT.OutputExecution;
+import fr.ens.transcriptome.eoulsan.it.ITResult.OutputExecution;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
@@ -70,7 +72,7 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class ProcessIT {
+public class IT {
 
   public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
@@ -83,14 +85,8 @@ public class ProcessIT {
 
   private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
-  private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
-
   /** Prefix for set environment variable in test configuration file */
   private static final String PREFIX_ENV_VAR = "env.var.";
-
-  private static int SUCCESS_COUNT = 0;
-  private static int FAIL_COUNT = 0;
-  private static int TEST_RUNNING_COUNT = 0;
 
   /** Variables */
   private final Properties testConf;
@@ -159,6 +155,29 @@ public class ProcessIT {
   }
 
   /**
+   * This internal class instance exception from process execution.
+   * @author Sandrine Perrin
+   */
+  private static final class ProcessScriptException extends Exception {
+    private static final long serialVersionUID = -749903788412172296L;
+
+    private Exception exception;
+
+    ProcessScriptException(final Exception e) {
+      this(e.getMessage());
+      this.exception = e;
+    }
+
+    ProcessScriptException() {
+      super();
+    }
+
+    public ProcessScriptException(final String message) {
+      super(message);
+    }
+  }
+
+  /**
    * This internal class allow to save Process outputs
    * @author Laurent Jourdren
    */
@@ -167,7 +186,7 @@ public class ProcessIT {
     final String cmdLine;
     final File directory;
     final int exitValue;
-    final Throwable exception;
+    final ProcessScriptException exception;
     final File stdoutFile;
     final File stderrFile;
     final String message;
@@ -184,7 +203,7 @@ public class ProcessIT {
       msg.append("\n\tcommand line: " + cmdLine);
       msg.append("\n\tin directory: " + directory.getAbsolutePath());
       msg.append("\n\texit value: " + exitValue);
-      msg.append("\n\tduration: " + duration);
+      msg.append("\n\tduration: " + toTimeHumanReadable(duration));
       msg.append("\n");
 
       if (isCatchedException())
@@ -193,12 +212,17 @@ public class ProcessIT {
       return msg.toString();
     }
 
+    public ProcessScriptException getException() {
+      return this.exception;
+    }
+
     //
     // Constructor
     //
     ResultScriptProcess(final String cmdLine, final File directory,
-        final int exitValue, final Throwable exception, final File stdoutFile,
-        final File stderrFile, final String message, final long duration) {
+        final int exitValue, final ProcessScriptException exception,
+        final File stdoutFile, final File stderrFile, final String message,
+        final long duration) {
 
       this.cmdLine = cmdLine;
       this.directory = directory;
@@ -332,7 +356,8 @@ public class ProcessIT {
 
       // Add message on exception
       if (this.exception != null) {
-        txt.append("\n" + createExceptionText(this.exception, withStackTrace));
+        if (!(this.exception instanceof ProcessScriptException))
+          txt.append("\n" + createExceptionText(this.exception, withStackTrace));
       }
 
       // Return text
@@ -371,9 +396,6 @@ public class ProcessIT {
       this.nothingToDo = true;
     }
 
-    public void addResultProcess(ResultScriptProcess resultProcess) {
-      this.resultScriptProcess.add(resultProcess);
-    }
   }
 
   /**
@@ -384,24 +406,24 @@ public class ProcessIT {
    */
   @Test
   public final void launchTest() throws Exception {
-    // Count test running
-    TEST_RUNNING_COUNT++;
 
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
 
     getLogger().info("Start test " + this.testName);
 
+    getItSuite().startTest(this.outputTestDirectory);
+
     // Compile the result comparison from all tests
-    ResultIT regressionResultIT = null;
-    ResultIT.OutputExecution outputComparison = null;
-    // String msgException = null;
+    ITResult resultIT = null;
+    ITResult.OutputExecution outputComparison = null;
+    boolean isSuccess = false;
 
     try {
       // Check data to generate
       if (!isDataNeededToBeGenerated()) {
         reportTest.asNothingToDo();
-        SUCCESS_COUNT++;
+        isSuccess = true;
         // Nothing to do
         return;
       }
@@ -413,8 +435,8 @@ public class ProcessIT {
       launchScriptsTest();
 
       // Treat result application directory
-      regressionResultIT =
-          new ResultIT(this.outputTestDirectory, this.fileToComparePatterns,
+      resultIT =
+          new ITResult(this.outputTestDirectory, this.fileToComparePatterns,
               this.excludeToComparePatterns, this.checkExistenceFilePatterns,
               this.checkAbsenceFilePatterns);
 
@@ -425,49 +447,40 @@ public class ProcessIT {
         createExpectedDirectory();
 
         // Copy files corresponding to pattern in expected data directory
-        regressionResultIT.copyFiles(this.expectedTestDirectory);
+        resultIT.copyFiles(this.expectedTestDirectory);
 
       } else {
 
         // Case comparison between expected and output test directory
         outputComparison =
-            regressionResultIT
-                .compareTo(new ResultIT(this.expectedTestDirectory
-                    .getParentFile(), this.fileToComparePatterns,
-                    this.excludeToComparePatterns,
-                    this.checkExistenceFilePatterns,
-                    this.checkAbsenceFilePatterns));
+            resultIT.compareTo(new ITResult(this.expectedTestDirectory
+                .getParentFile(), this.fileToComparePatterns,
+                this.excludeToComparePatterns, this.checkExistenceFilePatterns,
+                this.checkAbsenceFilePatterns));
       }
 
-      // Set success on generate data in expected directory
-      reportTest.setSuccess(true);
+      isSuccess = true;
 
     } catch (Throwable e) {
       reportTest.setException(e);
       throw new Exception(reportTest.createReportTestngMessage());
 
     } finally {
+      // Update global counter
+      getItSuite().updateCounter(reportTest.isSuccess());
 
+      // Set success on generate data in expected directory
+      reportTest.setSuccess(isSuccess);
       reportTest.setOutputComparison(outputComparison);
-
-      // Update counter
-      if (reportTest.isSuccess())
-        SUCCESS_COUNT++;
-      else
-        FAIL_COUNT++;
-
       reportTest.createReportFile();
-
+      
       // End test
       timer.stop();
       getLogger().info(
           reportTest.getLoggerTest(toTimeHumanReadable(timer
               .elapsed(TimeUnit.MILLISECONDS))));
-
-      // For latest
-      if (TEST_RUNNING_COUNT == ITFactory.TESTS_COUNT) {
-        closeLogger();
-      }
+      
+      getItSuite().endTest(this.outputTestDirectory);
     }
   }
 
@@ -523,17 +536,16 @@ public class ProcessIT {
 
     final StringBuilder msgException = new StringBuilder();
 
-    msgException.append("\n\n=== Execution Test Error ===\n");
-
+    msgException.append("\n=== Execution Test Error ===");
     msgException.append("\nFrom class: \n\t"
-        + exception.getClass().getName() + "\n");
+        + exception.getClass().getName() + "");
     msgException.append("\nException message: \n\t"
         + exception.getMessage() + "\n");
 
-    if (ITFactory.DEBUG_ENABLE && withStackTrace) {
+    if (isDebugEnable() && withStackTrace) {
       // Add the stack trace
-      msgException.append("\n\n=== Execution Test Debug Stack Trace ===\n");
-      msgException.append("\n\n"
+      msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
+      msgException.append("\n"
           + Joiner.on("\n\t").join(exception.getStackTrace()));
     }
 
@@ -636,10 +648,10 @@ public class ProcessIT {
   //
   /**
    * Launch all scripts defined for the test.
-   * @throws EoulsanException if an error occurs while execute script
+   * @throws ProcessScriptException if an error occurs while execute script
    * @throws IOException if the output directory is missing
    */
-  private void launchScriptsTest() throws EoulsanException, IOException {
+  private void launchScriptsTest() throws IOException, ProcessScriptException {
 
     checkExistingDirectoryFile(this.outputTestDirectory,
         "output test directory");
@@ -656,13 +668,13 @@ public class ProcessIT {
     // Generated test directory
     // Optional run pre-treatment global script, before specific of the test
     executeScript(ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY, new File(stdoutFile
-        + "PRE_SCRIPT_GLOBAL"), new File(stderrFile + "PRE_SCRIPT_GLOBAL"),
-        false, "pre script global");
+        + "_PRE_SCRIPT_GLOBAL"), new File(stderrFile + "_PRE_SCRIPT_GLOBAL"),
+        false, "pre script global", null);
 
     // Optional script, pre-treatment before launch application
     executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY, new File(stdoutFile
-        + "PRE_SCRIPT"), new File(stderrFile + "PRE_SCRIPT"), false,
-        "pre script for test");
+        + "_PRE_SCRIPT"), new File(stderrFile + "_PRE_SCRIPT"), false,
+        "pre script for test", null);
 
     // Execute application
     if (this.generateExpectedData && this.manualGenerationExpectedData)
@@ -678,32 +690,14 @@ public class ProcessIT {
     // Optional script, post-treatment after execution application and before
     // comparison between directories
     executeScript(ITFactory.POST_TEST_SCRIPT_CONF_KEY, new File(stdoutFile
-        + "POST_SCRIPT"), new File(stderrFile + "POST_SCRIPT"), false,
-        "post script for test");
+        + "_POST_SCRIPT"), new File(stderrFile + "_POST_SCRIPT"), false,
+        "post script for test", null);
 
     // Optional run post-treatment global script, after specific of the test
     executeScript(ITFactory.POSTTREATMENT_GLOBAL_SCRIPT_KEY, new File(
-        stdoutFile + "POST_SCRIPT_GLOBAL"), new File(stderrFile
-        + "POST_SCRIPT_GLOBAL"), false, "post script global");
+        stdoutFile + "_POST_SCRIPT_GLOBAL"), new File(stderrFile
+        + "_POST_SCRIPT_GLOBAL"), false, "post script global", null);
 
-  }
-
-  /**
-   * Execute a script from a command line retrieved from the test configuration
-   * @param scriptConfKey key for configuration to get command line
-   * @param stdoutFile file where copy the standard output of the script
-   * @param stderrFile file where copy the standard output of the script
-   * @param saveStandardOutputInSuccess if true generate always standard output
-   *          and error file otherwise only if script failed
-   * @param message message to describe script
-   * @throws EoulsanException if an error occurs while execute script
-   */
-  private void executeScript(final String scriptConfKey, final File stdoutFile,
-      final File stderrFile, final boolean saveStandardOutputInSuccess,
-      final String message) throws EoulsanException {
-
-    executeScript(scriptConfKey, stdoutFile, stderrFile,
-        saveStandardOutputInSuccess, message, null);
   }
 
   /**
@@ -717,12 +711,18 @@ public class ProcessIT {
    * @param cmdLineFile file where copy the command line of the script
    * @throws EoulsanException if an error occurs while execute script
    */
-  private void executeScript(final String scriptConfKey, final File stdoutFile,
-      final File stderrFile, final boolean saveStandardOutputInSuccess,
-      final String message, final File cmdLineFile) throws EoulsanException {
+  private ResultScriptProcess executeScript(final String scriptConfKey,
+      final File stdoutFile, final File stderrFile,
+      final boolean saveStandardOutputInSuccess, final String desc,
+      final File cmdLineFile) throws ProcessScriptException {
+
+    ProcessScriptException exception = null;
+    int exitValue = -1;
+    final Stopwatch timer = Stopwatch.createStarted();
+    final long duration;
 
     if (this.testConf.getProperty(scriptConfKey) == null)
-      return;
+      return null;
 
     // Get command line from the configuration
     final String cmdLine = this.testConf.getProperty(scriptConfKey);
@@ -733,7 +733,7 @@ public class ProcessIT {
             this.applicationPath.getAbsolutePath()).trim();
 
     if (cmd.isEmpty())
-      return;
+      return null;
 
     // Save command line in file
     if (cmdLineFile != null)
@@ -744,44 +744,11 @@ public class ProcessIT {
         // Nothing to do
       }
 
-    final ResultScriptProcess resultProcess =
-        executeCommandLine(cmd, this.outputTestDirectory, message, stdoutFile,
-            stderrFile, saveStandardOutputInSuccess);
-
-    this.reportTest.addResultProcess(resultProcess);
-
-    if (resultProcess.isCatchedException())
-      throw new EoulsanException();
-  }
-
-  /**
-   * Execute command line to run process integrated test
-   * @param cmdLine command line shell
-   * @param directory source for command line
-   * @param msg message if an error occurs during execution or if the process
-   *          fail
-   * @param stdoutFile file where copy the standard output of the process
-   * @param stderrFile file where copy the standard output of the process
-   * @param saveStandardOutputInSuccess if true generate always standard output
-   *          and error file otherwise only if script failed
-   * @throws EoulsanException if an error occurs during execution or if the
-   *           process fail
-   */
-  private ResultScriptProcess executeCommandLine(final String cmdLine,
-      final File directory, final String msg, final File stdoutFile,
-      final File stderrFile, final boolean saveStandardOutputInSuccess)
-      throws EoulsanException {
-
-    Throwable exception = null;
-    int exitValue = -1;
-    final Stopwatch timer = Stopwatch.createStarted();
-    final long duration;
-
     try {
 
       final Process p =
           Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
-              directory);
+              this.outputTestDirectory);
 
       // Save stdout
       if (stdoutFile != null) {
@@ -796,27 +763,33 @@ public class ProcessIT {
       // Wait the end of the process
       exitValue = p.waitFor();
 
+      // Execution script fail, create an exception
+      if (exitValue != 0) {
+        exception =
+            new ProcessScriptException(
+                "Error during execution script, bad exit value: " + exitValue);
+      }
+
       if (exitValue == 0 && !saveStandardOutputInSuccess) {
-        // Success execution, remove standard output and standard output error
-        // file
+        // Success execution, remove standard and error output file
         stdoutFile.delete();
         stderrFile.delete();
       }
 
     } catch (IOException | InterruptedException e) {
-      exception = e;
+      exception = new ProcessScriptException(e);
     } finally {
       duration = timer.elapsed(TimeUnit.MILLISECONDS);
       timer.stop();
     }
 
-    return new ResultScriptProcess(cmdLine, directory, exitValue, exception,
-        stdoutFile, stderrFile, msg, duration);
+    return new ResultScriptProcess(cmdLine, this.outputTestDirectory,
+        exitValue, exception, stdoutFile, stderrFile, desc, duration);
   }
 
   /**
    * Extract all environment variables setting in test configuration file. Key
-   * must be start with keyword {@link ProcessIT#PREFIX_ENV_VAR}
+   * must be start with keyword {@link IT#PREFIX_ENV_VAR}
    * @return null if not found or an string array in the format name=value
    */
   private String[] extractEnvironmentVariables() {
@@ -943,36 +916,12 @@ public class ProcessIT {
     if (valueConfigTests == null || valueConfigTests.trim().length() == 0)
       // Syntax **/filename
       return "**/"
-          + ProcessIT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
+          + IT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
           + ITFactory.TEST_CONFIGURATION_FILENAME;
 
-    return ProcessIT.TEST_SOURCE_LINK_NAME
+    return IT.TEST_SOURCE_LINK_NAME
         + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME + SEPARATOR
         + valueConfigTests;
-  }
-
-  /**
-   * Close log file, add a summary on tests execution and update symbolic link
-   * in output test directory.
-   */
-  private void closeLogger() {
-    // Add summary of tests execution
-    getLogger().info(
-        "Summary tests execution: "
-            + SUCCESS_COUNT + " successed tests and " + FAIL_COUNT
-            + " failed tests.");
-
-    // Add suffix to log global filename
-    getLogger().fine(
-        "End of configuration of "
-            + ITFactory.TESTS_COUNT + " integration tests in "
-            + toTimeHumanReadable(GLOBAL_TIMER.elapsed(TimeUnit.MILLISECONDS)));
-
-    GLOBAL_TIMER.stop();
-
-    // Update symbolic link in output test directory
-    ITFactory.createSymbolicLinkToTest(
-        this.outputTestDirectory.getParentFile(), FAIL_COUNT);
   }
 
   /**
@@ -1053,7 +1002,7 @@ public class ProcessIT {
    * @throws EoulsanException if an error occurs while search expected directory
    *           of the test.
    */
-  public ProcessIT(final Properties globalsConf, final File applicationPath,
+  public IT(final Properties globalsConf, final File applicationPath,
       final File testConfFile, final File testsDirectory, final String testName)
       throws IOException, EoulsanException {
 
