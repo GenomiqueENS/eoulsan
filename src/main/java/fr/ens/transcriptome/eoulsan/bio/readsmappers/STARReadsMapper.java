@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -42,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
-  private static final String DEFAULT_PACKAGE_VERSION = "2.3.0e";
-  private static final String MAPPER_EXECUTABLE = "STAR";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0e";
+  private static final String MAPPER_EXECUTABLE = "STARstatic";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
   public static final String DEFAULT_ARGUMENTS = "";
@@ -143,8 +144,20 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    // TODO Auto-generated method stub
-    return null;
+
+    final File genomeFile = new File(genomePathname);
+    List<String> cmd = new ArrayList<String>();
+    cmd.add(indexerPathname);
+    cmd.add("--runThreadN");
+    cmd.add("" + getThreadsNumber());
+    cmd.add("--runMode");
+    cmd.add("genomeGenerate");
+    cmd.add("--genomeDir");
+    cmd.add(genomeFile.getParentFile().getAbsolutePath());
+    cmd.add("--genomeFastaFiles");
+    cmd.add(genomePathname);
+
+    return cmd;
   }
 
   @Override
