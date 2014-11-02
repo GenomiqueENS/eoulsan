@@ -332,6 +332,10 @@ public final class Globals {
 
     readManifest();
 
+    if (manifestAttributes == null) {
+      return null;
+    }
+
     return manifestAttributes.getValue(propertyKey);
   }
 
