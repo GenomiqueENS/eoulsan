@@ -29,11 +29,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the STAR mapper.
@@ -42,8 +45,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
-  private static final String DEFAULT_PACKAGE_VERSION = "2.3.0e";
-  private static final String MAPPER_EXECUTABLE = "STAR";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0e";
+  private static final String MAPPER_EXECUTABLE = "STARstatic";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
   public static final String DEFAULT_ARGUMENTS = "";
@@ -143,36 +146,165 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 
-  @Override
-  protected InputStream internalMapPE(File readsFile1, File readsFile2,
-      File archiveIndex, GenomeDescription gd) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+    final File genomeFile = new File(genomePathname);
+    List<String> cmd = new ArrayList<String>();
+    cmd.add(indexerPathname);
+    cmd.add("--runThreadN");
+    cmd.add("" + getThreadsNumber());
+    cmd.add("--runMode");
+    cmd.add("genomeGenerate");
+    cmd.add("--genomeDir");
+    cmd.add(genomeFile.getParentFile().getAbsolutePath());
+    cmd.add("--genomeFastaFiles");
+    cmd.add(genomePathname);
+
+    return cmd;
   }
 
   @Override
   protected InputStream internalMapSE(File readsFile, File archiveIndex,
       GenomeDescription gd) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+
+    final String starPath;
+
+    synchronized (SYNC) {
+      starPath = install(MAPPER_EXECUTABLE);
+    }
+
+    final MapperProcess mapperProcess =
+        createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
+            readsFile, true);
+
+    return mapperProcess.getStout();
   }
 
   @Override
-  protected MapperProcess internalMapPE(File archiveIndex, GenomeDescription gd)
-      throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+  protected InputStream internalMapPE(File readsFile1, File readsFile2,
+      File archiveIndex, GenomeDescription gd) throws IOException {
+
+    final String starPath;
+
+    synchronized (SYNC) {
+      starPath = install(MAPPER_EXECUTABLE);
+    }
+
+    final MapperProcess mapperProcess =
+        createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
+            readsFile1, readsFile2, true);
+
+    return mapperProcess.getStout();
   }
 
   @Override
   protected MapperProcess internalMapSE(File archiveIndex, GenomeDescription gd)
       throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+
+    final String gsnapPath;
+
+    synchronized (SYNC) {
+      gsnapPath = install(MAPPER_EXECUTABLE);
+    }
+
+    return createMapperProcessSE(gsnapPath, archiveIndex.getAbsolutePath(),
+        null, false);
+  }
+
+  @Override
+  protected MapperProcess internalMapPE(File archiveIndex, GenomeDescription gd)
+      throws IOException {
+
+    final String starPath;
+
+    synchronized (SYNC) {
+      starPath = install(MAPPER_EXECUTABLE);
+    }
+
+    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
+        null, null, false);
+  }
+
+  private MapperProcess createMapperProcessSE(final String starPath,
+      final String archivePath, final File readsPath, final boolean fileMode)
+      throws IOException {
+
+    return new MapperProcess(this, fileMode, false, false) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+        cmd.add(starPath);
+        cmd.add("--runThreadN");
+        cmd.add("" + getThreadsNumber());
+        cmd.add("--genomeDir");
+        cmd.add(archivePath);
+        cmd.add("--outStd");
+        cmd.add("SAM");
+
+        cmd.addAll(getListMapperArguments());
+
+        cmd.add("--readFilesIn");
+        if (fileMode) {
+          cmd.add(readsPath.getAbsolutePath());
+        } else {
+          cmd.add(getTmpInputFile1().getAbsolutePath());
+        }
+
+        return Collections.singletonList(cmd);
+      }
+
+    };
+  }
+
+  private MapperProcess createMapperProcessPE(final String starPath,
+      final String archivePath, final File reads1File, final File reads2File,
+      final boolean fileMode) throws IOException {
+
+    return new MapperProcess(this, fileMode, false, false) {
+
+      @Override
+      protected List<List<String>> createCommandLines() {
+
+        // Build the command line
+        final List<String> cmd = new ArrayList<String>();
+        cmd.add(starPath);
+        cmd.add("--runThreadN");
+        cmd.add("" + getThreadsNumber());
+        cmd.add("--genomeDir");
+        cmd.add(archivePath);
+        cmd.add("--outStd");
+        cmd.add("SAM");
+
+        cmd.addAll(getListMapperArguments());
+
+        cmd.add("--readFilesIn");
+        if (fileMode) {
+          cmd.add(reads1File.getAbsolutePath());
+          cmd.add(reads2File.getAbsolutePath());
+        } else {
+          cmd.add(getTmpInputFile1().getAbsolutePath());
+          cmd.add(getTmpInputFile2().getAbsolutePath());
+        }
+
+        return Collections.singletonList(cmd);
+      }
+
+    };
+  }
+
+  //
+  // Init
+  //
+
+  @Override
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
+
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
+    setMapperArguments(DEFAULT_ARGUMENTS);
   }
 
 }

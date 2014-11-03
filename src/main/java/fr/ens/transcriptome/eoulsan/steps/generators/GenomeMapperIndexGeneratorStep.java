@@ -139,6 +139,10 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       // Set mapper temporary directory
       mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
 
+      // Set the number of thread to use
+      // TODO the number of thread must be defined by user
+      mapper.setThreadsNumber(1);
+
       // Create indexer
       final GenomeMapperIndexer indexer = new GenomeMapperIndexer(this.mapper);
 
