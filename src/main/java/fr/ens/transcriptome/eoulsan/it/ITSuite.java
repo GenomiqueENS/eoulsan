@@ -44,9 +44,10 @@ public class ITSuite {
   private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
 
   private static boolean debug_enable = false;
-  private static int failCount = -1;
+  private static int failCount = 0;
   private static int successCount = 0;
   private static int testRunningCount = 0;
+  private static boolean isFirstTest = true;
 
   /**
    * Create useful symbolic test to the latest and running test in output test
@@ -55,23 +56,24 @@ public class ITSuite {
    *          otherwise recreate latest and remove running test
    */
   public static void createSymbolicLinkToTest(final File directory) {
+
     // Path to the running link
-    File runningDirLink =
-        new File(directory.getParentFile(), RUNNING_LINKNAME);
+    File runningDirLink = new File(directory.getParentFile(), RUNNING_LINKNAME);
 
     // Path to the latest link
     File latestDirLink = new File(directory.getParentFile(), LATEST_LINKNAME);
 
-    File succeededDirLink =
-        new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
-    
+    // Path to the last succeeded test link
+    File succeededDirLink = new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
+
+    // Path to the last failed test link
     File failedDirLink = new File(directory.getParentFile(), FAILED_LINKNAME);
 
     // Remove old running test link
     runningDirLink.delete();
 
     // Create running test link
-    if (failCount == -1) {
+    if (testRunningCount == 0) {
       createSymbolicLink(directory, runningDirLink);
 
     } else {
@@ -99,34 +101,34 @@ public class ITSuite {
    * @param directory
    */
   public void startTest(final File directory) {
-    failCount = 0;
+
+    if (isFirstTest) {
+      createSymbolicLinkToTest(directory);
+      isFirstTest = false;
+    }
+
     // Count test running
     testRunningCount++;
 
-    createSymbolicLinkToTest(directory);
   }
 
   /**
    * @param directory
    */
-  public void endTest(final File directory) {
-    // For latest
-    if (testRunningCount == testsCount) {
-      closeLogger();
-    }
+  public void endTest(final File directory, final ITResult itResult) {
 
-    createSymbolicLinkToTest(directory);
-  }
-
-  /**
-   * @param isSuccess
-   */
-  public void updateCounter(final boolean isSuccess) {
     // Update counter
-    if (isSuccess)
+    if (itResult.isSuccess())
       successCount++;
     else
       failCount++;
+
+    // For latest
+    if (testRunningCount == testsCount) {
+      createSymbolicLinkToTest(directory);
+      closeLogger();
+    }
+
   }
 
   /**
@@ -137,8 +139,8 @@ public class ITSuite {
     // Add summary of tests execution
     getLogger().info(
         "Summary tests execution: "
-            + successCount + " successed tests and "
-            + failCount + " failed tests.");
+            + successCount + " successed tests and " + failCount
+            + " failed tests.");
 
     // Add suffix to log global filename
     getLogger().fine(
@@ -147,16 +149,12 @@ public class ITSuite {
             + toTimeHumanReadable(GLOBAL_TIMER.elapsed(TimeUnit.MILLISECONDS)));
 
     GLOBAL_TIMER.stop();
-
-    // Update symbolic link in output test directory
-    // createSymbolicLinkToTest(this.outputTestDirectory.getParentFile(),
-    // failCount);
   }
 
   //
   // Getter and setter
   //
-  
+
   public static boolean isDebugEnable() {
     return debug_enable;
   }

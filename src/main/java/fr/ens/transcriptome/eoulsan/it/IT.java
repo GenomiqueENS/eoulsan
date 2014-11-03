@@ -23,32 +23,30 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.Files.newReader;
-import static com.google.common.io.Files.newWriter;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.it.ITCommandExecutor.APPLICATION_PATH_VARIABLE;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.POSTTREATMENT_GLOBAL_SCRIPT_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.getItSuite;
-import static fr.ens.transcriptome.eoulsan.it.ITSuite.isDebugEnable;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.recursiveDelete;
-import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.utils.Charsets;
@@ -61,7 +59,6 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.it.ITResult.OutputExecution;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
@@ -78,15 +75,10 @@ public class IT {
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
   private static final String TEST_SOURCE_LINK_NAME = "test-source";
-  private static final String STDERR_FILENAME = "STDERR";
-  private static final String STDOUT_FILENAME = "STDOUT";
-  private static final String CMDLINE_FILENAME = "CMDLINE";
-  private static final String ENV_FILENAME = "ENV";
-
-  private static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
   /** Prefix for set environment variable in test configuration file */
   private static final String PREFIX_ENV_VAR = "env.var.";
+  private static final String ENV_FILENAME = "ENV";
 
   /** Variables */
   private final Properties testConf;
@@ -111,292 +103,9 @@ public class IT {
   // Case the expected data was generate manually (not with testing application)
   private final boolean manualGenerationExpectedData;
 
-  // Compile current environment variable and set in configuration file with
-  // prefix PREFIX_ENV_VAR
-  private final String[] environmentVariables;
-  // private final StringBuilder reportText = new StringBuilder();
-
   // Instance
-  private final ReportTest reportTest;
-
-  /**
-   * This internal class allow to save Process outputs
-   * @author Laurent Jourdren
-   */
-  private static final class CopyProcessOutput extends Thread {
-
-    private final Path path;
-    private final InputStream in;
-    private final String desc;
-
-    @Override
-    public void run() {
-
-      try {
-        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
-        getLogger().warning(
-            "Error while copying " + desc + ": " + e.getMessage());
-      }
-
-    }
-
-    CopyProcessOutput(final InputStream in, final File file, final String desc) {
-
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(file, "file argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
-
-      this.in = in;
-      this.path = file.toPath();
-      this.desc = desc;
-    }
-
-  }
-
-  /**
-   * This internal class instance exception from process execution.
-   * @author Sandrine Perrin
-   */
-  private static final class ProcessScriptException extends Exception {
-    private static final long serialVersionUID = -749903788412172296L;
-
-    private Exception exception;
-
-    ProcessScriptException(final Exception e) {
-      this(e.getMessage());
-      this.exception = e;
-    }
-
-    ProcessScriptException() {
-      super();
-    }
-
-    public ProcessScriptException(final String message) {
-      super(message);
-    }
-  }
-
-  /**
-   * This internal class allow to save Process outputs
-   * @author Laurent Jourdren
-   */
-  private static final class ResultScriptProcess {
-
-    final String cmdLine;
-    final File directory;
-    final int exitValue;
-    final ProcessScriptException exception;
-    final File stdoutFile;
-    final File stderrFile;
-    final String message;
-    final long duration;
-
-    public boolean isCatchedException() {
-      return exception != null;
-    }
-
-    public String getMessage() {
-      final StringBuilder msg = new StringBuilder();
-
-      msg.append("\nExecute script for " + message);
-      msg.append("\n\tcommand line: " + cmdLine);
-      msg.append("\n\tin directory: " + directory.getAbsolutePath());
-      msg.append("\n\texit value: " + exitValue);
-      msg.append("\n\tduration: " + toTimeHumanReadable(duration));
-      msg.append("\n");
-
-      if (isCatchedException())
-        msg.append(createExceptionText(exception, true));
-
-      return msg.toString();
-    }
-
-    public ProcessScriptException getException() {
-      return this.exception;
-    }
-
-    //
-    // Constructor
-    //
-    ResultScriptProcess(final String cmdLine, final File directory,
-        final int exitValue, final ProcessScriptException exception,
-        final File stdoutFile, final File stderrFile, final String message,
-        final long duration) {
-
-      this.cmdLine = cmdLine;
-      this.directory = directory;
-      this.exitValue = exitValue;
-      this.exception = exception;
-      this.stdoutFile = stdoutFile;
-      this.stderrFile = stderrFile;
-      this.message = message;
-      this.duration = duration;
-    }
-
-  }
-
-  /**
-   * This internal class allow to build report execution test
-   * @author Sandrine Perrin
-   */
-  private final class ReportTest {
-
-    private OutputExecution ouputComparison;
-    private Throwable exception;
-    private List<ResultScriptProcess> resultScriptProcess = Lists
-        .newArrayList();
-
-    private boolean generatedData = false;
-    // Set result on execution test
-    private boolean success = false;
-
-    // True if expected directory already exist
-    private boolean nothingToDo = false;
-
-    /**
-     * Create report of the test execution
-     * @param status result of test execution, use like filename
-     */
-    private void createReportFile() {
-
-      final String filename = isSuccess() ? "SUCCESS" : "FAIL";
-
-      final File reportFile = new File(outputTestDirectory, filename);
-      Writer fw;
-      try {
-        fw =
-            newWriter(reportFile,
-                Charset.forName(Globals.DEFAULT_FILE_ENCODING));
-
-        fw.write(createReportText(false));
-        fw.write("\n");
-
-        fw.flush();
-        fw.close();
-
-      } catch (Exception e) {
-      }
-
-      if (isGeneratedData())
-        try {
-          Files.copy(reportFile.toPath(), new File(expectedTestDirectory,
-              filename).toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-        }
-    }
-
-    /**
-     * Create report retrieve by testng instance and display in report.
-     * @return report text
-     */
-    private String createReportTestngMessage() {
-      if (isSuccess())
-        return "";
-
-      // Text without stack message when an exception occurs
-      String txt = "Fail test: " + testName;
-      txt += createExceptionText(this.exception, false);
-      return txt;
-    }
-
-    /**
-     * Create report retrieve by global tests logger.
-     * @param duration duration of execution
-     * @return report text
-     */
-    private String getLoggerTest(final String duration) {
-      if (nothingToDo)
-        return "Nothing_to_do: for " + testName;
-
-      String txt =
-          (isSuccess() ? "SUCCESS" : "FAIL")
-              + ": for "
-              + testName
-              + ((isGeneratedData())
-                  ? ": generate expected data" : ": launch test and comparison")
-              + " in " + duration;
-
-      txt += createExceptionText(this.exception, false);
-
-      return txt;
-    }
-
-    /**
-     * Create report text.
-     * @param withStackTrace if true contains the stack trace if exist
-     * @return report text
-     */
-    private String createReportText(final boolean withStackTrace) {
-
-      final StringBuilder txt = new StringBuilder();
-      txt.append((isSuccess() ? "SUCCESS" : "FAIL")
-          + ": for "
-          + testName
-          + ((isGeneratedData())
-              ? ": generate expected data" : ": launch test and comparison"));
-
-      // Add synthesis on execution script
-      if (!this.resultScriptProcess.isEmpty()) {
-        for (ResultScriptProcess rsp : this.resultScriptProcess) {
-          txt.append(rsp.getMessage());
-        }
-      }
-
-      if (isGeneratedData()) {
-        txt.append("\nSUCCESS: copy files to "
-            + expectedTestDirectory.getAbsolutePath());
-      }
-
-      // Add report text on comparison execution
-      if (this.ouputComparison != null) {
-        // Execution integration test
-        txt.append("\n" + this.ouputComparison.getReport());
-      }
-
-      // Add message on exception
-      if (this.exception != null) {
-        if (!(this.exception instanceof ProcessScriptException))
-          txt.append("\n" + createExceptionText(this.exception, withStackTrace));
-      }
-
-      // Return text
-      return txt.toString();
-    }
-
-    //
-    // Getter and Setter
-    //
-
-    public void asGeneratedData() {
-      this.generatedData = true;
-    }
-
-    public boolean isGeneratedData() {
-      return this.generatedData;
-    }
-
-    public void setSuccess(boolean result) {
-      this.success = result;
-    }
-
-    public boolean isSuccess() {
-      return this.success;
-    }
-
-    public void setException(final Throwable e) {
-      this.exception = e;
-    }
-
-    public void setOutputComparison(OutputExecution outputComparison) {
-      this.ouputComparison = outputComparison;
-    }
-
-    public void asNothingToDo() {
-      this.nothingToDo = true;
-    }
-
-  }
+  private final ITResult itResult;
+  private final String[] environmentVariables;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -411,19 +120,15 @@ public class IT {
     final Stopwatch timer = Stopwatch.createStarted();
 
     getLogger().info("Start test " + this.testName);
-
-    getItSuite().startTest(this.outputTestDirectory);
+    getItSuite().startTest(this.outputTestDirectory.getParentFile());
 
     // Compile the result comparison from all tests
-    ITResult resultIT = null;
-    ITResult.OutputExecution outputComparison = null;
-    boolean isSuccess = false;
+    ITOutput itOutput = null;
 
     try {
       // Check data to generate
       if (!isDataNeededToBeGenerated()) {
-        reportTest.asNothingToDo();
-        isSuccess = true;
+        itResult.asNothingToDo();
         // Nothing to do
         return;
       }
@@ -432,56 +137,180 @@ public class IT {
       buildOutputDirectory();
 
       // Launch scripts
-      launchScriptsTest();
+      launchScriptsTest(itResult);
 
       // Treat result application directory
-      resultIT =
-          new ITResult(this.outputTestDirectory, this.fileToComparePatterns,
+      itOutput =
+          new ITOutput(this.outputTestDirectory, this.fileToComparePatterns,
               this.excludeToComparePatterns, this.checkExistenceFilePatterns,
               this.checkAbsenceFilePatterns);
 
       if (this.generateExpectedData) {
-        this.reportTest.asGeneratedData();
+        itResult.asGeneratedData();
 
         // Build expected directory if necessary
         createExpectedDirectory();
 
         // Copy files corresponding to pattern in expected data directory
-        resultIT.copyFiles(this.expectedTestDirectory);
+        itOutput.copyFiles(this.expectedTestDirectory);
 
       } else {
 
         // Case comparison between expected and output test directory
-        outputComparison =
-            resultIT.compareTo(new ITResult(this.expectedTestDirectory
+        final Set<ITOutputComparisonResult> results =
+            itOutput.compareTo(new ITOutput(this.expectedTestDirectory
                 .getParentFile(), this.fileToComparePatterns,
                 this.excludeToComparePatterns, this.checkExistenceFilePatterns,
                 this.checkAbsenceFilePatterns));
+
+        itResult.addComparisonsResults(results);
+
+        // Check if at least on comparison fail, must throw an exception
+        if (!itResult.isSuccess())
+          throw itResult.getException();
       }
 
-      isSuccess = true;
-
     } catch (Throwable e) {
-      reportTest.setException(e);
-      throw new Exception(reportTest.createReportTestngMessage());
+      itResult.setException(e);
+      throw new Exception(itResult.createReportTestngMessage());
 
     } finally {
-      // Update global counter
-      getItSuite().updateCounter(reportTest.isSuccess());
-
       // Set success on generate data in expected directory
-      reportTest.setSuccess(isSuccess);
-      reportTest.setOutputComparison(outputComparison);
-      reportTest.createReportFile();
-      
-      // End test
       timer.stop();
-      getLogger().info(
-          reportTest.getLoggerTest(toTimeHumanReadable(timer
-              .elapsed(TimeUnit.MILLISECONDS))));
-      
-      getItSuite().endTest(this.outputTestDirectory);
+      itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
+
+      getItSuite().endTest(this.outputTestDirectory.getParentFile(),
+          this.itResult);
     }
+  }
+
+  /**
+   * Launch all scripts defined for the test.
+   * @return
+   * @throws EoulsanException if an error occurs while execute script
+   * @throws IOException if the output directory is missing
+   */
+  private void launchScriptsTest(final ITResult itResult) throws Throwable {
+
+    checkExistingDirectoryFile(this.outputTestDirectory,
+        "output test directory");
+
+    // Save environment variable process in file
+    saveEnvironmentVariable();
+
+    final ITCommandExecutor cmdExecutor =
+        new ITCommandExecutor(this.testConf, this.applicationPath,
+            this.outputTestDirectory, this.environmentVariables);
+
+    final boolean isApplication = true;
+
+    // Generated test directory
+    // Optional run pre-treatment global script, before specific of the test
+    executeCommand(cmdExecutor, itResult, PRETREATMENT_GLOBAL_SCRIPT_KEY,
+        "PRE_SCRIPT_GLOBAL", "prescript global");
+
+    // Optional script, pre-treatment before launch application
+    executeCommand(cmdExecutor, itResult, PRE_TEST_SCRIPT_CONF_KEY,
+        "PRE_SCRIPT", "prescript for test");
+
+    // Execute application
+    if (this.generateExpectedData && this.manualGenerationExpectedData) {
+      // Case generate expected data manually only it doesn't exists
+      executeCommand(cmdExecutor, itResult,
+          COMMAND_TO_GENERATE_MANUALLY_CONF_KEY, "",
+          "manual script to generate data", isApplication);
+    } else {
+      // Case execute testing application
+      executeCommand(cmdExecutor, itResult,
+          COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY, "", "execution application",
+          isApplication);
+    }
+    // Optional script, post-treatment after execution application and before
+    // comparison between directories
+    executeCommand(cmdExecutor, itResult, POST_TEST_SCRIPT_CONF_KEY,
+        "POST_SCRIPT", "post script for test");
+    // Optional run post-treatment global script, after specific of the test
+    executeCommand(cmdExecutor, itResult, POSTTREATMENT_GLOBAL_SCRIPT_KEY,
+        "POST_SCRIPT_GLOBAL", "post script global");
+  }
+
+  private void executeCommand(final ITCommandExecutor cmdExecutor,
+      final ITResult itResult, final String keyConf,
+      final String suffixFileaname, final String desc) throws Throwable {
+
+    executeCommand(cmdExecutor, itResult, keyConf, suffixFileaname, desc, false);
+  }
+
+  private void executeCommand(final ITCommandExecutor cmdExecutor,
+      final ITResult itResult, final String keyConf,
+      final String suffixFilename, final String desc,
+      final boolean isApplication) throws Throwable {
+
+    ITCommandResult cmdResult =
+        cmdExecutor
+            .executeCommand(keyConf, suffixFilename, desc, isApplication);
+
+    if (cmdResult == null)
+      return;
+
+    itResult.addCommandResult(cmdResult);
+
+    if (cmdResult.isCatchedException())
+      throw cmdResult.getException();
+  }
+
+  /**
+   * Save all environment variables in file.
+   */
+  private void saveEnvironmentVariable() {
+    final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
+
+    // Write in file
+    if (!(this.environmentVariables == null
+        || this.environmentVariables.length == 0)) {
+      // Convert to string
+      String envToString =
+          Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
+
+      try {
+        com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
+      } catch (IOException e) {
+        // Nothing to do
+      }
+    }
+  }
+
+  /**
+   * Extract all environment variables setting in test configuration file. Key
+   * must be start with keyword {@link IT#PREFIX_ENV_VAR}
+   * @return null if not found or an string array in the format name=value
+   */
+  private String[] extractEnvironmentVariables() {
+
+    List<String> envp = Lists.newArrayList();
+
+    // Add environment properties
+    for (Map.Entry<String, String> e : System.getenv().entrySet())
+      envp.add(e.getKey() + "=" + e.getValue());
+
+    // Add setting environment variables from configuration test
+    for (Object o : this.testConf.keySet()) {
+      String keyProperty = (String) o;
+
+      // Add property if key start with prefix setenv.
+      if (keyProperty.startsWith(PREFIX_ENV_VAR)) {
+        String keyEnvp = keyProperty.substring(PREFIX_ENV_VAR.length());
+        String valEnvp = this.testConf.getProperty(keyProperty);
+        envp.add(keyEnvp + "=" + valEnvp);
+      }
+    }
+
+    // No variable found, return null
+    if (envp.isEmpty())
+      return null;
+
+    // Convert to array
+    return envp.toArray(new String[envp.size()]);
   }
 
   /**
@@ -521,36 +350,6 @@ public class IT {
     }
 
     return version;
-  }
-
-  /**
-   * Create message exception with stack trace if required.
-   * @param withStackTrace if true contains the stack trace if exist
-   * @return message
-   */
-  private static String createExceptionText(final Throwable exception,
-      final boolean withStackTrace) {
-
-    if (exception == null)
-      return "";
-
-    final StringBuilder msgException = new StringBuilder();
-
-    msgException.append("\n=== Execution Test Error ===");
-    msgException.append("\nFrom class: \n\t"
-        + exception.getClass().getName() + "");
-    msgException.append("\nException message: \n\t"
-        + exception.getMessage() + "\n");
-
-    if (isDebugEnable() && withStackTrace) {
-      // Add the stack trace
-      msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
-      msgException.append("\n"
-          + Joiner.on("\n\t").join(exception.getStackTrace()));
-    }
-
-    // Return text
-    return msgException.toString();
   }
 
   /**
@@ -641,204 +440,6 @@ public class IT {
     // Create a symbolic link to the input directory
     createSymbolicLink(this.inputTestDirectory, new File(
         this.outputTestDirectory, TEST_SOURCE_LINK_NAME));
-  }
-
-  //
-  // Scripting methods
-  //
-  /**
-   * Launch all scripts defined for the test.
-   * @throws ProcessScriptException if an error occurs while execute script
-   * @throws IOException if the output directory is missing
-   */
-  private void launchScriptsTest() throws IOException, ProcessScriptException {
-
-    checkExistingDirectoryFile(this.outputTestDirectory,
-        "output test directory");
-
-    // Define stdout and stderr file
-    final File stdoutFile = new File(this.outputTestDirectory, STDOUT_FILENAME);
-    final File stderrFile = new File(this.outputTestDirectory, STDERR_FILENAME);
-    final File cmdLineFile =
-        new File(this.outputTestDirectory, CMDLINE_FILENAME);
-
-    // Save environment variable process in file
-    saveEnvironmentVariable();
-
-    // Generated test directory
-    // Optional run pre-treatment global script, before specific of the test
-    executeScript(ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY, new File(stdoutFile
-        + "_PRE_SCRIPT_GLOBAL"), new File(stderrFile + "_PRE_SCRIPT_GLOBAL"),
-        false, "pre script global", null);
-
-    // Optional script, pre-treatment before launch application
-    executeScript(ITFactory.PRE_TEST_SCRIPT_CONF_KEY, new File(stdoutFile
-        + "_PRE_SCRIPT"), new File(stderrFile + "_PRE_SCRIPT"), false,
-        "pre script for test", null);
-
-    // Execute application
-    if (this.generateExpectedData && this.manualGenerationExpectedData)
-      // Case generate expected data manually only it doesn't exists
-      executeScript(ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY,
-          stdoutFile, stderrFile, true, "manual script to generate data",
-          cmdLineFile);
-    else
-      // Case execute testing application
-      executeScript(ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY,
-          stdoutFile, stderrFile, true, "execution application", cmdLineFile);
-
-    // Optional script, post-treatment after execution application and before
-    // comparison between directories
-    executeScript(ITFactory.POST_TEST_SCRIPT_CONF_KEY, new File(stdoutFile
-        + "_POST_SCRIPT"), new File(stderrFile + "_POST_SCRIPT"), false,
-        "post script for test", null);
-
-    // Optional run post-treatment global script, after specific of the test
-    executeScript(ITFactory.POSTTREATMENT_GLOBAL_SCRIPT_KEY, new File(
-        stdoutFile + "_POST_SCRIPT_GLOBAL"), new File(stderrFile
-        + "_POST_SCRIPT_GLOBAL"), false, "post script global", null);
-
-  }
-
-  /**
-   * Execute a script from a command line retrieved from the test configuration.
-   * @param scriptConfKey key for configuration to get command line
-   * @param stdoutFile file where copy the standard output of the script
-   * @param stderrFile file where copy the standard output of the script
-   * @param saveStandardOutputInSuccess if true generate always standard output
-   *          and error file otherwise only if script failed
-   * @param message message to describe script
-   * @param cmdLineFile file where copy the command line of the script
-   * @throws EoulsanException if an error occurs while execute script
-   */
-  private ResultScriptProcess executeScript(final String scriptConfKey,
-      final File stdoutFile, final File stderrFile,
-      final boolean saveStandardOutputInSuccess, final String desc,
-      final File cmdLineFile) throws ProcessScriptException {
-
-    ProcessScriptException exception = null;
-    int exitValue = -1;
-    final Stopwatch timer = Stopwatch.createStarted();
-    final long duration;
-
-    if (this.testConf.getProperty(scriptConfKey) == null)
-      return null;
-
-    // Get command line from the configuration
-    final String cmdLine = this.testConf.getProperty(scriptConfKey);
-
-    // Replace application path variable in command line
-    final String cmd =
-        cmdLine.replace(APPLICATION_PATH_VARIABLE,
-            this.applicationPath.getAbsolutePath()).trim();
-
-    if (cmd.isEmpty())
-      return null;
-
-    // Save command line in file
-    if (cmdLineFile != null)
-      try {
-        com.google.common.io.Files.write(cmd + "\n", cmdLineFile,
-            Charsets.UTF_8);
-      } catch (IOException e) {
-        // Nothing to do
-      }
-
-    try {
-
-      final Process p =
-          Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
-              this.outputTestDirectory);
-
-      // Save stdout
-      if (stdoutFile != null) {
-        new CopyProcessOutput(p.getInputStream(), stdoutFile, "stdout").start();
-      }
-
-      // Save stderr
-      if (stderrFile != null) {
-        new CopyProcessOutput(p.getErrorStream(), stderrFile, "stderr").start();
-      }
-
-      // Wait the end of the process
-      exitValue = p.waitFor();
-
-      // Execution script fail, create an exception
-      if (exitValue != 0) {
-        exception =
-            new ProcessScriptException(
-                "Error during execution script, bad exit value: " + exitValue);
-      }
-
-      if (exitValue == 0 && !saveStandardOutputInSuccess) {
-        // Success execution, remove standard and error output file
-        stdoutFile.delete();
-        stderrFile.delete();
-      }
-
-    } catch (IOException | InterruptedException e) {
-      exception = new ProcessScriptException(e);
-    } finally {
-      duration = timer.elapsed(TimeUnit.MILLISECONDS);
-      timer.stop();
-    }
-
-    return new ResultScriptProcess(cmdLine, this.outputTestDirectory,
-        exitValue, exception, stdoutFile, stderrFile, desc, duration);
-  }
-
-  /**
-   * Extract all environment variables setting in test configuration file. Key
-   * must be start with keyword {@link IT#PREFIX_ENV_VAR}
-   * @return null if not found or an string array in the format name=value
-   */
-  private String[] extractEnvironmentVariables() {
-
-    List<String> envp = Lists.newArrayList();
-
-    // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
-      envp.add(e.getKey() + "=" + e.getValue());
-
-    // Add setting environment variables from configuration test
-    for (Object o : this.testConf.keySet()) {
-      String keyProperty = (String) o;
-
-      // Add property if key start with prefix setenv.
-      if (keyProperty.startsWith(PREFIX_ENV_VAR)) {
-        String keyEnvp = keyProperty.substring(PREFIX_ENV_VAR.length());
-        String valEnvp = this.testConf.getProperty(keyProperty);
-        envp.add(keyEnvp + "=" + valEnvp);
-      }
-    }
-
-    // No variable found, return null
-    if (envp.isEmpty())
-      return null;
-
-    // Convert to array
-    return envp.toArray(new String[envp.size()]);
-  }
-
-  /**
-   * Save all environment variables in file.
-   */
-  private void saveEnvironmentVariable() {
-    final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
-
-    // Write in file
-    if (this.environmentVariables == null
-        || this.environmentVariables.length == 0) {
-      // Convert to string
-      String envToString =
-          Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
-
-      try {
-        com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
-      } catch (IOException e) {
-        // Nothing to do
-      }
-    }
   }
 
   //
@@ -978,18 +579,49 @@ public class IT {
 
   }
 
+  //
+  // Getter
+  //
+
+  public String getTestName() {
+    return this.testName;
+  }
+
+  public File getExpectedTestDirectory() {
+    return this.expectedTestDirectory;
+  }
+
+  public File getOutputTestDirectory() {
+    return this.outputTestDirectory;
+  }
+
   @Override
   public String toString() {
 
     return this.description
-        + ", files from pattern(s) " + this.fileToComparePatterns + ""
-        + this.checkExistenceFilePatterns;
+        + ", files from pattern(s) " + this.fileToComparePatterns;
+  }
+
+  public String getFileToComparePatterns() {
+    return (fileToComparePatterns == null || fileToComparePatterns.isEmpty()
+        ? "none" : this.fileToComparePatterns);
+  }
+
+  public String getExcludeToComparePatterns() {
+    return (excludeToComparePatterns == null
+        || excludeToComparePatterns.isEmpty()
+        ? "none" : excludeToComparePatterns);
+  }
+
+  public String getCheckExistenceFilePatterns() {
+    return (checkExistenceFilePatterns == null
+        || checkExistenceFilePatterns.isEmpty()
+        ? "none" : checkExistenceFilePatterns);
   }
 
   //
   // Constructor
   //
-
   /**
    * Public constructor
    * @param globalsConf global configuration for tests
@@ -1008,12 +640,11 @@ public class IT {
 
     this.testConf = loadConfigurationFile(globalsConf, testConfFile);
 
-    // Extract environment variable from current context and configuration test
-    this.environmentVariables = extractEnvironmentVariables();
-
     this.applicationPath = applicationPath;
     this.testName = testName;
-    this.reportTest = new ReportTest();
+
+    this.itResult = new ITResult(this);
+    this.environmentVariables = extractEnvironmentVariables();
 
     this.inputTestDirectory = testConfFile.getParentFile();
 
@@ -1067,4 +698,5 @@ public class IT {
       this.description = this.testName + ", action type: " + actionType;
     }
   }
+
 }

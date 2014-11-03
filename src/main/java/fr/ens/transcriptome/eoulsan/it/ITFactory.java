@@ -25,7 +25,7 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.it.ITSuite.createSymbolicLinkToTest;
+import static fr.ens.transcriptome.eoulsan.it.IT.retrieveVersionApplication;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -203,8 +203,6 @@ public class ITFactory {
       throw new IOException("Cannot create output tests directory "
           + this.outputTestsDirectory.getAbsolutePath());
 
-    // Start test, no test execute, failtestcount equals -1
-    createSymbolicLinkToTest(this.outputTestsDirectory);
   }
 
   /**
@@ -506,7 +504,7 @@ public class ITFactory {
 
       // Retrieve application version test
       this.versionApplication =
-          IT.retrieveVersionApplication(
+          retrieveVersionApplication(
               this.globalsConf
                   .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
               this.applicationPath);
