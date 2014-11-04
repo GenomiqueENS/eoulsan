@@ -76,11 +76,16 @@ final class ITOutputComparisonResult implements
 
   enum StatutComparison {
 
-    NOT_EQUALS("not equals", false), EQUALS("equals", true), UNEXPECTED(
-        "unexpected", false), MISSING("missing", false), TO_COMPARE(
-        "to compare", false);
+    NOT_EQUALS("not equals", false,
+        "Comparison(s) failed for output result file(s): "), EQUALS("equals",
+        true, ""), UNEXPECTED("unexpected", false,
+        "Found unexpected file(s) in result test directory: "),
+    MISSING("missing", false,
+        "Missing expected file(s) in result test directory: "), TO_COMPARE(
+        "to compare", false, "Not comparison to start.");
 
     private final String name;
+    private final String exceptionMessage;
     private final boolean isSuccess;
 
     public String getName() {
@@ -91,9 +96,15 @@ final class ITOutputComparisonResult implements
       return isSuccess;
     }
 
-    StatutComparison(final String name, final boolean isSuccess) {
+    public String getExceptionMessage() {
+      return this.exceptionMessage;
+    }
+
+    StatutComparison(final String name, final boolean isSuccess,
+        final String exceptionMessage) {
       this.name = name;
       this.isSuccess = isSuccess;
+      this.exceptionMessage = exceptionMessage;
     }
   }
 }

@@ -178,9 +178,7 @@ public class ITOutput {
 
       if (fileTested == null) {
         comparisonResult.setResult(
-            StatutComparison.MISSING,
-            "missing file: "
-                + " \n\tin directory: "
+            StatutComparison.MISSING," \n\tin directory: "
                 + this.directory.getAbsolutePath());
       } else {
 

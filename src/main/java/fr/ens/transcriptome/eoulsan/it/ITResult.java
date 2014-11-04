@@ -158,7 +158,7 @@ public class ITResult {
     report.append("\n\t check size file " + it.getCheckExistenceFilePatterns());
     report.append("\n\t exclude file " + it.getExcludeToComparePatterns());
     report.append("\n");
-    
+
     // Add synthesis on execution script
     if (!this.commandsResults.isEmpty())
       for (ITCommandResult icr : this.commandsResults) {
@@ -193,7 +193,8 @@ public class ITResult {
     // Check comparison output it result
     for (ITOutputComparisonResult ocr : this.comparisonsResults) {
       if (!ocr.getStatutComparison().isSuccess())
-        setException(new EoulsanException("Fail comparison output result test."));
+        setException(new EoulsanException(ocr.getStatutComparison()
+            .getExceptionMessage() + "\n\tfile: " + ocr.getFilename()));
     }
   }
 
