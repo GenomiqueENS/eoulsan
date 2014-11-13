@@ -279,16 +279,9 @@ public class DataFileDistCp {
     PathUtils.fullyDelete(tmpInputDir, conf);
     PathUtils.fullyDelete(tmpOutputDir, conf);
 
-    try {
-      if (!job.isSuccessful())
-        throw new IOException("Unable to copy files using DataFileDistCp.");
+    if (!job.isSuccessful())
+      throw new IOException("Unable to copy files using DataFileDistCp.");
 
-      // FIXME Remove once using Hadoop 2.0
-      if (false)
-        throw new InterruptedException();
-    } catch (InterruptedException e) {
-      throw new IOException(e.getMessage());
-    }
   }
 
   /**
@@ -333,7 +326,7 @@ public class DataFileDistCp {
     jobConf.set("mapred.task.timeout", "" + MAX_COPY_DURATION);
 
     // Create the job and its name
-    final Job job = new Job(jobConf, "DataFileDistcp");
+    final Job job = Job.getInstance(jobConf, "DataFileDistcp");
 
     // Set the jar
     job.setJarByClass(DataFileDistCp.class);

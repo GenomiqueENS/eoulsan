@@ -16,11 +16,11 @@ public class RegressionActionDemo {
 
   public static void mainbis() {
 
-    final String confpath = "/import/mimir03/lib/it/it_global.conf";
+    final String confpath = "/home/sperrin/workspace/eoulsan/it_global.conf";
 
-    final String fileTests = "import/mimir03/lib/it/list_tests.txt";
-    final String reportDir =
-        "/import/disir04/it_eoulsan_results/testng-results";
+    final String fileTests = "/import/mimir03/lib/it/test_logger";
+    final String reportDir = "/tmp";
+    // "/import/disir04/it_eoulsan_results/testng-results";
 
     final String appliToTestPath =
         "/home/sperrin/workspace/eoulsan/target/dist/eoulsan-2.0-alpha2-SNAPSHOT";
@@ -32,7 +32,7 @@ public class RegressionActionDemo {
     IntegrationTestAction action = new IntegrationTestAction();
 
     // Run action
-    int choice = 3;
+    int choice = 2;
 
     switch (choice) {
     case 0:
@@ -47,8 +47,7 @@ public class RegressionActionDemo {
     case 2:
 
       action.action(Lists.newArrayList("-c", confpath, "-exec",
-          "/home/sperrin/home-net/eoulsan_newReadsMappers", "-f", fileTests,
-          "-o", reportDir));
+          appliToTestPath, "-f", fileTests, "-o", reportDir));
       break;
     case 3: // execute IT for one test
       action.action(Lists.newArrayList("-c", confpath, "-exec",
@@ -57,8 +56,9 @@ public class RegressionActionDemo {
 
     case 4:
       action.action(Lists.newArrayList("-c", confpath, "-exec",
-          "/home/sperrin/home-net/eoulsan_newReadsMappers", "-o", reportDir));
+          appliToTestPath, "-o", reportDir));
       break;
+      
     default:
       System.out.println("Choice INVALID");
     }

@@ -37,6 +37,7 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.U
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +50,6 @@ import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -105,7 +105,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
       final Configuration conf = context.getConfiguration();
 
-      final Path[] localCacheFiles = DistributedCache.getLocalCacheFiles(conf);
+      final URI[] localCacheFiles = context.getCacheFiles();
 
       if (localCacheFiles == null || localCacheFiles.length == 0)
         throw new IOException("Unable to retrieve genome index");
@@ -118,7 +118,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0].toString());
+      final File indexFile = new File(localCacheFiles[0]);
       this.features.load(indexFile);
 
       // Counter group

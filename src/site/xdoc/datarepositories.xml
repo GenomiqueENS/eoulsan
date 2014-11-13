@@ -37,11 +37,11 @@
   
     <section name="Data repositories">
 
-	<p>To avoid duplication of genome, annotation and genome index files, Eoulsan handles data repositories.
+	<p>To avoid duplication of genome, annotation, additional annotation and genome index files, Eoulsan handles data repositories.
 	It is very useful for genome indexes used in the mapping step witch computation is quite long for large genomes. 
 	The genome index repository store the result an index computation for the next analysis using this genome.</p>
 
-	<subsection name="Genome and annotation repositories">
+	<subsection name="Genome, annotation and additional annotation repositories">
 	
 		<p>The configuration of this repositories are quite the same. You must define the path of the root 
 		of the repository by setting the following global parameters (In <a href="conffile.html">configuration file</a> or in the 
@@ -51,6 +51,7 @@
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 		  <tr><td>main.genome.storage.path</td><td>string</td><td>Path to the genomes repository</td></tr>
 		  <tr><td>main.annotation.storage.path</td><td>string</td><td>Path to the annotations repository</td></tr>
+		  <tr><td>main.additional.annotation.storage.path</td><td>string</td><td>Path to the additional annotations repository</td></tr>
 		</table>
 		
 		<p>The path of the repositories can be URL (e.g. on webserver or on ftp server).</p>
@@ -70,6 +71,7 @@ lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 		  <tr><th>Repository type</th><th>Protocol</th><th>Protocol usage</th></tr>
 		  <tr><td>genome</td><td>genome</td><td>genome://&lt;genome name&gt; (e.g. genome://mouse-37)</td></tr>
 		  <tr><td>annotation</td><td>annotation</td><td>annotation://&lt;annotation name&gt; (e.g. annotation://mouse-37)</td></tr>
+		  <tr><td>additional annotation</td><td>additionalannotation</td><td>additionalannotation://&lt;annotation name&gt; (e.g. additionalannotation://mouse-37)</td></tr>
 		</table>
 	
 		<p>File extension (e.g. .fasta, .gff) and file compression extensions must be avoided in the genome and annotation URL. 

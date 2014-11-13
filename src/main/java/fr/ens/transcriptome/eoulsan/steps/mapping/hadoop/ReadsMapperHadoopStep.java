@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -150,11 +149,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Path inputPath = new Path(readsData.getDataFilename());
 
-    // Set genome index reference path
-    final Path genomeIndex = new Path(mapperIndexData.getDataFilename());
-
-    DistributedCache.addCacheFile(genomeIndex.toUri(), jobConf);
-
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
@@ -195,9 +189,14 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Create the job and its name
     final Job job =
-        new Job(jobConf, "Map reads with "
-            + getMapperName() + " (" + readsData.getName() + ", "
-            + inputPath.getName() + ")");
+        Job.getInstance(jobConf,
+            "Map reads with "
+                + getMapperName() + " (" + readsData.getName() + ", "
+                + inputPath.getName() + ")");
+
+    // Set genome index reference path in the distributed cache
+    final Path genomeIndex = new Path(mapperIndexData.getDataFilename());
+    job.addCacheFile(genomeIndex.toUri());
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);

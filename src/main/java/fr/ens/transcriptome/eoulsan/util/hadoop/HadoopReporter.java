@@ -32,8 +32,6 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.util.Reporter;
@@ -69,7 +67,7 @@ public class HadoopReporter implements Reporter {
 
     // This method does not works in Hadoop mappers and reducers
     if (context != null) {
-      throw new NotImplementedException();
+      throw new UnsupportedOperationException();
     }
 
     return this.counters.findCounter(counterGroup, counterName).getValue();
@@ -80,7 +78,7 @@ public class HadoopReporter implements Reporter {
 
     // This method does not works in Hadoop mappers and reducers
     if (context != null) {
-      throw new NotImplementedException();
+      throw new UnsupportedOperationException();
     }
 
     return Sets.newHashSet(counters.getGroupNames());
@@ -91,7 +89,7 @@ public class HadoopReporter implements Reporter {
 
     // This method does not works in Hadoop mappers and reducers
     if (context != null) {
-      throw new NotImplementedException();
+      throw new UnsupportedOperationException();
     }
 
     final Set<String> result = Sets.newHashSet();
