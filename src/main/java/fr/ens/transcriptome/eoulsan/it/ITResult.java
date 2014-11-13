@@ -58,10 +58,8 @@ public class ITResult {
 
   private boolean generatedData = false;
 
-  // True if expected directory already exist
+  // True if demand generate data and expected directory already exist
   private boolean nothingToDo = false;
-
-  private String exceptionMessage = null;
 
   //
   // Write reports
@@ -112,6 +110,8 @@ public class ITResult {
 
     // Text without stack message when an exception occurs
     String txt = "Fail test: " + it.getTestName();
+    txt += "\n\tdirectory: " + it.getOutputTestDirectory();
+
     txt += createExceptionText(this.exception, false);
     return txt;
   }
@@ -132,6 +132,7 @@ public class ITResult {
             + ((isGeneratedData())
                 ? ": generate expected data" : ": launch test and comparison")
             + " in " + duration;
+    txt += "\n\tdirectory: " + it.getOutputTestDirectory();
 
     if (!isSuccess())
       txt += createExceptionText(this.exception, false);
@@ -268,6 +269,10 @@ public class ITResult {
 
   public void asNothingToDo() {
     this.nothingToDo = true;
+  }
+
+  public boolean isNothingToDo() {
+    return this.nothingToDo;
   }
 
   //
