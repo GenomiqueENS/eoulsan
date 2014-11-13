@@ -175,10 +175,15 @@ public class IT {
       throw new Exception(itResult.createReportTestngMessage());
 
     } finally {
-      // Set success on generate data in expected directory
-      timer.stop();
-      itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
 
+      timer.stop();
+
+      if (!itResult.isNothingToDo()) {
+
+        // Set success on generate data in expected directory
+        itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
+      }
+      
       getItSuite().endTest(this.outputTestDirectory.getParentFile(),
           this.itResult);
     }
@@ -266,8 +271,7 @@ public class IT {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
     // Write in file
-    if (!(this.environmentVariables == null
-        || this.environmentVariables.length == 0)) {
+    if (!(this.environmentVariables == null || this.environmentVariables.length == 0)) {
       // Convert to string
       String envToString =
           Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
