@@ -38,6 +38,7 @@ public class ToolParameter implements ToolElement {
 
   /** Data from attribute param tag */
   private final String name;
+  private final String fullName;
 
   private final String type;
   private final List<String> formats;
@@ -104,6 +105,10 @@ public class ToolParameter implements ToolElement {
     return name;
   }
 
+  public String getFullName() {
+    return this.fullName;
+  }
+  
   public String getType() {
     return type;
   }
@@ -175,10 +180,13 @@ public class ToolParameter implements ToolElement {
 
   public ToolParameter(final Element param, final String prefixName) {
 
+    this.name = param.getAttribute("name");
+
+    // If exists add prefix from parent element 
     if (prefixName == null || prefixName.isEmpty()) {
-      this.name = param.getAttribute("name");
+      this.fullName = this.name;
     } else {
-      this.name = prefixName + SEP + param.getAttribute("name");
+      this.fullName = prefixName + SEP + param.getAttribute("name");
 
     }
 

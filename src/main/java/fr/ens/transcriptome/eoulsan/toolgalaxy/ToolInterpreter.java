@@ -37,8 +37,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -80,6 +83,7 @@ public class ToolInterpreter {
    * @param parametersEoulsan parameters from Eoulsan
    * @throws EoulsanException if an data missing
    */
+  // TODO param remove by Set<Parameter>
   public void configure(final Map<String, String> parametersEoulsan)
       throws EoulsanException {
 
@@ -201,9 +205,9 @@ public class ToolInterpreter {
    */
   private Map<String, String> extractParameters() throws EoulsanException {
 
-    final int variableCount = this.inputs.size() + this.outputs.size();
+    final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> results =
-        Maps.newHashMapWithExpectedSize(variableCount);
+        Maps.newHashMapWithExpectedSize(variablesCount);
 
     // Parse input
     for (ToolElement ptg : inputs) {
@@ -266,6 +270,154 @@ public class ToolInterpreter {
   // Static methods parsing xml
   //
 
+  static Set<ToolElement> extractParamElement(final Element parent)
+      throws EoulsanException {
+
+    Set<ToolElement> results = Sets.newHashSet();
+
+    // Extract all param tag
+    List<Element> simpleParams = extractElementsByTagName(parent, "param");
+
+    for (Element param : simpleParams) {
+      final ToolParameter ptg = new ToolParameter(param);
+      results.add(ptg);
+    }
+
+    return results;
+  }
+
+  static Set<ToolElement> extractConditionalParamElement(final Element parent,
+      final Map<String, String> parametersEoulsan) throws EoulsanException {
+
+    Set<ToolElement> results = Sets.newHashSet();
+
+    // Extract conditional element, can be empty
+    List<Element> condParams = extractElementsByTagName(parent, "conditional");
+
+    for (Element param : condParams) {
+      final ToolConditionalElement tce = new ToolConditionalElement(param);
+      results.add(tce.getToolParameterSelect());
+
+      // Set parameter
+      tce.setParameterEoulsan(parametersEoulsan);
+
+      if (tce.isSetting()) {
+        results.addAll(tce.getToolParametersResult());
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * @param doc
+   * @param tagName
+   * @param expectedCount
+   * @return
+   * @throws EoulsanException
+   */
+  static List<Element> extractElementsByTagName(final Document doc,
+      final String tagName) throws EoulsanException {
+    return extractElementsByTagName(doc, tagName, -1);
+  }
+
+  /**
+   * @param doc
+   * @param tagName
+   * @param expectedCount
+   * @return
+   * @throws EoulsanException
+   */
+  static List<Element> extractElementsByTagName(final Document doc,
+      final String tagName, final int expectedCount) throws EoulsanException {
+
+    final List<Element> result = XMLUtils.getElementsByTagName(doc, tagName);
+
+    // Expected count available
+    if (expectedCount > 0) {
+      if (result.isEmpty())
+        throw new EoulsanException("Parsing tool XML file: no "
+            + tagName + " tag found.");
+
+      if (result.size() != expectedCount)
+        throw new EoulsanException("Parsing tool XML file: tag "
+            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + " founded " + result.size() + ".");
+
+    }
+
+    return result;
+
+  }
+
+  /**
+   * @param parent
+   * @param tagName
+   * @param expectedCount
+   * @return
+   * @throws EoulsanException
+   */
+  static List<Element> extractElementsByTagName(final Element parent,
+      final String tagName) throws EoulsanException {
+    return extractElementsByTagName(parent, tagName, -1);
+  }
+
+  /**
+   * @param parent
+   * @param tagName
+   * @param expectedCount
+   * @return
+   * @throws EoulsanException
+   */
+  static List<Element> extractElementsByTagName(final Element parent,
+      final String tagName, final int expectedCount) throws EoulsanException {
+
+    final List<Element> result = extractChildElementsByTagName(parent, tagName);
+
+    // Expected count available
+    if (expectedCount > 0) {
+      if (result.isEmpty())
+        throw new EoulsanException("Parsing tool XML file: no "
+            + tagName + " tag found.");
+
+      if (result.size() != expectedCount)
+        throw new EoulsanException("Parsing tool XML file: tag "
+            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + " founded " + result.size() + ".");
+
+    }
+
+    return result;
+
+  }
+
+  static List<Element> extractChildElementsByTagName(
+      final Element parentElement, final String elementName) {
+
+    if (elementName == null || parentElement == null)
+      return null;
+
+    final NodeList nStepsList = parentElement.getChildNodes();
+    if (nStepsList == null)
+      return null;
+
+    final List<Element> result = Lists.newArrayList();
+
+    for (int i = 0; i < nStepsList.getLength(); i++) {
+
+      final Node node = nStepsList.item(i);
+
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+        Element e = (Element) node;
+
+        if (e.getTagName().equals(elementName))
+          result.add(e);
+      }
+    }
+
+    return result;
+  }
+
   /**
    * Extract all output parameters define in document.
    * @param doc document represented tool xml
@@ -277,12 +429,7 @@ public class ToolInterpreter {
 
     final Set<ToolElement> results = Sets.newHashSet();
 
-    Element outputsElement =
-        XMLUtils.getElementsByTagName(doc, "outputs").get(0);
-
-    // TODO check if can be null
-    if (outputsElement == null)
-      throw new EoulsanException("Parsing tool XML file: no outputs tag found.");
+    Element outputsElement = extractElementsByTagName(doc, "outputs", 1).get(0);
 
     // Extract all param tag
     List<Element> simpleParams =
@@ -317,34 +464,13 @@ public class ToolInterpreter {
 
     final Set<ToolElement> results = Sets.newHashSet();
 
-    Element inputsElement = XMLUtils.getElementsByTagName(doc, "inputs").get(0);
+    final Element inputElement =
+        extractElementsByTagName(doc, "inputs", 1).get(0);
 
-    if (inputsElement == null)
-      throw new EoulsanException("Parsing tool XML file: no inputs tag found.");
+    results.addAll(extractParamElement(inputElement));
+    results.addAll(extractConditionalParamElement(inputElement,
+        parametersEoulsan));
 
-    // Extract all param tag
-    List<Element> simpleParams =
-        XMLUtils.getElementsByTagName(inputsElement, "param");
-
-    for (Element param : simpleParams) {
-      final ToolParameter ptg = new ToolParameter(param);
-      results.add(ptg);
-    }
-
-    // Extract conditional element
-    List<Element> condParams =
-        XMLUtils.getElementsByTagName(inputsElement, "conditional");
-
-    for (Element param : condParams) {
-      final ToolConditionalElement tce = new ToolConditionalElement(param);
-
-      // Set parameter
-      tce.setParameterEoulsan(parametersEoulsan);
-
-      if (tce.isSetting()) {
-        results.addAll(tce.getToolParameterSelected());
-      }
-    }
     return results;
   }
 
@@ -412,7 +538,7 @@ public class ToolInterpreter {
     // List element
     List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
 
-    if (e.size() == 0)
+    if (e.isEmpty())
       return null;
 
     // Check size
@@ -453,11 +579,12 @@ public class ToolInterpreter {
 
   @Override
   public String toString() {
-    return "InterpreterToolGalaxy [inputs="
-        + inputs + ", outputs=" + outputs + ", toolName=" + toolName
+    return "InterpreterToolGalaxy \n[inputs="
+        + Joiner.on("\n").join(inputs) + ", \noutputs="
+        + Joiner.on("\n").join(outputs) + ", \ntoolName=" + toolName
         + ", toolVersion=" + toolVersion + ", description=" + description
-        + ", interpreter=" + interpreter + ", command=" + command
-        + ", isSettingsInputPort=" + isSettingsInputPort
+        + ", interpreter=" + interpreter + ", command=\n" + command
+        + ", \nisSettingsInputPort=" + isSettingsInputPort
         + ", isSettingsOutputPort=" + isSettingsOutputPort + "]";
   }
 

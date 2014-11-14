@@ -46,7 +46,7 @@ public class ToolInterpreterSimpleTest {
 
   private static boolean VERBOSE = true;
 
-  // @Test
+  @Test
   public void parseSamtoolsRmdup() throws FileNotFoundException,
       EoulsanException {
     final File toolFile =
