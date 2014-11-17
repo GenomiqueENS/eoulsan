@@ -56,7 +56,6 @@ public class ITCommandExecutor {
   private final Properties testConf;
   private final File outputTestDirectory;
 
-  private final File applicationPath;
   private final File cmdLineFile;
 
   // Compile current environment variable and set in configuration file with
@@ -76,7 +75,7 @@ public class ITCommandExecutor {
    */
   public ITCommandResult executeCommand(final String scriptConfKey,
       final String suffixNameOutputFile, final String desc,
-      final boolean isApplication){
+      final boolean isApplication) {
 
     if (this.testConf.getProperty(scriptConfKey) == null)
       return null;
@@ -84,18 +83,13 @@ public class ITCommandExecutor {
     // Get command line from the configuration
     final String cmdLine = this.testConf.getProperty(scriptConfKey);
 
-    // Replace application path variable in command line
-    final String cmd =
-        cmdLine.replace(APPLICATION_PATH_VARIABLE,
-            this.applicationPath.getAbsolutePath()).trim();
-
-    if (cmd.isEmpty())
+    if (cmdLine.isEmpty())
       return null;
 
     // Save command line in file
     if (isApplication)
       try {
-        com.google.common.io.Files.write(cmd + "\n", cmdLineFile,
+        com.google.common.io.Files.write(cmdLine + "\n", cmdLineFile,
             Charsets.UTF_8);
       } catch (IOException e) {
         // Nothing to do
@@ -109,12 +103,12 @@ public class ITCommandExecutor {
     final Stopwatch timer = Stopwatch.createStarted();
 
     final ITCommandResult cmdResult =
-        new ITCommandResult(cmd, this.outputTestDirectory, stdoutFile,
+        new ITCommandResult(cmdLine, this.outputTestDirectory, stdoutFile,
             stderrFile, desc);
     try {
 
       final Process p =
-          Runtime.getRuntime().exec(cmd, this.environmentVariables,
+          Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
               this.outputTestDirectory);
 
       // Save stdout
@@ -134,7 +128,7 @@ public class ITCommandExecutor {
       // Execution script fail, create an exception
       if (exitValue != 0) {
         cmdResult.setException(new EoulsanException("Bad exit value: "
-            + exitValue + "\n\tcommand line: " + cmd + "\n\tdirectory: "
+            + exitValue + "\n\tcommand line: " + cmdLine + "\n\tdirectory: "
             + this.outputTestDirectory));
       }
 
@@ -146,7 +140,7 @@ public class ITCommandExecutor {
 
     } catch (IOException | InterruptedException e) {
       cmdResult.setException(e, "Error during execution.\n\tcommand line: "
-          + cmd + "\n\tdirectory: " + this.outputTestDirectory);
+          + cmdLine + "\n\tdirectory: " + this.outputTestDirectory);
 
     } finally {
       cmdResult.setDuration(timer.elapsed(TimeUnit.MILLISECONDS));
@@ -178,11 +172,9 @@ public class ITCommandExecutor {
   // Constructor
   //
   public ITCommandExecutor(final Properties testConf,
-      final File applicationPath, final File outputTestDirectory,
-      final String[] environmentVariables) {
+      final File outputTestDirectory, final String[] environmentVariables) {
 
     this.testConf = testConf;
-    this.applicationPath = applicationPath;
     this.outputTestDirectory = outputTestDirectory;
 
     // Extract environment variable from current context and configuration test

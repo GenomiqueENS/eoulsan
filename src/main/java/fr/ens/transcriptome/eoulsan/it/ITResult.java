@@ -220,7 +220,7 @@ public class ITResult {
 
     if (isDebugEnable() && withStackTrace) {
       // Add the stack trace
-      msgException.append("\n=== Execution Test Debug Stack Trace ===");
+      msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
       msgException.append(Joiner.on("\n\t").join(exception.getStackTrace()));
     }
 

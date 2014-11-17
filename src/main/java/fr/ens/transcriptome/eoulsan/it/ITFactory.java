@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -46,10 +47,13 @@ import java.util.logging.Level;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
  * This class launch integration test with Testng.
@@ -89,6 +93,7 @@ public class ITFactory {
       "command.to.generate.manually";
   static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
       "command.to.get.application.version";
+  static final String INCLUDE_CONF_KEY = "include";
 
   /** Patterns */
   static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
@@ -106,6 +111,8 @@ public class ITFactory {
   static final String PRETREATMENT_GLOBAL_SCRIPT_KEY = "pre.global.script";
   static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY = "post.global.script";
 
+  static final String APPLICATION_PATH_VARIABLE = "application.path";
+
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
   private static Formatter DATE_FORMATTER = new Formatter().format(
@@ -113,7 +120,8 @@ public class ITFactory {
 
   private static String outputTestsDirectoryPath;
 
-  private final Properties globalsConf = new Properties();
+  private final Properties globalsConf;
+  private static final Properties CONSTANTS = initConstants();
   private final File applicationPath;
   private static ITSuite itSuite;
 
@@ -172,6 +180,25 @@ public class ITFactory {
 
     // Return none test
     return new Object[0];
+  }
+
+  /**
+   * Initialize the constants values.
+   * @return a map with the constants
+   */
+  private static Properties initConstants() {
+
+    final Properties constants = new Properties();
+
+    // Add java properties
+    for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
+      constants.put((String) e.getKey(), (String) e.getValue());
+
+    // Add environment properties
+    for (Map.Entry<String, String> e : System.getenv().entrySet())
+      constants.put(e.getKey(), e.getValue());
+
+    return constants;
   }
 
   /**
@@ -332,6 +359,128 @@ public class ITFactory {
 
   }
 
+  /**
+   * Load configuration file in properties object.
+   * @param configurationFile configuration file
+   * @return properties
+   * @throws IOException if an error occurs when reading file.
+   * @throws EoulsanException if an error occurs evaluate value property.
+   */
+  private static Properties loadProperties(final File configurationFile)
+      throws IOException, EoulsanException {
+
+    final Properties rawProps = new Properties();
+    final Properties props = new Properties();
+
+    checkExistingStandardFile(configurationFile, "test configuration file");
+
+    // Load configuration file
+    rawProps.load(newReader(configurationFile,
+        Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+
+    // Evaluate property
+    for (final String propertyName : rawProps.stringPropertyNames()) {
+      final String propertyValue =
+          evaluateExpressions(rawProps.getProperty(propertyName), true);
+
+      props.setProperty(propertyName, propertyValue);
+    }
+
+    // Check include
+    final String includeOption = props.getProperty(INCLUDE_CONF_KEY);
+
+    if (includeOption != null) {
+      // Check configuration file
+      final File otherConfigurationFile = new File(includeOption);
+
+      checkExistingStandardFile(otherConfigurationFile,
+          "configuration file doesn't exist");
+
+      // Load configuration in global configuration
+      props.putAll(loadProperties(otherConfigurationFile));
+    }
+
+    return props;
+  }
+
+  /**
+   * Evaluate expression in a string.
+   * @param s string in witch expression must be replaced
+   * @param allowExec allow execution of code
+   * @return a string with expression evaluated
+   * @throws EoulsanException if an error occurs while parsing the string or
+   *           executing an expression
+   */
+  static String evaluateExpressions(final String s, boolean allowExec)
+      throws EoulsanException {
+
+    if (s == null)
+      return null;
+
+    final StringBuilder result = new StringBuilder();
+
+    final int len = s.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final int c0 = s.codePointAt(i);
+
+      // Variable substitution
+      if (c0 == '$' && i + 1 < len) {
+
+        final int c1 = s.codePointAt(i + 1);
+        if (c1 == '{') {
+
+          final String expr = subStr(s, i + 2, '}');
+
+          final String trimmedExpr = expr.trim();
+          if (CONSTANTS.containsKey(trimmedExpr))
+            result.append(CONSTANTS.get(trimmedExpr));
+
+          i += expr.length() + 2;
+          continue;
+        }
+      }
+
+      // Command substitution
+      if (c0 == '`' && allowExec) {
+        final String expr = subStr(s, i + 1, '`');
+        try {
+          final String r =
+              ProcessUtils.execToString(evaluateExpressions(expr, false));
+
+          // remove last '\n' in the result
+          if (r.charAt(r.length() - 1) == '\n')
+            result.append(r.substring(0, r.length() - 1));
+          else
+            result.append(r);
+
+        } catch (IOException e) {
+          throw new EoulsanException("Error while evaluating expression \""
+              + expr + "\"");
+        }
+        i += expr.length() + 1;
+        continue;
+      }
+
+      result.appendCodePoint(c0);
+    }
+
+    return result.toString();
+  }
+
+  private static String subStr(final String s, final int beginIndex,
+      final int charPoint) throws EoulsanException {
+
+    final int endIndex = s.indexOf(charPoint, beginIndex);
+
+    if (endIndex == -1)
+      throw new EoulsanException("Unexpected end of expression in \""
+          + s + "\"");
+
+    return s.substring(beginIndex, endIndex);
+  }
+
   //
   // Getter
   //
@@ -448,8 +597,9 @@ public class ITFactory {
    * Public constructor
    * @throws EoulsanException if an error occurs when reading configuration
    *           file.
+   * @throws IOException
    */
-  public ITFactory() throws EoulsanException {
+  public ITFactory() throws EoulsanException, IOException {
 
     // Get configuration file path
     File configurationFile = getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
@@ -458,15 +608,11 @@ public class ITFactory {
 
       // Get application path
       this.applicationPath = getApplicationPath();
+      CONSTANTS.setProperty(APPLICATION_PATH_VARIABLE,
+          this.applicationPath.getAbsolutePath());
 
-      // Check if application path exists
-      if (this.applicationPath == null
-          || !this.applicationPath.isDirectory()
-          || !this.applicationPath.exists()) {
-        throw new EoulsanException("The application path doest not exists"
-            + this.applicationPath == null
-            ? "" : this.applicationPath.toString());
-      }
+      FileUtils.checkExistingDirectoryFile(this.applicationPath,
+          "The application path doest not exists.");
 
       // Get the file with the list of tests to run
       this.selectedTestsFile =
@@ -476,16 +622,7 @@ public class ITFactory {
       this.selectedTest = System.getProperty(IT_TEST_SYSTEM_KEY);
 
       // Load configuration file
-      try {
-
-        checkExistingStandardFile(configurationFile, "test configuration file");
-
-        this.globalsConf.load(newReader(configurationFile,
-            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
-      } catch (IOException e) {
-        throw new EoulsanException("Reading test configuration file fail ("
-            + configurationFile.getAbsolutePath() + "): " + e.getMessage());
-      }
+      this.globalsConf = loadProperties(configurationFile);
 
       // Load command line properties
       // Command generate all expected directories test
@@ -539,6 +676,7 @@ public class ITFactory {
       this.loggerPath = null;
       this.selectedTestsFile = null;
       this.selectedTest = null;
+      this.globalsConf = null;
     }
   }
 
