@@ -65,16 +65,15 @@ public class ToolConditionalElement implements ToolElement {
     this.toolParametersResult = Lists.newArrayList();
 
     for (Map.Entry<String, String> p : parametersEoulsan.entrySet()) {
-      
+
       // Check value parameter corresponding to a key
       if (options.containsKey(p.getKey())) {
 
-          this.toolParametersResult.add(toolParameterSelected);
+        // this.toolParametersResult.add(toolParameterSelected);
       }
     }
 
   }
-  
 
   // public Collection<? extends ToolElement> getToolParametersSelected() {
   //
@@ -95,8 +94,7 @@ public class ToolConditionalElement implements ToolElement {
 
     final Map<String, ToolParameter> result = Maps.newHashMap();
 
-    final List<Element> elemWhen =
-        getElementsByTagName(element, "when");
+    final List<Element> elemWhen = getElementsByTagName(element, "when");
 
     final int whenTagCount = elemWhen.size();
 
@@ -115,19 +113,21 @@ public class ToolConditionalElement implements ToolElement {
     return result;
   }
 
-  private Map<String, String> extractAllOptions(final Element parent) {
-    
+  private Map<String, String> extractAllOptions(final Element parent)
+      throws EoulsanException {
+
     final Map<String, String> allOptions = Maps.newHashMap();
-    
+
     final List<Element> optionsElement = getElementsByTagName(parent, "option");
-    
+
     for (Element e : optionsElement) {
       allOptions.put(e.getAttribute("value"), e.getTextContent());
     }
-    
+
     if (allOptions.isEmpty())
-      throw new EoulsanException("Parsing tool xml: no option found in conditional element.");
-    
+      throw new EoulsanException(
+          "Parsing tool xml: no option found in conditional element.");
+
     return Collections.unmodifiableMap(allOptions);
   }
 
@@ -164,15 +164,15 @@ public class ToolConditionalElement implements ToolElement {
     return this.parameterEoulsan;
   }
 
-//  @Override
-//  public void setParameterEoulsan(final String paramValue) {
-//
-//    // Set tool parameter related
-//    if (options.containsKey(paramValue)) {
-//      options.get(paramValue).setParameterEoulsan(paramValue);
-//
-//    }
-  }
+  // @Override
+  // public void setParameterEoulsan(final String paramValue) {
+  //
+  // // Set tool parameter related
+  // if (options.containsKey(paramValue)) {
+  // options.get(paramValue).setParameterEoulsan(paramValue);
+  //
+  // }
+  // }
 
   @Override
   public String toString() {
@@ -211,6 +211,12 @@ public class ToolConditionalElement implements ToolElement {
     // Extract all case available
     this.options = extractWhenTag(element);
     this.checkOptions = Maps.newHashMap();
+
+  }
+
+  @Override
+  public void setParameterEoulsan(String value) {
+    // TODO Auto-generated method stub
 
   }
 

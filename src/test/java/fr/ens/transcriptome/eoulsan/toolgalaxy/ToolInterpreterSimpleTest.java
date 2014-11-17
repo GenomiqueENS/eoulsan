@@ -46,7 +46,7 @@ public class ToolInterpreterSimpleTest {
 
   private static boolean VERBOSE = true;
 
-  @Test
+  // @Test
   public void parseSamtoolsRmdup() throws FileNotFoundException,
       EoulsanException {
     final File toolFile =
@@ -88,7 +88,7 @@ public class ToolInterpreterSimpleTest {
     // checkInterperter(toolFile, mock);
   }
 
-  @Test
+  // @Test
   public void parseSimpleToolFileTest() throws FileNotFoundException,
       EoulsanException {
     final File toolFile = new File(dir, "ToolGalaxyBasic.xml");
