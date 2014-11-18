@@ -114,6 +114,14 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
     }
 
+    // Change index bai file
+    final String bamIndexFilename =
+        bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
+            + "i";
+    final File bamIndexFile =
+        new File(bamDataFile.toFile().getParentFile(), bamIndexFilename);
+    bamIndexFile.renameTo(bamIndexDataFile.toFile());
+
     samReader.close();
     samWriter.close();
   }

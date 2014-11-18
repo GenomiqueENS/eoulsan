@@ -25,13 +25,13 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.it.ITCommandExecutor.APPLICATION_PATH_VARIABLE;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.COMMAND_TO_GENERATE_MANUALLY_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.COMMAND_TO_LAUNCH_APPLICATION_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.POSTTREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.getItSuite;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
@@ -204,8 +204,8 @@ public class IT {
     saveEnvironmentVariable();
 
     final ITCommandExecutor cmdExecutor =
-        new ITCommandExecutor(this.testConf, this.applicationPath,
-            this.outputTestDirectory, this.environmentVariables);
+        new ITCommandExecutor(this.testConf, this.outputTestDirectory,
+            this.environmentVariables);
 
     final boolean isApplication = true;
 
@@ -335,16 +335,9 @@ public class IT {
       return version;
     }
 
-    // Execute command
     try {
-
-      // Replace application path variable in command line
-      final String cmd =
-          commandLine.replace(APPLICATION_PATH_VARIABLE,
-              applicationPath.getAbsolutePath());
-
       // Execute command
-      final String output = ProcessUtils.execToString(cmd);
+      final String output = ProcessUtils.execToString(commandLine);
 
       if (output != null && output.trim().length() > 0)
         // Retrieve version
@@ -536,9 +529,10 @@ public class IT {
    * @param testConfFile file with the test configuration
    * @return Properties content of configuration file
    * @throws IOException if an error occurs while reading the file.
+   * @throws EoulsanException if an error occurs while evaluating value property
    */
   private Properties loadConfigurationFile(final Properties globalsConf,
-      final File testConfFile) throws IOException {
+      final File testConfFile) throws IOException, EoulsanException {
 
     checkExistingFile(testConfFile, "configuration file");
 
@@ -562,7 +556,9 @@ public class IT {
         continue;
 
       final String key = line.substring(0, pos).trim();
-      String value = line.substring(pos + 1).trim();
+
+      // Evaluate value
+      String value = evaluateExpressions(line.substring(pos + 1).trim(), true);
 
       // Save parameter with value
       if (value.length() > 0) {

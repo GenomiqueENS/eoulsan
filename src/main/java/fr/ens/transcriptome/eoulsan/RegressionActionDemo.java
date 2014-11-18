@@ -16,7 +16,8 @@ public class RegressionActionDemo {
 
   public static void mainbis() {
 
-    final String confpath = "/home/sperrin/workspace/eoulsan/it_global.conf";
+    final String confpath =
+        "/home/sperrin/Documents/test_eoulsan/tests_fonctionnels/it_local_debug.conf";
 
     final String fileTests = "/import/mimir03/lib/it/test_logger";
     final String reportDir = "/tmp";
@@ -25,14 +26,14 @@ public class RegressionActionDemo {
     final String appliToTestPath =
         "/home/sperrin/workspace/eoulsan/target/dist/eoulsan-2.0-alpha2-SNAPSHOT";
     final String nameTest =
-        "000079_filterreads_multistep_SR_plasticite_abdomen_B2012_small_local";
+        "000077_sam2bam_minlevel_SR_plasticite_abdomen_B2012_small_local";
     // Set the default local for all the application
     // Globals.setDefaultLocale();
 
     IntegrationTestAction action = new IntegrationTestAction();
 
     // Run action
-    int choice = 2;
+    int choice = 3;
 
     switch (choice) {
     case 0:
@@ -58,7 +59,7 @@ public class RegressionActionDemo {
       action.action(Lists.newArrayList("-c", confpath, "-exec",
           appliToTestPath, "-o", reportDir));
       break;
-      
+
     default:
       System.out.println("Choice INVALID");
     }
