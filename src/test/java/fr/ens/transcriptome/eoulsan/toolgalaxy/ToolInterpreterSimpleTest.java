@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -44,9 +45,56 @@ public class ToolInterpreterSimpleTest {
   private File dir = new File(new File(".").getAbsolutePath(),
       "src/main/java/files/toolshed/");
 
-  private static boolean VERBOSE = true;
+  public final static Splitter TOKEN = Splitter.on(" ").trimResults()
+      .omitEmptyStrings();
 
-  // @Test
+  private static boolean VERBOSE = false;
+
+  @Test
+  public void parseSam2Bam() throws FileNotFoundException, EoulsanException {
+    final File toolFile = new File(dir, "sam2bam/1.1.4/sam_to_bam.xml");
+    String name = "sam_to_bam";
+    String version = "1.1.4";
+    String desc = "converts SAM format to BAM format";
+    String interpreter = "python";
+
+    // type \t name \t value
+    String paramTabular_SR = "";
+    paramTabular_SR += "input\tsource.input1\tinput_value\n";
+    paramTabular_SR += "input\tsource.index_source\tno_selected\n";
+    paramTabular_SR += "input\tsource.ref_file\tref_file_value\n";
+    paramTabular_SR += "input\tsource.index.fields.path\tindex_fields_value\n";
+    paramTabular_SR += "output\toutput1\toutput_value\n";
+
+    List<String> cmd_SR =
+        TOKEN
+            .splitToList("sam_to_bam.py --input1=input_value --index=index_fields_value --output1=output_value");
+
+    final MockEoulsan mock =
+        new MockEoulsan(name, version, desc, interpreter, cmd_SR,
+            paramTabular_SR);
+
+    checkInterperter(toolFile, mock);
+
+    // type \t name \t value
+    // type \t name \t value
+    String paramTabular_withHistory = "";
+    paramTabular_withHistory += "input\tsource.input1\tinput_value\n";
+    paramTabular_withHistory += "input\tsource.index_source\thistory\n";
+    paramTabular_withHistory += "input\tsource.ref_file\tref_file_value\n";
+    paramTabular_withHistory +=
+        "input\tsource.index.fields.path\tindex_fields_value\n";
+    paramTabular_withHistory += "output\toutput1\toutput_value\n";
+
+    List<String> cmd_withHistory =
+        TOKEN
+            .splitToList("sam_to_bam.py --input1=input_value --ref_file=ref_file_value --output1=output_value");
+    mock.setCommand(cmd_withHistory, paramTabular_withHistory);
+
+    checkInterperter(toolFile, mock);
+  }
+
+  @Test
   public void parseSamtoolsRmdup() throws FileNotFoundException,
       EoulsanException {
     final File toolFile =
@@ -63,9 +111,12 @@ public class ToolInterpreterSimpleTest {
     paramTabular_SR +=
         "param\tbam_paired_end_type.bam_paired_end_type_selector\tSE\n";
 
-    String cmd_SR =
-        "samtools rmdup -s input_value output_value "
-            + "2&gt;&amp;1 || echo \"Error running samtools rmdup.\" &gt;&amp;2";
+    List<String> cmd_SR =
+        TOKEN.splitToList("samtools rmdup -s input_value output_value "
+            + "2>&1 || echo 'Error running samtools rmdup.' >&2");
+
+    // "samtools rmdup -s input_value output_value "
+    // + "2&gt;&amp;1 || echo 'Error running samtools rmdup.' &gt;&amp;2";
 
     final MockEoulsan mock =
         new MockEoulsan(name, version, desc, interpreter, cmd_SR,
@@ -73,22 +124,22 @@ public class ToolInterpreterSimpleTest {
 
     checkInterperter(toolFile, mock);
 
-    // // type \t name \t value
-    // String paramTabular_PE = "";
-    // paramTabular_PE += "input\tinput1\tinput_value\n";
-    // paramTabular_PE += "output\toutput1\toutput_value\n";
-    // paramTabular_PE +=
-    // "param\tbam_paired_end_type.bam_paired_end_type_selector\tPE\n";
-    //
-    // String cmd_PE =
-    // "samtools rmdup -S input_value output_value "
-    // + "2&gt;&amp;1 || echo \"Error running samtools rmdup.\" &gt;&amp;2";
-    // mock.setCommand(cmd_PE, paramTabular_PE);
-    //
-    // checkInterperter(toolFile, mock);
+    // type \t name \t value
+    String paramTabular_PE = "";
+    paramTabular_PE += "input\tinput1\tinput_value\n";
+    paramTabular_PE += "output\toutput1\toutput_value\n";
+    paramTabular_PE +=
+        "param\tbam_paired_end_type.bam_paired_end_type_selector\tPE\n";
+
+    List<String> cmd_PE =
+        TOKEN.splitToList("samtools rmdup -S input_value output_value "
+            + "2>&1 || echo 'Error running samtools rmdup.' >&2");
+    mock.setCommand(cmd_PE, paramTabular_PE);
+
+    checkInterperter(toolFile, mock);
   }
 
-  // @Test
+  @Test
   public void parseSimpleToolFileTest() throws FileNotFoundException,
       EoulsanException {
     final File toolFile = new File(dir, "ToolGalaxyBasic.xml");
@@ -101,7 +152,8 @@ public class ToolInterpreterSimpleTest {
     final MockEoulsan mock =
         new MockEoulsan("Compute GC content", "",
             "for each sequence in a file", "perl",
-            "toolExample.pl input_value output_value", paramTabular);
+            TOKEN.splitToList("toolExample.pl input_value output_value"),
+            paramTabular);
 
     checkInterperter(toolFile, mock);
   }
@@ -134,12 +186,14 @@ public class ToolInterpreterSimpleTest {
     itg.setPortOutput(mock.getOutputsPort());
 
     // Create command line
-    final String cmd = itg.createCommandLine();
+    final List<String> cmdExpected = TOKEN.splitToList(itg.createCommandLine());
 
     if (VERBOSE)
-      System.out.println("command create\n\t " + cmd);
+      System.out.println("\n\ncommand create\n\t " + cmdExpected);
 
-    assertEquals("Command line equals ", cmd, mock.getCommand());
+    int n = 0;
+    for (String token : mock.getCommand())
+      assertEquals("Token in command line equals ", token, cmdExpected.get(n++));
   }
 
   //
@@ -155,7 +209,7 @@ public class ToolInterpreterSimpleTest {
     private String version;
     private String description;
     private String interpreter;
-    private String command;
+    private List<String> command;
 
     private Map<String, String> parameters;
     private Map<String, String> inputs;
@@ -181,7 +235,7 @@ public class ToolInterpreterSimpleTest {
       return this.parameters;
     }
 
-    public String getCommand() {
+    public List<String> getCommand() {
       return command;
     }
 
@@ -219,7 +273,7 @@ public class ToolInterpreterSimpleTest {
       }
     }
 
-    public void setCommand(final String cmd, final String paramTabular)
+    public void setCommand(final List<String> cmd, final String paramTabular)
         throws EoulsanException {
       this.command = cmd;
 
@@ -233,7 +287,7 @@ public class ToolInterpreterSimpleTest {
 
     public MockEoulsan(final String name, final String version,
         final String description, final String interpreter,
-        final String command, final String paramTabular)
+        final List<String> command, final String paramTabular)
         throws EoulsanException {
       this.name = name;
       this.version = version;
