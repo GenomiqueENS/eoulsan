@@ -467,6 +467,7 @@
     ## $headContent
   </head>
   <body class="composite">
+    <div id="page">
     <div id="banner">
       #banner( $decoration.bannerLeft "bannerLeft" )
       #banner( $decoration.bannerRight "bannerRight" )
@@ -503,6 +504,7 @@
       <div class="clear">
         <hr/>
       </div>
+    </div>
     </div>
   </body>
 </html>

@@ -38,17 +38,17 @@
 	<body>
 	        <link rel="alternate" type="application/rss+xml" title="Eoulsan updates" href="eoulsan.rss" />
 
-		<section name="Welcome to Eoulsan">
+		<section name="">
 
 
 
-			<div
+			<div class="noname"
 				style="float: right; margin: 0 10px 20px 20px; padding: 5px; border: 1px solid #999; background-color: #eee;">
 				<h5
-					style="margin: 0; font-size: smaller; border-bottom: 1px solid #aaaaaa">
+					style="margin: 0; font-size: 100%; border-bottom: 1px solid #aaaaaa">
 					Get Eoulsan @@@VERSION@@@
 				</h5>
-				<p style="font-size: smaller">
+				<p style="font-size: 100%">
 					<img valign="top"
 						src="http://maven.apache.org/images/folder-open.gif" border="0"
 						alt="" title="Download Eoulsan" />
@@ -57,22 +57,23 @@
 					<br />
 				</p>
 				<ul style="margin-top: 0; list-style-type: disc">
-					<li style="font-size: smaller">
+					<li style="font-size: 100%">
 						<a href="download.html#requirements">
 							System Requirements
 						</a>
 						and
 						<a href="installing.html">Installation Instructions</a>.
 					</li>
-					<li style="font-size: smaller">
+					<li style="font-size: 100%">
 						<a href="quickstart.html">
 							QuickStart tutorial
 						</a>
 					</li>
 				</ul>
 			</div>
+		</section>
 
-
+		<section name="Welcome to Eoulsan">
 			<p>
 				We developed Eoulsan, a versatile framework based on the Hadoop implementation of the MapReduce algorithm,
 				dedicated to high throughput sequencing data analysis on distributed computers. With Eoulsan, users can easily
