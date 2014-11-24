@@ -29,7 +29,7 @@
 	<publishDate position="left" format="yyyy-MM-dd HH:mm"/>
 
 	<bannerLeft>
-		<name>ENS</name>
+		<name>Genomic Paris Centre</name>
 		<src>images/logo_genomicpariscentre-90pxh.png</src>
 		<href>http://transcriptome.ens.fr/sgdb</href>
 	</bannerLeft>
