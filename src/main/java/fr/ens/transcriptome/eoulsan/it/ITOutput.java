@@ -55,7 +55,7 @@ import fr.ens.transcriptome.eoulsan.io.comparators.FastqComparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.LogComparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.SAMComparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.TextComparator;
-import fr.ens.transcriptome.eoulsan.it.ITOutputComparisonResult.StatutComparison;
+import fr.ens.transcriptome.eoulsan.it.ITOutputComparisonResult.StatusComparison;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -148,7 +148,6 @@ public class ITOutput {
   public final Set<ITOutputComparisonResult> compareTo(
       final ITOutput expectedOutput) throws IOException {
 
-    //
     final Set<ITOutputComparisonResult> results = Sets.newTreeSet();
 
     // Copy list files
@@ -177,9 +176,8 @@ public class ITOutput {
           new ITOutputComparisonResult(filename);
 
       if (fileTested == null) {
-        comparisonResult.setResult(
-            StatutComparison.MISSING," \n\tin directory: "
-                + this.directory.getAbsolutePath());
+        comparisonResult.setResult(StatusComparison.MISSING,
+            "\n\tin directory: " + this.directory.getAbsolutePath());
       } else {
 
         // Comparison file
@@ -201,7 +199,7 @@ public class ITOutput {
       for (File f : allFilesFromTest) {
         final ITOutputComparisonResult ocr =
             new ITOutputComparisonResult(f.getName(),
-                StatutComparison.UNEXPECTED,
+                StatusComparison.UNEXPECTED,
                 "Unexpected file in data to test directory");
         results.add(ocr);
       }
@@ -226,7 +224,7 @@ public class ITOutput {
 
   /**
    * Compare content on expected file from tested file with same filename, save
-   * result in outputExecution instance
+   * result in outputExecution instance.
    * @param comparisonResult outputExecution object
    * @param fileExpected file from expected directory
    * @param fileTested file from tested directory
@@ -243,7 +241,7 @@ public class ITOutput {
 
     if (!res) {
       comparisonResult.setResult(
-          StatutComparison.NOT_EQUALS,
+          StatusComparison.NOT_EQUALS,
           "Fail comparison with file: "
               + fileExpected.getAbsolutePath() + " vs "
               + fileTested.getAbsolutePath() + "\n\tdetail: "
@@ -251,13 +249,13 @@ public class ITOutput {
     }
 
     // Add comparison in the report text
-    comparisonResult.setResult(StatutComparison.EQUALS,
+    comparisonResult.setResult(StatusComparison.EQUALS,
         "Success file comparison.");
   }
 
   /**
    * Compare length on expected file from tested file with same filename, save
-   * result in outputExecution instance
+   * result in outputExecution instance.
    * @param comparisonResult outputExecution object
    * @param fileExpected file from expected directory
    * @param fileTested file from tested directory
@@ -281,17 +279,19 @@ public class ITOutput {
               fileExpected.getAbsolutePath(), fileExpectedSize,
               fileTested.getAbsolutePath(), fileTestedSize);
 
-      comparisonResult.setResult(StatutComparison.NOT_EQUALS, msg);
+      comparisonResult.setResult(StatusComparison.NOT_EQUALS, msg);
     }
 
     // Add comparison in the report text
-    comparisonResult.setResult(StatutComparison.EQUALS,
+    comparisonResult.setResult(StatusComparison.EQUALS,
         "Success file comparison size file.");
   }
 
   /**
-   * @return
-   * @throws IOException
+   * Check if can be find files matching to patterns setting to absence file
+   * expected after run test.
+   * @return comparisons result, one per comparison file realized
+   * @throws IOException if an error occurs when list file matched to patterns.
    */
   private Set<ITOutputComparisonResult> checkAbsenceFileFromPatterns()
       throws IOException {
@@ -308,7 +308,8 @@ public class ITOutput {
 
     for (File f : matchedFile) {
       final ITOutputComparisonResult ocr =
-          new ITOutputComparisonResult(f.getName(), StatutComparison.UNEXPECTED,
+          new ITOutputComparisonResult(f.getName(),
+              StatusComparison.UNEXPECTED,
               "Unexpected file in output test directory matched to patterns "
                   + this.checkAbsenceFilePatterns);
       results.add(ocr);

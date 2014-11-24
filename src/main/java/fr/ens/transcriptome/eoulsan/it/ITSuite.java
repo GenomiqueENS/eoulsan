@@ -32,15 +32,23 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+
+/**
+ * The class represents a singleton which follow test execution, update counter
+ * and manager symbolic link in output directory.
+ * @author Sandrine Perrin
+ * @since 2.0
+ */
 public class ITSuite {
   // Singleton
+  private static ITSuite itSuite;
 
   private static final String RUNNING_LINKNAME = "running";
   private static final String SUCCEEDED_LINKNAME = "succeeded";
   private static final String FAILED_LINKNAME = "failed";
   private static final String LATEST_LINKNAME = "latest";
 
-  private final int testsCount;
   private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
 
   private static boolean debug_enable = false;
@@ -48,6 +56,32 @@ public class ITSuite {
   private static int successCount = 0;
   private static int testRunningCount = 0;
   private static boolean isFirstTest = true;
+
+  private final int testsCount;
+
+  /**
+   * Initialize instance of ITSuite object.
+   * @param testsCount tests count for the execution
+   */
+  public static void createInstance(final int testsCount) {
+
+    if (itSuite == null)
+      itSuite = new ITSuite(testsCount);
+  }
+
+  /**
+   * Get instance of ITSuite object.
+   * @return instance of ITSuite object
+   * @throws EoulsanException if instance doesn't exist
+   */
+  public static ITSuite getInstance() throws EoulsanException {
+
+    if (itSuite != null)
+      return itSuite;
+
+    throw new EoulsanException(
+        "Can not get instance of ITSuite class, it is not initialized.");
+  }
 
   /**
    * Create useful symbolic test to the latest and running test in output test
@@ -64,7 +98,8 @@ public class ITSuite {
     File latestDirLink = new File(directory.getParentFile(), LATEST_LINKNAME);
 
     // Path to the last succeeded test link
-    File succeededDirLink = new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
+    File succeededDirLink =
+        new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
 
     // Path to the last failed test link
     File failedDirLink = new File(directory.getParentFile(), FAILED_LINKNAME);
@@ -98,7 +133,8 @@ public class ITSuite {
   }
 
   /**
-   * @param directory
+   * Update counter of tests running. If it is the first, create symbolics link.
+   * @param directory directory where create symbolic link.
    */
   public void startTest(final File directory) {
 
@@ -113,7 +149,9 @@ public class ITSuite {
   }
 
   /**
-   * @param directory
+   * Update counter of tests running. If it is the last, update symbolics link
+   * and close logger.
+   * @param directory directory where update symbolic link.
    */
   public void endTest(final File directory, final ITResult itResult) {
 
@@ -155,10 +193,18 @@ public class ITSuite {
   // Getter and setter
   //
 
+  /**
+   * Get the true if debug mode settings otherwise false.
+   * @return true if debug mode settings otherwise false.
+   */
   public static boolean isDebugEnable() {
     return debug_enable;
   }
 
+  /**
+   * Set the debug mode, true if true if it is demand otherwise false.
+   * @param b true if it is demand otherwise false.
+   */
   public void setDebugEnable(boolean b) {
     debug_enable = b;
   }
@@ -166,8 +212,12 @@ public class ITSuite {
   //
   // Constructor
   //
-  public ITSuite(final int testsCount) {
-    this.testsCount = testsCount;
+  /**
+   * Private constructor.
+   * @param _testsCount tests count to run
+   */
+  private ITSuite(final int _testsCount) {
+    testsCount = _testsCount;
   }
 
 }

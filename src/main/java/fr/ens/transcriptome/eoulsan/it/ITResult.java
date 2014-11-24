@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This internal class allow to build report execution test
+ * This internal class allow to build report execution test.
  * @author Sandrine Perrin
  */
 public class ITResult {
@@ -65,7 +65,7 @@ public class ITResult {
   // Write reports
   //
   /**
-   * Create report of the test execution
+   * Create report of the test execution.
    * @param duration of execution test
    * @param status result of test execution, use like filename
    */
@@ -186,6 +186,10 @@ public class ITResult {
     return report.toString();
   }
 
+  /**
+   * Collect all exceptions throw when compare output test generated to output
+   * test expected.
+   */
   public void checkNeededThrowException() {
 
     if (this.comparisonsResults.isEmpty())
@@ -228,18 +232,27 @@ public class ITResult {
     return msgException.toString();
   }
 
-  public void addCommandResult(ITCommandResult cmdResult) {
+  /**
+   * Add command line result.
+   * @param cmdResult command line result object
+   */
+  public void addCommandResult(final ITCommandResult cmdResult) {
     if (cmdResult != null) {
       this.commandsResults.add(cmdResult);
     }
   }
 
+  /**
+   * Add comparisons results and check if exception has been throw.
+   * @param comparisonsResults set of comparison results.
+   */
   public void addComparisonsResults(
       final Set<ITOutputComparisonResult> comparisonsResults) {
 
     if (comparisonsResults != null)
       this.comparisonsResults = comparisonsResults;
 
+    // Check if exception has been throw.
     checkNeededThrowException();
   }
 
@@ -279,6 +292,10 @@ public class ITResult {
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   * @param it it object
+   */
   public ITResult(final IT it) {
     this.it = it;
     this.commandsResults = Lists.newArrayList();

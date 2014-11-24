@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -76,11 +77,11 @@ public class IT {
   public static final String SEPARATOR = " ";
   private static final String TEST_SOURCE_LINK_NAME = "test-source";
 
-  /** Prefix for set environment variable in test configuration file */
+  /** Prefix for set environment variable in test configuration file. */
   private static final String PREFIX_ENV_VAR = "env.var.";
   private static final String ENV_FILENAME = "ENV";
 
-  /** Variables */
+  /** Variables. */
   private final Properties testConf;
   private final String testName;
   private final String description;
@@ -89,12 +90,12 @@ public class IT {
   private final File outputTestDirectory;
   private final File expectedTestDirectory;
 
-  /** Patterns */
+  /** Patterns. */
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
-  /** Patterns to check file and compare size */
+  /** Patterns to check file and compare size. */
   private final String checkExistenceFilePatterns;
-  /** Patterns to check file not exist in test directory */
+  /** Patterns to check file not exist in test directory. */
   private final String checkAbsenceFilePatterns;
 
   private final boolean generateExpectedData;
@@ -105,12 +106,12 @@ public class IT {
 
   // Instance
   private final ITResult itResult;
-  private final String[] environmentVariables;
+  private final List<String> environmentVariables;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
-   * arguments: expected data or data to test.If it is data to test then launch
-   * comparison
+   * arguments: expected data or data to test. If it is data to test then launch
+   * comparison.
    * @throws Exception if an error occurs while execute script or comparison
    */
   @Test
@@ -183,7 +184,7 @@ public class IT {
         // Set success on generate data in expected directory
         itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
       }
-      
+
       getItSuite().endTest(this.outputTestDirectory.getParentFile(),
           this.itResult);
     }
@@ -191,9 +192,7 @@ public class IT {
 
   /**
    * Launch all scripts defined for the test.
-   * @return
-   * @throws EoulsanException if an error occurs while execute script
-   * @throws IOException if the output directory is missing
+   * @throws Throwable if an error occurs while execute script or output directory is missing
    */
   private void launchScriptsTest(final ITResult itResult) throws Throwable {
 
@@ -239,18 +238,41 @@ public class IT {
         "POST_SCRIPT_GLOBAL", "post script global");
   }
 
+  /**
+   * Execute command to run command line.
+   * @param cmdExecutor ITCommandExecutor object
+   * @param itResult ItResult object
+   * @param keyConf key configuration to retrieve command line
+   * @param suffixFilename suffix filename for output standard and error file on
+   *          execution processus
+   * @param desc description on command line
+   * @throws Throwable if an error occurs during execution processus
+   */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
-      final String suffixFileaname, final String desc) throws Throwable {
+      final String suffixFilename, final String desc) throws Throwable {
 
-    executeCommand(cmdExecutor, itResult, keyConf, suffixFileaname, desc, false);
+    executeCommand(cmdExecutor, itResult, keyConf, suffixFilename, desc, false);
   }
 
+  /**
+   * Execute command to run command line.
+   * @param cmdExecutor ITCommandExecutor object
+   * @param itResult ItResult object
+   * @param keyConf key configuration to retrieve command line
+   * @param suffixFilename suffix filename for output standard and error file on
+   *          execution processus
+   * @param desc description on command line
+   * @param isApplication true if application to run, otherwise false
+   *          corresponding to annexes script
+   * @throws Throwable if an error occurs during execution processus
+   */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
       final String suffixFilename, final String desc,
       final boolean isApplication) throws Throwable {
 
+    // Execute command line and save standard and error output in file
     ITCommandResult cmdResult =
         cmdExecutor
             .executeCommand(keyConf, suffixFilename, desc, isApplication);
@@ -271,7 +293,7 @@ public class IT {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
     // Write in file
-    if (!(this.environmentVariables == null || this.environmentVariables.length == 0)) {
+    if (!(this.environmentVariables == null || this.environmentVariables.size() == 0)) {
       // Convert to string
       String envToString =
           Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
@@ -285,11 +307,10 @@ public class IT {
   }
 
   /**
-   * Extract all environment variables setting in test configuration file. Key
-   * must be start with keyword {@link IT#PREFIX_ENV_VAR}
+   * Extract all environment variables setting in test configuration file.
    * @return null if not found or an string array in the format name=value
    */
-  private String[] extractEnvironmentVariables() {
+  private List<String> extractEnvironmentVariables() {
 
     List<String> envp = Lists.newArrayList();
 
@@ -314,7 +335,7 @@ public class IT {
       return null;
 
     // Convert to array
-    return envp.toArray(new String[envp.size()]);
+    return Collections.unmodifiableList(envp);
   }
 
   /**
@@ -350,7 +371,7 @@ public class IT {
   }
 
   /**
-   * Check the expected data or data to test must be generated
+   * Check the expected data or data to test must be generated.
    * @return true if data must be generated
    * @throws IOException if an error occurs while creating directory.
    */
@@ -444,7 +465,7 @@ public class IT {
   //
 
   /**
-   * Create the expected data test directory
+   * Create the expected data test directory.
    * @param inputTestDirectory source test directory with needed files
    * @return expected data directory for the test
    * @throws EoulsanException if the existing directory is empty
@@ -524,7 +545,7 @@ public class IT {
 
   /**
    * Retrieve properties for the test, compile specific configuration with
-   * global
+   * global.
    * @param globalsConf global configuration for tests
    * @param testConfFile file with the test configuration
    * @return Properties content of configuration file
@@ -623,7 +644,7 @@ public class IT {
   // Constructor
   //
   /**
-   * Public constructor
+   * Public constructor.
    * @param globalsConf global configuration for tests
    * @param applicationPath path to the application to test
    * @param testConfFile file with the test configuration

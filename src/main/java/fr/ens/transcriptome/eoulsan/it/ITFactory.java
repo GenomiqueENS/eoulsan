@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -123,7 +122,6 @@ public class ITFactory {
   private final Properties globalsConf;
   private static final Properties CONSTANTS = initConstants();
   private final File applicationPath;
-  private static ITSuite itSuite;
 
   // File with tests name to execute
   private final File selectedTestsFile;
@@ -135,7 +133,7 @@ public class ITFactory {
   private final String loggerPath;
 
   /**
-   * Create all instance for integrated tests
+   * Create all instance for integrated tests.
    * @return array object from integrated tests
    */
   @Factory
@@ -160,8 +158,9 @@ public class ITFactory {
         return new Object[0];
 
       // Initialize ITSuite
-      itSuite = new ITSuite(testsCount);
-      itSuite.setDebugEnable(Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
+      ITSuite.createInstance(testsCount);
+      ITSuite.getInstance().setDebugEnable(
+          Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
 
       // Return all tests
       return tests.toArray(new Object[testsCount]);
@@ -202,7 +201,7 @@ public class ITFactory {
   }
 
   /**
-   * Initialization factory with principal needed directories
+   * Initialization factory with principal needed directories.
    * @throws IOException if a source file doesn't exist
    */
   private void init() throws IOException {
@@ -298,7 +297,7 @@ public class ITFactory {
   }
 
   /**
-   * Collect tests to launch from text files with name tests
+   * Collect tests to launch from text files with name tests.
    * @return list all directories test found
    * @throws IOException if an error occurs while read file
    */
@@ -495,10 +494,11 @@ public class ITFactory {
 
   /**
    * Get instance on ITSuite object.
-   * @return
+   * @return instance of ITSuite object
+   * @throws EoulsanException if an instance doesn't exist
    */
-  public static ITSuite getItSuite() {
-    return itSuite;
+  public static ITSuite getItSuite() throws EoulsanException {
+    return ITSuite.getInstance();
   }
 
   //
@@ -594,7 +594,7 @@ public class ITFactory {
   //
 
   /**
-   * Public constructor
+   * Public constructor.
    * @throws EoulsanException if an error occurs when reading configuration
    *           file.
    * @throws IOException

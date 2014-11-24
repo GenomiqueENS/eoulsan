@@ -28,15 +28,13 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 import java.io.File;
 
 /**
- * This internal class allow to save Process outputs
+ * This internal class allow to save Process outputs.
  * @author Laurent Jourdren
  */
 public class ITCommandResult {
 
   private final File directory;
   private final String commandLine;
-  private final File stdout;
-  private final File stderr;
   private final String desc;
 
   private final StringBuilder message;
@@ -99,12 +97,10 @@ public class ITCommandResult {
   // Constructor
   //
   ITCommandResult(final String commandLine, final File directory,
-      final File stdoutFile, final File stderrFile, final String desc) {
+      final String desc) {
 
     this.commandLine = commandLine;
     this.directory = directory;
-    this.stdout = stdoutFile;
-    this.stderr = stderrFile;
     this.desc = desc;
 
     this.message = new StringBuilder();
