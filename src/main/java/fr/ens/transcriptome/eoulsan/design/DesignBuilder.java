@@ -660,11 +660,11 @@ public class DesignBuilder {
   private boolean isDataFormatExtension(final DataFormat dataFormat,
       final String extension, DataFileMetadata md) {
 
-    if (md != null
-        && md.getDataFormat() != null && dataFormat.equals(md.getDataFormat()))
-      return true;
+    if (md != null && md.getDataFormat() != null) {
+      return dataFormat.equals(md.getDataFormat());
+    }
 
-    return dfr.getDataFormatFromExtension(extension) != null;
+    return dfr.getDataFormatFromExtension(extension) == dataFormat;
   }
 
   /**

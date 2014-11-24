@@ -143,7 +143,7 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       final List<String> newArgs =
-          arguments.subList(argsOptions, arguments.size() - 1);
+          arguments.subList(argsOptions, arguments.size());
 
       final DesignBuilder db = new DesignBuilder();
 
