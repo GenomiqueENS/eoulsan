@@ -10,4 +10,5 @@
 /.idea
 /eoulsan.iml
 /test-output/
-/it_global.conf
+src/main/java/fr/ens/transcriptome/eoulsan/toolgalaxy/PPMain.java
+src/main/java/fr/ens/transcriptome/eoulsan/toolgalaxy/VariableRegistry.java
