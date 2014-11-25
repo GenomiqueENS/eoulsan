@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -154,7 +155,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     }
 
     // TSV creation can be multithreaded
-    return ParallelizationMode.STANDARD;
+    return STANDARD;
   }
 
   @Override
