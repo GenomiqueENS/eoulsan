@@ -32,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KE
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
-import static fr.ens.transcriptome.eoulsan.it.ITFactory.getItSuite;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -122,7 +121,12 @@ public class IT {
     final Stopwatch timer = Stopwatch.createStarted();
 
     getLogger().info("Start test " + this.testName);
-    getItSuite().startTest(this.outputTestDirectory.getParentFile());
+
+    // Get ITSuite object
+    final ITSuite itSuite = ITSuite.getInstance();
+
+    // Notify the suite of the beginning of the current test
+    itSuite.startTest(this.outputTestDirectory.getParentFile());
 
     // Compile the result comparison from all tests
     ITOutput itOutput = null;
@@ -186,8 +190,8 @@ public class IT {
         itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
       }
 
-      getItSuite().endTest(this.outputTestDirectory.getParentFile(),
-          this.itResult);
+      // Notify the suite of the end of the current test
+      itSuite.endTest(this.outputTestDirectory.getParentFile(), this.itResult);
     }
   }
 

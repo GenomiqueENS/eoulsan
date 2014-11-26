@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newWriter;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.it.ITSuite.isDebugEnable;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.File;
@@ -222,7 +221,7 @@ public class ITResult {
     msgException.append("\nException message: \n\t"
         + exception.getMessage() + "\n");
 
-    if (isDebugEnable() && withStackTrace) {
+    if (ITSuite.getInstance().isDebugEnabled() && withStackTrace) {
       // Add the stack trace
       msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
       msgException.append(Joiner.on("\n\t").join(exception.getStackTrace()));
