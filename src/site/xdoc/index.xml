@@ -120,6 +120,14 @@
 
 	</section>
 
+	<section name="Screencast demo">
+
+	<p>The following screencast show how to install Eoulsan, create a design file and launch an analysis in local mode. For more information see the <a href="quickstart.html">quickstart guide</a>.</p>
+
+	<iframe src="http://showterm.io/64a12d1f7fe2096e92c90" width="1011" height="480"></iframe>
+
+	</section>
+
 	<section name="RNA-Seq analysis">
 
 		<p>Eoulsan contains out the box a fully customizable RNA-Seq pipeline that generate many reports about the performed analysis. The following images are
