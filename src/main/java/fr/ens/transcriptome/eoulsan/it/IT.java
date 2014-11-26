@@ -75,10 +75,11 @@ public class IT {
   public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
-  private static final String TEST_SOURCE_LINK_NAME = "test-source";
 
   /** Prefix for set environment variable in test configuration file. */
-  private static final String PREFIX_ENV_VAR = "env.var.";
+  static final String PREFIX_ENV_VAR = "env.var.";
+
+  private static final String TEST_SOURCE_LINK_NAME = "test-source";
   private static final String ENV_FILENAME = "ENV";
 
   /** Variables. */
@@ -192,7 +193,8 @@ public class IT {
 
   /**
    * Launch all scripts defined for the test.
-   * @throws Throwable if an error occurs while execute script or output directory is missing
+   * @throws Throwable if an error occurs while execute script or output
+   *           directory is missing
    */
   private void launchScriptsTest(final ITResult itResult) throws Throwable {
 
@@ -581,18 +583,15 @@ public class IT {
       // Evaluate value
       String value = evaluateExpressions(line.substring(pos + 1).trim(), true);
 
-      // Save parameter with value
-      if (value.length() > 0) {
-
-        // Key pattern : add value for test to values from
-        // configuration general
-        if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
-          // Concatenate values
-          value = props.getProperty(key) + SEPARATOR + value;
-        }
-
-        props.put(key, value);
+      // Key pattern : add value for test to values from
+      // configuration general
+      if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
+        // Concatenate values
+        value = props.getProperty(key) + SEPARATOR + value;
       }
+
+      // Save parameter with value
+      props.put(key, value);
     }
     br.close();
 

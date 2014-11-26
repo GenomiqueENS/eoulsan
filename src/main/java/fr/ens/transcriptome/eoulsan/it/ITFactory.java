@@ -377,12 +377,21 @@ public class ITFactory {
     rawProps.load(newReader(configurationFile,
         Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
+    // Extract environment variable
+    for (final String propertyName : rawProps.stringPropertyNames()) {
+      if (propertyName.startsWith(IT.PREFIX_ENV_VAR)) {
+        CONSTANTS.put(propertyName.substring(IT.PREFIX_ENV_VAR.length()),
+            rawProps.getProperty(propertyName));
+      }
+    }
+
     // Evaluate property
     for (final String propertyName : rawProps.stringPropertyNames()) {
       final String propertyValue =
           evaluateExpressions(rawProps.getProperty(propertyName), true);
 
       props.setProperty(propertyName, propertyValue);
+
     }
 
     // Check include
