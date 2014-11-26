@@ -29,7 +29,7 @@ public class LineScriptJython {
   final static Set<VariablePattern> patterns = initPatterns();
 
   private static final Pattern VARIABLES_PATTERN = Pattern
-      .compile("$\\{?[\\w.-_]+\\}?");
+      .compile("\\$\\{?[\\w.-_]+\\}?");
 
   // Pattern for "$var" or '$var' or "${var}"
   final static Pattern STRING_PATTERN = Pattern
@@ -62,24 +62,87 @@ public class LineScriptJython {
     boolean isCurrentTextCode = false;
     boolean firstToken = true;
     boolean lastToken = false;
-    int count = 0;
+    int currentPos = 0;
 
     List<String> modifiedLine = Lists.newArrayList();
 
+    String variableName = "";
+    String codeJava = "";
+
     while (matcher.find()) {
-      String currentText = matcher.group();
+      System.out.println("found "
+          + matcher.group() + "\n\tstart: " + matcher.start() + "-"
+          + matcher.end() + "\tcurrent pos: " + currentPos + "\tend txt: "
+          + (line.length() - 1));
+      variableName = matcher.group();
       int start = matcher.start();
       int end = matcher.end();
 
-      firstToken = start == 0;
-      lastToken = end == line.length() - 1;
+      if (currentPos < start) {
+        // Extract text before variable
+        String txt = line.substring(currentPos, start - 1).trim();
+        System.out.println("-- txt ss variable: " + txt + ".");
+        // Add syntax
+        if (!txt.isEmpty()) {
+          isPreviousTextCode = false;
 
+          modifiedLine.add(addTokenInString(txt, isPreviousTextCode,
+              isCurrentTextCode, firstToken, lastToken, false));
+          firstToken = false;
+        }
+      }
+
+      codeJava = buildCodeJava(variableName);
+      isCurrentTextCode = true;
+
+      // Add code java
+      modifiedLine.add(addTokenInString(codeJava, isPreviousTextCode,
+          isCurrentTextCode, firstToken, lastToken, true));
+
+      // Update current position
+      currentPos = end + 1;
+      isPreviousTextCode = isCurrentTextCode;
+      firstToken = false;
     }
 
+    // Add end line
+    if (currentPos < line.length()) {
+      String txt = line.substring(currentPos);
+      modifiedLine.add(addTokenInString(txt, isPreviousTextCode,
+          isCurrentTextCode, firstToken, true, false));
+    }
+
+    // No variable name found
     if (modifiedLine.isEmpty())
-      return line;
+      return addTokenInString(line, isPreviousTextCode, isCurrentTextCode,
+          true, true, false);
+
+    // End string
+    String endString =
+        endString(modifiedLine.get(modifiedLine.size() - 1),
+            isPreviousTextCode, isCurrentTextCode, true, true, false);
+    if (endString != null)
+      modifiedLine.add(endString);
 
     return Joiner.on(" ").join(modifiedLine);
+  }
+
+  private String buildCodeJava(final String variableName) {
+
+    int n = 0;
+    // Check presence accolade
+    if (variableName.contains("{"))
+      n = 1;
+
+    String variableNameTrimmed =
+        variableName.substring(1 + n, variableName.length() - n);
+
+    // TODO
+    System.out.println("VAR before\t"
+        + variableName + "\tafter\t" + CALL_METHOD + "(\""
+        + variableNameTrimmed + "\")");
+
+    return CALL_METHOD + "(\"" + variableNameTrimmed + "\")";
   }
 
   private String buildNewVariableSyntax(final String variableName,
@@ -148,9 +211,9 @@ public class LineScriptJython {
       // Add token in string
       String t =
           addTokenInString(newToken, isPreviousCode, isCurrentCode, firstToken,
-              lastToken);
+              lastToken, false);
       newLine.add(addTokenInString(newToken, isPreviousCode, isCurrentCode,
-          firstToken, lastToken));
+          firstToken, lastToken, false));
 
       // TODO
       // System.out.println("newtoken \t"
@@ -170,16 +233,20 @@ public class LineScriptJython {
     return Joiner.on(" ").join(newLine).trim();
   }
 
-  private String addTokenInString(final String newToken,
+  private String addTokenInString(String newToken,
       final boolean isPreviousCode, final boolean isCurrentCode,
-      final boolean firstToken, final boolean lastToken) {
+      final boolean firstToken, final boolean lastToken,
+      final boolean isCodeJava) {
+
+    if (isInstruction())
+      return newToken;
 
     final List<String> txt = Lists.newArrayList();
 
-    if (firstToken) {
-      if (!isCurrentCode) {
+    if (firstToken && !isInstruction()) {
+      if (!isCurrentCode && !newToken.startsWith("\"")) {
         // Start string
-        txt.add("\"");
+        txt.add("\" ");
       }
     } else {
       // Add in middle string
@@ -198,24 +265,56 @@ public class LineScriptJython {
       }
     }
     // Add text
+    if (!isCodeJava)
+      newToken = newToken.replaceAll("\"", "'");
     txt.add(newToken);
 
-    if (lastToken) {
-      if (!isCurrentCode) {
-        if (!newToken.endsWith("\"") || !newToken.endsWith("\'"))
-          // Close string
-          txt.add("\"");
-      } else {
-        // Add space
-        txt.add(" ");
-      }
-    }
+    // if (lastToken && !isInstruction()) {
+    // if (!isCurrentCode) {
+    // if (!newToken.endsWith("\"") || !newToken.endsWith("\'"))
+    // // Close string
+    // txt.add("\"");
+    // } else {
+    // // Add space
+    // txt.add(" ");
+    // }
+    // }
 
     if (txt.isEmpty())
       return "";
 
+    // // TODO
+    // System.out.println("before \t"
+    // + newToken + "\tafter\t" + Joiner.on(" ").join(txt));
+
+    // TODO
+    System.out.println("newtoken \t"
+        + newToken + "\t isPrevCode: " + isPreviousCode + "\t isCurrentCode: "
+        + isCurrentCode + "\tfirst: " + firstToken + "\tlast: " + lastToken
+        + "\n\t----------" + newToken + " ====> "
+        + Joiner.on(" ").join(txt).trim());
+
     // Return string with default separator escape
     return Joiner.on(" ").join(txt);
+  }
+
+  private String endString(final String lastText, final boolean isPreviousCode,
+      final boolean isCurrentCode, final boolean firstToken,
+      final boolean lastToken, final boolean isCodeJava) {
+
+    if (isInstruction())
+      return null;
+
+    if (!isCurrentCode) {
+      if (!lastText.endsWith("\"") || !lastText.endsWith("\'"))
+        // Close string
+        return "\"";
+    } else {
+      // Add space
+      return " ";
+    }
+
+    return null;
   }
 
   private String replaceVariableNameByCodeJava(final String text) {
@@ -324,7 +423,7 @@ public class LineScriptJython {
     // }
     // }
 
-    return replaceVariableNameByCodeJava(newLine);
+    return newLine;
   }
 
   private String buildLineScript(final String line) {
@@ -333,7 +432,7 @@ public class LineScriptJython {
     txt.append(tab(currentTabCount));
 
     if (!isInstruction)
-      txt.append(VAR_CMD_NAME + " +=  ");
+      txt.append(VAR_CMD_NAME + " +=  \" \" + ");
 
     txt.append(line);
 
