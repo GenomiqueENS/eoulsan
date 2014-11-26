@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class LanternaUI implements UI, Terminal.ResizeListener {
+public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   private Workflow workflow;
   private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
@@ -75,11 +75,8 @@ public class LanternaUI implements UI, Terminal.ResizeListener {
     // Search step to follow
     searchSteps();
 
-    // Test if Eoulsan has been launched in interactive mode
-    final boolean interactiveMode = System.console() != null;
-
     this.terminal =
-        interactiveMode ? TerminalFacade.createUnixTerminal() : null;
+        isInteractiveMode() ? TerminalFacade.createUnixTerminal() : null;
 
     // Get terminal size
     this.terminal.enterPrivateMode();
