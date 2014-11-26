@@ -43,6 +43,8 @@
                 <li>use the <b>-conf &lt;file&gt;</b> option of Eoulsan command line. The <code>~/.eoulsan</code> file will not be read.</li>
         </ul>
 
+		<p>A setting can be also set using the <tt>-s</tt> option of Eoulsan. See the <a href="command_line.html">command line section</a> for more information.</p>
+
         <p>The next table summaries the available parameters of the configuration file:</p>
 
 	<table>

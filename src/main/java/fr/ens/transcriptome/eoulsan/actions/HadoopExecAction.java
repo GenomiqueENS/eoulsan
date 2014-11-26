@@ -213,6 +213,11 @@ public class HadoopExecAction extends AbstractAction {
         argsList.add(main.getConfigurationFileArgument());
       }
 
+      for (String setting : main.getCommandLineSettings()) {
+        argsList.add("-s");
+        argsList.add(setting);
+      }
+
       argsList.add(ExecJarHadoopAction.ACTION_NAME);
 
       if (jobDescription != null) {

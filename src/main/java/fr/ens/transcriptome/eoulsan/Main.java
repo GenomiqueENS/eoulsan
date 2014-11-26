@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -74,6 +75,7 @@ public abstract class Main {
   private String logLevel;
   private String logFile;
   private String conf;
+  private List<String> commandLineSettings;
 
   private final BufferedHandler handler = new BufferedHandler();
 
@@ -182,6 +184,19 @@ public abstract class Main {
   }
 
   /**
+   * Get the command line settings arguments.
+   * @return a list with the settings defined in the command line
+   */
+  public List<String> getCommandLineSettings() {
+
+    if (this.commandLineSettings == null) {
+      return Collections.emptyList();
+    }
+
+    return unmodifiableList(this.commandLineSettings);
+  }
+
+  /**
    * Get the path to the launch script.
    * @return the path to the launch script or null if no launch script has been
    *         used
@@ -212,8 +227,8 @@ public abstract class Main {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(getHelpEoulsanCommand()
-        + " [options] action arguments", options);
+    formatter.printHelp(
+        getHelpEoulsanCommand() + " [options] action arguments", options);
 
     System.out.println("Available actions:");
     for (Action action : ActionService.getInstance().getActions()) {
@@ -251,6 +266,13 @@ public abstract class Main {
 
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("configuration file to use").create("conf"));
+
+    options.addOption(OptionBuilder
+        .withArgName("property=value")
+        .hasArg()
+        .withDescription(
+            "set a configuration setting. This "
+                + "option can be used several times").create('s'));
 
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("external log file").create("log"));
@@ -317,6 +339,13 @@ public abstract class Main {
 
         argsOptions += 2;
         this.conf = line.getOptionValue("conf");
+      }
+
+      // Set the configuration settings
+      if (line.hasOption('s')) {
+
+        this.commandLineSettings = Arrays.asList(line.getOptionValues('s'));
+        argsOptions += 2 * this.commandLineSettings.size();
       }
 
       // eoulsan.sh options
@@ -462,6 +491,24 @@ public abstract class Main {
 
     getLogger().config("No configuration file found.");
     return new Settings(false);
+  }
+
+  /**
+   * Set the command line settings entry.
+   * @param settings the settings object
+   */
+  private void setManualSettings(final Settings settings) {
+
+    for (String s : getCommandLineSettings()) {
+
+      final int index = s.indexOf('=');
+
+      if (index == -1) {
+        settings.setSetting(s, "");
+      } else {
+        settings.setSetting(s.substring(0, index), s.substring(index + 1));
+      }
+    }
   }
 
   /**
@@ -612,6 +659,9 @@ public abstract class Main {
 
       // Load configuration file (if needed)
       final Settings settings = loadConfigurationFile();
+
+      // Set manual settings
+      setManualSettings(settings);
 
       // Log settings
       settings.logSettings();
