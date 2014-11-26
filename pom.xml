@@ -642,28 +642,33 @@
 						<phase>site</phase>
 						<configuration>
 							<tasks>
+								<copy file="${basedir}/src/main/bin/eoulsan-docker-installer.sh" todir="${basedir}/target/site/" />
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.url}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@WEBSITE@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.version}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@VERSION@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.name}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@APPNAME@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.artifactId}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@APPNAMEMIN@@@</replacetoken>
 								</replace>
 
@@ -677,6 +682,7 @@
 									<include name="**/*.jnlp" />
 									<include name="**/*.html" />
 									<include name="**/*.rss" />
+									<include name="**/*.sh"/>
 									<replacetoken>@@@DATE@@@</replacetoken>
 								</replace>
 							</tasks>

@@ -26,6 +26,14 @@ RUN tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz
 RUN ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan.sh
 RUN ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan
 
+# Create data repositories directories
+RUN mkdir -p /data/genomes
+RUN mkdir -p /data/genomes_descs
+RUN mkdir -p /data/mappers_indexes
+RUN mkdir -p /data/annotations
+RUN mkdir -p /data/additional_annotations
+RUN mkdir -p /data/plugins
+
 # Cleanup
 RUN rm -rf /tmp/eoulsan-*.tar.gz
 RUN apt-get clean
