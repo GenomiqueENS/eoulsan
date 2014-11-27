@@ -40,50 +40,35 @@
 
 		<section name="">
 
-
-
 			<div class="noname"
 				style="float: right; margin: 25px 0px 15px 15px; padding: 0px; border: 1px solid #999; background-color: #eee;">
 				<h5
 					style="margin: 0; font-size: 100%; border-bottom: 1px solid #aaaaaa">
 					Get Eoulsan @@@VERSION@@@
 				</h5>
-				<p style="font-size: 100%">
-					<img valign="top"
-						src="images/folder-open.gif" border="0"
-						alt="" title="Download Eoulsan" />
-					<a href="eoulsan-@@@VERSION@@@.tar.gz">Download</a>
-					Eoulsan Application
+				<p>
+					<img valign="top" src="images/folder-open.gif" border="0" alt="" title="Download Eoulsan" />
+					<a href="eoulsan-@@@VERSION@@@.tar.gz">Download</a>Eoulsan Application
 					<br />
 				</p>
 				<ul style="margin-top: 0; list-style-type: disc">
-					<li style="font-size: 100%">
-						<a href="download.html#requirements">
-							System Requirements
-						</a>
-						and
-						<a href="installing.html">Installation Instructions</a>.
+					<li><a href="download.html#requirements">System Requirements</a> and
+						<a href="installing.html">Installation instructions</a>
 					</li>
-					<li style="font-size: 100%">
+					<li>
 						<a href="quickstart.html">QuickStart tutorial</a>
 					</li>
 				</ul>
 				
-				<p style="font-size: 100%">
-					<img valign="top"
-						src="images/docker_very_small_h.png" border="0"
-						alt="" title="Docker" />
+				<p>
+				    <img valign="top" src="images/docker_very_small_h.png" border="0" alt="" title="Docker" />
 					<br />
 				</p>
 				<ul style="margin-top: 0; list-style-type: disc">
-					<li style="font-size: 100%">
-						<a href="eoulsan-docker-installer.sh">
-							<tt>eoulsan-docker.sh</tt> installer
-						</a>
-						and
-						<a href="installing.html#docker">installation Instructions</a>.
+					<li>
+						<a href="installing.html#docker">Usage instructions</a>
 					</li>
-					<li style="font-size: 100%">
+					<li>
 						<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan Docker page</a>
 					</li>
 				</ul>
@@ -121,8 +106,17 @@
 		  <li>Support for multiple versions of a mapper</li>
 		  <li>Rewritten mapper launcher</li>
 		  <li>New JSON format for step result file</li>
+		  <li>Docker support</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
+		
+		<p>You can now easily run Eoulsan using <a href="http://www.docker.com">Docker</a> with a dedicated 
+		<tt>eoulsan-docker.sh</tt> script that automatically configure your Docker environment like 
+		Eoulsan resources mounts. For more information about Docker and Eoulsan see the 
+		<a href="installing.html#docker">the related Eoulsan documentation</a>.	To install this
+		script just copy and paste the following command line in your terminal: </p>
+		<source>
+$ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 
 		<p>Only few Eoulsan modes are currently working with the current version. The following table summarize the status of each mode:</p>
 		<table>
