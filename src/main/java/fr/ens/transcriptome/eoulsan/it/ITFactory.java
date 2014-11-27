@@ -158,8 +158,7 @@ public class ITFactory {
         return new Object[0];
 
       // Initialize ITSuite
-      ITSuite.createInstance(testsCount);
-      ITSuite.getInstance().setDebugEnable(
+      ITSuite.getInstance(testsCount).setDebugEnabled(
           Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
 
       // Return all tests
@@ -499,15 +498,6 @@ public class ITFactory {
    */
   public static String getOutputTestDirectoryPath() {
     return outputTestsDirectoryPath;
-  }
-
-  /**
-   * Get instance on ITSuite object.
-   * @return instance of ITSuite object
-   * @throws EoulsanException if an instance doesn't exist
-   */
-  public static ITSuite getItSuite() throws EoulsanException {
-    return ITSuite.getInstance();
   }
 
   //
