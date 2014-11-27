@@ -436,7 +436,7 @@
       @import url("$relativePath/css/site.css");
     </style>
     <link rel="stylesheet" href="$relativePath/css/print.css" type="text/css" media="print" />
-    <link rel="icon" type="image/vnd.microsoft.icon" href="$relativePath/favicon.ico" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="$relativePath/images/favicon.ico" />
     <link rel="alternate" type="application/rss+xml" title="@@@APPNAME@@@ updates" href="@@@APPNAMEMIN@@@.rss" />
 #foreach( $author in $authors )
       <meta name="author" content="$author" />
