@@ -10,7 +10,7 @@
 	<description>
 		A pipeline for NGS analysis.
 	</description>
-	<url>http://transcriptome.ens.fr/eoulsan</url>
+	<url>http://transcriptome.ens.fr/eoulsan2</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
