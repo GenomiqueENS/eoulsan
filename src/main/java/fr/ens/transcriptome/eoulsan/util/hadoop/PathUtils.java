@@ -608,7 +608,7 @@ public final class PathUtils {
       throw new NullPointerException("Configuration is null");
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDir())
+    if (!fs.getFileStatus(dir).isDirectory())
       throw new IOException("Directory path is not a directory: " + dir);
 
     final FileStatus[] filesStatus =
@@ -663,7 +663,7 @@ public final class PathUtils {
       throw new NullPointerException("Configuration is null");
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDir())
+    if (!fs.getFileStatus(dir).isDirectory())
       throw new IOException("Directory path is not a directory: " + dir);
 
     final FileStatus[] filesStatus =
@@ -799,7 +799,7 @@ public final class PathUtils {
       // FileStatus contents[] = srcFS.listStatus(srcDir);
       // for (int i = 0; i < contents.length; i++) {
       for (Path p : paths)
-        if (!srcFs.getFileStatus(p).isDir()) {
+        if (!srcFs.getFileStatus(p).isDirectory()) {
           InputStream in = srcFs.open(p);
           try {
             IOUtils.copyBytes(in, out, conf, false);
@@ -862,7 +862,7 @@ public final class PathUtils {
 
     final FileSystem fs = directory.getFileSystem(conf);
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException("The "
           + msgFileType + " is not a directory: " + directory);
   }
@@ -885,7 +885,7 @@ public final class PathUtils {
     final FileSystem fs = directory.getFileSystem(conf);
 
     try {
-      return fs.getFileStatus(directory).isDir();
+      return fs.getFileStatus(directory).isDirectory();
     } catch (FileNotFoundException e) {
       return false;
     }
@@ -943,7 +943,7 @@ public final class PathUtils {
 
     final FileSystem fs = file.getFileSystem(conf);
 
-    if (!fs.isFile(file) && !fs.getFileStatus(file).isDir())
+    if (!fs.isFile(file) && !fs.getFileStatus(file).isDirectory())
       throw new IOException("The "
           + msgFileType + " is  not a standard file or a directory: " + file);
   }

@@ -98,7 +98,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
     if (ct != null)
       result.setContentEncoding(ct.getContentEncoding());
 
-    if (status.isDir())
+    if (status.isDirectory())
       result.setDirectory(true);
 
     return result;

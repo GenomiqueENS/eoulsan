@@ -79,7 +79,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final FileStatus fStatus = fs.getFileStatus(path);
 
-    if (fStatus.isDir()) {
+    if (fStatus.isDirectory()) {
 
       final List<Path> paths = getPathToConcat(fs, path);
 
@@ -200,7 +200,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     if (!fs.exists(path))
       throw new FileNotFoundException("File not found: " + file);
 
-    if (!fileStatus.isDir())
+    if (!fileStatus.isDirectory())
       throw new IOException("The file is not a directory: " + file);
 
     // List directory

@@ -241,6 +241,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       }
     }
 
+    @SuppressWarnings("deprecation")
     public void destroy() {
 
       if (this.process != null) {
