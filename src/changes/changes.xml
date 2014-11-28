@@ -572,6 +572,10 @@ of reads that reject each filter like in local mode.
                 Various fixes in  the workflow engine when use skipped steps.
             </action>
 
+            <action dev="jourdren" type="fix">
+                Fix createdesign bug when trying to discover the format of the input files.
+            </action>
+
             <action dev="jourdren" type="add">
                 Add a new sam2bam step. This new step currently only works in local mode.
             </action>
@@ -610,6 +614,18 @@ of reads that reject each filter like in local mode.
 
             <action dev="sperrin" type="update">
                 Add several enhancements to the Eoulsan integration tests engine.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Update of the CSS of the website, and update the main page of the website (e.g. add a screencast).
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a dedicated eoulsan-docker.sh script that automatically configure Docker environment like Eoulsan resources mounts.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Eoulsan now use Maven 3 for building binaries and website.
             </action>
 
          </release>
