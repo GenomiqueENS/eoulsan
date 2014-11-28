@@ -580,10 +580,10 @@ public final class CasavaDesignUtil {
    */
   public static List<String> parseTabulatedDesignLine(final String line) {
 
-    if (s == null)
+    if (line == null)
       return null;
 
-    return Arrays.asList(s.split("\t"));
+    return Arrays.asList(line.split("\t"));
   }
 
   /**
