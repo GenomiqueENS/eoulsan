@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -241,8 +242,8 @@ public class ITFactory {
    */
   private List<IT> collectTests() throws EoulsanException, IOException {
 
-    final List<IT> tests = Lists.newArrayList();
-    final List<File> testsToExecuteDirectories = Lists.newArrayList();
+    final List<IT> tests = new ArrayList<>();
+    final List<File> testsToExecuteDirectories = new ArrayList<>();
 
     // Collect tests from a file with names tests
     testsToExecuteDirectories.addAll(readTestListFile());
@@ -302,7 +303,7 @@ public class ITFactory {
    */
   private List<File> readTestListFile() throws IOException {
 
-    final List<File> result = Lists.newArrayList();
+    final List<File> result = new ArrayList<>();
 
     if (this.selectedTestsFile == null) {
       return Collections.emptyList();

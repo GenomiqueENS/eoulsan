@@ -36,12 +36,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -71,8 +71,8 @@ public class TaskContext implements StepContext, Serializable {
   private String contextName;
   private final AbstractWorkflowStep step;
 
-  private final Map<String, Data> inputData = Maps.newHashMap();
-  private final Map<String, AbstractData> outputData = Maps.newHashMap();
+  private final Map<String, Data> inputData = new HashMap<>();
+  private final Map<String, AbstractData> outputData = new HashMap<>();
 
   //
   // Getters

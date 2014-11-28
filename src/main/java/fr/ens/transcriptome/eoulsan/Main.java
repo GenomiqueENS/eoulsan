@@ -30,6 +30,7 @@ import static java.util.Collections.unmodifiableList;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.actions.Action;
 import fr.ens.transcriptome.eoulsan.actions.ActionService;
@@ -427,7 +427,7 @@ public abstract class Main {
                 ? "(no startup script)" : getLaunchScriptPath()));
 
     // Command line arguments
-    final List<String> args = Lists.newArrayList();
+    final List<String> args = new ArrayList<>();
     for (String a : getArgs())
       if (a.indexOf(' ') != -1)
         args.add("\"" + a + "\"");

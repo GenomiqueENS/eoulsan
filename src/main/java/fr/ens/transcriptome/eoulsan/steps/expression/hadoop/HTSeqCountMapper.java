@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,6 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -84,7 +84,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
       + ".expression.no.ambiguous.cases";
 
   private GenomicArray<String> features = new GenomicArray<String>();
-  private Map<String, Integer> counts = Utils.newHashMap();
+  private Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
   private StrandUsage stranded;

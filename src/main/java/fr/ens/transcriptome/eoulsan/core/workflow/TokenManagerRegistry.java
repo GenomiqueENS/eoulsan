@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 /**
  * This class store all the TokenManager instances.
@@ -38,7 +38,7 @@ public class TokenManagerRegistry {
 
   private static TokenManagerRegistry singleton;
 
-  private Map<AbstractWorkflowStep, TokenManager> map = Maps.newHashMap();
+  private Map<AbstractWorkflowStep, TokenManager> map = new HashMap<>();
 
   /**
    * Get the requested TokenManager.

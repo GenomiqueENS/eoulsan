@@ -30,11 +30,11 @@ import static com.google.common.collect.Multimaps.synchronizedMultimap;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.synchronizedMap;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
@@ -477,9 +477,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     this.runningContexts = synchronizedMultimap(mm2);
     this.doneContexts = synchronizedMultimap(mm3);
 
-    final Map<Integer, WorkflowStep> m1 = Maps.newHashMap();
-    final Map<WorkflowStep, WorkflowStepStatus> m2 = Maps.newHashMap();
-    final Map<WorkflowStep, WorkflowStepResult> m3 = Maps.newHashMap();
+    final Map<Integer, WorkflowStep> m1 = new HashMap<>();
+    final Map<WorkflowStep, WorkflowStepStatus> m2 = new HashMap<>();
+    final Map<WorkflowStep, WorkflowStepResult> m3 = new HashMap<>();
 
     this.contexts = synchronizedMap(m1);
     this.status = synchronizedMap(m2);

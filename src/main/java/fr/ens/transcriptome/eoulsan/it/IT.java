@@ -41,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -318,7 +319,7 @@ public class IT {
    */
   private List<String> extractEnvironmentVariables() {
 
-    List<String> envp = Lists.newArrayList();
+    List<String> envp = new ArrayList<>();
 
     // Add environment properties
     for (Map.Entry<String, String> e : System.getenv().entrySet())

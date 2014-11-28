@@ -32,7 +32,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,15 +153,6 @@ public class Utils {
 
   /**
    * Create an ArrayList Object.
-   * @return a new ArrayList object
-   */
-  public static <E> List<E> newArrayList() {
-
-    return new ArrayList<E>();
-  }
-
-  /**
-   * Create an ArrayList Object.
    * @param elements to add at the creation of the list
    * @return a new ArrayList object
    */
@@ -173,39 +163,12 @@ public class Utils {
 
   /**
    * Create a HashSet Object.
-   * @return a new HashSet object
-   */
-  public static <E> HashSet<E> newHashSet() {
-
-    return new HashSet<E>();
-  }
-
-  /**
-   * Create a HashSet Object.
    * @param elements to add at the creation of the set
    * @return a new HashSet object
    */
   public static <E> HashSet<E> newHashSet(final Collection<? extends E> elements) {
 
     return new HashSet<E>(elements);
-  }
-
-  /**
-   * Create a HashMap Object.
-   * @return a new HashMap object
-   */
-  public static <K, V> Map<K, V> newHashMap() {
-
-    return new HashMap<K, V>();
-  }
-
-  /**
-   * Create a LinkedHashMap Object.
-   * @return a new HashMap object
-   */
-  public static <K, V> Map<K, V> newLinkedHashMap() {
-
-    return new LinkedHashMap<K, V>();
   }
 
   /**

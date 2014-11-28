@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -48,7 +48,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   private final BufferedReader reader;
   private boolean endStream;
 
-  private static final Charset CHARSET = Charsets.ISO_8859_1;
+  private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
   private final StringBuilder sb = new StringBuilder();
 
   protected List<String> transform(final String s) {
@@ -165,7 +165,8 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     super(in);
     this.reader =
-        new BufferedReader(new InputStreamReader(this.in, Charsets.ISO_8859_1));
+        new BufferedReader(new InputStreamReader(this.in,
+            StandardCharsets.ISO_8859_1));
 
   }
 

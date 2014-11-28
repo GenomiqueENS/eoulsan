@@ -26,10 +26,11 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -114,8 +115,8 @@ public class DesignStep extends AbstractStep {
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
-    final Set<DataFile> files = Sets.newHashSet();
-    final Set<String> dataNames = Sets.newHashSet();
+    final Set<DataFile> files = new HashSet<>();
+    final Set<String> dataNames = new HashSet<>();
 
     for (Sample sample : this.design.getSamples()) {
 
@@ -186,7 +187,7 @@ public class DesignStep extends AbstractStep {
     checkNotNull(sample, "sample argument cannot be null");
     checkNotNull(port, "port argument cannot be null");
 
-    final List<DataFile> result = Lists.newArrayList();
+    final List<DataFile> result = new ArrayList<>();
 
     // Get the design field name for the port
     String fieldName = null;

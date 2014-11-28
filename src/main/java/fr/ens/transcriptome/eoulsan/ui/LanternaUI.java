@@ -27,9 +27,9 @@ package fr.ens.transcriptome.eoulsan.ui;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.Terminal.Color;
@@ -50,11 +50,11 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   private Workflow workflow;
-  private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
+  private final Map<WorkflowStep, Double> steps = new HashMap<>();
   private UnixTerminal terminal;
   private TerminalSize terminalSize;
 
-  private final Map<WorkflowStep, Integer> stepLines = Maps.newHashMap();
+  private final Map<WorkflowStep, Integer> stepLines = new HashMap<>();
   private int lineCount;
 
   //

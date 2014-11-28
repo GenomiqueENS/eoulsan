@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -459,7 +460,7 @@ public enum FastqFormat {
         if (c < format.getCharMin() || c > format.getCharMax()) {
 
           if (toRemove == null)
-            toRemove = newHashSet();
+            toRemove = new HashSet<>();
           toRemove.add(format);
         }
       }

@@ -24,9 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -42,8 +41,8 @@ public class OutputPortsBuilder {
   /** Default single output port name. */
   public static final String DEFAULT_SINGLE_OUTPUT_PORT_NAME = "output";
 
-  private Set<OutputPort> result = Sets.newHashSet();
-  private Set<String> portNames = Sets.newHashSet();
+  private Set<OutputPort> result = new HashSet<>();
+  private Set<String> portNames = new HashSet<>();
 
   /**
    * Add an output port.

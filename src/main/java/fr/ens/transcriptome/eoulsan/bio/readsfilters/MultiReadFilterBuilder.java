@@ -25,15 +25,16 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This builder allow to create a MultiReadFilter object.
@@ -42,10 +43,10 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class MultiReadFilterBuilder {
 
-  private final Map<String, ReadFilter> mapFilters = newHashMap();
-  private final List<ReadFilter> listFilter = Utils.newArrayList();
+  private final Map<String, ReadFilter> mapFilters = new HashMap<>();
+  private final List<ReadFilter> listFilter = new ArrayList<>();
 
-  private final Map<String, String> mapParameters = Utils.newLinkedHashMap();
+  private final Map<String, String> mapParameters = new LinkedHashMap<>();
 
   /**
    * Add a parameter to the builder

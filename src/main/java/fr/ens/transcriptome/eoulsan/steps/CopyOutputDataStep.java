@@ -26,11 +26,11 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -65,8 +65,8 @@ public class CopyOutputDataStep extends AbstractStep {
   public static final String PORTS_PARAMETER = "ports";
   public static final String FORMATS_PARAMETER = "formats";
 
-  private List<String> portNames = Lists.newArrayList();
-  private List<DataFormat> formats = Lists.newArrayList();
+  private List<String> portNames = new ArrayList<>();
+  private List<DataFormat> formats = new ArrayList<>();
 
   @Override
   public String getName() {
@@ -199,7 +199,7 @@ public class CopyOutputDataStep extends AbstractStep {
     } else {
 
       final int count = inData.getDataFileCount();
-      final List<DataFile> outFiles = Lists.newArrayList();
+      final List<DataFile> outFiles = new ArrayList<>();
 
       // Handle multi file format like fastq
       for (int i = 0; i < count; i++) {

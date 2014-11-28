@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.ui;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Strings;
@@ -45,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 public class BasicUI extends AbstractUI {
 
   private Workflow workflow;
-  private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
+  private final Map<WorkflowStep, Double> steps = new HashMap<>();
 
   private int lastMessageLength = 0;
 

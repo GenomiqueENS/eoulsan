@@ -48,17 +48,13 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
-  /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
-
   private long end;
   private boolean stillInChunk = true;
 
   private FSDataInputStream fsin;
   private DataOutputBuffer buffer = new DataOutputBuffer();
 
-  private byte[] endTag = "\n>".getBytes(Globals.DEFAULT_FILE_ENCODING);
+  private byte[] endTag = "\n>".getBytes(Globals.DEFAULT_CHARSET);
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 
@@ -97,9 +93,13 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
     // If start of the file, ignore first '>'
     if (startPos == 0)
-      data = new String(buffer.getData(), 1, buffer.getLength(), CHARSET);
+      data =
+          new String(buffer.getData(), 1, buffer.getLength(),
+              Globals.DEFAULT_CHARSET);
     else
-      data = new String(buffer.getData(), 0, buffer.getLength(), CHARSET);
+      data =
+          new String(buffer.getData(), 0, buffer.getLength(),
+              Globals.DEFAULT_CHARSET);
 
     final String[] lines = PATTERN.split(data);
 

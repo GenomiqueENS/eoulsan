@@ -26,11 +26,11 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.amazonaws.services.ec2.model.InstanceType;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -178,7 +178,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     sb.append(this.logPathname);
 
     // Command arguments
-    final List<String> eoulsanArgsList = Lists.newArrayList();
+    final List<String> eoulsanArgsList = new ArrayList<>();
     eoulsanArgsList.add(ExecJarHadoopAction.ACTION_NAME);
     eoulsanArgsList.add("-p");
     eoulsanArgsList.add(Long.toString(context.getContextCreationTime()));

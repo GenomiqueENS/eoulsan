@@ -9,10 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.Data;
@@ -32,7 +31,7 @@ public class DataMetadataStorage {
   private static DataMetadataStorage singleton;
 
   private final DataFile metadataFile;
-  private final Map<String, Map<String, String>> metadata = Maps.newHashMap();
+  private final Map<String, Map<String, String>> metadata = new HashMap<>();
 
   /**
    * Set the metdata of a data from the metadata storage.
@@ -98,7 +97,7 @@ public class DataMetadataStorage {
     for (DataFile file : files) {
 
       final String filename = file.getName();
-      final Map<String, String> newEntries = Maps.newHashMap();
+      final Map<String, String> newEntries = new HashMap<>();
 
       final StringBuilder sb = new StringBuilder();
       sb.append(filename);
@@ -160,7 +159,7 @@ public class DataMetadataStorage {
         if (fields.length % 2 != 0) {
 
           final String filename = fields[0];
-          final Map<String, String> entries = Maps.newHashMap();
+          final Map<String, String> entries = new HashMap<>();
           this.metadata.put(filename, entries);
 
           for (int i = 1; i < fields.length; i += 2) {

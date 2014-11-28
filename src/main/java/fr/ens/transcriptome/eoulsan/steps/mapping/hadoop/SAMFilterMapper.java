@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
@@ -32,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_A
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
@@ -41,7 +41,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -66,7 +65,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
 
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
-  private List<String> idFields = newArrayList();
+  private List<String> idFields = new ArrayList<>();
 
   private String counterGroup;
 
@@ -202,7 +201,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     if (this.headers == null)
-      this.headers = Lists.newArrayList();
+      this.headers = new ArrayList<>();
 
     this.headers.add(line);
 

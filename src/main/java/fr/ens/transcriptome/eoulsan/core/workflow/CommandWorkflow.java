@@ -33,14 +33,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -77,7 +77,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   private final List<CommandWorkflowStep> steps =
       new ArrayList<CommandWorkflowStep>();
-  private Set<String> stepsIds = Sets.newHashSet();
+  private Set<String> stepsIds = new HashSet<>();
 
   private final CommandWorkflowModel workflowCommand;
 
@@ -369,7 +369,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     final String stepName = CopyInputDataStep.STEP_NAME;
 
     // Search a non used step id
-    final Set<String> stepsIds = Sets.newHashSet();
+    final Set<String> stepsIds = new HashSet<>();
     for (WorkflowStep s : workflow.getSteps())
       stepsIds.add(s.getId());
     int i = 1;
@@ -391,7 +391,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       comp = outputCompressionAllowed.iterator().next();
 
     // Set parameters
-    final Set<Parameter> parameters = Sets.newHashSet();
+    final Set<Parameter> parameters = new HashSet<>();
     parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, port
         .getFormat().getName()));
     parameters.add(new Parameter(
@@ -423,7 +423,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     final String stepName = CopyOutputDataStep.STEP_NAME;
 
     // Search a non used step id
-    final Set<String> stepsIds = Sets.newHashSet();
+    final Set<String> stepsIds = new HashSet<>();
     for (WorkflowStep s : workflow.getSteps())
       stepsIds.add(s.getId());
     int i = 1;
@@ -435,15 +435,15 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     } while (stepsIds.contains(stepId));
 
-    List<String> portsList = Lists.newArrayList();
-    List<String> formatsList = Lists.newArrayList();
+    List<String> portsList = new ArrayList<>();
+    List<String> formatsList = new ArrayList<>();
     for (WorkflowOutputPort port : outputPorts) {
       portsList.add(port.getName());
       formatsList.add(port.getFormat().getName());
     }
 
     // Set parameters
-    final Set<Parameter> parameters = Sets.newHashSet();
+    final Set<Parameter> parameters = new HashSet<>();
     parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner.on(
         ',').join(portsList)));
     parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER, Joiner
@@ -467,7 +467,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void addManualDependencies() throws EoulsanException {
 
     // Create a map with the name of the steps
-    final Map<String, CommandWorkflowStep> stepsMap = Maps.newHashMap();
+    final Map<String, CommandWorkflowStep> stepsMap = new HashMap<>();
     for (CommandWorkflowStep step : this.steps)
       stepsMap.put(step.getId(), step);
 
@@ -517,8 +517,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void searchDependencies() throws EoulsanException {
 
-    final Map<DataFormat, CommandWorkflowStep> generatorAdded =
-        Maps.newHashMap();
+    final Map<DataFormat, CommandWorkflowStep> generatorAdded = new HashMap<>();
     searchDependencies(generatorAdded);
   }
 
@@ -640,7 +639,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
 
     // Add dependencies for terminal steps
-    final List<CommandWorkflowStep> terminalSteps = Lists.newArrayList();
+    final List<CommandWorkflowStep> terminalSteps = new ArrayList<>();
     for (CommandWorkflowStep step : this.steps) {
 
       for (CommandWorkflowStep terminalStep : terminalSteps)
@@ -731,9 +730,9 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private WorkflowFiles listStepsFiles(final WorkflowStep originStep) {
 
-    // final Set<WorkflowStepOutputDataFile> inFiles = Sets.newHashSet();
-    // final Set<WorkflowStepOutputDataFile> reusedFiles = Sets.newHashSet();
-    // final Set<WorkflowStepOutputDataFile> outFiles = Sets.newHashSet();
+    // final Set<WorkflowStepOutputDataFile> inFiles = new HashSet<>();
+    // final Set<WorkflowStepOutputDataFile> reusedFiles = new HashSet<>();
+    // final Set<WorkflowStepOutputDataFile> outFiles = new HashSet<>();
     //
     // boolean firstStepFound = false;
     //
@@ -772,7 +771,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     //
     // files = Collections.singletonList(f);
     // } else {
-    // files = Lists.newArrayList();
+    // files = new ArrayList<>();
     // final int count =
     // step.getInputPortData(inputPort.getName()).getDataFileCount(false);
     //

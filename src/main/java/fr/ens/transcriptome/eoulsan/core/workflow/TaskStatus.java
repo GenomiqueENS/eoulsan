@@ -30,11 +30,11 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -51,7 +51,7 @@ public class TaskStatus implements StepStatus {
   private final WorkflowStepStatus status;
 
   private String message;
-  private final Map<String, Long> counters = Maps.newHashMap();
+  private final Map<String, Long> counters = new HashMap<>();
   private String taskDescription;
   private double progress;
 

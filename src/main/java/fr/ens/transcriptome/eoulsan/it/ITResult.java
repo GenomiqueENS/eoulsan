@@ -33,12 +33,12 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -296,7 +296,7 @@ public class ITResult {
    */
   public ITResult(final IT it) {
     this.it = it;
-    this.commandsResults = Lists.newArrayList();
+    this.commandsResults = new ArrayList<>();
     this.comparisonsResults = Collections.emptySet();
   }
 

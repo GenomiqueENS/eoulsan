@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +45,6 @@ import java.util.Set;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -73,12 +74,11 @@ public class WorkflowStepResult {
   private long duration;
   private Set<Parameter> parameters;
 
-  private final Map<Integer, String> taskNames = Maps.newHashMap();
-  private final Map<Integer, Map<String, Long>> taskCounters = Maps
-      .newHashMap();
-  private final Map<Integer, String> taskDescriptions = Maps.newHashMap();
-  private final Map<Integer, String> taskMessages = Maps.newHashMap();
-  private final Map<String, Long> stepCounters = Maps.newHashMap();
+  private final Map<Integer, String> taskNames = new HashMap<>();
+  private final Map<Integer, Map<String, Long>> taskCounters = new HashMap<>();
+  private final Map<Integer, String> taskDescriptions = new HashMap<>();
+  private final Map<Integer, String> taskMessages = new HashMap<>();
+  private final Map<String, Long> stepCounters = new HashMap<>();
   private String stepMessage;
 
   private boolean success = true;
@@ -450,7 +450,7 @@ public class WorkflowStepResult {
     if (parameters == null)
       return Collections.emptyMap();
 
-    final Map<String, String> result = Maps.newLinkedHashMap();
+    final Map<String, String> result = new LinkedHashMap<>();
     for (Parameter p : parameters)
       result.put(p.getName(), p.getStringValue());
 

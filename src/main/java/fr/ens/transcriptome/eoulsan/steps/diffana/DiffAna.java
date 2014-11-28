@@ -30,13 +30,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.rosuda.REngine.REngineException;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -229,7 +227,8 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  public void run(final StepContext context, final Data data) throws EoulsanException {
+  public void run(final StepContext context, final Data data)
+      throws EoulsanException {
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Differential analysis : Rserve mode");
@@ -248,12 +247,12 @@ public class DiffAna extends Normalization {
   protected String generateScript(final List<Sample> experimentSamplesList,
       final StepContext context) throws EoulsanException {
 
-    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
+    final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 
-    final List<Integer> rSampleIds = Lists.newArrayList();
-    final List<String> rSampleNames = Lists.newArrayList();
-    final List<String> rCondNames = Lists.newArrayList();
-    final List<String> rRepTechGroup = Lists.newArrayList();
+    final List<Integer> rSampleIds = new ArrayList<>();
+    final List<String> rSampleNames = new ArrayList<>();
+    final List<String> rCondNames = new ArrayList<>();
+    final List<String> rRepTechGroup = new ArrayList<>();
     int i = 0;
 
     // Get samples ids, conditions names/indexes and repTechGoups
@@ -276,7 +275,7 @@ public class DiffAna extends Normalization {
 
       final List<Integer> index;
       if (!conditionsMap.containsKey(condition)) {
-        index = Lists.newArrayList();
+        index = new ArrayList<>();
         conditionsMap.put(condition, index);
       } else {
         index = conditionsMap.get(condition);

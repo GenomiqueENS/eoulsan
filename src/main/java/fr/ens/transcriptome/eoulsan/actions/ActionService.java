@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
@@ -81,7 +81,7 @@ public class ActionService extends ServiceNameLoader<Action> {
    */
   public List<Action> getActions() {
 
-    final List<Action> result = Lists.newArrayList();
+    final List<Action> result = new ArrayList<>();
 
     for (String actionName : service.getServiceClasses().keySet())
       result.add(newService(actionName));

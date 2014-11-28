@@ -25,12 +25,11 @@
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
@@ -90,7 +89,7 @@ public class HadoopUploadStep extends UploadStep {
       throw new NullPointerException("The files argument is null.");
 
     // Process to local copies
-    for (Map.Entry<DataFile, DataFile> e : Maps.newHashMap(files).entrySet()) {
+    for (Map.Entry<DataFile, DataFile> e : new HashMap<>(files).entrySet()) {
 
       final DataFile src = e.getKey();
       final DataFile dest = e.getValue();

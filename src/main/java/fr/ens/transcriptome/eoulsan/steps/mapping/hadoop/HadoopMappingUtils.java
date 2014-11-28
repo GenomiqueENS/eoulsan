@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 
 /**
  * This class contains utility methods for the Hadoop mapping package classes.
@@ -76,7 +76,7 @@ public class HadoopMappingUtils {
   static Map<String, String> jobConfToParameters(final Configuration jobConf,
       final String prefix) {
 
-    final Map<String, String> result = Maps.newLinkedHashMap();
+    final Map<String, String> result = new LinkedHashMap<>();
 
     if (jobConf == null || prefix == null)
       return result;

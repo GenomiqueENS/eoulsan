@@ -32,7 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +43,6 @@ import org.rosuda.REngine.REngineException;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -116,7 +117,7 @@ public class Normalization {
    */
   protected boolean isTechnicalReplicates(List<String> rRepTechGroup) {
 
-    Map<String, String> rtgMap = Maps.newHashMap();
+    Map<String, String> rtgMap = new HashMap<>();
 
     for (String repTechGroup : rRepTechGroup) {
 
@@ -234,7 +235,7 @@ public class Normalization {
 
     List<Sample> samples = this.design.getSamples();
     // Create design HashMap
-    Map<String, List<Sample>> experimentMap = Maps.newHashMap();
+    Map<String, List<Sample>> experimentMap = new HashMap<>();
 
     for (Sample s : samples) {
       String expName = s.getMetadata().getExperiment();
@@ -324,12 +325,12 @@ public class Normalization {
   protected String generateScript(final List<Sample> experimentSamplesList,
       final StepContext context) throws EoulsanException {
 
-    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
+    final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 
-    final List<Integer> rSampleIds = Lists.newArrayList();
-    final List<String> rSampleNames = Lists.newArrayList();
-    final List<String> rCondNames = Lists.newArrayList();
-    List<String> rRepTechGroup = Lists.newArrayList();
+    final List<Integer> rSampleIds = new ArrayList<>();
+    final List<String> rSampleNames = new ArrayList<>();
+    final List<String> rCondNames = new ArrayList<>();
+    List<String> rRepTechGroup = new ArrayList<>();
     int i = 0;
 
     // Get samples ids, conditions names/indexes and repTechGoups
@@ -352,7 +353,7 @@ public class Normalization {
 
       final List<Integer> index;
       if (!conditionsMap.containsKey(condition)) {
-        index = Lists.newArrayList();
+        index = new ArrayList<>();
         conditionsMap.put(condition, index);
       } else {
         index = conditionsMap.get(condition);
@@ -644,7 +645,7 @@ public class Normalization {
       List<String> rCondNames) throws EoulsanException {
 
     // Check repTechGroup field coherence
-    Map<String, String> condRepTGMap = Maps.newHashMap();
+    Map<String, String> condRepTGMap = new HashMap<>();
     for (int i = 0; i < rRepTechGroup.size(); i++) {
 
       String repTechGroup = rRepTechGroup.get(i);
@@ -702,7 +703,7 @@ public class Normalization {
    */
   private boolean isEnoughRepTechGroup(List<String> rRepTechGroup) {
 
-    List<String> repTechGroupMap = Lists.newArrayList();
+    List<String> repTechGroupMap = new ArrayList<>();
     for (String r : rRepTechGroup) {
 
       if (!repTechGroupMap.contains(r))

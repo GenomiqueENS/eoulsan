@@ -27,6 +27,9 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,10 +37,6 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -147,7 +146,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
             + inPath);
 
       // Map with files to download
-      final Map<DataFile, DataFile> files = Maps.newHashMap();
+      final Map<DataFile, DataFile> files = new HashMap<>();
 
       // Get the output file of the workflow
       final Set<WorkflowStepOutputDataFile> outFiles =
@@ -181,8 +180,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
         } else {
 
           // Use distributed copy if output is not on local FileSystem
-          final Map<DataFile, DataFile> filesToTranscode = Maps.newHashMap();
-          final Map<DataFile, DataFile> filesToDistCp = Maps.newHashMap();
+          final Map<DataFile, DataFile> filesToTranscode = new HashMap<>();
+          final Map<DataFile, DataFile> filesToDistCp = new HashMap<>();
 
           // Test if temporary file is needed
           for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
@@ -254,7 +253,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       final Map<DataFile, DataFile> files) throws EoulsanException {
 
     final DistCp distcp = new DistCp(conf);
-    final Map<DataFile, Set<DataFile>> toCopy = Maps.newHashMap();
+    final Map<DataFile, Set<DataFile>> toCopy = new HashMap<>();
 
     // Create a map of file to copy with destination directory as key
     for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
@@ -274,7 +273,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       if (toCopy.containsKey(destDir)) {
         inputFiles = toCopy.get(destDir);
       } else {
-        inputFiles = Sets.newHashSet();
+        inputFiles = new HashSet<>();
         toCopy.put(destDir, inputFiles);
       }
 
@@ -284,7 +283,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
     // For each desitination run distcp
     for (Map.Entry<DataFile, Set<DataFile>> e : toCopy.entrySet()) {
 
-      final List<String> argsList = Lists.newArrayList();
+      final List<String> argsList = new ArrayList<>();
 
       // Add input files
       for (DataFile f : e.getValue())

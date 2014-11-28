@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.data.storages;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -54,7 +54,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   private static final String INDEX_FILENAME = "genomes_desc_storage.txt";
 
   private final DataFile dir;
-  private Map<String, IndexEntry> entries = newLinkedHashMap();
+  private Map<String, IndexEntry> entries = new LinkedHashMap<>();
   private String lastMD5Computed;
   private DataFile lastGenomeFile;
   private long lastGenomeFileModified;
@@ -108,7 +108,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
 
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_FILE_ENCODING));
+            Globals.DEFAULT_CHARSET));
 
     final Pattern pattern = Pattern.compile("\t");
     String line = null;
@@ -152,7 +152,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     // Create an empty index file
     final BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_FILE_ENCODING));
+            Globals.DEFAULT_CHARSET));
     writer.write("#Genome\tGenomeFileMD5\tGenomeFileLength\n");
 
     for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {

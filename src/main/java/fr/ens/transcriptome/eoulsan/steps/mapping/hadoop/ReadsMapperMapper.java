@@ -23,7 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
@@ -35,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -45,7 +46,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -101,7 +101,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private SequenceReadsMapper mapper;
   private MapperProcess process;
-  private List<String> fields = newArrayList();
+  private List<String> fields = new ArrayList<>();
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
@@ -270,7 +270,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       final ZipEntry e = entries.nextElement();
 
-      hs.putString(e.getName(), Charsets.UTF_8);
+      hs.putString(e.getName(), StandardCharsets.UTF_8);
       hs.putLong(e.getSize());
       hs.putLong(e.getTime());
       hs.putLong(e.getCrc());

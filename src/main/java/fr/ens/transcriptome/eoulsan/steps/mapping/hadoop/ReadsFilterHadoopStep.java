@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,7 +109,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
           CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      final Map<Job, String> jobs = Maps.newHashMap();
+      final Map<Job, String> jobs = new HashMap<>();
       jobs.put(createJobConf(conf, inData, outData, fastqFormat),
           inData.getName());
 

@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.join;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -238,7 +237,7 @@ public class SOAP2SAM {
 
     if (tab.length > 9) {
 
-      final List<String> x = newArrayList();
+      final List<String> x = new ArrayList<>();
 
       for (int i = 10; i < tab.length; i++) {
 

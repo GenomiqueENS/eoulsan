@@ -35,6 +35,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_T
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -87,7 +88,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private DataFile annotationFile;
-  private Map<String, DataFormat> outputFormats = Maps.newHashMap();
+  private Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
   // Step methods
@@ -315,7 +316,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return new String[] { "EnsemblGeneID" };
       }
     };
 

@@ -29,9 +29,8 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 /**
  * This class define a linux info file parser.
@@ -40,7 +39,7 @@ import com.google.common.collect.Maps;
  */
 public abstract class LinuxInfo {
 
-  private Map<String, String> map = Maps.newHashMap();
+  private Map<String, String> map = new HashMap<>();
 
   /**
    * Get the file to parse.

@@ -27,11 +27,10 @@ package fr.ens.transcriptome.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
@@ -46,7 +45,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler {
   private static final int WAIT_SHUTDOWN_MINUTES = 60;
 
   private final PausableThreadPoolExecutor executor;
-  private final List<Future<TaskThread>> threads = Lists.newArrayList();
+  private final List<Future<TaskThread>> threads = new ArrayList<>();
 
   /**
    * Wrapper class around a call to executeTask methods.

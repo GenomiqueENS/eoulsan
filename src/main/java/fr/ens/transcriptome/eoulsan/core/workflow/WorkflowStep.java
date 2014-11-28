@@ -25,9 +25,8 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -76,7 +75,7 @@ public interface WorkflowStep extends Serializable {
      */
     public static Set<String> getAllDefaultStepId() {
 
-      final Set<String> result = Sets.newHashSet();
+      final Set<String> result = new HashSet<>();
 
       for (StepType type : values()) {
 

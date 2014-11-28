@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +46,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Reporter;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * This class defines a wrapper on the HTSeq-count counter.
@@ -126,7 +126,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     final GenomicArray<String> features =
         new GenomicArray<String>(GenomeDescription.load(genomeDescFile.open()));
 
-    final Map<String, Integer> counts = Utils.newHashMap();
+    final Map<String, Integer> counts = new HashMap<>();
 
     final Writer writer = FileUtils.createBufferedWriter(outFile.create());
 

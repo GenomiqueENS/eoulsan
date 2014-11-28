@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
@@ -41,6 +40,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +64,7 @@ public class GenomeDescription {
   private static final String SEQUENCES_COUNT_PREFIX = PREFIX + "sequences";
 
   private String genomeName;
-  private Map<String, Long> sequences = newLinkedHashMap();
+  private Map<String, Long> sequences = new LinkedHashMap<>();
   private String md5Sum;
 
   //
@@ -389,8 +389,7 @@ public class GenomeDescription {
 
         // Update digest with chromosome name
         if (md5Digest != null)
-          md5Digest.update(parsedSeqName
-              .getBytes(Globals.DEFAULT_FILE_ENCODING));
+          md5Digest.update(parsedSeqName.getBytes(Globals.DEFAULT_CHARSET));
 
         lastSeqName = seqName;
         chrSize = 0;
@@ -404,7 +403,7 @@ public class GenomeDescription {
       chrSize += checkBases(sequence, lastSeqName, alphabet);
 
       // Update digest with chromosome sequence
-      md5Digest.update(sequence.getBytes(Globals.DEFAULT_FILE_ENCODING));
+      md5Digest.update(sequence.getBytes(Globals.DEFAULT_CHARSET));
     }
 
     // Add the last sequence

@@ -32,12 +32,13 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 
 /**
@@ -52,8 +53,8 @@ public class WorkflowStepStateObserver implements Serializable {
   private final AbstractWorkflowStep step;
   private StepState stepState;
 
-  private Set<AbstractWorkflowStep> requiredSteps = Sets.newHashSet();
-  private Set<AbstractWorkflowStep> stepsToInform = Sets.newHashSet();
+  private Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
+  private Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
 
   /**
    * Add a dependency.
@@ -162,7 +163,7 @@ public class WorkflowStepStateObserver implements Serializable {
             + step.getNumber() + " " + step.getId()
             + " has the following dependencies: ";
 
-    List<String> list = Lists.newArrayList();
+    List<String> list = new ArrayList<>();
 
     for (AbstractWorkflowStep step : this.requiredSteps) {
       list.add("step #" + step.getNumber() + " " + step.getId());

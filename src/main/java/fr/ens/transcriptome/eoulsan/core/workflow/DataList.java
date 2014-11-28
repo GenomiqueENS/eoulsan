@@ -27,12 +27,12 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -48,7 +48,7 @@ public class DataList extends AbstractData implements Serializable {
 
   private static final long serialVersionUID = -2933515018143805029L;
 
-  private final List<Data> list = Lists.newArrayList();
+  private final List<Data> list = new ArrayList<>();
 
   // Required by the metadata
   private final Design design;

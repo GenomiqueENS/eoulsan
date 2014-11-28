@@ -34,8 +34,11 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +48,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -79,12 +81,12 @@ public class TokenManager implements Runnable {
   private final WorkflowInputPorts inputPorts;
   private final WorkflowOutputPorts outputPorts;
 
-  private Set<Integer> receivedTokens = Sets.newHashSet();
+  private Set<Integer> receivedTokens = new HashSet<>();
   private Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
   private Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
-  private Set<InputPort> closedPorts = Sets.newHashSet();
-  private Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed = Sets
-      .newHashSet();
+  private Set<InputPort> closedPorts = new HashSet<>();
+  private Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
+      new HashSet<>();
 
   private volatile boolean endOfStep;
   private boolean isStarted;
@@ -377,7 +379,7 @@ public class TokenManager implements Runnable {
   private void sendSkipStepTokens() {
 
     // Create a map with the samples
-    final Map<String, Sample> samples = Maps.newHashMap();
+    final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
       samples.put(FileNaming.toValidName(sample.getName()), sample);
     }
@@ -440,14 +442,14 @@ public class TokenManager implements Runnable {
         || !checkIfAllListPortsAreClosed())
       return Collections.emptySet();
 
-    final Set<ImmutableMap<InputPort, Data>> result = Sets.newHashSet();
+    final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
     final List<WorkflowInputPort> portsList =
         Lists.newArrayList(this.inputPorts.iterator());
 
     // First create the lists for Sets.cartesianProduct()
-    final List<Set<CartesianProductEntry>> sets = Lists.newArrayList();
+    final List<Set<CartesianProductEntry>> sets = new ArrayList<>();
     for (WorkflowInputPort port : portsList) {
-      final Set<CartesianProductEntry> s = Sets.newHashSet();
+      final Set<CartesianProductEntry> s = new HashSet<>();
       for (Data d : this.inputTokens.get(port)) {
         s.add(new CartesianProductEntry(port, d));
       }
@@ -482,7 +484,7 @@ public class TokenManager implements Runnable {
     // Design is required by metadata
     final Design design = this.step.getAbstractWorkflow().getDesign();
 
-    final Map<OutputPort, AbstractData> result = Maps.newHashMap();
+    final Map<OutputPort, AbstractData> result = new HashMap<>();
     for (WorkflowOutputPort outputPort : this.outputPorts) {
 
       final AbstractData data;
@@ -506,7 +508,7 @@ public class TokenManager implements Runnable {
    */
   private Set<TaskContext> createContexts(final WorkflowContext workflowContext) {
 
-    final Set<TaskContext> result = Sets.newHashSet();
+    final Set<TaskContext> result = new HashSet<>();
 
     final Set<ImmutableMap<InputPort, Data>> cartesianProductToProcess;
 
@@ -760,7 +762,7 @@ public class TokenManager implements Runnable {
       msg += "no token received";
     } else {
 
-      List<String> list = Lists.newArrayList();
+      List<String> list = new ArrayList<>();
       for (InputPort port : this.inputTokens.keySet()) {
         list.add(port.getName()
             + " (" + port.getFormat().getName() + "): "
@@ -787,7 +789,7 @@ public class TokenManager implements Runnable {
       msg += " no token sent";
     } else {
 
-      List<String> list = Lists.newArrayList();
+      List<String> list = new ArrayList<>();
       for (OutputPort port : this.outputTokens.keySet()) {
         list.add(port.getName()
             + " (" + port.getFormat().getName() + "): "

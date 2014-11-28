@@ -58,7 +58,7 @@ public class FastqRecordReader implements RecordReader<LongWritable, Text> {
   private FSDataInputStream fsin;
   private DataOutputBuffer buffer = new DataOutputBuffer();
 
-  private byte[] endTag = "\n@".getBytes(Globals.DEFAULT_FILE_ENCODING);
+  private byte[] endTag = "\n@".getBytes(Globals.DEFAULT_CHARSET);
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 

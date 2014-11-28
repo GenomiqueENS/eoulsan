@@ -37,10 +37,10 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -63,7 +63,7 @@ public class TaskResult implements StepResult, Serializable {
   private final boolean success;
   private final Throwable exception;
   private final String errorMessage;
-  private final Map<String, Long> counters = Maps.newHashMap();
+  private final Map<String, Long> counters = new HashMap<>();
   private final String taskMessage;
   private final String taskDescription;
 

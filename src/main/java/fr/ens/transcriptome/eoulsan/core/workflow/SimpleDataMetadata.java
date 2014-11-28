@@ -28,10 +28,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 import fr.ens.transcriptome.eoulsan.design.Design;
@@ -47,7 +46,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   private static final long serialVersionUID = -2905676240064559127L;
 
   private final Design design;
-  private final Map<String, String> map = Maps.newHashMap();
+  private final Map<String, String> map = new HashMap<>();
 
   private static final String STRING_TYPE = "value";
   private static final String SAMPLE_NAME_TYPE = "design_sample_name";

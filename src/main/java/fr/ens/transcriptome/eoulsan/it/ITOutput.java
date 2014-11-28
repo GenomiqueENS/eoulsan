@@ -23,10 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
-import static com.google.common.collect.Sets.newHashSet;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -39,14 +35,15 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.io.comparators.BinaryComparator;
@@ -148,7 +145,7 @@ public class ITOutput {
   public final Set<ITOutputComparisonResult> compareTo(
       final ITOutput expectedOutput) throws IOException {
 
-    final Set<ITOutputComparisonResult> results = Sets.newTreeSet();
+    final Set<ITOutputComparisonResult> results = new TreeSet<>();
 
     // Copy list files
     final List<File> allFilesFromTest =
@@ -156,7 +153,7 @@ public class ITOutput {
 
     // Build map filename with files path
     Map<String, File> filesTestedMap =
-        newHashMapWithExpectedSize(this.filesToCompare.size());
+        new HashMap<>(this.filesToCompare.size());
 
     for (File f : this.filesToCompare) {
       filesTestedMap.put(f.getName(), f);
@@ -296,7 +293,7 @@ public class ITOutput {
   private Set<ITOutputComparisonResult> checkAbsenceFileFromPatterns()
       throws IOException {
 
-    final Set<ITOutputComparisonResult> results = Sets.newHashSet();
+    final Set<ITOutputComparisonResult> results = new HashSet<>();
 
     if (this.checkAbsenceFilePatterns == null
         || this.checkAbsenceFilePatterns.length() == 0)
@@ -357,7 +354,7 @@ public class ITOutput {
   private List<File> listingFilesFromPatterns(final Set<PathMatcher> patterns)
       throws IOException {
 
-    final List<File> matchedFiles = Lists.newArrayList();
+    final List<File> matchedFiles = new ArrayList<>();
 
     for (final PathMatcher matcher : patterns) {
 
@@ -411,7 +408,7 @@ public class ITOutput {
     }
 
     // Init collection
-    final Set<PathMatcher> result = newHashSet();
+    final Set<PathMatcher> result = new HashSet<>();
 
     // Parse patterns
     for (String globSyntax : COMMA_SPLITTER.split(patterns)) {
@@ -444,7 +441,7 @@ public class ITOutput {
             + this.filesToCheckExistence.size();
 
     //
-    final Map<File, Boolean> files = Maps.newHashMapWithExpectedSize(size);
+    final Map<File, Boolean> files = new HashMap<>(size);
 
     // Add all files to compare with an comparator object
     for (File f : this.filesToCompareWithComparator) {
@@ -510,7 +507,7 @@ public class ITOutput {
    */
   private static final class FilesComparator {
 
-    private final List<Comparator> comparators = newArrayList();
+    private final List<Comparator> comparators = new ArrayList<>();
     private static final boolean USE_SERIALIZATION_FILE = true;
 
     private File fileA;

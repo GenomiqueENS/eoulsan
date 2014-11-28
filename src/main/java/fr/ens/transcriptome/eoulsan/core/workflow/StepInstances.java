@@ -26,9 +26,8 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
@@ -45,7 +44,7 @@ public class StepInstances {
 
   private static StepInstances instance;
 
-  private final Map<WorkflowStep, Step> steps = Maps.newHashMap();
+  private final Map<WorkflowStep, Step> steps = new HashMap<>();
 
   /**
    * Get a step instance.

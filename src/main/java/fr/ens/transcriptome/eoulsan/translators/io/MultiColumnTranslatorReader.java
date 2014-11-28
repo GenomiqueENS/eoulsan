@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
@@ -132,13 +131,8 @@ public class MultiColumnTranslatorReader {
    */
   public MultiColumnTranslator read() throws EoulsanIOException {
 
-    try {
-      setBufferedReader(new BufferedReader(new InputStreamReader(
-          getInputStream(), Globals.DEFAULT_FILE_ENCODING)));
-    } catch (UnsupportedEncodingException e1) {
-      throw new EoulsanIOException("Unknown encoding: "
-          + Globals.DEFAULT_FILE_ENCODING);
-    }
+    setBufferedReader(new BufferedReader(new InputStreamReader(
+        getInputStream(), Globals.DEFAULT_CHARSET)));
 
     final boolean removeQuotes = isRemoveQuotes();
 

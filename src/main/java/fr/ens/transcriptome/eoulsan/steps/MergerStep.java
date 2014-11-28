@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionType
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +38,6 @@ import java.util.Set;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -115,7 +115,7 @@ public class MergerStep extends AbstractStep {
       });
 
       // Check if two data has the same part number
-      final Set<Integer> partNumbers = Sets.newHashSet();
+      final Set<Integer> partNumbers = new HashSet<>();
       for (Data data : list) {
 
         if (partNumbers.contains(data.getPart())) {
@@ -204,7 +204,7 @@ public class MergerStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    final Set<Parameter> mergerParameters = Sets.newHashSet();
+    final Set<Parameter> mergerParameters = new HashSet<>();
 
     for (Parameter p : stepParameters) {
 

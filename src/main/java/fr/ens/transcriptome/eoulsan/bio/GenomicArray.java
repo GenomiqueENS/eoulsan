@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  */
 public class GenomicArray<T> {
 
-  private Map<String, ChromosomeZones<T>> chromosomes = Utils.newHashMap();
+  private Map<String, ChromosomeZones<T>> chromosomes = new HashMap<>();
 
   /**
    * This class define a zone in a ChromosomeZone object.
@@ -448,7 +449,7 @@ public class GenomicArray<T> {
           final Set<T> r = zone.getValues();
 
           if (result == null)
-            result = Utils.newHashMap();
+            result = new HashMap<>();
 
           if (r != null) {
             result.put(iv, Collections.unmodifiableSet(r));
@@ -573,7 +574,7 @@ public class GenomicArray<T> {
     public Map<GenomicInterval, Set<T>> getEntries(final int start,
         final int stop) {
 
-      final Map<GenomicInterval, Set<T>> result = Utils.newHashMap();
+      final Map<GenomicInterval, Set<T>> result = new HashMap<>();
 
       final Map<GenomicInterval, Set<T>> interPlus =
           this.plus.getEntries(start, stop);
@@ -688,7 +689,6 @@ public class GenomicArray<T> {
     if (gd == null) {
       throw new NullPointerException("gd argument cannot be null");
     }
-
 
     for (String chromosomeName : gd.getSequencesNames())
       addChromosome(chromosomeName);

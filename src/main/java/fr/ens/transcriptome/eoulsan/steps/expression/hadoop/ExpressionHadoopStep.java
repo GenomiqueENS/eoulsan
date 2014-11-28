@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,6 @@ import fr.ens.transcriptome.eoulsan.steps.expression.FinalExpressionTranscriptsC
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
@@ -413,7 +413,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final GenomicArray<String> features = new GenomicArray<String>();
     final GenomeDescription genomeDescription =
         GenomeDescription.load(genomeDescDataFile.open());
-    final Map<String, Integer> counts = Utils.newHashMap();
+    final Map<String, Integer> counts = new HashMap<>();
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
@@ -619,7 +619,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Job, String> jobsRunning = Maps.newHashMap();
+    final Map<Job, String> jobsRunning = new HashMap<>();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -688,7 +688,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Configuration conf = new Configuration(false);
 
     // Create the list of jobs to run
-    final Map<Job, String> jobsRunning = Maps.newHashMap();
+    final Map<Job, String> jobsRunning = new HashMap<>();
 
     try {
       final long startTime = System.currentTimeMillis();

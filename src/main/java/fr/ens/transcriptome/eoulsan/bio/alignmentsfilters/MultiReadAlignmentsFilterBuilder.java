@@ -25,11 +25,11 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,9 +43,9 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadAlignmentsFilterBuilder {
 
-  private final Map<String, ReadAlignmentsFilter> mapFilters = newHashMap();
-  private final List<ReadAlignmentsFilter> listFilter = newArrayList();
-  private final Map<String, String> mapParameters = newLinkedHashMap();
+  private final Map<String, ReadAlignmentsFilter> mapFilters = new HashMap<>();
+  private final List<ReadAlignmentsFilter> listFilter = new ArrayList<>();
+  private final Map<String, String> mapParameters = new LinkedHashMap<>();
 
   /**
    * Add a parameter to the builder

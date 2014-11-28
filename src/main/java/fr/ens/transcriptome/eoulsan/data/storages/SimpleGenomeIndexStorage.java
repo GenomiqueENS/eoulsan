@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.data.storages;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newLinkedHashMap;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -51,11 +51,10 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
- 
   private static final String INDEX_FILENAME = "genomes_index_storage.txt";
 
   private final DataFile dir;
-  private Map<String, IndexEntry> entries = newLinkedHashMap();
+  private Map<String, IndexEntry> entries = new LinkedHashMap<>();
 
   /**
    * This inner class define an entry of the index file.
@@ -128,8 +127,10 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       FileUtils.copy(indexArchive.rawOpen(), entry.file.create());
       this.entries.put(entry.getKey(), entry);
       save();
-      getLogger().info("Successully added "
-          + indexArchive.getName() + " index archive to genome index storage.");
+      getLogger().info(
+          "Successully added "
+              + indexArchive.getName()
+              + " index archive to genome index storage.");
     } catch (IOException e) {
     }
   }
@@ -159,7 +160,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_FILE_ENCODING));
+            Globals.DEFAULT_CHARSET));
 
     final Pattern pattern = Pattern.compile("\t");
     String line = null;
@@ -203,7 +204,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     // Create an empty index file
     final BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_FILE_ENCODING));
+            Globals.DEFAULT_CHARSET));
     writer
         .write("#Genome\tGenomeMD5\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\n");
 
@@ -281,8 +282,9 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     this.dir = dir;
     load();
 
-    getLogger().info("Genome index storage found."
-        + this.entries.size() + " entries in : " + dir.getSource());
+    getLogger().info(
+        "Genome index storage found."
+            + this.entries.size() + " entries in : " + dir.getSource());
   }
 
 }

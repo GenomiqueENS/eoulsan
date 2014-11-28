@@ -24,8 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
@@ -39,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadFilter implements ReadFilter {
 
-  private final List<ReadFilter> list = newArrayList();
+  private final List<ReadFilter> list = new ArrayList<>();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
 
@@ -123,7 +122,7 @@ public class MultiReadFilter implements ReadFilter {
    */
   public List<String> getFilterNames() {
 
-    final List<String> result = newArrayList();
+    final List<String> result = new ArrayList<>();
     for (ReadFilter f : this.list)
       result.add(f.getName());
 

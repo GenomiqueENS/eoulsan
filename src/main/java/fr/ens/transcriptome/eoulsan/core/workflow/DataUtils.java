@@ -29,11 +29,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.workflow.FileNaming.toValidName;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -144,7 +144,7 @@ public final class DataUtils {
     }
 
     // Get the fields to not use (fields related to files)
-    final Set<String> fieldsToNotUse = Sets.newHashSet();
+    final Set<String> fieldsToNotUse = new HashSet<>();
     for (DataFormat format : DataFormatRegistry.getInstance().getAllFormats()) {
       if (format.getDesignFieldName() != null) {
         fieldsToNotUse.add(format.getDesignFieldName());

@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
@@ -125,7 +124,7 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hashCode(this.transcript, baseNotCovered, alignementCount,
+      return Objects.hash(this.transcript, baseNotCovered, alignementCount,
           ratio);
     }
 

@@ -38,8 +38,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.io.PathConcatInputStream;
@@ -115,7 +113,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     });
 
     // Create final result
-    final List<Path> result = Lists.newArrayListWithCapacity(files.length);
+    final List<Path> result = new ArrayList<>(files.length);
     for (FileStatus file : files) {
       result.add(file.getPath());
     }

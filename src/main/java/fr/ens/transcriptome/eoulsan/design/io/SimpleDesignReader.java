@@ -62,7 +62,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     try {
 
       setBufferedReader(new BufferedReader(new InputStreamReader(
-          getInputStream(), Globals.DEFAULT_FILE_ENCODING)));
+          getInputStream(), Globals.DEFAULT_CHARSET)));
 
       BufferedReader br = getBufferedReader();
       final String separator = getSeparatorField();

@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -38,8 +39,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -195,7 +194,7 @@ public class HadoopExecAction extends AbstractAction {
       getLogger().info("Launch Eoulsan in Hadoop mode.");
 
       // Create command line
-      final List<String> argsList = Lists.newArrayList();
+      final List<String> argsList = new ArrayList<>();
 
       argsList.add("hadoop");
       argsList.add("jar");
