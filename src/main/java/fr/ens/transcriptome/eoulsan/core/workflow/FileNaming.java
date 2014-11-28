@@ -517,8 +517,6 @@ public class FileNaming {
    * @param dataName data name
    * @param fileIndex file index
    * @param part file part
-   * @param extension file extension
-   * @param compression file compression
    * @return a String with the suffix of a file
    */
   public static String fileMiddle(final String dataName, final int fileIndex,
@@ -566,9 +564,6 @@ public class FileNaming {
 
   /**
    * Create the suffix of a file.
-   * @param dataName data name
-   * @param fileIndex file index
-   * @param part file part
    * @param format format of the file
    * @param compression file compression
    * @return a String with the suffix of a file
@@ -585,9 +580,6 @@ public class FileNaming {
 
   /**
    * Create the suffix of a file.
-   * @param dataName data name
-   * @param fileIndex file index
-   * @param part file part
    * @param extension file extension
    * @param compression file compression
    * @return a String with the suffix of a file
@@ -683,7 +675,7 @@ public class FileNaming {
 
   /**
    * Create a FileNaming object from a filename.
-   * @param file the filename
+   * @param filename the filename
    * @return a new FileNaming object
    */
   public static FileNaming parse(final String filename) {

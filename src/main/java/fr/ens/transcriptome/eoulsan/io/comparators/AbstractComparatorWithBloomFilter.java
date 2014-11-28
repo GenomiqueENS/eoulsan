@@ -90,8 +90,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
 
   /**
    * Initialize BloomFilter with the expected number of elements.
-   * @param expectedNumberOfElements
-   * @return
+   * @param expectedNumberOfElements expected number of elements
    */
   protected static BloomFilterUtils initBloomFilter(
       final int expectedNumberOfElements) {

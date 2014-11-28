@@ -66,7 +66,6 @@ public class ITResult {
   /**
    * Create report of the test execution.
    * @param duration of execution test
-   * @param status result of test execution, use like filename
    */
   public void createReportFile(final long duration) {
 

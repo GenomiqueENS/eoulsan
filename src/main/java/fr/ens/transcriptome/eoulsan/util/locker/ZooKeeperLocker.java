@@ -38,10 +38,8 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
 /**
- * This class implements a locker using Zookeeper.
- * @see https
- *      ://www.altamiracorp.com/blog/employee-posts/distributed-lock-using-
- *      zookeeper
+ * This class implements a locker using Zookeeper. See
+ * {@link <a href="http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper">blog post</a>}
  * @author Laurent Jourdren
  * @since 2.0
  */

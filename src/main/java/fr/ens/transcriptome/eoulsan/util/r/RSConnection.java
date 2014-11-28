@@ -67,8 +67,8 @@ public interface RSConnection {
 
   /**
    * Put a file from the RServer.
+   * @param inputFile input file of the file to put
    * @param rServeFilename filename of the file to put
-   * @param outputfile output file of the file to put
    * @throws REngineException if an error occurs while downloading the file
    */
   void putFile(final File inputFile, final String rServeFilename)

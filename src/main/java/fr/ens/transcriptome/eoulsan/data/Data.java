@@ -83,7 +83,7 @@ public interface Data {
   /**
    * Add a data to the list of data.
    * @param name name of the data
-   * @param split split number (-1 for no part)
+   * @param part split part number (-1 for no part)
    * @return the data object added to the list
    */
   Data addDataToList(String name, int part);

@@ -578,7 +578,7 @@ public final class CasavaDesignUtil {
    * @return a list of String with the contents of each cell without unnecessary
    *         quotes
    */
-  public static List<String> parseTabulatedDesignLine(final String s) {
+  public static List<String> parseTabulatedDesignLine(final String line) {
 
     if (s == null)
       return null;

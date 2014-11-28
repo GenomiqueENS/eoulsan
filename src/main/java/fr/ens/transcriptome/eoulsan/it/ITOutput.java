@@ -140,8 +140,8 @@ public class ITOutput {
    * Compare all files matching to a pattern files.If no pattern defined, moving
    * all files.
    * @param expectedOutput instance of RegressionResultIT to compare with this.
-   * @return instance of {@link fr.ens.transcriptome.eoulsan.it.OutputExecution}
-   *         which summary result of directories comparison
+   * @return a set of ITOutputComparisonResult which summary result of
+   *         directories comparison
    * @throws IOException if on error occurs while clean directory or compare
    *           file
    */

@@ -141,7 +141,7 @@ public class WorkflowStepStatus {
 
   /**
    * Set the progress of a step.
-   * @param value value to set
+   * @param progress value to set
    */
   public void setProgress(final double progress) {
 
@@ -179,7 +179,7 @@ public class WorkflowStepStatus {
    * Set the progress of a task.
    * @param contextId id of the context
    * @param contextName name of the context
-   * @param value value to set
+   * @param progress progress value to set
    */
   public void setTaskProgress(final int contextId, final String contextName,
       final double progress) {

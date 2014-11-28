@@ -123,8 +123,8 @@ public class FinalExpressionFeaturesCreator {
     //
 
     /**
-     * Constructor for ExpressionTranscript
-     * @param transcript Transcript to set
+     * Constructor for ExpressionTranscript.
+     * @param id identifier to set
      */
     public ExpressionFeature(String id) {
 
@@ -147,9 +147,8 @@ public class FinalExpressionFeaturesCreator {
   }
 
   /**
-   * Load pre result file
+   * Load pre result file.
    * @param preResultFile pre-result file
-   * @param readsUsed the number of read useds
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final File preResultFile) throws IOException {
@@ -158,9 +157,8 @@ public class FinalExpressionFeaturesCreator {
   }
 
   /**
-   * Load pre-result file
+   * Load pre-result file.
    * @param is input stream of pre-results
-   * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final InputStream is) throws IOException {
@@ -244,7 +242,7 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Public constructor.
-   * @param tef TranscriptAndExonFinder object
+   * @param ga GenomicArray object
    */
   public FinalExpressionFeaturesCreator(final GenomicArray<String> ga) {
 

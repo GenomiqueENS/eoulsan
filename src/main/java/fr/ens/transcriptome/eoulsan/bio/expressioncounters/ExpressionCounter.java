@@ -114,7 +114,7 @@ public interface ExpressionCounter {
 
   /**
    * Set the attribute ID to be used as feature ID.
-   * @param attributeID string with the attribute ID
+   * @param attributeId string with the attribute ID
    */
   void setAttributeId(String attributeId);
 

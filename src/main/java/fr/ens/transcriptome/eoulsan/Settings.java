@@ -721,7 +721,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the mail address for eoulsan results.
-   * @param the mail address as a string
+   * @param mail the mail address as a string
    */
   public void setResultMail(final String mail) {
 

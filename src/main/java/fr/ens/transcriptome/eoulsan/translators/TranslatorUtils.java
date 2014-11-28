@@ -44,7 +44,6 @@ public class TranslatorUtils {
   /**
    * Create a file with additional annotation.
    * @param inputFile input file
-   * @param outputFile output file with additional annotation
    * @param fieldToTranslate field to use with translator
    * @param translator translator to use
    * @throws FileNotFoundException if a file cannot be found

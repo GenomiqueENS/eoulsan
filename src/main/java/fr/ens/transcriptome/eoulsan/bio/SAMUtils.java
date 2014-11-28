@@ -103,7 +103,7 @@ public class SAMUtils {
 
   /**
    * Create a GenomeDescription object from a SAM header.
-   * @param SAM file witch header must be read
+   * @param file SAM file witch header must be read
    * @return a new GenomeDescription object with the name and chromsomomes
    *         length defined in the SAM header
    * @throws FileNotFoundException if the file cannot be found
@@ -201,7 +201,7 @@ public class SAMUtils {
 
   /**
    * Create a GenomeDescription object from a SAMFileHeader object.
-   * @param header SAM header object
+   * @param samRecord header SAM header object
    * @return a new GenomeDescription object with the name and chromsomomes
    *         length defined in the SAM header
    */

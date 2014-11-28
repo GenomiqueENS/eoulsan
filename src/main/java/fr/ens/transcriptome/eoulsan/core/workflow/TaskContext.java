@@ -544,7 +544,7 @@ public class TaskContext implements StepContext, Serializable {
 
   /**
    * Serialize output data.
-   * @param out output stream
+   * @param file output file
    * @throws IOException if an error occurs while creating the file
    */
   public void serializeOutputData(final File file) throws IOException {
