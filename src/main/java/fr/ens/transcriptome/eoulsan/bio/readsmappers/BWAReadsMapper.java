@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 
@@ -313,7 +314,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        tmpFile.delete();
+        if (!tmpFile.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile);
+        }
       }
 
     };
@@ -393,8 +396,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        tmpFile1.delete();
-        tmpFile2.delete();
+        if (tmpFile1.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile1);
+        }
+
+        if (tmpFile2.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile2);
+        }
       }
 
     };
