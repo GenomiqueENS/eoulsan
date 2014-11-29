@@ -802,7 +802,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.12</version>
 				<configuration>
-					<configLocation>./checkstyle_google.xml</configLocation>
+					<configLocation>./checkstyle.xml</configLocation>
 				</configuration>
 			</plugin>
 
