@@ -178,8 +178,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             break;
 
           default:
-            new EoulsanException("Unknown output format: " + format);
-            break;
+            throw new EoulsanException("Unknown output format: " + format);
           }
 
         }
@@ -334,7 +333,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return new String[] { "EnsemblGeneID" };
       }
     };
 

@@ -190,8 +190,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
             break;
 
           default:
-            new EoulsanException("Unknown output format: " + format);
-            break;
+            throw new EoulsanException("Unknown output format: " + format);
           }
 
         }
