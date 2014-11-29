@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
@@ -312,7 +313,7 @@ public class WorkflowContext implements Serializable {
    */
   public Logger getLogger() {
 
-    return getLogger();
+    return EoulsanLogger.getLogger();
   }
 
   //

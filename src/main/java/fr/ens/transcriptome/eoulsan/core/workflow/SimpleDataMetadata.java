@@ -173,7 +173,9 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
     checkKey(key);
 
-    return this.removeKey(key);
+    this.map.remove(key);
+
+    return true;
   }
 
   @Override
