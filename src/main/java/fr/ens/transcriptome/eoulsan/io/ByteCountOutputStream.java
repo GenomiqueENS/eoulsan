@@ -28,6 +28,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.lang.NullArgumentException;
+
 /**
  * This class define a filter that count the number of written bytes by an
  * InputSream.
@@ -48,6 +50,11 @@ public class ByteCountOutputStream extends FilterOutputStream {
   public void write(final byte[] b, final int off, final int len)
       throws IOException {
 
+    if (b == null) {
+      throw new NullArgumentException(
+          "the array of bytes argument cannot be null");
+    }
+
     boolean add = false;
     if (!currentWrite)
       add = true;
@@ -56,7 +63,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
 
     super.write(b, off, len);
 
-    if (add && b != null) {
+    if (add) {
       nWritten += len;
       currentWrite = false;
     }
@@ -65,13 +72,18 @@ public class ByteCountOutputStream extends FilterOutputStream {
   @Override
   public void write(final byte[] b) throws IOException {
 
+    if (b == null) {
+      throw new NullArgumentException(
+          "the array of bytes argument cannot be null");
+    }
+
     boolean add = false;
     if (!currentWrite)
       add = true;
     currentWrite = true;
 
     super.write(b);
-    if (add && b != null) {
+    if (add) {
       nWritten += b.length;
       currentWrite = false;
     }
