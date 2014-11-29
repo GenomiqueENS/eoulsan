@@ -48,7 +48,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   private static final String DEFAULT_PACKAGE_VERSION = "2012-07-20";
   private static final String MAPPER_EXECUTABLE = "gsnap";
   private static final String[] INDEXER_EXECUTABLES = new String[] {
-      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
+      "fa_coords", "gmap_process", "gmapindex", "gmap_build" };
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -80,9 +80,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final String cmd = gsnapPath + " --version";
 
       final String s = ProcessUtils.execToString(cmd);
-
-      if (s == null)
-        return null;
 
       final String[] lines = s.split("\n");
       if (lines.length == 0)
