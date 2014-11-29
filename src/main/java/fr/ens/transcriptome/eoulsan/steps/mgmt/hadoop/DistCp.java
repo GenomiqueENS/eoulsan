@@ -854,7 +854,7 @@ public class DistCp implements Tool {
             throw new IllegalArgumentException("num_maps not specified in -m");
           }
           try {
-            conf.setInt(MAX_MAPS_LABEL, Integer.valueOf(args[idx]));
+            conf.setInt(MAX_MAPS_LABEL, Integer.parseInt(args[idx]));
           } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid argument to -m: "
                 + args[idx]);
