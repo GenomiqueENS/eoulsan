@@ -34,6 +34,7 @@ import java.util.List;
 
 import com.google.common.io.Files;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -74,8 +75,11 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       // Create temporary directory
       final File tempDir = File.createTempFile("STAR-get-version-", ".tmp");
-      tempDir.delete();
-      tempDir.mkdir();
+      if (!(tempDir.delete() && tempDir.mkdir())) {
+        EoulsanLogger.getLogger().warning(
+            "Cannot create temporary directory for STAR: " + tempDir);
+        return null;
+      }
 
       // Execute STAR with no argument
       final ProcessBuilder pb = new ProcessBuilder(execPath);
