@@ -213,11 +213,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           continue;
         }
 
-        if (sam1 != null && !sam1.getReadUnmappedFlag()) {
+        if (!sam1.getReadUnmappedFlag()) {
           ivSeq.addAll(HTSeqUtils.addIntervals(sam1, stranded));
         }
 
-        if (sam2 != null && !sam2.getReadUnmappedFlag()) {
+        if (!sam2.getReadUnmappedFlag()) {
           ivSeq.addAll(HTSeqUtils.addIntervals(sam2, stranded));
         }
 
