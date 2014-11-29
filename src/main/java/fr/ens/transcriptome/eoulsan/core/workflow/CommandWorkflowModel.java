@@ -97,7 +97,9 @@ public class CommandWorkflowModel implements Serializable {
   private Map<String, Boolean> stepDiscardOutput = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
-  static final class StepPort {
+  static final class StepPort implements Serializable {
+
+    private static final long serialVersionUID = -1282360626885971051L;
 
     final String stepId;
     final String portName;
