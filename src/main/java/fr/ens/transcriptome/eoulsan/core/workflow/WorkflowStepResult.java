@@ -111,22 +111,22 @@ public class WorkflowStepResult {
 
   /**
    * Get a context message.
-   * @param contextName context name
+   * @param contextId context id
    * @return the message for the context
    */
-  public String getContextMessage(final String contextName) {
+  public String getContextMessage(final int contextId) {
 
-    return this.taskMessages.get(contextName);
+    return this.taskMessages.get(contextId);
   }
 
   /**
    * Get the contextName counters.
-   * @param contextName contextName
+   * @param contextId context id
    * @return the contextName counters as a map
    */
-  public Map<String, Long> getContextCounters(final String contextName) {
+  public Map<String, Long> getContextCounters(final int contextId) {
 
-    final Map<String, Long> result = this.taskCounters.get(contextName);
+    final Map<String, Long> result = this.taskCounters.get(contextId);
 
     return Collections.unmodifiableMap(result);
   }
