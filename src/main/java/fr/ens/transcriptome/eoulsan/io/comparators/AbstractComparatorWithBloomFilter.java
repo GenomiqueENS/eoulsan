@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
@@ -143,7 +144,8 @@ public abstract class AbstractComparatorWithBloomFilter extends
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
 
     String line = null;
 

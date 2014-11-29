@@ -4,16 +4,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -148,7 +149,8 @@ public class DataMetadataStorage {
     }
 
     try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(this.metadataFile.open()))) {
+        new BufferedReader(new InputStreamReader(this.metadataFile.open(),
+            Globals.DEFAULT_CHARSET))) {
 
       String line = null;
 
@@ -181,8 +183,8 @@ public class DataMetadataStorage {
     }
 
     try (PrintWriter out =
-        new PrintWriter(new BufferedWriter(new FileWriter(
-            this.metadataFile.toFile(), true)))) {
+        new PrintWriter(new OutputStreamWriter(new FileOutputStream(
+            this.metadataFile.toFile(), true), Globals.DEFAULT_CHARSET))) {
 
       // Write entry
       out.println(s);

@@ -26,13 +26,15 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.io.Files;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -85,7 +87,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       // Read STAR version from STAR log file
       String version = null;
-      try (BufferedReader reader = new BufferedReader(new FileReader(logFile))) {
+      try (BufferedReader reader =
+          Files.newReader(logFile, Globals.DEFAULT_CHARSET)) {
         final String line = reader.readLine();
 
         if (line != null && line.indexOf('=') != -1) {

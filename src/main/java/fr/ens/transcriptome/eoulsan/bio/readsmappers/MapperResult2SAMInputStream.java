@@ -36,6 +36,8 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.Globals;
+
 /**
  * This class allow to transform the output of a mapper into SAM format.
  * @author Laurent Jourdren
@@ -71,7 +73,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     this.sb.setLength(0);
     this.sb.append(new String(this.buffer, this.pos, this.buffer.length
-        - this.pos));
+        - this.pos, Globals.DEFAULT_CHARSET));
 
     do {
       String line = this.reader.readLine();

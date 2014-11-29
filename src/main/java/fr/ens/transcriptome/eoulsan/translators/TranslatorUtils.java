@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
@@ -72,7 +73,8 @@ public class TranslatorUtils {
     String[] translatorFieldnames = translator.getFields();
     final int n = translatorFieldnames.length;
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line;
     boolean first = true;
 
