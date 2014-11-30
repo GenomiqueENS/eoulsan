@@ -75,8 +75,13 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     // Search step to follow
     searchSteps();
 
-    this.terminal =
-        isInteractiveMode() ? TerminalFacade.createUnixTerminal() : null;
+    // Test if is interactive mode
+    if (!isInteractiveMode()) {
+      return;
+    }
+
+    // Set terminal object
+    this.terminal = TerminalFacade.createUnixTerminal();
 
     // Get terminal size
     this.terminal.enterPrivateMode();
