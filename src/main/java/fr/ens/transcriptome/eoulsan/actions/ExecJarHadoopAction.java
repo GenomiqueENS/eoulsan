@@ -311,14 +311,14 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Define parameter URI
       final URI paramURI;
-      if (workflowPathname.indexOf("://") != -1)
+      if (workflowPathname.contains("://"))
         paramURI = new URI(workflowPathname);
       else
         paramURI = new File(workflowPathname).getAbsoluteFile().toURI();
 
       // Define design URI
       final URI designURI;
-      if (designPathname.indexOf("://") != -1)
+      if (designPathname.contains("://"))
         designURI = new URI(designPathname);
       else
         designURI = new File(designPathname).getAbsoluteFile().toURI();
