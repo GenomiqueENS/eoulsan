@@ -739,8 +739,6 @@ public class FileUtils {
 
     try {
       inChannel.transferTo(0, inChannel.size(), outChannel);
-    } catch (IOException e) {
-      throw e;
     } finally {
       if (inChannel != null)
         inChannel.close();
@@ -1655,8 +1653,6 @@ public class FileUtils {
       isb = new FileInputStream(fileB);
 
       return compareFile(isa, isb);
-    } catch (IOException e) {
-      throw e;
     } finally {
       if (isa != null)
         isa.close();

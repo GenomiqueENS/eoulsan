@@ -163,9 +163,6 @@ public class SOAP2SAM {
       // throw IOException of reader if needed
       reader.throwException();
 
-    } catch (IOException e) {
-
-      throw e;
     } finally {
       bw.close();
     }
