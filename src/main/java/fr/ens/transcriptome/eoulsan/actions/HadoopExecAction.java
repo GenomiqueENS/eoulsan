@@ -86,7 +86,7 @@ public class HadoopExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -234,7 +234,7 @@ public class HadoopExecAction extends AbstractAction {
       argsList.add(designFile.toString());
       argsList.add(hdfsPath);
 
-      final String[] args = argsList.toArray(new String[0]);
+      final String[] args = argsList.toArray(new String[argsList.size()]);
 
       // execute hadoop
       ProcessUtils.execThreadOutput(args);

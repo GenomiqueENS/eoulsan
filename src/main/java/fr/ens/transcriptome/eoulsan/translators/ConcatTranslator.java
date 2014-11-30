@@ -43,7 +43,7 @@ public class ConcatTranslator extends BasicTranslator {
    */
   public String[] getFields() {
 
-    return translators.keySet().toArray(new String[0]);
+    return translators.keySet().toArray(new String[translators.size()]);
   }
 
   /**

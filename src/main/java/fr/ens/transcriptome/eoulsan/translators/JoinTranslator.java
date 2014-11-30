@@ -172,7 +172,7 @@ public class JoinTranslator extends BasicTranslator {
         fieldList.add(f);
       }
 
-    this.fields = fieldList.toArray(new String[0]);
+    this.fields = fieldList.toArray(new String[fieldList.size()]);
 
   }
 

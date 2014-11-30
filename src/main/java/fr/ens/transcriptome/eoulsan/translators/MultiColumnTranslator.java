@@ -150,7 +150,7 @@ public class MultiColumnTranslator extends BasicTranslator {
    */
   public String[] getIds() {
 
-    return this.annotations.keySet().toArray(new String[0]);
+    return this.annotations.keySet().toArray(new String[this.annotations.size()]);
   }
 
   //
