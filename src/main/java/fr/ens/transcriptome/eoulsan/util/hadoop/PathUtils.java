@@ -793,26 +793,19 @@ public final class PathUtils {
     if (!overwrite && dstFs.exists(dstPath))
       throw new IOException("The output file already exists: " + dstPath);
 
-    final OutputStream out = dstFs.create(dstPath);
-
-    try {
+    try (OutputStream out = dstFs.create(dstPath)) {
       // FileStatus contents[] = srcFS.listStatus(srcDir);
       // for (int i = 0; i < contents.length; i++) {
       for (Path p : paths)
         if (!srcFs.getFileStatus(p).isDirectory()) {
-          InputStream in = srcFs.open(p);
-          try {
+          try (InputStream in = srcFs.open(p)) {
             IOUtils.copyBytes(in, out, conf, false);
             if (addString != null)
               out.write(addString.getBytes(FileCharsets.UTF8_CHARSET));
 
-          } finally {
-            in.close();
           }
         }
 
-    } finally {
-      out.close();
     }
 
     if (deleteSource)

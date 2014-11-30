@@ -154,9 +154,7 @@ public class SOAP2SAM {
 
     br.close();
 
-    final SequenceReader reader = new FastaReader(this.funmap);
-
-    try {
+    try (SequenceReader reader = new FastaReader(this.funmap)) {
 
       for (Sequence sequence : reader)
         bw.write(sequence.getName()
@@ -169,8 +167,6 @@ public class SOAP2SAM {
 
       throw e;
     } finally {
-
-      reader.close();
       bw.close();
     }
 
