@@ -81,11 +81,11 @@ public class TokenManager implements Runnable {
   private final WorkflowInputPorts inputPorts;
   private final WorkflowOutputPorts outputPorts;
 
-  private Set<Integer> receivedTokens = new HashSet<>();
-  private Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
-  private Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
-  private Set<InputPort> closedPorts = new HashSet<>();
-  private Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
+  private final Set<Integer> receivedTokens = new HashSet<>();
+  private final Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
+  private final Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
+  private final Set<InputPort> closedPorts = new HashSet<>();
+  private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
       new HashSet<>();
 
   private volatile boolean endOfStep;
