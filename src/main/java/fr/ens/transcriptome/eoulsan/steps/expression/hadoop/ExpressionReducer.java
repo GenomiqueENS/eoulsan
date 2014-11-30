@@ -76,12 +76,10 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
     int count = 0;
 
-    final Iterator<Text> it = values.iterator();
-
-    while (it.hasNext()) {
+    for (Text value : values) {
 
       count++;
-      StringUtils.fastSplit(it.next().toString(), this.fields);
+      StringUtils.fastSplit(value.toString(), this.fields);
 
       final String exonChr = this.fields[0];
       final int exonStart = Integer.parseInt(this.fields[1]);
