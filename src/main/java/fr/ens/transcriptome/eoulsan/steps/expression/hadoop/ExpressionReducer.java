@@ -32,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.P
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Iterator;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;

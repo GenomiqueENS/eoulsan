@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FSDataInputStream;

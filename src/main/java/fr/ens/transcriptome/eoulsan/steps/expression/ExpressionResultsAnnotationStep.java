@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;

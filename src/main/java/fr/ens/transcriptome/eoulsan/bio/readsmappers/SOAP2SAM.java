@@ -135,7 +135,6 @@ public class SOAP2SAM {
     final BufferedReader br = FileUtils.createBufferedReader(this.fin);
     final UnSynchronizedBufferedWriter bw = createWriter();
 
-    String[] sLast = null;
     String line = null;
 
     while ((line = br.readLine()) != null) {

@@ -30,8 +30,6 @@ import static fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadSte
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;

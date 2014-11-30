@@ -71,7 +71,6 @@ public class TranslatorUtils {
       throw new NullPointerException("OutputFormat is null");
 
     String[] translatorFieldnames = translator.getFields();
-    final int n = translatorFieldnames.length;
 
     final BufferedReader reader =
         new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
@@ -85,10 +84,12 @@ public class TranslatorUtils {
       if (first) {
 
         // Write original file header
-        for (String field : fields) of.addHeaderField(field);
+        for (String field : fields)
+          of.addHeaderField(field);
 
         // Write original file header
-        for (String translatorFieldname : translatorFieldnames) of.addHeaderField(translatorFieldname);
+        for (String translatorFieldname : translatorFieldnames)
+          of.addHeaderField(translatorFieldname);
 
         first = false;
       } else {
