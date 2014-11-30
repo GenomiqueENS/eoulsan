@@ -453,7 +453,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    serialize(new FileOutputStream(file));
+    try (OutputStream out = new FileOutputStream(file)) {
+      serialize(out);
+    }
   }
 
   /**
@@ -465,7 +467,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    serialize(file.create());
+    try (OutputStream out = file.create()) {
+      serialize(out);
+    }
   }
 
   /**
@@ -477,11 +481,12 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(out, "out argument cannot be null");
 
-    final ObjectOutputStream oos = new ObjectOutputStream(out);
+    try (final ObjectOutputStream oos = new ObjectOutputStream(out)) {
 
-    oos.writeObject(this);
-    oos.writeObject(EoulsanRuntime.getSettings());
-    oos.close();
+      oos.writeObject(this);
+      oos.writeObject(EoulsanRuntime.getSettings());
+    }
+
   }
 
   /**
@@ -494,7 +499,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    return deserialize(new FileInputStream(file));
+    try (InputStream in = new FileInputStream(file)) {
+      return deserialize(in);
+    }
   }
 
   /**
@@ -507,7 +514,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    return deserialize(file.open());
+    try (InputStream in = file.open()) {
+      return deserialize(in);
+    }
   }
 
   /**
@@ -521,8 +530,7 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try {
-      final ObjectInputStream ois = new ObjectInputStream(in);
+    try (final ObjectInputStream ois = new ObjectInputStream(in)) {
 
       // Read TaskContext object
       final TaskContext result = (TaskContext) ois.readObject();
@@ -532,8 +540,6 @@ public class TaskContext implements StepContext, Serializable {
 
       // Overwrite current Settings of Eoulsan runtime
       EoulsanRuntime.getSettings().setSettings(settings);
-
-      ois.close();
 
       return result;
 
