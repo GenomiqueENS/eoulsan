@@ -105,9 +105,8 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     final String fieldName =
         field == null ? translator.getDefaultField() : field;
 
-    for (int i = 0; i < ids.length; i++) {
+    for (String row : ids) {
 
-      String row = ids[i];
       String t = translator.translateField(row, fieldName);
 
       if (t == null || "".equals(t))
@@ -155,9 +154,8 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
     }
 
-    for (int i = 0; i < ids.length; i++) {
+    for (final String id : ids) {
 
-      final String id = ids[i];
       final String newId = translation.get(id);
 
       // System.out.println(id + "\t" + newId);

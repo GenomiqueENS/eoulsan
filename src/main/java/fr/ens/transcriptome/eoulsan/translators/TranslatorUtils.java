@@ -85,12 +85,10 @@ public class TranslatorUtils {
       if (first) {
 
         // Write original file header
-        for (int i = 0; i < fields.length; i++)
-          of.addHeaderField(fields[i]);
+        for (String field : fields) of.addHeaderField(field);
 
         // Write original file header
-        for (int i = 0; i < n; i++)
-          of.addHeaderField(translatorFieldnames[i]);
+        for (String translatorFieldname : translatorFieldnames) of.addHeaderField(translatorFieldname);
 
         first = false;
       } else {
@@ -98,18 +96,17 @@ public class TranslatorUtils {
         of.newLine();
 
         // Write orignal file data
-        for (int i = 0; i < fields.length; i++)
+        for (String field1 : fields)
           try {
-            of.writeDouble(Double.parseDouble(fields[i]));
+            of.writeDouble(Double.parseDouble(field1));
           } catch (NumberFormatException e) {
 
-            of.writeText(fields[i]);
+            of.writeText(field1);
           }
 
         // Write annotation
-        for (int i = 0; i < n; i++) {
+        for (final String field : translatorFieldnames) {
 
-          final String field = translatorFieldnames[i];
           final String valueToTranslate = fields[fieldToTranslate];
           final String value;
 

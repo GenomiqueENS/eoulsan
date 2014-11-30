@@ -168,8 +168,8 @@ public abstract class BasicTranslator implements Translator {
     if (fields == null)
       return false;
 
-    for (int i = 0; i < fields.length; i++)
-      if (field.equals(fields[i]))
+    for (String field1 : fields)
+      if (field.equals(field1))
         return true;
 
     return false;

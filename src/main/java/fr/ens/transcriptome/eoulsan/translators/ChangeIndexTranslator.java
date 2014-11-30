@@ -89,9 +89,8 @@ public class ChangeIndexTranslator extends BasicTranslator {
     if (ids == null)
       return;
 
-    for (int i = 0; i < ids.length; i++) {
+    for (String id : ids) {
 
-      String id = ids[i];
       String t = this.translator.translateField(id);
 
       if (t != null && !this.index.containsKey(t))
@@ -104,9 +103,9 @@ public class ChangeIndexTranslator extends BasicTranslator {
 
     int count = 0;
 
-    for (int i = 0; i < fs.length; i++)
-      if (!this.field.equals(fs[i]))
-        this.fields[count++] = fs[i];
+    for (String f : fs)
+      if (!this.field.equals(f))
+        this.fields[count++] = f;
 
   }
 

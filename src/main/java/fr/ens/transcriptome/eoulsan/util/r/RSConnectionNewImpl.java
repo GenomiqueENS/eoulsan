@@ -329,8 +329,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       final int nbBuffers = buffers.size();
 
-      for (int i = 0; i < nbBuffers; i++) {
-        byte[] b = buffers.get(i);
+      for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }
@@ -393,8 +392,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       final int nbBuffers = buffers.size();
 
-      for (int i = 0; i < nbBuffers; i++) {
-        byte[] b = buffers.get(i);
+      for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }

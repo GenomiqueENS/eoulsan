@@ -107,9 +107,7 @@ public class ConcatTranslator extends BasicTranslator {
     if (fields == null)
       return;
 
-    for (int i = 0; i < fields.length; i++) {
-
-      final String key = fields[i];
+    for (final String key : fields) {
 
       if (!this.translators.containsKey(key))
         this.translators.put(key, translator);

@@ -971,9 +971,7 @@ public class FileUtils {
     if (filesToRemove == null)
       return false;
 
-    for (int i = 0; i < filesToRemove.length; i++) {
-
-      final File f = filesToRemove[i];
+    for (final File f : filesToRemove) {
 
       if (f.isDirectory()) {
         if (recursive) {
@@ -1019,9 +1017,9 @@ public class FileUtils {
     String prefix = null;
     final StringBuilder sb = new StringBuilder();
 
-    for (int i = 0; i < files.length; i++) {
+    for (File file : files) {
 
-      String filename = files[i].getName();
+      String filename = file.getName();
 
       if (prefix == null)
         prefix = filename;
@@ -1243,8 +1241,8 @@ public class FileUtils {
       return false;
 
     final File[] files = directory.listFiles();
-    for (int i = 0; i < files.length; i++)
-      if (!files[i].delete())
+    for (File file : files)
+      if (!file.delete())
         return false;
 
     return directory.delete();

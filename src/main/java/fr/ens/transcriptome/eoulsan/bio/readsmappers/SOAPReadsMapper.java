@@ -92,10 +92,10 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String s = ProcessUtils.execToString(cmd, true, false);
       final String[] lines = s.split("\n");
 
-      for (int i = 0; i < lines.length; i++)
-        if (lines[i].startsWith("Version:")) {
+      for (String line : lines)
+        if (line.startsWith("Version:")) {
 
-          final String[] tokens = lines[i].split(":");
+          final String[] tokens = line.split(":");
           if (tokens.length > 1)
             return tokens[1].trim();
         }

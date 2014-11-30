@@ -101,9 +101,9 @@ public class FastqRecordReader implements RecordReader<LongWritable, Text> {
     String id = "";
     int count = 0;
 
-    for (int i = 0; i < lines.length; i++) {
+    for (String line1 : lines) {
 
-      final String line = lines[i].trim();
+      final String line = line1.trim();
 
       if ("".equals(line))
         continue;
