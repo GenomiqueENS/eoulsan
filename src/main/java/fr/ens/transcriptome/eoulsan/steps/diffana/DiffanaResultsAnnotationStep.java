@@ -282,8 +282,11 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
           }
 
           TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
-          descriptionString.append("Convert "
-              + inFile + " to " + outFile + "\n");
+          descriptionString.append("Convert ");
+          descriptionString.append(inFile);
+          descriptionString.append(" to ");
+          descriptionString.append(outFile);
+          descriptionString.append("\n");
         }
       }
 

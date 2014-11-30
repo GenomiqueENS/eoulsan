@@ -266,7 +266,11 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
           of = new TSVTranslatorOutputFormat(outFile.create());
 
         TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
-        resultString.append("Convert " + inFile + " to " + outFile + "\n");
+        resultString.append("Convert ");
+        resultString.append(inFile);
+        resultString.append(" to ");
+        resultString.append(outFile);
+        resultString.append('\n');
       }
 
     } catch (IOException e) {

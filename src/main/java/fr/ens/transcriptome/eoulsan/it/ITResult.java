@@ -146,17 +146,20 @@ public class ITResult {
   private String createReportText(final boolean withStackTrace) {
 
     final StringBuilder report = new StringBuilder();
-    report.append((isSuccess() ? "SUCCESS" : "FAIL")
-        + ": for "
-        + it.getTestName()
-        + ((isGeneratedData())
-            ? ": generate expected data" : ": launch test and comparison"));
+    report.append(isSuccess() ? "SUCCESS" : "FAIL");
+    report.append(": for ");
+    report.append(it.getTestName());
+    report.append(isGeneratedData()
+            ? ": generate expected data" : ": launch test and comparison");
 
     report.append("\n\nPatterns:");
-    report.append("\n\t compare file " + it.getFileToComparePatterns());
-    report.append("\n\t check size file " + it.getCheckExistenceFilePatterns());
-    report.append("\n\t exclude file " + it.getExcludeToComparePatterns());
-    report.append("\n");
+    report.append("\n\t compare file ");
+    report.append(it.getFileToComparePatterns());
+    report.append("\n\t check size file ");
+    report.append(it.getCheckExistenceFilePatterns());
+    report.append("\n\t exclude file ");
+    report.append(it.getExcludeToComparePatterns());
+    report.append('\n');
 
     // Add synthesis on execution script
     if (!this.commandsResults.isEmpty())
@@ -165,19 +168,22 @@ public class ITResult {
       }
 
     if (isGeneratedData()) {
-      report.append("\nSUCCESS: copy files to "
-          + it.getExpectedTestDirectory().getAbsolutePath());
+      report.append("\nSUCCESS: copy files to ");
+      report.append(it.getExpectedTestDirectory().getAbsolutePath());
     }
 
     // Add report text on comparison execution
     if (!this.comparisonsResults.isEmpty()) {
-      for (ITOutputComparisonResult ocr : this.comparisonsResults)
-        report.append("\n" + ocr.getReport());
+      for (ITOutputComparisonResult ocr : this.comparisonsResults) {
+        report.append('\n');
+        report.append(ocr.getReport());
+      }
     }
 
     // Add message on exception
     if (this.exception != null) {
-      report.append("\n" + createExceptionText(this.exception, withStackTrace));
+      report.append('\n');
+      report.append(createExceptionText(this.exception, withStackTrace));
     }
 
     // Return text
