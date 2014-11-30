@@ -151,7 +151,7 @@ public class AnnotationChecker implements Checker {
     InputStream is = file.open();
     final GFFReader gffReader = new GFFReader(is);
 
-    final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomicArray<String> features = new GenomicArray<>();
     Map<String, long[]> sequenceRegions = null;
     final Map<String, Long> sequenceLengths = getSequencesLengths(desc);
     boolean featuresFound = false;

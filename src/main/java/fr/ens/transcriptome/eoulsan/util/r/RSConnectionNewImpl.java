@@ -299,7 +299,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
     try {
       RFileInputStream is = connection.openFile(filename);
-      ArrayList<byte[]> buffers = new ArrayList<byte[]>();
+      ArrayList<byte[]> buffers = new ArrayList<>();
       int bufSize = 65536;
       byte[] buf = new byte[bufSize];
       int imgLength = 0;
@@ -364,7 +364,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
     try {
       RFileInputStream is = connection.openFile(filename);
-      ArrayList<byte[]> buffers = new ArrayList<byte[]>();
+      ArrayList<byte[]> buffers = new ArrayList<>();
 
       int bufSize = 65536;
       byte[] buf = new byte[bufSize];

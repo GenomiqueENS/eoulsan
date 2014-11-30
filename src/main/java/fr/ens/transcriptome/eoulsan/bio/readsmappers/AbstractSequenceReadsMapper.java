@@ -119,7 +119,7 @@ public abstract class AbstractSequenceReadsMapper implements
     // Split the mapper arguments
     final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
 
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
 
     // Keep only non empty arguments
     for (String arg : tabMapperArguments) {
@@ -264,7 +264,7 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     // Build the command line and compute the index
-    final List<String> cmd = new ArrayList<String>();
+    final List<String> cmd = new ArrayList<>();
     cmd.addAll(getIndexerCommand(indexerPath, tmpGenomeFile.getAbsolutePath()));
 
     getLogger().fine(cmd.toString());

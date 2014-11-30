@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class GFFEntry {
 
   private Map<String, List<String>> metaData =
-      new LinkedHashMap<String, List<String>>();
+      new LinkedHashMap<>();
   private int id;
   private String seqId;
   private String source;
@@ -354,7 +354,7 @@ public class GFFEntry {
     final List<String> list;
 
     if (!this.metaData.containsKey(key)) {
-      list = new ArrayList<String>();
+      list = new ArrayList<>();
       this.metaData.put(key, list);
     } else
       list = this.metaData.get(key);
@@ -401,7 +401,7 @@ public class GFFEntry {
     }
 
     if (this.attributes == null) {
-      this.attributes = new LinkedHashMap<String, String>();
+      this.attributes = new LinkedHashMap<>();
     }
 
     this.attributes.put(attributeName, value);

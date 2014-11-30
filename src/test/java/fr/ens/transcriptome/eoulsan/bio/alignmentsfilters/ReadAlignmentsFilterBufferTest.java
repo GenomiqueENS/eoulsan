@@ -196,7 +196,7 @@ public class ReadAlignmentsFilterBufferTest {
     samRecordPE9 = parser.parseLine(recordPE9);
     samRecordPE10 = parser.parseLine(recordPE10);
 
-    recordsVerif = new ArrayList<SAMRecord>();
+    recordsVerif = new ArrayList<>();
 
     filter = new QualityReadAlignmentsFilter();
     filter.setParameter("threshold", "50");

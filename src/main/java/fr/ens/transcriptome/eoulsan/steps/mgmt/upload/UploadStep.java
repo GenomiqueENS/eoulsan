@@ -289,7 +289,7 @@ public abstract class UploadStep extends AbstractStep {
    */
   private void removeNotExistingDataFile(Map<DataFile, DataFile> files) {
 
-    Set<DataFile> filesToRemove = new HashSet<DataFile>();
+    Set<DataFile> filesToRemove = new HashSet<>();
 
     for (DataFile file : files.keySet())
       if (!file.exists())

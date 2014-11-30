@@ -503,7 +503,7 @@ public final class Settings implements Serializable {
    */
   public Set<String> getSettingsNames() {
 
-    final Set<String> result = new HashSet<String>();
+    final Set<String> result = new HashSet<>();
 
     for (String key : this.properties.stringPropertyNames()) {
       if (!key.startsWith(MAIN_PREFIX_KEY)) {

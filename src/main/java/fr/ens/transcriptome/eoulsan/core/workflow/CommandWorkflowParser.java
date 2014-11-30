@@ -293,7 +293,7 @@ public class CommandWorkflowParser {
       final String stepId) throws EoulsanException {
 
     final Map<String, StepOutputPort> result =
-        new HashMap<String, StepOutputPort>();
+        new HashMap<>();
 
     final NodeList nList = root.getElementsByTagName(INPUTS_TAG_NAMES);
 
@@ -381,7 +381,7 @@ public class CommandWorkflowParser {
       String elementName, final String stepName, final boolean evaluateValues)
       throws EoulsanException {
 
-    final Set<Parameter> result = new LinkedHashSet<Parameter>();
+    final Set<Parameter> result = new LinkedHashSet<>();
 
     final NodeList nList = root.getElementsByTagName(elementName);
 
@@ -528,7 +528,7 @@ public class CommandWorkflowParser {
    */
   private static Map<String, String> initConstants() {
 
-    final Map<String, String> constants = new HashMap<String, String>();
+    final Map<String, String> constants = new HashMap<>();
 
     constants.put(VERSION_CONSTANT_NAME, APP_VERSION_STRING);
     constants.put(BUILD_NUMBER_CONSTANT_NAME, APP_BUILD_NUMBER);

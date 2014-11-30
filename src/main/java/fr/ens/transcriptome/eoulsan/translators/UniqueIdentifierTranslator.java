@@ -37,9 +37,9 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
   private static final String DEFAULT_FIELD = "UniqueId";
 
-  private Map<String, String> mapUniqueId = new HashMap<String, String>();
+  private Map<String, String> mapUniqueId = new HashMap<>();
   private Map<String, String> reversemapUniqueId =
-      new HashMap<String, String>();
+      new HashMap<>();
   private String[] fields;
   private String newFieldName = DEFAULT_FIELD;
 
@@ -99,8 +99,8 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
     final Translator translator = this.translator;
 
-    Map<String, String> translation = new HashMap<String, String>();
-    Map<String, Integer> translationCount = new HashMap<String, Integer>();
+    Map<String, String> translation = new HashMap<>();
+    Map<String, Integer> translationCount = new HashMap<>();
 
     final String fieldName =
         field == null ? translator.getDefaultField() : field;
@@ -124,7 +124,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     }
 
     Map<String, Integer> translationCurrentCount =
-        new HashMap<String, Integer>();
+        new HashMap<>();
 
     // for (String row : translation.keySet()) {
     for (Map.Entry<String, String> e : translation.entrySet()) {

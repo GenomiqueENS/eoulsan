@@ -157,7 +157,7 @@ public class HTSeqUtils {
     if (record == null)
       return null;
 
-    List<GenomicInterval> result = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> result = new ArrayList<>();
 
     // single-end mode or first read in the paired-end mode
     if (!record.getReadPairedFlag()
@@ -219,7 +219,7 @@ public class HTSeqUtils {
     if (cigar == null)
       return null;
 
-    final List<GenomicInterval> result = new ArrayList<GenomicInterval>();
+    final List<GenomicInterval> result = new ArrayList<>();
 
     int pos = start;
     for (CigarElement ce : cigar.getCigarElements()) {
@@ -261,7 +261,7 @@ public class HTSeqUtils {
     // Overlap mode "union"
     if (mode == UNION) {
 
-      fs = new HashSet<String>();
+      fs = new HashSet<>();
 
       for (final GenomicInterval iv : ivList) {
 
@@ -323,7 +323,7 @@ public class HTSeqUtils {
 
             if (fs2.size() > 0 || mode == INTERSECTION_STRICT) {
               if (fs == null)
-                fs = new HashSet<String>(fs2);
+                fs = new HashSet<>(fs2);
               else
                 fs.retainAll(fs2);
 
@@ -351,7 +351,7 @@ public class HTSeqUtils {
     if (intervals == null)
       return;
 
-    final Set<GenomicInterval> toRemove = new HashSet<GenomicInterval>();
+    final Set<GenomicInterval> toRemove = new HashSet<>();
 
     for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
       if (e.getKey().getStrand() != strand)

@@ -379,7 +379,7 @@ public final class ProcessUtils {
     if (executableName == null)
       return null;
 
-    Set<Integer> result = new HashSet<Integer>();
+    Set<Integer> result = new HashSet<>();
 
     try {
       final String s =

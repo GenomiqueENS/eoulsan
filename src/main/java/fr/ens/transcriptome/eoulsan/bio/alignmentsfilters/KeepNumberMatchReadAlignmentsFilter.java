@@ -91,7 +91,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     if (records == null || records.isEmpty())
       return;
 
-    List<SAMRecord> recordsToKeep = new ArrayList<SAMRecord>();
+    List<SAMRecord> recordsToKeep = new ArrayList<>();
     int cptRecords = 0;
     int nbRecordsToKeep;
 

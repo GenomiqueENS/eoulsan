@@ -70,7 +70,7 @@ public class SOAP2SAM {
   }
 
   private String[] sLast;
-  private final List<String> results = new ArrayList<String>();
+  private final List<String> results = new ArrayList<>();
 
   public List<String> c(String line, boolean isPaired) {
 

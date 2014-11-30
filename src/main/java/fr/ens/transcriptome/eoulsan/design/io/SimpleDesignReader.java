@@ -56,8 +56,8 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   @Override
   public Design read() throws EoulsanIOException {
 
-    Map<String, List<String>> data = new HashMap<String, List<String>>();
-    List<String> fieldnames = new ArrayList<String>();
+    Map<String, List<String>> data = new HashMap<>();
+    List<String> fieldnames = new ArrayList<>();
 
     try {
 

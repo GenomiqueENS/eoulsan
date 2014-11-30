@@ -98,7 +98,7 @@ public class RunInfo {
   private String flowCell;
   private String instrument;
   private String date;
-  private List<Read> reads = new ArrayList<Read>();
+  private List<Read> reads = new ArrayList<>();
 
   // FlowcellLayout
 
@@ -107,7 +107,7 @@ public class RunInfo {
   private int flowCellSwathCount;
   private int flowCellTileCount;
 
-  private List<Integer> alignToPhix = new ArrayList<Integer>();
+  private List<Integer> alignToPhix = new ArrayList<>();
 
   //
   // Getters

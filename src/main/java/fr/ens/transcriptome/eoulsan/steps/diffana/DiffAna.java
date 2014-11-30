@@ -378,7 +378,7 @@ public class DiffAna extends Normalization {
     // Add plot dispersion
     if (this.dispEstMethod.equals(DispersionMethod.PER_CONDITION)) {
 
-      List<String> passedConditionName = new ArrayList<String>();
+      List<String> passedConditionName = new ArrayList<>();
       for (String cond : rCondNames) {
 
         if (passedConditionName.indexOf(cond) == -1) {

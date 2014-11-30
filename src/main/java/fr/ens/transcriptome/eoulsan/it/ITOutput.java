@@ -149,7 +149,7 @@ public class ITOutput {
 
     // Copy list files
     final List<File> allFilesFromTest =
-        new ArrayList<File>(this.filesToCompare);
+        new ArrayList<>(this.filesToCompare);
 
     // Build map filename with files path
     Map<String, File> filesTestedMap =

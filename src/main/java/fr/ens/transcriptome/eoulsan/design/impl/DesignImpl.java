@@ -48,14 +48,14 @@ public class DesignImpl implements Design, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = -7616692450023046216L;
 
-  private List<String> samplesOrder = new ArrayList<String>();
-  private Map<String, Integer> samples = new HashMap<String, Integer>();
-  private Map<Integer, String> samplesReverse = new HashMap<Integer, String>();
-  private Map<Integer, Integer> ids = new HashMap<Integer, Integer>();
+  private List<String> samplesOrder = new ArrayList<>();
+  private Map<String, Integer> samples = new HashMap<>();
+  private Map<Integer, String> samplesReverse = new HashMap<>();
+  private Map<Integer, Integer> ids = new HashMap<>();
 
-  private Map<String, Integer> metadataFields = new HashMap<String, Integer>();
-  private List<String> metadataOrder = new ArrayList<String>();
-  private Map<String, String> metadataData = new HashMap<String, String>();
+  private Map<String, Integer> metadataFields = new HashMap<>();
+  private List<String> metadataOrder = new ArrayList<>();
+  private Map<String, String> metadataData = new HashMap<>();
 
   private int countSamples;
   private int countLabels;
@@ -219,7 +219,7 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public List<Sample> getSamples() {
 
-    final List<Sample> result = new ArrayList<Sample>();
+    final List<Sample> result = new ArrayList<>();
 
     final List<String> names = getSamplesNames();
 
@@ -261,7 +261,7 @@ public class DesignImpl implements Design, Serializable {
     // Remove targets
     final String suffix = "-" + this.metadataFields.get(fieldName);
 
-    for (String key : new HashSet<String>(this.metadataData.keySet()))
+    for (String key : new HashSet<>(this.metadataData.keySet()))
       if (key.endsWith(suffix))
         this.metadataData.remove(key);
 
@@ -283,7 +283,7 @@ public class DesignImpl implements Design, Serializable {
     // Remove descriptions
     final String prefixDescritpion = this.samples.get(sampleName) + "-";
 
-    for (String key : new HashSet<String>(this.metadataData.keySet()))
+    for (String key : new HashSet<>(this.metadataData.keySet()))
       if (key.startsWith(prefixDescritpion))
         this.metadataData.remove(key);
 

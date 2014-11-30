@@ -124,7 +124,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     final String binariesDirectory =
         new File(indexerPathname).getParentFile().getAbsolutePath();
     final String genomeDirectory =
@@ -218,7 +218,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
         cmd.add("-A");
         cmd.add("sam");
@@ -252,7 +252,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
         cmd.add("-A");
         cmd.add("sam");

@@ -75,11 +75,11 @@ public class HTSeqUtilsTest {
     Set<String> results;
 
     // intervals of a SAM alignment
-    List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> ivSeq = new ArrayList<>();
     ivSeq.add(new GenomicInterval(chromosome, 5, 15, strand));
 
     // annotation
-    GenomicArray<String> annot = new GenomicArray<String>();
+    GenomicArray<String> annot = new GenomicArray<>();
     annot.addEntry(new GenomicInterval(chromosome, 1, 20, strand), "a");
     annot.addEntry(new GenomicInterval(chromosome, 25, 45, strand), "b");
 

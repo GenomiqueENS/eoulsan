@@ -46,7 +46,7 @@ public class FileConcatInputStreamTest {
   @Test
   public void test() throws IOException {
 
-    final List<File> files = new ArrayList<File>();
+    final List<File> files = new ArrayList<>();
 
     files.add(writeFile(1000, 255));
     files.add(writeFile(1500, 123));

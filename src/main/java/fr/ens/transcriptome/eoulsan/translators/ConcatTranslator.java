@@ -35,7 +35,7 @@ import java.util.Map;
 public class ConcatTranslator extends BasicTranslator {
 
   private Map<String, Translator> translators =
-      new LinkedHashMap<String, Translator>();
+      new LinkedHashMap<>();
 
   /**
    * Get an ordered list of the translator fields

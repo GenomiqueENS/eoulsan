@@ -205,7 +205,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileStatus[] files = fs.listStatus(path);
 
     // Convert the File array to a list of DataFile
-    final List<DataFile> result = new ArrayList<DataFile>(files.length);
+    final List<DataFile> result = new ArrayList<>(files.length);
     for (FileStatus f : files)
       result.add(new DataFile(f.getPath().toUri().toString()));
 

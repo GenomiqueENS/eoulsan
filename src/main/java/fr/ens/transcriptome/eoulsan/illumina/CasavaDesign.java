@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class CasavaDesign implements Iterable<CasavaSample> {
 
-  private List<CasavaSample> samples = new ArrayList<CasavaSample>();
+  private List<CasavaSample> samples = new ArrayList<>();
 
   public void addSample(final CasavaSample sample) {
 
@@ -60,7 +60,7 @@ public class CasavaDesign implements Iterable<CasavaSample> {
     if (laneId < 1)
       return null;
 
-    final List<CasavaSample> result = new ArrayList<CasavaSample>();
+    final List<CasavaSample> result = new ArrayList<>();
 
     for (CasavaSample s : this.samples) {
       if (s.getLane() == laneId)

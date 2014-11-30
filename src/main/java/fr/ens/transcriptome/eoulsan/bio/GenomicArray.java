@@ -91,7 +91,7 @@ public class GenomicArray<T> {
               || this._value.hashCode() == value.hashCode())
             return;
 
-          this._values = new HashSet<T>();
+          this._values = new HashSet<>();
           this._values.add(this._value);
           this._value = null;
         }
@@ -119,7 +119,7 @@ public class GenomicArray<T> {
         this._value = values.iterator().next();
         this.valueCount = this._value == null ? 0 : 1;
       } else {
-        this._values = new HashSet<T>(values);
+        this._values = new HashSet<>(values);
         this.valueCount = len;
       }
 
@@ -157,7 +157,7 @@ public class GenomicArray<T> {
     @Override
     public String toString() {
 
-      Set<String> r = new HashSet<String>();
+      Set<String> r = new HashSet<>();
       if (getValues() != null)
         for (T e : getValues())
           r.add(e.toString());
@@ -248,7 +248,7 @@ public class GenomicArray<T> {
 
     private final String chromosomeName;
     private int length = 0;
-    private final List<Zone<T>> zones = new ArrayList<Zone<T>>();
+    private final List<Zone<T>> zones = new ArrayList<>();
 
     private final Zone<T> get(final int index) {
 
@@ -326,7 +326,7 @@ public class GenomicArray<T> {
     private Zone<T> splitZone(final Zone<T> zone, final int pos) {
 
       final Zone<T> result =
-          new Zone<T>(pos, zone.end, zone.strand, zone.getValues());
+          new Zone<>(pos, zone.end, zone.strand, zone.getValues());
       zone.end = pos - 1;
 
       return result;
@@ -353,7 +353,7 @@ public class GenomicArray<T> {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (intervalEnd > this.length) {
-        final Set<T> val = new TreeSet<T>();
+        final Set<T> val = new TreeSet<>();
         val.add(value);
         add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
@@ -633,8 +633,8 @@ public class GenomicArray<T> {
         throw new NullPointerException("chromosomeName argument cannot be null");
       }
 
-      this.plus = new ChromosomeStrandedZones<T>(chromosomeName);
-      this.minus = new ChromosomeStrandedZones<T>(chromosomeName);
+      this.plus = new ChromosomeStrandedZones<>(chromosomeName);
+      this.minus = new ChromosomeStrandedZones<>(chromosomeName);
     }
   }
 
@@ -750,7 +750,7 @@ public class GenomicArray<T> {
    */
   public Set<String> getFeaturesIds() {
 
-    Set<String> results = new TreeSet<String>();
+    Set<String> results = new TreeSet<>();
 
     for (Map.Entry<String, ChromosomeZones<T>> strandedZone : this.chromosomes
         .entrySet()) {

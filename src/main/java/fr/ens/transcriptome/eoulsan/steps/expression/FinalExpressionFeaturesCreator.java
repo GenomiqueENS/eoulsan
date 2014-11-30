@@ -57,9 +57,9 @@ public class FinalExpressionFeaturesCreator {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private GenomicArray<String> ga = new GenomicArray<String>();
+  private GenomicArray<String> ga = new GenomicArray<>();
   private final Map<String, ExpressionFeature> expressionResults =
-      new HashMap<String, ExpressionFeature>();
+      new HashMap<>();
 
   private static final class ExpressionFeature implements
       Comparable<ExpressionFeature> {
@@ -200,7 +200,7 @@ public class FinalExpressionFeaturesCreator {
   public void saveFinalResults(final OutputStream os) throws IOException {
 
     final List<ExpressionFeature> list =
-        new ArrayList<ExpressionFeature>(this.expressionResults.values());
+        new ArrayList<>(this.expressionResults.values());
 
     Collections.sort(list);
 
@@ -235,7 +235,7 @@ public class FinalExpressionFeaturesCreator {
   public FinalExpressionFeaturesCreator(final InputStream indexIs)
       throws IOException {
 
-    this.ga = new GenomicArray<String>();
+    this.ga = new GenomicArray<>();
     this.ga.load(indexIs);
   }
 

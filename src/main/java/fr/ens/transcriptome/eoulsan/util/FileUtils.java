@@ -1730,8 +1730,8 @@ public class FileUtils {
     final File absPath = path.getAbsoluteFile();
     final File absBase = base.getAbsoluteFile();
 
-    List<String> pathNodes = new ArrayList<String>();
-    List<String> baseNodes = new ArrayList<String>();
+    List<String> pathNodes = new ArrayList<>();
+    List<String> baseNodes = new ArrayList<>();
 
     File parent = absPath;
     do {
@@ -1752,7 +1752,7 @@ public class FileUtils {
     while (i < minSize && pathNodes.get(i).equals(baseNodes.get(i)))
       i++;
 
-    final List<String> resultNodes = new ArrayList<String>();
+    final List<String> resultNodes = new ArrayList<>();
 
     if (i < baseNodes.size())
       for (int j = 0; j < baseNodes.size() - i; j++)

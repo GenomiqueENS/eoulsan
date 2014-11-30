@@ -94,7 +94,7 @@ public abstract class AbstractBowtieReadsMapper extends
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
 
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
 
     cmd.add(indexerPathname);
     cmd.add(genomePathname);
@@ -132,7 +132,7 @@ public abstract class AbstractBowtieReadsMapper extends
           protected List<List<String>> createCommandLines() {
 
             // Build the command line
-            final List<String> cmd = new ArrayList<String>();
+            final List<String> cmd = new ArrayList<>();
 
             // Add common arguments
             cmd.addAll(createCommonArgs(bowtiePath, index));
@@ -176,7 +176,7 @@ public abstract class AbstractBowtieReadsMapper extends
           @Override
           protected List<List<String>> createCommandLines() {
             // Build the command line
-            final List<String> cmd = new ArrayList<String>();
+            final List<String> cmd = new ArrayList<>();
 
             // Add common arguments
             cmd.addAll(createCommonArgs(bowtiePath, index));
@@ -230,7 +230,7 @@ public abstract class AbstractBowtieReadsMapper extends
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         // TODO enable memory mapped in streaming mode
         // Add common arguments
@@ -288,7 +288,7 @@ public abstract class AbstractBowtieReadsMapper extends
       @Override
       protected List<List<String>> createCommandLines() {
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         // TODO enable memory mapped in streaming mode
         // Add common arguments

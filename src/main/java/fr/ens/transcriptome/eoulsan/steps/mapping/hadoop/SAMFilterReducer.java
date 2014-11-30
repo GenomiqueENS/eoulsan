@@ -82,7 +82,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   private Text outKey = new Text();
   private Text outValue = new Text();
-  private List<SAMRecord> records = new ArrayList<SAMRecord>();
+  private List<SAMRecord> records = new ArrayList<>();
 
   @Override
   protected void setup(final Context context) throws IOException,

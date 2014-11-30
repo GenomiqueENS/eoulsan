@@ -54,7 +54,7 @@ public class Utils {
     if (map == null)
       return null;
 
-    final Map<V, Set<K>> result = new HashMap<V, Set<K>>();
+    final Map<V, Set<K>> result = new HashMap<>();
 
     for (Map.Entry<K, V> e : map.entrySet()) {
 
@@ -63,7 +63,7 @@ public class Utils {
       final V value = e.getValue();
 
       if (!result.containsKey(value)) {
-        set = new HashSet<K>();
+        set = new HashSet<>();
         result.put(value, set);
       } else
         set = result.get(value);
@@ -87,7 +87,7 @@ public class Utils {
 
     final List<E> list = Arrays.asList(array);
 
-    return Collections.unmodifiableSet(new HashSet<E>(list));
+    return Collections.unmodifiableSet(new HashSet<>(list));
   }
 
   /**
@@ -100,7 +100,7 @@ public class Utils {
     if (list == null)
       return null;
 
-    final List<E> result = new ArrayList<E>();
+    final List<E> result = new ArrayList<>();
 
     for (E e : list)
       if (e != null)
@@ -158,7 +158,7 @@ public class Utils {
    */
   public static <E> List<E> newArrayList(final Collection<? extends E> elements) {
 
-    return new ArrayList<E>(elements);
+    return new ArrayList<>(elements);
   }
 
   /**
@@ -168,7 +168,7 @@ public class Utils {
    */
   public static <E> HashSet<E> newHashSet(final Collection<? extends E> elements) {
 
-    return new HashSet<E>(elements);
+    return new HashSet<>(elements);
   }
 
   /**

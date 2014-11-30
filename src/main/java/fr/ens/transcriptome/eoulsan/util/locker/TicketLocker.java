@@ -269,7 +269,7 @@ public class TicketLocker implements Locker {
         new TicketLocker(args[0], Integer.parseInt(args[1]), null);
 
     List<Ticket> tickets =
-        new ArrayList<Ticket>(locker.getStub().getTickets(null));
+        new ArrayList<>(locker.getStub().getTickets(null));
     Collections.sort(tickets);
 
     for (Ticket t : tickets) {

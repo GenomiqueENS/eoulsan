@@ -618,7 +618,7 @@ public final class PathUtils {
     if (filesStatus == null)
       return Collections.emptyList();
 
-    final List<Path> result = new ArrayList<Path>(filesStatus.length);
+    final List<Path> result = new ArrayList<>(filesStatus.length);
 
     for (FileStatus fst : filesStatus)
       result.add(fst.getPath());
@@ -673,7 +673,7 @@ public final class PathUtils {
     if (filesStatus == null)
       return Collections.emptyList();
 
-    final List<Path> result = new ArrayList<Path>(filesStatus.length);
+    final List<Path> result = new ArrayList<>(filesStatus.length);
 
     for (FileStatus fst : filesStatus)
       result.add(fst.getPath());

@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 public class MultiColumnTranslator extends BasicTranslator {
 
   private Map<String, Map<String, String>> annotations =
-      new HashMap<String, Map<String, String>>();
+      new HashMap<>();
   private String[] fieldNames;
 
   /**
@@ -66,7 +66,7 @@ public class MultiColumnTranslator extends BasicTranslator {
     if (id == null || rowData == null)
       return;
 
-    Map<String, String> dataMap = new HashMap<String, String>();
+    Map<String, String> dataMap = new HashMap<>();
 
     final int sizeData = rowData.length;
     final int sizeFields = this.fieldNames.length;

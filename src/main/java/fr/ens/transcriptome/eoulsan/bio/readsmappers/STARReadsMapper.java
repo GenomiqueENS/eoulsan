@@ -155,7 +155,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
     cmd.add("--runThreadN");
     cmd.add("" + getThreadsNumber());
@@ -241,7 +241,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
         cmd.add("" + getThreadsNumber());
@@ -275,7 +275,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
         cmd.add("" + getThreadsNumber());

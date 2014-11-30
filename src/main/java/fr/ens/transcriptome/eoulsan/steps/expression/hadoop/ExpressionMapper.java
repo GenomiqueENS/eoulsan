@@ -81,7 +81,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
   private final Map<String, Exon> oneExonByParentId =
-      new HashMap<String, Exon>();
+      new HashMap<>();
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the

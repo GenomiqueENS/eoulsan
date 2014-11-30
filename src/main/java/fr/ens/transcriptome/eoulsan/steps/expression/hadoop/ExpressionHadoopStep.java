@@ -410,7 +410,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Path featuresIndexPath, final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
 
-    final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomicArray<String> features = new GenomicArray<>();
     final GenomeDescription genomeDescription =
         GenomeDescription.load(genomeDescDataFile.open());
     final Map<String, Integer> counts = new HashMap<>();
@@ -696,7 +696,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       getLogger().info("Genomic type: " + getGenomicType());
 
       // Create the list of paired-end jobs to run
-      final List<Job> jobsPairedEnd = new ArrayList<Job>();
+      final List<Job> jobsPairedEnd = new ArrayList<>();
 
       // Get the paired end mode
       boolean pairedEnd = alignmentsData.getMetadata().isPairedEnd();

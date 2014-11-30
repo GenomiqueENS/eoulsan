@@ -185,7 +185,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
     if (format == null)
       return Collections.emptyList();
 
-    final List<E> result = new ArrayList<E>();
+    final List<E> result = new ArrayList<>();
 
     for (E e : this)
       if (e.getFormat().equals(format))

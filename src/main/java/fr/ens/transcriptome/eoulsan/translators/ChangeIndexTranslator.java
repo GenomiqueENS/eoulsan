@@ -39,7 +39,7 @@ public class ChangeIndexTranslator extends BasicTranslator {
   private String field;
   private String[] fields;
 
-  private Map<String, String> index = new HashMap<String, String>();
+  private Map<String, String> index = new HashMap<>();
 
   /**
    * Get link information.

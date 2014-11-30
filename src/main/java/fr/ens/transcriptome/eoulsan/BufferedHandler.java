@@ -40,8 +40,8 @@ import java.util.logging.LogRecord;
  */
 public class BufferedHandler extends Handler {
 
-  private List<Handler> handlers = new ArrayList<Handler>();
-  private Queue<LogRecord> records = new LinkedList<LogRecord>();
+  private List<Handler> handlers = new ArrayList<>();
+  private Queue<LogRecord> records = new LinkedList<>();
   private boolean flushed = false;
 
   /**

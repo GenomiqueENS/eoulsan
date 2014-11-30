@@ -49,9 +49,9 @@ public abstract class ServiceNameLoader<S> {
   private final Class<S> service;
   private final ClassLoader loader;
   private final Map<String, String> classNames =
-      new LinkedHashMap<String, String>();
-  private final Map<String, S> cache = new HashMap<String, S>();
-  private final Set<String> classesToNotLoad = new HashSet<String>();
+      new LinkedHashMap<>();
+  private final Map<String, S> cache = new HashMap<>();
+  private final Set<String> classesToNotLoad = new HashSet<>();
   private boolean notYetLoaded = true;
 
   /**

@@ -62,7 +62,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   private final SpreadsheetDocument document;
   private final TableTableElement tableElement;
   private final Table table;
-  private final List<String> headers = new ArrayList<String>();
+  private final List<String> headers = new ArrayList<>();
   private TableTableRowElement rowElement;
   private final OdfFileDom dom;
 

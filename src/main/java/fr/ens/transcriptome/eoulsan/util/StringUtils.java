@@ -251,7 +251,7 @@ public final class StringUtils {
     List<String> result;
 
     if (list == null)
-      result = new ArrayList<String>();
+      result = new ArrayList<>();
     else
       result = list;
 
@@ -701,7 +701,7 @@ public final class StringUtils {
 
     s = s.substring(1, s.length() - 1);
 
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
     int last = 0;
     boolean escapeNext = false;
 

@@ -141,7 +141,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       final Reporter reporter, final ReadAlignmentsFilter filter)
       throws IOException {
 
-    final List<SAMRecord> records = new ArrayList<SAMRecord>();
+    final List<SAMRecord> records = new ArrayList<>();
     int counterInput = 0;
     int counterOutput = 0;
     int counterInvalid = 0;

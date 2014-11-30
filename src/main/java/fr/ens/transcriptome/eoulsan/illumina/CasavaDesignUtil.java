@@ -72,20 +72,20 @@ public final class CasavaDesignUtil {
     if (design.size() == 0)
       throw new EoulsanException("No samples found in the design.");
 
-    final List<String> warnings = new ArrayList<String>();
+    final List<String> warnings = new ArrayList<>();
 
     String fcid = null;
     boolean first = true;
 
     final Map<Integer, Set<String>> indexes =
-        new HashMap<Integer, Set<String>>();
-    final Set<String> sampleIds = new HashSet<String>();
-    final Set<Integer> laneWithIndexes = new HashSet<Integer>();
-    final Set<Integer> laneWithoutIndexes = new HashSet<Integer>();
+        new HashMap<>();
+    final Set<String> sampleIds = new HashSet<>();
+    final Set<Integer> laneWithIndexes = new HashSet<>();
+    final Set<Integer> laneWithoutIndexes = new HashSet<>();
     final Map<String, Set<Integer>> sampleInLanes =
-        new HashMap<String, Set<Integer>>();
-    final Map<String, String> samplesProjects = new HashMap<String, String>();
-    final Map<String, String> samplesIndex = new HashMap<String, String>();
+        new HashMap<>();
+    final Map<String, String> samplesProjects = new HashMap<>();
+    final Map<String, String> samplesIndex = new HashMap<>();
 
     for (CasavaSample sample : design) {
 
@@ -203,7 +203,7 @@ public final class CasavaDesignUtil {
 
     // Return unique warnings
     final List<String> result =
-        new ArrayList<String>(new HashSet<String>(warnings));
+        new ArrayList<>(new HashSet<>(warnings));
     Collections.sort(result);
     return result;
   }
@@ -364,7 +364,7 @@ public final class CasavaDesignUtil {
 
     final Set<Integer> lanes;
     if (!sampleInLanes.containsKey(sampleId)) {
-      lanes = new HashSet<Integer>();
+      lanes = new HashSet<>();
       sampleInLanes.put(sampleId, lanes);
     } else
       lanes = sampleInLanes.get(sampleId);
@@ -389,7 +389,7 @@ public final class CasavaDesignUtil {
         sb.append(e.getKey());
         sb.append("\" exists in lanes: ");
 
-        final List<Integer> laneSorted = new ArrayList<Integer>(lanes);
+        final List<Integer> laneSorted = new ArrayList<>(lanes);
         Collections.sort(laneSorted);
 
         boolean first = true;
@@ -594,7 +594,7 @@ public final class CasavaDesignUtil {
    */
   public static final List<String> parseCSVDesignLine(final String line) {
 
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
 
     if (line == null)
       return null;

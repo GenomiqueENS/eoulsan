@@ -76,7 +76,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
   private final List<CommandWorkflowStep> steps =
-      new ArrayList<CommandWorkflowStep>();
+      new ArrayList<>();
   private Set<String> stepsIds = new HashSet<>();
 
   private final CommandWorkflowModel workflowCommand;

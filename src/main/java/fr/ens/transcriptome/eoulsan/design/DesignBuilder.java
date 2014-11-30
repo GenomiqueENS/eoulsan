@@ -439,7 +439,7 @@ public class DesignBuilder {
         if (fastqMap.containsKey(sampleName))
           list = fastqMap.get(sampleName);
         else {
-          list = new ArrayList<FastqEntry>();
+          list = new ArrayList<>();
           fastqMap.put(sampleName, list);
         }
 

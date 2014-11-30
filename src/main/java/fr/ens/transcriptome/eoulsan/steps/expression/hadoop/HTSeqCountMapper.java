@@ -83,7 +83,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
   static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
       + ".expression.no.ambiguous.cases";
 
-  private GenomicArray<String> features = new GenomicArray<String>();
+  private GenomicArray<String> features = new GenomicArray<>();
   private Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
@@ -182,7 +182,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
     context.getCounter(this.counterGroup,
         TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
-    List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> ivSeq = new ArrayList<>();
 
     String[] fields = line.split("£");
 
@@ -278,7 +278,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
               this.stranded);
 
       if (fs == null)
-        fs = new HashSet<String>();
+        fs = new HashSet<>();
 
       switch (fs.size()) {
       case 0:

@@ -124,7 +124,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       IOException, BadBioEntryException {
 
     final GenomicArray<String> features =
-        new GenomicArray<String>(GenomeDescription.load(genomeDescFile.open()));
+        new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));
 
     final Map<String, Integer> counts = new HashMap<>();
 
@@ -142,7 +142,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           + featureType + "' found.\n");
     }
 
-    List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> ivSeq = new ArrayList<>();
 
     final SAMFileReader inputSam = new SAMFileReader(samFile.open());
 
@@ -278,7 +278,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     inputSam.close();
 
     // Write results
-    final List<String> keysSorted = new ArrayList<String>(counts.keySet());
+    final List<String> keysSorted = new ArrayList<>(counts.keySet());
     Collections.sort(keysSorted);
 
     writer.write("Id\tCount\n");

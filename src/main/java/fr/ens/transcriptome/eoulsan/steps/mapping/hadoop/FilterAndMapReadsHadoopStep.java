@@ -99,7 +99,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     try {
 
-      final List<Job> jobsPairedEnd = new ArrayList<Job>();
+      final List<Job> jobsPairedEnd = new ArrayList<>();
       final Data readData = context.getInputData(READS_PORT_NAME);
 
       if (readData.getDataFileCount() == 2) {

@@ -54,7 +54,7 @@ public final class XMLUtils {
     if (e == null)
       return null;
 
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
 
     final NamedNodeMap map = e.getAttributes();
 
@@ -99,7 +99,7 @@ public final class XMLUtils {
     if (nStepsList == null)
       return null;
 
-    final List<Element> result = new ArrayList<Element>();
+    final List<Element> result = new ArrayList<>();
 
     for (int i = 0; i < nStepsList.getLength(); i++) {
 
@@ -128,7 +128,7 @@ public final class XMLUtils {
     if (nStepsList == null)
       return null;
 
-    final List<Element> result = new ArrayList<Element>();
+    final List<Element> result = new ArrayList<>();
 
     for (int i = 0; i < nStepsList.getLength(); i++) {
 
@@ -173,7 +173,7 @@ public final class XMLUtils {
     if (parentElement == null || elementName == null)
       return null;
 
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
 
     for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName))
       result.add(e.getTextContent());

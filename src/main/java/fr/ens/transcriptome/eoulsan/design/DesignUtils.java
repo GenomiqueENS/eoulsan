@@ -113,7 +113,7 @@ public final class DesignUtils {
    */
   public static boolean checkSamples(final Design design) {
 
-    final Set<String> samplesSources = new HashSet<String>();
+    final Set<String> samplesSources = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
@@ -136,7 +136,7 @@ public final class DesignUtils {
   private static boolean checkSamplesWithException(final Design design)
       throws EoulsanException {
 
-    final Set<String> samplesSources = new HashSet<String>();
+    final Set<String> samplesSources = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
@@ -163,7 +163,7 @@ public final class DesignUtils {
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
       return true;
 
-    final Set<String> genomes = new HashSet<String>();
+    final Set<String> genomes = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
 
@@ -189,7 +189,7 @@ public final class DesignUtils {
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
       return true;
 
-    final Set<String> annotations = new HashSet<String>();
+    final Set<String> annotations = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
 
@@ -341,7 +341,7 @@ public final class DesignUtils {
       for (final String field : fieldsToModify) {
 
         final List<String> values =
-            new ArrayList<String>(s.getMetadata().getFieldAsList(field));
+            new ArrayList<>(s.getMetadata().getFieldAsList(field));
         for (int i = 0; i < values.size(); i++) {
 
           final DataFile df = new DataFile(values.get(i));

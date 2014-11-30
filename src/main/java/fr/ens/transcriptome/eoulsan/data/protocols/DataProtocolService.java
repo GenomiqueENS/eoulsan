@@ -98,7 +98,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   public Map<String, String> getServiceClasses() {
 
     final Map<String, String> result =
-        new HashMap<String, String>(super.getServiceClasses());
+        new HashMap<>(super.getServiceClasses());
 
     result.put(this.defaultProtocolName, this.defaultProtocol.getClass()
         .getName());

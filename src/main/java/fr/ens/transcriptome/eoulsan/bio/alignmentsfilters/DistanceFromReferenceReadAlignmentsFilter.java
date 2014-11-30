@@ -92,7 +92,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
     if (records == null)
       return;
 
-    List<SAMRecord> recordsToKeep = new ArrayList<SAMRecord>();
+    List<SAMRecord> recordsToKeep = new ArrayList<>();
 
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {

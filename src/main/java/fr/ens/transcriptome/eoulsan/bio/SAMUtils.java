@@ -227,7 +227,7 @@ public class SAMUtils {
       throw new NullPointerException("The genome description is null.");
 
     final List<SAMSequenceRecord> sequences =
-        new ArrayList<SAMSequenceRecord>();
+        new ArrayList<>();
 
     for (String sequenceName : genomeDescription.getSequencesNames()) {
 

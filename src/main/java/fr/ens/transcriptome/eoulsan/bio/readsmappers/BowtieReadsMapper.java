@@ -109,7 +109,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
       final String index, final boolean inputCrossbowFormat,
       final boolean memoryMappedIndex) {
 
-    final List<String> result = new ArrayList<String>();
+    final List<String> result = new ArrayList<>();
 
     // Bowtie Executable path
     result.add(bowtiePath);

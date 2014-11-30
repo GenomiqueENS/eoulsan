@@ -42,7 +42,7 @@ public class JoinTranslator extends BasicTranslator {
   private String joinField;
   private String[] fields;
   private Map<String, Translator> mapTranslator =
-      new HashMap<String, Translator>();
+      new HashMap<>();
   private boolean returnTranslation1IfNoTranslation;
 
   /**
@@ -159,7 +159,7 @@ public class JoinTranslator extends BasicTranslator {
     this.translator2 = translator2;
     this.returnTranslation1IfNoTranslation = returnTranslation1IfNoTranslation;
 
-    final ArrayList<String> fieldList = new ArrayList<String>();
+    final ArrayList<String> fieldList = new ArrayList<>();
 
     for (final String f : translator1.getFields()) {
       this.mapTranslator.put(f, translator1);

@@ -112,7 +112,7 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
     samRecordPE3 = parser.parseLine(recordPE3);
     samRecordPE4 = parser.parseLine(recordPE4);
 
-    records = new ArrayList<SAMRecord>();
+    records = new ArrayList<>();
 
     filter = new RemoveMultiMatchesReadAlignmentsFilter();
   }
@@ -144,7 +144,7 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   @Test
   public void testFilterReadAlignments() {
 
-    List<SAMRecord> recordsVerif = new ArrayList<SAMRecord>();
+    List<SAMRecord> recordsVerif = new ArrayList<>();
 
     // single-end mode
     records.add(samRecordSE1);

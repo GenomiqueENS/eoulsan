@@ -144,7 +144,7 @@ public class QualityReadAlignmentsFilterTest {
     samRecordPE7 = parser.parseLine(recordPE7);
     samRecordPE8 = parser.parseLine(recordPE8);
 
-    records = new ArrayList<SAMRecord>();
+    records = new ArrayList<>();
 
     filter = new QualityReadAlignmentsFilter();
     filter.setParameter("threshold", "50");

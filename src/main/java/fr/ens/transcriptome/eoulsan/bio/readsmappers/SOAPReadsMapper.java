@@ -122,7 +122,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
     cmd.add(genomePathname);
     return cmd;
@@ -235,7 +235,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
         if (getListMapperArguments() != null)
@@ -296,7 +296,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
         if (getListMapperArguments() != null)
