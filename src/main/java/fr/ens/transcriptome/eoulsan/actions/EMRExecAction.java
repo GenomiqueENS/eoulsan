@@ -224,7 +224,7 @@ public class EMRExecAction extends AbstractAction {
 
       // Launch executor
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
-          (Step) new AWSElasticMapReduceExecStep(), (Step) new TerminalStep()),
+              new AWSElasticMapReduceExecStep(), new TerminalStep()),
           null);
 
     } catch (FileNotFoundException e) {

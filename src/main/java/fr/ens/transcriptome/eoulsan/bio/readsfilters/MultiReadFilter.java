@@ -146,7 +146,7 @@ public class MultiReadFilter implements ReadFilter {
    */
   public MultiReadFilter() {
 
-    this((ReporterIncrementer) null, null);
+    this(null, null);
   }
 
   /**

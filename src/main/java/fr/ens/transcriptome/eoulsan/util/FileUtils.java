@@ -390,7 +390,7 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final File file) throws IOException {
 
-    return createFastBufferedWriter(file, (Charset) null);
+    return createFastBufferedWriter(file, null);
   }
 
   /**

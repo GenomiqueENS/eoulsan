@@ -144,7 +144,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
    */
   public MultiReadAlignmentsFilter() {
 
-    this((ReporterIncrementer) null, null);
+    this(null, null);
   }
 
   /**

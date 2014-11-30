@@ -202,7 +202,7 @@ public class UploadS3Action extends AbstractAction {
 
       // Launch executor
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
-          (Step) new TerminalStep()), null);
+          new TerminalStep()), null);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());

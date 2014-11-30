@@ -191,7 +191,7 @@ public class ITFactory {
 
     // Add java properties
     for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
-      constants.put((String) e.getKey(), (String) e.getValue());
+      constants.put(e.getKey(), e.getValue());
 
     // Add environment properties
     for (Map.Entry<String, String> e : System.getenv().entrySet())
