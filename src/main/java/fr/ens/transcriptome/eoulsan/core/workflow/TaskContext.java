@@ -647,7 +647,7 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
 
-    synchronized (this.getClass()) {
+    synchronized (TaskContext.class) {
       this.id = (++instanceCounter);
     }
     this.contextName = "context" + id;
