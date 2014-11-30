@@ -155,7 +155,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
         .toString());
-    cell.setOfficeValueAttribute(Double.valueOf(l));
+    cell.setOfficeValueAttribute((double) l);
   }
 
   @Override
@@ -164,7 +164,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
         .toString());
-    cell.setOfficeValueAttribute(Double.valueOf(d));
+    cell.setOfficeValueAttribute(d);
   }
 
   @Override
