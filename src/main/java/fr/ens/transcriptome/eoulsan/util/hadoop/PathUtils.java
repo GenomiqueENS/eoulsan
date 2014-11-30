@@ -112,7 +112,7 @@ public final class PathUtils {
       this.allowCompressedFile = allowCompressedFile;
     }
 
-  };
+  }
 
   /**
    * Simple PathFilter to filter Paths with their beginning
@@ -171,7 +171,7 @@ public final class PathUtils {
       this.allowCompressedFile = allowCompressedFile;
     }
 
-  };
+  }
 
   /**
    * Create an input stream from a path.

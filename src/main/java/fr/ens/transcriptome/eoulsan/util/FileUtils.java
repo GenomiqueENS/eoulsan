@@ -122,7 +122,7 @@ public class FileUtils {
       this.prefix = prefix;
       this.allowCompressedFile = allowCompressedFile;
     }
-  };
+  }
 
   /**
    * Simple FilenameFilter to filter Paths with their suffix.
@@ -176,7 +176,7 @@ public class FileUtils {
       this.suffix = suffix;
       this.allowCompressedFile = allowCompressedFile;
     }
-  };
+  }
 
   /**
    * Utility method to create a fast InputStream from a file.

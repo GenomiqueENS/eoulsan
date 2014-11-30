@@ -80,7 +80,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
           + ", length=" + length + ", genomeMD5=" + genomeMD5
           + ", mapperName= " + mapperName + ", file=" + file + "}";
     }
-  };
+  }
 
   //
   // Interface methods

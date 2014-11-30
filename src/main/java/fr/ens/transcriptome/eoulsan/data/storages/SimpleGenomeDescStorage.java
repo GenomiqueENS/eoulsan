@@ -81,7 +81,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
           + genomeFileLength + ", genomeFileMD5Sum=" + genomeFileMD5Sum
           + ", file=" + file + "}";
     }
-  };
+  }
 
   //
   // Index management methods
