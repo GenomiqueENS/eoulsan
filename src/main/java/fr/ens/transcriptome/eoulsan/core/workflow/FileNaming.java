@@ -59,7 +59,7 @@ public class FileNaming {
   private int sampleId = -1;
   private DataFormat format;
   private int fileIndex = -1;
-  private int part = -1;;
+  private int part = -1;
   private CompressionType compression = CompressionType.NONE;
 
   //

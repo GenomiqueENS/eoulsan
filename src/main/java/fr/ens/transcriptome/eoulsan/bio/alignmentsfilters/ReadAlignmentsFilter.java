@@ -68,6 +68,6 @@ public interface ReadAlignmentsFilter {
    * Initialize the filter.
    * @throws EoulsanException an error occurs while initialize the filter
    */
-  void init() throws EoulsanException;;
+  void init() throws EoulsanException;
 
 }
