@@ -387,23 +387,15 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       Common.errorExit(e, "File not found: " + e.getMessage());
 
-    } catch (EoulsanException e) {
+    } catch (EoulsanException | EoulsanRuntimeException e) {
 
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
 
-    } catch (EoulsanRuntimeException e) {
-
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-
-    } catch (IOException e) {
+    } catch (IOException | URISyntaxException e) {
 
       Common.errorExit(e, "Error: " + e.getMessage());
 
-    } catch (URISyntaxException e) {
-
-      Common.errorExit(e, "Error: " + e.getMessage());
     }
 
   }

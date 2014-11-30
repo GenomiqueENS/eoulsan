@@ -316,15 +316,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
         break;
       }
 
-    } catch (SAMFormatException e) {
-
-      context.getCounter(this.counterGroup,
-          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + line + "'");
-      return;
-    } catch (EoulsanException e) {
+    } catch (SAMFormatException | EoulsanException e) {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);

@@ -114,9 +114,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
         new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
             .write(design);
       }
-    } catch (IOException e) {
-      getLogger().severe("Unable to copy design file to output path.");
-    } catch (EoulsanIOException e) {
+    } catch (IOException | EoulsanIOException e) {
       getLogger().severe("Unable to copy design file to output path.");
     }
 

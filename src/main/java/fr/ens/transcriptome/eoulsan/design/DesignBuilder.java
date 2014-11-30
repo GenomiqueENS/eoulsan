@@ -148,9 +148,7 @@ public class DesignBuilder {
         reader.throwException();
 
         return reader.next().getName();
-      } catch (IOException e) {
-        throw new EoulsanException(e.getMessage());
-      } catch (BadBioEntryException e) {
+      } catch (IOException | BadBioEntryException e) {
         throw new EoulsanException(e.getMessage());
       }
 
@@ -640,9 +638,7 @@ public class DesignBuilder {
       format =
           FastqFormat.identifyFormat(fileToCheck.open(),
               MAX_FASTQ_ENTRIES_TO_READ);
-    } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (BadBioEntryException e) {
+    } catch (IOException | BadBioEntryException e) {
       throw new EoulsanException(e.getMessage());
     }
 

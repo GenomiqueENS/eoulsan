@@ -239,9 +239,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
         c.voidEval("file.remove(\"" + filename + "\")");
 
-    } catch (RserveException e) {
-      throw new REngineException(rconnection, "RServe exception: " + e);
-    } catch (REXPMismatchException e) {
+    } catch (RserveException | REXPMismatchException e) {
       throw new REngineException(rconnection, "RServe exception: " + e);
     }
   }

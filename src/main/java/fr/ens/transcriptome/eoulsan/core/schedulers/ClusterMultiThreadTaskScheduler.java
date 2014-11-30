@@ -222,13 +222,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         // Send tokens
         TaskRunner.sendTokens(this.context, result);
 
-      } catch (IOException e) {
-        e.printStackTrace();
-        result = TaskRunner.createStepResult(this.context, e);
-      } catch (EoulsanException e) {
-        e.printStackTrace();
-        result = TaskRunner.createStepResult(this.context, e);
-      } catch (InterruptedException e) {
+      } catch (IOException | EoulsanException | InterruptedException e) {
         e.printStackTrace();
         result = TaskRunner.createStepResult(this.context, e);
       } finally {

@@ -426,13 +426,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     try {
       parse(is);
-    } catch (ParserConfigurationException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (FileNotFoundException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (SAXException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (IOException e) {
+    } catch (ParserConfigurationException | IOException | SAXException e) {
       throw new EoulsanException(e.getMessage());
     }
   }

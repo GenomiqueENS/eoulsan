@@ -48,9 +48,7 @@ public class FileNamingTest {
 
     try {
       EoulsanRuntimeDebug.initDebugEoulsanRuntime();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (EoulsanException e) {
+    } catch (IOException | EoulsanException e) {
       e.printStackTrace();
     }
   }

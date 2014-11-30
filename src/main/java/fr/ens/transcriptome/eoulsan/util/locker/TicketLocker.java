@@ -204,8 +204,7 @@ public class TicketLocker implements Locker {
           while (true)
             Thread.sleep(10000);
 
-        } catch (InterruptedException e) {
-        } catch (RemoteException e) {
+        } catch (InterruptedException | RemoteException e) {
         }
 
       }

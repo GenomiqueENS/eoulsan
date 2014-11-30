@@ -158,10 +158,7 @@ public class CommandWorkflowParser {
       doc = dBuilder.parse(this.is);
       doc.getDocumentElement().normalize();
 
-    } catch (ParserConfigurationException e) {
-      throw new EoulsanException("Error while parsing param file: "
-          + e.getMessage());
-    } catch (SAXException e) {
+    } catch (ParserConfigurationException | SAXException e) {
       throw new EoulsanException("Error while parsing param file: "
           + e.getMessage());
     } catch (IOException e) {

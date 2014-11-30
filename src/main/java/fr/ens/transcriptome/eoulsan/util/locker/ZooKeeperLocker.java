@@ -101,9 +101,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
           lock.wait();
         }
       }
-    } catch (KeeperException e) {
-      throw new IOException(e);
-    } catch (InterruptedException e) {
+    } catch (KeeperException | InterruptedException e) {
       throw new IOException(e);
     }
   }
@@ -116,9 +114,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
       this.lockPath = null;
       this.zk.close();
       this.response = false;
-    } catch (KeeperException e) {
-      throw new IOException(e);
-    } catch (InterruptedException e) {
+    } catch (KeeperException | InterruptedException e) {
       throw new IOException(e);
     }
 

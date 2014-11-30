@@ -428,9 +428,7 @@ public class DiffAna extends Normalization {
         writer.write(sb.toString());
         writer.close();
       }
-    } catch (REngineException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (REngineException | IOException e) {
       e.printStackTrace();
     }
 
