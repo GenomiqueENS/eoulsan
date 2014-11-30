@@ -291,14 +291,14 @@ public abstract class Main {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
+    final String[] argsArray = this.args.toArray(new String[args.size()]);
 
     int argsOptions = 0;
 
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, args.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, argsArray, true);
 
       // Help option
       if (line.hasOption("help")) {
