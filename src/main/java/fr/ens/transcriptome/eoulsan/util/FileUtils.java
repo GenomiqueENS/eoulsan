@@ -122,7 +122,7 @@ public class FileUtils {
       this.prefix = prefix;
       this.allowCompressedFile = allowCompressedFile;
     }
-  };
+  }
 
   /**
    * Simple FilenameFilter to filter Paths with their suffix.
@@ -176,7 +176,7 @@ public class FileUtils {
       this.suffix = suffix;
       this.allowCompressedFile = allowCompressedFile;
     }
-  };
+  }
 
   /**
    * Utility method to create a fast InputStream from a file.
@@ -390,7 +390,7 @@ public class FileUtils {
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final File file) throws IOException {
 
-    return createFastBufferedWriter(file, (Charset) null);
+    return createFastBufferedWriter(file, null);
   }
 
   /**
@@ -739,8 +739,6 @@ public class FileUtils {
 
     try {
       inChannel.transferTo(0, inChannel.size(), outChannel);
-    } catch (IOException e) {
-      throw e;
     } finally {
       if (inChannel != null)
         inChannel.close();
@@ -971,9 +969,7 @@ public class FileUtils {
     if (filesToRemove == null)
       return false;
 
-    for (int i = 0; i < filesToRemove.length; i++) {
-
-      final File f = filesToRemove[i];
+    for (final File f : filesToRemove) {
 
       if (f.isDirectory()) {
         if (recursive) {
@@ -1019,9 +1015,9 @@ public class FileUtils {
     String prefix = null;
     final StringBuilder sb = new StringBuilder();
 
-    for (int i = 0; i < files.length; i++) {
+    for (File file : files) {
 
-      String filename = files[i].getName();
+      String filename = file.getName();
 
       if (prefix == null)
         prefix = filename;
@@ -1243,8 +1239,8 @@ public class FileUtils {
       return false;
 
     final File[] files = directory.listFiles();
-    for (int i = 0; i < files.length; i++)
-      if (!files[i].delete())
+    for (File file : files)
+      if (!file.delete())
         return false;
 
     return directory.delete();
@@ -1657,8 +1653,6 @@ public class FileUtils {
       isb = new FileInputStream(fileB);
 
       return compareFile(isa, isb);
-    } catch (IOException e) {
-      throw e;
     } finally {
       if (isa != null)
         isa.close();
@@ -1730,8 +1724,8 @@ public class FileUtils {
     final File absPath = path.getAbsoluteFile();
     final File absBase = base.getAbsoluteFile();
 
-    List<String> pathNodes = new ArrayList<String>();
-    List<String> baseNodes = new ArrayList<String>();
+    List<String> pathNodes = new ArrayList<>();
+    List<String> baseNodes = new ArrayList<>();
 
     File parent = absPath;
     do {
@@ -1752,7 +1746,7 @@ public class FileUtils {
     while (i < minSize && pathNodes.get(i).equals(baseNodes.get(i)))
       i++;
 
-    final List<String> resultNodes = new ArrayList<String>();
+    final List<String> resultNodes = new ArrayList<>();
 
     if (i < baseNodes.size())
       for (int j = 0; j < baseNodes.size() - i; j++)

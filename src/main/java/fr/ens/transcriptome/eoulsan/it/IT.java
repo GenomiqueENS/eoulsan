@@ -32,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KE
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
-import static fr.ens.transcriptome.eoulsan.it.ITFactory.getItSuite;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
@@ -42,7 +41,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -55,7 +56,6 @@ import org.testng.annotations.Test;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -74,13 +74,14 @@ public class IT {
   public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
       .trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
-  private static final String TEST_SOURCE_LINK_NAME = "test-source";
 
-  /** Prefix for set environment variable in test configuration file */
-  private static final String PREFIX_ENV_VAR = "env.var.";
+  /** Prefix for set environment variable in test configuration file. */
+  static final String PREFIX_ENV_VAR = "env.var.";
+
+  private static final String TEST_SOURCE_LINK_NAME = "test-source";
   private static final String ENV_FILENAME = "ENV";
 
-  /** Variables */
+  /** Variables. */
   private final Properties testConf;
   private final String testName;
   private final String description;
@@ -89,12 +90,12 @@ public class IT {
   private final File outputTestDirectory;
   private final File expectedTestDirectory;
 
-  /** Patterns */
+  /** Patterns. */
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
-  /** Patterns to check file and compare size */
+  /** Patterns to check file and compare size. */
   private final String checkExistenceFilePatterns;
-  /** Patterns to check file not exist in test directory */
+  /** Patterns to check file not exist in test directory. */
   private final String checkAbsenceFilePatterns;
 
   private final boolean generateExpectedData;
@@ -105,12 +106,12 @@ public class IT {
 
   // Instance
   private final ITResult itResult;
-  private final String[] environmentVariables;
+  private final List<String> environmentVariables;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
-   * arguments: expected data or data to test.If it is data to test then launch
-   * comparison
+   * arguments: expected data or data to test. If it is data to test then launch
+   * comparison.
    * @throws Exception if an error occurs while execute script or comparison
    */
   @Test
@@ -120,7 +121,12 @@ public class IT {
     final Stopwatch timer = Stopwatch.createStarted();
 
     getLogger().info("Start test " + this.testName);
-    getItSuite().startTest(this.outputTestDirectory.getParentFile());
+
+    // Get ITSuite object
+    final ITSuite itSuite = ITSuite.getInstance();
+
+    // Notify the suite of the beginning of the current test
+    itSuite.startTest(this.outputTestDirectory.getParentFile());
 
     // Compile the result comparison from all tests
     ITOutput itOutput = null;
@@ -166,8 +172,9 @@ public class IT {
         itResult.addComparisonsResults(results);
 
         // Check if at least on comparison fail, must throw an exception
-        if (!itResult.isSuccess())
+        if (!itResult.isSuccess()) {
           throw itResult.getException();
+        }
       }
 
     } catch (Throwable e) {
@@ -183,17 +190,16 @@ public class IT {
         // Set success on generate data in expected directory
         itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
       }
-      
-      getItSuite().endTest(this.outputTestDirectory.getParentFile(),
-          this.itResult);
+
+      // Notify the suite of the end of the current test
+      itSuite.endTest(this.outputTestDirectory.getParentFile(), this.itResult);
     }
   }
 
   /**
    * Launch all scripts defined for the test.
-   * @return
-   * @throws EoulsanException if an error occurs while execute script
-   * @throws IOException if the output directory is missing
+   * @throws Throwable if an error occurs while execute script or output
+   *           directory is missing
    */
   private void launchScriptsTest(final ITResult itResult) throws Throwable {
 
@@ -239,29 +245,54 @@ public class IT {
         "POST_SCRIPT_GLOBAL", "post script global");
   }
 
+  /**
+   * Execute command to run command line.
+   * @param cmdExecutor ITCommandExecutor object
+   * @param itResult ItResult object
+   * @param keyConf key configuration to retrieve command line
+   * @param suffixFilename suffix filename for output standard and error file on
+   *          execution process
+   * @param desc description on command line
+   * @throws Throwable if an error occurs during execution process
+   */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
-      final String suffixFileaname, final String desc) throws Throwable {
+      final String suffixFilename, final String desc) throws Throwable {
 
-    executeCommand(cmdExecutor, itResult, keyConf, suffixFileaname, desc, false);
+    executeCommand(cmdExecutor, itResult, keyConf, suffixFilename, desc, false);
   }
 
+  /**
+   * Execute command to run command line.
+   * @param cmdExecutor ITCommandExecutor object
+   * @param itResult ItResult object
+   * @param keyConf key configuration to retrieve command line
+   * @param suffixFilename suffix filename for output standard and error file on
+   *          execution process
+   * @param desc description on command line
+   * @param isApplication true if application to run, otherwise false
+   *          corresponding to annexes script
+   * @throws Throwable if an error occurs during execution process
+   */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
       final String suffixFilename, final String desc,
       final boolean isApplication) throws Throwable {
 
+    // Execute command line and save standard and error output in file
     ITCommandResult cmdResult =
         cmdExecutor
             .executeCommand(keyConf, suffixFilename, desc, isApplication);
 
-    if (cmdResult == null)
+    if (cmdResult == null) {
       return;
+    }
 
     itResult.addCommandResult(cmdResult);
 
-    if (cmdResult.isCatchedException())
+    if (cmdResult.isCatchedException()) {
       throw cmdResult.getException();
+    }
   }
 
   /**
@@ -271,7 +302,7 @@ public class IT {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
     // Write in file
-    if (!(this.environmentVariables == null || this.environmentVariables.length == 0)) {
+    if (!(this.environmentVariables == null || this.environmentVariables.size() == 0)) {
       // Convert to string
       String envToString =
           Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
@@ -285,18 +316,18 @@ public class IT {
   }
 
   /**
-   * Extract all environment variables setting in test configuration file. Key
-   * must be start with keyword {@link IT#PREFIX_ENV_VAR}
+   * Extract all environment variables setting in test configuration file.
    * @return null if not found or an string array in the format name=value
    */
-  private String[] extractEnvironmentVariables() {
+  private List<String> extractEnvironmentVariables() {
 
-    List<String> envp = Lists.newArrayList();
+    List<String> envp = new ArrayList<>();
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
+    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       envp.add(e.getKey() + "=" + e.getValue());
-
+    }
+    
     // Add setting environment variables from configuration test
     for (Object o : this.testConf.keySet()) {
       String keyProperty = (String) o;
@@ -310,11 +341,12 @@ public class IT {
     }
 
     // No variable found, return null
-    if (envp.isEmpty())
+    if (envp.isEmpty()) {
       return null;
+    }
 
     // Convert to array
-    return envp.toArray(new String[envp.size()]);
+    return Collections.unmodifiableList(envp);
   }
 
   /**
@@ -339,9 +371,10 @@ public class IT {
       // Execute command
       final String output = ProcessUtils.execToString(commandLine);
 
-      if (output != null && output.trim().length() > 0)
+      if (output != null && output.trim().length() > 0) {
         // Retrieve version
         version = output.trim();
+      }
 
     } catch (IOException e) {
     }
@@ -350,24 +383,27 @@ public class IT {
   }
 
   /**
-   * Check the expected data or data to test must be generated
+   * Check the expected data or data to test must be generated.
    * @return true if data must be generated
    * @throws IOException if an error occurs while creating directory.
    */
   private boolean isDataNeededToBeGenerated() throws IOException {
 
-    if (!this.generateExpectedData)
+    if (!this.generateExpectedData) {
       // Command for generate data to test, in all case it is true
       return true;
+    }
 
     // Command for generate expected data test
-    if (this.manualGenerationExpectedData)
+    if (this.manualGenerationExpectedData) {
       // non regenerated expected directory if already exists
       return !this.expectedTestDirectory.exists();
+    }
 
     // Regenerate all expected data directory, remove if always exists
-    if (this.generateAllTests)
+    if (this.generateAllTests) {
       return true;
+    }
 
     // Generate only missing expected data directory
     return this.generateNewTests && !this.expectedTestDirectory.exists();
@@ -383,14 +419,16 @@ public class IT {
   private void createExpectedDirectory() throws IOException {
 
     // Skip if data to test to generate
-    if (!this.generateExpectedData)
+    if (!this.generateExpectedData) {
       return;
+    }
 
     // Check already exists
     if ((this.manualGenerationExpectedData || this.generateNewTests)
-        && this.expectedTestDirectory.exists())
+        && this.expectedTestDirectory.exists()) {
       // Nothing to do
       return;
+    }
 
     // Regenerate existing expected data directory
     if (this.generateAllTests && this.expectedTestDirectory.exists()) {
@@ -401,10 +439,11 @@ public class IT {
     // New check existing directory
     if (!this.expectedTestDirectory.exists()) {
       // Create new expected data directory
-      if (!this.expectedTestDirectory.mkdir())
+      if (!this.expectedTestDirectory.mkdir()) {
         throw new IOException(testName
             + ": error while create expected data directory: "
             + this.expectedTestDirectory.getAbsolutePath());
+      }
     }
   }
 
@@ -414,14 +453,16 @@ public class IT {
    */
   private void buildOutputDirectory() throws IOException {
 
-    if (this.outputTestDirectory.exists())
+    if (this.outputTestDirectory.exists()) {
       throw new IOException("Test output directory already exists "
           + this.outputTestDirectory.getAbsolutePath());
+    }
 
     // Create analysis directory and temporary directory
-    if (!new File(this.outputTestDirectory + "/tmp").mkdirs())
+    if (!new File(this.outputTestDirectory + "/tmp").mkdirs()) {
       throw new IOException("Cannot create analysis directory "
           + this.outputTestDirectory.getAbsolutePath());
+    }
 
     // Check input test directory
     checkExistingDirectoryFile(this.inputTestDirectory, "input test directory");
@@ -444,7 +485,7 @@ public class IT {
   //
 
   /**
-   * Create the expected data test directory
+   * Create the expected data test directory.
    * @param inputTestDirectory source test directory with needed files
    * @return expected data directory for the test
    * @throws EoulsanException if the existing directory is empty
@@ -463,10 +504,11 @@ public class IT {
         });
 
     // Execute test, expected must be existing
-    if (expectedDirectories.length == 0 && !this.generateExpectedData)
+    if (expectedDirectories.length == 0 && !this.generateExpectedData) {
       throw new EoulsanException(testName
           + ": no expected directory found to launch test in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
     // No test directory found
     if (expectedDirectories.length == 0) {
@@ -489,15 +531,17 @@ public class IT {
     }
 
     // One test directory found
-    if (expectedDirectories.length > 1)
+    if (expectedDirectories.length > 1) {
       throw new EoulsanException(testName
           + ": more one expected directory found in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
-    if (!expectedDirectories[0].isDirectory())
+    if (!expectedDirectories[0].isDirectory()) {
       throw new EoulsanException(testName
           + ": no expected directory found in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
     // Return expected data directory
     return expectedDirectories[0];
@@ -507,15 +551,16 @@ public class IT {
   /**
    * Group exclude file patterns with default, global configuration and
    * configuration test.
-   * @param valueConfigTests
+   * @param valueConfigTests patterns from configuration file
    * @return exclude files patterns for tests
    */
   private String buildExcludePatterns(final String valueConfigTests) {
-    if (valueConfigTests == null || valueConfigTests.trim().length() == 0)
+    if (valueConfigTests == null || valueConfigTests.trim().length() == 0) {
       // Syntax **/filename
       return "**/"
           + IT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
           + ITFactory.TEST_CONFIGURATION_FILENAME;
+    }
 
     return IT.TEST_SOURCE_LINK_NAME
         + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME + SEPARATOR
@@ -524,7 +569,7 @@ public class IT {
 
   /**
    * Retrieve properties for the test, compile specific configuration with
-   * global
+   * global.
    * @param globalsConf global configuration for tests
    * @param testConfFile file with the test configuration
    * @return Properties content of configuration file
@@ -548,30 +593,29 @@ public class IT {
 
     while ((line = br.readLine()) != null) {
       // Skip commentary
-      if (line.startsWith("#"))
+      if (line.startsWith("#")) {
         continue;
+      }
 
       final int pos = line.indexOf('=');
-      if (pos == -1)
+      if (pos == -1) {
         continue;
+      }
 
       final String key = line.substring(0, pos).trim();
 
       // Evaluate value
       String value = evaluateExpressions(line.substring(pos + 1).trim(), true);
 
-      // Save parameter with value
-      if (value.length() > 0) {
-
-        // Key pattern : add value for test to values from
-        // configuration general
-        if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
-          // Concatenate values
-          value = props.getProperty(key) + SEPARATOR + value;
-        }
-
-        props.put(key, value);
+      // Key pattern : add value for test to values from
+      // configuration general
+      if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
+        // Concatenate values
+        value = props.getProperty(key) + SEPARATOR + value;
       }
+
+      // Save parameter with value
+      props.put(key, value);
     }
     br.close();
 
@@ -583,14 +627,26 @@ public class IT {
   // Getter
   //
 
+  /**
+   * Gets the test name.
+   * @return the test name
+   */
   public String getTestName() {
     return this.testName;
   }
 
+  /**
+   * Gets the expected test directory.
+   * @return the expected test directory
+   */
   public File getExpectedTestDirectory() {
     return this.expectedTestDirectory;
   }
 
+  /**
+   * Gets the output test directory.
+   * @return the output test directory
+   */
   public File getOutputTestDirectory() {
     return this.outputTestDirectory;
   }
@@ -602,17 +658,29 @@ public class IT {
         + ", files from pattern(s) " + this.fileToComparePatterns;
   }
 
+  /**
+   * Gets the file to compare patterns.
+   * @return the file to compare patterns
+   */
   public String getFileToComparePatterns() {
     return (fileToComparePatterns == null || fileToComparePatterns.isEmpty()
         ? "none" : this.fileToComparePatterns);
   }
 
+  /**
+   * Gets the exclude to compare patterns.
+   * @return the exclude to compare patterns
+   */
   public String getExcludeToComparePatterns() {
     return (excludeToComparePatterns == null
         || excludeToComparePatterns.isEmpty()
         ? "none" : excludeToComparePatterns);
   }
 
+  /**
+   * Gets the check existence file patterns.
+   * @return the check existence file patterns
+   */
   public String getCheckExistenceFilePatterns() {
     return (checkExistenceFilePatterns == null
         || checkExistenceFilePatterns.isEmpty()
@@ -623,7 +691,7 @@ public class IT {
   // Constructor
   //
   /**
-   * Public constructor
+   * Public constructor.
    * @param globalsConf global configuration for tests
    * @param applicationPath path to the application to test
    * @param testConfFile file with the test configuration

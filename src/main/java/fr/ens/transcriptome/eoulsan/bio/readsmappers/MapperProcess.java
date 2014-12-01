@@ -34,10 +34,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
@@ -457,7 +457,8 @@ public abstract class MapperProcess {
       final String quality) throws IOException {
 
     if (this.writer1 == null) {
-      this.writer1 = new OutputStreamWriter(getStdin(), Charsets.ISO_8859_1);
+      this.writer1 =
+          new OutputStreamWriter(getStdin(), StandardCharsets.ISO_8859_1);
     }
 
     if (this.isPairedEnd())
@@ -493,10 +494,10 @@ public abstract class MapperProcess {
 
       this.writer1 =
           new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
-              Charsets.ISO_8859_1);
+              StandardCharsets.ISO_8859_1);
       this.writer2 =
           new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
-              Charsets.ISO_8859_1);
+              StandardCharsets.ISO_8859_1);
     }
 
     if (!this.isPairedEnd())

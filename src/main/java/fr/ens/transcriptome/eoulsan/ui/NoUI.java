@@ -32,7 +32,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class NoUI implements UI {
+public class NoUI extends AbstractUI {
 
   @Override
   public String getName() {

@@ -55,7 +55,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
   private int id;
   private String type;
   private double densityRatio;
-  private List<RTALaneSummary> lanes = new ArrayList<RTALaneSummary>();
+  private List<RTALaneSummary> lanes = new ArrayList<>();
 
   //
   // Getters

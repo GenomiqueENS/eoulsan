@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
@@ -44,7 +45,6 @@ public class TranslatorUtils {
   /**
    * Create a file with additional annotation.
    * @param inputFile input file
-   * @param outputFile output file with additional annotation
    * @param fieldToTranslate field to use with translator
    * @param translator translator to use
    * @throws FileNotFoundException if a file cannot be found
@@ -71,9 +71,9 @@ public class TranslatorUtils {
       throw new NullPointerException("OutputFormat is null");
 
     String[] translatorFieldnames = translator.getFields();
-    final int n = translatorFieldnames.length;
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line;
     boolean first = true;
 
@@ -84,12 +84,12 @@ public class TranslatorUtils {
       if (first) {
 
         // Write original file header
-        for (int i = 0; i < fields.length; i++)
-          of.addHeaderField(fields[i]);
+        for (String field : fields)
+          of.addHeaderField(field);
 
         // Write original file header
-        for (int i = 0; i < n; i++)
-          of.addHeaderField(translatorFieldnames[i]);
+        for (String translatorFieldname : translatorFieldnames)
+          of.addHeaderField(translatorFieldname);
 
         first = false;
       } else {
@@ -97,18 +97,17 @@ public class TranslatorUtils {
         of.newLine();
 
         // Write orignal file data
-        for (int i = 0; i < fields.length; i++)
+        for (String field1 : fields)
           try {
-            of.writeDouble(Double.parseDouble(fields[i]));
+            of.writeDouble(Double.parseDouble(field1));
           } catch (NumberFormatException e) {
 
-            of.writeText(fields[i]);
+            of.writeText(field1);
           }
 
         // Write annotation
-        for (int i = 0; i < n; i++) {
+        for (final String field : translatorFieldnames) {
 
-          final String field = translatorFieldnames[i];
           final String valueToTranslate = fields[fieldToTranslate];
           final String value;
 

@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.mapreduce.Counter;
@@ -92,7 +93,7 @@ public class HadoopReporter implements Reporter {
       throw new UnsupportedOperationException();
     }
 
-    final Set<String> result = Sets.newHashSet();
+    final Set<String> result = new HashSet<>();
 
     for (Counter c : counters.getGroup(group))
       result.add(c.getName());

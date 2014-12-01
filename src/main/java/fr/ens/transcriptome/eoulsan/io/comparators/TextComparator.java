@@ -31,6 +31,7 @@ import java.util.Collection;
 
 import com.google.common.collect.Sets;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
@@ -50,7 +51,8 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line = null;
     numberElementsCompared = 0;
 
@@ -80,6 +82,7 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   //
   // Getter
   //
+  @Override
   public Collection<String> getExtensions() {
     return EXTENSIONS;
   }

@@ -62,7 +62,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   private final SpreadsheetDocument document;
   private final TableTableElement tableElement;
   private final Table table;
-  private final List<String> headers = new ArrayList<String>();
+  private final List<String> headers = new ArrayList<>();
   private TableTableRowElement rowElement;
   private final OdfFileDom dom;
 
@@ -155,7 +155,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
         .toString());
-    cell.setOfficeValueAttribute(Double.valueOf(l));
+    cell.setOfficeValueAttribute((double) l);
   }
 
   @Override
@@ -164,7 +164,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
         .toString());
-    cell.setOfficeValueAttribute(Double.valueOf(d));
+    cell.setOfficeValueAttribute(d);
   }
 
   @Override

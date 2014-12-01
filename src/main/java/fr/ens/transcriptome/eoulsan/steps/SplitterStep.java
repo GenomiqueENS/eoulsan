@@ -31,12 +31,11 @@ import static fr.ens.transcriptome.eoulsan.io.CompressionType.NONE;
 import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionTypeByContentEncoding;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -80,7 +79,7 @@ public class SplitterStep extends AbstractStep {
   private static final class SplitterIterator {
 
     private final Data data;
-    private final List<Data> list = Lists.newArrayList();
+    private final List<Data> list = new ArrayList<>();
 
     private Data getData(final int index) {
 
@@ -177,7 +176,7 @@ public class SplitterStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    final Set<Parameter> splitterParameters = Sets.newHashSet();
+    final Set<Parameter> splitterParameters = new HashSet<>();
 
     for (Parameter p : stepParameters) {
 

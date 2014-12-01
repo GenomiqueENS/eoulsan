@@ -25,12 +25,11 @@
 package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newHashMap;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newHashSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public abstract class UploadStep extends AbstractStep {
     final WorkflowContext fullContext =
         ((AbstractWorkflow) context.getWorkflow()).getWorkflowContext();
 
-    final Map<DataFile, DataFile> filesToCopy = newHashMap();
+    final Map<DataFile, DataFile> filesToCopy = new HashMap<>();
     File repackagedJarFile = null;
 
     try {
@@ -268,7 +267,7 @@ public abstract class UploadStep extends AbstractStep {
   private Map<DataFile, DataFile> findDataFilesInWorkflow(Sample sample,
       final StepContext context) throws IOException {
 
-    final Map<DataFile, DataFile> result = newHashMap();
+    final Map<DataFile, DataFile> result = new HashMap<>();
 
     Set<WorkflowStepOutputDataFile> inFiles =
         context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
@@ -290,7 +289,7 @@ public abstract class UploadStep extends AbstractStep {
    */
   private void removeNotExistingDataFile(Map<DataFile, DataFile> files) {
 
-    Set<DataFile> filesToRemove = new HashSet<DataFile>();
+    Set<DataFile> filesToRemove = new HashSet<>();
 
     for (DataFile file : files.keySet())
       if (!file.exists())
@@ -308,7 +307,7 @@ public abstract class UploadStep extends AbstractStep {
     final WorkflowStep designStep = context.getWorkflow().getDesignStep();
     final Design design = context.getWorkflow().getDesign();
 
-    final Set<String> fieldWithFiles = newHashSet();
+    final Set<String> fieldWithFiles = new HashSet<>();
     boolean first = true;
     for (final Sample s : design.getSamples()) {
 
@@ -322,7 +321,7 @@ public abstract class UploadStep extends AbstractStep {
       for (final String field : fieldWithFiles) {
 
         final List<String> oldValues = s.getMetadata().getFieldAsList(field);
-        final List<String> newValues = newArrayList();
+        final List<String> newValues = new ArrayList<>();
 
         final int nValues = oldValues.size();
 

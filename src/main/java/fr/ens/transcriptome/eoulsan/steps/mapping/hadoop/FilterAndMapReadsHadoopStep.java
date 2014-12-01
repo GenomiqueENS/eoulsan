@@ -32,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,8 +45,6 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -100,7 +99,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     try {
 
-      final List<Job> jobsPairedEnd = new ArrayList<Job>();
+      final List<Job> jobsPairedEnd = new ArrayList<>();
       final Data readData = context.getInputData(READS_PORT_NAME);
 
       if (readData.getDataFileCount() == 2) {
@@ -112,7 +111,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      final Map<Job, String> jobs = Maps.newHashMap();
+      final Map<Job, String> jobs = new HashMap<>();
       jobs.put(createJobConf(conf, context), readData.getName());
 
       // Submit filter and map job

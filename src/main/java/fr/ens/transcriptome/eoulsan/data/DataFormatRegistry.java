@@ -24,12 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Sets.newHashSet;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +53,9 @@ public class DataFormatRegistry {
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldataformats/";
 
-  private Set<DataFormat> formats = newHashSet();
-  private Map<String, DataFormat> mapFormats = newHashMap();
-  private Map<String, DataFormat> mapDesignDataFormat = newHashMap();
+  private Set<DataFormat> formats = new HashSet<>();
+  private Map<String, DataFormat> mapFormats = new HashMap<>();
+  private Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
 
   private static DataFormatRegistry instance;
 

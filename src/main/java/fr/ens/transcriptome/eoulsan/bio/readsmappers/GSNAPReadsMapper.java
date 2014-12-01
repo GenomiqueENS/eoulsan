@@ -48,7 +48,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   private static final String DEFAULT_PACKAGE_VERSION = "2012-07-20";
   private static final String MAPPER_EXECUTABLE = "gsnap";
   private static final String[] INDEXER_EXECUTABLES = new String[] {
-      "fa_coords", "gmap_process", "gmapindex", "gmap_build"};
+      "fa_coords", "gmap_process", "gmapindex", "gmap_build" };
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -80,9 +80,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final String cmd = gsnapPath + " --version";
 
       final String s = ProcessUtils.execToString(cmd);
-
-      if (s == null)
-        return null;
 
       final String[] lines = s.split("\n");
       if (lines.length == 0)
@@ -127,7 +124,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     final String binariesDirectory =
         new File(indexerPathname).getParentFile().getAbsolutePath();
     final String genomeDirectory =
@@ -221,7 +218,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
         cmd.add("-A");
         cmd.add("sam");
@@ -255,7 +252,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
         cmd.add("-A");
         cmd.add("sam");

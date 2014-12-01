@@ -87,7 +87,7 @@ public class ExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -218,10 +218,7 @@ public class ExecAction extends AbstractAction {
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
-    } catch (EoulsanException e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-    } catch (EoulsanRuntimeException e) {
+    } catch (EoulsanException | EoulsanRuntimeException e) {
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }

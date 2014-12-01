@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -58,9 +57,9 @@ public class FinalExpressionFeaturesCreator {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private GenomicArray<String> ga = new GenomicArray<String>();
+  private GenomicArray<String> ga = new GenomicArray<>();
   private final Map<String, ExpressionFeature> expressionResults =
-      new HashMap<String, ExpressionFeature>();
+      new HashMap<>();
 
   private static final class ExpressionFeature implements
       Comparable<ExpressionFeature> {
@@ -109,7 +108,7 @@ public class FinalExpressionFeaturesCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hashCode(this.id, this.alignementCount);
+      return Objects.hash(this.id, this.alignementCount);
     }
 
     @Override
@@ -123,8 +122,8 @@ public class FinalExpressionFeaturesCreator {
     //
 
     /**
-     * Constructor for ExpressionTranscript
-     * @param transcript Transcript to set
+     * Constructor for ExpressionTranscript.
+     * @param id identifier to set
      */
     public ExpressionFeature(String id) {
 
@@ -147,9 +146,8 @@ public class FinalExpressionFeaturesCreator {
   }
 
   /**
-   * Load pre result file
+   * Load pre result file.
    * @param preResultFile pre-result file
-   * @param readsUsed the number of read useds
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final File preResultFile) throws IOException {
@@ -158,9 +156,8 @@ public class FinalExpressionFeaturesCreator {
   }
 
   /**
-   * Load pre-result file
+   * Load pre-result file.
    * @param is input stream of pre-results
-   * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final InputStream is) throws IOException {
@@ -203,7 +200,7 @@ public class FinalExpressionFeaturesCreator {
   public void saveFinalResults(final OutputStream os) throws IOException {
 
     final List<ExpressionFeature> list =
-        new ArrayList<ExpressionFeature>(this.expressionResults.values());
+        new ArrayList<>(this.expressionResults.values());
 
     Collections.sort(list);
 
@@ -238,13 +235,13 @@ public class FinalExpressionFeaturesCreator {
   public FinalExpressionFeaturesCreator(final InputStream indexIs)
       throws IOException {
 
-    this.ga = new GenomicArray<String>();
+    this.ga = new GenomicArray<>();
     this.ga.load(indexIs);
   }
 
   /**
    * Public constructor.
-   * @param tef TranscriptAndExonFinder object
+   * @param ga GenomicArray object
    */
   public FinalExpressionFeaturesCreator(final GenomicArray<String> ga) {
 

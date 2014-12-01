@@ -505,7 +505,7 @@ public class TranscriptAndExonFinder {
           if (exon == this._exon || this._exon.hashCode() == exon.hashCode())
             return;
 
-          this._exons = new HashSet<Exon>();
+          this._exons = new HashSet<>();
           this._exons.add(this._exon);
           this._exon = null;
         }
@@ -533,7 +533,7 @@ public class TranscriptAndExonFinder {
         this._exon = exons.iterator().next();
         this.exonCount = this._exon == null ? 0 : 1;
       } else {
-        this._exons = new HashSet<Exon>(exons);
+        this._exons = new HashSet<>(exons);
         this.exonCount = len;
       }
 
@@ -564,7 +564,7 @@ public class TranscriptAndExonFinder {
 
     public String toString() {
 
-      Set<String> r = new HashSet<String>();
+      Set<String> r = new HashSet<>();
       if (getExons() != null)
         for (Exon e : getExons())
           r.add(e.parentId);
@@ -607,7 +607,7 @@ public class TranscriptAndExonFinder {
     private static final long serialVersionUID = 6344269628891493512L;
 
     private int length = 0;
-    private final List<Zone> zones = new ArrayList<Zone>();
+    private final List<Zone> zones = new ArrayList<>();
 
     private final Zone get(int pos) {
 
@@ -754,7 +754,7 @@ public class TranscriptAndExonFinder {
             if (e.intersect(start, stop)) {
 
               if (result == null)
-                result = new HashSet<Exon>();
+                result = new HashSet<>();
 
               result.add(e);
             }
@@ -781,10 +781,10 @@ public class TranscriptAndExonFinder {
 
     final GFFReader reader = new GFFReader(is);
 
-    this.chrZoneMap = new HashMap<String, ChromosomeZone>();
-    this.transcripts = new HashMap<String, Transcript>();
+    this.chrZoneMap = new HashMap<>();
+    this.transcripts = new HashMap<>();
 
-    final Map<String, String> idType = new HashMap<String, String>();
+    final Map<String, String> idType = new HashMap<>();
 
     int count = 0;
 

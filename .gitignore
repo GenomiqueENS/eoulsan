@@ -10,5 +10,4 @@
 /.idea
 /eoulsan.iml
 /test-output/
-src/main/java/fr/ens/transcriptome/eoulsan/toolgalaxy/PPMain.java
-src/main/java/fr/ens/transcriptome/eoulsan/toolgalaxy/VariableRegistry.java
+.pydevproject

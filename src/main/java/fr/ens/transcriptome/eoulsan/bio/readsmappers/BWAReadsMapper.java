@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 
@@ -95,10 +96,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String s = ProcessUtils.execToString(cmd, true, false);
       final String[] lines = s.split("\n");
 
-      for (int i = 0; i < lines.length; i++)
-        if (lines[i].startsWith("Version:")) {
+      for (String line : lines)
+        if (line.startsWith("Version:")) {
 
-          final String[] tokens = lines[i].split(":");
+          final String[] tokens = line.split(":");
           if (tokens.length > 1)
             return tokens[1].trim();
         }
@@ -116,7 +117,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
       cmd.add(indexerPathname);
       cmd.add("index");
@@ -272,7 +273,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
             getFastqFormat() == FASTQ_ILLUMINA
                 || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
-        final List<String> cmd1 = new ArrayList<String>();
+        final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
         cmd1.add("aln");
         if (illuminaFastq)
@@ -288,7 +289,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         else
           cmd1.add(getTmpInputFile1().getAbsolutePath());
 
-        final List<String> cmd2 = new ArrayList<String>();
+        final List<String> cmd2 = new ArrayList<>();
 
         // Build the command line
         cmd2.add(bwaPath);
@@ -303,7 +304,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         else
           cmd2.add(getTmpInputFile1().getAbsolutePath());
 
-        final List<List<String>> result = new ArrayList<List<String>>();
+        final List<List<String>> result = new ArrayList<>();
         result.add(cmd1);
         result.add(cmd2);
 
@@ -313,7 +314,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        tmpFile.delete();
+        if (!tmpFile.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile);
+        }
       }
 
     };
@@ -334,7 +337,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
             getFastqFormat() == FASTQ_ILLUMINA
                 || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
-        final List<String> cmd1 = new ArrayList<String>();
+        final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
         cmd1.add("aln");
         if (illuminaFastq)
@@ -350,7 +353,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         else
           cmd1.add(getTmpInputFile1().getAbsolutePath());
 
-        final List<String> cmd2 = new ArrayList<String>();
+        final List<String> cmd2 = new ArrayList<>();
         cmd2.add(bwaPath);
         cmd2.add("aln");
         if (illuminaFastq)
@@ -366,7 +369,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         else
           cmd2.add(getTmpInputFile2().getAbsolutePath());
 
-        final List<String> cmd3 = new ArrayList<String>();
+        final List<String> cmd3 = new ArrayList<>();
 
         // Build the command line
         cmd3.add(bwaPath);
@@ -382,7 +385,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           cmd3.add(getTmpInputFile2().getAbsolutePath());
         }
 
-        final List<List<String>> result = new ArrayList<List<String>>();
+        final List<List<String>> result = new ArrayList<>();
         result.add(cmd1);
         result.add(cmd2);
         result.add(cmd3);
@@ -393,8 +396,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        tmpFile1.delete();
-        tmpFile2.delete();
+        if (tmpFile1.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile1);
+        }
+
+        if (tmpFile2.delete()) {
+          getLogger().warning("Cannot remove BWA temporary file: " + tmpFile2);
+        }
       }
 
     };

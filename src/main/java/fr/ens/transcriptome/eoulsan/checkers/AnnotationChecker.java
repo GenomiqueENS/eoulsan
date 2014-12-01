@@ -34,11 +34,11 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionSt
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -151,7 +151,7 @@ public class AnnotationChecker implements Checker {
     InputStream is = file.open();
     final GFFReader gffReader = new GFFReader(is);
 
-    final GenomicArray<String> features = new GenomicArray<String>();
+    final GenomicArray<String> features = new GenomicArray<>();
     Map<String, long[]> sequenceRegions = null;
     final Map<String, Long> sequenceLengths = getSequencesLengths(desc);
     boolean featuresFound = false;
@@ -267,7 +267,7 @@ public class AnnotationChecker implements Checker {
     if (desc == null)
       return null;
 
-    final Map<String, Long> result = Maps.newHashMap();
+    final Map<String, Long> result = new HashMap<>();
 
     for (String sequenceName : desc.getSequencesNames())
       result.put(sequenceName, desc.getSequenceLength(sequenceName));
@@ -281,7 +281,7 @@ public class AnnotationChecker implements Checker {
     if (entry == null || desc == null)
       return null;
 
-    final Map<String, long[]> result = Maps.newHashMap();
+    final Map<String, long[]> result = new HashMap<>();
 
     final List<String> sequenceRegions =
         entry.getMetadataEntryValues("sequence-region");

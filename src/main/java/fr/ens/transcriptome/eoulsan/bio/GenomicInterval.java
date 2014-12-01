@@ -220,7 +220,7 @@ public class GenomicInterval implements Serializable,
   /**
    * Public constructor
    * @param gffEntry GFF entry
-   * @param stranded save the strand information
+   * @param saveStrandInfo save the strand information
    */
   public GenomicInterval(final GFFEntry gffEntry, final boolean saveStrandInfo) {
 

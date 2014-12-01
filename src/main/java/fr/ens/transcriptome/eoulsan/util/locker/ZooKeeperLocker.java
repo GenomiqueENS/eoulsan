@@ -38,10 +38,8 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
 /**
- * This class implements a locker using Zookeeper.
- * @see https
- *      ://www.altamiracorp.com/blog/employee-posts/distributed-lock-using-
- *      zookeeper
+ * This class implements a locker using Zookeeper. See
+ * {@link <a href="http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper">blog post</a>}
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -103,9 +101,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
           lock.wait();
         }
       }
-    } catch (KeeperException e) {
-      throw new IOException(e);
-    } catch (InterruptedException e) {
+    } catch (KeeperException | InterruptedException e) {
       throw new IOException(e);
     }
   }
@@ -118,9 +114,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
       this.lockPath = null;
       this.zk.close();
       this.response = false;
-    } catch (KeeperException e) {
-      throw new IOException(e);
-    } catch (InterruptedException e) {
+    } catch (KeeperException | InterruptedException e) {
       throw new IOException(e);
     }
 

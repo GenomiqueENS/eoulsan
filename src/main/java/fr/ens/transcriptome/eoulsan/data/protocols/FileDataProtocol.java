@@ -228,7 +228,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final File[] files = directoryFile.listFiles();
 
     // Convert the File array to a list of DataFile
-    final List<DataFile> result = new ArrayList<DataFile>(files.length);
+    final List<DataFile> result = new ArrayList<>(files.length);
     for (File f : files)
       result.add(new DataFile(f));
 

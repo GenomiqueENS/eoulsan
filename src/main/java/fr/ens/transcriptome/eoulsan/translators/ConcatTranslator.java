@@ -35,7 +35,7 @@ import java.util.Map;
 public class ConcatTranslator extends BasicTranslator {
 
   private Map<String, Translator> translators =
-      new LinkedHashMap<String, Translator>();
+      new LinkedHashMap<>();
 
   /**
    * Get an ordered list of the translator fields
@@ -43,7 +43,7 @@ public class ConcatTranslator extends BasicTranslator {
    */
   public String[] getFields() {
 
-    return translators.keySet().toArray(new String[0]);
+    return translators.keySet().toArray(new String[translators.size()]);
   }
 
   /**
@@ -107,9 +107,7 @@ public class ConcatTranslator extends BasicTranslator {
     if (fields == null)
       return;
 
-    for (int i = 0; i < fields.length; i++) {
-
-      final String key = fields[i];
+    for (final String key : fields) {
 
       if (!this.translators.containsKey(key))
         this.translators.put(key, translator);

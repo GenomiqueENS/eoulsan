@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.D
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -41,7 +42,6 @@ import java.util.logging.StreamHandler;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -271,9 +271,9 @@ public class TaskRunner {
    */
   private String createDefaultContextName() {
 
-    final List<String> namedData = Lists.newArrayList();
-    final List<String> fileNames = Lists.newArrayList();
-    final List<String> otherDataNames = Lists.newArrayList();
+    final List<String> namedData = new ArrayList<>();
+    final List<String> fileNames = new ArrayList<>();
+    final List<String> otherDataNames = new ArrayList<>();
 
     // Collect the names of the data and files names
     for (String inputPortName : this.context.getCurrentStep().getInputPorts()

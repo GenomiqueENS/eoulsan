@@ -30,11 +30,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class allow to transform the output of a mapper into SAM format.
@@ -48,7 +50,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   private final BufferedReader reader;
   private boolean endStream;
 
-  private static final Charset CHARSET = Charsets.ISO_8859_1;
+  private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
   private final StringBuilder sb = new StringBuilder();
 
   protected List<String> transform(final String s) {
@@ -71,7 +73,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     this.sb.setLength(0);
     this.sb.append(new String(this.buffer, this.pos, this.buffer.length
-        - this.pos));
+        - this.pos, Globals.DEFAULT_CHARSET));
 
     do {
       String line = this.reader.readLine();
@@ -165,7 +167,8 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     super(in);
     this.reader =
-        new BufferedReader(new InputStreamReader(this.in, Charsets.ISO_8859_1));
+        new BufferedReader(new InputStreamReader(this.in,
+            StandardCharsets.ISO_8859_1));
 
   }
 

@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -34,11 +35,11 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_T
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -86,7 +87,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private DataFile annotationFile;
-  private Map<String, DataFormat> outputFormats = Maps.newHashMap();
+  private Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
   // Step methods
@@ -154,7 +155,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     }
 
     // TSV creation can be multithreaded
-    return ParallelizationMode.STANDARD;
+    return STANDARD;
   }
 
   @Override
@@ -188,8 +189,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
             break;
 
           default:
-            new EoulsanException("Unknown output format: " + format);
-            break;
+            throw new EoulsanException("Unknown output format: " + format);
           }
 
         }
@@ -265,7 +265,11 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
           of = new TSVTranslatorOutputFormat(outFile.create());
 
         TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
-        resultString.append("Convert " + inFile + " to " + outFile + "\n");
+        resultString.append("Convert ");
+        resultString.append(inFile);
+        resultString.append(" to ");
+        resultString.append(outFile);
+        resultString.append('\n');
       }
 
     } catch (IOException e) {
@@ -314,7 +318,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return new String[] { "EnsemblGeneID" };
       }
     };
 

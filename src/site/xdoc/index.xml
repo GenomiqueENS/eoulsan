@@ -38,41 +38,45 @@
 	<body>
 	        <link rel="alternate" type="application/rss+xml" title="Eoulsan updates" href="eoulsan.rss" />
 
-		<section name="Welcome to Eoulsan">
+		<section name="">
 
-
-
-			<div
-				style="float: right; margin: 0 10px 20px 20px; padding: 5px; border: 1px solid #999; background-color: #eee;">
+			<div class="noname"
+				style="float: right; margin: 25px 0px 15px 15px; padding: 0px; border: 1px solid #999; background-color: #eee;">
 				<h5
-					style="margin: 0; font-size: smaller; border-bottom: 1px solid #aaaaaa">
+					style="margin: 0; font-size: 100%; border-bottom: 1px solid #aaaaaa">
 					Get Eoulsan @@@VERSION@@@
 				</h5>
-				<p style="font-size: smaller">
-					<img valign="top"
-						src="http://maven.apache.org/images/folder-open.gif" border="0"
-						alt="" title="Download Eoulsan" />
-					<a href="eoulsan-@@@VERSION@@@.tar.gz">Download</a>
-					Eoulsan Application
+				<p>
+					<img valign="top" src="images/folder-open.gif" border="0" alt="" title="Download Eoulsan" />
+					<a href="eoulsan-@@@VERSION@@@.tar.gz">Download</a>Eoulsan Application
 					<br />
 				</p>
 				<ul style="margin-top: 0; list-style-type: disc">
-					<li style="font-size: smaller">
-						<a href="download.html#requirements">
-							System Requirements
-						</a>
-						and
-						<a href="installing.html">Installation Instructions</a>.
+					<li><a href="download.html#requirements">System Requirements</a> and
+						<a href="installing.html">Installation instructions</a>
 					</li>
-					<li style="font-size: smaller">
-						<a href="quickstart.html">
-							QuickStart tutorial
-						</a>
+					<li>
+						<a href="quickstart.html">QuickStart tutorial</a>
 					</li>
 				</ul>
+				
+				<p>
+				    <img valign="top" src="images/docker_very_small_h.png" border="0" alt="" title="Docker" />
+					<br />
+				</p>
+				<ul style="margin-top: 0; list-style-type: disc">
+					<li>
+						<a href="installing.html#docker">Usage instructions</a>
+					</li>
+					<li>
+						<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan Docker page</a>
+					</li>
+				</ul>
+				
 			</div>
+		</section>
 
-
+		<section name="Welcome to Eoulsan">
 			<p>
 				We developed Eoulsan, a versatile framework based on the Hadoop implementation of the MapReduce algorithm,
 				dedicated to high throughput sequencing data analysis on distributed computers. With Eoulsan, users can easily
@@ -102,8 +106,17 @@
 		  <li>Support for multiple versions of a mapper</li>
 		  <li>Rewritten mapper launcher</li>
 		  <li>New JSON format for step result file</li>
+		  <li>Docker support</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
+		
+		<p>You can now easily run Eoulsan using <a href="http://www.docker.com">Docker</a> with a dedicated 
+		<tt>eoulsan-docker.sh</tt> script that automatically configure your Docker environment like 
+		Eoulsan resources mounts. For more information about Docker and Eoulsan see the 
+		<a href="installing.html#docker">the related Eoulsan documentation</a>.	To install this
+		script just copy and paste the following command line in your terminal: </p>
+		<source>
+$ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 
 		<p>Only few Eoulsan modes are currently working with the current version. The following table summarize the status of each mode:</p>
 		<table>
@@ -118,6 +131,14 @@
 
         <p><b>Note:</b> Eoulsan 2.x is not binary compatible with Eoulsan 1.2.x, so step plug-ins written for previous versions will not work this release. The Eoulsan 2.x API
         is not currently stable and breaking compatibility may occurs until final Eoulsan 2.0 version.</p>
+
+	</section>
+
+	<section name="Screencast demo">
+
+	<p>The following screencast show how to install Eoulsan, create a design file and launch an analysis in local mode. For more information see the <a href="quickstart.html">quickstart guide</a>.</p>
+
+	<iframe src="http://showterm.io/64a12d1f7fe2096e92c90" width="1011" height="480"></iframe>
 
 	</section>
 
@@ -159,9 +180,13 @@
 
 		<section name="Funding">
 
-		<p>This work was supported by the Infrastructures en Biologie Santé et Agronomie (IBiSA) and Amazon Web Services research grant.</p>
+		<p>This work was supported by the Infrastructures en Biologie Santé et Agronomie (IBiSA), France Genomique and Amazon Web Services research grant.</p>
+		<div align="center">
 		<a href="http://www.ibisa.net/"><img src="images/logo_ibisa-40.gif"/></a>&#160;&#160;
+				<a href="http://www.france-genomique.org/"><img src="images/france-genomique-40.png"/></a>&#160;&#160;
 		<a href="http://aws.amazon.com/"><img src="images/logo_aws-40.gif"/></a>
+		</div>
+
 
 		</section>
 

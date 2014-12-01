@@ -4,17 +4,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -32,7 +32,7 @@ public class DataMetadataStorage {
   private static DataMetadataStorage singleton;
 
   private final DataFile metadataFile;
-  private final Map<String, Map<String, String>> metadata = Maps.newHashMap();
+  private final Map<String, Map<String, String>> metadata = new HashMap<>();
 
   /**
    * Set the metdata of a data from the metadata storage.
@@ -98,7 +98,7 @@ public class DataMetadataStorage {
     for (DataFile file : files) {
 
       final String filename = file.getName();
-      final Map<String, String> newEntries = Maps.newHashMap();
+      final Map<String, String> newEntries = new HashMap<>();
 
       final StringBuilder sb = new StringBuilder();
       sb.append(filename);
@@ -149,7 +149,8 @@ public class DataMetadataStorage {
     }
 
     try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(this.metadataFile.open()))) {
+        new BufferedReader(new InputStreamReader(this.metadataFile.open(),
+            Globals.DEFAULT_CHARSET))) {
 
       String line = null;
 
@@ -160,7 +161,7 @@ public class DataMetadataStorage {
         if (fields.length % 2 != 0) {
 
           final String filename = fields[0];
-          final Map<String, String> entries = Maps.newHashMap();
+          final Map<String, String> entries = new HashMap<>();
           this.metadata.put(filename, entries);
 
           for (int i = 1; i < fields.length; i += 2) {
@@ -182,8 +183,8 @@ public class DataMetadataStorage {
     }
 
     try (PrintWriter out =
-        new PrintWriter(new BufferedWriter(new FileWriter(
-            this.metadataFile.toFile(), true)))) {
+        new PrintWriter(new OutputStreamWriter(new FileOutputStream(
+            this.metadataFile.toFile(), true), Globals.DEFAULT_CHARSET))) {
 
       // Write entry
       out.println(s);

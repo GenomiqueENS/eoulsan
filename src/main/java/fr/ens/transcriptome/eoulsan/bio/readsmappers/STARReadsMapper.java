@@ -26,13 +26,16 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.io.Files;
+
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -72,8 +75,11 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       // Create temporary directory
       final File tempDir = File.createTempFile("STAR-get-version-", ".tmp");
-      tempDir.delete();
-      tempDir.mkdir();
+      if (!(tempDir.delete() && tempDir.mkdir())) {
+        EoulsanLogger.getLogger().warning(
+            "Cannot create temporary directory for STAR: " + tempDir);
+        return null;
+      }
 
       // Execute STAR with no argument
       final ProcessBuilder pb = new ProcessBuilder(execPath);
@@ -85,7 +91,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       // Read STAR version from STAR log file
       String version = null;
-      try (BufferedReader reader = new BufferedReader(new FileReader(logFile))) {
+      try (BufferedReader reader =
+          Files.newReader(logFile, Globals.DEFAULT_CHARSET)) {
         final String line = reader.readLine();
 
         if (line != null && line.indexOf('=') != -1) {
@@ -148,7 +155,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
     cmd.add("--runThreadN");
     cmd.add("" + getThreadsNumber());
@@ -234,7 +241,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
         cmd.add("" + getThreadsNumber());
@@ -268,7 +275,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
         cmd.add("" + getThreadsNumber());

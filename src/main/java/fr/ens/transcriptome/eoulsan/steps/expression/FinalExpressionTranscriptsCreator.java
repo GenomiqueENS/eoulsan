@@ -37,8 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
@@ -59,7 +58,7 @@ public class FinalExpressionTranscriptsCreator {
 
   private TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final Map<String, ExpressionTranscript> expressionResults =
-      new HashMap<String, ExpressionTranscript>();
+      new HashMap<>();
 
   private static final class ExpressionTranscript implements
       Comparable<ExpressionTranscript> {
@@ -125,7 +124,7 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hashCode(this.transcript, baseNotCovered, alignementCount,
+      return Objects.hash(this.transcript, baseNotCovered, alignementCount,
           ratio);
     }
 
@@ -232,7 +231,7 @@ public class FinalExpressionTranscriptsCreator {
   public void saveFinalResults(final OutputStream os) throws IOException {
 
     final List<ExpressionTranscript> list =
-        new ArrayList<ExpressionTranscript>(this.expressionResults.values());
+        new ArrayList<>(this.expressionResults.values());
 
     Collections.sort(list);
 

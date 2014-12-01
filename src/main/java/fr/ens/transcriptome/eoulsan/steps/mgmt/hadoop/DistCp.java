@@ -307,7 +307,7 @@ public class DistCp implements Tool {
       FileSystem fs = src.getFileSystem(job);
       FileStatus srcst = fs.getFileStatus(src);
 
-      ArrayList<FileSplit> splits = new ArrayList<FileSplit>(numSplits);
+      ArrayList<FileSplit> splits = new ArrayList<>(numSplits);
       LongWritable key = new LongWritable();
       FilePair value = new FilePair();
       final long targetsize = cbsize / numSplits;
@@ -345,7 +345,7 @@ public class DistCp implements Tool {
      */
     public RecordReader<Text, Text> getRecordReader(InputSplit split,
         JobConf job, Reporter reporter) throws IOException {
-      return new SequenceFileRecordReader<Text, Text>(job, (FileSplit) split);
+      return new SequenceFileRecordReader<>(job, (FileSplit) split);
     }
   }
 
@@ -632,7 +632,7 @@ public class DistCp implements Tool {
 
   private static List<Path> fetchFileList(Configuration conf, Path srcList)
       throws IOException {
-    List<Path> result = new ArrayList<Path>();
+    List<Path> result = new ArrayList<>();
     FileSystem fs = srcList.getFileSystem(conf);
     BufferedReader input = null;
     try {
@@ -654,7 +654,7 @@ public class DistCp implements Tool {
       Path logPath, boolean srcAsList, boolean ignoreReadFailures)
       throws IOException {
     final Path src = new Path(srcPath);
-    List<Path> tmp = new ArrayList<Path>();
+    List<Path> tmp = new ArrayList<>();
     if (srcAsList) {
       tmp.addAll(fetchFileList(conf, src));
     } else {
@@ -672,7 +672,7 @@ public class DistCp implements Tool {
   /** Sanity check for srcPath */
   private static void checkSrcPath(Configuration conf, List<Path> srcPaths)
       throws IOException {
-    List<IOException> rslt = new ArrayList<IOException>();
+    List<IOException> rslt = new ArrayList<>();
     for (Path p : srcPaths) {
       FileSystem fs = p.getFileSystem(conf);
       if (!fs.exists(p)) {
@@ -807,7 +807,7 @@ public class DistCp implements Tool {
 
     static Arguments valueOf(String[] args, Configuration conf)
         throws IOException {
-      List<Path> srcs = new ArrayList<Path>();
+      List<Path> srcs = new ArrayList<>();
       Path dst = null;
       Path log = null;
       EnumSet<Options> flags = EnumSet.noneOf(Options.class);
@@ -854,7 +854,7 @@ public class DistCp implements Tool {
             throw new IllegalArgumentException("num_maps not specified in -m");
           }
           try {
-            conf.setInt(MAX_MAPS_LABEL, Integer.valueOf(args[idx]));
+            conf.setInt(MAX_MAPS_LABEL, Integer.parseInt(args[idx]));
           } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid argument to -m: "
                 + args[idx]);
@@ -1142,7 +1142,7 @@ public class DistCp implements Tool {
           ++srcCount;
         }
 
-        Stack<FileStatus> pathstack = new Stack<FileStatus>();
+        Stack<FileStatus> pathstack = new Stack<>();
         for (pathstack.push(srcfilestat); !pathstack.empty();) {
           FileStatus cur = pathstack.pop();
           FileStatus[] children = srcfs.listStatus(cur.getPath());
@@ -1311,7 +1311,7 @@ public class DistCp implements Tool {
             dstroot.getClass(), SequenceFile.CompressionType.NONE);
     try {
       // do lsr to get all file statuses in dstroot
-      final Stack<FileStatus> lsrstack = new Stack<FileStatus>();
+      final Stack<FileStatus> lsrstack = new Stack<>();
       for (lsrstack.push(dstroot); !lsrstack.isEmpty();) {
         final FileStatus status = lsrstack.pop();
         if (status.isDir()) {

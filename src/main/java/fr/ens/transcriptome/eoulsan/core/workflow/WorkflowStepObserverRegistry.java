@@ -25,9 +25,8 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 /**
  * This class allow to relay workflow step events to other observers. This class
@@ -39,7 +38,7 @@ public class WorkflowStepObserverRegistry {
 
   private static WorkflowStepObserverRegistry singleton;
 
-  private Set<WorkflowStepObserver> observers = Sets.newHashSet();
+  private Set<WorkflowStepObserver> observers = new HashSet<>();
 
   /**
    * Add a listener.

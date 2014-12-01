@@ -32,30 +32,75 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+
+/**
+ * This singleton class survey the execution of a test suite (count the number
+ * of finished tests and manage the symbolic links in output directory).
+ * @author Sandrine Perrin
+ * @since 2.0
+ */
 public class ITSuite {
-  // Singleton
 
   private static final String RUNNING_LINKNAME = "running";
   private static final String SUCCEEDED_LINKNAME = "succeeded";
   private static final String FAILED_LINKNAME = "failed";
   private static final String LATEST_LINKNAME = "latest";
 
-  private final int testsCount;
-  private static final Stopwatch GLOBAL_TIMER = Stopwatch.createStarted();
+  // Singleton
+  private static ITSuite itSuite;
 
-  private static boolean debug_enable = false;
-  private static int failCount = 0;
-  private static int successCount = 0;
-  private static int testRunningCount = 0;
-  private static boolean isFirstTest = true;
+  private final Stopwatch globalTimer = Stopwatch.createStarted();
+
+  private boolean debugEnabled = false;
+  private int failCount = 0;
+  private int successCount = 0;
+  private int testRunningCount = 0;
+  private boolean isFirstTest = true;
+
+  private final int testsCount;
+
+  //
+  // Singleton methods
+  //
+
+  /**
+   * Initialize an instance of ITSuite.
+   * @param testsCount tests count for the execution
+   * @return the instance of ITSuite object
+   */
+  public static ITSuite getInstance(final int testsCount) {
+
+    if (itSuite == null) {
+      itSuite = new ITSuite(testsCount);
+
+      return itSuite;
+    }
+
+    throw new EoulsanRuntimeException(
+        "Cannot create an instance of ITSuite because an instance has already been created.");
+  }
+
+  /**
+   * Get the instance of ITSuite object.
+   * @return the instance of ITSuite object
+   */
+  public static ITSuite getInstance() {
+
+    if (itSuite != null) {
+      return itSuite;
+    }
+
+    throw new EoulsanRuntimeException(
+        "Cannot get an instance of ITSuite class because no instance has been created.");
+  }
 
   /**
    * Create useful symbolic test to the latest and running test in output test
    * directory.
-   * @param failTestsCount in case of start tests, create running test link
-   *          otherwise recreate latest and remove running test
+   * @param directory the source path directory
    */
-  public static void createSymbolicLinkToTest(final File directory) {
+  private void createSymbolicLinkToTest(final File directory) {
 
     // Path to the running link
     File runningDirLink = new File(directory.getParentFile(), RUNNING_LINKNAME);
@@ -64,7 +109,8 @@ public class ITSuite {
     File latestDirLink = new File(directory.getParentFile(), LATEST_LINKNAME);
 
     // Path to the last succeeded test link
-    File succeededDirLink = new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
+    File succeededDirLink =
+        new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
 
     // Path to the last failed test link
     File failedDirLink = new File(directory.getParentFile(), FAILED_LINKNAME);
@@ -73,7 +119,7 @@ public class ITSuite {
     runningDirLink.delete();
 
     // Create running test link
-    if (testRunningCount == 0) {
+    if (this.testRunningCount == 0) {
       createSymbolicLink(directory, runningDirLink);
 
     } else {
@@ -85,7 +131,7 @@ public class ITSuite {
       // Recreate the latest link
       createSymbolicLink(directory, latestDirLink);
 
-      if (failCount == 0) {
+      if (this.failCount == 0) {
         // Update succeed link
         succeededDirLink.delete();
         createSymbolicLink(directory, succeededDirLink);
@@ -98,33 +144,36 @@ public class ITSuite {
   }
 
   /**
-   * @param directory
+   * Update counter of tests running. If it is the first, create symbolics link.
+   * @param directory directory where create symbolic link.
    */
   public void startTest(final File directory) {
 
-    if (isFirstTest) {
+    if (this.isFirstTest) {
       createSymbolicLinkToTest(directory);
       isFirstTest = false;
     }
 
     // Count test running
-    testRunningCount++;
-
+    this.testRunningCount++;
   }
 
   /**
-   * @param directory
+   * Update counter of tests running. If it is the last, update symbolics link
+   * and close logger.
+   * @param directory directory where update symbolic link.
    */
   public void endTest(final File directory, final ITResult itResult) {
 
     // Update counter
-    if (itResult.isSuccess())
-      successCount++;
-    else
-      failCount++;
+    if (itResult.isSuccess()) {
+      this.successCount++;
+    } else {
+      this.failCount++;
+    }
 
     // For latest
-    if (testRunningCount == testsCount) {
+    if (this.testRunningCount == this.testsCount) {
       createSymbolicLinkToTest(directory);
       closeLogger();
     }
@@ -136,37 +185,53 @@ public class ITSuite {
    * in output test directory.
    */
   private void closeLogger() {
+
     // Add summary of tests execution
     getLogger().info(
         "Summary tests execution: "
-            + successCount + " successed tests and " + failCount
+            + successCount + " succeeded tests and " + failCount
             + " failed tests.");
 
     // Add suffix to log global filename
     getLogger().fine(
         "End of configuration of "
-            + testsCount + " integration tests in "
-            + toTimeHumanReadable(GLOBAL_TIMER.elapsed(TimeUnit.MILLISECONDS)));
+            + testsCount
+            + " integration tests in "
+            + toTimeHumanReadable(this.globalTimer
+                .elapsed(TimeUnit.MILLISECONDS)));
 
-    GLOBAL_TIMER.stop();
+    this.globalTimer.stop();
   }
 
   //
   // Getter and setter
   //
 
-  public static boolean isDebugEnable() {
-    return debug_enable;
+  /**
+   * Get the true if debug mode settings otherwise false.
+   * @return true if debug mode settings otherwise false.
+   */
+  public boolean isDebugEnabled() {
+    return debugEnabled;
   }
 
-  public void setDebugEnable(boolean b) {
-    debug_enable = b;
+  /**
+   * Set the debug mode, true if it is demand otherwise false.
+   * @param debugEnabled true if it is demand otherwise false.
+   */
+  public void setDebugEnabled(boolean debugEnabled) {
+    this.debugEnabled = debugEnabled;
   }
 
   //
   // Constructor
   //
-  public ITSuite(final int testsCount) {
+
+  /**
+   * Private constructor.
+   * @param testsCount tests count to run
+   */
+  private ITSuite(final int testsCount) {
     this.testsCount = testsCount;
   }
 

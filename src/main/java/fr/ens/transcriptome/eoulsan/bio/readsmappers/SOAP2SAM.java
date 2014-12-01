@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.join;
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -71,7 +70,7 @@ public class SOAP2SAM {
   }
 
   private String[] sLast;
-  private final List<String> results = new ArrayList<String>();
+  private final List<String> results = new ArrayList<>();
 
   public List<String> c(String line, boolean isPaired) {
 
@@ -136,7 +135,6 @@ public class SOAP2SAM {
     final BufferedReader br = FileUtils.createBufferedReader(this.fin);
     final UnSynchronizedBufferedWriter bw = createWriter();
 
-    String[] sLast = null;
     String line = null;
 
     while ((line = br.readLine()) != null) {
@@ -155,9 +153,7 @@ public class SOAP2SAM {
 
     br.close();
 
-    final SequenceReader reader = new FastaReader(this.funmap);
-
-    try {
+    try (SequenceReader reader = new FastaReader(this.funmap)) {
 
       for (Sequence sequence : reader)
         bw.write(sequence.getName()
@@ -166,12 +162,7 @@ public class SOAP2SAM {
       // throw IOException of reader if needed
       reader.throwException();
 
-    } catch (IOException e) {
-
-      throw e;
     } finally {
-
-      reader.close();
       bw.close();
     }
 
@@ -238,7 +229,7 @@ public class SOAP2SAM {
 
     if (tab.length > 9) {
 
-      final List<String> x = newArrayList();
+      final List<String> x = new ArrayList<>();
 
       for (int i = 10; i < tab.length; i++) {
 

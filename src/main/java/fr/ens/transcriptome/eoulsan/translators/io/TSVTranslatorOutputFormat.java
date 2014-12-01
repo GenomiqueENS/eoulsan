@@ -26,10 +26,12 @@ package fr.ens.transcriptome.eoulsan.translators.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * This class define a TranslatorOutputFormat that generate a tabular text file.
@@ -129,7 +131,8 @@ public class TSVTranslatorOutputFormat implements TranslatorOutputFormat {
    */
   public TSVTranslatorOutputFormat(final OutputStream os) {
 
-    this.writer = new BufferedWriter(new OutputStreamWriter(os));
+    this.writer =
+        new BufferedWriter(new OutputStreamWriter(os, Globals.DEFAULT_CHARSET));
   }
 
   /**
@@ -138,7 +141,9 @@ public class TSVTranslatorOutputFormat implements TranslatorOutputFormat {
    */
   public TSVTranslatorOutputFormat(final File file) throws IOException {
 
-    this.writer = new BufferedWriter(new FileWriter(file));
+    this.writer =
+        new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),
+            Globals.DEFAULT_CHARSET));
   }
 
 }

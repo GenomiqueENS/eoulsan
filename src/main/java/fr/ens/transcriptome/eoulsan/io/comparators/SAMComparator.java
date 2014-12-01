@@ -29,10 +29,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
@@ -53,7 +55,8 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   public boolean compareFiles(BloomFilterUtils filter, InputStream is)
       throws IOException {
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line = null;
     numberElementsCompared = 0;
 
@@ -104,13 +107,15 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
 
   private static String getTag(final String samHeaderLine) {
 
-    if (samHeaderLine.length() == 0)
+    if (samHeaderLine.length() == 0) {
       return "";
+    }
 
     final int pos = samHeaderLine.indexOf('\t');
 
-    if (pos == -1)
+    if (pos == -1) {
       return samHeaderLine.substring(1);
+    }
 
     return samHeaderLine.substring(1, pos);
   }
@@ -144,7 +149,7 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   public SAMComparator(final boolean useSerializeFile) {
     super(useSerializeFile);
 
-    this.tagsToNotCompare = Sets.newHashSet();
+    this.tagsToNotCompare = new HashSet<>();
   }
 
   /**
@@ -156,8 +161,9 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   public SAMComparator(boolean useSerializeFile, String... headersTags) {
     super(useSerializeFile);
 
-    if (headersTags == null)
+    if (headersTags == null) {
       throw new NullPointerException("headersTags is null");
+    }
 
     this.tagsToNotCompare = Sets.newHashSet(headersTags);
   }

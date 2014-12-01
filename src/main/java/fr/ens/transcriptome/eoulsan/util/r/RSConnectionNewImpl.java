@@ -239,9 +239,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
         c.voidEval("file.remove(\"" + filename + "\")");
 
-    } catch (RserveException e) {
-      throw new REngineException(rconnection, "RServe exception: " + e);
-    } catch (REXPMismatchException e) {
+    } catch (RserveException | REXPMismatchException e) {
       throw new REngineException(rconnection, "RServe exception: " + e);
     }
   }
@@ -299,7 +297,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
     try {
       RFileInputStream is = connection.openFile(filename);
-      ArrayList<byte[]> buffers = new ArrayList<byte[]>();
+      ArrayList<byte[]> buffers = new ArrayList<>();
       int bufSize = 65536;
       byte[] buf = new byte[bufSize];
       int imgLength = 0;
@@ -329,8 +327,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       final int nbBuffers = buffers.size();
 
-      for (int i = 0; i < nbBuffers; i++) {
-        byte[] b = buffers.get(i);
+      for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }
@@ -364,7 +361,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
     try {
       RFileInputStream is = connection.openFile(filename);
-      ArrayList<byte[]> buffers = new ArrayList<byte[]>();
+      ArrayList<byte[]> buffers = new ArrayList<>();
 
       int bufSize = 65536;
       byte[] buf = new byte[bufSize];
@@ -393,8 +390,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
       final int nbBuffers = buffers.size();
 
-      for (int i = 0; i < nbBuffers; i++) {
-        byte[] b = buffers.get(i);
+      for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }

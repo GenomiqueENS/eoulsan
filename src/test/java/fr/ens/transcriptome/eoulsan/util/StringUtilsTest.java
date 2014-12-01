@@ -158,17 +158,17 @@ public class StringUtilsTest {
     assertEquals("[]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
     assertEquals("[]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {""})));
+        StringUtils.serializeStringArray(Arrays.asList("")));
     assertEquals("[toto]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto"})));
+        StringUtils.serializeStringArray(Arrays.asList("toto")));
     assertEquals(
         "[toto,titi]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {"toto",
-            "titi"})));
+        StringUtils.serializeStringArray(Arrays.asList("toto",
+            "titi")));
     assertEquals("[to\\,to]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {"to,to"})));
+        StringUtils.serializeStringArray(Arrays.asList("to,to")));
     assertEquals("[to\\\\to]", StringUtils.serializeStringArray(Arrays
-        .asList(new String[] {"to\\to"})));
+        .asList("to\\to")));
   }
 
   @Test

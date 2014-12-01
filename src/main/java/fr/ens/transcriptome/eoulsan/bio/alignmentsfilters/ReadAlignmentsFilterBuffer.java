@@ -40,7 +40,7 @@ import net.sf.samtools.SAMRecord;
 public class ReadAlignmentsFilterBuffer {
 
   private final ReadAlignmentsFilter filter;
-  private final List<SAMRecord> list = new ArrayList<SAMRecord>();
+  private final List<SAMRecord> list = new ArrayList<>();
   private String currentName;
   private boolean reuseResultList;
 
@@ -97,7 +97,7 @@ public class ReadAlignmentsFilterBuffer {
     if (this.reuseResultList)
       return this.list;
 
-    List<SAMRecord> results = new ArrayList<SAMRecord>(this.list);
+    List<SAMRecord> results = new ArrayList<>(this.list);
     this.list.clear();
     this.currentName = null;
 

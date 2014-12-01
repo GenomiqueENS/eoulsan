@@ -55,7 +55,7 @@ public abstract class PseudoMapReduce {
 
   private File tmpDir;
   private File mapOutputFile;
-  private List<File> listMapOutputFile = new ArrayList<File>();
+  private List<File> listMapOutputFile = new ArrayList<>();
 
   private File sortOutputFile;
   private LocalReporter reporter = new LocalReporter();
@@ -67,7 +67,7 @@ public abstract class PseudoMapReduce {
   private static final class RepeatedEntriesList<E> extends AbstractList<E> {
 
     private int count;
-    private final Map<E, Integer> map = new LinkedHashMap<E, Integer>();
+    private final Map<E, Integer> map = new LinkedHashMap<>();
 
     @Override
     public E get(final int index) {
@@ -224,7 +224,7 @@ public abstract class PseudoMapReduce {
     final UnSynchronizedBufferedWriter bw =
         FileUtils.createFastBufferedWriter(getMapOutputTempFile());
 
-    final List<String> results = new ArrayList<String>();
+    final List<String> results = new ArrayList<>();
     String line;
 
     final StringBuilder sb = new StringBuilder();
@@ -265,7 +265,7 @@ public abstract class PseudoMapReduce {
     final UnSynchronizedBufferedWriter bw =
         FileUtils.createFastBufferedWriter(this.mapOutputFile);
 
-    final List<String> results = new ArrayList<String>();
+    final List<String> results = new ArrayList<>();
     String line;
 
     final StringBuilder sb = new StringBuilder();
@@ -382,8 +382,8 @@ public abstract class PseudoMapReduce {
 
     String line = null;
     String currentKey = null;
-    final List<String> values = new RepeatedEntriesList<String>();
-    final List<String> results = new ArrayList<String>();
+    final List<String> values = new RepeatedEntriesList<>();
+    final List<String> results = new ArrayList<>();
 
     final StringBuilder sb = new StringBuilder();
 

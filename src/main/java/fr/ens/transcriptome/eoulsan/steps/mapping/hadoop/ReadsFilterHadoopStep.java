@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +43,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -99,7 +98,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
-      final List<Job> jobsPairedEnd = new ArrayList<Job>();
+      final List<Job> jobsPairedEnd = new ArrayList<>();
       if (inData.getDataFileCount() == 2)
         jobsPairedEnd.add(createJobConfPairedEnd(conf, inData, fastqFormat));
 
@@ -108,7 +107,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
           CommonHadoop.CHECK_COMPLETION_TIME);
 
       // Create the list of jobs to run
-      final Map<Job, String> jobs = Maps.newHashMap();
+      final Map<Job, String> jobs = new HashMap<>();
       jobs.put(createJobConf(conf, inData, outData, fastqFormat),
           inData.getName());
 

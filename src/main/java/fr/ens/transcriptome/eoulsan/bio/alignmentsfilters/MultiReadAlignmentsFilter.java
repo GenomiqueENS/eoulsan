@@ -24,8 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import static fr.ens.transcriptome.eoulsan.util.Utils.newArrayList;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -40,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
-  private final List<ReadAlignmentsFilter> list = newArrayList();
+  private final List<ReadAlignmentsFilter> list = new ArrayList<>();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
 
@@ -121,7 +120,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
    */
   public List<String> getFilterNames() {
 
-    final List<String> result = newArrayList();
+    final List<String> result = new ArrayList<>();
     for (ReadAlignmentsFilter f : this.list)
       result.add(f.getName());
 
@@ -145,7 +144,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
    */
   public MultiReadAlignmentsFilter() {
 
-    this((ReporterIncrementer) null, null);
+    this(null, null);
   }
 
   /**

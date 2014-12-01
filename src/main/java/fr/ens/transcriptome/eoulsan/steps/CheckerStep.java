@@ -28,12 +28,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -65,9 +67,9 @@ public class CheckerStep extends AbstractStep {
 
   private static CheckerStep instance;
 
-  private Map<DataFormat, Checker> checkers = Maps.newHashMap();
-  private final Map<DataFormat, Set<Parameter>> checkerConfiguration = Maps
-      .newHashMap();
+  private Map<DataFormat, Checker> checkers = new HashMap<>();
+  private final Map<DataFormat, Set<Parameter>> checkerConfiguration =
+      new HashMap<>();
   private InputPorts inputPorts = InputPortsBuilder.noInputPort();
   private boolean inputPortsConfigured;
 
@@ -198,10 +200,10 @@ public class CheckerStep extends AbstractStep {
   private List<Checker> createDependenciesList() throws EoulsanException {
 
     List<Checker> list = Lists.newArrayList(this.checkers.values());
-    List<Checker> result = Lists.newArrayList();
+    List<Checker> result = new ArrayList<>();
 
-    final Map<Checker, Set<Checker>> dependencies = Maps.newHashMap();
-    final Set<Checker> added = Sets.newHashSet();
+    final Map<Checker, Set<Checker>> dependencies = new HashMap<>();
+    final Set<Checker> added = new HashSet<>();
 
     // Create the dependencies map
     for (Checker c : list) {
@@ -209,7 +211,7 @@ public class CheckerStep extends AbstractStep {
       if (c == null)
         continue;
 
-      final Set<Checker> deps = Sets.newHashSet();
+      final Set<Checker> deps = new HashSet<>();
       for (DataFormat format : c.getCheckersRequiered()) {
 
         if (this.checkers.containsKey(format)) {
@@ -227,7 +229,7 @@ public class CheckerStep extends AbstractStep {
     // Resolve dependencies
     while (result.size() != list.size()) {
 
-      final Set<Checker> toRemove = Sets.newHashSet();
+      final Set<Checker> toRemove = new HashSet<>();
       for (Map.Entry<Checker, Set<Checker>> e : dependencies.entrySet()) {
         e.getValue().removeAll(added);
         if (e.getValue().size() == 0)

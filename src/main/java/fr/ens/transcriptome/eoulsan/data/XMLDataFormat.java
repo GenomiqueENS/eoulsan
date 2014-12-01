@@ -23,14 +23,16 @@
  */
 package fr.ens.transcriptome.eoulsan.data;
 
-import static com.google.common.base.Objects.equal;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -40,10 +42,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
@@ -74,9 +72,9 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private boolean dataFormatFromDesignFile;
   private String designFieldName;
   private String contentType = "text/plain";
-  private final List<String> extensions = Lists.newArrayList();
+  private final List<String> extensions = new ArrayList<>();
   private String generatorClassName;
-  private Set<Parameter> generatorParameters = Sets.newLinkedHashSet();
+  private Set<Parameter> generatorParameters = new LinkedHashSet<>();
   private String checkerClassName;
   private String splitterClassName;
   private String mergerClassName;
@@ -367,25 +365,26 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     final XMLDataFormat that = (XMLDataFormat) o;
 
-    return equal(this.name, that.name)
-        && equal(this.description, that.description)
-        && equal(this.prefix, that.prefix)
-        && equal(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
-        && equal(this.dataFormatFromDesignFile, that.dataFormatFromDesignFile)
-        && equal(this.designFieldName, that.designFieldName)
-        && equal(this.contentType, that.contentType)
-        && equal(this.extensions, that.extensions)
-        && equal(this.generatorClassName, that.generatorClassName)
-        && equal(this.checkerClassName, that.checkerClassName)
-        && equal(this.splitterClassName, that.splitterClassName)
-        && equal(this.mergerClassName, that.mergerClassName)
-        && equal(this.maxFilesCount, that.maxFilesCount);
+    return Objects.equals(this.name, that.name)
+        && Objects.equals(this.description, that.description)
+        && Objects.equals(this.prefix, that.prefix)
+        && Objects.equals(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
+        && Objects.equals(this.dataFormatFromDesignFile,
+            that.dataFormatFromDesignFile)
+        && Objects.equals(this.designFieldName, that.designFieldName)
+        && Objects.equals(this.contentType, that.contentType)
+        && Objects.equals(this.extensions, that.extensions)
+        && Objects.equals(this.generatorClassName, that.generatorClassName)
+        && Objects.equals(this.checkerClassName, that.checkerClassName)
+        && Objects.equals(this.splitterClassName, that.splitterClassName)
+        && Objects.equals(this.mergerClassName, that.mergerClassName)
+        && Objects.equals(this.maxFilesCount, that.maxFilesCount);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.name, this.description, this.prefix,
+    return Objects.hash(this.name, this.description, this.prefix,
         this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
         this.designFieldName, this.contentType, this.extensions,
         this.generatorClassName, this.checkerClassName, this.splitterClassName,
@@ -395,9 +394,9 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", this.name)
-        .add("description", this.description).add("prefix", prefix)
-        .add("contentType", this.contentType)
+    return com.google.common.base.Objects.toStringHelper(this)
+        .add("name", this.name).add("description", this.description)
+        .add("prefix", prefix).add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
         .add("generatorClassName", this.generatorClassName)
@@ -427,13 +426,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     try {
       parse(is);
-    } catch (ParserConfigurationException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (FileNotFoundException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (SAXException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (IOException e) {
+    } catch (ParserConfigurationException | IOException | SAXException e) {
       throw new EoulsanException(e.getMessage());
     }
   }

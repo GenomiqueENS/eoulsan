@@ -47,18 +47,20 @@ $ eoulsan.sh -h
 
 <source>
 usage: eoulsan [options] action arguments
- -about              display information about this software
- -conf &lt;file&gt;        configuration file to use
- -h,--help           display this help
- -j &lt;path&gt;           JAVA_HOME path
- -J &lt;args&gt;           JVM arguments (-server by default)
- -license            display information about the license of this
-                     software
- -log &lt;file&gt;         external log file
- -loglevel &lt;level&gt;   log level
- -m &lt;size&gt;           maximal memory usage for JVM in MB (2048 by default)
- -p &lt;classpath&gt;      additional classpath for eoulsan plugins
- -version            show version of the software
+ -about                display information about this software
+ -conf &lt;file&gt;          configuration file to use
+ -h,--help             display this help
+ -j &lt;path&gt;             JAVA_HOME path
+ -J &lt;args&gt;             JVM arguments (-server by default)
+ -license              display information about the license of this
+                       software
+ -log &lt;file&gt;           external log file
+ -loglevel &lt;level&gt;     log level
+ -m &lt;size&gt;             maximal memory usage for JVM in MB (2048 by default)
+ -p &lt;classpath&gt;        additional classpath for eoulsan plugins
+ -s &lt;property=value&gt;   set a configuration setting. This option can be
+                       used several times
+ -version              show version of the software
 Available actions:
  - emrexec      execute eoulsan on Amazon Elastic MapReduce service.
  - createdesign create a design file from a list of files.
@@ -84,6 +86,10 @@ Available actions:
     </subsection>
     <subsection name="-conf &lt;file&gt;">
       <p>With this option, Eoulsan will load the <b>file</b> as configuration file. See the <a href="conffile.html">configuration section</a> for more information.</p>
+    </subsection>
+    <subsection name="-s &lt;property=value&gt;">
+      <p>With this option, Eoulsan will set a specific setting. Usage of this option override settings loaded in configuration file. Key and value of the setting are separated by the '=' character.
+         This option can be used several times in command line. See the <a href="conffile.html">configuration section</a> for more information.</p>
     </subsection>
 	<subsection name="-j &lt;path&gt;">
 		<p>This option allow to define the path to the JVM to use for running Eoulsan.</p>

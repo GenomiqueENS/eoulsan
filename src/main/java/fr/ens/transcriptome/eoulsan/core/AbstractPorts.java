@@ -27,12 +27,11 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -134,7 +133,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
       return;
     }
 
-    final Map<String, E> map = Maps.newHashMap();
+    final Map<String, E> map = new HashMap<>();
 
     for (E port : ports) {
 
@@ -186,7 +185,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
     if (format == null)
       return Collections.emptyList();
 
-    final List<E> result = new ArrayList<E>();
+    final List<E> result = new ArrayList<>();
 
     for (E e : this)
       if (e.getFormat().equals(format))

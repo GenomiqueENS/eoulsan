@@ -71,7 +71,7 @@ public class GenomicArrayTest {
   @Before
   public void setUp() throws Exception {
 
-    ga = new GenomicArray<String>();
+    ga = new GenomicArray<>();
     fgi = new FastGenomicInterval("chr1", '.');
     fgi_stranded = new FastGenomicInterval("chr1", '-');
   }

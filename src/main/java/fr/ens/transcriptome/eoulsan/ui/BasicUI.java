@@ -27,10 +27,10 @@ package fr.ens.transcriptome.eoulsan.ui;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
@@ -42,11 +42,10 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class BasicUI implements UI {
+public class BasicUI extends AbstractUI {
 
   private Workflow workflow;
-  private final Map<WorkflowStep, Double> steps = Maps.newHashMap();
-  private boolean interactiveMode;
+  private final Map<WorkflowStep, Double> steps = new HashMap<>();
 
   private int lastMessageLength = 0;
 
@@ -67,8 +66,6 @@ public class BasicUI implements UI {
 
     // Search step to follow
     searchSteps();
-
-    this.interactiveMode = System.console() != null;
   }
 
   @Override
@@ -100,7 +97,7 @@ public class BasicUI implements UI {
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
-    if (!this.interactiveMode
+    if (!isInteractiveMode()
         || step == null || step.getWorkflow() != this.workflow
         || step.getState() != StepState.WORKING
         || !this.steps.containsKey(step))

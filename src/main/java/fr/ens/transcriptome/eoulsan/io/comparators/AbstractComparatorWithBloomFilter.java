@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
@@ -46,7 +47,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
 
   // Limited create serialize bloomfilter file for size file inferior to
   // size of serialize bloomfilter file 27369839 bytes with default parameters
-  private final long sizeMinimalCreateSerializeFile = 40000000;
+  private static final long SIZE_MINIMAL_CREATE_SERIALIZE_FILE = 40000000;
 
   private double falsePositiveProbability = 0.1;
   private int expectedNumberOfElements = 30000000;
@@ -57,8 +58,9 @@ public abstract class AbstractComparatorWithBloomFilter extends
       throws FileNotFoundException, IOException {
 
     // Check input files
-    if (!checkFiles(fileA, fileB) && checkFileSize())
+    if (!checkFiles(fileA, fileB) && checkFileSize()) {
       return false;
+    }
 
     // Check path file (abstract and symbolic) is the same
     if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
@@ -90,8 +92,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
 
   /**
    * Initialize BloomFilter with the expected number of elements.
-   * @param expectedNumberOfElements
-   * @return
+   * @param expectedNumberOfElements expected number of elements
    */
   protected static BloomFilterUtils initBloomFilter(
       final int expectedNumberOfElements) {
@@ -144,7 +145,8 @@ public abstract class AbstractComparatorWithBloomFilter extends
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
 
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
 
     String line = null;
 
@@ -179,17 +181,19 @@ public abstract class AbstractComparatorWithBloomFilter extends
       final CompressionType zType) {
 
     // No serialize file require
-    if (!this.useSerializeFile)
+    if (!this.useSerializeFile) {
       return false;
+    }
 
     // Compressed file and serialize require
-    if (zType != CompressionType.NONE)
+    if (zType != CompressionType.NONE) {
       return true;
+    }
 
     // File size in bytes
     final long fileSize = file.length();
     // Check to choice
-    return fileSize > this.sizeMinimalCreateSerializeFile;
+    return fileSize > SIZE_MINIMAL_CREATE_SERIALIZE_FILE;
   }
 
   //

@@ -25,9 +25,8 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -42,7 +41,7 @@ public class InputPortsBuilder {
   /** Default single input port name. */
   public static final String DEFAULT_SINGLE_INPUT_PORT_NAME = "input";
 
-  private Set<InputPort> result = Sets.newHashSet();
+  private Set<InputPort> result = new HashSet<>();
 
   /**
    * Add an input port.

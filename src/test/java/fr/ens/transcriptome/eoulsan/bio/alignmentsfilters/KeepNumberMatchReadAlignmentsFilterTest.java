@@ -133,7 +133,7 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
     samRecordPE5 = parser.parseLine(recordPE5);
     samRecordPE6 = parser.parseLine(recordPE6);
 
-    records = new ArrayList<SAMRecord>();
+    records = new ArrayList<>();
 
     filter = new KeepNumberMatchReadAlignmentsFilter();
     filter.setParameter("threshold", "2");

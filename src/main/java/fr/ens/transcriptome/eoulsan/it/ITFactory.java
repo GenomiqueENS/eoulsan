@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -46,9 +47,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -123,7 +121,6 @@ public class ITFactory {
   private final Properties globalsConf;
   private static final Properties CONSTANTS = initConstants();
   private final File applicationPath;
-  private static ITSuite itSuite;
 
   // File with tests name to execute
   private final File selectedTestsFile;
@@ -135,15 +132,16 @@ public class ITFactory {
   private final String loggerPath;
 
   /**
-   * Create all instance for integrated tests
+   * Create all instance for integrated tests.
    * @return array object from integrated tests
    */
   @Factory
   public final Object[] createInstances() {
 
     // If no test configuration path defined, do nothing
-    if (this.applicationPath == null)
+    if (this.applicationPath == null) {
       return new Object[0];
+    }
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
@@ -156,12 +154,13 @@ public class ITFactory {
 
       getLogger().config("Count tests found " + testsCount);
 
-      if (testsCount == 0)
+      if (testsCount == 0) {
         return new Object[0];
+      }
 
       // Initialize ITSuite
-      itSuite = new ITSuite(testsCount);
-      itSuite.setDebugEnable(Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
+      ITSuite.getInstance(testsCount).setDebugEnabled(
+          Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
 
       // Return all tests
       return tests.toArray(new Object[testsCount]);
@@ -191,18 +190,20 @@ public class ITFactory {
     final Properties constants = new Properties();
 
     // Add java properties
-    for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
-      constants.put((String) e.getKey(), (String) e.getValue());
+    for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+      constants.put(e.getKey(), e.getValue());
+    }
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
+    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       constants.put(e.getKey(), e.getValue());
+    }
 
     return constants;
   }
 
   /**
-   * Initialization factory with principal needed directories
+   * Initialization factory with principal needed directories.
    * @throws IOException if a source file doesn't exist
    */
   private void init() throws IOException {
@@ -226,9 +227,10 @@ public class ITFactory {
             + this.outputTestsDirectory.getAbsolutePath());
 
     // Create output test directory
-    if (!this.outputTestsDirectory.mkdir())
+    if (!this.outputTestsDirectory.mkdir()) {
       throw new IOException("Cannot create output tests directory "
           + this.outputTestsDirectory.getAbsolutePath());
+    }
 
   }
 
@@ -243,8 +245,8 @@ public class ITFactory {
    */
   private List<IT> collectTests() throws EoulsanException, IOException {
 
-    final List<IT> tests = Lists.newArrayList();
-    final List<File> testsToExecuteDirectories = Lists.newArrayList();
+    final List<IT> tests = new ArrayList<>();
+    final List<File> testsToExecuteDirectories = new ArrayList<>();
 
     // Collect tests from a file with names tests
     testsToExecuteDirectories.addAll(readTestListFile());
@@ -257,26 +259,29 @@ public class ITFactory {
     }
 
     // If no test was defined by user use all the existing tests
-    if (testsToExecuteDirectories.isEmpty()) {
-      testsToExecuteDirectories.addAll(Arrays.asList(this.testsDataDirectory
-          .listFiles()));
+    final File[] files = this.testsDataDirectory.listFiles();
+    if (files != null && testsToExecuteDirectories.isEmpty()) {
+      testsToExecuteDirectories.addAll(Arrays.asList(files));
     }
 
-    if (testsToExecuteDirectories.size() == 0)
+    if (testsToExecuteDirectories.size() == 0) {
       throw new EoulsanException("None test directory found in "
           + testsDataDirectory.getAbsolutePath());
+    }
 
     // Build map
     for (File testDirectory : testsToExecuteDirectories) {
 
       // Ignore file
-      if (testDirectory.isFile())
+      if (testDirectory.isFile()) {
         continue;
+      }
 
       checkExistingDirectoryFile(testDirectory, "test directory");
 
-      if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
+      if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists()) {
         continue;
+      }
 
       // Create instance
       final IT processIT =
@@ -289,22 +294,23 @@ public class ITFactory {
     }
 
     // Check tests founded
-    if (tests.size() == 0)
+    if (tests.size() == 0) {
       throw new EoulsanException(
           "None test define (with test.conf) in directory "
               + testsDataDirectory.getAbsolutePath());
+    }
 
     return Collections.unmodifiableList(tests);
   }
 
   /**
-   * Collect tests to launch from text files with name tests
+   * Collect tests to launch from text files with name tests.
    * @return list all directories test found
    * @throws IOException if an error occurs while read file
    */
   private List<File> readTestListFile() throws IOException {
 
-    final List<File> result = Lists.newArrayList();
+    final List<File> result = new ArrayList<>();
 
     if (this.selectedTestsFile == null) {
       return Collections.emptyList();
@@ -319,8 +325,9 @@ public class ITFactory {
     String nameTest;
     while ((nameTest = br.readLine()) != null) {
       // Skip commentary
-      if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
+      if (nameTest.startsWith("#") || nameTest.trim().length() == 0) {
         continue;
+      }
 
       result.add(new File(this.testsDataDirectory, nameTest.trim()));
     }
@@ -378,12 +385,21 @@ public class ITFactory {
     rawProps.load(newReader(configurationFile,
         Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
+    // Extract environment variable
+    for (final String propertyName : rawProps.stringPropertyNames()) {
+      if (propertyName.startsWith(IT.PREFIX_ENV_VAR)) {
+        CONSTANTS.put(propertyName.substring(IT.PREFIX_ENV_VAR.length()),
+            rawProps.getProperty(propertyName));
+      }
+    }
+
     // Evaluate property
     for (final String propertyName : rawProps.stringPropertyNames()) {
       final String propertyValue =
           evaluateExpressions(rawProps.getProperty(propertyName), true);
 
       props.setProperty(propertyName, propertyValue);
+
     }
 
     // Check include
@@ -414,8 +430,9 @@ public class ITFactory {
   static String evaluateExpressions(final String s, boolean allowExec)
       throws EoulsanException {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final StringBuilder result = new StringBuilder();
 
@@ -434,8 +451,9 @@ public class ITFactory {
           final String expr = subStr(s, i + 2, '}');
 
           final String trimmedExpr = expr.trim();
-          if (CONSTANTS.containsKey(trimmedExpr))
+          if (CONSTANTS.containsKey(trimmedExpr)) {
             result.append(CONSTANTS.get(trimmedExpr));
+          }
 
           i += expr.length() + 2;
           continue;
@@ -450,10 +468,11 @@ public class ITFactory {
               ProcessUtils.execToString(evaluateExpressions(expr, false));
 
           // remove last '\n' in the result
-          if (r.charAt(r.length() - 1) == '\n')
+          if (r.charAt(r.length() - 1) == '\n') {
             result.append(r.substring(0, r.length() - 1));
-          else
+          } else {
             result.append(r);
+          }
 
         } catch (IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
@@ -474,9 +493,10 @@ public class ITFactory {
 
     final int endIndex = s.indexOf(charPoint, beginIndex);
 
-    if (endIndex == -1)
+    if (endIndex == -1) {
       throw new EoulsanException("Unexpected end of expression in \""
           + s + "\"");
+    }
 
     return s.substring(beginIndex, endIndex);
   }
@@ -491,14 +511,6 @@ public class ITFactory {
    */
   public static String getOutputTestDirectoryPath() {
     return outputTestsDirectoryPath;
-  }
-
-  /**
-   * Get instance on ITSuite object.
-   * @return
-   */
-  public static ITSuite getItSuite() {
-    return itSuite;
   }
 
   //
@@ -531,7 +543,7 @@ public class ITFactory {
    */
   private static Boolean getBooleanFromSystemProperty(final String property) {
 
-    return (property == null) ? false : Boolean.getBoolean(property);
+    return (property != null) && Boolean.getBoolean(property);
   }
 
   /**
@@ -566,17 +578,20 @@ public class ITFactory {
     int dirCount = 0;
     int fileCount = 0;
 
-    for (File f : distDir.listFiles()) {
+    final File[] files = distDir.listFiles();
+    if (files != null) {
+      for (File f : files) {
 
-      if (f.getName().startsWith(".")) {
-        continue;
-      }
+        if (f.getName().startsWith(".")) {
+          continue;
+        }
 
-      if (f.isDirectory()) {
-        dirCount++;
-        subDir = f;
-      } else if (f.isFile()) {
-        fileCount++;
+        if (f.isDirectory()) {
+          dirCount++;
+          subDir = f;
+        } else if (f.isFile()) {
+          fileCount++;
+        }
       }
     }
 
@@ -594,7 +609,7 @@ public class ITFactory {
   //
 
   /**
-   * Public constructor
+   * Public constructor.
    * @throws EoulsanException if an error occurs when reading configuration
    *           file.
    * @throws IOException

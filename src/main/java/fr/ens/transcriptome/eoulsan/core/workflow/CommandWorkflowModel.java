@@ -35,17 +35,20 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.I
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.NAME_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERNAME_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERS_TAG_NAME;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERVALUE_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETER_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PORT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.ROOT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.SKIP_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.STEP_TAG_NAME;
-import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERVALUE_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.WORKFLOWNAME_TAG_NAME;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,10 +66,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -90,16 +89,17 @@ public class CommandWorkflowModel implements Serializable {
   private String description = "";
   private String author = "";
 
-  private List<String> stepIdList = Lists.newArrayList();
-  private Map<String, String> stepIdNames = Maps.newHashMap();
-  private final Map<String, Map<String, StepPort>> stepInputs = Maps
-      .newHashMap();
-  private final Map<String, Set<Parameter>> stepParameters = Maps.newHashMap();
-  private Map<String, Boolean> stepSkiped = Maps.newHashMap();
-  private Map<String, Boolean> stepDiscardOutput = Maps.newHashMap();
-  private final Set<Parameter> globalParameters = Sets.newHashSet();
+  private List<String> stepIdList = new ArrayList<>();
+  private Map<String, String> stepIdNames = new HashMap<>();
+  private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
+  private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
+  private Map<String, Boolean> stepSkiped = new HashMap<>();
+  private Map<String, Boolean> stepDiscardOutput = new HashMap<>();
+  private final Set<Parameter> globalParameters = new HashSet<>();
 
-  static final class StepPort {
+  static final class StepPort implements Serializable {
+
+    private static final long serialVersionUID = -1282360626885971051L;
 
     final String stepId;
     final String portName;
@@ -240,7 +240,7 @@ public class CommandWorkflowModel implements Serializable {
       throw new EoulsanException("The inputs are null.");
 
     // Check input data formats
-    Map<String, StepPort> inputsMap = Maps.newHashMap();
+    Map<String, StepPort> inputsMap = new HashMap<>();
     for (Map.Entry<String, StepOutputPort> e : inputs.entrySet()) {
 
       String toPortName = e.getKey();

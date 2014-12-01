@@ -29,8 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.NOT_NEEDED;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 
 import java.util.Collections;
 import java.util.Set;
@@ -71,7 +69,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final String id;
   private final StepType type;
   private final Set<Parameter> parameters;
-  private final ParallelizationMode parallelizationMode;
+  private ParallelizationMode parallelizationMode =
+      ParallelizationMode.STANDARD;
   private InputPorts inputPortsParameter = noInputPort();
   private OutputPorts outputPortsParameter = noOutputPort();
 
@@ -299,14 +298,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final WorkflowOutputPort dependencyOutputPort) {
 
     checkNotNull(inputPort, "inputPort argument cannot be null");
-    checkNotNull(dependencyOutputPort, "dependencyOutputPort argument cannot be null");
+    checkNotNull(dependencyOutputPort,
+        "dependencyOutputPort argument cannot be null");
 
     final AbstractWorkflowStep step = inputPort.getStep();
     final AbstractWorkflowStep dependencyStep = dependencyOutputPort.getStep();
 
-    checkArgument(step == this,  "input port ("
-        + inputPort.getName() + ") is not a port of the step (" + getId()
-        + ")");
+    checkArgument(step == this, "input port ("
+        + inputPort.getName() + ") is not a port of the step (" + getId() + ")");
 
     // Set the link
     inputPort.setLink(dependencyOutputPort);
@@ -405,7 +404,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final Step step = getStep();
       if (getType() == StepType.STANDARD_STEP
           || getType() == StepType.DESIGN_STEP) {
+
+        // Configure step
         step.configure(getParameters());
+
+        // Update parallelization mode if step configuration requires it
+        this.parallelizationMode = getParallelizationMode(step);
       }
 
       // Register input and output formats
@@ -455,7 +459,29 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   //
-  // Constructor
+  // Other methods
+  //
+
+  /**
+   * Get the parallelization mode of a step.
+   * @param step The step
+   * @return a ParallelizationMode that cannot be null
+   */
+  private static ParallelizationMode getParallelizationMode(final Step step) {
+
+    if (step != null) {
+      final ParallelizationMode mode = step.getParallelizationMode();
+
+      if (mode != null) {
+        return mode;
+      }
+    }
+
+    return ParallelizationMode.STANDARD;
+  }
+
+  //
+  // Constructors
   //
 
   /**
@@ -484,7 +510,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.type = type;
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
-    this.parallelizationMode = NOT_NEEDED;
+    this.parallelizationMode = ParallelizationMode.NOT_NEEDED;
 
     switch (type) {
     case CHECKER_STEP:
@@ -569,9 +595,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
-    this.parallelizationMode =
-        generator.getParallelizationMode() == null ? STANDARD : generator
-            .getParallelizationMode();
+    this.parallelizationMode = getParallelizationMode(generator);
 
     // Define working directory
     this.workingDir =
@@ -617,9 +641,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
     this.createLogFiles = step.isCreateLogFiles();
-    this.parallelizationMode =
-        step.getParallelizationMode() == null ? STANDARD : step
-            .getParallelizationMode();
+    this.parallelizationMode = getParallelizationMode(step);
 
     // Define working directory
     this.workingDir =
@@ -674,9 +696,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();
     this.createLogFiles = step.isCreateLogFiles();
-    this.parallelizationMode =
-        step.getParallelizationMode() == null ? STANDARD : step
-            .getParallelizationMode();
+    this.parallelizationMode = getParallelizationMode(step);
 
     // Define working directory
     this.workingDir = workingDir;

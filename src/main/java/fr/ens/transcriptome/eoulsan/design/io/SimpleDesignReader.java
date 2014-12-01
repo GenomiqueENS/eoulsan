@@ -56,13 +56,13 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   @Override
   public Design read() throws EoulsanIOException {
 
-    Map<String, List<String>> data = new HashMap<String, List<String>>();
-    List<String> fieldnames = new ArrayList<String>();
+    Map<String, List<String>> data = new HashMap<>();
+    List<String> fieldnames = new ArrayList<>();
 
     try {
 
       setBufferedReader(new BufferedReader(new InputStreamReader(
-          getInputStream(), Globals.DEFAULT_FILE_ENCODING)));
+          getInputStream(), Globals.DEFAULT_CHARSET)));
 
       BufferedReader br = getBufferedReader();
       final String separator = getSeparatorField();

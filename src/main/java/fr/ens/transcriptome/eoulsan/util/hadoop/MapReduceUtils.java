@@ -164,7 +164,7 @@ public final class MapReduceUtils {
     int completedJobs = 0;
 
     final StringBuilder sb = new StringBuilder();
-    final Set<Job> completedJobsSet = new HashSet<Job>();
+    final Set<Job> completedJobsSet = new HashSet<>();
 
     while (completedJobs != totalJobs) {
 

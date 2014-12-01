@@ -40,7 +40,7 @@ import com.google.common.collect.Lists;
 public class LocalReporter implements Reporter {
 
   private Map<String, Map<String, Long>> map =
-      new HashMap<String, Map<String, Long>>();
+      new HashMap<>();
 
   @Override
   public void incrCounter(final String counterGroup, final String counter,
@@ -52,7 +52,7 @@ public class LocalReporter implements Reporter {
     final Map<String, Long> group;
 
     if (!this.map.containsKey(counterGroup)) {
-      group = new HashMap<String, Long>();
+      group = new HashMap<>();
       this.map.put(counterGroup, group);
     } else
       group = this.map.get(counterGroup);
@@ -81,7 +81,7 @@ public class LocalReporter implements Reporter {
     final Map<String, Long> group;
 
     if (!this.map.containsKey(counterGroup)) {
-      group = new HashMap<String, Long>();
+      group = new HashMap<>();
       this.map.put(counterGroup, group);
     } else
       group = this.map.get(counterGroup);

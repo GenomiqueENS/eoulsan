@@ -112,7 +112,7 @@ public final class PathUtils {
       this.allowCompressedFile = allowCompressedFile;
     }
 
-  };
+  }
 
   /**
    * Simple PathFilter to filter Paths with their beginning
@@ -171,7 +171,7 @@ public final class PathUtils {
       this.allowCompressedFile = allowCompressedFile;
     }
 
-  };
+  }
 
   /**
    * Create an input stream from a path.
@@ -608,7 +608,7 @@ public final class PathUtils {
       throw new NullPointerException("Configuration is null");
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDir())
+    if (!fs.getFileStatus(dir).isDirectory())
       throw new IOException("Directory path is not a directory: " + dir);
 
     final FileStatus[] filesStatus =
@@ -618,7 +618,7 @@ public final class PathUtils {
     if (filesStatus == null)
       return Collections.emptyList();
 
-    final List<Path> result = new ArrayList<Path>(filesStatus.length);
+    final List<Path> result = new ArrayList<>(filesStatus.length);
 
     for (FileStatus fst : filesStatus)
       result.add(fst.getPath());
@@ -663,7 +663,7 @@ public final class PathUtils {
       throw new NullPointerException("Configuration is null");
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDir())
+    if (!fs.getFileStatus(dir).isDirectory())
       throw new IOException("Directory path is not a directory: " + dir);
 
     final FileStatus[] filesStatus =
@@ -673,7 +673,7 @@ public final class PathUtils {
     if (filesStatus == null)
       return Collections.emptyList();
 
-    final List<Path> result = new ArrayList<Path>(filesStatus.length);
+    final List<Path> result = new ArrayList<>(filesStatus.length);
 
     for (FileStatus fst : filesStatus)
       result.add(fst.getPath());
@@ -793,26 +793,19 @@ public final class PathUtils {
     if (!overwrite && dstFs.exists(dstPath))
       throw new IOException("The output file already exists: " + dstPath);
 
-    final OutputStream out = dstFs.create(dstPath);
-
-    try {
+    try (OutputStream out = dstFs.create(dstPath)) {
       // FileStatus contents[] = srcFS.listStatus(srcDir);
       // for (int i = 0; i < contents.length; i++) {
       for (Path p : paths)
-        if (!srcFs.getFileStatus(p).isDir()) {
-          InputStream in = srcFs.open(p);
-          try {
+        if (!srcFs.getFileStatus(p).isDirectory()) {
+          try (InputStream in = srcFs.open(p)) {
             IOUtils.copyBytes(in, out, conf, false);
             if (addString != null)
               out.write(addString.getBytes(FileCharsets.UTF8_CHARSET));
 
-          } finally {
-            in.close();
           }
         }
 
-    } finally {
-      out.close();
     }
 
     if (deleteSource)
@@ -862,7 +855,7 @@ public final class PathUtils {
 
     final FileSystem fs = directory.getFileSystem(conf);
 
-    if (!fs.getFileStatus(directory).isDir())
+    if (!fs.getFileStatus(directory).isDirectory())
       throw new IOException("The "
           + msgFileType + " is not a directory: " + directory);
   }
@@ -885,7 +878,7 @@ public final class PathUtils {
     final FileSystem fs = directory.getFileSystem(conf);
 
     try {
-      return fs.getFileStatus(directory).isDir();
+      return fs.getFileStatus(directory).isDirectory();
     } catch (FileNotFoundException e) {
       return false;
     }
@@ -943,7 +936,7 @@ public final class PathUtils {
 
     final FileSystem fs = file.getFileSystem(conf);
 
-    if (!fs.isFile(file) && !fs.getFileStatus(file).isDir())
+    if (!fs.isFile(file) && !fs.getFileStatus(file).isDirectory())
       throw new IOException("The "
           + msgFileType + " is  not a standard file or a directory: " + file);
   }

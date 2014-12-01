@@ -109,7 +109,7 @@ public final class Globals {
 
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
-      .unmodifiableSet(new HashSet<String>(Arrays.asList(new String[] {
+      .unmodifiableSet(new HashSet<>(Arrays.asList(new String[] {
           "linux\tamd64", "linux\tx86_64" })));
 
   /** Platforms alias. */

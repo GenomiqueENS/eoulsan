@@ -503,7 +503,7 @@ public final class Settings implements Serializable {
    */
   public Set<String> getSettingsNames() {
 
-    final Set<String> result = new HashSet<String>();
+    final Set<String> result = new HashSet<>();
 
     for (String key : this.properties.stringPropertyNames()) {
       if (!key.startsWith(MAIN_PREFIX_KEY)) {
@@ -721,7 +721,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the mail address for eoulsan results.
-   * @param the mail address as a string
+   * @param mail the mail address as a string
    */
   public void setResultMail(final String mail) {
 

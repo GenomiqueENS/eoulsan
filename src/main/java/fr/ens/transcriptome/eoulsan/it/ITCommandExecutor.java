@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -42,11 +43,11 @@ import com.google.common.base.Stopwatch;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
- * @author sperrin
+ * The class represents an executor to command line.
+ * @author Sandrine Perrin
+ * @since 2.0
  */
 public class ITCommandExecutor {
-
-  public static final String APPLICATION_PATH_VARIABLE = "${application.path}";
 
   private static final String STDERR_FILENAME = "STDERR";
   private static final String STDOUT_FILENAME = "STDOUT";
@@ -67,33 +68,36 @@ public class ITCommandExecutor {
    * @param scriptConfKey key for configuration to get command line
    * @param suffixNameOutputFile suffix for standard and error output file on
    *          process
-   * @param saveStandardOutputInSuccess if true generate always standard output
-   *          and error file otherwise only if script failed
-   * @param message message to describe script
-   * @param cmdLineFile file where copy the command line of the script
-   * @throws EoulsanException if an error occurs while execute script
+   * @param desc description on command line
+   * @param isApplication true if application to run, otherwise false
+   *          corresponding to annexes script
+   * @return result of execution command line, if command line not found in
+   *         configuration return null
    */
   public ITCommandResult executeCommand(final String scriptConfKey,
       final String suffixNameOutputFile, final String desc,
       final boolean isApplication) {
 
-    if (this.testConf.getProperty(scriptConfKey) == null)
+    if (this.testConf.getProperty(scriptConfKey) == null) {
       return null;
+    }
 
     // Get command line from the configuration
     final String cmdLine = this.testConf.getProperty(scriptConfKey);
 
-    if (cmdLine.isEmpty())
+    if (cmdLine.isEmpty()) {
       return null;
+    }
 
     // Save command line in file
-    if (isApplication)
+    if (isApplication) {
       try {
         com.google.common.io.Files.write(cmdLine + "\n", cmdLineFile,
             Charsets.UTF_8);
       } catch (IOException e) {
         // Nothing to do
       }
+    }
 
     // Define stdout and stderr file
     final File stdoutFile = createSdtoutFile(suffixNameOutputFile);
@@ -103,8 +107,7 @@ public class ITCommandExecutor {
     final Stopwatch timer = Stopwatch.createStarted();
 
     final ITCommandResult cmdResult =
-        new ITCommandResult(cmdLine, this.outputTestDirectory, stdoutFile,
-            stderrFile, desc);
+        new ITCommandResult(cmdLine, this.outputTestDirectory, desc);
     try {
 
       final Process p =
@@ -151,8 +154,9 @@ public class ITCommandExecutor {
   }
 
   /**
+   * Create standard output file with suffix name, if not empty.
    * @param suffixName
-   * @return
+   * @return file
    */
   private File createSdtoutFile(final String suffixName) {
     return new File(this.outputTestDirectory, STDOUT_FILENAME
@@ -160,8 +164,9 @@ public class ITCommandExecutor {
   }
 
   /**
+   * Create error output file with suffix name, if not empty.
    * @param suffixName
-   * @return
+   * @return file
    */
   private File createSdterrFile(final String suffixName) {
     return new File(this.outputTestDirectory, STDERR_FILENAME
@@ -171,19 +176,26 @@ public class ITCommandExecutor {
   //
   // Constructor
   //
+  /**
+   * Public constructor.
+   * @param testConf properties on the test
+   * @param outputTestDirectory output test directory
+   * @param environmentVariables environment variables to run test
+   */
   public ITCommandExecutor(final Properties testConf,
-      final File outputTestDirectory, final String[] environmentVariables) {
+      final File outputTestDirectory, final List<String> environmentVariables) {
 
     this.testConf = testConf;
     this.outputTestDirectory = outputTestDirectory;
 
     // Extract environment variable from current context and configuration test
-    this.environmentVariables = environmentVariables;
+    this.environmentVariables =
+        environmentVariables.toArray(new String[environmentVariables.size()]);
     this.cmdLineFile = new File(this.outputTestDirectory, CMDLINE_FILENAME);
   }
 
   /**
-   * This internal class allow to save Process outputs
+   * This internal class allow to save Process outputs.
    * @author Laurent Jourdren
    */
   private static final class CopyProcessOutput extends Thread {

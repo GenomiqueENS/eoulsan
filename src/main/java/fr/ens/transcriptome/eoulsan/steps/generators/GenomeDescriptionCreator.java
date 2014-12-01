@@ -49,7 +49,7 @@ public class GenomeDescriptionCreator {
   /**
    * Create genome description object from the storage if already exists or
    * compute it from the genome.
-   * @param gffFile annotation file
+   * @param annotationDataFile annotation file
    * @return the genome description object
    * @throws BadBioEntryException if an error occurs while computing the genome
    *           description

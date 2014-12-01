@@ -63,7 +63,7 @@ public class ReadNameStartsWithReadFilter extends AbstractReadFilter {
     if ("forbidden.prefixes".equals(key.trim())) {
 
       if (this.forbiddenPrefixes == null)
-        this.forbiddenPrefixes = new HashSet<String>();
+        this.forbiddenPrefixes = new HashSet<>();
 
       final String[] prefixes = value.split(",");
 
@@ -74,7 +74,7 @@ public class ReadNameStartsWithReadFilter extends AbstractReadFilter {
     } else if ("allowed.prefixes".equals(key.trim())) {
 
       if (this.allowedPrefixes == null)
-        this.allowedPrefixes = new HashSet<String>();
+        this.allowedPrefixes = new HashSet<>();
 
       final String[] prefixes = value.split(",");
 

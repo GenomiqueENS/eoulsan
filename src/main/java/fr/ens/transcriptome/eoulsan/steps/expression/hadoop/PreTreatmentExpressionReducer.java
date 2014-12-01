@@ -62,7 +62,7 @@ public class PreTreatmentExpressionReducer extends
   private Text outValue = new Text();
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private List<SAMRecord> records = new ArrayList<SAMRecord>();
+  private List<SAMRecord> records = new ArrayList<>();
 
   @Override
   protected void setup(final Context context) throws IOException,

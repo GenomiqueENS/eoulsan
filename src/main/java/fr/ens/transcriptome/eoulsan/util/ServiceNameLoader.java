@@ -49,9 +49,9 @@ public abstract class ServiceNameLoader<S> {
   private final Class<S> service;
   private final ClassLoader loader;
   private final Map<String, String> classNames =
-      new LinkedHashMap<String, String>();
-  private final Map<String, S> cache = new HashMap<String, S>();
-  private final Set<String> classesToNotLoad = new HashSet<String>();
+      new LinkedHashMap<>();
+  private final Map<String, S> cache = new HashMap<>();
+  private final Set<String> classesToNotLoad = new HashSet<>();
   private boolean notYetLoaded = true;
 
   /**
@@ -229,10 +229,7 @@ public abstract class ServiceNameLoader<S> {
     final S obj;
     try {
       obj = service.cast(clazz.newInstance());
-    } catch (InstantiationException e) {
-      throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": Class cannot be instancied: " + className);
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       throw new ServiceConfigurationError(service.getName()
           + ": " + url + ": Class cannot be instancied: " + className);
     }
@@ -240,11 +237,7 @@ public abstract class ServiceNameLoader<S> {
     final Method m;
     try {
       m = obj.getClass().getMethod(getMethodName());
-    } catch (SecurityException e) {
-      throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": Method " + getMethodName()
-          + "() cannot be instancied in class: " + className);
-    } catch (NoSuchMethodException e) {
+    } catch (SecurityException | NoSuchMethodException e) {
       throw new ServiceConfigurationError(service.getName()
           + ": " + url + ": Method " + getMethodName()
           + "() cannot be instancied in class: " + className);
@@ -253,15 +246,7 @@ public abstract class ServiceNameLoader<S> {
     final String name;
     try {
       name = (String) m.invoke(obj);
-    } catch (IllegalArgumentException e) {
-      throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": Method " + getMethodName()
-          + "() cannot be invoked in class: " + className);
-    } catch (IllegalAccessException e) {
-      throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": Method " + getMethodName()
-          + "() cannot be invoked in class: " + className);
-    } catch (InvocationTargetException e) {
+    } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
       throw new ServiceConfigurationError(service.getName()
           + ": " + url + ": Method " + getMethodName()
           + "() cannot be invoked in class: " + className);
@@ -343,10 +328,7 @@ public abstract class ServiceNameLoader<S> {
           this.cache.put(serviceNameLower, result);
 
         return result;
-      } catch (InstantiationException e) {
-        throw new ServiceConfigurationError(service.getName()
-            + ": " + serviceNameLower + " cannot be instancied");
-      } catch (IllegalAccessException e) {
+      } catch (InstantiationException | IllegalAccessException e) {
         throw new ServiceConfigurationError(service.getName()
             + ": " + serviceNameLower + " cannot be instancied");
       } catch (ClassNotFoundException e) {

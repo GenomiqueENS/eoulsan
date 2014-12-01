@@ -33,10 +33,13 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,9 +47,7 @@ import java.util.Set;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -85,8 +86,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private final Design design;
   private final WorkflowContext workflowContext;
-  private final Set<String> stepIds = Sets.newHashSet();
-  private final Map<AbstractWorkflowStep, StepState> steps = Maps.newHashMap();
+  private final Set<String> stepIds = new HashSet<>();
+  private final Map<AbstractWorkflowStep, StepState> steps = new HashMap<>();
   private final Multimap<StepState, AbstractWorkflowStep> states =
       ArrayListMultimap.create();
   private final Stopwatch stopwatch = Stopwatch.createUnstarted();
@@ -149,7 +150,7 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public Set<WorkflowStep> getSteps() {
 
-    final Set<WorkflowStep> result = Sets.newHashSet();
+    final Set<WorkflowStep> result = new HashSet<>();
     result.addAll(this.steps.keySet());
 
     return Collections.unmodifiableSet(result);
@@ -511,7 +512,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     Preconditions.checkNotNull(states, "states argument is null");
 
-    final List<AbstractWorkflowStep> result = Lists.newArrayList();
+    final List<AbstractWorkflowStep> result = new ArrayList<>();
 
     for (StepState state : states)
       result.addAll(getSortedStepsByState(state));

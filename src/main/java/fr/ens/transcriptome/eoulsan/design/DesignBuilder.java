@@ -34,12 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -67,9 +66,8 @@ public class DesignBuilder {
   private static final int MAX_FASTQ_ENTRIES_TO_READ = 10000;
 
   private final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-  private final Map<String, List<FastqEntry>> fastqMap = Maps
-      .newLinkedHashMap();
-  private final Map<String, String> prefixMap = Maps.newHashMap();
+  private final Map<String, List<FastqEntry>> fastqMap = new LinkedHashMap<>();
+  private final Map<String, String> prefixMap = new HashMap<>();
   private DataFile genomeFile;
   private DataFile gffFile;
 
@@ -150,9 +148,7 @@ public class DesignBuilder {
         reader.throwException();
 
         return reader.next().getName();
-      } catch (IOException e) {
-        throw new EoulsanException(e.getMessage());
-      } catch (BadBioEntryException e) {
+      } catch (IOException | BadBioEntryException e) {
         throw new EoulsanException(e.getMessage());
       }
 
@@ -318,7 +314,7 @@ public class DesignBuilder {
       final List<FastqEntry> sampleEntries;
 
       if (!this.fastqMap.containsKey(sampleName)) {
-        sampleEntries = Lists.newArrayList();
+        sampleEntries = new ArrayList<>();
         this.fastqMap.put(sampleName, sampleEntries);
       } else
         sampleEntries = this.fastqMap.get(sampleName);
@@ -441,7 +437,7 @@ public class DesignBuilder {
         if (fastqMap.containsKey(sampleName))
           list = fastqMap.get(sampleName);
         else {
-          list = new ArrayList<FastqEntry>();
+          list = new ArrayList<>();
           fastqMap.put(sampleName, list);
         }
 
@@ -550,7 +546,7 @@ public class DesignBuilder {
                   + StringUtils.toLetter(count);
 
           // Convert the list of DataFiles to a list of filenames
-          final List<String> filenames = Lists.newArrayList();
+          final List<String> filenames = new ArrayList<>();
           for (FastqEntry fe : fes)
             filenames.add(fe.path.getSource());
 
@@ -642,9 +638,7 @@ public class DesignBuilder {
       format =
           FastqFormat.identifyFormat(fileToCheck.open(),
               MAX_FASTQ_ENTRIES_TO_READ);
-    } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
-    } catch (BadBioEntryException e) {
+    } catch (IOException | BadBioEntryException e) {
       throw new EoulsanException(e.getMessage());
     }
 
@@ -660,11 +654,11 @@ public class DesignBuilder {
   private boolean isDataFormatExtension(final DataFormat dataFormat,
       final String extension, DataFileMetadata md) {
 
-    if (md != null
-        && md.getDataFormat() != null && dataFormat.equals(md.getDataFormat()))
-      return true;
+    if (md != null && md.getDataFormat() != null) {
+      return dataFormat.equals(md.getDataFormat());
+    }
 
-    return dfr.getDataFormatFromExtension(extension) != null;
+    return dfr.getDataFormatFromExtension(extension) == dataFormat;
   }
 
   /**
@@ -676,9 +670,9 @@ public class DesignBuilder {
   private List<List<FastqEntry>> findPairEndFiles(final List<FastqEntry> files)
       throws EoulsanException {
 
-    final Map<String, List<FastqEntry>> mapPrefix = Maps.newHashMap();
-    final Map<FastqEntry, Integer> mapPair = Maps.newHashMap();
-    final List<List<FastqEntry>> result = Lists.newArrayList();
+    final Map<String, List<FastqEntry>> mapPrefix = new HashMap<>();
+    final Map<FastqEntry, Integer> mapPair = new HashMap<>();
+    final List<List<FastqEntry>> result = new ArrayList<>();
 
     for (FastqEntry fe : files) {
 
@@ -689,7 +683,7 @@ public class DesignBuilder {
       if (mapPrefix.containsKey(fe.prefix))
         list = mapPrefix.get(fe.prefix);
       else {
-        list = Lists.newArrayList();
+        list = new ArrayList<>();
         mapPrefix.put(fe.prefix, list);
         result.add(list);
       }

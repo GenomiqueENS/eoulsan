@@ -38,8 +38,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.io.PathConcatInputStream;
@@ -79,7 +77,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final FileStatus fStatus = fs.getFileStatus(path);
 
-    if (fStatus.isDir()) {
+    if (fStatus.isDirectory()) {
 
       final List<Path> paths = getPathToConcat(fs, path);
 
@@ -115,7 +113,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     });
 
     // Create final result
-    final List<Path> result = Lists.newArrayListWithCapacity(files.length);
+    final List<Path> result = new ArrayList<>(files.length);
     for (FileStatus file : files) {
       result.add(file.getPath());
     }
@@ -200,14 +198,14 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     if (!fs.exists(path))
       throw new FileNotFoundException("File not found: " + file);
 
-    if (!fileStatus.isDir())
+    if (!fileStatus.isDirectory())
       throw new IOException("The file is not a directory: " + file);
 
     // List directory
     final FileStatus[] files = fs.listStatus(path);
 
     // Convert the File array to a list of DataFile
-    final List<DataFile> result = new ArrayList<DataFile>(files.length);
+    final List<DataFile> result = new ArrayList<>(files.length);
     for (FileStatus f : files)
       result.add(new DataFile(f.getPath().toUri().toString()));
 

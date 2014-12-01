@@ -117,7 +117,7 @@ public class ServiceListLoader {
       urls = this.loader.getResources(fullName);
 
     // Parse the URLs files
-    final List<Entry> result = new ArrayList<Entry>();
+    final List<Entry> result = new ArrayList<>();
     for (URL url : Utils.newIterable(urls))
       parse(url, result);
 
@@ -176,7 +176,7 @@ public class ServiceListLoader {
       final ClassLoader loader) throws IOException {
 
     final List<Entry> entries = loadEntries(serviceName, loader);
-    final List<String> result = new ArrayList<String>(entries.size());
+    final List<String> result = new ArrayList<>(entries.size());
 
     for (Entry e : entries)
       result.add(e.getValue());

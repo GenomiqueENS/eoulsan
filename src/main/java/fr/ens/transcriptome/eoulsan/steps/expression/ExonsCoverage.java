@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class ExonsCoverage {
 
-  private Map<String, Exoncoverage> exons = new HashMap<String, Exoncoverage>();
+  private Map<String, Exoncoverage> exons = new HashMap<>();
 
   private int alignmentCount;
 

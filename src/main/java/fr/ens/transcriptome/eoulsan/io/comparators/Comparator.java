@@ -64,9 +64,8 @@ public interface Comparator {
 
   /**
    * Compare two files no ordered, check if they are the same contents.
-   * @param streamA the path to the first file, used like reference.
-   * @param streamB the path to the second file,
-   * @return boolean true if files are same.
+   * @param isA the path to the first file, used like reference.
+   * @param isB the path to the second file,
    * @throws IOException if an error occurs while comparing the files.
    */
   public boolean compareFiles(final InputStream isA, final InputStream isB)

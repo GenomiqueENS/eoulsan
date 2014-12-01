@@ -187,10 +187,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     getLogger().info("Filter file: " + inFile);
     getLogger().info("FastqFormat: " + fastqFormat);
 
-    final FastqReader reader = new FastqReader(inFile.open());
-    final FastqWriter writer = new FastqWriter(outFile.create());
-
-    try {
+    try (FastqReader reader = new FastqReader(inFile.open()); FastqWriter writer = new FastqWriter(outFile.create())) {
       for (final ReadSequence read : reader) {
 
         // Set Fastq format
@@ -216,10 +213,6 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
       throw new IOException("Invalid Fastq format: " + e.getEntry());
 
-    } finally {
-
-      reader.close();
-      writer.close();
     }
   }
 
@@ -243,12 +236,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         "Filter files: "
             + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
 
-    final FastqReader reader1 = new FastqReader(inFile1.open());
-    final FastqReader reader2 = new FastqReader(inFile2.open());
-    final FastqWriter writer1 = new FastqWriter(outFile1.create());
-    final FastqWriter writer2 = new FastqWriter(outFile2.create());
-
-    try {
+    try (FastqReader reader2 = new FastqReader(inFile2.open()); FastqWriter writer1 = new FastqWriter(outFile1.create()); FastqWriter writer2 = new FastqWriter(outFile2.create()); FastqReader reader1 = new FastqReader(inFile1.open())) {
       for (final ReadSequence read1 : reader1) {
 
         // Test if the second read exists
@@ -288,12 +276,6 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
       throw new IOException("Invalid Fastq format: " + e.getEntry());
 
-    } finally {
-
-      reader1.close();
-      reader2.close();
-      writer1.close();
-      writer2.close();
     }
 
   }

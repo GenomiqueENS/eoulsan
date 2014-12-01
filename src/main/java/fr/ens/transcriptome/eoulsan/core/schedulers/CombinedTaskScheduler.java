@@ -158,10 +158,11 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public void start() {
 
-    // Check execution state
-    checkState(!this.isStopped, "The scheduler is stopped");
-
     synchronized (this) {
+
+      // Check execution state
+      checkState(!this.isStopped, "The scheduler is stopped");
+
       this.isStarted = true;
     }
 
@@ -200,8 +201,10 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
    */
   private void checkExecutionState() {
 
-    checkState(this.isStarted, "The scheduler is not started");
-    checkState(!this.isStopped, "The scheduler is stopped");
+    synchronized (this) {
+      checkState(this.isStarted, "The scheduler is not started");
+      checkState(!this.isStopped, "The scheduler is stopped");
+    }
   }
 
   /**
@@ -256,7 +259,13 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public void run() {
 
-    while (!this.isStopped) {
+    boolean stopped;
+
+    synchronized (this) {
+      stopped = this.isStopped;
+    }
+
+    while (!stopped) {
 
       // Is there some task to do by ownTaskScheduler ?
       if (this.ownTaskScheduler.isPaused()
@@ -286,6 +295,10 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
         Thread.sleep(SLEEP_TIME_IN_MS);
       } catch (InterruptedException e) {
         getLogger().severe(e.getMessage());
+      }
+
+      synchronized (this) {
+        stopped = this.isStopped;
       }
     }
   }

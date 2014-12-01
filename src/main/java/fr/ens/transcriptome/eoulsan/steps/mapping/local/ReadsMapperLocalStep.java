@@ -38,8 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-
-import com.google.common.base.Charsets;
+import java.nio.charset.StandardCharsets;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -270,7 +269,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         FileUtils.createBufferedReader(samFileInputStream);
     final Writer writer =
         new OutputStreamWriter(new FileOutputStream(samFile),
-            Charsets.ISO_8859_1);
+            StandardCharsets.ISO_8859_1);
 
     int entriesParsed = 0;
 

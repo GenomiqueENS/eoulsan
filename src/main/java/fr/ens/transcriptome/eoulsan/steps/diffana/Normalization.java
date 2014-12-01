@@ -32,7 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +43,6 @@ import org.rosuda.REngine.REngineException;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -103,7 +104,7 @@ public class Normalization {
 
   // Getters
   /**
-   * get Rserve connection
+   * Get Rserve connection.
    * @return rConnection
    */
   protected RSConnectionNewImpl getRConnection() {
@@ -111,13 +112,12 @@ public class Normalization {
   }
 
   /**
-   * Test if there is Technical replicates into rRepTechGroup field
-   * @param rRepTechGroup
-   * @return
+   * Test if there is Technical replicates into rRepTechGroup field.
+   * @param rRepTechGroup list of the technical replicate group
    */
   protected boolean isTechnicalReplicates(List<String> rRepTechGroup) {
 
-    Map<String, String> rtgMap = Maps.newHashMap();
+    Map<String, String> rtgMap = new HashMap<>();
 
     for (String repTechGroup : rRepTechGroup) {
 
@@ -131,8 +131,10 @@ public class Normalization {
   }
 
   /**
-   * run Rnw script on Rserve server
-   * @throws EoulsanException
+   * Run Rnw script on Rserve server.
+   * @param context Step context
+   * @param data data to process
+   * @throws EoulsanException if an error occurs while executing the script
    */
   protected void runRserveRnwScript(final StepContext context, final Data data)
       throws EoulsanException {
@@ -187,8 +189,10 @@ public class Normalization {
   }
 
   /**
-   * run Rnw script on local mode
-   * @throws EoulsanException
+   * run Rnw script on local mode.
+   * @param context Step context
+   * @param data data to process
+   * @throws EoulsanException if an error occurs while executing the script
    */
   protected void runLocalRnwScript(final StepContext context, final Data data)
       throws EoulsanException {
@@ -224,14 +228,14 @@ public class Normalization {
   }
 
   /**
-   * Split design into multiple experiments Samples list
+   * Split design into multiple experiments Samples list.
    * @return experiementMap a map of experiments
    */
   protected Map<String, List<Sample>> experimentsSpliter() {
 
     List<Sample> samples = this.design.getSamples();
     // Create design HashMap
-    Map<String, List<Sample>> experimentMap = Maps.newHashMap();
+    Map<String, List<Sample>> experimentMap = new HashMap<>();
 
     for (Sample s : samples) {
       String expName = s.getMetadata().getExperiment();
@@ -248,10 +252,11 @@ public class Normalization {
 
   /**
    * Execute the analysis.
-   * @param rScript
-   * @throws IOException
-   * @throws REngineException
-   * @throws EoulsanException
+   * @param rnwScript script to execute
+   * @throws REngineException if an error occurs while executing the script on
+   *           Rserve
+   * @throws EoulsanException if an error occurs while executing the script in
+   *           local mode
    */
   protected void runRnwScript(String rnwScript, boolean isRserveEnable)
       throws REngineException, EoulsanException {
@@ -286,7 +291,7 @@ public class Normalization {
    * Read a static part of the generated script.
    * @param staticFile the name of a file containing a part of the script
    * @return A String with the static part of the script
-   * @throws EoulsanException
+   * @throws EoulsanException if an error occurs while reading the script
    */
   protected String readStaticScript(String staticFile) throws EoulsanException {
 
@@ -312,20 +317,20 @@ public class Normalization {
   }
 
   /**
-   * Generate the R script
-   * @param experimentSamplesList
-   * @return String rScript
-   * @throws EoulsanException
+   * Generate the R script.
+   * @param experimentSamplesList list of sample experiments
+   * @return String rScript R script to execute
+   * @throws EoulsanException if an error occurs while generate the R script
    */
   protected String generateScript(final List<Sample> experimentSamplesList,
       final StepContext context) throws EoulsanException {
 
-    final Map<String, List<Integer>> conditionsMap = Maps.newHashMap();
+    final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 
-    final List<Integer> rSampleIds = Lists.newArrayList();
-    final List<String> rSampleNames = Lists.newArrayList();
-    final List<String> rCondNames = Lists.newArrayList();
-    List<String> rRepTechGroup = Lists.newArrayList();
+    final List<Integer> rSampleIds = new ArrayList<>();
+    final List<String> rSampleNames = new ArrayList<>();
+    final List<String> rCondNames = new ArrayList<>();
+    List<String> rRepTechGroup = new ArrayList<>();
     int i = 0;
 
     // Get samples ids, conditions names/indexes and repTechGoups
@@ -348,7 +353,7 @@ public class Normalization {
 
       final List<Integer> index;
       if (!conditionsMap.containsKey(condition)) {
-        index = Lists.newArrayList();
+        index = new ArrayList<>();
         conditionsMap.put(condition, index);
       } else {
         index = conditionsMap.get(condition);
@@ -442,9 +447,7 @@ public class Normalization {
         writer.write(sb.toString());
         writer.close();
       }
-    } catch (REngineException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (REngineException | IOException e) {
       e.printStackTrace();
     }
 
@@ -453,9 +456,9 @@ public class Normalization {
   }
 
   /**
-   * Write Rnw preamble
-   * @param sb
-   * @param experimentSamplesList
+   * Write Rnw preamble.
+   * @param experimentSamplesList sample experiement list
+   * @param title title of the document
    * @return a stringbuilder whith Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
@@ -508,9 +511,9 @@ public class Normalization {
   }
 
   /**
-   * Add sampleNames vector to R script
-   * @param rSampleNames
-   * @param sb
+   * Add sampleNames vector to R script.
+   * @param rSampleNames sample names
+   * @param sb StringBuilder where write the part of the script
    */
   protected void generateSampleNamePart(final List<String> rSampleNames,
       final StringBuilder sb) {
@@ -534,9 +537,9 @@ public class Normalization {
   }
 
   /**
-   * Add SampleIds vector to R script
-   * @param rSampleIds
-   * @param sb
+   * Add SampleIds vector to R script.
+   * @param rSampleIds samples identifiers
+   * @param sb StringBuilder where write the part of the script
    */
   protected void generateSampleIdsPart(final List<Integer> rSampleIds,
       final StringBuilder sb) {
@@ -554,8 +557,8 @@ public class Normalization {
   }
 
   /**
-   * Add expression file name vector to R script
-   * @param sb
+   * Add expression file name vector to R script.
+   * @param sb StringBuilder where write the part of the script
    */
   protected void generateExpressionFileNamesPart(StringBuilder sb) {
 
@@ -568,9 +571,9 @@ public class Normalization {
   }
 
   /**
-   * Write
-   * @param rRepTechGroup
-   * @param sb
+   * Write the section of the script that handle technical replicate groups.
+   * @param rRepTechGroup list of technical replicate groups
+   * @param sb StringBuilder where write the part of the script
    */
   protected void generateRepTechGroupPart(List<String> rRepTechGroup,
       StringBuilder sb) {
@@ -606,9 +609,9 @@ public class Normalization {
   }
 
   /**
-   * Add condition vector to R script
-   * @param rCondNames
-   * @param sb
+   * Add condition vector to R script.
+   * @param rCondNames condition names
+   * @param sb StringBuilder where write the part of the script
    */
   protected void generateConditionPart(List<String> rCondNames, StringBuilder sb) {
 
@@ -631,16 +634,16 @@ public class Normalization {
   }
 
   /**
-   * Check if there is a problem in the repTechGroup coherence
-   * @param rRepTechGroup
-   * @param rCondNames
-   * @throws EoulsanException
+   * Check if there is a problem in the repTechGroup coherence.
+   * @param rRepTechGroup technical replicate group
+   * @param rCondNames condition names
+   * @throws EoulsanException if an error if found in the design file
    */
   protected void checkRepTechGroupCoherence(List<String> rRepTechGroup,
       List<String> rCondNames) throws EoulsanException {
 
     // Check repTechGroup field coherence
-    Map<String, String> condRepTGMap = Maps.newHashMap();
+    Map<String, String> condRepTGMap = new HashMap<>();
     for (int i = 0; i < rRepTechGroup.size(); i++) {
 
       String repTechGroup = rRepTechGroup.get(i);
@@ -659,8 +662,8 @@ public class Normalization {
   }
 
   /**
-   * Escape underscore for LaTeX title
-   * @param s
+   * Escape underscore for LaTeX title.
+   * @param s string to escape
    * @return s with escaped underscore
    */
   protected String escapeUnderScore(final String s) {
@@ -671,10 +674,9 @@ public class Normalization {
   }
 
   /**
-   * Replace na values in RepTechGroup list to avoid pooling error
-   * @param rRepTechGroup
-   * @param rSampleNames
-   * @return
+   * Replace na values in RepTechGroup list to avoid pooling error.
+   * @param rRepTechGroup list of technical replicate groups
+   * @param rSampleNames sample names
    */
   protected void replaceRtgNA(List<String> rRepTechGroup,
       List<String> rSampleNames) {
@@ -692,13 +694,14 @@ public class Normalization {
    */
 
   /**
-   * Test if there is enough distinct repTechGroup (>2) to perform clustering
-   * @param rRepTechGroup
-   * @return
+   * Test if there is enough distinct repTechGroup (>2) to perform clustering.
+   * @param rRepTechGroup list of technical replicate groups
+   * @return true if there is enough distinct repTechGroup (>2) to perform
+   *         clustering
    */
   private boolean isEnoughRepTechGroup(List<String> rRepTechGroup) {
 
-    List<String> repTechGroupMap = Lists.newArrayList();
+    List<String> repTechGroupMap = new ArrayList<>();
     for (String r : rRepTechGroup) {
 
       if (!repTechGroupMap.contains(r))
@@ -711,8 +714,8 @@ public class Normalization {
   }
 
   /**
-   * Put all expression files needed for the analysis on the R server
-   * @throws REngineException
+   * Put all expression files needed for the analysis on the R server.
+   * @throws REngineException if an error occurs on RServe server
    */
   private void putExpressionFiles(List<Sample> experiment, Data data)
       throws REngineException {
@@ -731,8 +734,8 @@ public class Normalization {
   }
 
   /**
-   * Put all expression files needed for the analysis on the R server
-   * @throws REngineException
+   * Put all expression files needed for the analysis on the R server.
+   * @throws REngineException if an error occurs on RServe server
    */
   private void createLinkExpressionFiles(List<Sample> experiment, Data data,
       File inputDir) throws REngineException {
@@ -754,9 +757,9 @@ public class Normalization {
   }
 
   /**
-   * Remove all expression files from the R server after analysis
-   * @param experiment
-   * @throws REngineException
+   * Remove all expression files from the R server after analysis.
+   * @param experiment list of samples
+   * @throws REngineException if an error occurs on RServe server
    */
   private void removeExpressionFiles(List<Sample> experiment)
       throws REngineException {
@@ -777,14 +780,15 @@ public class Normalization {
    */
 
   /**
-   * Public constructor
-   * @param design
-   * @param expressionFilesDirectory
-   * @param expressionFilesPrefix
-   * @param expressionFilesSuffix
-   * @param outPath
-   * @param rServerName
-   * @throws EoulsanException
+   * Public constructor.
+   * @param design The design object
+   * @param expressionFilesDirectory the directory of expression files
+   * @param expressionFilesPrefix the prefix of expression files
+   * @param expressionFilesSuffix the suffix of expression file
+   * @param outPath the output path
+   * @param rServerName the name of the RServe server
+   * @throws EoulsanException if an error occurs if connection to RServe server
+   *           cannot be etablished
    */
   public Normalization(final Design design,
       final File expressionFilesDirectory, final String expressionFilesPrefix,

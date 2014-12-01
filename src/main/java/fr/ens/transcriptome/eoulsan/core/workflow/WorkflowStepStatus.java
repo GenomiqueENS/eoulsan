@@ -27,11 +27,11 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 /**
  * This class define a step status.
@@ -42,8 +42,8 @@ public class WorkflowStepStatus {
 
   private final AbstractWorkflowStep step;
 
-  private final Map<Integer, Double> taskProgress = Maps.newHashMap();
-  private final Map<Integer, String> taskNames = Maps.newHashMap();
+  private final Map<Integer, Double> taskProgress = new HashMap<>();
+  private final Map<Integer, String> taskNames = new HashMap<>();
   private double progress = Double.NaN;
   private String note;
 
@@ -141,7 +141,7 @@ public class WorkflowStepStatus {
 
   /**
    * Set the progress of a step.
-   * @param value value to set
+   * @param progress value to set
    */
   public void setProgress(final double progress) {
 
@@ -179,7 +179,7 @@ public class WorkflowStepStatus {
    * Set the progress of a task.
    * @param contextId id of the context
    * @param contextName name of the context
-   * @param value value to set
+   * @param progress progress value to set
    */
   public void setTaskProgress(final int contextId, final String contextName,
       final double progress) {

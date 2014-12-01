@@ -134,11 +134,11 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
       return comp2;
 
     // Compare PID
-    final int comp3 = Integer.valueOf(this.pid).compareTo(this.pid);
+    final int comp3 = Integer.valueOf(this.pid).compareTo(ticket.pid);
     if (comp3 != 0)
       return comp3;
 
-    return Long.valueOf(this.threadId).compareTo(this.threadId);
+    return Long.valueOf(this.threadId).compareTo(ticket.threadId);
   }
 
   @Override

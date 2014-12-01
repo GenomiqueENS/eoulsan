@@ -148,7 +148,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -311,14 +311,14 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Define parameter URI
       final URI paramURI;
-      if (workflowPathname.indexOf("://") != -1)
+      if (workflowPathname.contains("://"))
         paramURI = new URI(workflowPathname);
       else
         paramURI = new File(workflowPathname).getAbsoluteFile().toURI();
 
       // Define design URI
       final URI designURI;
-      if (designPathname.indexOf("://") != -1)
+      if (designPathname.contains("://"))
         designURI = new URI(designPathname);
       else
         designURI = new File(designPathname).getAbsoluteFile().toURI();
@@ -387,23 +387,15 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       Common.errorExit(e, "File not found: " + e.getMessage());
 
-    } catch (EoulsanException e) {
+    } catch (EoulsanException | EoulsanRuntimeException e) {
 
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
 
-    } catch (EoulsanRuntimeException e) {
-
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
-
-    } catch (IOException e) {
+    } catch (IOException | URISyntaxException e) {
 
       Common.errorExit(e, "Error: " + e.getMessage());
 
-    } catch (URISyntaxException e) {
-
-      Common.errorExit(e, "Error: " + e.getMessage());
     }
 
   }

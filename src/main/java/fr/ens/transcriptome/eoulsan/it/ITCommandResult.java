@@ -28,44 +28,58 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 import java.io.File;
 
 /**
- * This internal class allow to save Process outputs
- * @author Laurent Jourdren
+ * This internal class allow to save Process outputs.
+ * @author Sandrine Perrin
+ * @since 2.0
  */
 public class ITCommandResult {
 
   private final File directory;
   private final String commandLine;
-  private final File stdout;
-  private final File stderr;
   private final String desc;
 
   private final StringBuilder message;
 
   private Throwable exception;
-  private String exceptionMessage;
   private int exitValue = -1;
   private long duration = -1;
+
+  @SuppressWarnings("unused")
+  private String exceptionMessage;
 
   public boolean isEmpty() {
     return message.toString().isEmpty();
   }
 
+  /**
+   * Gets the report on execution command line.
+   * @return the report
+   */
   public String getReport() {
 
-    message.append("\nExecute script for " + this.desc);
-    message.append("\n\tcommand line: " + this.commandLine);
-    message.append("\n\tin directory: " + this.directory.getAbsolutePath());
+    message.append("\nExecute script for ");
+    message.append(this.desc);
+    message.append("\n\tcommand line: ");
+    message.append(this.commandLine);
+    message.append("\n\tin directory: ");
+    message.append(this.directory.getAbsolutePath());
 
-    message.append("\n\tduration: "
-        + (duration == -1 ? "none" : toTimeHumanReadable(this.duration)));
+    message.append("\n\tduration: ");
+    message
+        .append(duration == -1 ? "none" : toTimeHumanReadable(this.duration));
 
-    message.append("\n\texit value: " + this.exitValue);
+    message.append("\n\texit value: ");
+    message.append(this.exitValue);
 
     message.append("\n");
 
     return message.toString();
   }
 
+  /**
+   * Checks if is catched exception.
+   * @return true, if is catched exception
+   */
   public boolean isCatchedException() {
     return exception != null;
   }
@@ -74,22 +88,43 @@ public class ITCommandResult {
   // Getter & setter
   //
 
+  /**
+   * Set the exit value.
+   * @param exitValue the new exit value
+   */
   public void setExitValue(final int exitValue) {
     this.exitValue = exitValue;
   }
 
+  /**
+   * Set the duration.
+   * @param duration the new duration
+   */
   public void setDuration(final long duration) {
     this.duration = duration;
   }
 
+  /**
+   * Get the exception.
+   * @return the exception
+   */
   public Throwable getException() {
     return this.exception;
   }
 
+  /**
+   * Set the exception.
+   * @param exception the new exception
+   */
   public void setException(Exception exception) {
     setException(exception, "");
   }
 
+  /**
+   * Set the exception.
+   * @param exception the exception
+   * @param message the message
+   */
   public void setException(Exception exception, final String message) {
     this.exception = exception;
     this.exceptionMessage = message;
@@ -98,13 +133,17 @@ public class ITCommandResult {
   //
   // Constructor
   //
+  /**
+   * Constructor.
+   * @param commandLine the command line
+   * @param directory the directory
+   * @param desc the description on command line
+   */
   ITCommandResult(final String commandLine, final File directory,
-      final File stdoutFile, final File stderrFile, final String desc) {
+      final String desc) {
 
     this.commandLine = commandLine;
     this.directory = directory;
-    this.stdout = stdoutFile;
-    this.stderr = stderrFile;
     this.desc = desc;
 
     this.message = new StringBuilder();

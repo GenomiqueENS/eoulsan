@@ -40,7 +40,7 @@ public class RemoveUnmappedReadAlignmentsFilter extends
 
   public static final String FILTER_NAME = "removeunmapped";
 
-  private final List<SAMRecord> recordsToRemove = new ArrayList<SAMRecord>();
+  private final List<SAMRecord> recordsToRemove = new ArrayList<>();
 
   @Override
   public String getName() {

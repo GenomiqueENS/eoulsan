@@ -27,9 +27,8 @@ package fr.ens.transcriptome.eoulsan.steps.mgmt.upload;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep.DATAFORMATS_TO_DOWNLOAD_SETTING;
 
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -96,7 +95,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
     }
 
     final String[] fields = formatNames.split(",");
-    final Set<DataFormat> formats = Sets.newHashSet();
+    final Set<DataFormat> formats = new HashSet<>();
     final DataFormatRegistry registery = DataFormatRegistry.getInstance();
 
     for (String format : fields) {

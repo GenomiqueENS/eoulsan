@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
@@ -33,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUti
 import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils.parseKeyValue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
@@ -69,7 +69,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
-  private List<String> fields = newArrayList();
+  private List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
 

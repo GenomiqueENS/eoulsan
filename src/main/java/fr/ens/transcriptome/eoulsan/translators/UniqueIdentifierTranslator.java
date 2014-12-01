@@ -37,9 +37,9 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
   private static final String DEFAULT_FIELD = "UniqueId";
 
-  private Map<String, String> mapUniqueId = new HashMap<String, String>();
+  private Map<String, String> mapUniqueId = new HashMap<>();
   private Map<String, String> reversemapUniqueId =
-      new HashMap<String, String>();
+      new HashMap<>();
   private String[] fields;
   private String newFieldName = DEFAULT_FIELD;
 
@@ -99,15 +99,14 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
     final Translator translator = this.translator;
 
-    Map<String, String> translation = new HashMap<String, String>();
-    Map<String, Integer> translationCount = new HashMap<String, Integer>();
+    Map<String, String> translation = new HashMap<>();
+    Map<String, Integer> translationCount = new HashMap<>();
 
     final String fieldName =
         field == null ? translator.getDefaultField() : field;
 
-    for (int i = 0; i < ids.length; i++) {
+    for (String row : ids) {
 
-      String row = ids[i];
       String t = translator.translateField(row, fieldName);
 
       if (t == null || "".equals(t))
@@ -124,7 +123,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     }
 
     Map<String, Integer> translationCurrentCount =
-        new HashMap<String, Integer>();
+        new HashMap<>();
 
     // for (String row : translation.keySet()) {
     for (Map.Entry<String, String> e : translation.entrySet()) {
@@ -155,9 +154,8 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
     }
 
-    for (int i = 0; i < ids.length; i++) {
+    for (final String id : ids) {
 
-      final String id = ids[i];
       final String newId = translation.get(id);
 
       // System.out.println(id + "\t" + newId);
@@ -177,7 +175,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     String[] tFields = this.translator.getFields();
 
     if (tFields == null)
-      this.fields = new String[] {newFieldName};
+      this.fields = new String[] { newFieldName };
     else {
 
       this.fields = new String[tFields.length + 1];
@@ -210,7 +208,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
       public String[] getFields() {
 
-        return new String[] {newFieldName};
+        return new String[] { newFieldName };
       }
 
       public String translateField(final String id, final String field) {
@@ -222,6 +220,22 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
 
     };
 
+  }
+
+  /**
+   * Get the default field of a translator.
+   * @param translator a translator
+   * @return the default field or null if the translator is null or if there is
+   *         no default field for the translator
+   */
+  private static final String getTranslatorDefaultField(
+      final Translator translator) {
+
+    if (translator == null) {
+      return null;
+    }
+
+    return translator.getDefaultField();
   }
 
   //
@@ -236,8 +250,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
   public UniqueIdentifierTranslator(final String[] ids,
       final Translator translator) {
 
-    this(ids, translator, translator != null
-        ? translator.getDefaultField() : null, null);
+    this(ids, translator, getTranslatorDefaultField(translator), null);
   }
 
   /**

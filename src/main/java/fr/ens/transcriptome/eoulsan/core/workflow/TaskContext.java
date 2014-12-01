@@ -36,12 +36,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
@@ -71,8 +71,8 @@ public class TaskContext implements StepContext, Serializable {
   private String contextName;
   private final AbstractWorkflowStep step;
 
-  private final Map<String, Data> inputData = Maps.newHashMap();
-  private final Map<String, AbstractData> outputData = Maps.newHashMap();
+  private final Map<String, Data> inputData = new HashMap<>();
+  private final Map<String, AbstractData> outputData = new HashMap<>();
 
   //
   // Getters
@@ -453,7 +453,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    serialize(new FileOutputStream(file));
+    try (OutputStream out = new FileOutputStream(file)) {
+      serialize(out);
+    }
   }
 
   /**
@@ -465,7 +467,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    serialize(file.create());
+    try (OutputStream out = file.create()) {
+      serialize(out);
+    }
   }
 
   /**
@@ -477,11 +481,12 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(out, "out argument cannot be null");
 
-    final ObjectOutputStream oos = new ObjectOutputStream(out);
+    try (final ObjectOutputStream oos = new ObjectOutputStream(out)) {
 
-    oos.writeObject(this);
-    oos.writeObject(EoulsanRuntime.getSettings());
-    oos.close();
+      oos.writeObject(this);
+      oos.writeObject(EoulsanRuntime.getSettings());
+    }
+
   }
 
   /**
@@ -494,7 +499,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    return deserialize(new FileInputStream(file));
+    try (InputStream in = new FileInputStream(file)) {
+      return deserialize(in);
+    }
   }
 
   /**
@@ -507,7 +514,9 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(file, "file argument cannot be null");
 
-    return deserialize(file.open());
+    try (InputStream in = file.open()) {
+      return deserialize(in);
+    }
   }
 
   /**
@@ -521,8 +530,7 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try {
-      final ObjectInputStream ois = new ObjectInputStream(in);
+    try (final ObjectInputStream ois = new ObjectInputStream(in)) {
 
       // Read TaskContext object
       final TaskContext result = (TaskContext) ois.readObject();
@@ -533,8 +541,6 @@ public class TaskContext implements StepContext, Serializable {
       // Overwrite current Settings of Eoulsan runtime
       EoulsanRuntime.getSettings().setSettings(settings);
 
-      ois.close();
-
       return result;
 
     } catch (ClassNotFoundException e) {
@@ -544,7 +550,7 @@ public class TaskContext implements StepContext, Serializable {
 
   /**
    * Serialize output data.
-   * @param out output stream
+   * @param file output file
    * @throws IOException if an error occurs while creating the file
    */
   public void serializeOutputData(final File file) throws IOException {
@@ -647,7 +653,7 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
 
-    synchronized (this.getClass()) {
+    synchronized (TaskContext.class) {
       this.id = (++instanceCounter);
     }
     this.contextName = "context" + id;

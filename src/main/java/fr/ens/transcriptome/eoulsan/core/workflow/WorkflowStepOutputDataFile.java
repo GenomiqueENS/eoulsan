@@ -34,7 +34,6 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -218,7 +217,6 @@ public final class WorkflowStepOutputDataFile implements
 
   /**
    * Create a DataFile object that correspond to a standard Eoulsan output file.
-   * @param context context object
    * @param step step that generated the file
    * @param portName the port that generated the file
    * @param format format of the file
@@ -226,15 +224,14 @@ public final class WorkflowStepOutputDataFile implements
    * @param fileIndex file index of the file for multifile data
    * @return a new DataFile object
    */
-  private static DataFile newStandardDataFile(final StepContext context,
-      final WorkflowStep step, final String portName, final DataFormat format,
-      final Sample sample, final int fileIndex,
-      final CompressionType compression) {
+  private static DataFile newStandardDataFile(final AbstractWorkflowStep step,
+      final String portName, final DataFormat format, final Sample sample,
+      final int fileIndex, final CompressionType compression) {
 
     final StringBuilder sb = new StringBuilder();
 
     // Set base path if exists
-    final String basePath = context.getStepWorkingPathname();
+    final String basePath = step.getStepWorkingDir().toString();
     if (basePath != null) {
       sb.append(basePath);
       sb.append('/');
@@ -384,7 +381,7 @@ public final class WorkflowStepOutputDataFile implements
     Preconditions.checkNotNull(outputPort, "outputPort cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
-    final WorkflowStep step = outputPort.getStep();
+    final AbstractWorkflowStep step = outputPort.getStep();
     final DataFormat format = outputPort.getFormat();
     final CompressionType compression = outputPort.getCompression();
 
@@ -404,9 +401,9 @@ public final class WorkflowStepOutputDataFile implements
 
       do {
 
-        final DataFile file = null;
-        // newStandardDataFile(step.getContext(), step, outputPort.getName(),
-        // format, sample, count, compression);
+        final DataFile file =
+            newStandardDataFile(step, outputPort.getName(), format, sample,
+                count, compression);
 
         found = file.exists();
         if (found)

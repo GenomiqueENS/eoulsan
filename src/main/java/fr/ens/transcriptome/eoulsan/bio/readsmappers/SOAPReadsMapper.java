@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -90,10 +92,10 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String s = ProcessUtils.execToString(cmd, true, false);
       final String[] lines = s.split("\n");
 
-      for (int i = 0; i < lines.length; i++)
-        if (lines[i].startsWith("Version:")) {
+      for (String line : lines)
+        if (line.startsWith("Version:")) {
 
-          final String[] tokens = lines[i].split(":");
+          final String[] tokens = line.split(":");
           if (tokens.length > 1)
             return tokens[1].trim();
         }
@@ -120,7 +122,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected List<String> getIndexerCommand(String indexerPathname,
       String genomePathname) {
-    List<String> cmd = new ArrayList<String>();
+    List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
     cmd.add(genomePathname);
     return cmd;
@@ -233,7 +235,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
         if (getListMapperArguments() != null)
@@ -267,8 +269,15 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        outputFile.delete();
-        unmapFile.delete();
+        if (!outputFile.delete()) {
+          getLogger().warning(
+              "Cannot remove SOAP temporary file: " + outputFile);
+        }
+
+        if (!unmapFile.delete()) {
+          getLogger()
+              .warning("Cannot remove SOAP temporary file: " + unmapFile);
+        }
       }
 
     };
@@ -287,7 +296,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected List<List<String>> createCommandLines() {
 
         // Build the command line
-        final List<String> cmd = new ArrayList<String>();
+        final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
         if (getListMapperArguments() != null)
@@ -322,8 +331,15 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected void clean() {
 
-        outputFile.delete();
-        unmapFile.delete();
+        if (!outputFile.delete()) {
+          getLogger().warning(
+              "Cannot remove SOAP temporary file: " + outputFile);
+        }
+
+        if (!unmapFile.delete()) {
+          getLogger()
+              .warning("Cannot remove SOAP temporary file: " + unmapFile);
+        }
       }
 
     };

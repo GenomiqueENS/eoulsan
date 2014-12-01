@@ -66,7 +66,7 @@ public final class Alphabets {
     if (array == null)
       return null;
 
-    final Set<Character> result = new HashSet<Character>();
+    final Set<Character> result = new HashSet<>();
 
     for (char c : array)
       result.add(c);

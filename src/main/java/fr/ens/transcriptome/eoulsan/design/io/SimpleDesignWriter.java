@@ -59,7 +59,7 @@ public class SimpleDesignWriter extends DesignWriter {
     try {
       bw =
           new BufferedWriter(new OutputStreamWriter(getOutputStream(),
-              Globals.DEFAULT_FILE_ENCODING));
+              Globals.DEFAULT_CHARSET));
 
       if (this.bw == null)
         throw new EoulsanIOException("No stream to write");

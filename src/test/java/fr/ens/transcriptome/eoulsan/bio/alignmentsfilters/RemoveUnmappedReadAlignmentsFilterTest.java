@@ -139,7 +139,7 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
     samRecordPE7 = parser.parseLine(recordPE7);
     samRecordPE8 = parser.parseLine(recordPE8);
 
-    records = new ArrayList<SAMRecord>();
+    records = new ArrayList<>();
 
     filter = new RemoveUnmappedReadAlignmentsFilter();
   }
@@ -170,7 +170,7 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
   @Test
   public void testFilterReadAlignments() {
 
-    List<SAMRecord> recordsVerif = new ArrayList<SAMRecord>();
+    List<SAMRecord> recordsVerif = new ArrayList<>();
 
     // single-end mode
     records.add(samRecordSE1);

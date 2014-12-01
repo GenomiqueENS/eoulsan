@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -38,8 +39,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -87,7 +86,7 @@ public class HadoopExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -195,7 +194,7 @@ public class HadoopExecAction extends AbstractAction {
       getLogger().info("Launch Eoulsan in Hadoop mode.");
 
       // Create command line
-      final List<String> argsList = Lists.newArrayList();
+      final List<String> argsList = new ArrayList<>();
 
       argsList.add("hadoop");
       argsList.add("jar");
@@ -211,6 +210,11 @@ public class HadoopExecAction extends AbstractAction {
       if (main.getConfigurationFileArgument() != null) {
         argsList.add("-conf");
         argsList.add(main.getConfigurationFileArgument());
+      }
+
+      for (String setting : main.getCommandLineSettings()) {
+        argsList.add("-s");
+        argsList.add(setting);
       }
 
       argsList.add(ExecJarHadoopAction.ACTION_NAME);
@@ -230,7 +234,7 @@ public class HadoopExecAction extends AbstractAction {
       argsList.add(designFile.toString());
       argsList.add(hdfsPath);
 
-      final String[] args = argsList.toArray(new String[0]);
+      final String[] args = argsList.toArray(new String[argsList.size()]);
 
       // execute hadoop
       ProcessUtils.execThreadOutput(args);

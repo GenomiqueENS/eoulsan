@@ -27,12 +27,11 @@ package fr.ens.transcriptome.eoulsan.design;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -41,7 +40,6 @@ import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
  * Utils methods for Design.
@@ -58,7 +56,7 @@ public final class DesignUtils {
 
     List<String> metadataFields = design.getMetadataFieldsNames();
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     // Write header
     sb.append(Design.SAMPLE_NUMBER_FIELD);
@@ -115,7 +113,7 @@ public final class DesignUtils {
    */
   public static boolean checkSamples(final Design design) {
 
-    final Set<String> samplesSources = new HashSet<String>();
+    final Set<String> samplesSources = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
@@ -138,7 +136,7 @@ public final class DesignUtils {
   private static boolean checkSamplesWithException(final Design design)
       throws EoulsanException {
 
-    final Set<String> samplesSources = new HashSet<String>();
+    final Set<String> samplesSources = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
@@ -165,7 +163,7 @@ public final class DesignUtils {
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
       return true;
 
-    final Set<String> genomes = new HashSet<String>();
+    final Set<String> genomes = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
 
@@ -191,7 +189,7 @@ public final class DesignUtils {
     if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
       return true;
 
-    final Set<String> annotations = new HashSet<String>();
+    final Set<String> annotations = new HashSet<>();
 
     for (Sample s : design.getSamples()) {
 
@@ -255,9 +253,9 @@ public final class DesignUtils {
       removeFieldIfExists(design, SampleMetadata.REFERENCE_FIELD);
     }
 
-    final Map<String, Integer> mapExperiment = Maps.newHashMap();
-    final Map<String, Integer> mapCondition = Maps.newHashMap();
-    final Map<String, Integer> mapRepTechGroup = Maps.newHashMap();
+    final Map<String, Integer> mapExperiment = new HashMap<>();
+    final Map<String, Integer> mapCondition = new HashMap<>();
+    final Map<String, Integer> mapRepTechGroup = new HashMap<>();
     int countExperiment = 0;
     int countCondition = 0;
     int countRepTechGroup = 0;
@@ -333,7 +331,7 @@ public final class DesignUtils {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final List<String> fieldsToModify = Utils.newArrayList();
+    final List<String> fieldsToModify = new ArrayList<>();
 
     for (String field : design.getMetadataFieldsNames())
       if (registry.getDataFormatForDesignField(field) != null)
@@ -343,7 +341,7 @@ public final class DesignUtils {
       for (final String field : fieldsToModify) {
 
         final List<String> values =
-            new ArrayList<String>(s.getMetadata().getFieldAsList(field));
+            new ArrayList<>(s.getMetadata().getFieldAsList(field));
         for (int i = 0; i < values.size(); i++) {
 
           final DataFile df = new DataFile(values.get(i));

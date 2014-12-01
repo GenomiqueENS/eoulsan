@@ -40,7 +40,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   public static final String FILTER_NAME = "mappingquality";
   private int qualityThreshold = -1;
 
-  private final List<SAMRecord> result = new ArrayList<SAMRecord>();
+  private final List<SAMRecord> result = new ArrayList<>();
 
   @Override
   public String getName() {

@@ -32,14 +32,14 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -86,7 +86,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private DataFile annotationFile;
-  private Map<String, DataFormat> outputFormats = Maps.newHashMap();
+  private Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
   // Step methods
@@ -178,8 +178,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             break;
 
           default:
-            new EoulsanException("Unknown output format: " + format);
-            break;
+            throw new EoulsanException("Unknown output format: " + format);
           }
 
         }
@@ -232,7 +231,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
       final DataFile outputDir = new DataFile(context.getOutputPathname());
       final List<DataFile> files = outputDir.list();
-      final List<DataFile> filesToConvert = Lists.newArrayList();
+      final List<DataFile> filesToConvert = new ArrayList<>();
 
       // Filter files to convert
       for (DataFile f : files) {
@@ -283,8 +282,11 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
           }
 
           TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
-          descriptionString.append("Convert "
-              + inFile + " to " + outFile + "\n");
+          descriptionString.append("Convert ");
+          descriptionString.append(inFile);
+          descriptionString.append(" to ");
+          descriptionString.append(outFile);
+          descriptionString.append("\n");
         }
       }
 
@@ -334,7 +336,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return new String[] { "EnsemblGeneID" };
       }
     };
 

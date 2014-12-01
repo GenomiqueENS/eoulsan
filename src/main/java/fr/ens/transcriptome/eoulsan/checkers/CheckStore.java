@@ -36,7 +36,7 @@ import java.util.Map;
 public class CheckStore {
 
   private static CheckStore singleton;
-  private Map<String, Object> info = new HashMap<String, Object>();
+  private Map<String, Object> info = new HashMap<>();
 
   /**
    * Store some data.

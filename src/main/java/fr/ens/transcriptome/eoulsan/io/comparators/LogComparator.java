@@ -109,8 +109,9 @@ public class LogComparator extends AbstractComparator {
     for (String counterGroup : logTested.getCounterGroups()) {
       // Retrieve counterGroup corresponding to the same sample file that
       // expected
-      if (counterGroup.startsWith(prefix))
+      if (counterGroup.startsWith(prefix)) {
         return logTested.getCounterValue(counterGroup, counter);
+      }
     }
     return -1;
   }

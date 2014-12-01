@@ -64,7 +64,7 @@
 	  	<a href="http://fedoraproject.org/">Fedora</a>...). 
 	  	You can develop on other system but your system will not run Eoulsan</li>
 	    <li>A <a href="http://www.oracle.com/technetwork/java/index.html">Java 6</a> SDK (Oracle JDK or openJDK are recommended)</li>
-	    <li><a href="http://maven.apache.org/">Maven 2.2.x</a></li>
+	    <li><a href="http://maven.apache.org/">Maven 3.x</a></li>
 	    <li>An IDE like <a href="http://www.eclipse.org/">Eclipse</a> (Optional)</li>
 	    <li>An Internet connection</li>
 	  </ul>
@@ -72,7 +72,7 @@
 	  <p>If you use Ubuntu 11.10 (Oneiric Ocelot), you can install all the 
 	  requirements with the next command line:</p>
 <source>
-$ sudo apt-get install openjdk-6-jdk maven2 eclipse-jdt
+$ sudo apt-get install openjdk-6-jdk maven eclipse-jdt
 </source>
    
     </subsection>

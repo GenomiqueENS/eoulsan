@@ -41,7 +41,6 @@ public interface ReadAlignmentsFilter {
    * All the read id in the records are the same. The input list is modified
    * after the call of the method.
    * @param records the list of alignments with the same read name
-   * @param pairedEnd true if data are in paired-end mode
    */
   void filterReadAlignments(List<SAMRecord> records);
 
@@ -69,6 +68,6 @@ public interface ReadAlignmentsFilter {
    * Initialize the filter.
    * @throws EoulsanException an error occurs while initialize the filter
    */
-  void init() throws EoulsanException;;
+  void init() throws EoulsanException;
 
 }

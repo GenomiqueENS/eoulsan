@@ -40,10 +40,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -118,7 +118,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       // Serialize the context object
       context.serialize(taskContextFile);
 
-      final List<String> command = Lists.newArrayList();
+      final List<String> command = new ArrayList<>();
 
       command.add(Main.getInstance().getEoulsanScriptPath());
 
@@ -222,13 +222,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         // Send tokens
         TaskRunner.sendTokens(this.context, result);
 
-      } catch (IOException e) {
-        e.printStackTrace();
-        result = TaskRunner.createStepResult(this.context, e);
-      } catch (EoulsanException e) {
-        e.printStackTrace();
-        result = TaskRunner.createStepResult(this.context, e);
-      } catch (InterruptedException e) {
+      } catch (IOException | EoulsanException | InterruptedException e) {
         e.printStackTrace();
         result = TaskRunner.createStepResult(this.context, e);
       } finally {
@@ -241,6 +235,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       }
     }
 
+    @SuppressWarnings("deprecation")
     public void destroy() {
 
       if (this.process != null) {

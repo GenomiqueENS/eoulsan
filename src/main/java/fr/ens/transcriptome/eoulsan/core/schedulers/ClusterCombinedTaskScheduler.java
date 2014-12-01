@@ -154,10 +154,11 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public void start() {
 
-    // Check execution state
-    checkState(!this.isStopped, "The scheduler is stopped");
-
     synchronized (this) {
+
+      // Check execution state
+      checkState(!this.isStopped, "The scheduler is stopped");
+
       this.isStarted = true;
     }
 
@@ -190,8 +191,10 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
    */
   private void checkExecutionState() {
 
-    checkState(this.isStarted, "The scheduler is not started");
-    checkState(!this.isStopped, "The scheduler is stopped");
+    synchronized (this) {
+      checkState(this.isStarted, "The scheduler is not started");
+      checkState(!this.isStopped, "The scheduler is stopped");
+    }
   }
 
   /**

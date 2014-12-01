@@ -65,7 +65,7 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> implements
     if (ports == null)
       throw new NullPointerException("Ports is null");
 
-    final Set<WorkflowInputPort> result = new HashSet<WorkflowInputPort>();
+    final Set<WorkflowInputPort> result = new HashSet<>();
 
     for (InputPort port : ports) {
       if (port != null)

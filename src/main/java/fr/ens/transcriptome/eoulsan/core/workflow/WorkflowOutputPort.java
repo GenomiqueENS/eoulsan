@@ -28,7 +28,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +38,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.SimpleOutputPort;
@@ -57,7 +58,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
   private static final long serialVersionUID = -7857426034202971843L;
 
   private final AbstractWorkflowStep step;
-  private Set<WorkflowInputPort> links = Sets.newHashSet();
+  private Set<WorkflowInputPort> links = new HashSet<>();
 
   /**
    * Get the step related to the port.
@@ -119,7 +120,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    */
   public List<DataFile> getExistingOutputFiles() {
 
-    final List<DataFile> result = Lists.newArrayList();
+    final List<DataFile> result = new ArrayList<>();
 
     try {
 
@@ -161,7 +162,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
     }
 
     // Create the result object
-    final Set<Data> result = Sets.newHashSet();
+    final Set<Data> result = new HashSet<>();
 
     // Sort the file
     Collections.sort(files);

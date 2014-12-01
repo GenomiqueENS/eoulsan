@@ -33,7 +33,7 @@
 
   <body>
     
-    <section name="Installation">
+    <section name="Standard Installation">
      
       <p>The installation of Eoulsan on all *nix systems is quite similar and very easy. You don't need to be the root user of your system to install Eoulsan.</p> 
      
@@ -64,6 +64,33 @@ $ ./eoulsan.sh
       <p>If you want to run Eoulsan on a local Hadoop cluster, see the <a href="hadoopmode.html">Hadoop configuration page</a> for more informations about Hadoop installation and configuration.</p>
      
 
+   </section>
+   
+   <a name="docker" />
+   <section name="Installation using Docker">
+   
+     <p>It is very easy to install Eoulsan using Docker. You just had to execute the following command:</p>
+<source>
+$ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash
+</source>
+     <p>This command will create a <tt>eoulsan-docker.sh</tt> script in your current directory that launch Eoulsan in a Docker container with the right Environment. This script automatically:</p>
+     <ul>
+       <li>Set Eoulsan environment variable of the host in the container</li>
+       <li>Allow access to your <tt>~/.eoulsan</tt> configuration file by the container</li>
+       <li>Mount Eoulsan resource repositories defined in <tt>~/.eoulsan</tt> configuration file in in the container</li>
+     </ul> 
+     
+     <p>You can use <tt>eoulsan-docker</tt> just as the standard <tt>eoulsan.sh</tt> script.</p>
+     
+     <p>If you want to use another version of Eoulsan than the version defined in <tt>eoulsan-docker</tt>, 
+     just edit the script and change the following line. For the latest version, you can of course reinstall the script.</p>
+<source>
+EOULSAN_VERSION=@@@VERSION@@@
+</source>
+
+     <p>The list of available docker versions of Eoulsan can be found on <a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">docker website</a>.</p>
+
+     
    </section>
    
   </body>

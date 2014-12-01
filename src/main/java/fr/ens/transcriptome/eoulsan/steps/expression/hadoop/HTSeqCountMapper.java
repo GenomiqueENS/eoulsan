@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,6 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.util.Utils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
@@ -83,8 +83,8 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
   static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
       + ".expression.no.ambiguous.cases";
 
-  private GenomicArray<String> features = new GenomicArray<String>();
-  private Map<String, Integer> counts = Utils.newHashMap();
+  private GenomicArray<String> features = new GenomicArray<>();
+  private Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
   private StrandUsage stranded;
@@ -182,7 +182,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
     context.getCounter(this.counterGroup,
         TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
-    List<GenomicInterval> ivSeq = new ArrayList<GenomicInterval>();
+    List<GenomicInterval> ivSeq = new ArrayList<>();
 
     String[] fields = line.split("£");
 
@@ -278,7 +278,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
               this.stranded);
 
       if (fs == null)
-        fs = new HashSet<String>();
+        fs = new HashSet<>();
 
       switch (fs.size()) {
       case 0:
@@ -316,15 +316,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
         break;
       }
 
-    } catch (SAMFormatException e) {
-
-      context.getCounter(this.counterGroup,
-          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + line + "'");
-      return;
-    } catch (EoulsanException e) {
+    } catch (SAMFormatException | EoulsanException e) {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);

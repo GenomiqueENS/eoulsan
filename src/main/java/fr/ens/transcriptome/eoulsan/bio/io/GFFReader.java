@@ -59,7 +59,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
   private boolean fastaSectionFound;
 
   private Map<String, List<String>> metadata =
-      new LinkedHashMap<String, List<String>>();
+      new LinkedHashMap<>();
   private boolean nextCallDone = true;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
@@ -112,7 +112,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
 
           final List<String> list;
           if (!this.metadata.containsKey(mdKey)) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             this.metadata.put(mdKey, list);
           } else
             list = this.metadata.get(mdKey);

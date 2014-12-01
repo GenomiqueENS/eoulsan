@@ -269,9 +269,7 @@ public class DataFileDistCp {
 
     try {
       job.waitForCompletion(false);
-    } catch (InterruptedException e) {
-      throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage());
-    } catch (ClassNotFoundException e) {
+    } catch (InterruptedException | ClassNotFoundException e) {
       throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage());
     }
 

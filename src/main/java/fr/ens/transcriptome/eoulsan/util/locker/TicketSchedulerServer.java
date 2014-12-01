@@ -47,8 +47,8 @@ public class TicketSchedulerServer implements TicketScheduler {
   private static TicketSchedulerServer serverInstance;
 
   private Ticket currentActive;
-  private final Map<Ticket, Ticket> tickets = new HashMap<Ticket, Ticket>();
-  private final Set<Ticket> toRemove = new HashSet<Ticket>();
+  private final Map<Ticket, Ticket> tickets = new HashMap<>();
+  private final Set<Ticket> toRemove = new HashSet<>();
 
   private int maxWorkingTime = 2 * 60 * 1000;
   private int deadTime = 30 * 1000;
@@ -60,7 +60,7 @@ public class TicketSchedulerServer implements TicketScheduler {
   public Set<Ticket> getTickets(final Ticket ticket) {
 
     if (ticket == null)
-      return new HashSet<Ticket>(tickets.values());
+      return new HashSet<>(tickets.values());
 
     synchronized (this.tickets) {
 
@@ -76,7 +76,7 @@ public class TicketSchedulerServer implements TicketScheduler {
 
       check();
 
-      return new HashSet<Ticket>(tickets.values());
+      return new HashSet<>(tickets.values());
     }
   }
 
@@ -145,7 +145,7 @@ public class TicketSchedulerServer implements TicketScheduler {
         }
       }
 
-      List<Ticket> list = new ArrayList<Ticket>(this.tickets.values());
+      List<Ticket> list = new ArrayList<>(this.tickets.values());
       Collections.sort(list);
       this.currentActive = list.get(0);
       this.currentActive.setWorking(true);

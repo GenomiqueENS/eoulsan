@@ -104,7 +104,7 @@ public class FastaLineParser {
   //
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is InputStream to use
    */
   public FastaLineParser(final InputStream is) {
@@ -113,9 +113,9 @@ public class FastaLineParser {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is InputStream to use
-   * @param the input file is a GFF file
+   * @param gffFile the input file is a GFF file
    */
   public FastaLineParser(final InputStream is, final boolean gffFile) {
 
@@ -128,7 +128,7 @@ public class FastaLineParser {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param file File to use
    */
   public FastaLineParser(final File file) throws FileNotFoundException {
@@ -137,9 +137,9 @@ public class FastaLineParser {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param file File to use
-   * @param the input file is a GFF file
+   * @param gffFile the input file is a GFF file
    */
   public FastaLineParser(final File file, final boolean gffFile)
       throws FileNotFoundException {
@@ -154,7 +154,7 @@ public class FastaLineParser {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param filename File to use
    */
   public FastaLineParser(final String filename) throws FileNotFoundException {
@@ -163,9 +163,9 @@ public class FastaLineParser {
   }
 
   /**
-   * Public constructor
-   * @param file File to use
-   * @param the input file is a GFF file
+   * Public constructor.
+   * @param filename File to use
+   * @param gffFile the input file is a GFF file
    */
   public FastaLineParser(final String filename, final boolean gffFile)
       throws FileNotFoundException {

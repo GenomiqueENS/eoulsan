@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.PrimitiveSink;
@@ -183,7 +183,7 @@ public class BloomFilterUtils implements Serializable {
 
       @Override
       public void funnel(String from, PrimitiveSink into) {
-        into.putString(from, Charsets.UTF_8);
+        into.putString(from, StandardCharsets.UTF_8);
       }
 
     }, expectedNumberOfElements, falsePositiveProbability);

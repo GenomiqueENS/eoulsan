@@ -81,7 +81,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   private final String[] fields = new String[9];
 
   private final Map<String, Exon> oneExonByParentId =
-      new HashMap<String, Exon>();
+      new HashMap<>();
 
   //
   // Mapper and reducer
@@ -143,7 +143,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     for (Exon e : exonSorted)
       oneExonByParentId.put(e.getParentId(), e);
 
-    List<String> keysSorted = new ArrayList<String>(oneExonByParentId.keySet());
+    List<String> keysSorted = new ArrayList<>(oneExonByParentId.keySet());
     Collections.sort(keysSorted);
 
     for (String key : keysSorted) {

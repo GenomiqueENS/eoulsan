@@ -10,7 +10,7 @@
 	<description>
 		A pipeline for NGS analysis.
 	</description>
-	<url>http://transcriptome.ens.fr/eoulsan</url>
+	<url>http://transcriptome.ens.fr/eoulsan2</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
@@ -217,13 +217,10 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:https://eoulsan.googlecode.com/svn/trunk/
-		</connection>
-		<tag>eoulsan-read-only</tag>
-		<!--developerConnection></developerConnection -->
-		<url>http://code.google.com/p/eoulsan/source/checkout</url>
+		<url>https://github.com/GenomicParisCentre/eoulsan</url>
+		<connection>scm:git:git://github.com/GenomicParisCentre/eoulsan.git</connection>
+		<developerConnection>scm:git:git@github.com:GenomicParisCentre/eoulsan.git</developerConnection>
 	</scm>
-
 	<issueManagement>
 		<system>GoogleCode</system>
 		<url>http://code.google.com/p/eoulsan/issues/list</url>
@@ -315,8 +312,8 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
 			<version>1.4.5</version>
 			<scope>compile</scope>
 		</dependency>
@@ -369,6 +366,12 @@
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -651,28 +654,33 @@
 						<phase>site</phase>
 						<configuration>
 							<tasks>
+								<copy file="${basedir}/src/main/bin/eoulsan-docker-installer.sh" todir="${basedir}/target/site/" />
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.url}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@WEBSITE@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.version}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@VERSION@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.name}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@APPNAME@@@</replacetoken>
 								</replace>
 								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.artifactId}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
+									<include name="**/*.sh"/>
 									<replacetoken>@@@APPNAMEMIN@@@</replacetoken>
 								</replace>
 
@@ -686,6 +694,7 @@
 									<include name="**/*.jnlp" />
 									<include name="**/*.html" />
 									<include name="**/*.rss" />
+									<include name="**/*.sh"/>
 									<replacetoken>@@@DATE@@@</replacetoken>
 								</replace>
 							</tasks>
@@ -778,31 +787,20 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>2.0-beta-7</version>
+				<version>3.4</version>
 				<configuration>
 					<templateFile>${basedir}/src/site/site.vm</templateFile>
 					<outputEncoding>iso-8859-1</outputEncoding>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-descriptor</id>
+						<goals>
+							<goal>attach-descriptor</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-			<!--plugin> 
-			<groupId>org.codehaus.mojo</groupId> 
-			<artifactId>cobertura-maven-plugin</artifactId> 
-				<version>2.5.1</version> 
-				<configuration> 
-				<formats> 
-				<format>xml</format> 
-				</formats> 
-				</configuration> 
-				<executions> 
-				<execution> 
-				<phase>package</phase> 
-				<goals> 
-				<goal>cobertura</goal> 
-				</goals> 
-				</execution> 
-				</executions> 
-		   </plugin -->
-
 			<!-- add plugin for test with Jenkins : static analysis code -->
 			<!-- PLUG-IN Checkstyle -->
 			<plugin>
@@ -810,15 +808,15 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.12</version>
 				<configuration>
-					<configLocation>./checkstyle_google.xml</configLocation>
+					<configLocation>./checkstyle.xml</configLocation>
 				</configuration>
 			</plugin>
 
-			<!-- PLUG-IN Findbugs use version 2.3.2 to maven 3 -->
+			<!-- PLUG-IN Findbugs to maven 3 -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>2.5.5</version>
 				<configuration>
 					<effort>Max</effort>
 					<xmlOutput>true</xmlOutput>
@@ -846,191 +844,58 @@
 				</configuration>
 			</plugin>
 
+			<!-- PLUG-in for static analysis code -->
+			<!-- mvn modernizer:modernizer -->
+			<plugin>
+			  <groupId>org.gaul</groupId>
+			  <artifactId>modernizer-maven-plugin</artifactId>
+			  <version>1.1.0</version>
+			  <configuration>
+			    <javaVersion>1.7</javaVersion>
+			  	<failOnViolations>False</failOnViolations>
+			  </configuration>
+			</plugin>
 		</plugins>
 
 
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
-				<version>1.0-beta-2</version>
-			</extension>
-		</extensions>
 	</build>
 
 
 
 	<reporting>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>2.0-beta-7</version>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
 				<configuration>
-					<outputEncoding>utf-8</outputEncoding>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.11</version>
+			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
 				<configuration>
 					<encoding>utf-8</encoding>
 					<doctitle>${project.name} ${project.version} API</doctitle>
 					<overview>${basedir}/src/main/java/overview.html</overview>
+					<quiet>true</quiet>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>changes-maven-plugin</artifactId>
-				<version>2.0-beta-1</version>
 				<reportSets>
 					<reportSet>
+						<id>default</id>
+						<configuration/>
 						<reports>
-							<report>changes-report</report>
+							<report>javadoc</report>
 						</reports>
 					</reportSet>
 				</reportSets>
 			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-
-
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId> 
-			</plugin> 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId> 
-				<version>2.12.2</version> 
-			</plugin -->
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clover-plugin</artifactId> 
-			</plugin> 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId> 
-				<artifactId>maven-docck-plugin</artifactId> 
-			</plugin -->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId> 
-				<version>2.5.2</version> 
-				<configuration>
-					<findbugsXmlOutput>true</findbugsXmlOutput>
-					<findbugsXmlWithMessages>true</findbugsXmlWithMessages> 
-					<xmlOutput>true</xmlOutput> 
-				</configuration> 
-			</plugin -->
-
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jxr-maven-plugin</artifactId> 
-			</plugin> 
-				
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId> 
-				<configuration>
-					<configLocation>checkstyle.xml</configLocation> 
-				</configuration> 
-				</plugin -->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId> 
-			</plugin> 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId> 
-				</plugin -->
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId> 
-				<version>2.7.1</version>
-				<configuration>
-					<linkXref>true</linkXref> 
-					<sourceEncoding>utf-8</sourceEncoding> 
-					<minimumTokens>100</minimumTokens> 
-					<targetJdk>1.6</targetJdk> 
-				</configuration>
-			</plugin -->
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>javancss-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jdepend-maven-plugin</artifactId>
-			</plugin-->
-
-			<!--plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>ckjm-maven-plugin</artifactId>
-				</plugin -->
-
-
-			<!--plugin>
-			<groupId>net.sf.xradar</groupId><artifactId>maven-xradar-plugin</artifactId> 
-				<version>1.2.2</version></plugin -->
-
-			<!--<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId> 
-				<configuration>
-					<targetjdk>1.5</targetjdk>
-					<rulesets>
-						<ruleset>/rulesets/basic.xml</ruleset> 
-						<ruleset>/rulesets/controversial.xml</ruleset>
-					</rulesets>
-					<format>xml</format> 
-					<linkXref>true</linkXref>
-					<sourceEncoding>utf-8</sourceEncoding>
-					<minimumTokens>100</minimumTokens> 
-				</configuration>
-			</plugin> -->
-			
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>changelog-maven-plugin</artifactId> 
-				<configuration>
-					<type>date</type> 
-					<dates>
-						<date implementation="java.lang.String">2008-01-01</date> 
-					</dates>
-					<dateFormat>yyyy-MM-dd</dateFormat>
-				</configuration>
-			</plugin -->
-			
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId> 
-			</plugin -->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-simian-plugin</artifactId> 
-			</plugin> -->
-			<!--plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-junit-report-plugin</artifactId> 
-			</plugin -->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-tasklist-plugin</artifactId> 
-			</plugin> -->
-			<!--<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-pmd-plugin</artifactId> 
-			</plugin>
-			
-			<plugin>
-				<groupId>maven</groupId>
-				<artifactId>maven-faq-plugin</artifactId> 
-			</plugin> -->
 		</plugins>
 	</reporting>
 

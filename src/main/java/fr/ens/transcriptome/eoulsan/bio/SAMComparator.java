@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import net.sf.samtools.SAMRecord;
@@ -33,7 +34,9 @@ import net.sf.samtools.SAMRecord;
  * @since 1.2
  * @author Claire Wallon
  */
-public class SAMComparator implements Comparator<SAMRecord> {
+public class SAMComparator implements Comparator<SAMRecord>, Serializable {
+
+  private static final long serialVersionUID = -3948514532737476599L;
 
   @Override
   public int compare(final SAMRecord r0, final SAMRecord r1) {

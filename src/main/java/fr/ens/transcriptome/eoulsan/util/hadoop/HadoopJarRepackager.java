@@ -43,7 +43,7 @@ public final class HadoopJarRepackager {
 
   private static final String DIR_IN_JAR = "lib/";
 
-  private final List<File> jarFiles = new ArrayList<File>();
+  private final List<File> jarFiles = new ArrayList<>();
   private File srcJar;
 
   /**
