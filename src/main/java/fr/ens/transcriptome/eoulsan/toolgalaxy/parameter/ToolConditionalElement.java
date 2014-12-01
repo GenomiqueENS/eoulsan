@@ -56,7 +56,14 @@ public class ToolConditionalElement implements ToolElement {
 
   private boolean isSettings = false;
 
+  @Override
+  public boolean setParameterEoulsan() {
+    // TODO Auto-generated method stub
+    return true;
+  }
+
   // TODO replace by Set<Parameter>
+  @Override
   public void setParameterEoulsan(final Map<String, String> parametersEoulsan) {
 
     // Retrieve choice select from analysis
@@ -68,10 +75,14 @@ public class ToolConditionalElement implements ToolElement {
 
     // Check value parameter corresponding to a key
     for (final ToolElement toolParameter : toolParameters) {
+      final String value = parametersEoulsan.get(toolParameter.getName());
 
-      if (toolParameter != null) {
-        toolParameter.setParameterEoulsan(parametersEoulsan);
+      if (value == null) {
+        toolParameter.setParameterEoulsan();
+      } else {
+        toolParameter.setParameterEoulsan(value);
       }
+
     }
 
     // Save setting parameter
@@ -92,8 +103,6 @@ public class ToolConditionalElement implements ToolElement {
     final Multimap<String, ToolElement> result = ArrayListMultimap.create();
     final List<Element> whenElement = getElementsByTagName(element, "when");
 
-    final int whenElementCount = whenElement.size();
-
     for (final Element e : whenElement) {
       final String whenName = e.getAttribute("value");
 
@@ -111,9 +120,10 @@ public class ToolConditionalElement implements ToolElement {
         final ToolElement toolParameter =
             getInstanceToolElement(elem, this.nameSpace);
 
-        if (toolParameter != null)
+        if (toolParameter != null) {
           // Add tool parameter in result
           result.put(whenName, toolParameter);
+        }
       }
     }
 
@@ -123,6 +133,7 @@ public class ToolConditionalElement implements ToolElement {
   //
   // Getter
   //
+  @Override
   public String getName() {
     return this.nameSpace;
   }
@@ -133,8 +144,9 @@ public class ToolConditionalElement implements ToolElement {
 
   public Collection<ToolElement> getToolParametersResult() {
 
-    if (actionsRelatedOptions.isEmpty())
+    if (actionsRelatedOptions.isEmpty()) {
       return Collections.emptyList();
+    }
 
     return actionsRelatedOptions.values();
   }
@@ -194,25 +206,21 @@ public class ToolConditionalElement implements ToolElement {
               + ". Must be 1 in conditional element, for type select");
     }
 
-    if (!param.get(0).getAttribute("type").equals("select"))
+    if (!param.get(0).getAttribute("type").equals("select")) {
       throw new EoulsanException(
           "Parsing tool xml: no parameter type select found, in conditional element.");
+    }
 
     // Init parameter select
     this.toolParameterSelect = new ToolParameterSelect(param.get(0), nameSpace);
 
     // Init default value
-    if (this.toolParameterSelect.isSetting())
+    if (this.toolParameterSelect.isSetting()) {
       this.value = this.toolParameterSelect.getValue();
+    }
 
     // Extract all case available
     this.actionsRelatedOptions = parseActionsRelatedOptions(element);
 
-  }
-
-  @Override
-  public boolean setParameterEoulsan() {
-    // TODO Auto-generated method stub
-    return true;
   }
 }
