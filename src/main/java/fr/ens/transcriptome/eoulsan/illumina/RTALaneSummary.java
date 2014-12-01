@@ -262,58 +262,86 @@ public class RTALaneSummary {
 
       final String value = e.getAttribute(key);
 
-      if ("key".equals(key))
-        this.lane = Integer.parseInt(value);
-      else if ("TileCount".equals(key))
-        this.tileCount = Integer.parseInt(value);
-      else if ("ClustersRaw".equals(key))
-        this.clustersRaw = Integer.parseInt(value);
-      else if ("ClustersRawSD".equals(key))
-        this.clustersRawSD = Double.parseDouble(value);
-      else if ("ClustersPF".equals(key))
-        this.clustersPF = Integer.parseInt(value);
-      else if ("ClustersPFSD".equals(key))
-        this.clustersPFSD = Double.parseDouble(value);
-      else if ("PrcPFClusters".equals(key))
-        this.prcPFClusters = Double.parseDouble(value);
-      else if ("PrcPFClustersSD".equals(key))
-        this.prcPFClustersSD = Double.parseDouble(value);
-      else if ("Phasing".equals(key))
-        this.phasing = Double.parseDouble(value);
-      else if ("Prephasing".equals(key))
-        this.prephasing = Double.parseDouble(value);
-      else if ("CalledCyclesMin".equals(key))
-        this.calledCyclesMin = Integer.parseInt(value);
-      else if ("CalledCyclesMax".equals(key))
-        this.calledCyclesMax = Integer.parseInt(value);
-      else if ("PrcAlign".equals(key))
-        this.prcAlign = Double.parseDouble(value);
-      else if ("PrcAlignSD".equals(key))
-        this.prcAlignSD = Double.parseDouble(value);
-      else if ("ErrRatePhiX".equals(key))
-        this.errRatePhiX = Double.parseDouble(value);
-      else if ("ErrRatePhiXSD".equals(key))
-        this.errRatePhiXSD = Double.parseDouble(value);
-      else if ("ErrRate35".equals(key))
-        this.errRate35 = Double.parseDouble(value);
-      else if ("ErrRate35SD".equals(key))
-        this.errRate35SD = Double.parseDouble(value);
-      else if ("ErrRate75".equals(key))
-        this.errRate75 = Double.parseDouble(value);
-      else if ("ErrRate75SD".equals(key))
-        this.errRate75SD = Double.parseDouble(value);
-      else if ("ErrRate100".equals(key))
-        this.errRate100 = Double.parseDouble(value);
-      else if ("ErrRate100SD".equals(key))
-        this.errRate100SD = Double.parseDouble(value);
-      else if ("FirstCycleIntPF".equals(key))
-        this.firstCycleIntPF = Integer.parseInt(value);
-      else if ("FirstCycleIntPFSD".equals(key))
-        this.firstCycleIntPFSD = Double.parseDouble(value);
-      else if ("PrcIntensityAfter20CyclesPF".equals(key))
-        this.prcIntensityAfter20CyclesPF = Double.parseDouble(value);
-      else if ("PrcIntensityAfter20CyclesPFSD".equals(key))
-        this.prcIntensityAfter20CyclesPFSD = Double.parseDouble(value);
+      switch (key) {
+        case "key":
+          this.lane = Integer.parseInt(value);
+          break;
+        case "TileCount":
+          this.tileCount = Integer.parseInt(value);
+          break;
+        case "ClustersRaw":
+          this.clustersRaw = Integer.parseInt(value);
+          break;
+        case "ClustersRawSD":
+          this.clustersRawSD = Double.parseDouble(value);
+          break;
+        case "ClustersPF":
+          this.clustersPF = Integer.parseInt(value);
+          break;
+        case "ClustersPFSD":
+          this.clustersPFSD = Double.parseDouble(value);
+          break;
+        case "PrcPFClusters":
+          this.prcPFClusters = Double.parseDouble(value);
+          break;
+        case "PrcPFClustersSD":
+          this.prcPFClustersSD = Double.parseDouble(value);
+          break;
+        case "Phasing":
+          this.phasing = Double.parseDouble(value);
+          break;
+        case "Prephasing":
+          this.prephasing = Double.parseDouble(value);
+          break;
+        case "CalledCyclesMin":
+          this.calledCyclesMin = Integer.parseInt(value);
+          break;
+        case "CalledCyclesMax":
+          this.calledCyclesMax = Integer.parseInt(value);
+          break;
+        case "PrcAlign":
+          this.prcAlign = Double.parseDouble(value);
+          break;
+        case "PrcAlignSD":
+          this.prcAlignSD = Double.parseDouble(value);
+          break;
+        case "ErrRatePhiX":
+          this.errRatePhiX = Double.parseDouble(value);
+          break;
+        case "ErrRatePhiXSD":
+          this.errRatePhiXSD = Double.parseDouble(value);
+          break;
+        case "ErrRate35":
+          this.errRate35 = Double.parseDouble(value);
+          break;
+        case "ErrRate35SD":
+          this.errRate35SD = Double.parseDouble(value);
+          break;
+        case "ErrRate75":
+          this.errRate75 = Double.parseDouble(value);
+          break;
+        case "ErrRate75SD":
+          this.errRate75SD = Double.parseDouble(value);
+          break;
+        case "ErrRate100":
+          this.errRate100 = Double.parseDouble(value);
+          break;
+        case "ErrRate100SD":
+          this.errRate100SD = Double.parseDouble(value);
+          break;
+        case "FirstCycleIntPF":
+          this.firstCycleIntPF = Integer.parseInt(value);
+          break;
+        case "FirstCycleIntPFSD":
+          this.firstCycleIntPFSD = Double.parseDouble(value);
+          break;
+        case "PrcIntensityAfter20CyclesPF":
+          this.prcIntensityAfter20CyclesPF = Double.parseDouble(value);
+          break;
+        case "PrcIntensityAfter20CyclesPFSD":
+          this.prcIntensityAfter20CyclesPFSD = Double.parseDouble(value);
+          break;
+      }
     }
 
   }
