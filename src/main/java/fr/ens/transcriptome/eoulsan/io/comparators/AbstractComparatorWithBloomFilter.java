@@ -58,8 +58,9 @@ public abstract class AbstractComparatorWithBloomFilter extends
       throws FileNotFoundException, IOException {
 
     // Check input files
-    if (!checkFiles(fileA, fileB) && checkFileSize())
+    if (!checkFiles(fileA, fileB) && checkFileSize()) {
       return false;
+    }
 
     // Check path file (abstract and symbolic) is the same
     if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
@@ -180,12 +181,14 @@ public abstract class AbstractComparatorWithBloomFilter extends
       final CompressionType zType) {
 
     // No serialize file require
-    if (!this.useSerializeFile)
+    if (!this.useSerializeFile) {
       return false;
+    }
 
     // Compressed file and serialize require
-    if (zType != CompressionType.NONE)
+    if (zType != CompressionType.NONE) {
       return true;
+    }
 
     // File size in bytes
     final long fileSize = file.length();

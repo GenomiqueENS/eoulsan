@@ -56,12 +56,14 @@ public abstract class AbstractComparator implements Comparator {
       throws FileNotFoundException, IOException {
 
     // Check input files
-    if (!checkFiles(fileA, fileB) && checkFileSize())
+    if (!checkFiles(fileA, fileB) && checkFileSize()) {
       return false;
+    }
 
     // The files are not equals
-    if (fileA.equals(fileB))
+    if (fileA.equals(fileB)) {
       return false;
+    }
 
     // Check path file (abstract and symbolic) is the same
     if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
@@ -107,8 +109,9 @@ public abstract class AbstractComparator implements Comparator {
     checkExistingStandardFile(fileB, fileB.getAbsolutePath());
 
     // Check if try to compare the same file
-    if (fileA.equals(fileB))
+    if (fileA.equals(fileB)) {
       throw new IOException("Try to compare the same file: " + fileA);
+    }
 
     return true;
   }

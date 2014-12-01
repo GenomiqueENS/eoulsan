@@ -112,10 +112,11 @@ public class ITOutput {
       if (!new File(destinationDirectory, filename).exists()) {
         final File dest = new File(destinationDirectory, filename);
 
-        if (!FileUtils.copyFile(f, dest))
+        if (!FileUtils.copyFile(f, dest)) {
           throw new IOException("Error when moving file "
               + filename + " to " + destinationDirectory.getAbsolutePath()
               + ".");
+        }
 
         noFileFoundToCopy = false;
       }
@@ -208,8 +209,9 @@ public class ITOutput {
     // Remove all files not need to compare
     // this.cleanDirectory();
 
-    if (results.isEmpty())
+    if (results.isEmpty()) {
       return Collections.emptySet();
+    }
 
     return results;
   }
@@ -295,8 +297,9 @@ public class ITOutput {
     final Set<ITOutputComparisonResult> results = new HashSet<>();
 
     if (this.checkAbsenceFilePatterns == null
-        || this.checkAbsenceFilePatterns.length() == 0)
+        || this.checkAbsenceFilePatterns.length() == 0) {
       return Collections.emptySet();
+    }
 
     final Set<PathMatcher> patterns =
         createPathMatchers(checkAbsenceFilePatterns, false);
@@ -338,8 +341,9 @@ public class ITOutput {
       files.removeAll(excludedFiles);
     }
 
-    if (files.isEmpty())
+    if (files.isEmpty()) {
       return Collections.emptyList();
+    }
 
     // Return unmodifiable list
     return Collections.unmodifiableList(files);
@@ -380,9 +384,10 @@ public class ITOutput {
     }
 
     // No file found
-    if (matchedFiles.isEmpty())
+    if (matchedFiles.isEmpty()) {
       // return empty list
       return Collections.emptyList();
+    }
 
     return matchedFiles;
   }
@@ -403,8 +408,9 @@ public class ITOutput {
     // No pattern defined
     if (patterns == null || patterns.trim().isEmpty()) {
 
-      if (defaultAllPath)
+      if (defaultAllPath) {
         return Collections.singleton(ALL_PATH_MATCHER);
+      }
       return Collections.emptySet();
     }
 
@@ -548,8 +554,9 @@ public class ITOutput {
       for (Comparator comp : this.comparators) {
 
         // Check extension file in list extensions define by comparator
-        if (comp.getExtensions().contains(extension))
+        if (comp.getExtensions().contains(extension)) {
           return comp;
+        }
       }
 
       // None comparator find by extension file, return the default comparator

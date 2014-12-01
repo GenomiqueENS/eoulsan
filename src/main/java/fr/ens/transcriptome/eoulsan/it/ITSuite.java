@@ -87,8 +87,9 @@ public class ITSuite {
    */
   public static ITSuite getInstance() {
 
-    if (itSuite != null)
+    if (itSuite != null) {
       return itSuite;
+    }
 
     throw new EoulsanRuntimeException(
         "Cannot get an instance of ITSuite class because no instance has been created.");
@@ -165,10 +166,11 @@ public class ITSuite {
   public void endTest(final File directory, final ITResult itResult) {
 
     // Update counter
-    if (itResult.isSuccess())
+    if (itResult.isSuccess()) {
       this.successCount++;
-    else
+    } else {
       this.failCount++;
+    }
 
     // For latest
     if (this.testRunningCount == this.testsCount) {
