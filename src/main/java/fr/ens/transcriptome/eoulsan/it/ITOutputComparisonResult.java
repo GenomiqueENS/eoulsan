@@ -39,35 +39,59 @@ final class ITOutputComparisonResult implements
   }
 
   //
-  // Getter
+  // Getters & setters
   //
 
+  /**
+   * Gets the filename.
+   * @return the filename
+   */
   public String getFilename() {
     return filename;
   }
 
+  /**
+   * Gets the statut comparison.
+   * @return the statut comparison
+   */
   public StatusComparison getStatutComparison() {
     return statusComparison;
   }
 
+  /**
+   * Gets the message.
+   * @return the message
+   */
   public String getMessage() {
     return message;
   }
 
+  /**
+   * Sets the filename.
+   * @param filename the new filename
+   */
   public void setFilename(final String filename) {
     this.filename = filename;
   }
 
+  /**
+   * Sets the statut comparison.
+   * @param statutComparison the new statut comparison
+   */
   public void setStatutComparison(final StatusComparison statutComparison) {
     this.statusComparison = statutComparison;
   }
 
+  /**
+   * Sets the message.
+   * @param message the new message
+   */
   public void setMessage(String message) {
     this.message = message;
   }
 
   //
-  // Constructor
+  // Constructors
   //
   /**
    * Public constructor.

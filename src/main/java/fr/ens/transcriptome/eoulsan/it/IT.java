@@ -56,7 +56,6 @@ import org.testng.annotations.Test;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -251,9 +250,9 @@ public class IT {
    * @param itResult ItResult object
    * @param keyConf key configuration to retrieve command line
    * @param suffixFilename suffix filename for output standard and error file on
-   *          execution processus
+   *          execution process
    * @param desc description on command line
-   * @throws Throwable if an error occurs during execution processus
+   * @throws Throwable if an error occurs during execution process
    */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
@@ -268,11 +267,11 @@ public class IT {
    * @param itResult ItResult object
    * @param keyConf key configuration to retrieve command line
    * @param suffixFilename suffix filename for output standard and error file on
-   *          execution processus
+   *          execution process
    * @param desc description on command line
    * @param isApplication true if application to run, otherwise false
    *          corresponding to annexes script
-   * @throws Throwable if an error occurs during execution processus
+   * @throws Throwable if an error occurs during execution process
    */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
@@ -535,7 +534,7 @@ public class IT {
   /**
    * Group exclude file patterns with default, global configuration and
    * configuration test.
-   * @param valueConfigTests
+   * @param valueConfigTests patterns from configuration file
    * @return exclude files patterns for tests
    */
   private String buildExcludePatterns(final String valueConfigTests) {
@@ -608,14 +607,26 @@ public class IT {
   // Getter
   //
 
+  /**
+   * Gets the test name.
+   * @return the test name
+   */
   public String getTestName() {
     return this.testName;
   }
 
+  /**
+   * Gets the expected test directory.
+   * @return the expected test directory
+   */
   public File getExpectedTestDirectory() {
     return this.expectedTestDirectory;
   }
 
+  /**
+   * Gets the output test directory.
+   * @return the output test directory
+   */
   public File getOutputTestDirectory() {
     return this.outputTestDirectory;
   }
@@ -627,17 +638,29 @@ public class IT {
         + ", files from pattern(s) " + this.fileToComparePatterns;
   }
 
+  /**
+   * Gets the file to compare patterns.
+   * @return the file to compare patterns
+   */
   public String getFileToComparePatterns() {
     return (fileToComparePatterns == null || fileToComparePatterns.isEmpty()
         ? "none" : this.fileToComparePatterns);
   }
 
+  /**
+   * Gets the exclude to compare patterns.
+   * @return the exclude to compare patterns
+   */
   public String getExcludeToComparePatterns() {
     return (excludeToComparePatterns == null
         || excludeToComparePatterns.isEmpty()
         ? "none" : excludeToComparePatterns);
   }
 
+  /**
+   * Gets the check existence file patterns.
+   * @return the check existence file patterns
+   */
   public String getCheckExistenceFilePatterns() {
     return (checkExistenceFilePatterns == null
         || checkExistenceFilePatterns.isEmpty()

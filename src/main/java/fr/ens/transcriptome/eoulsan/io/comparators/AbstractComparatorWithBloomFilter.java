@@ -47,7 +47,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
 
   // Limited create serialize bloomfilter file for size file inferior to
   // size of serialize bloomfilter file 27369839 bytes with default parameters
-  private final long sizeMinimalCreateSerializeFile = 40000000;
+  private static final long SIZE_MINIMAL_CREATE_SERIALIZE_FILE = 40000000;
 
   private double falsePositiveProbability = 0.1;
   private int expectedNumberOfElements = 30000000;
@@ -190,7 +190,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
     // File size in bytes
     final long fileSize = file.length();
     // Check to choice
-    return fileSize > this.sizeMinimalCreateSerializeFile;
+    return fileSize > SIZE_MINIMAL_CREATE_SERIALIZE_FILE;
   }
 
   //

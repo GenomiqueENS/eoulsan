@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 
 /**
@@ -98,8 +97,7 @@ public class ITSuite {
   /**
    * Create useful symbolic test to the latest and running test in output test
    * directory.
-   * @param failTestsCount in case of start tests, create running test link
-   *          otherwise recreate latest and remove running test
+   * @param directory the source path directory
    */
   private void createSymbolicLinkToTest(final File directory) {
 
@@ -189,7 +187,7 @@ public class ITSuite {
     // Add summary of tests execution
     getLogger().info(
         "Summary tests execution: "
-            + successCount + " successed tests and " + failCount
+            + successCount + " succeeded tests and " + failCount
             + " failed tests.");
 
     // Add suffix to log global filename
@@ -216,7 +214,7 @@ public class ITSuite {
   }
 
   /**
-   * Set the debug mode, true if true if it is demand otherwise false.
+   * Set the debug mode, true if it is demand otherwise false.
    * @param debugEnabled true if it is demand otherwise false.
    */
   public void setDebugEnabled(boolean debugEnabled) {

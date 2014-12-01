@@ -123,7 +123,7 @@ public class ITOutput {
 
     if (noFileFoundToCopy) {
       String msg =
-          "Fail: none file to copy in dest "
+          "Fail: none file to copy in destination "
               + destinationDirectory.getAbsolutePath();
       throw new EoulsanException(msg);
     }
@@ -148,8 +148,7 @@ public class ITOutput {
     final Set<ITOutputComparisonResult> results = new TreeSet<>();
 
     // Copy list files
-    final List<File> allFilesFromTest =
-        new ArrayList<>(this.filesToCompare);
+    final List<File> allFilesFromTest = new ArrayList<>(this.filesToCompare);
 
     // Build map filename with files path
     Map<String, File> filesTestedMap =
@@ -317,9 +316,11 @@ public class ITOutput {
 
   /**
    * Listing recursively all files in the source directory which match with
-   * patterns files definedsourceDirectory
-   * @param sourceDirectory source directory
-   * @return a map with all files which match with pattern
+   * patterns files
+   * @param patternKey the pattern key
+   * @param excludedFiles the excluded files
+   * @param defaultAllPath the default all path
+   * @return the list with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
    * @throws EoulsanException if no file to compare found
    */

@@ -44,8 +44,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This internal class allow to build report execution test.
+ * This class compute result on integration test execution.
  * @author Sandrine Perrin
+ * @since 2.0
  */
 public class ITResult {
 
@@ -150,7 +151,7 @@ public class ITResult {
     report.append(": for ");
     report.append(it.getTestName());
     report.append(isGeneratedData()
-            ? ": generate expected data" : ": launch test and comparison");
+        ? ": generate expected data" : ": launch test and comparison");
 
     report.append("\n\nPatterns:");
     report.append("\n\t compare file ");
@@ -264,30 +265,56 @@ public class ITResult {
   // Getter and Setter
   //
 
+  /**
+   * As generated data.
+   */
   public void asGeneratedData() {
     this.generatedData = true;
   }
 
+  /**
+   * Checks if is generated data.
+   * @return true, if is generated data
+   */
   public boolean isGeneratedData() {
     return this.generatedData;
   }
 
+  /**
+   * Checks if is success.
+   * @return true, if is success
+   */
   public boolean isSuccess() {
     return this.exception == null;
   }
 
+  /**
+   * Gets the exception.
+   * @return the exception
+   */
   public Throwable getException() {
     return this.exception;
   }
 
+  /**
+   * Sets the exception.
+   * @param e the new exception
+   */
   public void setException(final Throwable e) {
     this.exception = e;
   }
 
+  /**
+   * As nothing to do.
+   */
   public void asNothingToDo() {
     this.nothingToDo = true;
   }
 
+  /**
+   * Checks if is nothing to do.
+   * @return true, if is nothing to do
+   */
   public boolean isNothingToDo() {
     return this.nothingToDo;
   }
@@ -298,7 +325,7 @@ public class ITResult {
 
   /**
    * Public constructor.
-   * @param it it object
+   * @param it integration test object
    */
   public ITResult(final IT it) {
     this.it = it;
