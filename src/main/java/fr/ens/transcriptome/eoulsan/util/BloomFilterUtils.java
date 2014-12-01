@@ -71,8 +71,9 @@ public class BloomFilterUtils implements Serializable {
   public static void serializationBloomFilter(final File fileSer,
       final BloomFilterUtils bloomFilter) throws IOException {
 
-    if (bloomFilter == null)
+    if (bloomFilter == null) {
       throw new IOException("Bloom filter not exists");
+    }
 
     // Serialization BloomFilter
     ObjectOutputStream oos;
@@ -82,9 +83,6 @@ public class BloomFilterUtils implements Serializable {
       oos.flush();
       oos.close();
 
-      // Permission file, set readonly
-      boolean b = fileSer.setReadOnly();
-      
     } catch (FileNotFoundException e) {
       throw new IOException(e.getMessage());
     }
@@ -163,15 +161,17 @@ public class BloomFilterUtils implements Serializable {
       final double falsePositiveProbability) {
 
     // Check parameter
-    if (expectedNumberOfElements <= 0)
+    if (expectedNumberOfElements <= 0) {
       throw new IllegalArgumentException(
           "Parameter 'expectedNumberOfElements' to create bloom filter invalid "
               + expectedNumberOfElements);
+    }
 
-    if (falsePositiveProbability <= 0 || falsePositiveProbability >= 1.0)
+    if (falsePositiveProbability <= 0 || falsePositiveProbability >= 1.0) {
       throw new IllegalArgumentException(
           "Parameter 'falsePositiveProbability' to create bloom filter invalid "
               + falsePositiveProbability);
+    }
 
     this.addedNumberOfElements = 0;
     this.expectedNumberOfElements = expectedNumberOfElements;
