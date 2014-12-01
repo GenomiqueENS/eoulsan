@@ -132,7 +132,7 @@ public class KeepOneMatchReadAlignmentsFilterTest {
    */
   @Test
   public void testGetDescription() {
-    assertEquals("After this filter only one alignment is keeped by read",
+    assertEquals("After this filter only one alignment is kept by read",
         filter.getDescription());
   }
 

@@ -192,7 +192,7 @@ public class DistanceFromReferenceReadAlignmentsFilterTest {
   public void testGetDescription() {
     assertEquals(
         "After this filter, only the alignments which the distance from the "
-            + "reference is lower than the given distance are keeped.",
+            + "reference is lower than the given distance are kept.",
         filter.getDescription());
     assertFalse("ko".equals(filter.getName()));
   }
