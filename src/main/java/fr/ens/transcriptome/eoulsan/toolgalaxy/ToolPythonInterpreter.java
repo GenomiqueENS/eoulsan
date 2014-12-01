@@ -2,12 +2,15 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy;
 
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.VariableRegistry.INSTANCE_NAME;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.python.core.PyObject;
 import org.python.google.common.base.Joiner;
 import org.python.util.PythonInterpreter;
+import org.testng.collections.Sets;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -19,6 +22,8 @@ public class ToolPythonInterpreter {
   public final static Splitter NEW_LINE = Splitter.onPattern("[\r\n]")
       .trimResults().omitEmptyStrings();
   public static final String VAR_CMD_NAME = "cmd";
+
+  private final Set<String> variableNames = Sets.newHashSet();
 
   public String executeScript(final String script,
       final Map<String, String> registry) {
@@ -54,12 +59,22 @@ public class ToolPythonInterpreter {
 
     // Build line script python
     for (final String line : rawCommandInList) {
-      final LineScriptJython newLine = new LineScriptJython(line);
+      // TODO
+      // final LineScriptJython newLine = new LineScriptJython(line);
+      final ScriptLineJython newLine = new ScriptLineJython(line);
       commandInList.add(newLine.asString());
 
+      this.variableNames.addAll(newLine.getVariableNames());
     }
 
     return Joiner.on(LINE_SEPARATOR).join(commandInList).trim();
   }
 
+  public Set<String> getVariableNames() {
+
+    if (this.variableNames.isEmpty()) {
+      return Collections.emptySet();
+    }
+    return Collections.unmodifiableSet(variableNames);
+  }
 }

@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.toolgalaxy;
 
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.AbstractToolParameter.getInstanceToolParameter;
+import static fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.AbstractToolElement.getInstanceToolElement;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +49,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.AbstractToolParameter;
 import fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.ToolConditionalElement;
 import fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
@@ -65,6 +64,8 @@ public class ToolInterpreter {
   // Throw an exception if tag exist in tool file
   private final static Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
 
+  private static final String DEFAULT_VALUE_NULL = "no_authorized";
+
   // Set DOM related to the tool XML file
   private final Document doc;
   private final ToolPythonInterpreter pythonInterperter;
@@ -78,6 +79,7 @@ public class ToolInterpreter {
   private String description;
   private String interpreter;
   private String command;
+  private Set<String> variableNamesFromCommandTag;
 
   // Set input port is setting
   private boolean isSettingsInputPort = false;
@@ -108,16 +110,18 @@ public class ToolInterpreter {
     if (cmdTagContent.isEmpty())
       throw new EoulsanException("Parsing tool XML file: no command found.");
 
-    // Associate parameter input tool with parameters Eoulsan
-    for (ToolElement ptg : inputs) {
-      final String name = ptg.getName();
-
-      if (parametersEoulsan.containsKey(name))
-        // TODO Check validity
-        ptg.setParameterEoulsan(parametersEoulsan.get(name));
-    }
+    // // Associate parameter input tool with parameters Eoulsan
+    // for (ToolElement ptg : inputs) {
+    // final String name = ptg.getName();
+    //
+    // if (parametersEoulsan.containsKey(name))
+    // // TODO Check validity
+    // ptg.setParameterEoulsan(parametersEoulsan.get(name));
+    // }
 
     this.command = this.pythonInterperter.parseCommandString(cmdTagContent);
+    this.variableNamesFromCommandTag =
+        this.pythonInterperter.getVariableNames();
   }
 
   /**
@@ -151,33 +155,8 @@ public class ToolInterpreter {
     // List variable name define
     Map<String, String> parameters = extractParameters();
 
-    // TODO
-    // System.out.println("list parameters \n"
-    // + Joiner.on("\n\t").withKeyValueSeparator("=").join(parameters));
-
-
     String new_command =
         this.pythonInterperter.executeScript(command, parameters);
-
-    // TODO
-    // System.out.println("map parameters \n"
-    // + Joiner.on("\n").withKeyValueSeparator("\t").join(parameters));
-
-    // String old_command = this.command;
-    // String new_command = "";
-
-    // // Replace variable by value
-    // for (Map.Entry<String, String> e : parameters.entrySet()) {
-    // final String var = "$" + e.getKey();
-    // final String value = e.getValue();
-    //
-    // new_command = old_command.replace(var, value);
-    // old_command = new_command;
-    // }
-    //
-    // // Remove new line
-    // new_command =
-    // old_command.replaceAll("[\\n\\t\\r]+", " ").replaceAll("\\s+", " ");
 
     return new_command;
   }
@@ -219,7 +198,23 @@ public class ToolInterpreter {
    * @return setting parameters tools with values
    * @throws EoulsanException no parameter setting found
    */
-  public Map<String, String> extractParameters() throws EoulsanException {
+  private Map<String, String> extractParameters() throws EoulsanException {
+    final Map<String, String> results = extractParametersFromXML();
+
+    // Compare with variable from command tag
+    // Add variable not found in xml tag, corresponding to dataset value from
+    // external file
+    final Map<String, String> missingVariables =
+        comparisonParametersXMLVariablesCommand(results);
+
+    if (!missingVariables.isEmpty())
+      results.putAll(missingVariables);
+
+    return results;
+  }
+
+  private Map<String, String> extractParametersFromXML()
+      throws EoulsanException {
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> results =
@@ -228,32 +223,44 @@ public class ToolInterpreter {
     // TODO
     System.out.println("inputs param " + Joiner.on("\n").join(inputs));
     // TODO
-    // System.out.println("outputs param " + Joiner.on("\n").join(outputs));
+    System.out.println("outputs param " + Joiner.on("\n").join(outputs));
 
     // Parse input
     for (ToolElement ptg : inputs) {
       // TODO
-      System.out.println("to add in param: "
-          + ptg.getName() + "\t" + ptg.getValue());
-
-      if (ptg.isSetting())
-        results.put(ptg.getName(), ptg.getValue());
+      // if (ptg.isSetting())
+      System.out.println("extract name="
+          + ptg.getName() + "\tval=" + ptg.getValue());
+      results.put(ptg.getName(), ptg.getValue());
     }
 
     // Parse output
     for (ToolElement ptg : outputs) {
       // TODO
-      System.out.println("to add in param: "
-          + ptg.getName() + "\t" + ptg.getValue());
-
-      if (ptg.isSetting())
-        // Add in map
-        results.put(ptg.getName(), ptg.getValue());
+      // Add in map
+      System.out.println("extract name="
+          + ptg.getName() + "\tval=" + ptg.getValue());
+      results.put(ptg.getName(), ptg.getValue());
     }
 
     if (results.isEmpty())
       throw new EoulsanException("No parameter settings.");
 
+    return results;
+  }
+
+  private Map<String, String> comparisonParametersXMLVariablesCommand(
+      final Map<String, String> parametersXML) throws EoulsanException {
+
+    final Map<String, String> results = Maps.newHashMap();
+
+    // Parsing variable name found in command tag
+    for (String variableName : variableNamesFromCommandTag) {
+      // Check exist
+      if (parametersXML.get(variableName) == null) {
+        results.put(variableName, DEFAULT_VALUE_NULL);
+      }
+    }
     return results;
   }
 
@@ -299,21 +306,28 @@ public class ToolInterpreter {
   // Static methods parsing xml
   //
 
-  static Set<ToolElement> extractParamElement(final Element parent)
-      throws EoulsanException {
+  static Set<ToolElement> extractParamElement(final Element parent,
+      final String elementName) throws EoulsanException {
 
     Set<ToolElement> results = Sets.newHashSet();
 
     // Extract all param tag
-    List<Element> simpleParams = extractChildElementsByTagName(parent, "param");
+    List<Element> simpleParams =
+        extractChildElementsByTagName(parent, elementName);
 
     for (Element param : simpleParams) {
-      final ToolElement ptg = getInstanceToolParameter(param);
+      final ToolElement ptg = getInstanceToolElement(param);
 
       results.add(ptg);
     }
 
     return results;
+  }
+
+  static Set<ToolElement> extractConditionalParamElement(final Element parent)
+      throws EoulsanException {
+    Map<String, String> map = Collections.emptyMap();
+    return extractConditionalParamElement(parent, map);
   }
 
   static Set<ToolElement> extractConditionalParamElement(final Element parent,
@@ -332,12 +346,10 @@ public class ToolInterpreter {
       // Set parameter
       tce.setParameterEoulsan(parametersEoulsan);
 
-      if (tce.isSetting()) {
-        results.addAll(tce.getToolParametersResult());
-      }
+      results.addAll(tce.getToolParametersResult());
 
       // TODO
-      // System.out.println("cond " + tce);
+      System.out.println("cond " + tce);
     }
 
     return results;
@@ -463,34 +475,46 @@ public class ToolInterpreter {
 
     final Set<ToolElement> results = Sets.newHashSet();
 
-    Element outputsElement = extractElementsByTagName(doc, "outputs", 1).get(0);
+    final Element outputElement =
+        extractElementsByTagName(doc, "outputs", 1).get(0);
 
-    // Extract all param tag
-    List<Element> simpleParams =
-        XMLUtils.getElementsByTagName(outputsElement, "data");
+    results.addAll(extractParamElement(outputElement, "data"));
 
-    for (Element param : simpleParams) {
-      final ToolElement ptg = getInstanceToolParameter(param);
-      results.add(ptg);
-    }
+    results.addAll(extractConditionalParamElement(outputElement));
 
-    // Extract all param tag
-    List<Element> condParams =
-        XMLUtils.getElementsByTagName(outputsElement, "conditional");
-
-    for (Element param : condParams) {
-      final ToolElement ptg = new ToolConditionalElement(param);
-      results.add(ptg);
-    }
-
-    if (results.isEmpty()) {
-      System.out.println("no outputs parameter found");
-      return Collections.emptySet();
-    }
-
-    // TODO
-    // System.out.println("outputs : " + Joiner.on("\n").join(results));
     return results;
+    //
+    // final Set<ToolElement> results = Sets.newHashSet();
+    //
+    // Element outputsElement = extractElementsByTagName(doc, "outputs",
+    // 1).get(0);
+    //
+    // // Extract all param tag
+    // List<Element> simpleParams =
+    // XMLUtils.getElementsByTagName(outputsElement, "data");
+    //
+    // for (Element param : simpleParams) {
+    // final ToolElement ptg = getInstanceToolParameter(param);
+    // results.add(ptg);
+    // }
+    //
+    // // Extract all param tag
+    // List<Element> condParams =
+    // XMLUtils.getElementsByTagName(outputsElement, "conditional");
+    //
+    // for (Element param : condParams) {
+    // final ToolElement ptg = new ToolConditionalElement(param);
+    // results.add(ptg);
+    // }
+    //
+    // if (results.isEmpty()) {
+    // System.out.println("no outputs parameter found");
+    // return Collections.emptySet();
+    // }
+    //
+    // // TODO
+    // // System.out.println("outputs : " + Joiner.on("\n").join(results));
+    // return results;
   }
 
   /**
@@ -508,7 +532,7 @@ public class ToolInterpreter {
     final Element inputElement =
         extractElementsByTagName(doc, "inputs", 1).get(0);
 
-    results.addAll(extractParamElement(inputElement));
+    results.addAll(extractParamElement(inputElement, "param"));
 
     results.addAll(extractConditionalParamElement(inputElement,
         parametersEoulsan));
