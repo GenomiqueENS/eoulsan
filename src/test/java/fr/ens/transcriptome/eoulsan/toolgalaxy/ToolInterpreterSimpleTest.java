@@ -53,7 +53,7 @@ public class ToolInterpreterSimpleTest {
   @Test
   public void parseSam2Bam() throws FileNotFoundException, EoulsanException {
     final File toolFile = new File(dir, "sam2bam/1.1.4/sam_to_bam.xml");
-    String name = "sam_to_bam";
+    String name = "SAM-to-BAM";
     String version = "1.1.4";
     String desc = "converts SAM format to BAM format";
     String interpreter = "python";
@@ -63,12 +63,13 @@ public class ToolInterpreterSimpleTest {
     paramTabular_SR += "input\tsource.input1\tinput_value\n";
     paramTabular_SR += "input\tsource.index_source\tno_selected\n";
     paramTabular_SR += "input\tsource.ref_file\tref_file_value\n";
-    paramTabular_SR += "input\tsource.index.fields.path\tindex_fields_value\n";
+    // paramTabular_SR +=
+    // "input\tsource.index.fields.path\t index_fields_value\n";
     paramTabular_SR += "output\toutput1\toutput_value\n";
 
     List<String> cmd_SR =
         TOKEN
-            .splitToList("sam_to_bam.py --input1=input_value --index=index_fields_value --output1=output_value");
+            .splitToList("sam_to_bam.py --input1= input_value --index= no_authorized --output1= output_value");
 
     final MockEoulsan mock =
         new MockEoulsan(name, version, desc, interpreter, cmd_SR,
@@ -82,13 +83,13 @@ public class ToolInterpreterSimpleTest {
     paramTabular_withHistory += "input\tsource.input1\tinput_value\n";
     paramTabular_withHistory += "input\tsource.index_source\thistory\n";
     paramTabular_withHistory += "input\tsource.ref_file\tref_file_value\n";
-    paramTabular_withHistory +=
-        "input\tsource.index.fields.path\tindex_fields_value\n";
+    // paramTabular_withHistory +=
+    // "input\tsource.index.fields.path\t index_fields_value\n";
     paramTabular_withHistory += "output\toutput1\toutput_value\n";
 
     List<String> cmd_withHistory =
         TOKEN
-            .splitToList("sam_to_bam.py --input1=input_value --ref_file=ref_file_value --output1=output_value");
+            .splitToList("sam_to_bam.py --input1= input_value --ref_file= ref_file_value --output1= output_value");
     mock.setCommand(cmd_withHistory, paramTabular_withHistory);
 
     checkInterperter(toolFile, mock);
@@ -271,6 +272,9 @@ public class ToolInterpreterSimpleTest {
           throw new EoulsanException("Entry unknown: " + tokens[0]);
         }
       }
+
+      if (this.inputs.isEmpty())
+        throw new EoulsanException("MockEoulsan: no input settings.");
     }
 
     public void setCommand(final List<String> cmd, final String paramTabular)
